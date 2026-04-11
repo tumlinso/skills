@@ -1,0 +1,4 @@
+version: 1
+display_name: CUDA V100
+short_description: V100 CUDA entry point with routing for fusion, divergence, memory-tier, benchmark, and profiler decisions
+default_prompt: Assist with CUDA build, debugging, profiling, kernel fusion, divergence and launch-overhead tradeoffs, memory-tier choice, fit, topology, pipeline, benchmark standardization, Torch extension, and performance work for code intended to run on NVIDIA Tesla V100 GPUs. Choose the dominant bottleneck first, load only the matching addendum or benchmark references, and prefer compact benchmark or profiler summaries over raw artifacts when possible.

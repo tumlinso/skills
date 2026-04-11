@@ -1,0 +1,15 @@
+{
+  "dataset_id": "example-real-dataset",
+  "dataset_kind": "scrna",
+  "path": "/abs/path/to/data",
+  "format": "mtx",
+  "rows": 1000000,
+  "cols": 20000,
+  "nnz": 80000000,
+  "tags": ["real", "scrna"],
+  "row_nnz_percentiles": {
+    "p50": 64,
+    "p90": 256,
+    "p99": 1024
+  }
+}

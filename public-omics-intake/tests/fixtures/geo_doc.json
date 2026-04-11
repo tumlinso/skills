@@ -1,0 +1,11 @@
+{
+  "accession": "GSE171555",
+  "entrytype": "GSE",
+  "gdstype": "Expression profiling by high throughput sequencing",
+  "pubmedids": "34567890",
+  "summary": "Single-cell RNA-seq atlas of adult human liver fibrosis with healthy controls.",
+  "taxon": [
+    "Homo sapiens"
+  ],
+  "title": "Adult human liver fibrosis single-cell atlas"
+}

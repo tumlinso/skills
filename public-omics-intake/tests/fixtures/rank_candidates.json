@@ -1,0 +1,68 @@
+[
+  {
+    "source": "geo",
+    "primary_accession": "GSE171555",
+    "study_accessions": [
+      "GSE171555"
+    ],
+    "sample_accessions": [],
+    "run_accessions": [],
+    "title": "Adult human liver fibrosis single-cell atlas",
+    "summary": "scRNA-seq atlas with processed matrices and rich annotations.",
+    "species": [
+      "human"
+    ],
+    "modality": [
+      "scrna-seq"
+    ],
+    "assay": [
+      "expression profiling"
+    ],
+    "chemistry": [
+      "10x"
+    ],
+    "stage": "adult",
+    "tissue": "liver",
+    "cell_type": "hepatocyte",
+    "perturbation": "fibrosis",
+    "processed_available": true,
+    "raw_available": false,
+    "public_access": true
+  },
+  {
+    "source": "sra",
+    "primary_accession": "PRJNA720779",
+    "study_accessions": [
+      "PRJNA720779"
+    ],
+    "sample_accessions": [
+      "SAMN100",
+      "SAMN101"
+    ],
+    "run_accessions": [
+      "SRR100",
+      "SRR101"
+    ],
+    "title": "Mouse liver fibrosis bulk RNA-seq study",
+    "summary": "",
+    "species": [
+      "mouse"
+    ],
+    "modality": [
+      "bulk-rna-seq"
+    ],
+    "assay": [
+      "RNA-Seq"
+    ],
+    "chemistry": [
+      "Illumina"
+    ],
+    "stage": "adult",
+    "tissue": "liver",
+    "cell_type": "",
+    "perturbation": "fibrosis",
+    "processed_available": false,
+    "raw_available": true,
+    "public_access": true
+  }
+]

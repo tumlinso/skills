@@ -1,0 +1,21 @@
+{
+  "benchmark_id": "example-benchmark",
+  "target_name": "exampleBench",
+  "workload_family": "example-workload",
+  "supported_dataset_tiers": ["small", "large", "real"],
+  "default_small": {
+    "dataset_tier": "small",
+    "warmup": 1,
+    "repeats": 2
+  },
+  "default_large": {
+    "dataset_tier": "large",
+    "warmup": 1,
+    "repeats": 4
+  },
+  "real_dataset_requirements": {
+    "dataset_manifest": true
+  },
+  "recommended_nsys_phase": "steady_state_compute",
+  "recommended_ncu_phase": "steady_state_compute"
+}

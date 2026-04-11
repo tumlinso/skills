@@ -1,0 +1,6 @@
+interface:
+  display_name: "Public Omics Intake"
+  short_description: "Public omics dataset intake and acquisition"
+  default_prompt: "Use $public-omics-intake to discover, rank, plan, and fetch public omics datasets with metadata-first defaults and reproducible manifests."
+policy:
+  allow_implicit_invocation: false

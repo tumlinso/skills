@@ -1,0 +1,10 @@
+---
+title: "Split Fixture"
+author: "Test Author"
+format:
+  pdf: default
+---
+
+## Abstract
+
+This manuscript has companion section files.

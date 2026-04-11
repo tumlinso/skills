@@ -1,0 +1,12 @@
+{
+  "benchmark_id": "example-benchmark",
+  "workload_family": "example-workload",
+  "dataset_tier": "large",
+  "dataset_id": "synthetic-v1",
+  "dataset_manifest": null,
+  "visible_device_ids": [0, 1, 2, 3],
+  "topology": "v100-4gpu-diagonal-nvlink",
+  "warmup": 1,
+  "repeats": 4,
+  "profile_friendly": true
+}

@@ -1,0 +1,13 @@
+---
+title: "Citation Fixture"
+author: "Test Author"
+format:
+  pdf: default
+---
+
+## Introduction
+
+Our model reduces error by 35% across three datasets.
+Cardiac fibrosis is associated with high mortality.
+Recent studies show that BRD4 disruption attenuates fibroblast activation [@brd4].
+Single-cell atlases are widely used to study developmental trajectories.

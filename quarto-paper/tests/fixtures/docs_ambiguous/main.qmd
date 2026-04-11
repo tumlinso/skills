@@ -1,0 +1,10 @@
+---
+title: "Docs Ambiguous Fixture"
+author: "Test Author"
+format:
+  pdf: default
+---
+
+## Introduction
+
+The real manuscript lives at the root.
