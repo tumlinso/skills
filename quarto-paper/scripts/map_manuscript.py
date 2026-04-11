@@ -307,6 +307,18 @@ def analyze(root_input: Path) -> dict[str, object]:
         if render_dir.exists():
             render_like_paths.append(str(render_dir.relative_to(root)))
 
+    for bib_path in sorted(root.rglob("*.bib")):
+        if any(part in RENDER_DIR_NAMES for part in bib_path.parts):
+            continue
+        support_seen.add(("local", rel_path(bib_path, root)))
+        bibliography_files.append({"path": rel_path(bib_path, root), "exists": True, "source": None})
+
+    for csl_path in sorted(root.rglob("*.csl")):
+        if any(part in RENDER_DIR_NAMES for part in csl_path.parts):
+            continue
+        support_seen.add(("local", rel_path(csl_path, root)))
+        csl_files.append({"path": rel_path(csl_path, root), "exists": True, "source": None})
+
     for qmd_path in qmd_files:
         text = read_text(qmd_path)
         front_matter, body = extract_front_matter(text)
@@ -336,7 +348,7 @@ def analyze(root_input: Path) -> dict[str, object]:
         candidate_manuscripts.append(record)
 
         rel_path_obj = qmd_path.relative_to(root)
-        if is_section_path(rel_path_obj):
+        if is_section_path(rel_path_obj) and not is_auxiliary_path(rel_path_obj):
             section_files.append(rel)
         if is_auxiliary_path(rel_path_obj):
             auxiliary_qmd_files.append(rel)

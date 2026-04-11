@@ -21,7 +21,7 @@ HEURISTICS = [
     (
         "quantitative claim",
         re.compile(
-            r"\b\d+(?:\.\d+)?(?:\s*%|\s+percent|\s+fold|\s+x|\s+times|\s+million|\s+billion|\s+thousand)\b",
+            r"\b\d+(?:\.\d+)?(?:\s*%(?!\w)|\s+percent\b|\s+fold\b|\s+x\b|\s+times\b|\s+million\b|\s+billion\b|\s+thousand\b)",
             re.IGNORECASE,
         ),
         "quantitative or benchmark source",
