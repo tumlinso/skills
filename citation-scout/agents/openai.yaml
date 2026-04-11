@@ -1,0 +1,6 @@
+interface:
+  display_name: "Citation Scout"
+  short_description: "Abstract-first paper search and citation shortlisting"
+  default_prompt: "Use $citation-scout to search PubMed, bioRxiv, and arXiv with abstract-first workflows, rank papers against manuscript claims or topics, emit compact shortlist summaries, and export optional BibTeX without defaulting to full-text reading."
+policy:
+  allow_implicit_invocation: false

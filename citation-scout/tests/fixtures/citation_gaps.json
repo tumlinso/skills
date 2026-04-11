@@ -1,0 +1,26 @@
+{
+  "gaps": [
+    {
+      "file": "main.qmd",
+      "heading": "Introduction",
+      "line": 8,
+      "sentence": "Cardiac fibrosis is associated with high mortality.",
+      "reasons": [
+        "time or prevalence claim",
+        "evidence attribution"
+      ],
+      "suggested_citation_type": "epidemiology or historical source"
+    },
+    {
+      "file": "main.qmd",
+      "heading": "Methods",
+      "line": 11,
+      "sentence": "Our model reduces error by 35% across three datasets.",
+      "reasons": [
+        "quantitative claim",
+        "comparative or novelty claim"
+      ],
+      "suggested_citation_type": "comparative or benchmark source"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <entry>
+    <id>http://arxiv.org/abs/2404.12345v1</id>
+    <updated>2024-04-11T00:00:00Z</updated>
+    <published>2024-04-10T00:00:00Z</published>
+    <title>Benchmarking single-cell atlas integration methods across heterogeneous datasets</title>
+    <summary>We compare integration methods for single-cell atlases across multiple datasets and report benchmark performance.</summary>
+    <author><name>Alice Example</name></author>
+    <author><name>Bob Example</name></author>
+    <link href="https://arxiv.org/abs/2404.12345v1" rel="alternate" type="text/html"/>
+    <arxiv:doi>10.48550/arXiv.2404.12345</arxiv:doi>
+    <arxiv:journal_ref>arXiv</arxiv:journal_ref>
+    <category term="cs.LG"/>
+    <category term="q-bio.GN"/>
+  </entry>
+</feed>

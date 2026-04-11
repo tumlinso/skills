@@ -1,0 +1,55 @@
+{
+  "hits": [
+    {
+      "abstract": "Cardiac fibrosis contributes to adverse remodeling and mortality risk in progressive heart failure.",
+      "authors": ["Jane Smith", "John Doe"],
+      "categories": ["Review"],
+      "claim_id": "claim-1",
+      "date": "2024-04-10",
+      "doi": "10.1000/cardiac.2024.1",
+      "paper_kind": "review",
+      "publication_types": ["Journal Article", "Review"],
+      "query_text": "Cardiac fibrosis is associated with high mortality.",
+      "source": "pubmed",
+      "source_id": "12345678",
+      "title": "Cardiac fibrosis is associated with high mortality in progressive heart failure",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/12345678/",
+      "venue": "Journal of Cardiac Biology",
+      "year": "2024"
+    },
+    {
+      "abstract": "We compare integration methods for single-cell atlases across multiple datasets and report benchmark performance improvements.",
+      "authors": ["Alice Example", "Bob Example"],
+      "categories": ["cs.LG", "q-bio.GN"],
+      "claim_id": "claim-2",
+      "date": "2024-04-10T00:00:00Z",
+      "doi": "10.48550/arXiv.2404.12345",
+      "paper_kind": "preprint",
+      "publication_types": [],
+      "query_text": "Our model reduces error by 35% across three datasets.",
+      "source": "arxiv",
+      "source_id": "2404.12345",
+      "title": "Benchmarking single-cell atlas integration methods across heterogeneous datasets",
+      "url": "https://arxiv.org/abs/2404.12345v1",
+      "venue": "arXiv",
+      "year": "2024"
+    },
+    {
+      "abstract": "We present a benchmark for integration of single-cell atlases in fibrotic heart disease with comparisons across datasets.",
+      "authors": ["Alice Example", "Bob Example"],
+      "categories": ["bioinformatics"],
+      "claim_id": "claim-2",
+      "date": "2024-04-01",
+      "doi": "10.1101/2024.04.01.123456",
+      "paper_kind": "preprint",
+      "publication_types": [],
+      "query_text": "Our model reduces error by 35% across three datasets.",
+      "source": "biorxiv",
+      "source_id": "10.1101/2024.04.01.123456",
+      "title": "A preprint benchmark for single-cell atlas integration in fibrotic heart disease",
+      "url": "https://www.biorxiv.org/content/10.1101/2024.04.01.123456v1",
+      "venue": "bioRxiv",
+      "year": "2024"
+    }
+  ]
+}

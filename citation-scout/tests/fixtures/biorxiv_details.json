@@ -1,0 +1,20 @@
+{
+  "messages": [
+    {
+      "count": 1,
+      "cursor": 0,
+      "total": 1
+    }
+  ],
+  "collection": [
+    {
+      "doi": "10.1101/2024.04.01.123456",
+      "title": "A preprint benchmark for single-cell atlas integration in fibrotic heart disease",
+      "authors": "Alice Example;Bob Example",
+      "date": "2024-04-01",
+      "version": "1",
+      "category": "bioinformatics",
+      "abstract": "We present a benchmark for integration of single-cell atlases in fibrotic heart disease with comparisons across datasets."
+    }
+  ]
+}

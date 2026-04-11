@@ -1,6 +1,6 @@
 ---
 name: quarto-paper
-description: Writing assistant for Quarto manuscripts, preprints, and article-style `.qmd` projects. Use when Codex needs to detect the real manuscript source in a Quarto repo, inspect `_quarto.yml` and manuscript `.qmd` structure, distinguish source files from rendered output such as `docs/`, revise prose section-by-section, split a large manuscript into smaller subsection files while preserving front matter and references, or prepare structured citation-gap notes for later source gathering. Default skill for Quarto manuscript editing. Do not use for generic Quarto websites or books unless the task is clearly manuscript-centered, and do not use for dataset intake, heavy download workflows, downstream analysis, or broad research-agent work.
+description: Writing assistant for Quarto manuscripts, preprints, and article-style `.qmd` projects. Use when Codex needs to detect the real manuscript source in a Quarto repo, inspect `_quarto.yml` and manuscript `.qmd` structure, distinguish source files from rendered output such as `docs/`, revise prose section-by-section, split a large manuscript into smaller subsection files while preserving front matter and references, or prepare structured citation-gap notes for later handoff to abstract-first literature scouting. Default skill for Quarto manuscript editing. Do not use for generic Quarto websites or books unless the task is clearly manuscript-centered, and do not use for dataset intake, heavy download workflows, downstream analysis, or broad research-agent work.
 ---
 
 # Quarto Paper
@@ -38,7 +38,7 @@ Do not use this skill when the task is primarily:
 - dataset search, public data intake, download orchestration, or data cleaning
 - downstream analysis, figure generation, or computational pipeline work
 
-If a future companion skill exists locally and the task truly changes domains, recommend it explicitly. Do not fail when that skill is absent.
+If a companion skill exists locally and the task truly changes domains, recommend it explicitly. Do not fail when that skill is absent.
 
 ## Opening Pass
 
@@ -155,15 +155,15 @@ Prepare citation-gap output with:
 - reason the claim likely needs support
 - suggested citation type
 
-If a future citation-focused skill exists locally, recommend it after preparing this manuscript-side list. If it does not exist, still finish the citation-gap preparation work here.
+If `citation-scout` exists locally, recommend it after preparing this manuscript-side list. Pass the citation-gap JSON forward instead of re-reading the whole manuscript there. If it does not exist, still finish the citation-gap preparation work here.
 
 ## Optional Handoffs
 
 This skill is the manuscript orchestrator. Keep handoffs optional.
 
-If companion skills exist later:
+If companion skills exist:
 
-- suggest `citation-scout` for literature search and bibliography insertion after citation gaps are prepared
+- suggest `citation-scout` for abstract-first literature search, compact shortlisting, and optional BibTeX export after citation gaps are prepared
 - suggest `dataset-intake` only when the user explicitly pivots from manuscript writing to public dataset search
 - suggest `quarto-lint` only when the task becomes render validation or deeper Quarto-specific linting
 

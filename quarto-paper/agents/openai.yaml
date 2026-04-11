@@ -1,6 +1,6 @@
 interface:
   display_name: "Quarto Paper"
   short_description: "Quarto manuscript writing assistant"
-  default_prompt: "Use $quarto-paper to detect the real Quarto manuscript source, revise prose section-by-section, prepare citation gaps, and keep rendered output separate from source files."
+  default_prompt: "Use $quarto-paper to detect the real Quarto manuscript source, revise prose section-by-section, prepare citation gaps for later literature scouting, and keep rendered output separate from source files."
 policy:
   allow_implicit_invocation: true
