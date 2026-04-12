@@ -13,6 +13,8 @@ Use this file for concrete implementation choices:
 
 Read `v100_programming_guide.md` first for topology and optimization order.
 
+If the question is specifically how to get dense or blocked work onto Tensor Cores, read `references/addendum-tensor-core-routing.md` before owning low-level WMMA or PTX code.
+
 ## Quick Map
 
 - `1. Build Rules`

@@ -32,6 +32,7 @@ Try:
 - cuBLAS or cuBLASLt baseline
 - multiples-of-8 padding
 - FP16 inputs with FP32 accumulation
+- route into `references/addendum-tensor-core-routing.md`
 - verify the library path before hand-tuning the custom kernel further
 
 ### Low Occupancy With High Registers

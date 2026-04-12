@@ -1,4 +1,0 @@
-version: 1
-display_name: Torch Model Author
-short_description: Bioinformatics-first Torch model design for 4x V100 systems
-default_prompt: Use $torch-model-author to choose and design a PyTorch or libtorch model for a task, including 4x V100 distributed and custom-op planning.

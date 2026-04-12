@@ -13,6 +13,10 @@ Use this file for system-level V100 decisions:
 
 Read this first for the 4x V100 host with diagonal NVLink pairs.
 
+For operational Tensor Core enablement, verification, and escalation, route next into `references/addendum-tensor-core-routing.md`.
+
+For designing stress benchmarks that can actually saturate compute or transfers on this host, route into `references/benchmark-large-data.md`.
+
 ## Quick Map
 
 - `1. Non-Negotiable Rules`
@@ -195,6 +199,8 @@ benchmark cuBLASLt before writing a custom epilogue kernel.
 
 Sparse, irregular, or glue-heavy phases are often memory-bound. The win there is fewer bytes moved and fewer launches, not fake Tensor Core usage.
 
+When the workload is dense or reformulable into stable blocked dense tiles, read `references/addendum-tensor-core-routing.md` for the operational ladder before committing to low-level code.
+
 ## 6. Memory Movement Rules
 
 ### 6.1 Residency First
@@ -372,6 +378,8 @@ Questions Nsight Compute should answer:
 - is register pressure limiting residency?
 - is shared-memory use worth its occupancy cost?
 
+If the answer is "Tensor Cores should be firing but are not," route into `references/addendum-tensor-core-routing.md` before hand-tuning instruction-level details.
+
 ## 13. Anti-Patterns
 
 - preserving awkward shapes to avoid padding
@@ -381,6 +389,7 @@ Questions Nsight Compute should answer:
 - over-tuning NCCL env vars before topology and baseline tests
 - maximizing occupancy while ignoring register spills or memory traffic
 - forcing Tensor Core thinking onto sparse or irregular phases
+- benchmarking a vague `large` case that is neither compute-saturating nor transfer-stressing
 - splitting short branchy glue into many launches when moderate divergence would be cheaper
 - keeping many tiny kernels because the decomposition looks clean in framework code
 

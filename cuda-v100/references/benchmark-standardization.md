@@ -32,7 +32,7 @@ Do not make the skill parse raw benchmark stdout when a compact summary can answ
 
 Every benchmark target that wants easy interoperability should support:
 
-- `--dataset-tier small|large|real`
+- `--dataset-tier small|large-compute|large-transfer|real`
 - `--dataset-manifest PATH` for `real`
 - `--warmup N`
 - `--repeats N`
@@ -41,6 +41,8 @@ Every benchmark target that wants easy interoperability should support:
 - `--profile-friendly`
 
 Repo-local flags are fine, but these baseline flags should exist and retain the same meaning across targets.
+
+If a repo still accepts plain `large`, treat it as a compatibility alias only. The supported contract should name `large-compute` and `large-transfer` explicitly.
 
 ## Summary-First Principle
 
@@ -88,7 +90,8 @@ Use stable NVTX labels that match these phase names or a clearly documented refi
 {
   "benchmark_id": "scrna-preprocess",
   "workload_family": "scrna",
-  "dataset_tier": "large",
+  "dataset_tier": "large-compute",
+  "scenario_kind": "large-compute",
   "dataset_id": "synthetic-pareto-v1",
   "dataset_manifest": null,
   "visible_device_ids": [0, 1, 2, 3],
@@ -135,17 +138,22 @@ Treat a run as representative only when:
 - the benchmark records enough repeated steady-state iterations
 - the benchmark records device placement on this 4x V100 host
 - multi-GPU runs preserve the real fast pairs `0<->2` and `1<->3`
-- large or real runs are actually large enough to create repeated hot kernels and visible transfer behavior
+- `large-compute` runs are large enough to create repeated hot kernels
+- `large-transfer` runs are large enough to create visible transfer or collective behavior
+- `real` runs still reflect the semantic properties that matter in production
 
 ## Required Data Tiers
 
 Every important benchmark should support:
 
 - `small`: smoke or development loop
-- `large`: synthetic stress case large enough to expose real bottlenecks on this host
+- `large-compute`: synthetic or replayed stress case sized to expose the compute ceiling on this host
+- `large-transfer`: synthetic or replayed stress case sized to expose transfer, staging, or collective limits on this host
 - `real`: repo-local real dataset or real-data slice described by a manifest
 
 Do not treat `small` as proof of end-to-end throughput.
+
+Do not collapse `large-compute` and `large-transfer` into one ambiguous `large` label in new benchmark contracts.
 
 ## Script Workflow
 
@@ -161,8 +169,10 @@ Use these scripts in order:
 
 Be explicit about:
 
-- whether the result is `small`, `large`, or `real`
+- whether the result is `small`, `large-compute`, `large-transfer`, or `real`
+- whether the summary records `scenario_kind`
 - whether the timed phase is truly steady state
+- whether the measured window is compute-dominant, transfer-dominant, or mixed
 - what phase dominated wall time
 - what bottleneck dominated after combining benchmark and profiler evidence
 - what next measurement or optimization step should happen

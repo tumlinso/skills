@@ -99,16 +99,30 @@ def build_summary(run_config: dict, results: dict) -> dict:
         )
 
     dataset_tier = str(run_config.get("dataset_tier", "unknown"))
+    scenario_kind = str(run_config.get("scenario_kind", dataset_tier))
     dataset_id = run_config.get("dataset_id")
     dataset_manifest = run_config.get("dataset_manifest")
     if dataset_tier == "unknown":
         if status == "ok":
             status = "partial"
         reasons.append("`dataset_tier` is missing, so the run cannot be classified as smoke, stress, or real-data evidence.")
+    valid_tiers = {"small", "large-compute", "large-transfer", "real"}
+    if dataset_tier not in {"unknown", *valid_tiers}:
+        if status == "ok":
+            status = "partial"
+        reasons.append(
+            f"`dataset_tier={dataset_tier}` is nonstandard. Prefer `small`, `large-compute`, `large-transfer`, or `real`."
+        )
     if dataset_tier == "real" and not dataset_id and not dataset_manifest:
         if status == "ok":
             status = "partial"
         reasons.append("Real-data run is missing `dataset_id` or `dataset_manifest`.")
+    if scenario_kind not in {"unknown", *valid_tiers}:
+        if status == "ok":
+            status = "partial"
+        reasons.append(
+            f"`scenario_kind={scenario_kind}` is nonstandard. Prefer `small`, `large-compute`, `large-transfer`, or `real`."
+        )
 
     visible_devices = run_config.get("visible_device_ids") or run_config.get("devices") or []
     if isinstance(visible_devices, list) and len(visible_devices) > 1 and not run_config.get("topology"):
@@ -126,6 +140,13 @@ def build_summary(run_config: dict, results: dict) -> dict:
         reasons.append("Structured benchmark artifacts are present and the run looks representative enough for first-pass benchmarking decisions.")
 
     summary_metrics = top_metric_lines(results.get("metrics") or {})
+    dominant_phase_name = str((dominant_steady or dominant or {}).get("name", ""))
+    if any(token in dominant_phase_name for token in ("h2d", "d2h", "collective", "reduce", "pin_or_stage")):
+        workload_balance = "transfer-dominant"
+    elif dominant_phase_name:
+        workload_balance = "compute-dominant"
+    else:
+        workload_balance = "mixed"
     return {
         "tool": "benchmark",
         "status": status,
@@ -134,6 +155,8 @@ def build_summary(run_config: dict, results: dict) -> dict:
         "benchmark_id": str(run_config.get("benchmark_id", run_config.get("workload_family", "unknown-benchmark"))),
         "workload_family": str(run_config.get("workload_family", "unknown")),
         "dataset_tier": dataset_tier,
+        "scenario_kind": scenario_kind,
+        "workload_balance": workload_balance,
         "dataset_id": dataset_id,
         "dataset_manifest": dataset_manifest,
         "visible_device_ids": visible_devices,
@@ -158,6 +181,8 @@ def format_summary(summary: dict) -> str:
         f"benchmark_id: {summary['benchmark_id']}",
         f"workload_family: {summary['workload_family']}",
         f"dataset_tier: {summary['dataset_tier']}",
+        f"scenario_kind: {summary['scenario_kind']}",
+        f"workload_balance: {summary['workload_balance']}",
     ]
 
     if summary.get("dataset_id"):

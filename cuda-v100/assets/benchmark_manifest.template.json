@@ -2,14 +2,21 @@
   "benchmark_id": "example-benchmark",
   "target_name": "exampleBench",
   "workload_family": "example-workload",
-  "supported_dataset_tiers": ["small", "large", "real"],
+  "supported_dataset_tiers": ["small", "large-compute", "large-transfer", "real"],
   "default_small": {
     "dataset_tier": "small",
     "warmup": 1,
     "repeats": 2
   },
-  "default_large": {
-    "dataset_tier": "large",
+  "default_large_compute": {
+    "dataset_tier": "large-compute",
+    "scenario_kind": "large-compute",
+    "warmup": 1,
+    "repeats": 4
+  },
+  "default_large_transfer": {
+    "dataset_tier": "large-transfer",
+    "scenario_kind": "large-transfer",
     "warmup": 1,
     "repeats": 4
   },

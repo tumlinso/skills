@@ -47,17 +47,21 @@ Only add a separate normalized replay mode when you explicitly want a cleaner mi
 
 ## Tier Relationship
 
-Use all three tiers together:
+Use all four tiers together:
 
 - `small`: quick correctness and smoke runs
-- `large`: synthetic stress tuned to this machine
+- `large-compute`: controlled compute saturation evidence
+- `large-transfer`: controlled transfer or collective pressure evidence
 - `real`: representative production-like evidence
 
 When they disagree:
 
 - trust `real` for representativeness
-- trust `large` for controlled bottleneck isolation
+- trust `large-compute` for controlled compute-path isolation
+- trust `large-transfer` for controlled pipeline or communication isolation
 - trust `small` only for smoke and local iteration
+
+Do not relabel a real-data run as `large-compute` or `large-transfer` unless it was intentionally constructed as a stress case rather than representative evidence.
 
 ## Real-Data Summary Requirements
 
@@ -74,5 +78,6 @@ A real-data summary should always state:
 Be explicit about:
 
 - what is real vs synthetic
+- whether the real run is compute-leaning, transfer-leaning, or mixed without pretending it is a synthetic saturation tier
 - what semantic properties of the data are likely driving the result
 - whether the benchmark still reflects the actual use case after any slicing or preprocessing

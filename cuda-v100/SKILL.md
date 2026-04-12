@@ -1,6 +1,6 @@
 ---
 name: cuda-v100
-description: Default entry point for work on Tesla V100 16GB GPUs, especially a 4-GPU host with diagonal NVLink pairs. Use when the user is implementing, debugging, profiling, fitting, scaling, or aggressively optimizing CUDA/C++ workloads for native Volta `sm_70`, including low-level kernels, kernel fusion decisions, warp-divergence and control-flow tradeoffs, V100 memory-hierarchy choices, launch-overhead tradeoffs, memory budgeting, DDP and NCCL topology, host-device pipeline bottlenecks, NVIDIA HPC SDK tradeoffs, sparse bioinformatics or omics data pipelines, custom PyTorch CUDA extensions, and counter-driven tuning toward practical V100 limits. Use the differential addendum references in this skill when the task narrows to biological data layout semantics, kernel mechanics, 16 GB fit strategy, distributed layout, host staging, roofline micro-optimization, NVHPC surface selection, or PyTorch extension authoring on V100.
+description: Entry point for Tesla V100 16GB CUDA work on native Volta `sm_70`, especially 4-GPU hosts with diagonal NVLink pairs. Use for profiling, fitting, scaling, and optimizing CUDA/C++ workloads, including Tensor Core routing, low-level kernels, fusion and divergence tradeoffs, memory budgeting, DDP/NCCL topology, host-device pipeline bottlenecks, large-data benchmark saturation, sparse bioinformatics pipelines, Torch extensions, and counter-driven tuning toward practical V100 limits.
 ---
 
 # CUDA V100
@@ -9,7 +9,7 @@ Use this as the public entry point for the V100 skill family.
 
 Do not scan every reference. Choose one path, load that file first, and return here only when the bottleneck changes.
 
-If the user is asking what model family or architecture to build, use `torch-model-author` first, then return here for memory fit, topology, custom-op, and Volta-specific implementation work.
+If the user is asking what model family or architecture to build, use `v100-model-design` first, then return here for memory fit, topology, custom-op, and Volta-specific implementation work.
 
 For benchmark work, prefer summary-first workflows. Read compact benchmark or profiler summaries first, then inspect raw logs, CSVs, or reports only if the summaries disagree or remain inconclusive.
 
@@ -53,10 +53,11 @@ Choose the first statement that is true. Load only the file named in that row fi
 | "GPU is idle", "HtoD copies dominate", "input pipeline is starving the device" | `references/addendum-host-device-pipeline.md` | `references/v100_profiling_interpretation.md` if the measurement setup is weak |
 | "Should these kernels be fused?", "is divergence actually bad here?", "should I split this into specialized kernels?", "which CUDA memory tier should hold this data?", "is launch overhead worse than divergence?" | `references/addendum-kernel-mechanics.md` | `references/v100_cuda_cpp_optimize.md` and `references/roofline-launch-bound-patterns.md` |
 | "One kernel is hot", "Nsight Compute shows a limiter", "should this stay custom?" | `references/addendum-kernel-roofline-lab.md` | `references/v100_cuda_cpp_optimize.md` for implementation details |
+| "Why are Tensor Cores not firing?", "how do I force the Volta Tensor Core path?", "this dense or blocked workflow is not drawing enough power", "should I reformulate this for Tensor Cores?" | `references/addendum-tensor-core-routing.md` | `references/volta-tensor-core-low-level.md` only when cuBLAS, cuBLASLt, or CUTLASS leave a stable gap |
 | "Should this use NVHPC, OpenACC, OpenMP target, or stdpar?" | `references/addendum-nvhpc-cpp.md` | `references/v100_cuda_cpp_optimize.md` once the abstraction choice is locked |
 | "Write or fix a PyTorch C++/CUDA op", "where should the extension boundary sit?" | `references/addendum-torch-extensions.md` | `references/addendum-kernel-roofline-lab.md` only after the op already works |
 | "This is sparse omics / bio data", "which layout or phase boundary is right?" | `references/addendum-bio-data-layouts.md` | `references/v100_bioinformatics_guide.md` for the broader sparse pipeline |
-| "Standardize benchmarks", "make benchmark summaries concise", "add large plus real data tiers", "write benchmark targets that interoperate with the skill" | `references/benchmark-standardization.md` | `references/benchmark-target-authoring.md` and `references/benchmark-real-data.md` |
+| "Standardize benchmarks", "make benchmark summaries concise", "add large plus real data tiers", "add compute- and transfer-saturating large cases", "write benchmark targets that interoperate with the skill" | `references/benchmark-standardization.md` | `references/benchmark-large-data.md`, `references/benchmark-target-authoring.md`, and `references/benchmark-real-data.md` |
 | "I need a general V100 CUDA/C++ implementation or optimization path" | `references/v100_programming_guide.md` | one base manual below, then one addendum only if a dominant bottleneck appears |
 
 ## Opening Moves
@@ -98,6 +99,13 @@ After choosing a path, do only the opening move for that path before loading mor
 3. Change only the lever that matches the limiter.
 4. Return here if the correct fix is broader than one kernel.
 
+### Path: Tensor Core Routing
+
+1. Read `references/addendum-tensor-core-routing.md`.
+2. Decide whether the workload is genuinely eligible for Tensor Core pursuit or whether bytes moved still dominate.
+3. Fix dtype, blocking, padding, grouping, and library path selection before hand-tuning a custom kernel.
+4. Route to `references/volta-tensor-core-low-level.md` only if the library-backed path is already sound and still leaves a stable gap.
+
 ### Path: NVHPC
 
 1. Decide whether the abstraction can express the hot path without hidden data motion.
@@ -121,8 +129,9 @@ After choosing a path, do only the opening move for that path before loading mor
 
 1. Read `references/benchmark-standardization.md`.
 2. Make the benchmark emit structured raw measurements and let the scripts emit the concise interpretation.
-3. Add `small`, `large`, and `real` tiers before calling the benchmark representative.
-4. Read `references/benchmark-target-authoring.md` when defining new build targets or output contracts.
+3. Add `small`, `large-compute`, `large-transfer`, and `real` runs before calling the benchmark representative.
+4. Read `references/benchmark-large-data.md` when the question is how to actually saturate compute, transfers, or collectives on this host.
+5. Read `references/benchmark-target-authoring.md` when defining new build targets or output contracts.
 
 ### Path: General V100 Work
 
@@ -137,6 +146,7 @@ After choosing a path, do only the opening move for that path before loading mor
 - Read `references/v100_bioinformatics_guide.md` for sparse biological matrices, storage-format decisions, row-binned kernels, sparse preprocessing, and row-sharded omics pipelines.
 - Read `references/v100_profiling_interpretation.md` when the first problem is poor measurement hygiene, profiler choice, or ambiguous profiler output.
 - Read `references/benchmark-standardization.md` when the task is benchmark contract design, benchmark-summary design, or script-driven benchmark interpretation.
+- Read `references/benchmark-large-data.md` when the task is benchmark saturation, large-data shape selection, or compute-versus-transfer stress design.
 
 ## Support Map By Path
 
@@ -169,6 +179,10 @@ Load these only after the matching addendum tells you the problem really belongs
   - then `references/roofline-launch-bound-patterns.md`
   - then `references/roofline-cutlass-vs-handwritten.md`
   - then `references/roofline-example-tuning-loops.md`
+- `references/addendum-tensor-core-routing.md`
+  - then `references/v100_programming_guide.md`
+  - then `references/v100_cuda_cpp_optimize.md`
+  - then `references/volta-tensor-core-low-level.md`
 - `references/addendum-nvhpc-cpp.md`
   - then `references/nvhpc-tradeoffs.md`
   - then `references/nvhpc-offload-models.md`
@@ -180,6 +194,7 @@ Load these only after the matching addendum tells you the problem really belongs
   - then `references/custom-torch-ops-registry.md`
   - then `references/v100_cuda_cpp_optimize.md`
 - `references/benchmark-standardization.md`
+  - then `references/benchmark-large-data.md`
   - then `references/benchmark-target-authoring.md`
   - then `references/benchmark-real-data.md`
 
@@ -192,13 +207,16 @@ Use these when the problem genuinely moves from one bottleneck class to another.
 - `references/addendum-ddp-topology.md` -> `references/addendum-host-device-pipeline.md`: lock rank placement first, then repair loading and transfer behavior seen by those ranks.
 - main workflow -> `references/addendum-kernel-mechanics.md`: use when fusion, divergence, specialization, or memory-tier placement is the first unresolved design choice.
 - `references/addendum-kernel-mechanics.md` -> `references/addendum-kernel-roofline-lab.md`: choose the right kernel structure first, then do counter-driven hot-kernel tuning.
+- main workflow -> `references/addendum-tensor-core-routing.md`: use when dense or blocked work should probably be on Tensor Cores but the current path is leaving throughput on the table.
+- `references/addendum-tensor-core-routing.md` -> `references/volta-tensor-core-low-level.md`: only after the cuBLAS, cuBLASLt, or CUTLASS path is correct and still too slow.
 - `references/addendum-bio-data-layouts.md` -> `references/addendum-kernel-mechanics.md`: choose the biologically correct sparse phase first, then decide whether skew or glue should be handled by fusion or specialization.
 - `references/addendum-torch-extensions.md` -> `references/addendum-kernel-roofline-lab.md`: fix the extension boundary first, then micro-optimize the hot backend.
 - `references/addendum-torch-extensions.md` -> `references/addendum-kernel-mechanics.md`: fix the extension boundary first, then decide whether the backend should be fused, split, or library-backed.
+- `references/benchmark-standardization.md` -> `references/benchmark-large-data.md`: define the benchmark contract first, then make the large stress tiers actually saturate compute, transfers, or collectives on this host.
 - `references/benchmark-standardization.md` -> `references/benchmark-target-authoring.md`: define the benchmark contract first, then write interoperable build targets.
 - `references/benchmark-standardization.md` -> `references/benchmark-real-data.md`: define the summary contract first, then make `real` dataset runs representative.
 - main workflow -> `references/addendum-kernel-roofline-lab.md`: only after a hot kernel is isolated and the larger design is already reasonable.
-- `torch-model-author` -> `references/addendum-torch-extensions.md`: pick the right model first, then implement only the custom ops the model actually needs.
+- `v100-model-design` -> `references/addendum-torch-extensions.md`: pick the right model first, then implement only the custom ops the model actually needs.
 
 ## Scripts By Situation
 
@@ -227,9 +245,13 @@ Be explicit about:
 - which path was chosen and why
 - whether the answer came from a compact benchmark or profiler summary, or required raw-artifact inspection
 - whether the recommendation is library-backed or custom-kernel
+- whether the workload is eligible for Tensor Core pursuit or should stay on a non-Tensor-Core path
+- whether the Tensor Core route was library-backed, CUTLASS-backed, or low-level custom
 - whether divergence is actually part of the bottleneck or merely present
 - whether extra launches are preferable to the current divergent structure
 - whether the workload is limited by PCIe, HBM traffic, occupancy, register pressure, launch overhead, or communication topology
+- whether the benchmark scenario is `small`, `large-compute`, `large-transfer`, or `real`
+- whether the benchmark is intended to saturate compute, transfers, collectives, or glue-heavy steady state
 - which memory tier should hold the critical intermediates
 - what reformulation, layout change, fusion step, or padding decision would most improve throughput
 - which base reference or addendum informed the recommendation
@@ -240,5 +262,5 @@ Be explicit about:
 - Do not recommend CUDA 13-native Volta compilation paths.
 - Do not cargo-cult NCCL environment variables; benchmark before locking them in.
 - Do not treat all warp divergence as automatically wrong; judge it against launch overhead, memory traffic, and specialization cost.
-- Do not force Tensor Core thinking onto sparse or irregular omics phases that are fundamentally memory-bound.
+- Do not force Tensor Core thinking onto sparse or irregular phases that are fundamentally memory-bound, but do push dense and reformulable blocked paths harder than a generic CUDA guide would.
 - Do not load multiple addendums unless the task has clearly moved from one bottleneck class to another.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Ncurses UI"
+  short_description: "Ncurses terminal UI design and implementation"
+  default_prompt: "Use $ncurses-ui to build or refactor a stable, keyboard-driven ncurses interface with clean state, layout, input, rendering, resize, and cleanup boundaries."
+policy:
+  allow_implicit_invocation: true

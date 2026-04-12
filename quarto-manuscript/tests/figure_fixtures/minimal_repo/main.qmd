@@ -1,0 +1,10 @@
+---
+title: "Minimal Figure Fixture"
+author: "Test Author"
+format:
+  pdf: default
+---
+
+## Results
+
+The figure outputs will be proposed because the repo has no figure layout yet.

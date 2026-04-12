@@ -97,6 +97,8 @@ def build_summary(benchmark: dict | None, nsys: dict | None, ncu: dict | None) -
         "benchmark_id": benchmark.get("benchmark_id") if benchmark else None,
         "workload_family": benchmark.get("workload_family") if benchmark else None,
         "dataset_tier": benchmark.get("dataset_tier") if benchmark else None,
+        "scenario_kind": benchmark.get("scenario_kind") if benchmark else None,
+        "workload_balance": benchmark.get("workload_balance") if benchmark else None,
         "dominant_bottleneck": detect_bottleneck(benchmark, nsys, ncu),
         "next_step": choose_next_step(benchmark, nsys, ncu),
         "benchmark": benchmark,
@@ -118,6 +120,10 @@ def format_summary(summary: dict) -> str:
         lines.append(f"workload_family: {summary['workload_family']}")
     if summary.get("dataset_tier"):
         lines.append(f"dataset_tier: {summary['dataset_tier']}")
+    if summary.get("scenario_kind"):
+        lines.append(f"scenario_kind: {summary['scenario_kind']}")
+    if summary.get("workload_balance"):
+        lines.append(f"workload_balance: {summary['workload_balance']}")
     lines.append(f"dominant_bottleneck: {summary['dominant_bottleneck']}")
     lines.extend(["", "decision:"])
     for reason in summary["reasons"]:

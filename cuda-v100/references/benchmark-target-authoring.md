@@ -31,7 +31,7 @@ The target should:
 
 Support these flags with the standard meaning:
 
-- `--dataset-tier small|large|real`
+- `--dataset-tier small|large-compute|large-transfer|real`
 - `--dataset-manifest PATH`
 - `--warmup N`
 - `--repeats N`
@@ -40,6 +40,8 @@ Support these flags with the standard meaning:
 - `--profile-friendly`
 
 Additional workload-specific flags are fine.
+
+If a repo keeps a legacy `large` alias, map it internally to `large-compute` or `large-transfer` and emit the explicit value in `run_config.json`.
 
 ## Required Output Files
 
@@ -54,6 +56,11 @@ Then either:
 - emit the same `summary.json` and `summary.txt` shape yourself
 
 Prefer reusing the shared summarizer unless the benchmark genuinely has extra logic worth preserving.
+
+`run_config.json` should also record the benchmark scenario explicitly. Prefer:
+
+- `dataset_tier: small | large-compute | large-transfer | real`
+- `scenario_kind: small | large-compute | large-transfer | real`
 
 ## Required Timing Structure
 
@@ -109,7 +116,7 @@ Use this pattern for upload, sharding, or reduction-heavy workloads:
 Design the benchmark so these commands work without custom glue:
 
 ```bash
-benchmark_target --output-dir /tmp/run --dataset-tier large --warmup 1 --repeats 4
+benchmark_target --output-dir /tmp/run --dataset-tier large-compute --warmup 1 --repeats 4
 python3 scripts/summarize_benchmark_run.py /tmp/run
 bash scripts/profile_nsys.sh --benchmark-summary /tmp/run/summary.json -- benchmark_target ...
 bash scripts/profile_ncu.sh --benchmark-summary /tmp/run/summary.json -- benchmark_target ...
@@ -131,4 +138,5 @@ Be explicit about:
 - which phase is the real steady-state phase
 - which counters explain the throughput number
 - which dataset tier is being exercised
+- whether the run is `large-compute` or `large-transfer`
 - whether the target is suitable for `nsys`, `ncu`, or both

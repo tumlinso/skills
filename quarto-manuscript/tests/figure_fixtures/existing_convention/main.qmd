@@ -1,0 +1,10 @@
+---
+title: "Existing Convention Fixture"
+author: "Test Author"
+format:
+  pdf: default
+---
+
+## Introduction
+
+The manuscript already has a figure convention.
