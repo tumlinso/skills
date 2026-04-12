@@ -8,6 +8,8 @@ Use this addendum when the main question is not yet "how do I tune this hot kern
 - is launch overhead worse than moderate divergence here?
 - which CUDA memory tier should hold the critical intermediates on V100?
 
+If the user explicitly asks for PTX-level guidance for branch shaping or sparse hot paths, route from here into `references/addendum-ptx-routing.md` only after the structural decision is already clear.
+
 Use this before `references/addendum-kernel-roofline-lab.md` when the kernel structure itself is still unsettled.
 
 ## Quick Map

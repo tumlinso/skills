@@ -39,6 +39,8 @@ Sparse omics performance is usually dominated by:
 
 The true hot path is often not one big sparse primitive. It is the glue around a few primitives.
 
+If PTX guidance was explicitly requested for sparse, irregular, or branch-heavy bio kernels, route later into `references/ptx-sparse-bio-hotpaths.md` only after the layout and kernel-shape decisions are already sound.
+
 Assume throughout:
 
 - CUDA 12.x on native `sm_70`

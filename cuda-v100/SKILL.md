@@ -1,6 +1,6 @@
 ---
 name: cuda-v100
-description: Entry point for Tesla V100 16GB CUDA work on native Volta `sm_70`, especially 4-GPU hosts with diagonal NVLink pairs. Use for profiling, fitting, scaling, and optimizing CUDA/C++ workloads, including Tensor Core routing, low-level kernels, fusion and divergence tradeoffs, memory budgeting, DDP/NCCL topology, host-device pipeline bottlenecks, large-data benchmark saturation, sparse bioinformatics pipelines, Torch extensions, and counter-driven tuning toward practical V100 limits.
+description: Entry point for Tesla V100 16GB CUDA work on native Volta `sm_70`, especially 4-GPU hosts with diagonal NVLink pairs. Use for profiling, fitting, scaling, and optimizing CUDA/C++ workloads, including Tensor Core routing, low-level kernels, request-only PTX guidance, fusion and divergence tradeoffs, memory budgeting, DDP/NCCL topology, host-device pipeline bottlenecks, large-data benchmark saturation, sparse bioinformatics pipelines, Torch extensions, and counter-driven tuning toward practical V100 limits.
 ---
 
 # CUDA V100
@@ -54,6 +54,7 @@ Choose the first statement that is true. Load only the file named in that row fi
 | "Should these kernels be fused?", "is divergence actually bad here?", "should I split this into specialized kernels?", "which CUDA memory tier should hold this data?", "is launch overhead worse than divergence?" | `references/addendum-kernel-mechanics.md` | `references/v100_cuda_cpp_optimize.md` and `references/roofline-launch-bound-patterns.md` |
 | "One kernel is hot", "Nsight Compute shows a limiter", "should this stay custom?" | `references/addendum-kernel-roofline-lab.md` | `references/v100_cuda_cpp_optimize.md` for implementation details |
 | "Why are Tensor Cores not firing?", "how do I force the Volta Tensor Core path?", "this dense or blocked workflow is not drawing enough power", "should I reformulate this for Tensor Cores?" | `references/addendum-tensor-core-routing.md` | `references/volta-tensor-core-low-level.md` only when cuBLAS, cuBLASLt, or CUTLASS leave a stable gap |
+| "I explicitly want PTX guidance", "when should I use inline PTX here?", "teach me PTX optimization for this kernel", "show PTX choices for sparse hot paths", "I want lower-level branch-avoidance options" | `references/addendum-ptx-routing.md` | `references/ptx-volta-extreme.md` and `references/ptx-sparse-bio-hotpaths.md`, but only when PTX was explicitly requested |
 | "Should this use NVHPC, OpenACC, OpenMP target, or stdpar?" | `references/addendum-nvhpc-cpp.md` | `references/v100_cuda_cpp_optimize.md` once the abstraction choice is locked |
 | "Write or fix a PyTorch C++/CUDA op", "where should the extension boundary sit?" | `references/addendum-torch-extensions.md` | `references/addendum-kernel-roofline-lab.md` only after the op already works |
 | "This is sparse omics / bio data", "which layout or phase boundary is right?" | `references/addendum-bio-data-layouts.md` | `references/v100_bioinformatics_guide.md` for the broader sparse pipeline |
@@ -106,6 +107,13 @@ After choosing a path, do only the opening move for that path before loading mor
 3. Fix dtype, blocking, padding, grouping, and library path selection before hand-tuning a custom kernel.
 4. Route to `references/volta-tensor-core-low-level.md` only if the library-backed path is already sound and still leaves a stable gap.
 
+### Path: PTX
+
+1. Read `references/addendum-ptx-routing.md`, but only when PTX guidance was explicitly requested.
+2. Decide whether the problem is really PTX-sized or whether algorithm shape, binning, fusion, or library choice still dominates.
+3. Stay in `references/ptx-general-guidelines.md` for portable PTX guidance unless the user explicitly wants the deepest Volta-specific path.
+4. Route to `references/ptx-volta-extreme.md` or `references/ptx-sparse-bio-hotpaths.md` only after the hotspot and the motivation for PTX are both clear.
+
 ### Path: NVHPC
 
 1. Decide whether the abstraction can express the hot path without hidden data motion.
@@ -147,6 +155,7 @@ After choosing a path, do only the opening move for that path before loading mor
 - Read `references/v100_profiling_interpretation.md` when the first problem is poor measurement hygiene, profiler choice, or ambiguous profiler output.
 - Read `references/benchmark-standardization.md` when the task is benchmark contract design, benchmark-summary design, or script-driven benchmark interpretation.
 - Read `references/benchmark-large-data.md` when the task is benchmark saturation, large-data shape selection, or compute-versus-transfer stress design.
+- Read `references/addendum-ptx-routing.md` only when the user explicitly asks for PTX, inline PTX, or handwritten PTX-level optimization guidance.
 
 ## Support Map By Path
 
@@ -183,6 +192,10 @@ Load these only after the matching addendum tells you the problem really belongs
   - then `references/v100_programming_guide.md`
   - then `references/v100_cuda_cpp_optimize.md`
   - then `references/volta-tensor-core-low-level.md`
+- `references/addendum-ptx-routing.md`
+  - then `references/ptx-general-guidelines.md`
+  - then `references/ptx-volta-extreme.md`
+  - then `references/ptx-sparse-bio-hotpaths.md`
 - `references/addendum-nvhpc-cpp.md`
   - then `references/nvhpc-tradeoffs.md`
   - then `references/nvhpc-offload-models.md`
@@ -209,6 +222,9 @@ Use these when the problem genuinely moves from one bottleneck class to another.
 - `references/addendum-kernel-mechanics.md` -> `references/addendum-kernel-roofline-lab.md`: choose the right kernel structure first, then do counter-driven hot-kernel tuning.
 - main workflow -> `references/addendum-tensor-core-routing.md`: use when dense or blocked work should probably be on Tensor Cores but the current path is leaving throughput on the table.
 - `references/addendum-tensor-core-routing.md` -> `references/volta-tensor-core-low-level.md`: only after the cuBLAS, cuBLASLt, or CUTLASS path is correct and still too slow.
+- explicit PTX request -> `references/addendum-ptx-routing.md`: use only when the user explicitly asks for PTX, inline PTX, or handwritten PTX-level optimization.
+- `references/addendum-ptx-routing.md` -> `references/ptx-volta-extreme.md`: use when the user wants the deepest Volta-specific PTX path for `sm_70`.
+- `references/addendum-ptx-routing.md` -> `references/ptx-sparse-bio-hotpaths.md`: use when the explicit PTX request is about sparse, irregular, or bioinformatics-heavy hot paths.
 - `references/addendum-bio-data-layouts.md` -> `references/addendum-kernel-mechanics.md`: choose the biologically correct sparse phase first, then decide whether skew or glue should be handled by fusion or specialization.
 - `references/addendum-torch-extensions.md` -> `references/addendum-kernel-roofline-lab.md`: fix the extension boundary first, then micro-optimize the hot backend.
 - `references/addendum-torch-extensions.md` -> `references/addendum-kernel-mechanics.md`: fix the extension boundary first, then decide whether the backend should be fused, split, or library-backed.
@@ -245,6 +261,8 @@ Be explicit about:
 - which path was chosen and why
 - whether the answer came from a compact benchmark or profiler summary, or required raw-artifact inspection
 - whether the recommendation is library-backed or custom-kernel
+- whether PTX was explicitly requested and whether PTX was actually the right surface
+- whether the PTX guidance stayed portable or escalated into a Volta-specific path
 - whether the workload is eligible for Tensor Core pursuit or should stay on a non-Tensor-Core path
 - whether the Tensor Core route was library-backed, CUTLASS-backed, or low-level custom
 - whether divergence is actually part of the bottleneck or merely present
@@ -263,4 +281,6 @@ Be explicit about:
 - Do not cargo-cult NCCL environment variables; benchmark before locking them in.
 - Do not treat all warp divergence as automatically wrong; judge it against launch overhead, memory traffic, and specialization cost.
 - Do not force Tensor Core thinking onto sparse or irregular phases that are fundamentally memory-bound, but do push dense and reformulable blocked paths harder than a generic CUDA guide would.
+- Do not route into PTX unless the user explicitly asked for PTX-level guidance.
+- Do not use PTX as an excuse to skip algorithm, layout, binning, or fusion decisions that are still unresolved.
 - Do not load multiple addendums unless the task has clearly moved from one bottleneck class to another.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Todo Orchestrator"
+  short_description: "Persistent planning and execution ledger for substantial work"
+  default_prompt: "Use $todo-orchestrator to plan substantial multi-step work, keep `todos.md` updated as the canonical ledger, and continue non-interactively until the task is done."
+policy:
+  allow_implicit_invocation: true

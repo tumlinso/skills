@@ -15,6 +15,8 @@ Read `v100_programming_guide.md` first for topology and optimization order.
 
 If the question is specifically how to get dense or blocked work onto Tensor Cores, read `references/addendum-tensor-core-routing.md` before owning low-level WMMA or PTX code.
 
+If the question is specifically about inline PTX, handwritten PTX, branch predication, or sparse control-flow cleanup, read `references/addendum-ptx-routing.md` before adding architecture-specific low-level code.
+
 ## Quick Map
 
 - `1. Build Rules`
