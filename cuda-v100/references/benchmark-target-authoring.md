@@ -26,6 +26,7 @@ The target should:
 - accept the common benchmark CLI contract
 - emit the standard run directory artifacts
 - be callable directly from `profile_nsys.sh` and `profile_ncu.sh`
+- either embed a host-global benchmark mutex or be run through `scripts/with_benchmark_mutex.sh`
 
 ## Required CLI Flags
 
@@ -116,11 +117,15 @@ Use this pattern for upload, sharding, or reduction-heavy workloads:
 Design the benchmark so these commands work without custom glue:
 
 ```bash
-benchmark_target --output-dir /tmp/run --dataset-tier large-compute --warmup 1 --repeats 4
+bash scripts/with_benchmark_mutex.sh -- benchmark_target --output-dir /tmp/run --dataset-tier large-compute --warmup 1 --repeats 4
 python3 scripts/summarize_benchmark_run.py /tmp/run
 bash scripts/profile_nsys.sh --benchmark-summary /tmp/run/summary.json -- benchmark_target ...
 bash scripts/profile_ncu.sh --benchmark-summary /tmp/run/summary.json -- benchmark_target ...
 ```
+
+The shared mutex path defaults to `${CUDA_V100_BENCHMARK_MUTEX_PATH:-${TMPDIR:-/tmp}/cuda_v100_benchmark.lock}`.
+If the benchmark embeds its own lock instead of using the wrapper, keep that path
+compatible so profiler and non-profiler runs still serialize against one another.
 
 ## Templates
 

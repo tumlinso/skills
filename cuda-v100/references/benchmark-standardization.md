@@ -42,6 +42,11 @@ Every benchmark target that wants easy interoperability should support:
 
 Repo-local flags are fine, but these baseline flags should exist and retain the same meaning across targets.
 
+Benchmark-producing runs must also be serialized on shared hosts. The skill-owned
+profiler wrappers already do this. Raw benchmark commands should run through
+`scripts/with_benchmark_mutex.sh` or embed an equivalent host-global lock keyed
+by `CUDA_V100_BENCHMARK_MUTEX_PATH`.
+
 If a repo still accepts plain `large`, treat it as a compatibility alias only. The supported contract should name `large-compute` and `large-transfer` explicitly.
 
 ## Summary-First Principle
@@ -159,11 +164,12 @@ Do not collapse `large-compute` and `large-transfer` into one ambiguous `large` 
 
 Use these scripts in order:
 
-1. benchmark target writes `run_config.json` and `results.json`
-2. `scripts/summarize_benchmark_run.py` writes `summary.json` and `summary.txt`
-3. `scripts/profile_nsys.sh --benchmark-summary ...` writes Nsight summaries and a combined summary
-4. `scripts/profile_ncu.sh --benchmark-summary ...` writes Nsight summaries and a combined summary
-5. `scripts/combine_benchmark_summaries.py` merges benchmark, timeline, and kernel summaries when a fully merged interpretation is needed
+1. run the benchmark under `scripts/with_benchmark_mutex.sh -- benchmark_target ...` unless the target already embeds an equivalent mutex
+2. benchmark target writes `run_config.json` and `results.json`
+3. `scripts/summarize_benchmark_run.py` writes `summary.json` and `summary.txt`
+4. `scripts/profile_nsys.sh --benchmark-summary ...` writes Nsight summaries and a combined summary
+5. `scripts/profile_ncu.sh --benchmark-summary ...` writes Nsight summaries and a combined summary
+6. `scripts/combine_benchmark_summaries.py` merges benchmark, timeline, and kernel summaries when a fully merged interpretation is needed
 
 ## Output Requirements
 

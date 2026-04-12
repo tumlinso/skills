@@ -11,7 +11,7 @@ Do not scan every reference. Choose one path, load that file first, and return h
 
 If the user is asking what model family or architecture to build, use `v100-model-design` first, then return here for memory fit, topology, custom-op, and Volta-specific implementation work.
 
-For benchmark work, prefer summary-first workflows. Read compact benchmark or profiler summaries first, then inspect raw logs, CSVs, or reports only if the summaries disagree or remain inconclusive.
+For benchmark work, prefer summary-first workflows. Read compact benchmark or profiler summaries first, then inspect raw logs, CSVs, or reports only if the summaries disagree or remain inconclusive. Serialize benchmark-producing runs through the shared mutex. `scripts/profile_nsys.sh` and `scripts/profile_ncu.sh` do this automatically, and raw benchmark commands should run through `scripts/with_benchmark_mutex.sh`.
 
 Target **Tesla V100 16GB (`sm_70`)** systems, especially this 4-GPU topology:
 
@@ -240,6 +240,7 @@ Prefer the bundled scripts over ad hoc commands when they fit the task.
 
 - Use `scripts/summarize_benchmark_run.py` to turn `run_config.json` plus `results.json` into compact benchmark summaries.
 - Use `scripts/combine_benchmark_summaries.py` to merge benchmark, Nsight Systems, and Nsight Compute summaries into one short interpretation.
+- Use `scripts/with_benchmark_mutex.sh` for any raw benchmark command that is not already going through `profile_nsys.sh` or `profile_ncu.sh`.
 - Use `scripts/profile_nsys.sh` when the question is system timeline, overlap, communication, or pipeline starvation.
 - Use `scripts/profile_ncu.sh` when the question is one hot kernel and the run window is already representative.
 - Use `scripts/analyze_nsys_stats.py` after `profile_nsys.sh` to summarize timeline stalls and overlap.

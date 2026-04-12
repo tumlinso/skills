@@ -22,7 +22,8 @@ Options:
 The wrapper captures profiler chatter and command output to files, then prints a
 short summary that says whether the counters are usable and what limiter is most
 likely on V100. Throughput decisions should still come from the benchmark or
-Nsight Systems because Nsight Compute replay distorts timing.
+Nsight Systems because Nsight Compute replay distorts timing. Benchmark-producing
+runs are serialized through the shared benchmark mutex.
 EOF
 }
 
@@ -142,6 +143,8 @@ COMMAND_STDOUT="${RUN_DIR}/command.stdout.txt"
 COMMAND_STDERR="${RUN_DIR}/command.stderr.txt"
 PROFILER_STDOUT="${RUN_DIR}/profiler.stdout.txt"
 PROFILER_STDERR="${RUN_DIR}/profiler.stderr.txt"
+BENCHMARK_MUTEX_PATH="${CUDA_V100_BENCHMARK_MUTEX_PATH:-${TMPDIR:-/tmp}/cuda_v100_benchmark.lock}"
+BENCHMARK_MUTEX_LABEL="ncu:${LABEL}"
 
 mkdir -p "${RUN_DIR}"
 
@@ -154,6 +157,8 @@ mkdir -p "${RUN_DIR}"
   printf 'target_processes=%s\n' "${TARGET_PROCESSES}"
   printf 'ncu_bin=%s\n' "${NCU_BIN}"
   printf 'benchmark_summary=%s\n' "${BENCHMARK_SUMMARY}"
+  printf 'benchmark_mutex_path=%s\n' "${BENCHMARK_MUTEX_PATH}"
+  printf 'benchmark_mutex_label=%s\n' "${BENCHMARK_MUTEX_LABEL}"
   printf 'show_command_output=%s\n' "${SHOW_COMMAND_OUTPUT}"
   printf 'metrics=%s\n' "${METRICS:-${DEFAULT_METRICS}}"
   if [[ -n "${LAUNCH_COUNT}" ]]; then
@@ -215,7 +220,10 @@ else
   )
 fi
 
-"${NCU_BIN}" "${NCU_ARGS[@]}" "${WRAPPED_COMMAND[@]}" \
+"${SCRIPT_DIR}/with_benchmark_mutex.sh" \
+  --lock-file "${BENCHMARK_MUTEX_PATH}" \
+  --label "${BENCHMARK_MUTEX_LABEL}" \
+  -- "${NCU_BIN}" "${NCU_ARGS[@]}" "${WRAPPED_COMMAND[@]}" \
   > "${PROFILER_STDOUT}" 2> "${PROFILER_STDERR}"
 
 if [[ ! -f "${REPORT_FILE}" ]]; then

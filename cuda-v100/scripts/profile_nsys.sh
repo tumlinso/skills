@@ -20,6 +20,7 @@ Options:
 The wrapper prefers the full target-side `nsys` binary, captures noisy profiler
 and command output to files, and prints a concise summary that says whether the
 timeline is representative or should be rerun with cleaner steady-state data.
+Benchmark-producing runs are serialized through the shared benchmark mutex.
 EOF
 }
 
@@ -127,6 +128,8 @@ COMMAND_STDOUT="${RUN_DIR}/command.stdout.txt"
 COMMAND_STDERR="${RUN_DIR}/command.stderr.txt"
 PROFILER_STDOUT="${RUN_DIR}/profiler.stdout.txt"
 PROFILER_STDERR="${RUN_DIR}/profiler.stderr.txt"
+BENCHMARK_MUTEX_PATH="${CUDA_V100_BENCHMARK_MUTEX_PATH:-${TMPDIR:-/tmp}/cuda_v100_benchmark.lock}"
+BENCHMARK_MUTEX_LABEL="nsys:${LABEL}"
 
 mkdir -p "${RUN_DIR}"
 
@@ -138,6 +141,8 @@ mkdir -p "${RUN_DIR}"
   printf 'sample=%s\n' "${SAMPLE}"
   printf 'nsys_bin=%s\n' "${NSYS_BIN}"
   printf 'benchmark_summary=%s\n' "${BENCHMARK_SUMMARY}"
+  printf 'benchmark_mutex_path=%s\n' "${BENCHMARK_MUTEX_PATH}"
+  printf 'benchmark_mutex_label=%s\n' "${BENCHMARK_MUTEX_LABEL}"
   printf 'show_command_output=%s\n' "${SHOW_COMMAND_OUTPUT}"
   printf 'command='
   printf '%q ' "$@"
@@ -185,7 +190,10 @@ else
   )
 fi
 
-"${NSYS_BIN}" "${NSYS_ARGS[@]}" "${WRAPPED_COMMAND[@]}" \
+"${SCRIPT_DIR}/with_benchmark_mutex.sh" \
+  --lock-file "${BENCHMARK_MUTEX_PATH}" \
+  --label "${BENCHMARK_MUTEX_LABEL}" \
+  -- "${NSYS_BIN}" "${NSYS_ARGS[@]}" "${WRAPPED_COMMAND[@]}" \
   > "${PROFILER_STDOUT}" 2> "${PROFILER_STDERR}"
 
 if [[ ! -f "${REPORT_FILE}" ]]; then
