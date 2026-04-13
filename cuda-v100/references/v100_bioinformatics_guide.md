@@ -41,6 +41,8 @@ The true hot path is often not one big sparse primitive. It is the glue around a
 
 If PTX guidance was explicitly requested for sparse, irregular, or branch-heavy bio kernels, route later into `references/ptx-sparse-bio-hotpaths.md` only after the layout and kernel-shape decisions are already sound.
 
+If the starting point is CPU-centric sparse scientific code, route first into `references/cpu-porting-sparse-bio.md` before treating the work as an ordinary CUDA tuning problem.
+
 Assume throughout:
 
 - CUDA 12.x on native `sm_70`
@@ -187,6 +189,8 @@ For heavy feature-wise aggregation, compare:
 
 Prefer SpMM to repeated SpMV when the logical operation is sparse × dense projection.
 
+If the sparse structure is genuinely block-stable and the goal is Tensor Core throughput rather than generic sparse flexibility, explicitly compare against a blocked ELLPACK-style representation. On V100, blocked sparse matmul often performs best when the layout preserves dense block tiles cleanly enough for Tensor Core-friendly blocked execution.
+
 ## 6. Format Decisions
 
 ### CSR
@@ -214,9 +218,25 @@ Use when assembly or intermediate construction is simpler in coordinate form, no
 
 Use only when the block structure is real and stable enough to justify it.
 
+If the blocked sparse path is being pushed toward Tensor Cores, do not stop at generic BSR by reflex. Benchmark a blocked ELLPACK-style layout as well, because it often gives the cleanest blocked sparse SpMM path when the rows can tolerate the padding and the metadata remains compact.
+
 ### SELL / Sliced ELL
 
 Useful when row lengths are regular enough after binning to justify a more structured layout.
+
+### Blocked ELLPACK-Style
+
+Best for:
+
+- blocked sparse SpMM where the real inner work is dense tile math
+- Tensor Core-oriented sparse matmul on stable block structure
+- cases where modest padding is cheaper than irregular sparse control flow
+
+Use only when:
+
+- the nonzeros already cluster into real fixed-size blocks
+- the block padding overhead is controlled
+- end-to-end benchmarking still wins after packing and metadata costs
 
 ## 7. High-Value Workload Patterns
 
@@ -248,6 +268,8 @@ Better options:
 ### 7.4 Sparse × Dense Projection
 
 Prefer SpMM. Do not emulate projection with repeated SpMV if the dense RHS is naturally matrix-shaped.
+
+If this projection is block-structured and Tensor Core-eligible, benchmark a blocked ELLPACK-style path explicitly instead of assuming CSR, CSC, or generic BSR is the best sparse layout.
 
 ### 7.5 PCA / Low-Rank Embedding
 

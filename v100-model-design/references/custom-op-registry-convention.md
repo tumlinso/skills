@@ -1,6 +1,6 @@
 # Custom Op Registry Convention
 
-Use this reference when model design suggests a nontrivial custom Torch op.
+Use this reference when model design suggests a nontrivial custom Torch op or a low-level ML subsystem that still needs a recorded project boundary.
 
 ## File Rule
 
@@ -23,6 +23,7 @@ If the file does not exist, create it from `assets/custom_torch_ops.template.md`
 Add an entry when:
 
 - the model plan depends on a custom op
+- the model plan depends on a framework-minimal or framework-free hot subsystem
 - the op is still only proposed
 - a backend decision between library and custom CUDA must be preserved
 
@@ -32,15 +33,18 @@ Do not add an entry for trivial compositions of existing PyTorch ops that are un
 
 Every entry should capture:
 
-- op name
+- op or subsystem name
 - purpose
 - owning model or component
 - status
+- framework boundary
 - Python boundary
 - C++ binding boundary
-- CUDA or library backend
+- CUDA, library, or framework-free backend
 - contract and assumptions
 - backward notes
+- optimizer or update ownership
+- trainer-loop ownership
 - distributed implications
 - planned or actual code location
 

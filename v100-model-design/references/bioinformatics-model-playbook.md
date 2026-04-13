@@ -87,4 +87,11 @@ Custom ops are most likely to be justified for:
 - fused normalization or masking over omics-specific layouts
 - repeated sparse compaction or remapping
 
-Hand those cases to `cuda-v100` after registering them in `custom_torch_ops.md`.
+Route sparse or nonstandard-layout training questions into `references/sparse-layout-training-boundary.md` first when the real issue is:
+
+- framework overhead from sparse metadata churn
+- backward state that should stay in a custom layout
+- optimizer state that should stay sparse or blocked
+- a low-level trainer boundary around a hot omics subsystem
+
+Use the ordinary custom-op route only when the unresolved question is still a normal extension boundary. Hand implementation to `cuda-v100` only after the boundary, gradient ownership, and optimizer ownership are stable.

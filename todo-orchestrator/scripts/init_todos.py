@@ -22,6 +22,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Initial workstream status.",
     )
     parser.add_argument(
+        "--execution-state",
+        choices=["ready", "claimed", "idle", "closed"],
+        help="Optional pickup state for todo-status.md. Defaults from the workstream status.",
+    )
+    parser.add_argument(
         "--update-agents",
         action="store_true",
         help="Also create or update repo-level AGENTS.md with the workflow ledger guidance.",
@@ -46,6 +51,7 @@ def main() -> int:
             objective=args.objective or slug.replace("-", " "),
             status=args.status,
             owner=args.owner,
+            execution=args.execution_state,
         )
 
     if args.update_agents:

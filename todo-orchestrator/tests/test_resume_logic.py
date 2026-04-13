@@ -27,6 +27,23 @@ class ResumeLogicTests(unittest.TestCase):
             self.assertTrue(state["has_root_todos"])
             self.assertEqual(len(state["active_workstreams"]), 1)
             self.assertEqual(state["active_workstreams"][0]["slug"], "agent-alpha")
+            self.assertEqual(len(state["claimed_workstreams"]), 1)
+            self.assertEqual(state["claimed_workstreams"][0]["slug"], "agent-alpha")
+            self.assertEqual(state["pickup_ready_workstreams"], [])
+
+    def test_detect_resume_state_exposes_pickup_ready_idle_streams(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            ensure_root_files(repo_root)
+            ensure_workstream_file(repo_root, "agent-alpha", "Alpha work", "planned", "alpha", execution="ready")
+            ensure_workstream_file(repo_root, "agent-beta", "Beta work", "in_progress", "beta", execution="idle")
+            ensure_workstream_file(repo_root, "agent-gamma", "Gamma work", "in_progress", "gamma", execution="claimed")
+            state = detect_resume_state(repo_root)
+            ready = [entry["slug"] for entry in state["pickup_ready_workstreams"]]
+            self.assertEqual(ready, ["agent-alpha", "agent-beta"])
+            claimed = [entry["slug"] for entry in state["claimed_workstreams"]]
+            self.assertEqual(claimed, ["agent-gamma"])
+            self.assertFalse(state["cleanup_ready"])
 
     def test_agents_block_is_stable(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

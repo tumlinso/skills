@@ -1,6 +1,6 @@
-# Custom Torch Ops
+# Custom Torch Ops And Low-Level ML Boundaries
 
-Use this file as the project-level registry for nontrivial custom Torch operations.
+Use this file as the project-level registry for nontrivial custom Torch operations and low-level ML subsystem boundaries.
 
 ## How To Use This File
 
@@ -11,18 +11,22 @@ Use this file as the project-level registry for nontrivial custom Torch operatio
 
 ## Entry Template
 
-### `<op_name>`
+### `<op_or_subsystem_name>`
 
 - Purpose:
 - Owning model or component:
 - Status: proposed
+- Framework bypass rationale:
+- Framework boundary:
 - Python API boundary:
 - C++ binding boundary:
-- CUDA or library backend:
+- CUDA, library, or framework-free backend:
 - Input contract:
 - Output contract:
 - Dtype, layout, and device assumptions:
 - Backward or autograd notes:
+- Optimizer or update ownership:
+- Trainer-loop ownership:
 - Distributed implications:
 - Code location:
 - Validation notes:

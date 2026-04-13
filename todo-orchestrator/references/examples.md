@@ -6,6 +6,8 @@
 - "Turn this rough feature idea into a real plan and keep working until it is done."
 - "Resume the current repo task from `todos.md`."
 - "Organize this multi-step migration and keep the plan updated while you work."
+- "Check `todo-status.md`, pick a ready workstream, and start working."
+- "Run `todo-cleanup` now that every workstream is done."
 
 ## Not Good Triggers
 
@@ -19,6 +21,8 @@
 For multi-agent or multi-stream work:
 
 - keep root `todos.md` as the canonical overview
+- keep `todo-status.md` as the quick pickup register
 - create one detailed ledger per stream under `todos/`
 - keep each workstream status reflected in root `todos.md`
+- mark actively written streams as `claimed` so another thread can choose something else
 - use the workstream file to make ownership and next actions explicit

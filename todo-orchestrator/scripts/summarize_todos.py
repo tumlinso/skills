@@ -8,10 +8,14 @@ from pathlib import Path
 
 from todo_common import (
     PLACEHOLDER,
+    STATUS_PLACEHOLDER,
     WORKSTREAM_PLACEHOLDER,
     clear_placeholder,
     load_root_doc,
+    load_status_doc,
+    parse_status_entries,
     parse_workstream_entries,
+    pickup_ready_entries,
 )
 
 
@@ -31,11 +35,16 @@ def main() -> int:
     args = parser.parse_args()
     repo_root = Path(args.repo_root).resolve()
     root_doc = load_root_doc(repo_root)
+    status_doc = load_status_doc(repo_root)
 
     summary = first_real_line(root_doc.sections.get("Summary", [PLACEHOLDER]))
     blockers = clear_placeholder(root_doc.sections.get("Global Blockers", [PLACEHOLDER]))
     next_actions = clear_placeholder(root_doc.sections.get("Next Actions", [PLACEHOLDER]))
     entries = parse_workstream_entries(clear_placeholder(root_doc.sections.get("Workstreams", [WORKSTREAM_PLACEHOLDER])))
+    status_entries = parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    ready_entries = pickup_ready_entries(status_entries)
+    claimed_entries = [entry for entry in status_entries if entry["execution"] == "claimed"]
+    cleanup = clear_placeholder(status_doc.sections.get("Cleanup Status", [PLACEHOLDER]))
 
     print(f"Summary: {summary}")
     if entries:
@@ -44,6 +53,14 @@ def main() -> int:
             print(f"- {entry['slug']} [{entry['status']}] -> {entry['objective']}")
     else:
         print("Workstreams: none")
+    if ready_entries:
+        print("Pickup Ready:")
+        for entry in ready_entries:
+            print(f"- {entry['slug']} [{entry['status']}/{entry['execution']}] -> {entry['next']}")
+    if claimed_entries:
+        print("Claimed:")
+        for entry in claimed_entries:
+            print(f"- {entry['slug']} by {entry['owner']} -> {entry['next']}")
     if blockers:
         print("Blockers:")
         for blocker in blockers:
@@ -52,6 +69,10 @@ def main() -> int:
         print("Next Actions:")
         for action in next_actions:
             print(action)
+    if cleanup:
+        print("Cleanup Status:")
+        for line in cleanup:
+            print(line)
     return 0
 
 

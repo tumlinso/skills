@@ -69,6 +69,7 @@ For blocked ELLPACK or similar formats:
 
 - choose a block size that preserves stable dense tiles
 - keep metadata compact and warp-friendly
+- treat blocked ELLPACK-style storage as the default sparse Tensor Core candidate unless benchmark evidence clearly favors another blocked layout
 - benchmark the blocked path against both the original sparse route and a dense-library baseline
 - reject the blocked Tensor Core route if it only wins in isolated kernel timing while losing end-to-end
 

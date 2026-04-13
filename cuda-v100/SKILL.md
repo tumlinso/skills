@@ -1,6 +1,6 @@
 ---
 name: cuda-v100
-description: Entry point for Tesla V100 16GB CUDA work on native Volta `sm_70`, especially 4-GPU hosts with diagonal NVLink pairs. Use for profiling, fitting, scaling, and optimizing CUDA/C++ workloads, including Tensor Core routing, low-level kernels, request-only PTX guidance, fusion and divergence tradeoffs, memory budgeting, DDP/NCCL topology, host-device pipeline bottlenecks, large-data benchmark saturation, sparse bioinformatics pipelines, Torch extensions, and counter-driven tuning toward practical V100 limits.
+description: Entry point for Tesla V100 16GB CUDA work on native Volta `sm_70`, especially 4-GPU hosts with diagonal NVLink pairs. Use for crash triage, debugger helper workflows, profiling, fitting, scaling, and optimizing CUDA/C++ workloads, including CPU-to-CUDA porting, Tensor Core routing, low-level kernels, request-only PTX guidance, fusion and divergence tradeoffs, memory budgeting, DDP/NCCL topology, host-device pipeline bottlenecks, large-data benchmark saturation, sparse bioinformatics pipelines, Torch extensions, and counter-driven tuning toward practical V100 limits.
 ---
 
 # CUDA V100
@@ -51,9 +51,11 @@ Choose the first statement that is true. Load only the file named in that row fi
 | "It does not fit in 16 GB", "batch size collapsed", "buffers exploded" | `references/addendum-memory-budgeting.md` | `references/v100_programming_guide.md` after the fit plan is stable |
 | "DDP/NCCL is slow", "which ranks go where", "multi-GPU scaling is bad" | `references/addendum-ddp-topology.md` | `references/v100_programming_guide.md` for wider decomposition choices |
 | "GPU is idle", "HtoD copies dominate", "input pipeline is starving the device" | `references/addendum-host-device-pipeline.md` | `references/v100_profiling_interpretation.md` if the measurement setup is weak |
+| "It segfaults", "the CUDA binary crashes", "illegal memory access", "device assert", "launch failure", "run compute-sanitizer", "use cuda-gdb" | `references/addendum-crash-debugging.md` | `references/compute-sanitizer-playbook.md`, `references/cuda-gdb-playbook.md`, and `references/crash-signature-map.md` |
 | "Should these kernels be fused?", "is divergence actually bad here?", "should I split this into specialized kernels?", "which CUDA memory tier should hold this data?", "is launch overhead worse than divergence?" | `references/addendum-kernel-mechanics.md` | `references/v100_cuda_cpp_optimize.md` and `references/roofline-launch-bound-patterns.md` |
 | "One kernel is hot", "Nsight Compute shows a limiter", "should this stay custom?" | `references/addendum-kernel-roofline-lab.md` | `references/v100_cuda_cpp_optimize.md` for implementation details |
 | "Why are Tensor Cores not firing?", "how do I force the Volta Tensor Core path?", "this dense or blocked workflow is not drawing enough power", "should I reformulate this for Tensor Cores?" | `references/addendum-tensor-core-routing.md` | `references/volta-tensor-core-low-level.md` only when cuBLAS, cuBLASLt, or CUTLASS leave a stable gap |
+| "How do I port this CPU-centric code to CUDA?", "this was written for CPU caches and threads", "should I offload this or rewrite it for CUDA?", "how do I port irregular scientific code efficiently?" | `references/addendum-cpu-porting.md` | `references/cpu-porting-decision-tree.md`, `references/cpu-to-cuda-rewrite-patterns.md`, and `references/cpu-porting-sparse-bio.md` |
 | "I explicitly want PTX guidance", "when should I use inline PTX here?", "teach me PTX optimization for this kernel", "show PTX choices for sparse hot paths", "I want lower-level branch-avoidance options" | `references/addendum-ptx-routing.md` | `references/ptx-volta-extreme.md` and `references/ptx-sparse-bio-hotpaths.md`, but only when PTX was explicitly requested |
 | "Should this use NVHPC, OpenACC, OpenMP target, or stdpar?" | `references/addendum-nvhpc-cpp.md` | `references/v100_cuda_cpp_optimize.md` once the abstraction choice is locked |
 | "Write or fix a PyTorch C++/CUDA op", "where should the extension boundary sit?" | `references/addendum-torch-extensions.md` | `references/addendum-kernel-roofline-lab.md` only after the op already works |
@@ -86,6 +88,13 @@ After choosing a path, do only the opening move for that path before loading mor
 3. Repair batching and overlap before touching kernels.
 4. Return here when the device-side hot path becomes the limiter.
 
+### Path: Crash Debugging
+
+1. Read `references/addendum-crash-debugging.md`.
+2. Capture one compact crash summary before opening raw debugger logs.
+3. Run `compute-sanitizer` when the failure looks like memory, init, race, or sync trouble.
+4. Escalate to batch `cuda-gdb` only when the crash summary and sanitizer run still leave the fault ambiguous.
+
 ### Path: Kernel Mechanics
 
 1. Read `references/addendum-kernel-mechanics.md`.
@@ -106,6 +115,13 @@ After choosing a path, do only the opening move for that path before loading mor
 2. Decide whether the workload is genuinely eligible for Tensor Core pursuit or whether bytes moved still dominate.
 3. Fix dtype, blocking, padding, grouping, and library path selection before hand-tuning a custom kernel.
 4. Route to `references/volta-tensor-core-low-level.md` only if the library-backed path is already sound and still leaves a stable gap.
+
+### Path: CPU Porting
+
+1. Read `references/addendum-cpu-porting.md`.
+2. Decide whether the code wants directive offload, a native CUDA rewrite, or a mixed strategy.
+3. Rewrite the algorithm boundary, data layout, and work decomposition before low-level CUDA tuning.
+4. Route to `references/cpu-porting-sparse-bio.md` when the code is sparse, irregular, or bioinformatics-heavy.
 
 ### Path: PTX
 
@@ -153,8 +169,10 @@ After choosing a path, do only the opening move for that path before loading mor
 - Read `references/v100_cuda_cpp_optimize.md` for CUDA/C++ implementation details, build flags, kernel rules, profiling commands, WMMA or CUTLASS patterns, and libtorch or ATen integration.
 - Read `references/v100_bioinformatics_guide.md` for sparse biological matrices, storage-format decisions, row-binned kernels, sparse preprocessing, and row-sharded omics pipelines.
 - Read `references/v100_profiling_interpretation.md` when the first problem is poor measurement hygiene, profiler choice, or ambiguous profiler output.
+- Read `references/addendum-crash-debugging.md` when the binary still crashes, asserts, or fails before profiler-guided tuning can start.
 - Read `references/benchmark-standardization.md` when the task is benchmark contract design, benchmark-summary design, or script-driven benchmark interpretation.
 - Read `references/benchmark-large-data.md` when the task is benchmark saturation, large-data shape selection, or compute-versus-transfer stress design.
+- Read `references/addendum-cpu-porting.md` when the task is porting CPU-centric code efficiently to GPU rather than only tuning an already-GPU-shaped implementation.
 - Read `references/addendum-ptx-routing.md` only when the user explicitly asks for PTX, inline PTX, or handwritten PTX-level optimization guidance.
 
 ## Support Map By Path
@@ -177,6 +195,11 @@ Load these only after the matching addendum tells you the problem really belongs
 - `references/addendum-host-device-pipeline.md`
   - then `references/pipeline-bottlenecks.md`
   - then `references/pipeline-overlap-rules.md`
+- `references/addendum-crash-debugging.md`
+  - then `references/crash-triage-playbook.md`
+  - then `references/compute-sanitizer-playbook.md`
+  - then `references/cuda-gdb-playbook.md`
+  - then `references/crash-signature-map.md`
 - `references/addendum-kernel-mechanics.md`
   - then `references/v100_cuda_cpp_optimize.md`
   - then `references/roofline-launch-bound-patterns.md`
@@ -188,6 +211,10 @@ Load these only after the matching addendum tells you the problem really belongs
   - then `references/roofline-launch-bound-patterns.md`
   - then `references/roofline-cutlass-vs-handwritten.md`
   - then `references/roofline-example-tuning-loops.md`
+- `references/addendum-cpu-porting.md`
+  - then `references/cpu-porting-decision-tree.md`
+  - then `references/cpu-to-cuda-rewrite-patterns.md`
+  - then `references/cpu-porting-sparse-bio.md`
 - `references/addendum-tensor-core-routing.md`
   - then `references/v100_programming_guide.md`
   - then `references/v100_cuda_cpp_optimize.md`
@@ -218,8 +245,14 @@ Use these when the problem genuinely moves from one bottleneck class to another.
 - `references/addendum-bio-data-layouts.md` -> `references/addendum-memory-budgeting.md`: choose the biologically correct layout first, then make it fit.
 - `references/addendum-memory-budgeting.md` -> `references/addendum-host-device-pipeline.md`: make the job fit first, then repair staging and overlap.
 - `references/addendum-ddp-topology.md` -> `references/addendum-host-device-pipeline.md`: lock rank placement first, then repair loading and transfer behavior seen by those ranks.
+- `references/addendum-crash-debugging.md` -> `references/v100_profiling_interpretation.md`: only after the program runs stably enough that a profile reflects real behavior.
+- `references/addendum-crash-debugging.md` -> `references/addendum-torch-extensions.md`: use when the crashing target is a PyTorch extension and the fault survives the general crash workflow.
 - main workflow -> `references/addendum-kernel-mechanics.md`: use when fusion, divergence, specialization, or memory-tier placement is the first unresolved design choice.
 - `references/addendum-kernel-mechanics.md` -> `references/addendum-kernel-roofline-lab.md`: choose the right kernel structure first, then do counter-driven hot-kernel tuning.
+- main workflow -> `references/addendum-cpu-porting.md`: use when the code is still CPU-centric and the main problem is choosing the right GPU decomposition instead of micro-tuning existing kernels.
+- `references/addendum-cpu-porting.md` -> `references/addendum-nvhpc-cpp.md`: use when the port may be acceptable through OpenMP target, OpenACC, or NVHPC rather than a full native CUDA rewrite.
+- `references/addendum-cpu-porting.md` -> `references/addendum-bio-data-layouts.md`: use when sparse scientific code cannot be ported efficiently until the master layout and sparse-to-dense boundary are fixed.
+- `references/addendum-cpu-porting.md` -> `references/addendum-kernel-mechanics.md`: use after the GPU-shaped decomposition is clear and the remaining work is fusion, specialization, or memory-tier choice.
 - main workflow -> `references/addendum-tensor-core-routing.md`: use when dense or blocked work should probably be on Tensor Cores but the current path is leaving throughput on the table.
 - `references/addendum-tensor-core-routing.md` -> `references/volta-tensor-core-low-level.md`: only after the cuBLAS, cuBLASLt, or CUTLASS path is correct and still too slow.
 - explicit PTX request -> `references/addendum-ptx-routing.md`: use only when the user explicitly asks for PTX, inline PTX, or handwritten PTX-level optimization.
@@ -262,6 +295,8 @@ Be explicit about:
 - which path was chosen and why
 - whether the answer came from a compact benchmark or profiler summary, or required raw-artifact inspection
 - whether the recommendation is library-backed or custom-kernel
+- whether the code is still CPU-centric and what decomposition change is required before low-level tuning
+- whether the recommended endpoint is directive offload, native CUDA/C++, or a mixed strategy
 - whether PTX was explicitly requested and whether PTX was actually the right surface
 - whether the PTX guidance stayed portable or escalated into a Volta-specific path
 - whether the workload is eligible for Tensor Core pursuit or should stay on a non-Tensor-Core path
@@ -284,4 +319,5 @@ Be explicit about:
 - Do not force Tensor Core thinking onto sparse or irregular phases that are fundamentally memory-bound, but do push dense and reformulable blocked paths harder than a generic CUDA guide would.
 - Do not route into PTX unless the user explicitly asked for PTX-level guidance.
 - Do not use PTX as an excuse to skip algorithm, layout, binning, or fusion decisions that are still unresolved.
+- Do not port CPU-centric code literally to CUDA when the real win requires a new decomposition, layout, or library boundary.
 - Do not load multiple addendums unless the task has clearly moved from one bottleneck class to another.

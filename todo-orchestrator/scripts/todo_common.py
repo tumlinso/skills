@@ -13,6 +13,7 @@ from typing import Iterable
 
 ROOT_TITLE = "Active Objectives"
 WORKSTREAM_TITLE = "Current Objective"
+STATUS_TITLE = "Todo Status"
 
 ROOT_SECTION_ORDER = [
     "Summary",
@@ -28,6 +29,7 @@ ROOT_SECTION_ORDER = [
 
 WORKSTREAM_SECTION_ORDER = [
     "Summary",
+    "Quick Start",
     "Planning Notes",
     "Assumptions",
     "Suggested Skills",
@@ -40,16 +42,37 @@ WORKSTREAM_SECTION_ORDER = [
     "Done Criteria",
 ]
 
+STATUS_SECTION_ORDER = [
+    "Summary",
+    "Workstreams",
+    "Cleanup Status",
+]
+
 PLACEHOLDER = "_None recorded yet._"
 WORKSTREAM_PLACEHOLDER = "_No active workstreams yet._"
+STATUS_PLACEHOLDER = "_No tracked workstreams yet._"
 TASK_PATTERN = re.compile(r"^- \[([ x~!])\] (.+)$")
 WORKSTREAM_PATTERN = re.compile(
     r"^- `(?P<slug>[^`]+)` \| status: (?P<status>[^|]+) \| owner: (?P<owner>[^|]+) "
     r"\| file: `(?P<file>[^`]+)` \| objective: (?P<objective>.+)$"
 )
+STATUS_PATTERN = re.compile(
+    r"^- `(?P<slug>[^`]+)` \| status: (?P<status>[^|]+) \| execution: (?P<execution>[^|]+) "
+    r"\| owner: (?P<owner>[^|]+) \| file: `(?P<file>[^`]+)` \| next: (?P<next>.+)$"
+)
 FRONTMATTER_PATTERN = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
 AGENTS_START = "<!-- todo-orchestrator:start -->"
 AGENTS_END = "<!-- todo-orchestrator:end -->"
+
+DONE_STATUSES = {"done", "complete", "archived"}
+PICKUP_READY_STATES = {"ready", "idle"}
+DEFAULT_QUICK_START_LINES = [
+    "- Why this stream exists: _Summarize the domain boundary and why it was split out._",
+    "- In scope: _List the work this stream owns._",
+    "- Out of scope / dependencies: _List handoffs, upstream dependencies, or adjacent streams._",
+    "- Required skills: _List the exact repo-local skills to read before starting._",
+    "- Required references: _List the exact repo-local references to read before starting._",
+]
 
 
 @dataclass
@@ -169,6 +192,7 @@ def default_workstream_doc(objective: str) -> MarkdownDoc:
     sections = OrderedDict(
         (
             ("Summary", [objective or PLACEHOLDER]),
+            ("Quick Start", DEFAULT_QUICK_START_LINES.copy()),
             ("Planning Notes", [PLACEHOLDER]),
             ("Assumptions", [PLACEHOLDER]),
             ("Suggested Skills", [PLACEHOLDER]),
@@ -182,6 +206,32 @@ def default_workstream_doc(objective: str) -> MarkdownDoc:
         )
     )
     return MarkdownDoc(title=WORKSTREAM_TITLE, preamble=[], sections=sections, order=list(sections.keys()))
+
+
+def default_status_doc() -> MarkdownDoc:
+    sections = OrderedDict(
+        (
+            (
+                "Summary",
+                [
+                    "Use this file as the quick pickup register for `todos.md` workstreams.",
+                    "- `ready`: planned work that can be started now.",
+                    "- `claimed`: currently being written; choose another stream.",
+                    "- `idle`: unfinished but resumable; safe to pick up.",
+                    "- `closed`: completed or removed from pickup rotation.",
+                ],
+            ),
+            ("Workstreams", [STATUS_PLACEHOLDER]),
+            (
+                "Cleanup Status",
+                [
+                    "- Cleanup mode is explicit only.",
+                    "- Safe to call `todo-cleanup`: no, there are unfinished workstreams.",
+                ],
+            ),
+        )
+    )
+    return MarkdownDoc(title=STATUS_TITLE, preamble=[], sections=sections, order=list(sections.keys()))
 
 
 def ensure_sections(doc: MarkdownDoc, ordered_sections: list[str], placeholders: dict[str, list[str]] | None = None) -> MarkdownDoc:
@@ -216,9 +266,18 @@ def load_workstream_doc(repo_root: Path, slug: str, objective: str = "") -> Mark
     return ensure_sections(doc, WORKSTREAM_SECTION_ORDER)
 
 
+def load_status_doc(repo_root: Path) -> MarkdownDoc:
+    path = repo_root / "todo-status.md"
+    if path.exists():
+        doc = parse_markdown_document(path.read_text(encoding="utf-8"))
+    else:
+        doc = default_status_doc()
+    return ensure_sections(doc, STATUS_SECTION_ORDER, {"Workstreams": [STATUS_PLACEHOLDER]})
+
+
 def clear_placeholder(lines: list[str], placeholder: str = PLACEHOLDER) -> list[str]:
     normalized = normalize_text_lines(lines)
-    if normalized == [placeholder] or normalized == [WORKSTREAM_PLACEHOLDER]:
+    if normalized in ([placeholder], [WORKSTREAM_PLACEHOLDER], [STATUS_PLACEHOLDER]):
         return []
     return normalized
 
@@ -311,6 +370,16 @@ def parse_workstream_entries(lines: Iterable[str]) -> list[dict[str, str]]:
     return entries
 
 
+def parse_status_entries(lines: Iterable[str]) -> list[dict[str, str]]:
+    entries: list[dict[str, str]] = []
+    for line in lines:
+        match = STATUS_PATTERN.match(line.strip())
+        if not match:
+            continue
+        entries.append(match.groupdict())
+    return entries
+
+
 def render_workstream_entries(entries: Iterable[dict[str, str]]) -> list[str]:
     rendered = [
         (
@@ -320,6 +389,17 @@ def render_workstream_entries(entries: Iterable[dict[str, str]]) -> list[str]:
         for entry in entries
     ]
     return rendered or [WORKSTREAM_PLACEHOLDER]
+
+
+def render_status_entries(entries: Iterable[dict[str, str]]) -> list[str]:
+    rendered = [
+        (
+            f"- `{entry['slug']}` | status: {entry['status']} | execution: {entry['execution']} "
+            f"| owner: {entry['owner']} | file: `{entry['file']}` | next: {entry['next']}"
+        )
+        for entry in entries
+    ]
+    return rendered or [STATUS_PLACEHOLDER]
 
 
 def upsert_workstream_entry(
@@ -351,13 +431,159 @@ def upsert_workstream_entry(
     doc.sections["Workstreams"] = render_workstream_entries(entries)
 
 
+def remove_workstream_entry(doc: MarkdownDoc, slug: str) -> None:
+    entries = parse_workstream_entries(clear_placeholder(doc.sections.get("Workstreams", [WORKSTREAM_PLACEHOLDER])))
+    filtered = [entry for entry in entries if entry["slug"] != slug]
+    doc.sections["Workstreams"] = render_workstream_entries(filtered)
+
+
+def is_done_status(status: str) -> bool:
+    return status.strip() in DONE_STATUSES
+
+
+def derive_execution_state(status: str, current: str | None = None) -> str:
+    existing = (current or "").strip()
+    if existing:
+        return existing
+    normalized = status.strip()
+    if normalized == "planned":
+        return "ready"
+    if normalized == "in_progress":
+        return "claimed"
+    if normalized == "blocked":
+        return "idle"
+    if normalized in DONE_STATUSES:
+        return "closed"
+    return "idle"
+
+
+def first_status_next_action(next_action: str | None = None, doc: MarkdownDoc | None = None) -> str:
+    if next_action and next_action.strip():
+        return next_action.strip()
+    if doc is not None:
+        lines = clear_placeholder(doc.sections.get("Next Actions", [PLACEHOLDER]))
+        if lines:
+            return re.sub(r"^- ", "", lines[0]).strip()
+    return "Review the workstream ledger and pick the next concrete step."
+
+
+def upsert_status_entry(
+    doc: MarkdownDoc,
+    slug: str,
+    objective: str,
+    status: str,
+    owner: str,
+    execution: str | None = None,
+    next_action: str | None = None,
+) -> None:
+    entries = parse_status_entries(clear_placeholder(doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    target_file = f"todos/{slug}.md"
+    normalized_execution = derive_execution_state(status, execution)
+    summary = next_action.strip() if next_action and next_action.strip() else objective.strip() or humanize_slug(slug)
+    for entry in entries:
+        if entry["slug"] == slug:
+            entry["status"] = status
+            entry["execution"] = normalized_execution
+            entry["owner"] = owner
+            entry["file"] = target_file
+            entry["next"] = summary
+            doc.sections["Workstreams"] = render_status_entries(entries)
+            refresh_cleanup_status(doc)
+            return
+    entries.append(
+        {
+            "slug": slug,
+            "status": status,
+            "execution": normalized_execution,
+            "owner": owner,
+            "file": target_file,
+            "next": summary,
+        }
+    )
+    doc.sections["Workstreams"] = render_status_entries(entries)
+    refresh_cleanup_status(doc)
+
+
+def sync_status_entries_from_root(root_doc: MarkdownDoc, status_doc: MarkdownDoc) -> None:
+    root_entries = parse_workstream_entries(clear_placeholder(root_doc.sections.get("Workstreams", [WORKSTREAM_PLACEHOLDER])))
+    current_entries = {
+        entry["slug"]: entry
+        for entry in parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    }
+    synced: list[dict[str, str]] = []
+    for entry in root_entries:
+        current = current_entries.get(entry["slug"], {})
+        synced.append(
+            {
+                "slug": entry["slug"],
+                "status": entry["status"],
+                "execution": derive_execution_state(entry["status"], current.get("execution")),
+                "owner": entry["owner"],
+                "file": entry["file"],
+                "next": current.get("next", entry["objective"]),
+            }
+        )
+    status_doc.sections["Workstreams"] = render_status_entries(synced)
+    refresh_cleanup_status(status_doc)
+
+
+def remove_status_entry(doc: MarkdownDoc, slug: str) -> None:
+    entries = parse_status_entries(clear_placeholder(doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    filtered = [entry for entry in entries if entry["slug"] != slug]
+    doc.sections["Workstreams"] = render_status_entries(filtered)
+    refresh_cleanup_status(doc)
+
+
+def refresh_cleanup_status(doc: MarkdownDoc) -> None:
+    entries = parse_status_entries(clear_placeholder(doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    unfinished = [entry["slug"] for entry in entries if not is_done_status(entry["status"])]
+    if unfinished:
+        doc.sections["Cleanup Status"] = [
+            "- Cleanup mode is explicit only.",
+            f"- Safe to call `todo-cleanup`: no, waiting on {', '.join(unfinished)}.",
+        ]
+        return
+    if entries:
+        doc.sections["Cleanup Status"] = [
+            "- Cleanup mode is explicit only.",
+            "- Safe to call `todo-cleanup`: yes, every tracked workstream is done.",
+        ]
+        return
+    doc.sections["Cleanup Status"] = [
+        "- Cleanup mode is explicit only.",
+        "- Safe to call `todo-cleanup`: yes, there are no tracked workstreams left.",
+    ]
+
+
+def pickup_ready_entries(entries: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+    ready: list[dict[str, str]] = []
+    for entry in entries:
+        if is_done_status(entry["status"]) or entry["status"] == "blocked":
+            continue
+        if entry.get("execution", "").strip() not in PICKUP_READY_STATES:
+            continue
+        ready.append(entry)
+    return ready
+
+
 def ensure_root_files(repo_root: Path) -> None:
     root_doc = load_root_doc(repo_root)
     write_document(repo_root / "todos.md", root_doc, ROOT_SECTION_ORDER)
     (repo_root / "todos").mkdir(parents=True, exist_ok=True)
+    status_doc = load_status_doc(repo_root)
+    sync_status_entries_from_root(root_doc, status_doc)
+    write_document(repo_root / "todo-status.md", status_doc, STATUS_SECTION_ORDER)
 
 
-def ensure_workstream_file(repo_root: Path, slug: str, objective: str, status: str, owner: str) -> Path:
+def ensure_workstream_file(
+    repo_root: Path,
+    slug: str,
+    objective: str,
+    status: str,
+    owner: str,
+    execution: str | None = None,
+    next_action: str | None = None,
+) -> Path:
     ensure_root_files(repo_root)
     workstream_doc = load_workstream_doc(repo_root, slug, objective)
     if objective and workstream_doc.sections.get("Summary") in ([PLACEHOLDER], []):
@@ -368,6 +594,19 @@ def ensure_workstream_file(repo_root: Path, slug: str, objective: str, status: s
     root_doc = load_root_doc(repo_root)
     upsert_workstream_entry(root_doc, slug, objective or humanize_slug(slug), status=status, owner=owner)
     write_document(repo_root / "todos.md", root_doc, ROOT_SECTION_ORDER)
+
+    status_doc = load_status_doc(repo_root)
+    sync_status_entries_from_root(root_doc, status_doc)
+    upsert_status_entry(
+        status_doc,
+        slug=slug,
+        objective=objective or humanize_slug(slug),
+        status=status,
+        owner=owner,
+        execution=execution,
+        next_action=first_status_next_action(next_action, workstream_doc),
+    )
+    write_document(repo_root / "todo-status.md", status_doc, STATUS_SECTION_ORDER)
     return workstream_path
 
 
@@ -378,6 +617,7 @@ def managed_agents_block() -> str:
             "## Workflow Ledger",
             "",
             "- For substantial multi-step work, consult `todos.md` first.",
+            "- Consult `todo-status.md` for pickup-ready, claimed, and idle workstreams before starting parallel work.",
             "- Treat `todos.md` as the canonical active plan and progress ledger.",
             "- For concurrent workstreams, consult the relevant file under `todos/`.",
             "- In plan mode, consult `todo-orchestrator/references/planning-workflow.md`.",
@@ -415,14 +655,23 @@ def detect_resume_state(repo_root: Path) -> dict[str, object]:
             "has_root_todos": False,
             "has_agents_md": (repo_root / "AGENTS.md").exists(),
             "active_workstreams": [],
+            "pickup_ready_workstreams": [],
+            "claimed_workstreams": [],
+            "cleanup_ready": False,
         }
     root_doc = load_root_doc(repo_root)
     entries = parse_workstream_entries(clear_placeholder(root_doc.sections.get("Workstreams", [WORKSTREAM_PLACEHOLDER])))
-    active = [entry for entry in entries if entry["status"] not in {"done", "complete", "archived"}]
+    active = [entry for entry in entries if not is_done_status(entry["status"])]
+    status_doc = load_status_doc(repo_root)
+    status_entries = parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    claimed = [entry for entry in status_entries if entry.get("execution", "").strip() == "claimed"]
     return {
         "has_root_todos": True,
         "has_agents_md": (repo_root / "AGENTS.md").exists(),
         "active_workstreams": active,
+        "pickup_ready_workstreams": pickup_ready_entries(status_entries),
+        "claimed_workstreams": claimed,
+        "cleanup_ready": bool(status_entries) and not active,
     }
 
 

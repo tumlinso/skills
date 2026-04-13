@@ -2,6 +2,8 @@
 
 Use this addendum when the question is not "can NVHPC compile this?" but "does using NVHPC improve or hurt my V100 throughput relative to raw CUDA/C++ plus libraries?"
 
+If the broader problem is how to port CPU-centric code efficiently to GPU, read `references/addendum-cpu-porting.md` first and come here only after offload is one of the serious candidate endpoints.
+
 ## Workflow
 
 1. Identify the abstraction being considered.

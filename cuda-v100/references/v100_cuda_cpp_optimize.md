@@ -13,13 +13,18 @@ Use this file for concrete implementation choices:
 
 Read `v100_programming_guide.md` first for topology and optimization order.
 
+If the binary or extension still crashes, route first into `references/addendum-crash-debugging.md` before profiler or kernel-tuning work.
+
 If the question is specifically how to get dense or blocked work onto Tensor Cores, read `references/addendum-tensor-core-routing.md` before owning low-level WMMA or PTX code.
 
 If the question is specifically about inline PTX, handwritten PTX, branch predication, or sparse control-flow cleanup, read `references/addendum-ptx-routing.md` before adding architecture-specific low-level code.
 
+If the code still looks CPU-centric and has not been structurally rewritten for GPU execution, read `references/addendum-cpu-porting.md` before applying the CUDA/C++ rules in this file.
+
 ## Quick Map
 
 - `1. Build Rules`
+- `1.3 Debug Build`
 - `2. Fastest Full-Path Rule`
 - `3. Volta Kernel Rules`
 - `4. Profiling Commands`
@@ -52,7 +57,23 @@ nvcc -O3 \
   your_file.cu -o your_bin
 ```
 
-### 1.3 Aggressive Release Build
+### 1.3 Debug Build
+
+Use this only for crash reproduction and debugger runs:
+
+```bash
+nvcc -O0 \
+  -g -G \
+  -std=c++17 \
+  -arch=sm_70 \
+  -lineinfo \
+  -Xcompiler=-fno-omit-frame-pointer \
+  your_file.cu -o your_bin_debug
+```
+
+Use `-G` only when you need device-debug visibility. It perturbs performance heavily and is not a profiling build.
+
+### 1.4 Aggressive Release Build
 
 ```bash
 nvcc -O3 \
@@ -67,7 +88,7 @@ nvcc -O3 \
 
 Use `--use_fast_math` only when the numerical tradeoff is acceptable.
 
-### 1.4 CMake Skeleton
+### 1.5 CMake Skeleton
 
 ```cmake
 cmake_minimum_required(VERSION 3.24)
@@ -92,6 +113,12 @@ target_link_libraries(v100_main PRIVATE
   nccl
 )
 ```
+
+For crash-debug configurations, keep a separate target or preset that adds:
+
+- `-O0 -g -G` for device-debug visibility
+- `-lineinfo` for lighter source correlation
+- frame pointers on the host side for readable backtraces
 
 ## 2. Fastest Full-Path Rule
 

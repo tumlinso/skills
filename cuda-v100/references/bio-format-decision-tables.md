@@ -9,6 +9,7 @@
 | Repeated feature stats | CSC | Feature access becomes contiguous |
 | Transient construction or merge | COO | Simpler assembly path |
 | Stable block structure | BSR | Only if blocks are real and useful |
+| Stable block structure with Tensor Core-oriented sparse SpMM | Blocked ELLPACK-style | Often the best sparse layout when blocked SpMM should feed Tensor Core-friendly dense tiles |
 | Row-binned regularized access | SELL | Only after row skew analysis |
 
 ## Transpose Or Not
@@ -45,3 +46,4 @@ Go dense when:
 - dense conversion before the sparse phase has actually collapsed
 - COO as a long-lived steady-state format
 - forcing BSR or SELL without structural evidence
+- assuming generic BSR beats blocked ELLPACK-style storage for Tensor Core-oriented blocked sparse matmul

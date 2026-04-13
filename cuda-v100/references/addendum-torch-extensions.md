@@ -2,6 +2,8 @@
 
 Use this addendum when the task is to write, debug, or optimize a PyTorch C++ or CUDA extension that must run well on Tesla V100.
 
+If the extension still segfaults or hits a CUDA hard failure before normal tuning can begin, route first into `references/addendum-crash-debugging.md`. Return here after the crash class is stable enough to work on the extension boundary.
+
 Use it when questions look like:
 
 - how should this custom op be structured between Python, C++, and CUDA?
@@ -52,6 +54,7 @@ Use it when questions look like:
 
 - Read `references/torch-extension-playbook.md` for extension layout, registration patterns, stream handling, error checks, build flags, and packaging rules.
 - Read `references/custom-torch-ops-registry.md` for the repo-root registry convention and the required `custom_torch_ops.md` schema.
+- Read `references/addendum-crash-debugging.md` first when the extension cannot run stably enough for ordinary profiling or tuning.
 - Read `references/v100_cuda_cpp_optimize.md` for lower-level Volta kernel and libtorch or ATen integration rules after the extension boundary is set.
 - Read `references/addendum-kernel-roofline-lab.md` if the extension already works and the remaining problem is hot-kernel efficiency.
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compare Benchmarks"
+  short_description: "Compare two implementations fairly"
+  default_prompt: "Use $compare-benchmarks to compare implementation A and B, scaffold wrappers if needed, serialize benchmark runs, and emit compact comparison summaries."

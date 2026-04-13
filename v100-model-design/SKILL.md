@@ -4,10 +4,11 @@ description: >-
   Entry skill for choosing and designing PyTorch or libtorch models that will
   run on a 4x Tesla V100 host. Use when Codex needs to pick a model family,
   objective, latent structure, decoder, multimodal fusion plan, temporal
-  design, sparse-to-dense boundary, or custom-op boundary before handing off
-  low-level implementation, fit, topology, or profiler work to `cuda-v100`.
-  Keep the workflow routed: choose model family, distributed shape, or
-  custom-op planning first, then escalate to `cuda-v100` only when hardware
+  design, sparse-to-dense boundary, custom-op boundary, or low-level ML
+  subsystem boundary before handing off low-level implementation, fit,
+  topology, or profiler work to `cuda-v100`. Keep the workflow routed: choose
+  model family, distributed shape, custom-op planning, or low-level ML
+  ownership first, then escalate to `cuda-v100` only when hardware
   implementation becomes the main question.
 ---
 
@@ -26,6 +27,7 @@ Choose the first statement that is true. Load only the file named in that row fi
 | "What model family fits this task?", "should this be temporal, autoencoding, graph, diffusion, transformer, or hybrid?" | `references/route-model-family.md` | `references/bioinformatics-model-playbook.md` after the family is narrowed |
 | "Will this design scale on 4 V100s?", "should this be single-GPU first or distributed from the start?" | `references/route-distributed-shaping.md` | `references/distributed-4gpu-planning.md` once the family is stable |
 | "Do we need custom Torch ops?", "where should the custom-op boundary sit?" | `references/route-custom-op-planning.md` | `references/custom-op-registry-convention.md` before handing off to `cuda-v100` |
+| "Torch or libtorch overhead is hurting the hot path", "should this component own forward, backward, or optimizer logic directly?", "do we need low-level ML code for a sparse or nonstandard layout?" | `references/route-low-level-ml-boundary.md` | `references/sparse-layout-training-boundary.md` for sparse or layout-heavy cases |
 | "The real question is memory fit, DDP topology, staging, kernel shape, or profiler interpretation" | `cuda-v100` | return here only if model choice becomes unclear again |
 
 ## Opening Moves
@@ -51,6 +53,14 @@ Choose the first statement that is true. Load only the file named in that row fi
 3. Record any real custom op in `custom_torch_ops.md` before implementation.
 4. Hand off to `cuda-v100` only after the boundary is stable.
 
+### Path: Low-Level ML Boundary
+
+1. Decide whether this is still an ordinary custom-op question or a broader low-level ML subsystem.
+2. Define which ownership moves below the framework boundary: forward only, forward plus backward, forward plus backward plus optimizer, or most of the trainer.
+3. Specify parameter state, saved state, optimizer state, and layout assumptions before implementation talk starts.
+4. Keep the rest of the model high-level unless the low-level path is clearly justified.
+5. Hand off to `cuda-v100` only after the low-level ML boundary and contracts are stable.
+
 ## Handoff Rule
 
 Use `cuda-v100` for:
@@ -68,10 +78,15 @@ Do not bounce between this skill and `cuda-v100` repeatedly. Stay here until the
 - `references/route-model-family.md`
 - `references/route-distributed-shaping.md`
 - `references/route-custom-op-planning.md`
+- `references/route-low-level-ml-boundary.md`
 - `references/model-family-selection.md`
 - `references/bioinformatics-model-playbook.md`
 - `references/distributed-4gpu-planning.md`
 - `references/custom-op-registry-convention.md`
+- `references/manual-gradient-system-design.md`
+- `references/optimizer-and-update-design.md`
+- `references/low-level-trainer-loop-design.md`
+- `references/sparse-layout-training-boundary.md`
 
 ## Assets
 
@@ -82,4 +97,5 @@ Do not bounce between this skill and `cuda-v100` repeatedly. Stay here until the
 - Do not recommend diffusion by default when a lighter conditional model is enough.
 - Do not design a communication-heavy 4-GPU plan if the model fits and trains well on one V100 first.
 - Do not invent custom CUDA ops when existing Torch or library-backed paths are adequate.
+- Do not bypass Torch or libtorch for gradients or optimizers unless framework overhead, layout mismatch, or state handling is truly first-order.
 - Do not use this skill for low-level Volta tuning once the unresolved question is implementation rather than model design.

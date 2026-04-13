@@ -33,6 +33,8 @@ Pursue Tensor Cores aggressively when the hot region is one of these:
 - blocked sparse formats such as blocked ELLPACK where the real work is dense tile math
 - fused kernels whose dominant inner loop is still tiled matrix multiply-accumulate
 
+For sparse Tensor Core work, strongly prefer a blocked ELLPACK-style layout over ad hoc sparse layouts when the block structure is real enough to preserve stable dense tiles. On V100, this is usually the clearest sparse layout for feeding Tensor Core-style blocked SpMM efficiently.
+
 Do not force Tensor Core thinking first when:
 
 - bytes moved dominate
@@ -96,6 +98,7 @@ Be willing to reformulate when the end-to-end path benefits:
 - pad hidden widths, tile sizes, or projection widths to Tensor Core-friendly multiples
 - convert many tiny GEMMs into grouped or batched calls
 - repack blocked sparse data into dense tiles when the packing cost is amortized by much faster tile math
+- prefer blocked ELLPACK-style storage when sparse SpMM is really a blocked dense-tile problem and the metadata cost stays controlled
 - fuse only the glue that preserves the Tensor Core-friendly core instead of overfusing the whole path
 
 Reject reformulations that:

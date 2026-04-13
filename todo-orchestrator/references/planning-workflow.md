@@ -8,7 +8,7 @@ Use this guide when the task is substantial, ambiguous, or multi-step.
 - turn fuzzy requests into concrete execution steps
 - identify assumptions, risks, dependencies, and validation early
 - define done criteria before starting implementation
-- record the plan in `todos.md` and the active workstream file
+- record the plan in `todos.md`, `todo-status.md`, and the active workstream file
 
 ## Planning Sequence
 
@@ -16,9 +16,11 @@ Use this guide when the task is substantial, ambiguous, or multi-step.
 2. Identify the actual objective, constraints, audience, and success criteria.
 3. Challenge weak assumptions that would make the plan fragile.
 4. Decompose the work into implementation steps that can be executed without further decision-making.
-5. Identify likely dependencies, blockers, validation steps, and rollback concerns.
-6. Discover relevant repo-local skills and reference files and record them in the ledger.
-7. Write the result into `todos.md` and the active workstream file before implementation starts.
+5. Split work into domain-based workstreams when a fresh thread could own a substream without rediscovering the whole task.
+6. Identify which workstreams are parallelizable and call those out explicitly to the user.
+7. Identify likely dependencies, blockers, validation steps, and rollback concerns.
+8. Discover relevant repo-local skills and reference files and record them in the ledger.
+9. Write the result into `todos.md`, `todo-status.md`, and the active workstream file before implementation starts.
 
 ## Good Planning Questions
 
@@ -37,6 +39,7 @@ Avoid asking questions that can be answered from the repo.
 Record these items in the ledger:
 
 - objective summary
+- quick-start context for each workstream
 - planning notes
 - assumptions and defaults
 - concrete implementation steps
@@ -55,5 +58,6 @@ Planning is complete when:
 - important assumptions are explicit
 - likely validation steps are known
 - the relevant ledger files are updated
+- pickup-ready and claimed workstreams are visible in `todo-status.md`
 
 At that point, switch into implementation mode and continue without repeated guidance unless truly blocked.

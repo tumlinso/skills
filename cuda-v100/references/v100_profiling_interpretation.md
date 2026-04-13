@@ -2,6 +2,8 @@
 
 Use this reference when the task is not just "run a profiler," but **decide quickly whether a V100 measurement is trustworthy and what to do next**.
 
+If the binary still segfaults, trips a device assert, or dies before a representative run window exists, do not start here. Route first into `references/addendum-crash-debugging.md`.
+
 The profiling wrappers are now designed to emit **minimal decision-ready summaries**:
 
 - `scripts/profile_nsys.sh` writes `summary.txt` and `summary.json` that answer:
@@ -30,6 +32,7 @@ Both wrappers capture noisy command and profiler output into files inside the ru
 1. Run the benchmark normally first.
    - Use the benchmark or test output for throughput numbers.
    - Do not use Nsight Compute runtime as your throughput measurement. Replay changes runtime.
+   - If the binary still crashes, use the crash-debugging route before this workflow.
 
 2. Run `profile_nsys.sh` first.
    - Nsight Systems decides whether the benchmark run reflects steady-state behavior or mostly setup.

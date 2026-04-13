@@ -1,6 +1,6 @@
 interface:
   display_name: "V100 Model Design"
   short_description: "Model design before CUDA implementation"
-  default_prompt: "Use $v100-model-design to choose a PyTorch or libtorch model family for a 4x V100 host, route into distributed or custom-op planning, and hand off to $cuda-v100 only after the model decision is stable."
+  default_prompt: "Use $v100-model-design to choose a PyTorch or libtorch model family for a 4x V100 host, route into distributed shaping, custom-op planning, or low-level ML boundary design, and hand off to $cuda-v100 only after the model and ownership boundaries are stable."
 policy:
   allow_implicit_invocation: true

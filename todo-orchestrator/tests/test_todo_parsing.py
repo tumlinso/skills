@@ -10,13 +10,16 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 
 from todo_common import (  # noqa: E402
     ROOT_SECTION_ORDER,
+    STATUS_SECTION_ORDER,
     WORKSTREAM_SECTION_ORDER,
     append_section_bullets,
     ensure_root_files,
     ensure_workstream_file,
     load_root_doc,
+    load_status_doc,
     load_workstream_doc,
     parse_markdown_document,
+    parse_status_entries,
     render_markdown_document,
     set_section_text,
 )
@@ -43,9 +46,13 @@ User-owned text
             ensure_root_files(repo_root)
             ensure_workstream_file(repo_root, "build-ledger", "Build the ledger", "planned", "planner")
             self.assertTrue((repo_root / "todos.md").exists())
+            self.assertTrue((repo_root / "todo-status.md").exists())
             self.assertTrue((repo_root / "todos" / "build-ledger.md").exists())
             root_doc = load_root_doc(repo_root)
             self.assertIn("Workstreams", root_doc.sections)
+            status_doc = load_status_doc(repo_root)
+            entries = parse_status_entries(status_doc.sections["Workstreams"])
+            self.assertEqual(entries[0]["execution"], "ready")
 
     def test_preserves_user_written_preamble(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -69,6 +76,39 @@ Resume flow
             text = path.read_text(encoding="utf-8")
             self.assertIn("This note should stay.", text)
             self.assertIn("Resume flow with preserved notes", text)
+
+    def test_workstream_template_includes_quick_start(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            ensure_workstream_file(repo_root, "pickup-ready", "Pickup ready", "planned", "agent-a")
+            doc = load_workstream_doc(repo_root, "pickup-ready", "Pickup ready")
+            rendered = render_markdown_document(doc, WORKSTREAM_SECTION_ORDER)
+            self.assertIn("## Quick Start", rendered)
+            self.assertIn("Required skills", rendered)
+            self.assertIn("Required references", rendered)
+
+    def test_ensure_root_files_backfills_status_register_from_existing_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            (repo_root / "todos").mkdir(parents=True)
+            (repo_root / "todos.md").write_text(
+                """# Active Objectives
+
+## Summary
+Use this file as the canonical index for substantial multi-step work.
+
+## Workstreams
+- `legacy-stream` | status: blocked | owner: legacy | file: `todos/legacy-stream.md` | objective: Legacy stream
+""",
+                encoding="utf-8",
+            )
+            ensure_root_files(repo_root)
+            status_doc = load_status_doc(repo_root)
+            entries = parse_status_entries(status_doc.sections["Workstreams"])
+            self.assertEqual(len(entries), 1)
+            self.assertEqual(entries[0]["slug"], "legacy-stream")
+            self.assertEqual(entries[0]["status"], "blocked")
+            self.assertEqual(entries[0]["execution"], "idle")
 
 
 if __name__ == "__main__":

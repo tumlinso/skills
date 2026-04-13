@@ -79,4 +79,5 @@ State:
 - main alternative rejected
 - objective being optimized
 - expected memory and communication pressure
-- whether the family is a good fit for Python-only, libtorch, or both
+- whether the family is a good fit for Python-only, libtorch, both, or a selective low-level ML subsystem
+- whether training should stay framework-managed, use a low-level hot component, or move most of the trainer below Torch or libtorch

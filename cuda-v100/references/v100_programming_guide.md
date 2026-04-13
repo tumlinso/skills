@@ -17,6 +17,8 @@ For operational Tensor Core enablement, verification, and escalation, route next
 
 For designing stress benchmarks that can actually saturate compute or transfers on this host, route into `references/benchmark-large-data.md`.
 
+For code that is still CPU-centric and not yet properly decomposed for GPU execution, route into `references/addendum-cpu-porting.md` before treating it like an ordinary CUDA tuning problem.
+
 ## Quick Map
 
 - `1. Non-Negotiable Rules`
