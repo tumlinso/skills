@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--status",
         default="planned",
-        choices=["planned", "in_progress", "blocked", "done"],
+        choices=["planned", "in_progress", "blocked", "stale", "done", "superseded"],
         help="Initial workstream status.",
     )
     parser.add_argument(
@@ -31,6 +31,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Also create or update repo-level AGENTS.md with the workflow ledger guidance.",
     )
+    parser.add_argument("--stale-after-days", type=int, help="Override the initial stale threshold for the workstream.")
+    parser.add_argument("--review-now", action="store_true", help="Initialize the workstream with an explicit review timestamp.")
+    parser.add_argument("--superseded-by", help="Slug of the workstream that superseded this one.")
+    parser.add_argument("--waiting-on", help="Short note about the outstanding dependency for this workstream.")
+    parser.add_argument("--stale-reason", help="Reason recorded when initializing a stale workstream.")
     return parser
 
 
@@ -52,6 +57,11 @@ def main() -> int:
             status=args.status,
             owner=args.owner,
             execution=args.execution_state,
+            stale_after_days=args.stale_after_days,
+            superseded_by=args.superseded_by,
+            waiting_on=args.waiting_on,
+            stale_reason=args.stale_reason,
+            touch_review=args.review_now,
         )
 
     if args.update_agents:

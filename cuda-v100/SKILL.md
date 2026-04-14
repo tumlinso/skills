@@ -56,7 +56,7 @@ Choose the first statement that is true. Load only the file named in that row fi
 | "One kernel is hot", "Nsight Compute shows a limiter", "should this stay custom?" | `references/addendum-kernel-roofline-lab.md` | `references/v100_cuda_cpp_optimize.md` for implementation details |
 | "Why are Tensor Cores not firing?", "how do I force the Volta Tensor Core path?", "this dense or blocked workflow is not drawing enough power", "should I reformulate this for Tensor Cores?" | `references/addendum-tensor-core-routing.md` | `references/volta-tensor-core-low-level.md` only when cuBLAS, cuBLASLt, or CUTLASS leave a stable gap |
 | "How do I port this CPU-centric code to CUDA?", "this was written for CPU caches and threads", "should I offload this or rewrite it for CUDA?", "how do I port irregular scientific code efficiently?" | `references/addendum-cpu-porting.md` | `references/cpu-porting-decision-tree.md`, `references/cpu-to-cuda-rewrite-patterns.md`, and `references/cpu-porting-sparse-bio.md` |
-| "I explicitly want PTX guidance", "when should I use inline PTX here?", "teach me PTX optimization for this kernel", "show PTX choices for sparse hot paths", "I want lower-level branch-avoidance options" | `references/addendum-ptx-routing.md` | `references/ptx-volta-extreme.md` and `references/ptx-sparse-bio-hotpaths.md`, but only when PTX was explicitly requested |
+| "I explicitly want PTX guidance", "when should I use inline PTX here?", "teach me PTX optimization for this kernel", "show PTX choices for sparse hot paths", "I want lower-level branch-avoidance options" | `references/addendum-ptx-routing.md` | `references/ptx-volta-extreme.md` first for `sm_70`, then `references/ptx-sparse-bio-hotpaths.md` or `references/ptx-general-guidelines.md` only as needed |
 | "Should this use NVHPC, OpenACC, OpenMP target, or stdpar?" | `references/addendum-nvhpc-cpp.md` | `references/v100_cuda_cpp_optimize.md` once the abstraction choice is locked |
 | "Write or fix a PyTorch C++/CUDA op", "where should the extension boundary sit?" | `references/addendum-torch-extensions.md` | `references/addendum-kernel-roofline-lab.md` only after the op already works |
 | "This is sparse omics / bio data", "which layout or phase boundary is right?" | `references/addendum-bio-data-layouts.md` | `references/v100_bioinformatics_guide.md` for the broader sparse pipeline |
@@ -127,8 +127,8 @@ After choosing a path, do only the opening move for that path before loading mor
 
 1. Read `references/addendum-ptx-routing.md`, but only when PTX guidance was explicitly requested.
 2. Decide whether the problem is really PTX-sized or whether algorithm shape, binning, fusion, or library choice still dominates.
-3. Stay in `references/ptx-general-guidelines.md` for portable PTX guidance unless the user explicitly wants the deepest Volta-specific path.
-4. Route to `references/ptx-volta-extreme.md` or `references/ptx-sparse-bio-hotpaths.md` only after the hotspot and the motivation for PTX are both clear.
+3. Isolate the hot path into a separate header, helper, or narrow translation unit before dumping PTX or SASS.
+4. Route to `references/ptx-volta-extreme.md` first for explicit V100 `sm_70` PTX work, then load `references/ptx-sparse-bio-hotpaths.md` or `references/ptx-general-guidelines.md` only if the hotspot shape requires it.
 
 ### Path: NVHPC
 
@@ -220,8 +220,8 @@ Load these only after the matching addendum tells you the problem really belongs
   - then `references/v100_cuda_cpp_optimize.md`
   - then `references/volta-tensor-core-low-level.md`
 - `references/addendum-ptx-routing.md`
-  - then `references/ptx-general-guidelines.md`
   - then `references/ptx-volta-extreme.md`
+  - then `references/ptx-general-guidelines.md`
   - then `references/ptx-sparse-bio-hotpaths.md`
 - `references/addendum-nvhpc-cpp.md`
   - then `references/nvhpc-tradeoffs.md`
@@ -256,7 +256,7 @@ Use these when the problem genuinely moves from one bottleneck class to another.
 - main workflow -> `references/addendum-tensor-core-routing.md`: use when dense or blocked work should probably be on Tensor Cores but the current path is leaving throughput on the table.
 - `references/addendum-tensor-core-routing.md` -> `references/volta-tensor-core-low-level.md`: only after the cuBLAS, cuBLASLt, or CUTLASS path is correct and still too slow.
 - explicit PTX request -> `references/addendum-ptx-routing.md`: use only when the user explicitly asks for PTX, inline PTX, or handwritten PTX-level optimization.
-- `references/addendum-ptx-routing.md` -> `references/ptx-volta-extreme.md`: use when the user wants the deepest Volta-specific PTX path for `sm_70`.
+- `references/addendum-ptx-routing.md` -> `references/ptx-volta-extreme.md`: use first for explicit V100 `sm_70` PTX work once the hot path is isolated.
 - `references/addendum-ptx-routing.md` -> `references/ptx-sparse-bio-hotpaths.md`: use when the explicit PTX request is about sparse, irregular, or bioinformatics-heavy hot paths.
 - `references/addendum-bio-data-layouts.md` -> `references/addendum-kernel-mechanics.md`: choose the biologically correct sparse phase first, then decide whether skew or glue should be handled by fusion or specialization.
 - `references/addendum-torch-extensions.md` -> `references/addendum-kernel-roofline-lab.md`: fix the extension boundary first, then micro-optimize the hot backend.
@@ -285,6 +285,9 @@ Prefer the bundled scripts over ad hoc commands when they fit the task.
 - Use `scripts/emit_rank_layout_env.py` when testing rank placement or pair-local layouts.
 - Use `scripts/estimate_transfer_time.py` when comparing staging strategies or transfer batch sizes.
 - Use `scripts/emit_nvhpc_build_flags.py` when the task explicitly targets NVHPC compilation.
+- Use `scripts/dump_ptx_hotspot.sh` when PTX was explicitly requested and you need focused PTX, cubin, resource, and SASS artifacts for an isolated hot path.
+- Use `scripts/split_cuda_translation_unit.py` when the hot path still lives inside a multi-kernel `.cu` and you need one focused source before PTX dumping.
+- Use `scripts/summarize_ptx_dump.py` when you need to regenerate or inspect the compact summary for a PTX dump run.
 - Use `scripts/open_nsys_ui.sh` or `scripts/open_ncu_ui.sh` only when interactive profiler inspection is worth the cost.
 
 ## Output Requirements
@@ -298,6 +301,8 @@ Be explicit about:
 - whether the code is still CPU-centric and what decomposition change is required before low-level tuning
 - whether the recommended endpoint is directive offload, native CUDA/C++, or a mixed strategy
 - whether PTX was explicitly requested and whether PTX was actually the right surface
+- whether the hot path was isolated before PTX or SASS inspection
+- which symbol or micro-primitive was dumped
 - whether the PTX guidance stayed portable or escalated into a Volta-specific path
 - whether the workload is eligible for Tensor Core pursuit or should stay on a non-Tensor-Core path
 - whether the Tensor Core route was library-backed, CUTLASS-backed, or low-level custom
@@ -319,5 +324,6 @@ Be explicit about:
 - Do not force Tensor Core thinking onto sparse or irregular phases that are fundamentally memory-bound, but do push dense and reformulable blocked paths harder than a generic CUDA guide would.
 - Do not route into PTX unless the user explicitly asked for PTX-level guidance.
 - Do not use PTX as an excuse to skip algorithm, layout, binning, or fusion decisions that are still unresolved.
+- Do not dump monolithic CUDA or whole-library PTX when the hot path can be isolated first.
 - Do not port CPU-centric code literally to CUDA when the real win requires a new decomposition, layout, or library boundary.
 - Do not load multiple addendums unless the task has clearly moved from one bottleneck class to another.

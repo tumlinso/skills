@@ -15,20 +15,20 @@ from todo_common import (
     WORKSTREAM_SECTION_ORDER,
     append_section_bullets,
     append_structured_values,
+    ensure_workstream_frontmatter,
     ensure_root_files,
-    ensure_workstream_file,
     first_status_next_action,
     load_root_doc,
     load_status_doc,
     load_workstream_doc,
     normalize_slug,
     parse_workstream_entries,
+    persist_workstream_doc,
     set_section_text,
     set_task_status,
     sync_status_entries_from_root,
     upsert_status_entry,
     upsert_task,
-    upsert_workstream_entry,
     write_document,
 )
 
@@ -76,7 +76,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--owner", help="Owner or agent label for the workstream entry.")
     parser.add_argument(
         "--status",
-        choices=["planned", "in_progress", "blocked", "done"],
+        choices=["planned", "in_progress", "blocked", "stale", "done", "superseded"],
         help="Workstream status used in the root index.",
     )
     parser.add_argument(
@@ -105,6 +105,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--progress-note", action="append", default=[], help="Bullet to append to Progress Notes.")
     parser.add_argument("--next-action", action="append", default=[], help="Bullet to append to Next Actions.")
     parser.add_argument("--done-criterion", action="append", default=[], help="Bullet to append to Done Criteria.")
+    parser.add_argument("--review-now", action="store_true", help="Refresh the workstream review timestamp.")
+    parser.add_argument("--stale-after-days", type=int, help="Override the stale threshold for this workstream.")
+    parser.add_argument("--superseded-by", help="Slug of the workstream that superseded this one.")
+    parser.add_argument("--waiting-on", help="Short note about the outstanding dependency for this workstream.")
+    parser.add_argument("--stale-reason", help="Reason recorded when a workstream is marked stale.")
     return parser
 
 
@@ -146,6 +151,16 @@ def merge_payload(args: argparse.Namespace, defaults: dict[str, Any], payload: d
         current = getattr(args, key)
         if current != default:
             continue
+        if key == "stale_after_days":
+            if value is not None and not isinstance(value, int):
+                parser.error(f"payload field '{raw_key}' must be an integer")
+            setattr(args, key, value)
+            continue
+        if key == "review_now":
+            if not isinstance(value, bool):
+                parser.error(f"payload field '{raw_key}' must be a boolean")
+            setattr(args, key, value)
+            continue
         if value is not None and not isinstance(value, str):
             parser.error(f"payload field '{raw_key}' must be a string")
         setattr(args, key, value)
@@ -169,16 +184,9 @@ def main() -> int:
         objective = args.objective or current_entry.get("objective", slug.replace("-", " "))
         effective_status = args.status or current_entry.get("status", "planned")
         effective_owner = args.owner or current_entry.get("owner", "unassigned")
-        ensure_workstream_file(
-            repo_root,
-            slug=slug,
-            objective=objective,
-            status=effective_status,
-            owner=effective_owner,
-            execution=args.execution_state,
-            next_action=args.pickup_note,
-        )
         doc = load_workstream_doc(repo_root, slug, objective)
+        if objective and doc.sections.get("Summary") in ([], ["_None recorded yet._"]):
+            doc.sections["Summary"] = [objective]
         if args.summary:
             set_section_text(doc, "Summary", args.summary)
         apply_text_list(doc, "Quick Start", args.quick_start)
@@ -197,10 +205,23 @@ def main() -> int:
         apply_text_list(doc, "Progress Notes", args.progress_note)
         apply_text_list(doc, "Next Actions", args.next_action)
         apply_text_list(doc, "Done Criteria", args.done_criterion)
-        write_document(repo_root / "todos" / f"{slug}.md", doc, WORKSTREAM_SECTION_ORDER)
+        ensure_workstream_frontmatter(
+            doc,
+            slug=slug,
+            objective=objective,
+            status=effective_status,
+            owner=effective_owner,
+            execution=args.execution_state,
+            touch_heartbeat=True,
+            touch_review=args.review_now,
+            stale_after_days=args.stale_after_days,
+            superseded_by=args.superseded_by,
+            waiting_on=args.waiting_on,
+            stale_reason=args.stale_reason,
+        )
+        persist_workstream_doc(repo_root, slug, doc, objective=objective)
 
         root_doc = load_root_doc(repo_root)
-        upsert_workstream_entry(root_doc, slug, objective, status=effective_status, owner=effective_owner)
         if args.shared_assumption:
             apply_text_list(root_doc, "Shared Assumptions", args.shared_assumption)
         if args.global_blocker:

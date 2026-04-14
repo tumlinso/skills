@@ -6,7 +6,8 @@ from __future__ import annotations
 import json
 import re
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -45,12 +46,14 @@ WORKSTREAM_SECTION_ORDER = [
 STATUS_SECTION_ORDER = [
     "Summary",
     "Workstreams",
+    "Staleness Review",
     "Cleanup Status",
 ]
 
 PLACEHOLDER = "_None recorded yet._"
 WORKSTREAM_PLACEHOLDER = "_No active workstreams yet._"
 STATUS_PLACEHOLDER = "_No tracked workstreams yet._"
+STALENESS_PLACEHOLDER = "_No staleness review recorded yet._"
 TASK_PATTERN = re.compile(r"^- \[([ x~!])\] (.+)$")
 WORKSTREAM_PATTERN = re.compile(
     r"^- `(?P<slug>[^`]+)` \| status: (?P<status>[^|]+) \| owner: (?P<owner>[^|]+) "
@@ -60,18 +63,41 @@ STATUS_PATTERN = re.compile(
     r"^- `(?P<slug>[^`]+)` \| status: (?P<status>[^|]+) \| execution: (?P<execution>[^|]+) "
     r"\| owner: (?P<owner>[^|]+) \| file: `(?P<file>[^`]+)` \| next: (?P<next>.+)$"
 )
-FRONTMATTER_PATTERN = re.compile(r"^---\n(.*?)\n---", re.DOTALL)
+FRONTMATTER_PATTERN = re.compile(r"^---\n(.*?)\n---\n?", re.DOTALL)
 AGENTS_START = "<!-- todo-orchestrator:start -->"
 AGENTS_END = "<!-- todo-orchestrator:end -->"
 
-DONE_STATUSES = {"done", "complete", "archived"}
+DONE_STATUSES = {"done", "complete", "archived", "superseded"}
+TERMINAL_STATUSES = DONE_STATUSES
+NON_PICKUP_STATUSES = {"blocked", "stale"} | TERMINAL_STATUSES
 PICKUP_READY_STATES = {"ready", "idle"}
+PARTIAL_CLEANUP_ALLOWED_STATUSES = DONE_STATUSES | {"stale"}
+DEFAULT_STALE_AFTER_DAYS = {
+    "planned": 14,
+    "in_progress": 14,
+    "blocked": 30,
+    "stale": 14,
+}
 DEFAULT_QUICK_START_LINES = [
     "- Why this stream exists: _Summarize the domain boundary and why it was split out._",
     "- In scope: _List the work this stream owns._",
     "- Out of scope / dependencies: _List handoffs, upstream dependencies, or adjacent streams._",
     "- Required skills: _List the exact repo-local skills to read before starting._",
     "- Required references: _List the exact repo-local references to read before starting._",
+]
+WORKSTREAM_FRONTMATTER_ORDER = [
+    "slug",
+    "status",
+    "execution",
+    "owner",
+    "created_at",
+    "last_heartbeat_at",
+    "last_reviewed_at",
+    "stale_after_days",
+    "objective",
+    "superseded_by",
+    "waiting_on",
+    "stale_reason",
 ]
 
 
@@ -81,6 +107,7 @@ class MarkdownDoc:
     preamble: list[str]
     sections: "OrderedDict[str, list[str]]"
     order: list[str]
+    frontmatter: "OrderedDict[str, str]" = field(default_factory=OrderedDict)
 
 
 def normalize_slug(value: str) -> str:
@@ -106,8 +133,17 @@ def normalize_text_lines(lines: Iterable[str]) -> list[str]:
     return normalized
 
 
+def split_frontmatter(text: str) -> tuple["OrderedDict[str, str]", str]:
+    match = FRONTMATTER_PATTERN.match(text)
+    if not match:
+        return OrderedDict(), text
+    body = text[match.end() :]
+    return parse_frontmatter_block(match.group(1)), body
+
+
 def parse_markdown_document(text: str) -> MarkdownDoc:
-    lines = text.splitlines()
+    frontmatter, body = split_frontmatter(text)
+    lines = body.splitlines()
     title = ""
     index = 0
     while index < len(lines):
@@ -147,11 +183,50 @@ def parse_markdown_document(text: str) -> MarkdownDoc:
     else:
         preamble = normalize_text_lines(preamble)
 
-    return MarkdownDoc(title=title, preamble=preamble, sections=sections, order=list(sections.keys()))
+    return MarkdownDoc(
+        title=title,
+        preamble=preamble,
+        sections=sections,
+        order=list(sections.keys()),
+        frontmatter=frontmatter,
+    )
+
+
+def render_yaml_scalar(value: str) -> str:
+    text = str(value)
+    if re.fullmatch(r"-?[0-9]+(?:\.[0-9]+)?", text):
+        return text
+    return json.dumps(text)
+
+
+def render_frontmatter_lines(frontmatter: "OrderedDict[str, str]") -> list[str]:
+    lines: list[str] = []
+    seen: set[str] = set()
+    keys = [key for key in WORKSTREAM_FRONTMATTER_ORDER if key in frontmatter]
+    keys.extend(key for key in frontmatter if key not in seen and key not in keys)
+    for key in keys:
+        seen.add(key)
+        value = str(frontmatter[key]).strip()
+        if not value:
+            continue
+        if "\n" in value:
+            lines.append(f"{key}: |-")
+            for raw_line in value.splitlines():
+                lines.append(f"  {raw_line}")
+            continue
+        lines.append(f"{key}: {render_yaml_scalar(value)}")
+    return lines
 
 
 def render_markdown_document(doc: MarkdownDoc, preferred_order: list[str]) -> str:
-    lines: list[str] = [f"# {doc.title}", ""]
+    lines: list[str] = []
+    if doc.frontmatter:
+        lines.append("---")
+        lines.extend(render_frontmatter_lines(doc.frontmatter))
+        lines.append("---")
+        lines.append("")
+
+    lines.extend([f"# {doc.title}", ""])
     if doc.preamble:
         lines.extend(normalize_text_lines(doc.preamble))
         lines.append("")
@@ -222,6 +297,7 @@ def default_status_doc() -> MarkdownDoc:
                 ],
             ),
             ("Workstreams", [STATUS_PLACEHOLDER]),
+            ("Staleness Review", [STALENESS_PLACEHOLDER]),
             (
                 "Cleanup Status",
                 [
@@ -272,12 +348,24 @@ def load_status_doc(repo_root: Path) -> MarkdownDoc:
         doc = parse_markdown_document(path.read_text(encoding="utf-8"))
     else:
         doc = default_status_doc()
-    return ensure_sections(doc, STATUS_SECTION_ORDER, {"Workstreams": [STATUS_PLACEHOLDER]})
+    return ensure_sections(
+        doc,
+        STATUS_SECTION_ORDER,
+        {
+            "Workstreams": [STATUS_PLACEHOLDER],
+            "Staleness Review": [STALENESS_PLACEHOLDER],
+        },
+    )
 
 
 def clear_placeholder(lines: list[str], placeholder: str = PLACEHOLDER) -> list[str]:
     normalized = normalize_text_lines(lines)
-    if normalized in ([placeholder], [WORKSTREAM_PLACEHOLDER], [STATUS_PLACEHOLDER]):
+    if normalized in (
+        [placeholder],
+        [WORKSTREAM_PLACEHOLDER],
+        [STATUS_PLACEHOLDER],
+        [STALENESS_PLACEHOLDER],
+    ):
         return []
     return normalized
 
@@ -442,18 +530,18 @@ def is_done_status(status: str) -> bool:
 
 
 def derive_execution_state(status: str, current: str | None = None) -> str:
+    normalized = status.strip()
+    if normalized in TERMINAL_STATUSES or normalized == "stale":
+        return "closed"
     existing = (current or "").strip()
     if existing:
         return existing
-    normalized = status.strip()
     if normalized == "planned":
         return "ready"
     if normalized == "in_progress":
         return "claimed"
     if normalized == "blocked":
         return "idle"
-    if normalized in DONE_STATUSES:
-        return "closed"
     return "idle"
 
 
@@ -534,36 +622,389 @@ def remove_status_entry(doc: MarkdownDoc, slug: str) -> None:
     refresh_cleanup_status(doc)
 
 
-def refresh_cleanup_status(doc: MarkdownDoc) -> None:
-    entries = parse_status_entries(clear_placeholder(doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
-    unfinished = [entry["slug"] for entry in entries if not is_done_status(entry["status"])]
-    if unfinished:
-        doc.sections["Cleanup Status"] = [
+def cleanup_status_lines(entries: Iterable[dict[str, str]]) -> list[str]:
+    normalized_entries = list(entries)
+    active = [
+        entry["slug"]
+        for entry in normalized_entries
+        if entry["status"].strip() not in TERMINAL_STATUSES and entry["status"].strip() != "stale"
+    ]
+    stale = [entry["slug"] for entry in normalized_entries if entry["status"].strip() == "stale"]
+    done = [entry["slug"] for entry in normalized_entries if entry["status"].strip() in TERMINAL_STATUSES]
+    cleanup_candidates = done + stale
+    if active or stale:
+        lines = ["- Cleanup mode is explicit only."]
+        if active:
+            lines.append(f"- Safe to call `todo-cleanup`: no, active workstreams: {', '.join(active)}.")
+        if stale:
+            lines.append(f"- Cleanup still blocked by stale workstreams pending review: {', '.join(stale)}.")
+        if cleanup_candidates:
+            lines.append(
+                "- Partial cleanup is available via `todo-cleanup --partial`; include `stale` in `--scope` only when explicitly intended."
+            )
+        return lines
+    if normalized_entries:
+        return [
             "- Cleanup mode is explicit only.",
-            f"- Safe to call `todo-cleanup`: no, waiting on {', '.join(unfinished)}.",
+            "- Safe to call `todo-cleanup`: yes, every tracked workstream is done or superseded.",
         ]
-        return
-    if entries:
-        doc.sections["Cleanup Status"] = [
-            "- Cleanup mode is explicit only.",
-            "- Safe to call `todo-cleanup`: yes, every tracked workstream is done.",
-        ]
-        return
-    doc.sections["Cleanup Status"] = [
+    return [
         "- Cleanup mode is explicit only.",
         "- Safe to call `todo-cleanup`: yes, there are no tracked workstreams left.",
     ]
 
 
+def refresh_cleanup_status(doc: MarkdownDoc) -> None:
+    entries = parse_status_entries(clear_placeholder(doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    doc.sections["Cleanup Status"] = cleanup_status_lines(entries)
+
+
+def rebuild_root_after_cleanup(
+    root_doc: MarkdownDoc,
+    *,
+    removed_slugs: list[str],
+    cleanup_label: str,
+) -> None:
+    default_root = default_root_doc()
+    root_doc.sections["Summary"] = default_root.sections["Summary"]
+    root_doc.sections["Shared Assumptions"] = [PLACEHOLDER]
+    root_doc.sections["Suggested Skills"] = [PLACEHOLDER]
+    root_doc.sections["Useful Reference Files"] = [PLACEHOLDER]
+    root_doc.sections["Global Blockers"] = [PLACEHOLDER]
+    if removed_slugs:
+        slugs = ", ".join(removed_slugs)
+        root_doc.sections["Progress Notes"] = [f"- Ran `{cleanup_label}` and cleared workstreams: {slugs}."]
+    else:
+        root_doc.sections["Progress Notes"] = [PLACEHOLDER]
+    root_doc.sections["Next Actions"] = default_root.sections["Next Actions"]
+    root_doc.sections["Done Criteria"] = default_root.sections["Done Criteria"]
+
+
+def rebuild_status_after_cleanup(repo_root: Path, status_doc: MarkdownDoc) -> None:
+    status_doc.sections["Summary"] = default_status_doc().sections["Summary"]
+    reviews = review_workstream_staleness(repo_root)
+    status_doc.sections["Staleness Review"] = build_staleness_review_lines(reviews)
+    refresh_cleanup_status(status_doc)
+
+
+def parse_cleanup_scope(scope_text: str | None, *, partial: bool) -> set[str]:
+    if not partial:
+        return set(DONE_STATUSES)
+    default_scope = "done,superseded"
+    raw = (scope_text or default_scope).strip() or default_scope
+    scope: set[str] = set()
+    for piece in raw.split(","):
+        token = piece.strip().lower()
+        if not token:
+            continue
+        if token == "done":
+            scope.update({"done", "complete", "archived"})
+            continue
+        if token in PARTIAL_CLEANUP_ALLOWED_STATUSES:
+            scope.add(token)
+            continue
+        raise ValueError(
+            "unsupported cleanup scope token "
+            f"{token!r}; allowed values are done, complete, archived, superseded, stale"
+        )
+    if not scope:
+        raise ValueError("cleanup scope must include at least one cleanup-eligible status")
+    return scope
+
+
 def pickup_ready_entries(entries: Iterable[dict[str, str]]) -> list[dict[str, str]]:
     ready: list[dict[str, str]] = []
     for entry in entries:
-        if is_done_status(entry["status"]) or entry["status"] == "blocked":
+        status = entry["status"].strip()
+        if status in NON_PICKUP_STATUSES:
             continue
         if entry.get("execution", "").strip() not in PICKUP_READY_STATES:
             continue
         ready.append(entry)
     return ready
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def parse_iso_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        if text.endswith("Z"):
+            return datetime.fromisoformat(text[:-1] + "+00:00")
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def latest_activity_timestamp(metadata: dict[str, str]) -> datetime | None:
+    timestamps = [
+        parse_iso_timestamp(metadata.get("last_heartbeat_at")),
+        parse_iso_timestamp(metadata.get("last_reviewed_at")),
+    ]
+    candidates = [item for item in timestamps if item is not None]
+    if not candidates:
+        return None
+    return max(candidates)
+
+
+def stale_after_days_for(status: str, metadata: dict[str, str]) -> int:
+    raw = metadata.get("stale_after_days", "").strip()
+    if raw:
+        try:
+            parsed = int(raw)
+            if parsed > 0:
+                return parsed
+        except ValueError:
+            pass
+    return DEFAULT_STALE_AFTER_DAYS.get(status.strip(), DEFAULT_STALE_AFTER_DAYS["in_progress"])
+
+
+def workstream_objective(doc: MarkdownDoc, fallback: str = "") -> str:
+    objective = doc.frontmatter.get("objective", "").strip()
+    if objective:
+        return objective
+    summary = clear_placeholder(doc.sections.get("Summary", [PLACEHOLDER]))
+    if summary:
+        return summary[0].strip()
+    return fallback.strip()
+
+
+def set_metadata_value(metadata: "OrderedDict[str, str]", key: str, value: str | int | None) -> None:
+    if value is None:
+        return
+    text = str(value).strip()
+    if text:
+        metadata[key] = text
+        return
+    metadata.pop(key, None)
+
+
+def ensure_workstream_frontmatter(
+    doc: MarkdownDoc,
+    slug: str,
+    objective: str,
+    status: str,
+    owner: str,
+    execution: str | None = None,
+    *,
+    touch_heartbeat: bool = False,
+    touch_review: bool = False,
+    stale_after_days: int | str | None = None,
+    superseded_by: str | None = None,
+    waiting_on: str | None = None,
+    stale_reason: str | None = None,
+    now: str | None = None,
+) -> "OrderedDict[str, str]":
+    metadata: "OrderedDict[str, str]" = OrderedDict(doc.frontmatter)
+    timestamp = now or utc_now()
+    normalized_status = status.strip() or metadata.get("status", "planned").strip() or "planned"
+    metadata["slug"] = slug
+    metadata["status"] = normalized_status
+    metadata["execution"] = derive_execution_state(normalized_status, execution or metadata.get("execution"))
+    metadata["owner"] = owner.strip() or metadata.get("owner", "unassigned")
+    metadata["objective"] = objective.strip() or workstream_objective(doc, humanize_slug(slug))
+    metadata["created_at"] = metadata.get("created_at", timestamp)
+    if touch_heartbeat or not metadata.get("last_heartbeat_at"):
+        metadata["last_heartbeat_at"] = timestamp
+    if touch_review or not metadata.get("last_reviewed_at"):
+        metadata["last_reviewed_at"] = timestamp
+    metadata["stale_after_days"] = str(stale_after_days_for(normalized_status, {"stale_after_days": str(stale_after_days) if stale_after_days is not None else metadata.get("stale_after_days", "")}))
+    if stale_after_days is not None:
+        metadata["stale_after_days"] = str(int(stale_after_days))
+    set_metadata_value(metadata, "waiting_on", waiting_on)
+    if normalized_status == "superseded":
+        set_metadata_value(metadata, "superseded_by", superseded_by)
+    elif superseded_by is not None:
+        set_metadata_value(metadata, "superseded_by", superseded_by)
+    else:
+        metadata.pop("superseded_by", None)
+    if normalized_status == "stale":
+        set_metadata_value(metadata, "stale_reason", stale_reason or "Marked stale pending review.")
+    elif stale_reason is not None:
+        set_metadata_value(metadata, "stale_reason", stale_reason)
+    else:
+        metadata.pop("stale_reason", None)
+    doc.frontmatter = metadata
+    return metadata
+
+
+def classify_workstream_staleness(metadata: dict[str, str], *, as_of: datetime | None = None) -> dict[str, object]:
+    status = metadata.get("status", "planned").strip() or "planned"
+    execution = metadata.get("execution", "").strip()
+    threshold_days = stale_after_days_for(status, metadata)
+    latest = latest_activity_timestamp(metadata)
+    now = as_of or datetime.now(timezone.utc)
+    age_days = None if latest is None else (now - latest).total_seconds() / 86400.0
+    result: dict[str, object] = {
+        "slug": metadata.get("slug", ""),
+        "status": status,
+        "execution": execution,
+        "owner": metadata.get("owner", "unassigned"),
+        "objective": metadata.get("objective", ""),
+        "threshold_days": threshold_days,
+        "age_days": age_days,
+        "last_touch": latest.isoformat().replace("+00:00", "Z") if latest is not None else "",
+        "classification": "fresh",
+        "reason": f"Fresh within the {threshold_days}-day threshold.",
+        "claimed_inconsistency": False,
+        "eligible_for_stale_apply": False,
+    }
+    if status == "superseded":
+        result["classification"] = "superseded"
+        result["reason"] = f"Superseded by {metadata.get('superseded_by', 'another stream')}."
+        return result
+    if status in TERMINAL_STATUSES:
+        result["classification"] = "done"
+        result["reason"] = "Terminal workstream."
+        return result
+    if status == "stale":
+        result["classification"] = "stale"
+        result["reason"] = metadata.get("stale_reason", "Explicitly marked stale pending review.")
+        result["claimed_inconsistency"] = execution == "claimed"
+        return result
+    if latest is None:
+        result["classification"] = "stale_candidate"
+        result["reason"] = "Missing freshness metadata; review before pickup."
+        return result
+    if age_days is not None and age_days > threshold_days:
+        result["classification"] = "stale_candidate"
+        result["reason"] = f"No heartbeat or review within {threshold_days} days."
+        result["eligible_for_stale_apply"] = True
+        return result
+    if age_days is not None and age_days >= max(1.0, threshold_days / 2.0):
+        result["classification"] = "aging"
+        result["reason"] = f"Older than half of the {threshold_days}-day threshold."
+        return result
+    return result
+
+
+def build_staleness_review_lines(results: Iterable[dict[str, object]]) -> list[str]:
+    collected = list(results)
+    if not collected:
+        return [STALENESS_PLACEHOLDER]
+
+    def count(name: str) -> int:
+        return sum(1 for item in collected if item["classification"] == name)
+
+    lines = [
+        f"- Fresh: {count('fresh')}",
+        f"- Aging: {count('aging')}",
+        f"- Stale candidates: {count('stale_candidate')}",
+        f"- Stale: {count('stale')}",
+        f"- Superseded: {count('superseded')}",
+    ]
+    for item in collected:
+        classification = str(item["classification"])
+        if classification == "fresh":
+            continue
+        age_days = item.get("age_days")
+        age_text = "unknown" if age_days is None else f"{float(age_days):.1f}d"
+        threshold = item.get("threshold_days", "?")
+        reason = str(item.get("reason", "")).strip()
+        lines.append(
+            f"- `{item['slug']}` | {classification} | age: {age_text} | threshold: {threshold}d | reason: {reason}"
+        )
+        if item.get("claimed_inconsistency"):
+            lines.append(f"- `{item['slug']}` | inconsistency | stale workstream is still marked `claimed`.")
+    return lines
+
+
+def write_staleness_review(repo_root: Path, results: Iterable[dict[str, object]]) -> None:
+    status_doc = load_status_doc(repo_root)
+    status_doc.sections["Staleness Review"] = build_staleness_review_lines(results)
+    refresh_cleanup_status(status_doc)
+    write_document(repo_root / "todo-status.md", status_doc, STATUS_SECTION_ORDER)
+
+
+def gather_workstream_records(repo_root: Path) -> list[dict[str, object]]:
+    root_doc = load_root_doc(repo_root)
+    status_doc = load_status_doc(repo_root)
+    root_entries = parse_workstream_entries(clear_placeholder(root_doc.sections.get("Workstreams", [WORKSTREAM_PLACEHOLDER])))
+    status_entries = {
+        entry["slug"]: entry
+        for entry in parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
+    }
+    records: list[dict[str, object]] = []
+    for entry in root_entries:
+        slug = entry["slug"]
+        path = repo_root / entry["file"]
+        doc = load_workstream_doc(repo_root, slug, entry["objective"])
+        metadata = OrderedDict(doc.frontmatter)
+        metadata.setdefault("slug", slug)
+        metadata.setdefault("status", entry["status"])
+        metadata.setdefault("owner", entry["owner"])
+        metadata.setdefault(
+            "execution",
+            derive_execution_state(metadata["status"], status_entries.get(slug, {}).get("execution")),
+        )
+        metadata.setdefault("objective", entry["objective"])
+        if not metadata.get("stale_after_days"):
+            metadata["stale_after_days"] = str(stale_after_days_for(metadata["status"], metadata))
+        records.append(
+            {
+                "slug": slug,
+                "path": path,
+                "doc": doc,
+                "metadata": metadata,
+                "root_entry": entry,
+                "status_entry": status_entries.get(slug, {}),
+            }
+        )
+    return records
+
+
+def review_workstream_staleness(repo_root: Path) -> list[dict[str, object]]:
+    results: list[dict[str, object]] = []
+    for record in gather_workstream_records(repo_root):
+        review = classify_workstream_staleness(record["metadata"])
+        review["path"] = str(record["path"])
+        review["doc"] = record["doc"]
+        review["metadata"] = record["metadata"]
+        results.append(review)
+    return results
+
+
+def persist_workstream_doc(repo_root: Path, slug: str, doc: MarkdownDoc, objective: str = "") -> Path:
+    normalized_slug = normalize_slug(slug)
+    objective_text = workstream_objective(doc, objective or humanize_slug(normalized_slug))
+    status = doc.frontmatter.get("status", "planned").strip() or "planned"
+    owner = doc.frontmatter.get("owner", "unassigned").strip() or "unassigned"
+    execution = derive_execution_state(status, doc.frontmatter.get("execution"))
+    doc.frontmatter["slug"] = normalized_slug
+    doc.frontmatter["status"] = status
+    doc.frontmatter["owner"] = owner
+    doc.frontmatter["execution"] = execution
+    doc.frontmatter["objective"] = objective_text
+
+    workstream_path = repo_root / "todos" / f"{normalized_slug}.md"
+    write_document(workstream_path, doc, WORKSTREAM_SECTION_ORDER)
+
+    root_doc = load_root_doc(repo_root)
+    upsert_workstream_entry(root_doc, normalized_slug, objective_text, status=status, owner=owner)
+    write_document(repo_root / "todos.md", root_doc, ROOT_SECTION_ORDER)
+
+    status_doc = load_status_doc(repo_root)
+    sync_status_entries_from_root(root_doc, status_doc)
+    upsert_status_entry(
+        status_doc,
+        slug=normalized_slug,
+        objective=objective_text,
+        status=status,
+        owner=owner,
+        execution=execution,
+        next_action=first_status_next_action(doc=doc),
+    )
+    write_document(repo_root / "todo-status.md", status_doc, STATUS_SECTION_ORDER)
+    return workstream_path
 
 
 def ensure_root_files(repo_root: Path) -> None:
@@ -583,31 +1024,37 @@ def ensure_workstream_file(
     owner: str,
     execution: str | None = None,
     next_action: str | None = None,
+    *,
+    stale_after_days: int | str | None = None,
+    superseded_by: str | None = None,
+    waiting_on: str | None = None,
+    stale_reason: str | None = None,
+    touch_heartbeat: bool = True,
+    touch_review: bool = False,
+    now: str | None = None,
 ) -> Path:
     ensure_root_files(repo_root)
     workstream_doc = load_workstream_doc(repo_root, slug, objective)
     if objective and workstream_doc.sections.get("Summary") in ([PLACEHOLDER], []):
         workstream_doc.sections["Summary"] = [objective]
-    workstream_path = repo_root / "todos" / f"{slug}.md"
-    write_document(workstream_path, workstream_doc, WORKSTREAM_SECTION_ORDER)
-
-    root_doc = load_root_doc(repo_root)
-    upsert_workstream_entry(root_doc, slug, objective or humanize_slug(slug), status=status, owner=owner)
-    write_document(repo_root / "todos.md", root_doc, ROOT_SECTION_ORDER)
-
-    status_doc = load_status_doc(repo_root)
-    sync_status_entries_from_root(root_doc, status_doc)
-    upsert_status_entry(
-        status_doc,
+    ensure_workstream_frontmatter(
+        workstream_doc,
         slug=slug,
-        objective=objective or humanize_slug(slug),
+        objective=objective,
         status=status,
         owner=owner,
         execution=execution,
-        next_action=first_status_next_action(next_action, workstream_doc),
+        touch_heartbeat=touch_heartbeat,
+        touch_review=touch_review,
+        stale_after_days=stale_after_days,
+        superseded_by=superseded_by,
+        waiting_on=waiting_on,
+        stale_reason=stale_reason,
+        now=now,
     )
-    write_document(repo_root / "todo-status.md", status_doc, STATUS_SECTION_ORDER)
-    return workstream_path
+    if next_action and next_action.strip():
+        workstream_doc.sections["Next Actions"] = [f"- {next_action.strip()}"]
+    return persist_workstream_doc(repo_root, slug, workstream_doc, objective=objective)
 
 
 def managed_agents_block() -> str:
@@ -617,11 +1064,12 @@ def managed_agents_block() -> str:
             "## Workflow Ledger",
             "",
             "- For substantial multi-step work, consult `todos.md` first.",
-            "- Consult `todo-status.md` for pickup-ready, claimed, and idle workstreams before starting parallel work.",
+            "- Consult `todo-status.md` for pickup-ready, claimed, idle, and stale workstreams before starting parallel work.",
             "- Treat `todos.md` as the canonical active plan and progress ledger.",
             "- For concurrent workstreams, consult the relevant file under `todos/`.",
             "- In plan mode, consult `todo-orchestrator/references/planning-workflow.md`.",
             "- In implementation mode, continue from the recorded plan non-interactively unless truly blocked.",
+            "- Run `review_staleness.py` before assuming an old idle stream is still current.",
             "- Prefer relevant repo-local skills and reference files when they match the task.",
             AGENTS_END,
             "",
@@ -657,6 +1105,9 @@ def detect_resume_state(repo_root: Path) -> dict[str, object]:
             "active_workstreams": [],
             "pickup_ready_workstreams": [],
             "claimed_workstreams": [],
+            "stale_workstreams": [],
+            "stale_candidate_workstreams": [],
+            "stale_claimed_workstreams": [],
             "cleanup_ready": False,
         }
     root_doc = load_root_doc(repo_root)
@@ -665,28 +1116,32 @@ def detect_resume_state(repo_root: Path) -> dict[str, object]:
     status_doc = load_status_doc(repo_root)
     status_entries = parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
     claimed = [entry for entry in status_entries if entry.get("execution", "").strip() == "claimed"]
+    reviews = review_workstream_staleness(repo_root)
+    stale = [entry for entry in reviews if entry["classification"] == "stale"]
+    stale_candidates = [entry for entry in reviews if entry["classification"] == "stale_candidate"]
+    stale_claimed = [entry for entry in reviews if entry.get("claimed_inconsistency")]
     return {
         "has_root_todos": True,
         "has_agents_md": (repo_root / "AGENTS.md").exists(),
         "active_workstreams": active,
         "pickup_ready_workstreams": pickup_ready_entries(status_entries),
         "claimed_workstreams": claimed,
+        "stale_workstreams": stale,
+        "stale_candidate_workstreams": stale_candidates,
+        "stale_claimed_workstreams": stale_claimed,
         "cleanup_ready": bool(status_entries) and not active,
     }
 
 
-def parse_frontmatter(text: str) -> dict[str, str]:
-    match = FRONTMATTER_PATTERN.match(text)
-    if not match:
-        return {}
-    data: dict[str, str] = {}
+def parse_frontmatter_block(text: str) -> "OrderedDict[str, str]":
+    data: "OrderedDict[str, str]" = OrderedDict()
     current_key: str | None = None
     block_key: str | None = None
     block_lines: list[str] = []
-    for raw_line in match.group(1).splitlines():
+    for raw_line in text.splitlines():
         if re.match(r"^[A-Za-z0-9_-]+:", raw_line):
             if block_key is not None:
-                data[block_key] = " ".join(block_lines).strip()
+                data[block_key] = "\n".join(block_lines).strip()
                 block_key = None
                 block_lines = []
             current_key = None
@@ -698,25 +1153,43 @@ def parse_frontmatter(text: str) -> dict[str, str]:
                 block_key = cleaned_key
                 data.setdefault(cleaned_key, "")
             else:
-                data[cleaned_key] = cleaned_value.strip('"')
+                parsed_value = cleaned_value
+                if parsed_value.startswith('"') and parsed_value.endswith('"'):
+                    try:
+                        parsed_value = json.loads(parsed_value)
+                    except json.JSONDecodeError:
+                        parsed_value = parsed_value.strip('"')
+                data[cleaned_key] = parsed_value.strip('"')
                 current_key = cleaned_key
             continue
         if raw_line.startswith((" ", "\t")) and current_key is not None:
             continuation = raw_line.strip()
             if block_key == current_key:
-                if continuation:
-                    block_lines.append(continuation)
+                block_lines.append(continuation)
             elif continuation:
                 data[current_key] = f"{data.get(current_key, '')} {continuation}".strip()
             continue
         if block_key is not None:
-            data[block_key] = " ".join(block_lines).strip()
+            data[block_key] = "\n".join(block_lines).strip()
             block_key = None
             block_lines = []
         current_key = None
     if block_key is not None:
-        data[block_key] = " ".join(block_lines).strip()
+        data[block_key] = "\n".join(block_lines).strip()
     return data
+
+
+def parse_frontmatter(text: str) -> dict[str, str]:
+    frontmatter, body = split_frontmatter(text)
+    if frontmatter:
+        return dict(frontmatter)
+    match = FRONTMATTER_PATTERN.match(text)
+    if match:
+        return dict(parse_frontmatter_block(match.group(1)))
+    if text.startswith("---\n"):
+        return dict(parse_frontmatter_block(text))
+    _ = body
+    return {}
 
 
 def dumps_json(data: object, pretty: bool = False) -> str:

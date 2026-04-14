@@ -44,6 +44,16 @@ If the code still looks CPU-centric and has not been structurally rewritten for 
 - compile exactly for `sm_70`
 - do not ship vague multi-arch builds when the deployment target is known
 
+### 1.1.1 Hot-Path Isolation Rule
+
+Before deep PTX or SASS inspection, isolate the optimization target:
+
+- move the hot loop, warp primitive, or micro-primitive into a separate header or narrow translation unit
+- compile only the focused kernel or harness when possible
+- dump only the named symbol instead of the whole library
+
+If you cannot inspect the code without dragging in pages of unrelated CUDA, the optimization surface is still too broad.
+
 ### 1.2 Benchmark Build
 
 ```bash
@@ -256,6 +266,27 @@ scripts/profile_ncu.sh \
 ```
 
 Read `summary.txt` first. If it says `counter_valid: yes`, trust the limiter classification. Do not trust the profiled runtime for throughput timing.
+
+### 4.3 PTX And SASS Inspection
+
+When the question is explicitly PTX-sized, prefer the focused wrapper:
+
+```bash
+scripts/dump_ptx_hotspot.sh \
+  --label hot_kernel \
+  --symbol hot_kernel_name \
+  path/to/hot_kernel.cu
+```
+
+This should target an isolated hot kernel or helper, not a monolithic library translation unit. Read `summary.txt` first, then inspect the focused PTX or SASS artifacts if the summary still leaves ambiguity.
+
+When the source is a multi-kernel `.cu`, generate the focused source first:
+
+```bash
+scripts/split_cuda_translation_unit.py \
+  --symbol kernel_beta \
+  assets/ptx-examples/multi_kernel_unit_example.cu
+```
 
 ## 5. Dense Math Patterns
 

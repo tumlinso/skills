@@ -16,6 +16,7 @@ from todo_common import (
     parse_status_entries,
     parse_workstream_entries,
     pickup_ready_entries,
+    review_workstream_staleness,
 )
 
 
@@ -44,6 +45,10 @@ def main() -> int:
     status_entries = parse_status_entries(clear_placeholder(status_doc.sections.get("Workstreams", [STATUS_PLACEHOLDER])))
     ready_entries = pickup_ready_entries(status_entries)
     claimed_entries = [entry for entry in status_entries if entry["execution"] == "claimed"]
+    reviews = review_workstream_staleness(repo_root)
+    stale_candidates = [entry for entry in reviews if entry["classification"] == "stale_candidate"]
+    stale_entries = [entry for entry in reviews if entry["classification"] == "stale"]
+    stale_claimed = [entry for entry in reviews if entry.get("claimed_inconsistency")]
     cleanup = clear_placeholder(status_doc.sections.get("Cleanup Status", [PLACEHOLDER]))
 
     print(f"Summary: {summary}")
@@ -61,6 +66,19 @@ def main() -> int:
         print("Claimed:")
         for entry in claimed_entries:
             print(f"- {entry['slug']} by {entry['owner']} -> {entry['next']}")
+    if stale_candidates:
+        print("Stale Candidates:")
+        for entry in stale_candidates:
+            age_text = "unknown" if entry["age_days"] is None else f"{float(entry['age_days']):.1f}d"
+            print(f"- {entry['slug']} [{age_text} > {entry['threshold_days']}d] -> {entry['reason']}")
+    if stale_entries:
+        print("Stale:")
+        for entry in stale_entries:
+            print(f"- {entry['slug']} -> {entry['reason']}")
+    if stale_claimed:
+        print("Claimed But Stale:")
+        for entry in stale_claimed:
+            print(f"- {entry['slug']} is stale but still marked claimed.")
     if blockers:
         print("Blockers:")
         for blocker in blockers:

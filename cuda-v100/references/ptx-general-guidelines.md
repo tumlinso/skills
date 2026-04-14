@@ -10,9 +10,10 @@ This file is about when and how to use PTX, not about pretending PTX solves ever
 - `2. Control-Flow Choices`
 - `3. Predicate And Select Patterns`
 - `4. Warp-Level Coordination Patterns`
-- `5. Inline PTX Rules`
-- `6. Algorithmic Choices Before PTX`
-- `7. Anti-Patterns`
+- `5. Extract The Hot Path First`
+- `6. Inline PTX Rules`
+- `7. Algorithmic Choices Before PTX`
+- `8. Anti-Patterns`
 
 ## 1. PTX Is A Last-Resort Tool
 
@@ -28,6 +29,8 @@ That means:
 - use libraries first when the mapping is clean
 - use CUDA C++ plus good kernel structure before PTX
 - use PTX only for narrow, repeated, stable hot sequences
+
+Portable PTX guidance still benefits from a narrow compilation surface. If the kernel under study lives inside a large CUDA file or library boundary, first extract the hot loop or micro-primitive into a separate helper or focused harness so the PTX dump stays readable.
 
 ## 2. Control-Flow Choices
 
@@ -106,7 +109,24 @@ These patterns often beat lane-by-lane branching when:
 
 Do not compact blindly. If compaction costs more than the skipped work, keep the simpler path.
 
-## 5. Inline PTX Rules
+## 5. Extract The Hot Path First
+
+Bias PTX inspection toward small targets:
+
+- one kernel
+- one helper function
+- one warp primitive
+- one micro-primitive header
+
+Prefer this structure before dumping PTX or SASS:
+
+- keep the hot primitive in a separate header or narrow translation unit
+- build a tiny harness around it if the production file is too broad
+- filter dumps to the named symbol whenever possible
+
+If the only way to inspect the code is to dump half the library, the optimization surface is still too large.
+
+## 6. Inline PTX Rules
 
 Inline PTX is the preferred PTX surface for this skill.
 
@@ -128,7 +148,7 @@ Common failure modes from NVIDIA’s inline PTX guidance:
 
 Use inline PTX to improve a tiny sequence, not to turn the whole kernel into handwritten assembly.
 
-## 6. Algorithmic Choices Before PTX
+## 7. Algorithmic Choices Before PTX
 
 Before using PTX, ask:
 
@@ -147,9 +167,10 @@ For sparse or irregular kernels, the best gain is often:
 
 Only after those are stable should PTX decide the last few percent.
 
-## 7. Anti-Patterns
+## 8. Anti-Patterns
 
 - using PTX because the kernel is merely “complicated”
+- dumping PTX or SASS for a monolithic CUDA file when the hot path could be isolated first
 - predicating long heavy paths instead of splitting them
 - replacing good library-backed paths with opaque inline PTX
 - relying on old warp lockstep assumptions on Volta+

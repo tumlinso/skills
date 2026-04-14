@@ -8,6 +8,8 @@ Use this file as the quick pickup register for `todos.md` workstreams.
 - `closed`: completed or removed from pickup rotation.
 
 ## Workstreams
+- `cuda-v100-ptx-splitter` | status: done | execution: closed | owner: codex | file: `todos/cuda-v100-ptx-splitter.md` | next: Implementation complete; wait for explicit todo-cleanup or the next repo task.
+- `cuda-v100-ptx-hot-paths` | status: done | execution: closed | owner: codex | file: `todos/cuda-v100-ptx-hot-paths.md` | next: Implementation complete; wait for explicit todo-cleanup or the next repo task.
 - `cuda-v100-cpu-porting` | status: done | execution: closed | owner: unassigned | file: `todos/cuda-v100-cpu-porting.md` | next: cuda v100 cpu porting
 - `openacc-porting` | status: done | execution: closed | owner: unassigned | file: `todos/openacc-porting.md` | next: create a standalone openacc-porting skill
 - `compare-benchmarks-skill` | status: done | execution: closed | owner: unassigned | file: `todos/compare-benchmarks-skill.md` | next: compare benchmarks skill

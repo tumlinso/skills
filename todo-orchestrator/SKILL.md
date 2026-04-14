@@ -1,6 +1,6 @@
 ---
 name: todo-orchestrator
-description: Standalone orchestration skill for substantial multi-step work that needs deep planning, a persistent `todos.md` ledger, a legible `todo-status.md` pickup register, runtime discovery of relevant repo-local skills and reference files, and non-interactive execution after planning. Use when Codex should plan with the user, write and maintain `todos.md`, resume from an existing ledger, coordinate concurrent workstreams, surface delegation-ready substreams, or keep working through a repo task until it is done. Use `todo-cleanup` only for explicit post-completion cleanup of finished workstream ledgers. Do not use this skill for narrow one-off tasks that already clearly belong to a more specialized skill.
+description: Standalone orchestration skill for substantial multi-step work that needs deep planning, a persistent `todos.md` ledger, a legible `todo-status.md` pickup register, runtime discovery of relevant repo-local skills and reference files, and non-interactive execution after planning. Use when Codex should plan with the user, write and maintain `todos.md`, resume from an existing ledger, coordinate concurrent workstreams, surface delegation-ready substreams, or keep working through a repo task until it is done. Use `todo-cleanup` only for explicit cleanup of tracked workstream ledgers, either full cleanup when every stream is terminal or partial cleanup when the user explicitly requests a limited scope. Do not use this skill for narrow one-off tasks that already clearly belong to a more specialized skill.
 ---
 
 # Todo Orchestrator
@@ -14,6 +14,7 @@ This skill is responsible for:
 - treating `todos.md` as the canonical execution ledger
 - keeping `todo-status.md` as the quick pickup register for parallel or resumable work
 - supporting concurrent work through workstream files under `todos/`
+- keeping workstream frontmatter authoritative for lifecycle, freshness, and ownership metadata
 - discovering relevant repo-local skills and reference files at runtime
 - continuing implementation non-interactively after planning unless truly blocked
 
@@ -47,7 +48,8 @@ Before proposing a plan or making implementation decisions:
 5. Inspect `todos/` for active workstream ledgers if present.
 6. Discover available repo-local skills dynamically.
 7. Discover useful repo-local reference files dynamically.
-8. Determine whether there is already an active plan that should be resumed instead of replaced.
+8. Run a stale review when long-idle or suspicious workstreams might have drifted from reality.
+9. Determine whether there is already an active plan that should be resumed instead of replaced.
 
 Prefer the helper scripts when they are available:
 
@@ -55,6 +57,7 @@ Prefer the helper scripts when they are available:
 python todo-orchestrator/scripts/discover_skills_and_refs.py --repo-root <repo-root> --task "<task>"
 python todo-orchestrator/scripts/summarize_todos.py --repo-root <repo-root>
 python todo-orchestrator/scripts/cleanup_todos.py --repo-root <repo-root> --dry-run
+python todo-orchestrator/scripts/review_staleness.py --repo-root <repo-root> --dry-run
 ```
 
 Do not hardcode companion skill names into your working method. Discover them from the repo at runtime and record the relevant ones in the ledger.
@@ -108,6 +111,7 @@ For concurrent work, use:
 - root `todos.md` as the canonical index and shared-status ledger
 - `todo-status.md` as the legible pickup register
 - `todos/<workstream>.md` for detailed execution of each active stream
+- workstream frontmatter as the authoritative metadata surface for status, ownership, and freshness
 
 If a workstream already exists, preserve and extend it instead of replacing it.
 
@@ -138,7 +142,9 @@ Execution-state rules:
 - `in_progress` + `claimed`: currently being written; choose another stream
 - `in_progress` + `idle`: incomplete but resumable; safe to pick up
 - `blocked`: not pickable until the blocker is cleared
+- `stale` + `closed`: do not resume until a stale review says it is still current or it is explicitly reactivated
 - `done` + `closed`: finished and eligible for cleanup review
+- `superseded` + `closed`: terminal and cleanup-eligible
 
 If the user does not delegate parallelizable work, continue through the workstreams serially yourself. If a stream is `ready` or `idle` and not already claimed elsewhere, pick it up and keep going instead of waiting for another thread. If `todo-status.md` shows another agent already claimed a stream, skip it and choose a different ready or idle stream.
 
@@ -163,6 +169,7 @@ If a thread stops work without finishing:
 - release the stream from `claimed` to `idle`
 - leave a short next action in `todo-status.md`
 - make sure the workstream file is still sufficient for a fresh pickup
+- if the stream looks abandoned or obsolete, use `review_staleness.py` rather than guessing
 
 ## Ledger Rules
 
@@ -173,16 +180,26 @@ Use root `todos.md` as the canonical top-level ledger. For concurrent work:
 - keep shared assumptions and top-level status in root `todos.md`
 - keep quick pickup state in `todo-status.md`
 - keep detailed execution in `todos/<workstream>.md`
+- keep frontmatter in `todos/<workstream>.md` authoritative for `status`, `execution`, `owner`, timestamps, and stale metadata
 - keep the root `Workstreams` section synchronized with per-workstream status
 
 Use `todo-status.md` to distinguish work that is merely unfinished from work that is actively being written. Another thread should be able to read that file and decide what to pick up next without additional context.
 
+Staleness rules:
+
+- use `review_staleness.py` to classify streams as `fresh`, `aging`, `stale_candidate`, `stale`, or `superseded`
+- `review_staleness.py --apply` may mark eligible stale candidates as `stale`, but it must not auto-supersede or auto-clean them
+- `stale` blocks pickup and cleanup until a human reclassifies or reactivates the stream
+
 `todo-cleanup` is explicit cleanup mode:
 
 - only use it when the user explicitly asks for cleanup
-- it may report when cleanup is safe once every tracked workstream is `done`
+- full cleanup is safe once every tracked workstream is `done` or `superseded`
+- partial cleanup is allowed only when the user explicitly requests it and the cleanup scope is explicit
+- default partial-cleanup scope is completed terminal streams; `stale` is included only when explicitly requested in `--scope`
 - it must not run automatically
-- it deletes completed workstream ledgers and compacts the root ledgers after completion
+- full cleanup deletes every cleanup-eligible workstream ledger and compacts the root ledgers to the empty state
+- partial cleanup deletes only the selected cleanup-eligible workstream ledgers, removes their root/status entries, and rebuilds shared ledger sections from the surviving workstreams
 
 Do not overwrite user-written planning notes carelessly. Preserve unmanaged text where possible and update the managed structured sections in place.
 
@@ -199,7 +216,8 @@ Do not overwrite user-written planning notes carelessly. Preserve unmanaged text
 - `scripts/init_todos.py`: initialize root `todos.md`, create `todos/`, and optionally create a workstream ledger
 - `scripts/update_todos.py`: update structured sections, task states, blockers, assumptions, suggested skills, useful references, and next actions; use `--payload-file -` for shell-sensitive text
 - `scripts/summarize_todos.py`: emit a concise summary of active workstreams, blockers, and next actions
-- `scripts/cleanup_todos.py`: verify every workstream is done, then explicitly remove completed ledgers and compact the root files
+- `scripts/review_staleness.py`: classify workstream freshness and optionally mark stale candidates as `stale`
+- `scripts/cleanup_todos.py`: run explicit full or partial cleanup, remove selected cleanup-eligible ledgers, and rebuild the root/status ledgers accordingly
 - `scripts/discover_skills_and_refs.py`: inspect the repo for candidate skills and likely-useful reference files
 
 If the repo already has stronger utilities for these jobs, use them instead of duplicating behavior.

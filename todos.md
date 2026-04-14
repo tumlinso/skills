@@ -7,11 +7,14 @@ Use this file as the canonical index for substantial multi-step work.
 - Substantial cuda-v100 documentation work should be tracked in todos.md and a workstream file.
 - New substantial skill work should add a dedicated workstream ledger and close it only after validation.
 - New standalone skills should be tracked in todos.md and a dedicated workstream until validated.
+- Explicit PTX guidance in `cuda-v100` should stay request-only and should bias toward isolated hot-path inspection rather than monolithic code dumps.
+- The `cuda-v100` PTX path can add AST-driven helpers when libclang is available locally, even if Python bindings are not installed.
 
 ## Suggested Skills
 - `cuda-v100`
 - `cuda-v100` - Primary specialization for V100 routing and references.
 - `cuda-v100` - Primary skill being extended.
+- `cuda-v100` - Primary skill being extended for Volta PTX workflow depth.
 - `openacc-porting` - Review-first OpenACC assessment and incremental implementation skill.
 - `compare-benchmarks` - Benchmark-contract model for summary-first follow-on validation.
 - `todo-orchestrator` - Track the work in todos.md and a workstream ledger.
@@ -24,6 +27,10 @@ Use this file as the canonical index for substantial multi-step work.
 ## Useful Reference Files
 - `cuda-v100/references/benchmark-standardization.md`
 - `cuda-v100/references/benchmark-target-authoring.md`
+- `cuda-v100/references/addendum-ptx-routing.md` - Existing request-only PTX routing surface to extend.
+- `cuda-v100/references/ptx-volta-extreme.md` - Volta-specific PTX reference that needs a concrete workflow.
+- `cuda-v100/references/v100_cuda_cpp_optimize.md` - Existing CUDA/C++ optimization guide that should teach hot-path isolation before deep disassembly.
+- `cuda-v100/scripts/dump_ptx_hotspot.sh` - Existing focused PTX/SASS dump wrapper that should work well with a new translation-unit splitter.
 - `compare-benchmarks/references/comparison-contract.md` - Shared benchmark contract to reuse for OpenACC follow-on guidance.
 - `compare-benchmarks/references/profiler-workflow.md` - Summary-first profiler workflow to reuse in validation guidance.
 - `todo-orchestrator/references/planning-workflow.md` - Planning and ledger workflow for multi-step repo changes.
@@ -39,6 +46,8 @@ Use this file as the canonical index for substantial multi-step work.
 - `todo-orchestrator/references/status-and-cleanup.md` - Claiming rules and explicit cleanup policy.
 
 ## Workstreams
+- `cuda-v100-ptx-splitter` | status: done | owner: codex | file: `todos/cuda-v100-ptx-splitter.md` | objective: add an AST-driven helper to split multi-kernel CUDA translation units into focused single-kernel sources
+- `cuda-v100-ptx-hot-paths` | status: done | owner: codex | file: `todos/cuda-v100-ptx-hot-paths.md` | objective: add a Volta-first PTX hot-path workflow with focused dump scripts and examples
 - `cuda-v100-cpu-porting` | status: done | owner: unassigned | file: `todos/cuda-v100-cpu-porting.md` | objective: cuda v100 cpu porting
 - `openacc-porting` | status: done | owner: unassigned | file: `todos/openacc-porting.md` | objective: create a standalone openacc-porting skill
 - `compare-benchmarks-skill` | status: done | owner: unassigned | file: `todos/compare-benchmarks-skill.md` | objective: compare benchmarks skill
@@ -51,6 +60,10 @@ Use this file as the canonical index for substantial multi-step work.
 _None recorded yet._
 
 ## Progress Notes
+- Started the `cuda-v100` PTX splitter workstream to add a libclang-driven helper for extracting one kernel plus same-file helpers from a multi-kernel `.cu`.
+- Completed the `cuda-v100` PTX splitter workstream with a libclang-driven extraction helper, a multi-kernel example, and a validated split-to-dump flow on `sm_70`.
+- Started the `cuda-v100` PTX hot-path workstream for Volta-first PTX routing, focused dump helpers, and isolated example artifacts.
+- Completed the `cuda-v100` PTX hot-path expansion with Volta-first routing, focused dump helpers, isolated example artifacts, and live `sm_70` smoke tests.
 - Bootstrapped the `todo-orchestrator` workflow ledger for this repo.
 - Started the `cuda-v100` benchmark mutex workstream and scoped the integration to shared script plumbing plus benchmark authoring docs.
 - Added `scripts/with_benchmark_mutex.sh`, routed both profiler wrappers through it, and verified syntax plus a live contention test with a temporary lock file.
@@ -83,6 +96,8 @@ _None recorded yet._
 - Clarified the serial execution rules so unclaimed `ready` or `idle` workstreams must be picked up immediately instead of waiting or asking the user what to do next.
 
 ## Next Actions
+- No immediate action; resume the `cuda-v100` splitter only if the user wants deeper dependency recovery or build-system-aware extraction.
+- No immediate action; resume the `cuda-v100` PTX route only if the user wants more kernel-family examples or deeper heuristics.
 - Create or resume a new workstream ledger when the next substantial repo task arrives.
 - No immediate action; resume only if the user wants deeper CPU-porting examples or additional scripts.
 - No immediate action; extend the profiler wrappers only if a repo needs deeper compare-specific integration.
@@ -95,6 +110,10 @@ _None recorded yet._
 - Resume only if more todo-orchestrator execution wording needs tightening.
 
 ## Done Criteria
+- `cuda-v100` routes explicit PTX requests into a concrete `sm_70` hot-path isolation workflow before dumping PTX or SASS.
+- The skill includes focused PTX/SASS dump helpers plus compact summaries for isolated kernels or micro-primitives.
+- The Volta PTX references explain how to keep optimization context bounded by extracting hot paths into separate headers or narrow translation units.
+- The skill includes a helper that can AST-split a multi-kernel CUDA source into a focused single-kernel source plus same-file helper declarations when libclang is available.
 - Every active workstream in `todos/` is reflected here with a current status.
 - The `cuda-v100` benchmark path serializes measurement runs through a shared mutex and the skill docs say how to use it for raw benchmark commands.
 - cuda-v100 can route explicit CPU-centric porting questions into a dedicated set of references.

@@ -4,6 +4,8 @@ Use this file only when PTX guidance was explicitly requested and the hotspot is
 
 This file is not about forcing PTX onto every omics kernel. It is about the narrow cases where control flow, masks, or sparse metadata handling are hot enough that PTX-level choices become relevant.
 
+Keep the PTX surface narrow here too. For sparse bio kernels, isolate the hot bin, filter pass, or metadata micro-path into its own helper or narrow harness before dumping PTX or SASS.
+
 ## Quick Map
 
 - `1. Where PTX Helps In Bio Kernels`
@@ -47,6 +49,7 @@ Use PTX for row-skew only when:
 - the binning policy is already good
 - the remaining branchy logic is still hot
 - the per-lane decisions are small enough that predication or select-style updates can help
+- the binned hot path can be inspected without dragging in unrelated sparse phases
 
 Do not use PTX to hide a missing binning policy.
 
@@ -64,6 +67,7 @@ Good strategies:
 - use ballots to identify surviving lanes
 - compact survivors before doing heavier work
 - keep the PTX-level control limited to the active-lane decision and writeout setup
+- dump only the filtered micro-path, not the whole sparse pipeline
 
 If the compaction overhead exceeds the skipped work, keep the simpler branchy path.
 
@@ -118,6 +122,7 @@ Do not confuse this with the Tensor Core blocked path. If the real win is dense 
 ## 7. Anti-Patterns
 
 - applying PTX before deciding CSR versus CSC versus binned layouts
+- dumping PTX for a full sparse pipeline when the hot filter or compaction helper could be isolated first
 - using PTX to cover up a missing sparse-to-dense boundary decision
 - hand-writing PTX for primitive-shaped sparse kernels that are better served by libraries
 - predicating long heavy branches in QC or filtering pipelines instead of splitting the work

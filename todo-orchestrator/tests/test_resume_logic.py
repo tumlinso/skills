@@ -45,6 +45,17 @@ class ResumeLogicTests(unittest.TestCase):
             self.assertEqual(claimed, ["agent-gamma"])
             self.assertFalse(state["cleanup_ready"])
 
+    def test_detect_resume_state_surfaces_stale_streams(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            ensure_root_files(repo_root)
+            ensure_workstream_file(repo_root, "agent-alpha", "Alpha work", "stale", "alpha", execution="closed")
+            state = detect_resume_state(repo_root)
+            stale = [entry["slug"] for entry in state["stale_workstreams"]]
+            self.assertEqual(stale, ["agent-alpha"])
+            self.assertEqual(state["pickup_ready_workstreams"], [])
+            self.assertEqual(state["stale_candidate_workstreams"], [])
+
     def test_agents_block_is_stable(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = Path(tmpdir)

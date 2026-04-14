@@ -18,6 +18,7 @@ from todo_common import (  # noqa: E402
     load_root_doc,
     load_status_doc,
     load_workstream_doc,
+    parse_frontmatter,
     parse_markdown_document,
     parse_status_entries,
     render_markdown_document,
@@ -109,6 +110,19 @@ Use this file as the canonical index for substantial multi-step work.
             self.assertEqual(entries[0]["slug"], "legacy-stream")
             self.assertEqual(entries[0]["status"], "blocked")
             self.assertEqual(entries[0]["execution"], "idle")
+
+    def test_workstream_files_include_frontmatter_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            ensure_workstream_file(repo_root, "alpha-stream", "Alpha stream", "in_progress", "agent-a")
+            text = (repo_root / "todos" / "alpha-stream.md").read_text(encoding="utf-8")
+            frontmatter = parse_frontmatter(text)
+            self.assertEqual(frontmatter["slug"], "alpha-stream")
+            self.assertEqual(frontmatter["status"], "in_progress")
+            self.assertEqual(frontmatter["execution"], "claimed")
+            self.assertEqual(frontmatter["owner"], "agent-a")
+            self.assertEqual(frontmatter["objective"], "Alpha stream")
+            self.assertIn("Staleness Review", (repo_root / "todo-status.md").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

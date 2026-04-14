@@ -8,6 +8,7 @@
 - "Organize this multi-step migration and keep the plan updated while you work."
 - "Check `todo-status.md`, pick a ready workstream, and start working."
 - "Run `todo-cleanup` now that every workstream is done."
+- "Run `todo-cleanup --partial` to clear only the completed workstreams while active streams stay open."
 
 ## Not Good Triggers
 

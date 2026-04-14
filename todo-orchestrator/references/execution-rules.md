@@ -7,6 +7,7 @@ Use these rules after planning is complete.
 - read root `todos.md` before continuing work
 - read `todo-status.md` before claiming or resuming a parallel workstream
 - read the relevant `todos/<workstream>.md` file for the detailed plan
+- treat workstream frontmatter as the authoritative source for ownership, lifecycle, and freshness metadata
 - treat the ledger as the active execution guide
 
 ## Default Behavior
@@ -14,8 +15,10 @@ Use these rules after planning is complete.
 - continue non-interactively when the next action is already clear
 - if a stream is `claimed`, choose another stream unless you are the writer releasing or finishing it
 - if a stream is `ready` or `idle` and not already claimed elsewhere, pick it up immediately instead of waiting
+- if a stream is marked `stale`, review or reactivate it before resuming implementation
 - update task states, progress notes, assumptions, blockers, and next actions as work proceeds
 - keep `todo-status.md` synchronized with pickup state and the short next-step summary
+- refresh `last_heartbeat_at` on substantive workstream updates and `last_reviewed_at` when doing stale review
 - prefer relevant repo-local skills and reference files when they are a better fit for the current step
 
 ## When To Ask
@@ -33,5 +36,8 @@ If you stop, write the blocker and the exact missing decision into the ledger fi
 ## Cleanup
 
 - `todo-cleanup` is explicit mode only
-- it may be reported as safe once every tracked workstream is `done`
+- full cleanup may be reported as safe once every tracked workstream is `done` or `superseded`
+- `stale` workstreams still block full cleanup
+- partial cleanup may still be available when completed terminal workstreams exist alongside active or stale survivors
+- include `stale` in partial cleanup only when the user explicitly requests that scope
 - it must not run automatically during ordinary execution
