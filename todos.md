@@ -269,7 +269,7 @@ _None recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `113`
+Project revision: `122`
 
 ## Workstreams
 - `TO-V2-01` | kind: workstream | status: done | parent: TO-V2-00 | objective: Preserve and prove legacy behavior before semantic changes.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-18T15:28:40Z",
+  "generated_at": "2026-08-18T15:32:28Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "9d0f506f-8677-4660-ac11-e64ab40f6026",
     "schema_version": 2
   },
-  "project_revision": 113,
+  "project_revision": 122,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -26,7 +26,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-04",
-        "id": 41,
+        "id": 49,
         "required_state": "done",
         "type": "task"
       },
@@ -34,7 +34,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-05",
-        "id": 42,
+        "id": 50,
         "required_state": "done",
         "type": "task"
       },
@@ -42,7 +42,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-06",
-        "id": 43,
+        "id": 51,
         "required_state": "done",
         "type": "task"
       },
@@ -50,7 +50,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-07",
-        "id": 44,
+        "id": 52,
         "required_state": "done",
         "type": "task"
       },
@@ -58,7 +58,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-08",
-        "id": 45,
+        "id": 53,
         "required_state": "done",
         "type": "task"
       },
@@ -66,7 +66,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-09",
-        "id": 46,
+        "id": 54,
         "required_state": "done",
         "type": "task"
       },
@@ -74,7 +74,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-10",
-        "id": 47,
+        "id": 55,
         "required_state": "done",
         "type": "task"
       },
@@ -82,7 +82,7 @@
         "barrier_id": "TO-V2-INTEGRATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "TO-V2-11",
-        "id": 48,
+        "id": 56,
         "required_state": "done",
         "type": "task"
       }
@@ -92,9 +92,9 @@
         "explanation": "8/8 requirements satisfied; target=8",
         "id": "TO-V2-INTEGRATION-BARRIER",
         "mode": "all",
-        "opened_at": "2026-08-18 15:26:20",
+        "opened_at": "2026-08-18 15:32:28",
         "quorum": null,
-        "revision": 105,
+        "revision": 122,
         "state": "open",
         "title": "All feature lanes validated"
       }
@@ -111,7 +111,7 @@
         "id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "metadata_json": "{}",
         "reached_at": "2026-08-18T15:07:43Z",
-        "revision": 105,
+        "revision": 114,
         "revoked_at": null,
         "state": "reached",
         "task_id": "TO-V2-03",
@@ -1249,6 +1249,96 @@
         "revision": 113,
         "seq": 113,
         "timestamp": "2026-08-18T15:28:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "9d0f506f-8677-4660-ac11-e64ab40f6026",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/todo-orchestrator/references/v2-overhaul-dogfood.plan.json\"}",
+        "revision": 114,
+        "seq": 114,
+        "timestamp": "2026-08-18T15:32:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-07",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"TO-V2-07\"}",
+        "revision": 115,
+        "seq": 115,
+        "timestamp": "2026-08-18T15:32:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-07-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"TO-V2-07-GATE\"}",
+        "revision": 116,
+        "seq": 116,
+        "timestamp": "2026-08-18T15:32:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-07-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a02caeb9-1cba-44ae-91c0-769ec91ccd51\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 117,
+        "seq": 117,
+        "timestamp": "2026-08-18T15:32:25Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-07",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 118,
+        "seq": 118,
+        "timestamp": "2026-08-18T15:32:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-08",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"TO-V2-08\"}",
+        "revision": 119,
+        "seq": 119,
+        "timestamp": "2026-08-18T15:32:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-08-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"TO-V2-08-GATE\"}",
+        "revision": 120,
+        "seq": 120,
+        "timestamp": "2026-08-18T15:32:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-08-GATE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"9b79dc46-160e-470d-82e8-8515e05a288e\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 121,
+        "seq": 121,
+        "timestamp": "2026-08-18T15:32:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "TO-V2-08",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 122,
+        "seq": 122,
+        "timestamp": "2026-08-18T15:32:28Z"
       }
     ],
     "evidence": [
@@ -1477,6 +1567,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-18T15:32:28Z",
+        "gate_id": "TO-V2-08-GATE",
+        "id": "9b79dc46-160e-470d-82e8-8515e05a288e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}}, \"diff_fingerprint\": \"6f72448ff4bf893bc4da1df8ee8e8f351ceb622bff3f95a35579aae1281449d0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/SKILL.md\", \"cpp-context-compiler/agents/openai.yaml\", \"cpp-context-compiler/references/configuration.md\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/tests/test_integration.py\", \"cpp-context-compiler/tests/test_skill_metadata.py\", \"todo-orchestrator/references/v2-overhaul-dogfood.plan.json\", \"todo-status.md\", \"todos.md\", \"todos/to-v2-00.md\", \"todos/to-v2-01.md\", \"todos/to-v2-02.md\", \"todos/to-v2-03.md\", \"todos/to-v2-04.md\", \"todos/to-v2-05.md\", \"todos/to-v2-06.md\", \"todos/to-v2-07.md\", \"todos/to-v2-08.md\", \"todos/to-v2-09.md\", \"todos/to-v2-10.md\", \"todos/to-v2-11.md\", \"todos/to-v2-12.md\"], \"files\": [{\"path\": \"todo-orchestrator/scripts/v2_compat.py\", \"sha256\": \"92773a1f67b63c164c9603bbe8f6bdc43eb85700b3b43aa4db04f58299529fa0\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/legacy.py\", \"sha256\": \"5c5c42556e318ab655362fd6772d33c833501ca9974e122bbe59ad66f0549ec0\"}], \"interfaces\": [], \"recorded_git_head\": \"032e70b0101e369b271e78ea16584e85e0bd5017\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 120}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/9b79dc46-160e-470d-82e8-8515e05a288e",
+        "revision": 121,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-18T15:15:02Z",
         "gate_id": "TO-V2-03-GATE",
         "id": "9d4597a5-ba64-4cab-b9a3-71a7114d5c51",
@@ -1523,6 +1626,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-v\"], \"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}}, \"diff_fingerprint\": \"21ff976b86523b5775422945890a0366e4f6370e033a0748e1d4bfba746aa23a\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/SKILL.md\", \"cpp-context-compiler/agents/openai.yaml\", \"cpp-context-compiler/references/configuration.md\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/tests/test_integration.py\", \"cpp-context-compiler/tests/test_skill_metadata.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/agents/openai.yaml\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/references/examples.md\", \"todo-orchestrator/references/execution-rules.md\", \"todo-orchestrator/references/planning-workflow.md\", \"todo-orchestrator/references/project-plan-v2.md\", \"todo-orchestrator/references/status-and-cleanup.md\", \"todo-orchestrator/references/todo-format.md\", \"todo-orchestrator/references/v2-architecture.md\", \"todo-orchestrator/references/v2-overhaul-dogfood.plan.json\", \"todo-orchestrator/schemas/project-plan-v2.schema.json\", \"todo-orchestrator/scripts/cleanup_todos.py\", \"todo-orchestrator/scripts/init_todos.py\", \"todo-orchestrator/scripts/review_staleness.py\", \"todo-orchestrator/scripts/summarize_todos.py\", \"todo-orchestrator/scripts/todo.py\", \"todo-orchestrator/scripts/update_todos.py\", \"todo-orchestrator/scripts/v2_compat.py\", \"todo-orchestrator/tests/fixtures/legacy/todo-status.md\", \"todo-orchestrator/tests/fixtures/legacy/todos.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/alpha.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/beta.md\", \"todo-orchestrator/tests/fixtures/v2/generic-parallel-project.json\", \"todo-orchestrator/tests/test_v2_concurrency.py\", \"todo-orchestrator/tests/test_v2_foundation.py\", \"todo-orchestrator/tests/test_v2_graph_coordination.py\", \"todo-orchestrator/tests/test_v2_recovery_migration_context.py\", \"todo-orchestrator/tests/test_v2_resources_gates.py\", \"todo-orchestrator/tests/v2_helpers.py\", \"todo-orchestrator/todo_orchestrator/__init__.py\", \"todo-orchestrator/todo_orchestrator/audit.py\", \"todo-orchestrator/todo_orchestrator/barriers.py\", \"todo-orchestrator/todo_orchestrator/checkpoints.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/cli.py\", \"todo-orchestrator/todo_orchestrator/commands/__init__.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/core.py\", \"todo-orchestrator/todo_orchestrator/commands/migration.py\", \"todo-orchestrator/todo_orchestrator/commands/plan_commands.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/config.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/db.py\", \"todo-orchestrator/todo_orchestrator/events.py\", \"todo-orchestrator/todo_orchestrator/evidence.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/git_state.py\", \"todo-orchestrator/todo_orchestrator/graph.py\", \"todo-orchestrator/todo_orchestrator/interfaces.py\", \"todo-orchestrator/todo_orchestrator/legacy.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/models.py\", \"todo-orchestrator/todo_orchestrator/ownership.py\", \"todo-orchestrator/todo_orchestrator/plan.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/readiness.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-orchestrator/todo_orchestrator/resources.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/sessions.py\", \"todo-status.md\", \"todos.md\", \"todos/to-v2-00.md\", \"todos/to-v2-01.md\", \"todos/to-v2-02.md\", \"todos/to-v2-03.md\", \"todos/to-v2-04.md\", \"todos/to-v2-05.md\", \"todos/to-v2-06.md\", \"todos/to-v2-07.md\", \"todos/to-v2-08.md\", \"todos/to-v2-09.md\", \"todos/to-v2-10.md\", \"todos/to-v2-11.md\", \"todos/to-v2-12.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_v2_concurrency.py\", \"sha256\": \"230fb7dc53c14baeeaf404aea00da358c75e064393e70407fa1050c0585c41b7\"}, {\"path\": \"todo-orchestrator/tests/test_v2_resources_gates.py\", \"sha256\": \"6b1c518ae21477a868cea3ab7db2e8a8a56abe41b5f0053db29e245e65b8a8c1\"}], \"interfaces\": [], \"recorded_git_head\": \"de56e76a7388d7b3ea65bf46e37d3c01e03197cb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 79}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/9f36d640-15f8-4c45-9960-f7a706a454da",
         "revision": 80,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-18T15:32:25Z",
+        "gate_id": "TO-V2-07-GATE",
+        "id": "a02caeb9-1cba-44ae-91c0-769ec91ccd51",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}}, \"diff_fingerprint\": \"6f72448ff4bf893bc4da1df8ee8e8f351ceb622bff3f95a35579aae1281449d0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/SKILL.md\", \"cpp-context-compiler/agents/openai.yaml\", \"cpp-context-compiler/references/configuration.md\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/tests/test_integration.py\", \"cpp-context-compiler/tests/test_skill_metadata.py\", \"todo-orchestrator/references/v2-overhaul-dogfood.plan.json\", \"todo-status.md\", \"todos.md\", \"todos/to-v2-00.md\", \"todos/to-v2-01.md\", \"todos/to-v2-02.md\", \"todos/to-v2-03.md\", \"todos/to-v2-04.md\", \"todos/to-v2-05.md\", \"todos/to-v2-06.md\", \"todos/to-v2-07.md\", \"todos/to-v2-08.md\", \"todos/to-v2-09.md\", \"todos/to-v2-10.md\", \"todos/to-v2-11.md\", \"todos/to-v2-12.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_v2_recovery_migration_context.py\", \"sha256\": \"07a09b88562ce649440d8aa889474014183da4e2e65e43e2cc394705b38f2611\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"d608ce9afa6b39f15c69218e42383d7937958a1c3aba8e482064e1894707c5a6\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/events.py\", \"sha256\": \"d63c85bcea95b9dbe9259d99c6b0bba4f93b30ca2c82e1dc142934cdbbd91883\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/reporting.py\", \"sha256\": \"3cc2ca6aeee2bc7cc9cfd2d0249c9c6a35218c846808e1b174a5d1dde46821c6\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"2c816b3fd297c2d0d972b0c28659996674353280d6b9830046e2ba746f178bd9\"}], \"interfaces\": [], \"recorded_git_head\": \"032e70b0101e369b271e78ea16584e85e0bd5017\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 116}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/a02caeb9-1cba-44ae-91c0-769ec91ccd51",
+        "revision": 117,
         "status": "passed"
       },
       {
@@ -1638,7 +1754,7 @@
         "input_fingerprint": "bc7b3a78cc874288141361455d9513a259945f6ef4c76cdae0de7a496783f7ad",
         "last_run_at": "2026-08-18T15:07:37Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-01",
         "type": "command",
@@ -1651,7 +1767,7 @@
         "input_fingerprint": "88abd084e37493f89b22d39a75d7ad5f552aae6ca87c4dccd4df01c4ca978607",
         "last_run_at": "2026-08-18T15:26:12Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-02",
         "type": "command",
@@ -1664,7 +1780,7 @@
         "input_fingerprint": "0913b11bbb2c46cd5fde5c3b3972d324062d4c1878f07aa48fed00ec134175f3",
         "last_run_at": "2026-08-18T15:15:02Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-03",
         "type": "command",
@@ -1677,7 +1793,7 @@
         "input_fingerprint": "26c117d3399e250eef8e61d9899c094eaadd1dcf9c99222cfff12e1663db9948",
         "last_run_at": "2026-08-18T15:07:47Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-04",
         "type": "command",
@@ -1690,7 +1806,7 @@
         "input_fingerprint": "e778e309f637736b4027475d1e9e23fdad3d9e5f1cf1befb10d9a9a539c62715",
         "last_run_at": "2026-08-18T15:26:17Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-05",
         "type": "command",
@@ -1703,7 +1819,7 @@
         "input_fingerprint": "d85f5b7176d44dbd7cbe7fab6c626d40451919961a9661a1af4d0a9ce8c98007",
         "last_run_at": "2026-08-18T15:20:23Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-06",
         "type": "command",
@@ -1713,10 +1829,10 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"input_paths\": [\"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/events.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/tests/test_v2_recovery_migration_context.py\"]}",
         "id": "TO-V2-07-GATE",
-        "input_fingerprint": "5a90e4c8a68674ccdc6416fc81f082e0e58364e31ba89f00ee304b96a29fc989",
-        "last_run_at": "2026-08-18T15:26:19Z",
+        "input_fingerprint": "b2fa0ed3fa48a2982c66f38c8ce023e50fb4cac28faeb6d4c5dc65dea5c2e4da",
+        "last_run_at": "2026-08-18T15:32:25Z",
         "required": 1,
-        "revision": 105,
+        "revision": 117,
         "status": "passed",
         "task_id": "TO-V2-07",
         "type": "command",
@@ -1726,10 +1842,10 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"env\": {\"PYTHONDONTWRITEBYTECODE\": \"1\"}, \"input_paths\": [\"todo-orchestrator/todo_orchestrator/legacy.py\", \"todo-orchestrator/scripts/v2_compat.py\"]}",
         "id": "TO-V2-08-GATE",
-        "input_fingerprint": "fef9120ccb9ec2f36f35bba1d12d10d8f84d46fcd76674673cdb61b63bb8b1a5",
-        "last_run_at": "2026-08-18T15:10:51Z",
+        "input_fingerprint": "21646facb46342d939e14a037ba49a7910be3b8d5536aeaff53cc31ba2647963",
+        "last_run_at": "2026-08-18T15:32:28Z",
         "required": 1,
-        "revision": 105,
+        "revision": 121,
         "status": "passed",
         "task_id": "TO-V2-08",
         "type": "command",
@@ -1742,7 +1858,7 @@
         "input_fingerprint": "ddb3615c9ea997e8a746ff7e6ceb7d3993bd408022f2fedf695229d29101345f",
         "last_run_at": "2026-08-18T15:10:52Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-09",
         "type": "command",
@@ -1755,7 +1871,7 @@
         "input_fingerprint": "698319dabf73767101d886949c63991fc5727e5c4b8bd58a65a61d43adf97c0f",
         "last_run_at": "2026-08-18T15:15:26Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-10",
         "type": "command",
@@ -1768,7 +1884,7 @@
         "input_fingerprint": "d90a3f925f4666eaf4488575b6b0835a06adb34493f048b11ff404c8027b5a49",
         "last_run_at": "2026-08-18T15:11:10Z",
         "required": 1,
-        "revision": 105,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-11",
         "type": "command",
@@ -1781,7 +1897,7 @@
         "input_fingerprint": "79db190ee0a08e64acf271a9c774708a9f46fa975dff8796ffc44ed1c407eca3",
         "last_run_at": "2026-08-18T15:28:25Z",
         "required": 1,
-        "revision": 108,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-12",
         "type": "command",
@@ -1794,7 +1910,7 @@
         "input_fingerprint": "a1369b55f2369b98412412c5f31728e7d4bc44e79ae5bc2030a72bb9ff8aa5ef",
         "last_run_at": "2026-08-18T15:28:25Z",
         "required": 1,
-        "revision": 110,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-12",
         "type": "command",
@@ -1807,7 +1923,7 @@
         "input_fingerprint": "1c72e2ddcc287234419def6d87c24c2dec08599a517644c38a86f67d98d3c622",
         "last_run_at": "2026-08-18T15:28:40Z",
         "required": 1,
-        "revision": 112,
+        "revision": 114,
         "status": "passed",
         "task_id": "TO-V2-12",
         "type": "command",
@@ -1844,6 +1960,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/todo_orchestrator/evidence.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/resources.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"TO-V2-05-GATE\", \"last_run_at\": \"2026-08-18T15:15:07Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"cpp-context-compiler/SKILL.md                      |   8 +-\\n cpp-context-compiler/agents/openai.yaml            |   2 +-\\n cpp-context-compiler/references/configuration.md   |   1 +\\n cpp-context-compiler/scripts/ctxpp                 |  67 ++++-\\n cpp-context-compiler/tests/test_integration.py     |  27 ++\\n cpp-context-compiler/tests/test_skill_metadata.py  |   2 +\\n todo-orchestrator/SKILL.md                         | 275 ++++++++-------------\\n todo-orchestrator/agents/openai.yaml               |   4 +-\\n todo-orchestrator/references/examples.md           |  40 +--\\n todo-orchestrator/references/execution-rules.md    |  56 +----\\n todo-orchestrator/references/planning-workflow.md  |  79 ++----\\n todo-orchestrator/references/status-and-cleanup.md |  73 +-----\\n todo-orchestrator/references/todo-format.md        | 128 +---------\\n todo-orchestrator/scripts/cleanup_todos.py         |   3 +\\n todo-orchestrator/scripts/init_todos.py            |   3 +\\n todo-orchestrator/scripts/review_staleness.py      |   3 +\\n todo-orchestrator/scripts/summarize_todos.py       |   9 +\\n todo-orchestrator/scripts/update_todos.py          |   3 +\\n todo-status.md                                     |  37 ++-\\n todos.md                                           |  50 ++++\\n 20 files changed, 376 insertions(+), 494 deletions(-)\", \"git_head\": \"de56e76a7388d7b3ea65bf46e37d3c01e03197cb\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"TO-V2-05\"}",
         "revision": 73,
         "task_id": "TO-V2-05"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-18T15:32:26Z",
+        "id": "2d19dd09-cd31-4c75-b65f-ab507dead1d8",
+        "kind": "complete",
+        "note": "Revalidated after final formatting cleanup.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"TO-V2-07-GATE\", \"last_run_at\": \"2026-08-18T15:32:25Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 229 +++++++++++++--------\\n cpp-context-compiler/SKILL.md                      |   8 +-\\n cpp-context-compiler/agents/openai.yaml            |   2 +-\\n cpp-context-compiler/references/configuration.md   |   1 +\\n cpp-context-compiler/scripts/ctxpp                 |  67 +++++-\\n cpp-context-compiler/tests/test_integration.py     |  27 +++\\n cpp-context-compiler/tests/test_skill_metadata.py  |   2 +\\n .../references/v2-overhaul-dogfood.plan.json       |   4 +-\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n todos/to-v2-00.md                                  |   2 +-\\n todos/to-v2-01.md                                  |   2 +-\\n todos/to-v2-02.md                                  |   2 +-\\n todos/to-v2-03.md                                  |   2 +-\\n todos/to-v2-04.md                                  |   2 +-\\n todos/to-v2-05.md                                  |   2 +-\\n todos/to-v2-06.md                                  |   2 +-\\n todos/to-v2-07.md                                  |   6 +-\\n todos/to-v2-08.md                                  |   6 +-\\n todos/to-v2-09.md                                  |   2 +-\\n todos/to-v2-10.md                                  |   2 +-\\n todos/to-v2-11.md                                  |   2 +-\\n todos/to-v2-12.md                                  |   2 +-\\n 23 files changed, 265 insertions(+), 121 deletions(-)\", \"git_head\": \"032e70b0101e369b271e78ea16584e85e0bd5017\", \"interfaces\": [], \"note\": \"Revalidated after final formatting cleanup.\", \"resources\": [], \"task_id\": \"TO-V2-07\"}",
+        "revision": 118,
+        "task_id": "TO-V2-07"
       },
       {
         "claim_id": null,
@@ -1894,6 +2020,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/tests/fixtures/legacy/todo-status.md\", \"todo-orchestrator/tests/fixtures/legacy/todos.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/alpha.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/beta.md\", \"todo-orchestrator/tests/fixtures/v2/generic-parallel-project.json\", \"todo-orchestrator/tests/test_v2_concurrency.py\", \"todo-orchestrator/tests/test_v2_foundation.py\", \"todo-orchestrator/tests/test_v2_graph_coordination.py\", \"todo-orchestrator/tests/test_v2_recovery_migration_context.py\", \"todo-orchestrator/tests/test_v2_resources_gates.py\", \"todo-orchestrator/tests/v2_helpers.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"TO-V2-10-GATE\", \"last_run_at\": \"2026-08-18T15:11:07Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"cpp-context-compiler/SKILL.md                      |   8 +-\\n cpp-context-compiler/agents/openai.yaml            |   2 +-\\n cpp-context-compiler/references/configuration.md   |   1 +\\n cpp-context-compiler/scripts/ctxpp                 |  67 ++++-\\n cpp-context-compiler/tests/test_integration.py     |  27 ++\\n cpp-context-compiler/tests/test_skill_metadata.py  |   2 +\\n todo-orchestrator/SKILL.md                         | 275 ++++++++-------------\\n todo-orchestrator/agents/openai.yaml               |   4 +-\\n todo-orchestrator/references/examples.md           |  40 +--\\n todo-orchestrator/references/execution-rules.md    |  56 +----\\n todo-orchestrator/references/planning-workflow.md  |  79 ++----\\n todo-orchestrator/references/status-and-cleanup.md |  73 +-----\\n todo-orchestrator/references/todo-format.md        | 128 +---------\\n todo-orchestrator/scripts/cleanup_todos.py         |   3 +\\n todo-orchestrator/scripts/init_todos.py            |   3 +\\n todo-orchestrator/scripts/review_staleness.py      |   3 +\\n todo-orchestrator/scripts/summarize_todos.py       |   9 +\\n todo-orchestrator/scripts/update_todos.py          |   3 +\\n todo-status.md                                     |  37 ++-\\n todos.md                                           |  50 ++++\\n 20 files changed, 376 insertions(+), 494 deletions(-)\", \"git_head\": \"de56e76a7388d7b3ea65bf46e37d3c01e03197cb\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"TO-V2-10\"}",
         "revision": 47,
         "task_id": "TO-V2-10"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-18T15:32:28Z",
+        "id": "663307a1-0696-4f9b-bf1b-4532e121f498",
+        "kind": "complete",
+        "note": "Revalidated after final formatting cleanup.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"TO-V2-08-GATE\", \"last_run_at\": \"2026-08-18T15:32:28Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 294 ++++++++++++++-------\\n cpp-context-compiler/SKILL.md                      |   8 +-\\n cpp-context-compiler/agents/openai.yaml            |   2 +-\\n cpp-context-compiler/references/configuration.md   |   1 +\\n cpp-context-compiler/scripts/ctxpp                 |  67 ++++-\\n cpp-context-compiler/tests/test_integration.py     |  27 ++\\n cpp-context-compiler/tests/test_skill_metadata.py  |   2 +\\n .../references/v2-overhaul-dogfood.plan.json       |   4 +-\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/to-v2-00.md                                  |   2 +-\\n todos/to-v2-01.md                                  |   2 +-\\n todos/to-v2-02.md                                  |   2 +-\\n todos/to-v2-03.md                                  |   2 +-\\n todos/to-v2-04.md                                  |   2 +-\\n todos/to-v2-05.md                                  |   2 +-\\n todos/to-v2-06.md                                  |   2 +-\\n todos/to-v2-07.md                                  |   2 +-\\n todos/to-v2-08.md                                  |   6 +-\\n todos/to-v2-09.md                                  |   2 +-\\n todos/to-v2-10.md                                  |   2 +-\\n todos/to-v2-11.md                                  |   2 +-\\n todos/to-v2-12.md                                  |   2 +-\\n 23 files changed, 325 insertions(+), 118 deletions(-)\", \"git_head\": \"032e70b0101e369b271e78ea16584e85e0bd5017\", \"interfaces\": [], \"note\": \"Revalidated after final formatting cleanup.\", \"resources\": [], \"task_id\": \"TO-V2-08\"}",
+        "revision": 122,
+        "task_id": "TO-V2-08"
       },
       {
         "claim_id": null,
@@ -2286,7 +2422,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 81,
+        "id": 97,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-01",
         "task_id": "TO-V2-02",
@@ -2297,7 +2433,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 82,
+        "id": 98,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-02",
         "task_id": "TO-V2-03",
@@ -2308,7 +2444,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 83,
+        "id": 99,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-04",
@@ -2319,7 +2455,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 84,
+        "id": 100,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-05",
@@ -2330,7 +2466,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 85,
+        "id": 101,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-06",
@@ -2341,7 +2477,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 86,
+        "id": 102,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-07",
@@ -2352,7 +2488,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 87,
+        "id": 103,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-08",
@@ -2363,7 +2499,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 88,
+        "id": 104,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-09",
@@ -2374,7 +2510,7 @@
         "checkpoint_id": "TO-V2-BOOTSTRAP-PARALLEL-SAFE",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 89,
+        "id": 105,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-10",
@@ -2385,7 +2521,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 90,
+        "id": 106,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-04",
         "task_id": "TO-V2-11",
@@ -2396,7 +2532,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 91,
+        "id": 107,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-05",
         "task_id": "TO-V2-11",
@@ -2407,7 +2543,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 92,
+        "id": 108,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-06",
         "task_id": "TO-V2-11",
@@ -2418,7 +2554,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 93,
+        "id": 109,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-07",
         "task_id": "TO-V2-11",
@@ -2429,7 +2565,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 94,
+        "id": 110,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-08",
         "task_id": "TO-V2-11",
@@ -2440,7 +2576,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 95,
+        "id": 111,
         "interface_id": null,
         "prerequisite_task_id": "TO-V2-10",
         "task_id": "TO-V2-11",
@@ -2451,7 +2587,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 96,
+        "id": 112,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "TO-V2-12",
@@ -2550,12 +2686,12 @@
         "priority": 0,
         "result": "validated",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Transactional parallel orchestration v2",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 6
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -2572,12 +2708,12 @@
         "priority": 120,
         "result": "validated",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Preserve baseline and migration fixtures",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 8
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -2594,12 +2730,12 @@
         "priority": 110,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Transactional foundation",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 12
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 13
       },
       {
         "attention_reason": null,
@@ -2616,12 +2752,12 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Sessions and atomic pickup",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 10
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -2638,12 +2774,12 @@
         "priority": 90,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Graph, readiness, checkpoints, and barriers",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 8
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -2660,12 +2796,12 @@
         "priority": 89,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Generic resources and gates",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 12
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 13
       },
       {
         "attention_reason": null,
@@ -2682,12 +2818,12 @@
         "priority": 88,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Ownership, Git audit, interfaces, and locks",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 12
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 13
       },
       {
         "attention_reason": null,
@@ -2704,12 +2840,12 @@
         "priority": 87,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 118,
         "status": "done",
         "tags_json": "[]",
         "title": "Context, deltas, handoff, and reporting",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 10
+        "updated_at": "2026-08-18T15:32:26Z",
+        "version": 13
       },
       {
         "attention_reason": null,
@@ -2726,12 +2862,12 @@
         "priority": 86,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 122,
         "status": "done",
         "tags_json": "[]",
         "title": "Markdown migration and compatibility",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 8
+        "updated_at": "2026-08-18T15:32:28Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -2748,12 +2884,12 @@
         "priority": 85,
         "result": "validated",
         "result_policy_json": "{}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Skill and reference documentation",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 8
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -2770,12 +2906,12 @@
         "priority": 84,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Concurrency and recovery tests",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 10
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -2792,12 +2928,12 @@
         "priority": 70,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 105,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Generic topology fixture and end-to-end dogfood",
-        "updated_at": "2026-08-18T15:28:24Z",
-        "version": 8
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -2814,12 +2950,12 @@
         "priority": 60,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 113,
+        "revision": 114,
         "status": "done",
         "tags_json": "[]",
         "title": "Final integration and release readiness",
-        "updated_at": "2026-08-18T15:28:40Z",
-        "version": 11
+        "updated_at": "2026-08-18T15:32:23Z",
+        "version": 12
       }
     ]
   }

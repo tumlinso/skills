@@ -48,7 +48,7 @@ _No staleness review recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `113`
+Project revision: `122`
 
 ## Workstreams
 - `TO-V2-01` | status: done | execution: closed | next: Preserve and prove legacy behavior before semantic changes.
