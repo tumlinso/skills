@@ -2,28 +2,30 @@
 
 ## Good Triggers
 
-- "Plan this with me, write it into `todos.md`, and then execute it."
-- "Turn this rough feature idea into a real plan and keep working until it is done."
-- "Resume the current repo task from `todos.md`."
-- "Organize this multi-step migration and keep the plan updated while you work."
-- "Check `todo-status.md`, pick a ready workstream, and start working."
-- "Run `todo-cleanup` now that every workstream is done."
-- "Run `todo-cleanup --partial` to clear only the completed workstreams while active streams stay open."
+- “Use `$todo-orchestrator` and continue.”
+- “Decompose this migration into safe parallel work and execute it.”
+- “Create a producer/consumer plan with an interface-freeze checkpoint.”
+- “Coordinate these benchmarks across the available accelerators.”
+- “Recover the orphaned task without discarding its dirty files.”
+- “Migrate this existing `todos.md` project to transactional orchestration.”
+- “Explicitly clean completed legacy ledgers.”
 
 ## Not Good Triggers
 
-- "Rename this variable."
-- "Fix this single test."
-- "Explain this function."
-- "Brainstorm ideas only. Do not turn them into a plan yet."
+- “Rename this variable.”
+- “Fix this one isolated test.”
+- “Explain this function.”
+- “Brainstorm only; do not create execution state.”
 
-## Concurrent Workstreams
+## Generic Parallel Shape
 
-For multi-agent or multi-stream work:
+A useful project-neutral topology is:
 
-- keep root `todos.md` as the canonical overview
-- keep `todo-status.md` as the quick pickup register
-- create one detailed ledger per stream under `todos/`
-- keep each workstream status reflected in root `todos.md`
-- mark actively written streams as `claimed` so another thread can choose something else
-- use the workstream file to make ownership and next actions explicit
+```text
+contract producer --checkpoint/interface freeze--> parallel consumers
+baseline/evaluation tasks -----------------------> fan-in barrier
+parallel experiments --implemented or evaluated_not_promoted-->
+final barrier --> integration-exclusive task
+```
+
+Declare paths and named critical sections so shared build manifests or registries do not become accidental collision points. Put scarce hardware on the gate that uses it rather than leasing it for the entire coding task.

@@ -31,6 +31,7 @@ from todo_common import (
     upsert_task,
     write_document,
 )
+from v2_compat import migration_error, v2_project_exists
 
 
 LIST_FIELDS = {
@@ -174,6 +175,8 @@ def main() -> int:
         payload = load_payload(args.payload_file, parser)
         merge_payload(args, defaults, payload, parser)
     repo_root = Path(args.repo_root).resolve()
+    if v2_project_exists(repo_root):
+        return migration_error(repo_root, "update_todos.py", "status --json")
     ensure_root_files(repo_root)
 
     if args.workstream:

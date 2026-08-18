@@ -1,0 +1,83 @@
+"""Reconcile operational state with Git, artifacts, interfaces, gates, and projections."""
+
+from __future__ import annotations
+
+import json
+import sqlite3
+from pathlib import Path
+
+from .evidence import gate_input_fingerprint
+from .git_state import dirty_paths, git_head, path_contains, scope_manifest
+from .interfaces import interface_hash
+
+
+def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) -> dict[str, object]:
+    revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
+    discrepancies: list[dict[str, object]] = []
+    projection = conn.execute("SELECT * FROM projection_status WHERE name='all'").fetchone()
+    if not projection or int(projection["revision"]) != revision or projection["error"]:
+        discrepancies.append({"code": "projection_stale", "expected_revision": revision, "actual_revision": projection["revision"] if projection else None, "error": projection["error"] if projection else None})
+    if snapshot_file.exists():
+        try:
+            snapshot_revision = int(json.loads(snapshot_file.read_text(encoding="utf-8"))["project_revision"])
+            if snapshot_revision != revision:
+                discrepancies.append({"code": "snapshot_revision_mismatch", "expected_revision": revision, "actual_revision": snapshot_revision})
+        except Exception as exc:
+            discrepancies.append({"code": "snapshot_invalid", "error": str(exc)})
+    else:
+        discrepancies.append({"code": "snapshot_missing"})
+    for interface in conn.execute("SELECT * FROM interfaces WHERE state='frozen'"):
+        try:
+            digest, _ = interface_hash(repo_root, json.loads(interface["contract_paths_json"]))
+            if digest != interface["content_hash"]:
+                discrepancies.append({"code": "interface_hash_mismatch", "interface_id": interface["id"], "recorded": interface["content_hash"], "current": digest})
+        except Exception as exc:
+            discrepancies.append({"code": "interface_inspection_failed", "interface_id": interface["id"], "error": str(exc)})
+    for gate in conn.execute("SELECT * FROM gates WHERE valid=1"):
+        config = json.loads(gate["config_json"])
+        current, _ = gate_input_fingerprint(conn, repo_root, config)
+        if current != gate["input_fingerprint"]:
+            discrepancies.append({"code": "gate_inputs_changed", "gate_id": gate["id"], "recorded": gate["input_fingerprint"], "current": current})
+    for task in conn.execute("SELECT id,status FROM tasks WHERE status='done' AND kind<>'epic'"):
+        invalid_required = [dict(row) for row in conn.execute("SELECT id,status,valid FROM gates WHERE task_id=? AND required=1 AND (valid=0 OR status NOT IN ('passed','evaluated_not_promoted'))", (task["id"],))]
+        if invalid_required:
+            discrepancies.append({"code": "completed_required_gate_invalid", "task_id": task["id"], "gates": invalid_required})
+        for artifact in conn.execute("SELECT * FROM task_artifacts WHERE task_id=?", (task["id"],)):
+            if not (repo_root / artifact["path"]).exists():
+                discrepancies.append({"code": "completed_artifact_missing", "task_id": task["id"], "path": artifact["path"]})
+        if not conn.execute("SELECT 1 FROM gates WHERE task_id=?", (task["id"],)).fetchone():
+            discrepancies.append({"code": "code_inspection_required", "task_id": task["id"], "reason": "completed task has no structured gates"})
+    current_dirty = dirty_paths(repo_root)
+    active_claims = []
+    for claim in conn.execute("SELECT * FROM claims WHERE state IN ('active','orphaned')"):
+        scopes = [row[0] for row in conn.execute("SELECT path FROM ownership_scopes WHERE task_id=? AND mode='exclusive'", (claim["task_id"],))]
+        baseline = json.loads(claim["baseline_manifest_json"] or "{}")
+        current = scope_manifest(repo_root, scopes)
+        owned_dirty = [path for path in current_dirty if any(path_contains(scope, path) for scope in scopes)]
+        active_claims.append({"task_id": claim["task_id"], "claim_id": claim["id"], "state": claim["state"], "baseline_head": claim["baseline_head"], "current_head": git_head(repo_root), "owned_dirty_paths": owned_dirty, "changed_since_baseline": baseline.get("fingerprint") != current.get("fingerprint")})
+    owned_by_active = {path for item in active_claims for path in item["owned_dirty_paths"]}
+    return {
+        "project_revision": revision,
+        "discrepancies": discrepancies,
+        "active_claims": active_claims,
+        "pre_existing_or_unowned_dirty_paths": sorted(set(current_dirty) - owned_by_active),
+        "clean": not discrepancies,
+    }
+
+
+def reconcile_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path, revision: int) -> dict[str, object]:
+    report = audit_state(conn, repo_root, snapshot_file)
+    invalidated: list[str] = []
+    for item in report["discrepancies"]:
+        if item["code"] == "gate_inputs_changed":
+            conn.execute("UPDATE gates SET valid=0,status='invalidated',revision=? WHERE id=?", (revision, item["gate_id"]))
+            invalidated.append(item["gate_id"])
+        elif item["code"] == "interface_hash_mismatch":
+            conn.execute("UPDATE interfaces SET state='revised',revision=? WHERE id=?", (revision, item["interface_id"]))
+            for row in conn.execute("SELECT task_id FROM interface_consumers WHERE interface_id=?", (item["interface_id"],)):
+                if conn.execute("SELECT 1 FROM claims WHERE task_id=? AND state='active'", (row["task_id"],)).fetchone():
+                    conn.execute("UPDATE tasks SET status='attention_required',attention_reason=? WHERE id=?", (f"interface {item['interface_id']} hash changed", row["task_id"]))
+    from .graph import reevaluate_barriers
+
+    barrier_changes = reevaluate_barriers(conn, revision)
+    return {"invalidated_gates": invalidated, "discrepancies": report["discrepancies"], "barrier_changes": barrier_changes}

@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from todo_common import ensure_agents_md, ensure_root_files, ensure_workstream_file, normalize_slug
+from v2_compat import migration_error, v2_project_exists
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -43,6 +44,8 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     repo_root = Path(args.repo_root).resolve()
+    if v2_project_exists(repo_root):
+        return migration_error(repo_root, "init_todos.py", "plan apply --file <plan.json>")
 
     ensure_root_files(repo_root)
     created_path = repo_root / "todos.md"

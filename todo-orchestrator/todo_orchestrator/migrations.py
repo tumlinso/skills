@@ -1,0 +1,181 @@
+"""SQLite schema and forward-only migrations."""
+
+from __future__ import annotations
+
+SCHEMA_VERSION = 2
+
+MIGRATION_1 = r"""
+CREATE TABLE IF NOT EXISTS schema_migrations(
+  version INTEGER PRIMARY KEY,
+  applied_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS sessions(
+  id TEXT PRIMARY KEY, label TEXT NOT NULL UNIQUE, token_hash TEXT NOT NULL UNIQUE,
+  external_id TEXT, hostname TEXT NOT NULL, pid INTEGER, process_start TEXT,
+  repo_root TEXT NOT NULL, worktree_root TEXT NOT NULL, metadata_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL, last_seen_at TEXT NOT NULL, state TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS tasks(
+  id TEXT PRIMARY KEY, parent_id TEXT REFERENCES tasks(id), kind TEXT NOT NULL,
+  title TEXT NOT NULL, objective TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'planned',
+  priority INTEGER NOT NULL DEFAULT 0, tags_json TEXT NOT NULL DEFAULT '[]',
+  parallel_policy TEXT NOT NULL DEFAULT 'serial', result TEXT, next_action TEXT NOT NULL DEFAULT '',
+  result_policy_json TEXT NOT NULL DEFAULT '{}',
+  notes TEXT NOT NULL DEFAULT '', legacy_owner TEXT, legacy_payload_json TEXT NOT NULL DEFAULT '{}',
+  attention_reason TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  version INTEGER NOT NULL DEFAULT 1, revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_tasks_parent ON tasks(parent_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_status_priority ON tasks(status, priority DESC, id);
+CREATE TABLE IF NOT EXISTS decisions(
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, value_json TEXT, allowed_json TEXT NOT NULL DEFAULT '[]',
+  updated_at TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS task_dependencies(
+  id INTEGER PRIMARY KEY AUTOINCREMENT, task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  type TEXT NOT NULL, prerequisite_task_id TEXT REFERENCES tasks(id), checkpoint_id TEXT,
+  interface_id TEXT, barrier_id TEXT, decision_id TEXT, condition_json TEXT NOT NULL DEFAULT '{}',
+  UNIQUE(task_id,type,prerequisite_task_id,checkpoint_id,interface_id,barrier_id,decision_id)
+);
+CREATE INDEX IF NOT EXISTS idx_dependencies_task ON task_dependencies(task_id);
+CREATE TABLE IF NOT EXISTS checkpoints(
+  id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES tasks(id), title TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'pending', reached_at TEXT, revoked_at TEXT,
+  metadata_json TEXT NOT NULL DEFAULT '{}', revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS barriers(
+  id TEXT PRIMARY KEY, title TEXT NOT NULL, mode TEXT NOT NULL DEFAULT 'all', quorum INTEGER,
+  state TEXT NOT NULL DEFAULT 'closed', explanation TEXT NOT NULL DEFAULT '', opened_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS barrier_requirements(
+  id INTEGER PRIMARY KEY AUTOINCREMENT, barrier_id TEXT NOT NULL REFERENCES barriers(id) ON DELETE CASCADE,
+  type TEXT NOT NULL, entity_id TEXT NOT NULL, required_state TEXT NOT NULL,
+  dispositions_json TEXT NOT NULL DEFAULT '[]', UNIQUE(barrier_id,type,entity_id,required_state)
+);
+CREATE TABLE IF NOT EXISTS interfaces(
+  id TEXT PRIMARY KEY, owner_task_id TEXT NOT NULL REFERENCES tasks(id), state TEXT NOT NULL DEFAULT 'draft',
+  version TEXT NOT NULL DEFAULT '0', contract_paths_json TEXT NOT NULL DEFAULT '[]', content_hash TEXT,
+  frozen_at TEXT, revised_at TEXT, revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS interface_consumers(
+  interface_id TEXT NOT NULL REFERENCES interfaces(id) ON DELETE CASCADE,
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  required_state TEXT NOT NULL DEFAULT 'frozen', required_version TEXT,
+  PRIMARY KEY(interface_id,task_id)
+);
+CREATE TABLE IF NOT EXISTS checkpoint_interfaces(
+  checkpoint_id TEXT NOT NULL REFERENCES checkpoints(id) ON DELETE CASCADE,
+  interface_id TEXT NOT NULL REFERENCES interfaces(id) ON DELETE CASCADE,
+  version TEXT, PRIMARY KEY(checkpoint_id,interface_id)
+);
+CREATE TABLE IF NOT EXISTS invariants(
+  id TEXT PRIMARY KEY, rule TEXT NOT NULL, scope_json TEXT NOT NULL DEFAULT '{}',
+  severity TEXT NOT NULL DEFAULT 'error', enforcement TEXT
+);
+CREATE TABLE IF NOT EXISTS task_invariants(
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  invariant_id TEXT NOT NULL REFERENCES invariants(id) ON DELETE CASCADE,
+  PRIMARY KEY(task_id,invariant_id)
+);
+CREATE TABLE IF NOT EXISTS ownership_scopes(
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  mode TEXT NOT NULL, path TEXT NOT NULL, PRIMARY KEY(task_id,mode,path)
+);
+CREATE INDEX IF NOT EXISTS idx_scope_path ON ownership_scopes(path,mode);
+CREATE TABLE IF NOT EXISTS task_artifacts(
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL, path TEXT NOT NULL, content_hash TEXT,
+  PRIMARY KEY(task_id,kind,path)
+);
+CREATE TABLE IF NOT EXISTS named_locks(name TEXT PRIMARY KEY, capacity INTEGER NOT NULL DEFAULT 1, metadata_json TEXT NOT NULL DEFAULT '{}');
+CREATE TABLE IF NOT EXISTS task_locks(
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE, lock_name TEXT NOT NULL REFERENCES named_locks(name),
+  phase TEXT NOT NULL DEFAULT 'claim', PRIMARY KEY(task_id,lock_name,phase)
+);
+CREATE TABLE IF NOT EXISTS claims(
+  id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES tasks(id), session_id TEXT NOT NULL REFERENCES sessions(id),
+  token_hash TEXT NOT NULL UNIQUE, state TEXT NOT NULL, created_at TEXT NOT NULL, heartbeat_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL, baseline_head TEXT, baseline_manifest_json TEXT NOT NULL DEFAULT '{}',
+  baseline_revision INTEGER NOT NULL, orphan_reason TEXT, released_at TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_claim_per_task ON claims(task_id) WHERE state='active';
+CREATE INDEX IF NOT EXISTS idx_claims_state_expiry ON claims(state,expires_at);
+CREATE TABLE IF NOT EXISTS lock_leases(
+  id TEXT PRIMARY KEY, lock_name TEXT NOT NULL REFERENCES named_locks(name), claim_id TEXT REFERENCES claims(id),
+  session_id TEXT NOT NULL REFERENCES sessions(id), token_hash TEXT NOT NULL, state TEXT NOT NULL,
+  acquired_at TEXT NOT NULL, heartbeat_at TEXT NOT NULL, expires_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_exclusive_lock ON lock_leases(lock_name) WHERE state='active';
+CREATE TABLE IF NOT EXISTS resource_classes(
+  id TEXT PRIMARY KEY, mode TEXT NOT NULL DEFAULT 'exclusive', metadata_json TEXT NOT NULL DEFAULT '{}'
+);
+CREATE TABLE IF NOT EXISTS resource_instances(
+  id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES resource_classes(id), capacity INTEGER NOT NULL DEFAULT 1,
+  hostname TEXT, metadata_json TEXT NOT NULL DEFAULT '{}', enabled INTEGER NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS idx_resources_class ON resource_instances(class_id,enabled,id);
+CREATE TABLE IF NOT EXISTS resource_requests(
+  id TEXT PRIMARY KEY, task_id TEXT REFERENCES tasks(id) ON DELETE CASCADE, gate_id TEXT,
+  phase TEXT NOT NULL, selector TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 1,
+  mode TEXT NOT NULL DEFAULT 'exclusive', required INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS resource_leases(
+  id TEXT PRIMARY KEY, instance_id TEXT NOT NULL REFERENCES resource_instances(id), claim_id TEXT REFERENCES claims(id),
+  session_id TEXT NOT NULL REFERENCES sessions(id), request_id TEXT, token_hash TEXT NOT NULL,
+  state TEXT NOT NULL, hostname TEXT NOT NULL, pid INTEGER, process_start TEXT, command_json TEXT,
+  acquired_at TEXT NOT NULL, heartbeat_at TEXT NOT NULL, expires_at TEXT NOT NULL, released_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_resource_leases_active ON resource_leases(instance_id,state,expires_at);
+CREATE TABLE IF NOT EXISTS gates(
+  id TEXT PRIMARY KEY, task_id TEXT REFERENCES tasks(id) ON DELETE CASCADE,
+  checkpoint_id TEXT REFERENCES checkpoints(id) ON DELETE CASCADE, type TEXT NOT NULL,
+  config_json TEXT NOT NULL DEFAULT '{}', required INTEGER NOT NULL DEFAULT 1,
+  status TEXT NOT NULL DEFAULT 'pending', valid INTEGER NOT NULL DEFAULT 0,
+  input_fingerprint TEXT, last_run_at TEXT, revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS checkpoint_gates(
+  checkpoint_id TEXT NOT NULL REFERENCES checkpoints(id) ON DELETE CASCADE,
+  gate_id TEXT NOT NULL REFERENCES gates(id) ON DELETE CASCADE,
+  PRIMARY KEY(checkpoint_id,gate_id)
+);
+CREATE TABLE IF NOT EXISTS evidence(
+  id TEXT PRIMARY KEY, gate_id TEXT REFERENCES gates(id), checkpoint_id TEXT REFERENCES checkpoints(id),
+  claim_id TEXT REFERENCES claims(id), kind TEXT NOT NULL, status TEXT NOT NULL,
+  path TEXT, content_hash TEXT, metadata_json TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS handoffs(
+  id TEXT PRIMARY KEY, task_id TEXT NOT NULL REFERENCES tasks(id), claim_id TEXT REFERENCES claims(id),
+  kind TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', payload_json TEXT NOT NULL, created_at TEXT NOT NULL,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS migration_warnings(
+  id INTEGER PRIMARY KEY AUTOINCREMENT, entity_id TEXT, code TEXT NOT NULL, message TEXT NOT NULL,
+  payload_json TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL, resolved_at TEXT
+);
+CREATE TABLE IF NOT EXISTS projection_status(
+  name TEXT PRIMARY KEY, revision INTEGER NOT NULL DEFAULT 0, generated_at TEXT, error TEXT
+);
+CREATE TABLE IF NOT EXISTS events(
+  seq INTEGER PRIMARY KEY AUTOINCREMENT, revision INTEGER NOT NULL UNIQUE, timestamp TEXT NOT NULL,
+  actor_session_id TEXT REFERENCES sessions(id), entity_type TEXT NOT NULL, entity_id TEXT,
+  event_type TEXT NOT NULL, payload_json TEXT NOT NULL
+);
+"""
+
+MIGRATION_2 = r"""
+CREATE INDEX IF NOT EXISTS idx_events_entity ON events(entity_type,entity_id,revision);
+CREATE INDEX IF NOT EXISTS idx_evidence_gate ON evidence(gate_id,created_at);
+"""
+
+MIGRATION_3 = r"""
+ALTER TABLE lock_leases ADD COLUMN hostname TEXT;
+ALTER TABLE lock_leases ADD COLUMN pid INTEGER;
+ALTER TABLE lock_leases ADD COLUMN process_start TEXT;
+ALTER TABLE lock_leases ADD COLUMN command_json TEXT;
+CREATE INDEX IF NOT EXISTS idx_lock_leases_expiry ON lock_leases(state,expires_at);
+"""
+
+MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3}

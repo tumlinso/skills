@@ -1,0 +1,285 @@
+"""Resource-aware gate execution with evidence capture and cleanup."""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import subprocess
+import threading
+import uuid
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+from .config import utc_now
+from .claims import pulse_claim
+from .evidence import gate_input_fingerprint
+from .graph import reevaluate_barriers
+from .models import ExitCode, TodoError
+from .ownership import acquire_named_locks, release_lock
+from .projections import atomic_write_text
+from .resources import acquire_resource, release_resource, resource_environment
+from .sessions import authenticate_claim
+
+
+def list_gates(conn, task_id: str | None = None) -> list[dict[str, object]]:
+    if task_id:
+        rows = conn.execute("SELECT * FROM gates WHERE task_id=? ORDER BY id", (task_id,))
+    else:
+        rows = conn.execute("SELECT * FROM gates ORDER BY id")
+    result = []
+    for row in rows:
+        item = dict(row)
+        item["config"] = json.loads(item.pop("config_json"))
+        result.append(item)
+    return result
+
+
+def explain_gate(conn, gate_id: str) -> dict[str, object]:
+    row = conn.execute("SELECT * FROM gates WHERE id=?", (gate_id,)).fetchone()
+    if not row:
+        raise TodoError("gate_not_found", f"Unknown gate {gate_id}")
+    evidence = [dict(item) for item in conn.execute("SELECT * FROM evidence WHERE gate_id=? ORDER BY created_at DESC", (gate_id,))]
+    item = dict(row)
+    item["config"] = json.loads(item.pop("config_json"))
+    item["evidence"] = evidence
+    return item
+
+
+def _json_value(value: object, path: str) -> object:
+    current = value
+    for part in path.split(".") if path else []:
+        if isinstance(current, dict):
+            current = current[part]
+        else:
+            raise KeyError(path)
+    return current
+
+
+def _compare(actual: float, operator: str, expected: float) -> bool:
+    return {
+        ">=": actual >= expected,
+        ">": actual > expected,
+        "<=": actual <= expected,
+        "<": actual < expected,
+        "==": actual == expected,
+    }.get(operator, False)
+
+
+def _evaluate_static(repo_root: Path, gate_type: str, config: dict[str, object], conn) -> tuple[str, bool, dict[str, object]]:
+    if gate_type == "file_exists":
+        exists = (repo_root / str(config["path"])).exists()
+        return ("passed" if exists else "failed", exists, {"path": config["path"], "exists": exists})
+    if gate_type == "pattern":
+        path = repo_root / str(config["path"])
+        found = bool(path.is_file() and re.search(str(config["pattern"]), path.read_text(encoding="utf-8"), re.MULTILINE))
+        return ("passed" if found else "failed", found, {"path": str(config["path"]), "found": found})
+    if gate_type == "task_state":
+        row = conn.execute("SELECT status,result FROM tasks WHERE id=?", (config["task_id"],)).fetchone()
+        ok = bool(row and row["status"] == config.get("status", "done") and (not config.get("result") or row["result"] == config["result"]))
+        return ("passed" if ok else "failed", ok, dict(row) if row else {})
+    if gate_type == "checkpoint":
+        row = conn.execute("SELECT state FROM checkpoints WHERE id=?", (config["checkpoint_id"],)).fetchone()
+        ok = bool(row and row[0] == config.get("state", "reached"))
+        return ("passed" if ok else "failed", ok, {"state": row[0] if row else "missing"})
+    if gate_type == "interface":
+        row = conn.execute("SELECT state,version,content_hash FROM interfaces WHERE id=?", (config["interface_id"],)).fetchone()
+        ok = bool(row and row["state"] == config.get("state", "frozen") and (not config.get("version") or row["version"] == config["version"]))
+        return ("passed" if ok else "failed", ok, dict(row) if row else {})
+    if gate_type == "manual":
+        ok = bool(config.get("accepted"))
+        return ("passed" if ok else "failed", ok, {"accepted": ok, "note": config.get("note")})
+    raise TodoError("unsupported_gate_type", f"Gate type {gate_type} is not executable")
+
+
+def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: str | None) -> tuple[dict[str, object], int]:
+    configuration = project.get("configuration", {})
+    resource_seconds = int(configuration.get("resource_lease_seconds", 300))
+    claim_seconds = int(configuration.get("claim_lease_seconds", 7200))
+    acquired: dict[str, object] = {}
+    raw_tokens: dict[str, str] = {}
+
+    def acquire(conn, revision):
+        gate = conn.execute("SELECT * FROM gates WHERE id=?", (gate_id,)).fetchone()
+        if not gate:
+            raise TodoError("gate_not_found", f"Unknown gate {gate_id}")
+        if gate["task_id"]:
+            pulse_claim(conn, claim_token, claim_seconds)
+        claim = authenticate_claim(conn, claim_token) if gate["task_id"] else None
+        if claim and claim["task_id"] != gate["task_id"]:
+            raise TodoError("claim_task_mismatch", "Gate does not belong to the claimed task", ExitCode.INVALID_TOKEN)
+        config = json.loads(gate["config_json"])
+        session_id = claim["session_id"] if claim else config.get("session_id")
+        if not session_id:
+            raise TodoError("gate_session_required", "Gate execution requires an active claim")
+        resources = []
+        selectors = sorted(str(item) for item in config.get("resources", []))
+        argv = [str(item) for item in config.get("argv", [])]
+        for selector in selectors:
+            lease, token = acquire_resource(
+                conn,
+                selector=selector,
+                session_id=session_id,
+                claim_id=claim["id"] if claim else None,
+                request_id=None,
+                lease_seconds=resource_seconds,
+                command=argv,
+            )
+            resources.append(lease)
+            raw_tokens[f"resource:{lease['lease_id']}"] = token
+        locks = acquire_named_locks(
+            conn,
+            [str(item) for item in config.get("locks", [])],
+            claim_id=claim["id"] if claim else None,
+            session_id=session_id,
+            lease_seconds=resource_seconds,
+            command=argv,
+        )
+        for lock in locks:
+            raw_tokens[f"lock:{lock['lease_id']}"] = lock["token"]
+        fingerprint, inputs = gate_input_fingerprint(conn, paths.repo_root, config)
+        acquired.update(gate=dict(gate), config=config, claim=dict(claim) if claim else None, resources=resources, locks=locks, fingerprint=fingerprint, inputs=inputs)
+        return {"gate_id": gate_id, "resources": resources, "locks": [{k: v for k, v in item.items() if k != "token"} for item in locks]}
+
+    _, acquire_revision = db.mutate(
+        actor_session_id=None,
+        entity_type="gate",
+        entity_id=gate_id,
+        event_type="gate.started",
+        payload={"gate_id": gate_id},
+        operation=acquire,
+    )
+
+    stop = threading.Event()
+
+    def heartbeat() -> None:
+        if stop.wait(max(1.0, resource_seconds / 3.0)):
+            return
+        while not stop.is_set():
+            def refresh(conn, revision):
+                del revision
+                now = utc_now()
+                expires = (datetime.now(timezone.utc) + timedelta(seconds=resource_seconds)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+                for lease in acquired.get("resources", []):
+                    conn.execute("UPDATE resource_leases SET heartbeat_at=?,expires_at=? WHERE id=? AND state='active'", (now, expires, lease["lease_id"]))
+                for lease in acquired.get("locks", []):
+                    conn.execute("UPDATE lock_leases SET heartbeat_at=?,expires_at=? WHERE id=? AND state='active'", (now, expires, lease["lease_id"]))
+                return True
+            try:
+                db.mutate(actor_session_id=None, entity_type="gate", entity_id=gate_id, event_type="gate.heartbeat", payload={}, operation=refresh)
+            except Exception:
+                pass
+            stop.wait(max(1.0, resource_seconds / 3.0))
+
+    thread = threading.Thread(target=heartbeat, daemon=True)
+    thread.start()
+    gate = acquired["gate"]
+    config = acquired["config"]
+    gate_type = gate["type"]
+    stdout = ""
+    stderr = ""
+    returncode: int | None = None
+    status = "failed"
+    valid = False
+    details: dict[str, Any] = {}
+    try:
+        if gate_type in {"command", "benchmark", "json_predicate"}:
+            argv = config.get("argv")
+            if not isinstance(argv, list) or not argv:
+                raise TodoError("invalid_gate_command", "Command gates require a non-empty argv array")
+            environment = os.environ.copy()
+            environment.update({str(k): str(v) for k, v in config.get("env", {}).items()})
+            environment.update(resource_environment(acquired["resources"]))
+            result = subprocess.run(
+                [str(item) for item in argv],
+                cwd=paths.repo_root / str(config.get("cwd", ".")),
+                env=environment,
+                capture_output=True,
+                text=True,
+                timeout=float(config.get("timeout", 3600)),
+                check=False,
+            )
+            stdout, stderr, returncode = result.stdout, result.stderr, result.returncode
+            expected = int(config.get("expected_exit_code", 0))
+            executed = returncode == expected
+            status = "passed" if executed else "failed"
+            valid = executed
+            details = {"argv": argv, "returncode": returncode, "expected_exit_code": expected, "environment": resource_environment(acquired["resources"])}
+            if executed and gate_type in {"benchmark", "json_predicate"}:
+                source: object
+                metric_file = config.get("metric_file")
+                source = json.loads((paths.repo_root / str(metric_file)).read_text(encoding="utf-8")) if metric_file else json.loads(stdout)
+                actual = _json_value(source, str(config.get("metric_path", "")))
+                passed = _compare(float(actual), str(config.get("operator", ">=")), float(config["threshold"]))
+                details.update(actual=actual, threshold=config["threshold"], operator=config.get("operator", ">="))
+                if passed:
+                    status, valid = "passed", True
+                elif gate_type == "benchmark" and bool(config.get("evaluation_required", True)):
+                    status, valid = "evaluated_not_promoted", True
+                else:
+                    status, valid = "failed", False
+        else:
+            with db.read() as read_conn:
+                status, valid, details = _evaluate_static(paths.repo_root, gate_type, config, read_conn)
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        stderr = exc.stderr or ""
+        status, valid, details = "failed", False, {"timeout": config.get("timeout", 3600)}
+    except KeyboardInterrupt:
+        status, valid, details = "failed", False, {"interrupted": True}
+    except Exception as exc:
+        status, valid, details = "failed", False, {"error": str(exc)}
+    finally:
+        stop.set()
+        thread.join(timeout=2)
+
+    evidence_id = str(uuid.uuid4())
+    evidence_dir = paths.evidence_dir / evidence_id
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    atomic_write_text(evidence_dir / "stdout.txt", stdout)
+    atomic_write_text(evidence_dir / "stderr.txt", stderr)
+    metadata = {
+        **details,
+        "inputs": acquired["inputs"],
+        "resources": acquired["resources"],
+        "locks": [{k: v for k, v in item.items() if k != "token"} for item in acquired["locks"]],
+        "started_revision": acquire_revision,
+    }
+
+    def finish(conn, revision):
+        for key, token in raw_tokens.items():
+            if key.startswith("resource:"):
+                release_resource(conn, token)
+            else:
+                release_lock(conn, token)
+        conn.execute(
+            "UPDATE gates SET status=?,valid=?,input_fingerprint=?,last_run_at=?,revision=? WHERE id=?",
+            (status, int(valid), acquired["fingerprint"], utc_now(), revision, gate_id),
+        )
+        conn.execute(
+            "INSERT INTO evidence(id,gate_id,claim_id,kind,status,path,metadata_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?,?)",
+            (
+                evidence_id,
+                gate_id,
+                acquired["claim"]["id"] if acquired["claim"] else None,
+                gate_type,
+                status,
+                str(evidence_dir),
+                json.dumps(metadata, sort_keys=True),
+                utc_now(),
+                revision,
+            ),
+        )
+        barriers = reevaluate_barriers(conn, revision)
+        return {"gate_id": gate_id, "task_id": gate["task_id"], "status": status, "valid": valid, "evidence_id": evidence_id, "evidence_path": str(evidence_dir), "details": details, "barrier_changes": barriers}
+
+    report, revision = db.mutate(
+        actor_session_id=acquired["claim"]["session_id"] if acquired["claim"] else None,
+        entity_type="gate",
+        entity_id=gate_id,
+        event_type="gate.completed",
+        payload={"status": status, "valid": valid, "evidence_id": evidence_id},
+        operation=finish,
+    )
+    return report, revision

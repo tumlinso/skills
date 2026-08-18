@@ -18,6 +18,7 @@ from todo_common import (
     pickup_ready_entries,
     review_workstream_staleness,
 )
+from v2_compat import v2_project_exists
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -35,6 +36,14 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     repo_root = Path(args.repo_root).resolve()
+    if v2_project_exists(repo_root):
+        package_root = Path(__file__).resolve().parents[1]
+        if str(package_root) not in __import__("sys").path:
+            __import__("sys").path.insert(0, str(package_root))
+        from todo_orchestrator.service import Service
+        import json
+        print(json.dumps(Service(repo_root).status(), indent=2, sort_keys=True))
+        return 0
     root_doc = load_root_doc(repo_root)
     status_doc = load_status_doc(repo_root)
 

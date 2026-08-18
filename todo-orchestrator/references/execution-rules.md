@@ -1,43 +1,13 @@
-# Execution Rules
+# Execution Rules v2
 
-Use these rules after planning is complete.
+Run `todo continue --json`; the returned capsule is the execution guide. Do not reconstruct readiness from Markdown.
 
-## Canonical Source Of Truth
-
-- read root `todos.md` before continuing work
-- read `todo-status.md` before claiming or resuming a parallel workstream
-- read the relevant `todos/<workstream>.md` file for the detailed plan
-- treat workstream frontmatter as the authoritative source for ownership, lifecycle, and freshness metadata
-- treat the ledger as the active execution guide
-
-## Default Behavior
-
-- continue non-interactively when the next action is already clear
-- if a stream is `claimed`, choose another stream unless you are the writer releasing or finishing it
-- if a stream is `ready` or `idle` and not already claimed elsewhere, pick it up immediately instead of waiting
-- if a stream is marked `stale`, review or reactivate it before resuming implementation
-- update task states, progress notes, assumptions, blockers, and next actions as work proceeds
-- keep `todo-status.md` synchronized with pickup state and the short next-step summary
-- refresh `last_heartbeat_at` on substantive workstream updates and `last_reviewed_at` when doing stale review
-- prefer relevant repo-local skills and reference files when they are a better fit for the current step
-
-## When To Ask
-
-Stop and ask only when:
-
-- credentials or access are missing
-- the next step is destructive or irreversible
-- ambiguity is severe enough that substantial work would likely be wasted
-
-Before stopping, confirm there is no `ready` or `idle` stream you can advance yourself.
-
-If you stop, write the blocker and the exact missing decision into the ledger first.
-
-## Cleanup
-
-- `todo-cleanup` is explicit mode only
-- full cleanup may be reported as safe once every tracked workstream is `done` or `superseded`
-- `stale` workstreams still block full cleanup
-- partial cleanup may still be available when completed terminal workstreams exist alongside active or stale survivors
-- include `stale` in partial cleanup only when the user explicitly requests that scope
-- it must not run automatically during ordinary execution
+- Preserve the opaque claim token and renew the lease during long work.
+- Stay within exclusive roots; use named locks for shared critical sections.
+- Poll relevant event deltas before integration-sensitive decisions.
+- Run declared gates so evidence, inputs, resources, and results are recorded.
+- Reach checkpoints and change interfaces only through authenticated commands.
+- Stop on `attention_required` and inspect the invalidation or orphan report.
+- Finish through `complete`, `handoff`, `block`, or `release`.
+- Ask the user only for a declared human decision, missing authority/access, a destructive action, or genuine ambiguity with no safe claimable alternative.
+- Never auto-clean durable state.

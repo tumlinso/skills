@@ -22,6 +22,7 @@ from todo_common import (
     remove_workstream_entry,
     write_document,
 )
+from v2_compat import migration_error, v2_project_exists
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -46,6 +47,8 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     repo_root = Path(args.repo_root).resolve()
+    if v2_project_exists(repo_root):
+        return migration_error(repo_root, "cleanup_todos.py", "cleanup --json")
 
     root_doc = load_root_doc(repo_root)
     status_doc = load_status_doc(repo_root)

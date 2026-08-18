@@ -1,0 +1,18 @@
+{
+  "configuration": {
+    "busy_timeout_ms": 5000,
+    "claim_lease_seconds": 7200,
+    "context_budget_bytes": 12000,
+    "legacy_review_days": {
+      "blocked": 7,
+      "in_progress": 3,
+      "planned": 3,
+      "stale": 3
+    },
+    "resource_lease_seconds": 300
+  },
+  "created_at": "2026-08-18T15:07:15Z",
+  "project_name": "Todo Orchestrator v2 Overhaul",
+  "project_uuid": "9d0f506f-8677-4660-ac11-e64ab40f6026",
+  "schema_version": 2
+}

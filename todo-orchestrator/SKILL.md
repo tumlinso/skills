@@ -1,234 +1,159 @@
 ---
 name: todo-orchestrator
-description: Standalone orchestration skill for substantial multi-step work that needs deep planning, a persistent `todos.md` ledger, a legible `todo-status.md` pickup register, runtime discovery of relevant repo-local skills and reference files, and non-interactive execution after planning. Use when Codex should plan with the user, write and maintain `todos.md`, resume from an existing ledger, coordinate concurrent workstreams, surface delegation-ready substreams, or keep working through a repo task until it is done. Use `todo-cleanup` only for explicit cleanup of tracked workstream ledgers, either full cleanup when every stream is terminal or partial cleanup when the user explicitly requests a limited scope. Do not use this skill for narrow one-off tasks that already clearly belong to a more specialized skill.
+description: Transactional orchestration for substantial multi-step projects. Use when Codex should create or continue a persistent task graph, atomically claim safe work across parallel chats in one repository/worktree, coordinate checkpoints, barriers, interfaces, ownership scopes, named locks, scarce resources, gates, evidence, handoffs, or migrate legacy todos.md ledgers. A fresh chat should be able to invoke this skill and continue without the user restating project architecture.
 ---
 
 # Todo Orchestrator
 
-Use this skill as the orchestration layer for substantial work.
+Use the v2 command line as the coordination authority. SQLite is the live operational source of truth; `.todo-orchestrator/state.snapshot.json` is durable recovery state; `todos.md`, `todo-status.md`, and `todos/*.md` are generated human projections and legacy migration inputs.
 
-This skill is responsible for:
+Do not use this skill for a narrow one-step request that clearly belongs to another specialized skill.
 
-- building a strong plan with the user when the task is substantial, ambiguous, or multi-step
-- writing that plan into `todos.md`
-- treating `todos.md` as the canonical execution ledger
-- keeping `todo-status.md` as the quick pickup register for parallel or resumable work
-- supporting concurrent work through workstream files under `todos/`
-- keeping workstream frontmatter authoritative for lifecycle, freshness, and ownership metadata
-- discovering relevant repo-local skills and reference files at runtime
-- continuing implementation non-interactively after planning unless truly blocked
+## Normal Startup: Continue
 
-Do not let this skill steal obvious one-off work from a better specialized skill. If the task is already narrow and a specialized skill is clearly the best fit, use that specialized skill directly instead of wrapping it in orchestration.
+When the user says “Use `$todo-orchestrator` and continue”:
 
-## Trigger Boundary
+1. Locate the repository root and read repository `AGENTS.md` if present.
+2. Resolve this skill’s `scripts/todo.py` path. Do not assume it is inside the target repository.
+3. Run:
 
-Use this skill when the user is asking for any of:
+   ```bash
+   python <skill-dir>/scripts/todo.py bootstrap --repo-root <repo-root> --json
+   python <skill-dir>/scripts/todo.py continue --repo-root <repo-root> --json
+   ```
 
-- "plan this with me and then execute it"
-- "turn this rough idea into a task plan and work through it"
-- "keep working through this repo task using `todos.md`"
-- "resume the current plan from `todos.md`"
-- "organize this work and keep going until it is done"
-- substantial multi-step repo work where a persistent plan or concurrent workstreams would prevent drift
+4. Use only the returned task capsule for orchestration context. Inspect the task’s relevant source, declared paths, interfaces, and any on-demand capsule sections; do not begin by rereading every Markdown ledger.
+5. Proceed with the claimed task without asking the user to choose among safe ready work. Ask only when the graph explicitly requires a human decision or no safe action exists.
 
-Do not use this skill when the task is primarily:
+`continue` registers a distinct session, reconciles expired claims, computes readiness, atomically selects one task, acquires claim-time locks/resources, and returns claim/session credentials plus a compact context capsule. Preserve the claim token for subsequent commands. Tokens are secrets: do not commit or paste them into ledgers.
 
-- a simple one-step fix
-- a narrow request that already clearly belongs to a specialized skill
-- purely conversational brainstorming with no intent to turn it into execution
+If bootstrap created an empty project with no graph, follow “Planning a New Project.” If legacy Markdown exists but has not been migrated, follow “Legacy Migration.”
 
-## Startup
+## During Work
 
-Before proposing a plan or making implementation decisions:
+- Treat `task.objective`, `task.next_action`, `scope`, `prerequisites`, `checkpoints`, `gates`, `resources`, `interlocks`, and `active_siblings` in the capsule as binding coordination state.
+- Edit only declared exclusive paths. Read-only paths may be inspected but not modified.
+- Before editing an uncertain path, run `todo guard --paths ...`.
+- Acquire each named shared lock before its critical section. Use `todo exec --lock <name> -- <argv...>` for a short wrapped critical section.
+- Use `todo gate run` for validation, tests, benchmarks, and other evidence-bearing checks. Never benchmark on an unleased exclusive resource.
+- Run `todo pulse` during long unwrapped work. Authenticated coordination commands also refresh the lease.
+- Run `todo changes --since <delta_cursor>` after material pauses and before integration-sensitive work.
+- If an interface or checkpoint is invalidated, stop consuming the stale contract and follow the returned recovery state.
+- Never reset, overwrite, clean, or attribute shared-worktree changes merely because they are outside the current task. Run `todo audit` and reconcile ownership first.
 
-1. Inspect the repo context first.
-2. Read repo-level `AGENTS.md` if present.
-3. Read root `todos.md` if present.
-4. Read `todo-status.md` if present to see pickup-ready, claimed, idle, and completed workstreams.
-5. Inspect `todos/` for active workstream ledgers if present.
-6. Discover available repo-local skills dynamically.
-7. Discover useful repo-local reference files dynamically.
-8. Run a stale review when long-idle or suspicious workstreams might have drifted from reality.
-9. Determine whether there is already an active plan that should be resumed instead of replaced.
-
-Prefer the helper scripts when they are available:
+Useful commands:
 
 ```bash
-python todo-orchestrator/scripts/discover_skills_and_refs.py --repo-root <repo-root> --task "<task>"
-python todo-orchestrator/scripts/summarize_todos.py --repo-root <repo-root>
-python todo-orchestrator/scripts/cleanup_todos.py --repo-root <repo-root> --dry-run
-python todo-orchestrator/scripts/review_staleness.py --repo-root <repo-root> --dry-run
+python <skill-dir>/scripts/todo.py context --repo-root <repo> --claim-token <token> --section dependencies --json
+python <skill-dir>/scripts/todo.py changes --repo-root <repo> --claim-token <token> --since <revision> --json
+python <skill-dir>/scripts/todo.py guard --repo-root <repo> --claim-token <token> --paths <path...> --json
+python <skill-dir>/scripts/todo.py audit --repo-root <repo> --json
 ```
 
-Do not hardcode companion skill names into your working method. Discover them from the repo at runtime and record the relevant ones in the ledger.
+## Checkpoints, Interfaces, and Barriers
 
-## Planning
+A checkpoint is independent of task completion. Reach it only through:
 
-When the work is substantial, ambiguous, or multi-step:
+```bash
+python <skill-dir>/scripts/todo.py checkpoint reach <checkpoint-id> --repo-root <repo> --claim-token <token> --json
+```
 
-1. Read `references/planning-workflow.md`.
-2. Plan with the user in depth before implementation.
-3. Challenge weak assumptions when that improves the plan.
-4. Turn fuzzy goals into concrete steps, validation, and done criteria.
-5. Identify likely relevant repo-local skills and reference files.
-6. Split the work into domain-based workstreams when that creates clear ownership or enables parallel pickup.
-7. Tell the user which workstreams are good delegation candidates and which must remain serial.
-8. Write the resulting plan into the ledger.
-9. Ensure repo-level `AGENTS.md` contains the durable reminders to consult `todos.md`.
+The command verifies required gates, records evidence, freezes configured interfaces, reevaluates barriers, and unblocks dependents. Revoke through the CLI; active dependents become `attention_required`.
+
+Freeze or revise an owned interface only through `todo interface freeze|revise`. An explicit revision recalculates contract hashes, emits an event, and marks active consumers `attention_required`.
+
+Barrier state is computed from structured requirements. Do not manually declare a fan-in complete. Use `todo barrier explain <id> --json` when blocked.
+
+## Gates and Resources
+
+Prefer argv arrays in plan gates. Gate commands can declare working directory, environment, timeout, expected exit code, input paths/interfaces, locks, and generic resource selectors.
+
+The scheduler is resource-agnostic. `gpu:any` is one optional selector supported by the NVIDIA inventory provider; other classes may represent CPU benchmark slots, ports, datasets, build directories, or external services. A gate acquires resources immediately before execution, heartbeats while the child runs, sets provider environment such as `CUDA_VISIBLE_DEVICES`, captures evidence, and releases leases in finalization.
+
+If all matching resources are busy, accept the structured unavailable result or use an explicitly bounded `resource acquire --wait <seconds>`. Never bypass allocation with an ad hoc benchmark command.
+
+## Finish, Block, Release, or Hand Off
+
+Use exactly one structured exit path:
+
+```bash
+python <skill-dir>/scripts/todo.py complete --repo-root <repo> --claim-token <token> --disposition implemented --json
+python <skill-dir>/scripts/todo.py handoff --repo-root <repo> --claim-token <token> --note "<concise note>" --json
+python <skill-dir>/scripts/todo.py block --repo-root <repo> --claim-token <token> --reason "<structured reason>" --json
+python <skill-dir>/scripts/todo.py release --repo-root <repo> --claim-token <token> --json
+```
+
+`complete` refuses to close a task while required gates are missing, failed, or invalidated. Use the disposition allowed by the task policy. `evaluated_not_promoted` is a normal generic outcome for a correctly executed experiment that did not satisfy its promotion threshold.
+
+`handoff` derives changed owned files, diffstat, checkpoint/gate evidence, interfaces, resource history, warnings, and revision. Add only a concise note; do not rewrite project architecture in prose.
+
+## Orphan Recovery
+
+Claims use a configurable lease (default two hours), separate from legacy 3/7-day review freshness. Expiry does not blindly reassign dirty work:
+
+- unchanged owned scopes return safely to ready;
+- changed scopes become orphaned/quarantined and `attention_required`;
+- demonstrably live local resource processes are not reclaimed solely by time.
 
 Use:
 
 ```bash
-python todo-orchestrator/scripts/init_todos.py --repo-root <repo-root> --objective "<objective>"
-python todo-orchestrator/scripts/update_todos.py --repo-root <repo-root> --workstream <slug> ...
+python <skill-dir>/scripts/todo.py recover inspect <task-id> --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py recover adopt <task-id> --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py recover release <task-id> --repo-root <repo> --json
 ```
 
-When assumptions, progress notes, or pickup context contain markdown or shell-sensitive text such as backticks or globs, prefer the structured payload path instead of raw shell arguments:
+Inspect before adopting or explicitly acknowledging dirty release. Never discard orphaned files.
+
+## Planning a New Project
+
+For substantial new work, read `references/planning-workflow.md` and create a v2 JSON plan. Use a scaffold when useful:
 
 ```bash
-python todo-orchestrator/scripts/update_todos.py --repo-root <repo-root> --payload-file - <<'EOF'
-{"workstream":"debug-stream","progress_note":["Preserve `code` and `*.globs` exactly."]}
-EOF
+python <skill-dir>/scripts/todo.py plan scaffold fanout --output <draft.json> --json
+python <skill-dir>/scripts/todo.py plan validate --file <draft.json> --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py plan diff --file <draft.json> --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py plan apply --file <draft.json> --repo-root <repo> --json
 ```
 
-Planning outputs must include:
+The plan should declaratively capture hierarchy, typed prerequisites, checkpoints, barriers, decisions, ownership scopes, interfaces, locks, resource requests, gates, dispositions, and relevant invariants. Do not ask the user to hand-author JSON; Codex creates it from the project request and repository evidence.
 
-- current objective
-- a quick-start summary for each workstream that another thread can pick up without prior context
-- the exact repo-local skills and reference files that a fresh thread must read before starting each workstream
-- planning notes
-- assumptions
-- task list
-- blockers
-- suggested skills
-- useful reference files
-- progress notes
-- next actions
-- done criteria
+Validate and show the semantic diff before applying a substantial update. Plan application is one transaction.
 
-For concurrent work, use:
+## Legacy Migration
 
-- root `todos.md` as the canonical index and shared-status ledger
-- `todo-status.md` as the legible pickup register
-- `todos/<workstream>.md` for detailed execution of each active stream
-- workstream frontmatter as the authoritative metadata surface for status, ownership, and freshness
+Existing `todos.md`, `todo-status.md`, and `todos/*.md` remain supported. Bootstrap first, then dry-run before apply:
 
-If a workstream already exists, preserve and extend it instead of replacing it.
+```bash
+python <skill-dir>/scripts/todo.py migrate markdown --repo-root <repo> --dry-run --json
+python <skill-dir>/scripts/todo.py migrate markdown --repo-root <repo> --apply --json
+```
 
-When splitting into workstreams:
+Legacy owner labels are history, not session credentials. Legacy claimed entries become orphaned/attention-required migration records. Preserve unknown user-authored sections. After migration, never use Markdown as authority for claims, readiness, locks, resources, dependencies, or barriers.
 
-- keep each workstream narrow enough that a fresh thread can own it without rediscovering the entire repo
-- put the domain boundary and handoff context near the top of the workstream file
-- name the exact skills and references to load in the quick-start block, not just later in the full ledger
-- mark streams that are good delegation targets in `todo-status.md`
+Legacy scripts continue to work only before v2 bootstrap. Once `.todo-orchestrator/project.json` exists, compatibility wrappers direct mutations to the unified CLI so two state engines cannot diverge.
 
-## Execution
-
-After planning is complete:
-
-1. Read `todos.md` before continuing work.
-2. Read `todo-status.md` before claiming or starting a parallel workstream.
-3. If the relevant workstream exists under `todos/`, read that file too.
-4. Use the recorded plan as the active source of truth.
-5. Keep task states, assumptions, blockers, suggested skills, useful references, progress notes, and next actions current as implementation proceeds.
-6. Prefer a specialized repo-local skill when runtime discovery shows it is a better fit for the next step.
-7. Continue until the task is actually complete.
-
-The implementation ledger must stay current enough that another agent can resume from it without rediscovering context.
-
-Execution-state rules:
-
-- `planned` + `ready`: not started and safe to pick up
-- `in_progress` + `claimed`: currently being written; choose another stream
-- `in_progress` + `idle`: incomplete but resumable; safe to pick up
-- `blocked`: not pickable until the blocker is cleared
-- `stale` + `closed`: do not resume until a stale review says it is still current or it is explicitly reactivated
-- `done` + `closed`: finished and eligible for cleanup review
-- `superseded` + `closed`: terminal and cleanup-eligible
-
-If the user does not delegate parallelizable work, continue through the workstreams serially yourself. If a stream is `ready` or `idle` and not already claimed elsewhere, pick it up and keep going instead of waiting for another thread. If `todo-status.md` shows another agent already claimed a stream, skip it and choose a different ready or idle stream.
-
-## Non-Interactive Implementation
-
-Default to non-interactive execution once planning is complete.
-
-Do not stop after each milestone. Do not repeatedly ask what to do next if `todos.md` already makes the next step clear.
-
-Before asking the user for input, check whether any stream is still actionable. If a workstream is `ready` or `idle` and not already claimed by another thread, claim it and continue. Ask only when no stream can be advanced without one of the true blockers below.
-
-Make reasonable assumptions and record them in the ledger. Ask for guidance only when truly blocked by:
-
-- missing credentials or access
-- destructive or irreversible actions
-- ambiguity severe enough that substantial work would likely be wasted
-
-If blocked, update `Blockers`, `Assumptions`, and `Next Actions` before asking.
-
-If a thread stops work without finishing:
-
-- release the stream from `claimed` to `idle`
-- leave a short next action in `todo-status.md`
-- make sure the workstream file is still sufficient for a fresh pickup
-- if the stream looks abandoned or obsolete, use `review_staleness.py` rather than guessing
-
-## Ledger Rules
-
-Follow `references/todo-format.md` for the default layout.
-
-Use root `todos.md` as the canonical top-level ledger. For concurrent work:
-
-- keep shared assumptions and top-level status in root `todos.md`
-- keep quick pickup state in `todo-status.md`
-- keep detailed execution in `todos/<workstream>.md`
-- keep frontmatter in `todos/<workstream>.md` authoritative for `status`, `execution`, `owner`, timestamps, and stale metadata
-- keep the root `Workstreams` section synchronized with per-workstream status
-
-Use `todo-status.md` to distinguish work that is merely unfinished from work that is actively being written. Another thread should be able to read that file and decide what to pick up next without additional context.
-
-Staleness rules:
-
-- use `review_staleness.py` to classify streams as `fresh`, `aging`, `stale_candidate`, `stale`, or `superseded`
-- keep default stale windows short unless a stream explicitly overrides them: `planned`, `in_progress`, and `stale` default to 3 days; `blocked` defaults to 7 days
-- `review_staleness.py --apply` may mark eligible stale candidates as `stale`, but it must not auto-supersede or auto-clean them
-- `stale` blocks pickup and cleanup until a human reclassifies or reactivates the stream
-
-`todo-cleanup` is explicit cleanup mode:
-
-- only use it when the user explicitly asks for cleanup
-- full cleanup is safe once every tracked workstream is `done` or `superseded`
-- partial cleanup is allowed only when the user explicitly requests it and the cleanup scope is explicit
-- default partial-cleanup scope is completed terminal streams; `stale` is included only when explicitly requested in `--scope`
-- it must not run automatically
-- full cleanup deletes every cleanup-eligible workstream ledger and compacts the root ledgers to the empty state
-- partial cleanup deletes only the selected cleanup-eligible workstream ledgers, removes their root/status entries, and rebuilds shared ledger sections from the surviving workstreams
-
-Do not overwrite user-written planning notes carelessly. Preserve unmanaged text where possible and update the managed structured sections in place.
-
-## Reference Map
-
-- `references/planning-workflow.md`: how to do deep collaborative planning before execution
-- `references/todo-format.md`: stable markdown layout for root and workstream ledgers
-- `references/status-and-cleanup.md`: pickup register semantics, claiming rules, and explicit cleanup behavior
-- `references/execution-rules.md`: implementation-mode rules for non-interactive execution
-- `references/examples.md`: request shapes that should or should not trigger this skill
-
-## Helper Scripts
-
-- `scripts/init_todos.py`: initialize root `todos.md`, create `todos/`, and optionally create a workstream ledger
-- `scripts/update_todos.py`: update structured sections, task states, blockers, assumptions, suggested skills, useful references, and next actions; use `--payload-file -` for shell-sensitive text
-- `scripts/summarize_todos.py`: emit a concise summary of active workstreams, blockers, and next actions
-- `scripts/review_staleness.py`: classify workstream freshness and optionally mark stale candidates as `stale`
-- `scripts/cleanup_todos.py`: run explicit full or partial cleanup, remove selected cleanup-eligible ledgers, and rebuild the root/status ledgers accordingly
-- `scripts/discover_skills_and_refs.py`: inspect the repo for candidate skills and likely-useful reference files
-
-If the repo already has stronger utilities for these jobs, use them instead of duplicating behavior.
+Legacy review defaults remain: planned, in-progress, and stale streams use 3 days; blocked streams use 7 days. These review windows are unrelated to claim/resource leases.
 
 ## Hard Rules
 
-- Do not hardcode a fixed list of helper skills into the orchestration method.
-- Do not stop after writing a plan unless the task was explicitly planning-only.
-- Do not replace a clearly better specialized skill when one is available.
-- Do not keep interrupting implementation for confirmation when the ledger already makes the next step clear.
-- Do not replace existing user planning notes when an additive update is enough.
-- Do not treat `in_progress` alone as proof that another thread is actively writing; check `todo-status.md`.
-- Do not run `todo-cleanup` automatically.
+- Never manually declare a claim or directly edit runtime SQLite state.
+- Never treat Markdown pickup status as authoritative in v2.
+- Never edit a path owned by another active claim.
+- Never assume missing ownership means parallel-safe; the default is conservative.
+- Never cross an unopened barrier or ignore a checkpoint/interface invalidation.
+- Never modify a shared integration file without its named lock.
+- Never use an exclusive resource without a lease.
+- Never mark done without valid required gates.
+- Never auto-clean project state. Cleanup remains explicit-only.
+- Never rely on branch separation for coordination; v2 is designed for one branch and one shared worktree.
+
+## Reference Map
+
+- `references/v2-architecture.md`: state stores, transactions, recovery, and safety model
+- `references/project-plan-v2.md`: plan entities and examples
+- `references/cli-reference.md`: commands, JSON envelope, and stable exit codes
+- `references/planning-workflow.md`: evidence-first decomposition into the v2 graph
+- `references/status-and-cleanup.md`: computed state, leases, and explicit cleanup
+- `references/todo-format.md`: generated Markdown and legacy compatibility
+- `schemas/project-plan-v2.schema.json`: machine-readable plan schema

@@ -9,6 +9,10 @@ Use this file as the canonical index for substantial multi-step work.
 - New standalone skills should be tracked in todos.md and a dedicated workstream until validated.
 - Explicit PTX guidance in `cuda-v100` should stay request-only and should bias toward isolated hot-path inspection rather than monolithic code dumps.
 - The `cuda-v100` PTX path can add AST-driven helpers when libclang is available locally, even if Python bindings are not installed.
+- The legacy 3-day planned/in_progress/stale and 7-day blocked review windows remain compatibility behavior; claim leases are a distinct v2 mechanism.
+- TO-V2-01 through the atomic core of TO-V2-03 are a serial bootstrap lane.
+- No parallel skill edits are safe before TO-V2-BOOTSTRAP-PARALLEL-SAFE.
+- SQLite is live authority; JSON snapshots are durable recovery; Markdown is a generated projection and migration input.
 
 ## Suggested Skills
 - `cuda-v100`
@@ -101,6 +105,19 @@ Use this file as the canonical index for substantial multi-step work.
 - `deprecate-cuda-v100-by-routing-live-handoffs-to-cuda-and-leaving-only-a-compatibility-shim` | status: done | owner: codex | file: `todos/deprecate-cuda-v100-by-routing-live-handoffs-to-cuda-and-leaving-only-a-compatibility-shim.md` | objective: Deprecate cuda-v100 by routing live skill handoffs to cuda and leaving only a compatibility shim.
 - `cuda-context-routing-refactor` | status: done | owner: codex | file: `todos/cuda-context-routing-refactor.md` | objective: refactor the cuda skill into a dense two-stage routing tree with narrower context usage and stronger script-backed route selection
 - `cpp-context-compiler` | status: done | owner: codex | file: `todos/cpp-context-compiler.md` | objective: Implement and validate a complete V1 cpp-context-compiler Codex skill and local Clang-based toolkit
+- `to-v2-00` | status: in_progress | owner: codex-bootstrap | file: `todos/to-v2-00.md` | objective: TO-V2-00 Parent todo-orchestrator v2 overhaul epic
+- `to-v2-01` | status: done | owner: codex-bootstrap | file: `todos/to-v2-01.md` | objective: TO-V2-01 Preserve baseline and define migration fixtures
+- `to-v2-02` | status: done | owner: unassigned | file: `todos/to-v2-02.md` | objective: TO-V2-02 Transactional database, schema, revisions, and events
+- `to-v2-03` | status: done | owner: unassigned | file: `todos/to-v2-03.md` | objective: TO-V2-03 Unified CLI, sessions, and atomic continue/claim
+- `to-v2-04` | status: blocked | owner: unassigned | file: `todos/to-v2-04.md` | objective: TO-V2-04 Graph, readiness, checkpoints, barriers, and decisions
+- `to-v2-05` | status: blocked | owner: unassigned | file: `todos/to-v2-05.md` | objective: TO-V2-05 Generic resources, gate runner, and evidence
+- `to-v2-06` | status: blocked | owner: unassigned | file: `todos/to-v2-06.md` | objective: TO-V2-06 Ownership, Git audit, interfaces, and shared locks
+- `to-v2-07` | status: blocked | owner: unassigned | file: `todos/to-v2-07.md` | objective: TO-V2-07 Compact context, delta reporting, and handoff
+- `to-v2-08` | status: blocked | owner: unassigned | file: `todos/to-v2-08.md` | objective: TO-V2-08 Markdown migration, projections, and compatibility wrappers
+- `to-v2-09` | status: blocked | owner: unassigned | file: `todos/to-v2-09.md` | objective: TO-V2-09 SKILL.md and reference documentation
+- `to-v2-10` | status: blocked | owner: unassigned | file: `todos/to-v2-10.md` | objective: TO-V2-10 Concurrency, migration, and failure-recovery tests
+- `to-v2-11` | status: blocked | owner: unassigned | file: `todos/to-v2-11.md` | objective: TO-V2-11 CP-Math fixture and end-to-end dogfood
+- `to-v2-12` | status: blocked | owner: unassigned | file: `todos/to-v2-12.md` | objective: TO-V2-12 Final integration and release readiness
 
 ## Global Blockers
 _None recorded yet._
@@ -167,6 +184,12 @@ _None recorded yet._
 - Implemented the complete cpp-context-compiler V1 with a dynamic libclang semantic index, optional LibTooling target, incremental JSONL records, deterministic routing/slicing/views, safe plans, transactions, rollback, sharding, linting, tests, and evals.
 - Validated 17 integration and unit tests, the CMake core smoke test, skill metadata, a 14-prompt eval with 47.63 percent median context reduction and zero implicit mutations, and byte-exact reversal for rename and sharding plans.
 - Independent retrieval and mutation forward-tests exposed and drove fixes for macro/nonlocal-state routing, rename accounting, sharding slice cost, and verification tier enforcement.
+- Preserved and pushed the complete pre-v2 user worktree as commit de56e76 after all 23 legacy tests passed.
+- Baseline commit de56e76 is pushed to origin/main; 23 legacy tests passed and git diff --check was clean.
+- Baseline preserved in pushed commit de56e76; legacy 23-test behavior and live 3/7-day freshness captured by fixtures and compatibility tests.
+- SQLite schema, migrations, revisions, append-only events, snapshot recovery, atomic projections, and doctor foundation implemented and passing v2 foundation tests.
+- Unified modular CLI, generated session/claim tokens, computed readiness, and BEGIN IMMEDIATE atomic pickup implemented. Multiprocess tests prove 5 unique claims from 10 contenders and one winner from 8 contenders.
+- Checkpoint TO-V2-BOOTSTRAP-PARALLEL-SAFE reached after 31 tests passed (23 legacy + 8 v2), including real multiprocess atomic-claim and path-conflict coverage.
 
 ## Next Actions
 - No immediate action; resume the `cuda-v100` splitter only if the user wants deeper dependency recovery or build-system-aware extraction.
@@ -188,6 +211,8 @@ _None recorded yet._
 - Inspect the current top-level and family routing files, then patch the new dense two-stage tree.
 - No immediate action; extend the route recommender only if real workloads expose missing route labels or ambiguous follow-on decisions.
 - No immediate action; use the skill on an opted-in C++ repository and extend conservative rules only with fixtures and proof-level verification.
+- Complete TO-V2-01 fixtures, then implement the serial SQLite and atomic-claim bootstrap lane.
+- Add immutable legacy fixtures, then close TO-V2-01 and begin TO-V2-02.
 
 ## Done Criteria
 - `cuda-v100` routes explicit PTX requests into a concrete `sm_70` hot-path isolation workflow before dumping PTX or SASS.
@@ -236,3 +261,28 @@ _None recorded yet._
 - Opted-in fixture scans, resolves symbols, slices within budgets, and maps compact views to canonical source.
 - Sharding and one conservative rewrite plan apply transactionally, verify, reverse, and roll back on failure.
 - Tests and evals demonstrate deterministic outputs, context savings, correctness, protected names, and safe degraded behavior.
+- All v2 definition-of-done requirements are implemented and validated without reverting the live legacy freshness behavior.
+- Representative legacy ledgers and discrepancies are covered by migration fixtures without altering legacy runtime behavior.
+- Baseline commit is pushed and representative legacy migration fixtures exist.
+- TO-V2-BOOTSTRAP-PARALLEL-SAFE reached: migrations, revisions/events, atomic claims, tokens, response/command registration contracts, and concurrency tests pass.
+
+<!-- todo-orchestrator:v2-managed:start -->
+# Todo Orchestrator v2 Projection
+
+Project revision: `113`
+
+## Workstreams
+- `TO-V2-01` | kind: workstream | status: done | parent: TO-V2-00 | objective: Preserve and prove legacy behavior before semantic changes.
+- `TO-V2-02` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement project identity, migrations, revisions, events, snapshots, and projections.
+- `TO-V2-03` | kind: workstream | status: done | parent: TO-V2-00 | objective: Freeze the modular command, token, event, and atomic pickup contracts.
+- `TO-V2-04` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement typed graph semantics and computed readiness.
+- `TO-V2-05` | kind: workstream | status: done | parent: TO-V2-00 | objective: Schedule generic resources and capture gate evidence transactionally.
+- `TO-V2-06` | kind: workstream | status: done | parent: TO-V2-00 | objective: Protect shared-worktree paths, interfaces, and critical sections.
+- `TO-V2-07` | kind: workstream | status: done | parent: TO-V2-00 | objective: Return compact task-specific state and evidence-backed handoffs.
+- `TO-V2-08` | kind: workstream | status: done | parent: TO-V2-00 | objective: Migrate legacy ledgers without creating a second authority.
+- `TO-V2-09` | kind: workstream | status: done | parent: TO-V2-00 | objective: Document the low-token transactional workflow.
+- `TO-V2-10` | kind: validation_task | status: done | parent: TO-V2-00 | objective: Prove multiprocess, migration, resource, recovery, and compatibility behavior.
+- `TO-V2-11` | kind: validation_task | status: done | parent: TO-V2-00 | objective: Prove the generic abstraction replaces project-specific orchestration prose.
+- `TO-V2-12` | kind: integration_task | status: done | parent: TO-V2-00 | objective: Integrate and verify the complete v2 skill without disturbing unrelated work.
+- `TO-V2-00` | kind: epic | status: done | parent: - | objective: Replace cooperative Markdown synchronization with a project-agnostic transactional coordination system.
+<!-- todo-orchestrator:v2-managed:end -->
