@@ -50,7 +50,7 @@ Every entry should capture:
 
 ## Handoff Rule
 
-Once the entry exists, use `cuda-v100` for:
+Once the entry exists, use `cuda` for:
 
 - Torch extension boundary design
 - ATen and stream rules

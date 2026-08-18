@@ -46,7 +46,7 @@ Then state:
 - Keep the rest of the model conventional unless the low-level path is clearly justified.
 - Treat manual gradients and optimizer ownership as design contracts, not implementation details.
 - Prefer a selective low-level subsystem over rewriting the entire model stack without evidence.
-- Hand off to `cuda-v100` only after forward, backward, optimizer, and trainer ownership are stable enough to implement.
+- Hand off to `cuda` only after forward, backward, optimizer, and trainer ownership are stable enough to implement.
 
 ## Return To Root When
 

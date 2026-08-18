@@ -31,7 +31,7 @@ Then:
 
 - return to `references/route-model-family.md` if the need for custom ops suggests the architecture itself should change
 - switch to `references/route-low-level-ml-boundary.md` if the component may own backward, optimizer, or trainer logic outside Torch or libtorch
-- hand off to `cuda-v100` once the op boundary is recorded and the remaining questions are implementation, fit, or profiling
+- hand off to `cuda` once the op boundary is recorded and the remaining questions are implementation, fit, or profiling
 
 ## Return To Root When
 

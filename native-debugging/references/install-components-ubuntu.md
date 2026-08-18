@@ -41,7 +41,7 @@ Install debug-symbol packages for libc, libstdc++, and any large third-party lib
 
 ## CUDA Follow-On Components
 
-Only install these if the issue truly belongs in `cuda-v100`:
+Only install these if the issue truly belongs in `cuda`:
 
 - NVIDIA driver matching the GPU and kernel
 - CUDA Toolkit or NVIDIA HPC SDK that provides `cuda-gdb`

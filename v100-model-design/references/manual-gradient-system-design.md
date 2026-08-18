@@ -47,7 +47,7 @@ Prefer saving when:
 
 - Keep sparse gradients sparse only when the update path can actually consume them efficiently.
 - Do not promise sparse backward semantics if the optimizer path will densify immediately.
-- Make layout ownership explicit at the design level so `cuda-v100` can implement the correct state contract later.
+- Make layout ownership explicit at the design level so `cuda` can implement the correct state contract later.
 
 ## Output Checklist
 

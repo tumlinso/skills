@@ -188,6 +188,7 @@ Use `todo-status.md` to distinguish work that is merely unfinished from work tha
 Staleness rules:
 
 - use `review_staleness.py` to classify streams as `fresh`, `aging`, `stale_candidate`, `stale`, or `superseded`
+- keep default stale windows short unless a stream explicitly overrides them: `planned`, `in_progress`, and `stale` default to 3 days; `blocked` defaults to 7 days
 - `review_staleness.py --apply` may mark eligible stale candidates as `stale`, but it must not auto-supersede or auto-clean them
 - `stale` blocks pickup and cleanup until a human reclassifies or reactivates the stream
 

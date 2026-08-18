@@ -9,6 +9,7 @@ SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 
 from todo_common import (  # noqa: E402
+    DEFAULT_STALE_AFTER_DAYS,
     detect_resume_state,
     ensure_agents_md,
     ensure_root_files,
@@ -65,6 +66,12 @@ class ResumeLogicTests(unittest.TestCase):
             text = first.read_text(encoding="utf-8")
             self.assertEqual(text.count("todo-orchestrator:start"), 1)
             self.assertIn("consult `todos.md` first", text)
+
+    def test_default_stale_windows_are_short(self) -> None:
+        self.assertEqual(DEFAULT_STALE_AFTER_DAYS["planned"], 3)
+        self.assertEqual(DEFAULT_STALE_AFTER_DAYS["in_progress"], 3)
+        self.assertEqual(DEFAULT_STALE_AFTER_DAYS["blocked"], 7)
+        self.assertEqual(DEFAULT_STALE_AFTER_DAYS["stale"], 3)
 
 
 if __name__ == "__main__":

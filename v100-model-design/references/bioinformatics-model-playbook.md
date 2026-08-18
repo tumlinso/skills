@@ -94,4 +94,4 @@ Route sparse or nonstandard-layout training questions into `references/sparse-la
 - optimizer state that should stay sparse or blocked
 - a low-level trainer boundary around a hot omics subsystem
 
-Use the ordinary custom-op route only when the unresolved question is still a normal extension boundary. Hand implementation to `cuda-v100` only after the boundary, gradient ownership, and optimizer ownership are stable.
+Use the ordinary custom-op route only when the unresolved question is still a normal extension boundary. Hand implementation to `cuda` only after the boundary, gradient ownership, and optimizer ownership are stable.

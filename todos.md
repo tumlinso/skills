@@ -23,6 +23,22 @@ Use this file as the canonical index for substantial multi-step work.
 - `compare-benchmarks` - Standalone comparison harness skill for pitting implementation A against B under one contract.
 - `todo-orchestrator` - Primary skill being extended and validated.
 - `skill-creator` - Keep the skill concise while adding the new workflow surface.
+- `todo-orchestrator` - Track the substantial multi-step skill buildout in the shared ledger.
+- `skill-creator` - Keep the new skill segmented, concise, and validated as a real standalone skill.
+- `cuda-v100` - Reuse and improve existing Volta routing, profiling, and low-level optimization patterns.
+- `todo-orchestrator` - Track the follow-on expansion as a separate resumable workstream.
+- `cuda` - Primary skill being deepened and brought closer to cross-family parity.
+- `cuda-v100` - Reference the older Volta path map when expanding the new family routers.
+- `todo-orchestrator` - Track the native-router completion as a dedicated resumable workstream.
+- `cuda` - Primary skill being corrected so it can truly supersede the legacy V100 path.
+- `cuda-v100` - Reference route-shape and domain coverage baseline.
+- `todo-orchestrator` - Track the deprecation as a resumable multi-file migration.
+- `skill-creator` - Keep the shim and metadata concise rather than cloning the old router again.
+- `cuda` - Primary active CUDA route that now absorbs all live handoffs.
+- `skill-creator` - Keep the skill dense, segmented, and progressively disclosed.
+- `todo-orchestrator` - Track this substantial refactor in todos.md and todo-status.md.
+- `skill-creator` - Create and validate the standalone skill package.
+- `todo-orchestrator` - Maintain a resumable implementation ledger.
 
 ## Useful Reference Files
 - `cuda-v100/references/benchmark-standardization.md`
@@ -44,6 +60,30 @@ Use this file as the canonical index for substantial multi-step work.
 - `compare-benchmarks/references/comparison-contract.md` - Shared A/B run contract and summary layout.
 - `todo-orchestrator/references/todo-format.md` - Canonical ledger and pickup-register layout.
 - `todo-orchestrator/references/status-and-cleanup.md` - Claiming rules and explicit cleanup policy.
+- `cuda-v100/SKILL.md` - Source skill to copy and reorganize into the new primary `cuda` skill.
+- `cuda-v100/references/v100_programming_guide.md` - Current Volta system and optimization doctrine to preserve and deepen.
+- `cuda-v100/references/v100_cuda_cpp_optimize.md` - Current low-level CUDA/C++ rules and profiler guidance to refactor into family-local docs.
+- `todo-orchestrator/references/todo-format.md` - Canonical workstream format for keeping this task resumable.
+- `cuda/SKILL.md` - Current primary router that will gain deeper Volta and broader family routing.
+- `cuda/references/architectures/volta/router.md` - Immediate entrypoint for the stronger native Volta path.
+- `cuda/references/architectures/volta/native-v100-extreme.md` - Current Volta-specific optimization reference to deepen.
+- `cuda-v100/SKILL.md` - Legacy path map to mirror where parity is still missing.
+- `cuda/references/architectures/volta/router.md` - Target file that must become the full native super-router.
+- `cuda-v100/SKILL.md` - Legacy Volta route map to mirror and adapt.
+- `cuda/references/architectures/volta/native-v100-extreme.md` - Stronger new native addendum that should stay in the upgraded router.
+- `cuda/SKILL.md` - Top-level router that should still point cleanly into the completed Volta route.
+- `cuda/SKILL.md` - Primary route that should replace all active `cuda-v100` handoffs.
+- `native-debugging/references/cuda-follow-on.md` - Follow-on route that previously pointed into `cuda-v100`.
+- `compare-benchmarks/references/cuda-follow-on.md` - Comparison follow-on route that previously pointed into `cuda-v100`.
+- `v100-model-design/SKILL.md` - Design skill that previously handed implementation work to `cuda-v100`.
+- `cuda/SKILL.md` - Current top-level routing surface to compress.
+- `cuda/references/architectures/volta/router.md` - Largest route fan-out and main context hog.
+- `cuda/references/v100_cuda_cpp_optimize.md` - Largest Volta implementation manual to split.
+- `cuda/references/v100_programming_guide.md` - Second large Volta manual to split.
+- `todo-orchestrator/references/todo-format.md` - Ledger format guidance if the workstream file needs manual cleanup.
+- `/home/tumlinson/.codex/skills/.system/skill-creator/SKILL.md` - Skill structure and validation workflow.
+- `todo-orchestrator/references/planning-workflow.md` - Multi-step execution planning.
+- `todo-orchestrator/references/todo-format.md` - Ledger schema.
 
 ## Workstreams
 - `cuda-v100-ptx-splitter` | status: done | owner: codex | file: `todos/cuda-v100-ptx-splitter.md` | objective: add an AST-driven helper to split multi-kernel CUDA translation units into focused single-kernel sources
@@ -55,6 +95,12 @@ Use this file as the canonical index for substantial multi-step work.
 - `cuda-v100-crash-debugging` | status: done | owner: unassigned | file: `todos/cuda-v100-crash-debugging.md` | objective: add summary-first crash and debugger helpers to cuda-v100
 - `todo-orchestrator-status-cleanup` | status: done | owner: codex | file: `todos/todo-orchestrator-status-cleanup.md` | objective: extend todo-orchestrator with todo-status pickup coordination and explicit cleanup
 - `native-debugging` | status: done | owner: codex | file: `todos/native-debugging.md` | objective: create a standalone native-debugging skill for Linux C/C++ debugging with CUDA follow-on routing
+- `build-a-new-primary-cuda-skill-by-copying-cuda-v100-expanding-volta-native-depth-and-adding-deep-architecture-specific-optimization-diagnostics-and-profiling-guidance-for-ampere-hopper-blackwell-and-gb200-nvl72` | status: done | owner: codex | file: `todos/build-a-new-primary-cuda-skill-by-copying-cuda-v100-expanding-volta-native-depth-and-adding-deep-architecture-specific-optimization-diagnostics-and-profiling-guidance-for-ampere-hopper-blackwell-and-gb200-nvl72.md` | objective: Build a new primary cuda skill by copying cuda-v100, expanding Volta/native depth, and adding deep architecture-specific optimization, diagnostics, and profiling guidance for Ampere, Hopper, Blackwell, and GB200 NVL72.
+- `deepen-the-primary-cuda-skill-with-more-intense-native-v100-optimization-addendums-and-low-level-scripts-then-expand-ampere-hopper-and-blackwell-path-coverage-toward-cuda-v100-style-routing-parity` | status: done | owner: codex | file: `todos/deepen-the-primary-cuda-skill-with-more-intense-native-v100-optimization-addendums-and-low-level-scripts-then-expand-ampere-hopper-and-blackwell-path-coverage-toward-cuda-v100-style-routing-parity.md` | objective: Deepen the primary cuda skill with more intense native V100 optimization addendums and low-level scripts, then expand Ampere, Hopper, and Blackwell path coverage toward cuda-v100-style routing parity.
+- `make-the-cuda-volta-router-fully-cover-the-old-cuda-v100-domain-so-the-native-path-genuinely-supersedes-the-legacy-skill` | status: done | owner: codex | file: `todos/make-the-cuda-volta-router-fully-cover-the-old-cuda-v100-domain-so-the-native-path-genuinely-supersedes-the-legacy-skill.md` | objective: Make the cuda Volta router fully cover the old cuda-v100 domain so the native path genuinely supersedes the legacy skill.
+- `deprecate-cuda-v100-by-routing-live-handoffs-to-cuda-and-leaving-only-a-compatibility-shim` | status: done | owner: codex | file: `todos/deprecate-cuda-v100-by-routing-live-handoffs-to-cuda-and-leaving-only-a-compatibility-shim.md` | objective: Deprecate cuda-v100 by routing live skill handoffs to cuda and leaving only a compatibility shim.
+- `cuda-context-routing-refactor` | status: done | owner: codex | file: `todos/cuda-context-routing-refactor.md` | objective: refactor the cuda skill into a dense two-stage routing tree with narrower context usage and stronger script-backed route selection
+- `cpp-context-compiler` | status: done | owner: codex | file: `todos/cpp-context-compiler.md` | objective: Implement and validate a complete V1 cpp-context-compiler Codex skill and local Clang-based toolkit
 
 ## Global Blockers
 _None recorded yet._
@@ -94,6 +140,33 @@ _None recorded yet._
 - Validated `native-debugging` with `quick_validate.py`, shell and Python syntax checks, a segfault capture smoke test, an ASan smoke test, an unsandboxed `gdb` backtrace smoke test, an unsandboxed `strace` missing-path smoke test, a `perf stat` smoke test, and a combined-summary smoke test.
 - Hardened `update_todos.py` with a JSON `--payload-file` path so ledger updates can preserve backticks, globs, and markdown-heavy repro text without shell expansion.
 - Clarified the serial execution rules so unclaimed `ready` or `idle` workstreams must be picked up immediately instead of waiting or asking the user what to do next.
+- Initialized the new `cuda` workstream and recorded the expected routing, research, and diagnostics scope.
+- Copied `cuda-v100` into a new `cuda` skill, rewrote the top-level router, and added system-first plus architecture-family routing.
+- Added new focused references for native V100, Ampere, Hopper, Blackwell, GB200 NVL72, and cross-cutting code-organization and diagnostics doctrine.
+- Added segmented build and diagnostics helpers for narrow architecture-specific builds, single-kernel TU checks, focused objdump filtering, and compact summary merging.
+- Validated the new skill with quick_validate.py, compiled the new Python scripts, and smoke-tested the new build, dump-filtering, TU-check, and summary helpers.
+- Opened a new follow-on workstream to deepen the new `cuda` skill instead of modifying the closed scaffold workstream retroactively.
+- Added new Volta-native references for fusion and specialization, register-pressure triage, native benchmark-loop discipline, and SASS or PTX triage.
+- Added new Volta-native helper scripts for profile-build emission, ptxas verbose summarization, focused SASS behavior summarization, and native benchmark-matrix emission.
+- Expanded the Ampere, Hopper, and Blackwell family routers with broader path maps and new family-local docs for programming guidance, profiling interpretation, memory-topology, pipeline, kernel mechanics, hot-kernel lab, Tensor Core routing, and PTX routing.
+- Validated the updated skill with quick_validate.py, compiled the new Volta Python helpers, and smoke-tested the new ptxas, SASS, build-flag, and benchmark-matrix scripts.
+- Opened a focused workstream to close the remaining native-router completeness gap between `cuda` and `cuda-v100`.
+- Rewrote `cuda/references/architectures/volta/router.md` as the native super-router over the old `cuda-v100` domain rather than a shorter summary router.
+- Added the missing native route rows for Tensor Core routing, CPU-porting, NVHPC, Torch extensions, sparse bio, and benchmark standardization.
+- Restored the old Volta navigation scaffolding: path-specific opening moves, base-manual guidance, support-map chaining, common sequences, and the full scripts-by-situation surface.
+- Re-added the `v100-model-design` handoff in both the top-level `cuda` skill and the Volta router, and re-validated the updated `cuda` skill with quick_validate.py.
+- Migrated active handoffs in `v100-model-design`, `native-debugging`, `compare-benchmarks`, and the active `cuda` references from `cuda-v100` to `cuda`.
+- Replaced the old `cuda-v100/SKILL.md` router with a short deprecated compatibility shim and updated `cuda-v100/agents/openai.yaml` to match.
+- Validated that no live non-legacy routing surfaces outside `cuda-v100/` or historical todo ledgers still hand work to `cuda-v100`.
+- Opened the cuda-context-routing-refactor workstream and scoped it around routing compression plus script-backed delegation.
+- Rewrote cuda/SKILL.md into a denser public router with script-first diagnostics and explicit micro-router discipline.
+- Replaced the oversized Volta router with a compact route table and added narrow Volta micro-routers for native, fusion, hot-kernel, tensor, torch-op, and benchmark flows.
+- Added scripts/common/recommend_cuda_route.py and extended nsys, ncu, and combined benchmark summaries with machine-readable recommended_route fields.
+- Updated Ampere, Hopper, and Blackwell routers to use the shared route recommender when profiler or benchmark summaries already exist.
+- Validated the cuda skill with quick_validate.py, compiled the edited Python scripts, and smoke-tested the route recommender plus combined summary routing output.
+- Implemented the complete cpp-context-compiler V1 with a dynamic libclang semantic index, optional LibTooling target, incremental JSONL records, deterministic routing/slicing/views, safe plans, transactions, rollback, sharding, linting, tests, and evals.
+- Validated 17 integration and unit tests, the CMake core smoke test, skill metadata, a 14-prompt eval with 47.63 percent median context reduction and zero implicit mutations, and byte-exact reversal for rename and sharding plans.
+- Independent retrieval and mutation forward-tests exposed and drove fixes for macro/nonlocal-state routing, rename accounting, sharding slice cost, and verification tier enforcement.
 
 ## Next Actions
 - No immediate action; resume the `cuda-v100` splitter only if the user wants deeper dependency recovery or build-system-aware extraction.
@@ -108,6 +181,13 @@ _None recorded yet._
 - No immediate action; extend `native-debugging` only if the user wants additional wrappers or deeper symbolization helpers.
 - Resume only if more todo-orchestrator script hardening is needed.
 - Resume only if more todo-orchestrator execution wording needs tightening.
+- No immediate action; extend the family packs or diagnostics helpers only if a concrete CUDA workload exposes a missing route.
+- No immediate action; deepen individual family routes further only when a concrete CUDA workload exposes missing doctrine or helper coverage.
+- No immediate action; the native Volta path now reaches the full old `cuda-v100` domain from the new `cuda` skill.
+- No immediate action; leave the legacy `cuda-v100/references/` files on disk unless the user later asks for full removal rather than deprecation.
+- Inspect the current top-level and family routing files, then patch the new dense two-stage tree.
+- No immediate action; extend the route recommender only if real workloads expose missing route labels or ambiguous follow-on decisions.
+- No immediate action; use the skill on an opted-in C++ repository and extend conservative rules only with fixtures and proof-level verification.
 
 ## Done Criteria
 - `cuda-v100` routes explicit PTX requests into a concrete `sm_70` hot-path isolation workflow before dumping PTX or SASS.
@@ -133,3 +213,26 @@ _None recorded yet._
 - todo-orchestrator tracks pickup-ready versus claimed work without replacing the existing workstream status model.
 - todo-cleanup stays explicit and only succeeds when every tracked workstream is done.
 - `native-debugging` exists as a standalone skill with Linux-first native crash, sanitizer, tracing, symbolization, and CPU profiling routes plus explicit CUDA follow-on references.
+- `cuda` exists as a standalone primary skill with system-first and family-first routing that preserves and improves the Volta/native path.
+- The new skill contains deep architecture-specific optimization doctrine for Ampere, Hopper, Blackwell, and GB200 NVL72 without an H200-specific branch.
+- The diagnostics surface includes strong summary-first helpers for profiling, debugging, and low-level dump filtering.
+- The new `cuda` skill exists as a primary CUDA route with stronger native Volta guidance than the copied baseline.
+- The skill contains dedicated system and architecture references for native, GB200 NVL72, Volta, Ampere, Hopper, and Blackwell.
+- The skill exposes summary-first profiling, debugging, and low-level dump-filtering helpers under a segmented script layout.
+- The `cuda` skill exposes a stronger native Volta route than the current copied baseline, with additional addendums and low-level helper scripts.
+- Ampere, Hopper, and Blackwell each expose broader route coverage so the skill can handle more of the same path classes that `cuda-v100` already covers for Volta.
+- The updated skill validates and the new scripts pass syntax or smoke checks.
+- The Volta router in `cuda` can directly reach the full old `cuda-v100` domain from the new skill.
+- The router includes the legacy navigation scaffolding plus the stronger new Volta-native addendums and script surface.
+- The updated `cuda` skill validates cleanly.
+- Active skills and live references route V100 and CUDA follow-on work to `cuda` rather than `cuda-v100`.
+- `cuda-v100` remains only as a clearly marked compatibility shim.
+- The remaining non-historical `cuda-v100` mentions are compatibility or historical notes rather than live routing instructions.
+- The cuda skill reaches the same major optimization surfaces with less default context.
+- Family routers and Volta routing no longer default into broad manuals for routine follow-on questions.
+- Profiler decision scripts can emit a concrete next route instead of generic summary-only advice.
+- The rewritten skill validates and the new scripts pass syntax or smoke tests.
+- Skill metadata validates and routes only opt-in or explicit C++ context-reduction requests.
+- Opted-in fixture scans, resolves symbols, slices within budgets, and maps compact views to canonical source.
+- Sharding and one conservative rewrite plan apply transactionally, verify, reverse, and roll back on failure.
+- Tests and evals demonstrate deterministic outputs, context savings, correctness, protected names, and safe degraded behavior.

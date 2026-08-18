@@ -54,4 +54,4 @@ State:
 - single-GPU first or 4-GPU by design
 - likely memory limiter
 - likely communication limiter
-- whether `cuda-v100` DDP or memory addendums should be consulted next
+- whether `cuda` DDP or memory addendums should be consulted next

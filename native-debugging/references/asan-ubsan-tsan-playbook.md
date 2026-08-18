@@ -49,4 +49,4 @@ Leave this route when:
 
 - the failing source line is clear enough to fix
 - the instrumented binary stops reproducing and you need a different route
-- the issue is clearly CUDA-side and belongs in `cuda-v100`
+- the issue is clearly CUDA-side and belongs in `cuda`

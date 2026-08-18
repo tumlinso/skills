@@ -73,10 +73,10 @@ NON_PICKUP_STATUSES = {"blocked", "stale"} | TERMINAL_STATUSES
 PICKUP_READY_STATES = {"ready", "idle"}
 PARTIAL_CLEANUP_ALLOWED_STATUSES = DONE_STATUSES | {"stale"}
 DEFAULT_STALE_AFTER_DAYS = {
-    "planned": 14,
-    "in_progress": 14,
-    "blocked": 30,
-    "stale": 14,
+    "planned": 3,
+    "in_progress": 3,
+    "blocked": 7,
+    "stale": 3,
 }
 DEFAULT_QUICK_START_LINES = [
     "- Why this stream exists: _Summarize the domain boundary and why it was split out._",

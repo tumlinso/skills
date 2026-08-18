@@ -19,7 +19,7 @@ Then, for bioinformatics or omics tasks, load `references/bioinformatics-model-p
 - load `references/distributed-4gpu-planning.md` when model width, depth, batch plan, or sequence shape must be constrained by the 4x V100 host
 - switch to `references/route-custom-op-planning.md` when the chosen family seems to need nontrivial custom ops
 - switch to `references/route-low-level-ml-boundary.md` when the chosen family implies owned backward, optimizer, or trainer logic below the framework boundary
-- hand off to `cuda-v100` only after the architecture is already stable
+- hand off to `cuda` only after the architecture is already stable
 
 ## Return To Root When
 

@@ -1,6 +1,6 @@
 ---
 name: native-debugging
-description: "Standalone Linux-first C and C++ debugging skill for crash triage, sanitizer builds, batch `gdb` backtraces, symbolization, syscall tracing, and lightweight CPU-side `perf` diagnosis. Use when Codex needs to debug native binaries, tests, libraries, or mixed host-side failures in C/C++ code on Linux. Route CUDA-specific crashes, `compute-sanitizer`, or `cuda-gdb` requests to `cuda-v100` after the native host-side failure surface is classified."
+description: "Standalone Linux-first C and C++ debugging skill for crash triage, sanitizer builds, batch `gdb` backtraces, symbolization, syscall tracing, and lightweight CPU-side `perf` diagnosis. Use when Codex needs to debug native binaries, tests, libraries, or mixed host-side failures in C/C++ code on Linux. Route CUDA-specific crashes, `compute-sanitizer`, or `cuda-gdb` requests to `cuda` after the native host-side failure surface is classified."
 ---
 
 # Native Debugging
@@ -41,7 +41,7 @@ Keep `SKILL.md` small. Treat it as a router. Load only the reference that matche
 8. If the binary runs but the user needs a quick CPU-side performance diagnosis, read `references/perf-playbook.md`.
    - use `scripts/debug_perf.sh`
 
-9. If the failure is actually CUDA-specific, read `references/cuda-follow-on.md` and route into `cuda-v100`.
+9. If the failure is actually CUDA-specific, read `references/cuda-follow-on.md` and route into `cuda`.
 
 10. If the environment is missing tools, read `references/install-components-ubuntu.md` and run `scripts/check_debug_toolchain.sh`.
 
@@ -73,4 +73,4 @@ Be explicit about:
 - the likely failure class
 - the next tool or next fix
 - which summary file should be read first
-- whether the issue stays in this skill or should route into `cuda-v100`
+- whether the issue stays in this skill or should route into `cuda`

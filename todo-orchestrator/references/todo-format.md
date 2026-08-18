@@ -42,7 +42,7 @@ owner: "unassigned"
 created_at: "2026-04-13T13:55:36Z"
 last_heartbeat_at: "2026-04-13T13:55:36Z"
 last_reviewed_at: "2026-04-13T13:55:36Z"
-stale_after_days: 14
+stale_after_days: 3
 objective: "Short purpose"
 ---
 

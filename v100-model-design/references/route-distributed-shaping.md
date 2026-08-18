@@ -22,7 +22,7 @@ Classify the design as:
 
 - return to `references/route-model-family.md` if the scaling discussion exposes a bad family choice
 - switch to `references/route-custom-op-planning.md` if the design now depends on custom ops
-- hand off to `cuda-v100` when the remaining questions are memory fit, topology, or pipeline constraints
+- hand off to `cuda` when the remaining questions are memory fit, topology, or pipeline constraints
 
 ## Return To Root When
 

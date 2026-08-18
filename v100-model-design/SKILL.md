@@ -6,9 +6,9 @@ description: >-
   objective, latent structure, decoder, multimodal fusion plan, temporal
   design, sparse-to-dense boundary, custom-op boundary, or low-level ML
   subsystem boundary before handing off low-level implementation, fit,
-  topology, or profiler work to `cuda-v100`. Keep the workflow routed: choose
+  topology, or profiler work to `cuda`. Keep the workflow routed: choose
   model family, distributed shape, custom-op planning, or low-level ML
-  ownership first, then escalate to `cuda-v100` only when hardware
+  ownership first, then escalate to `cuda` only when hardware
   implementation becomes the main question.
 ---
 
@@ -16,7 +16,7 @@ description: >-
 
 Use this as the public entry point for model design on the 4x V100 host.
 
-Do not start in `cuda-v100` when the unresolved question is still architecture choice. Choose the model-design path first, then hand off only the remaining hardware-specific work.
+Do not start in `cuda` when the unresolved question is still architecture choice. Choose the model-design path first, then hand off only the remaining hardware-specific work.
 
 ## Choose Your Path
 
@@ -26,9 +26,9 @@ Choose the first statement that is true. Load only the file named in that row fi
 | --- | --- | --- |
 | "What model family fits this task?", "should this be temporal, autoencoding, graph, diffusion, transformer, or hybrid?" | `references/route-model-family.md` | `references/bioinformatics-model-playbook.md` after the family is narrowed |
 | "Will this design scale on 4 V100s?", "should this be single-GPU first or distributed from the start?" | `references/route-distributed-shaping.md` | `references/distributed-4gpu-planning.md` once the family is stable |
-| "Do we need custom Torch ops?", "where should the custom-op boundary sit?" | `references/route-custom-op-planning.md` | `references/custom-op-registry-convention.md` before handing off to `cuda-v100` |
+| "Do we need custom Torch ops?", "where should the custom-op boundary sit?" | `references/route-custom-op-planning.md` | `references/custom-op-registry-convention.md` before handing off to `cuda` |
 | "Torch or libtorch overhead is hurting the hot path", "should this component own forward, backward, or optimizer logic directly?", "do we need low-level ML code for a sparse or nonstandard layout?" | `references/route-low-level-ml-boundary.md` | `references/sparse-layout-training-boundary.md` for sparse or layout-heavy cases |
-| "The real question is memory fit, DDP topology, staging, kernel shape, or profiler interpretation" | `cuda-v100` | return here only if model choice becomes unclear again |
+| "The real question is memory fit, DDP topology, staging, kernel shape, or profiler interpretation" | `cuda` | return here only if model choice becomes unclear again |
 
 ## Opening Moves
 
@@ -51,7 +51,7 @@ Choose the first statement that is true. Load only the file named in that row fi
 1. Define the op boundary before talking about kernels.
 2. Prefer library-backed Torch, ATen, cuBLAS, cuSPARSE, or CUTLASS paths when they are adequate.
 3. Record any real custom op in `custom_torch_ops.md` before implementation.
-4. Hand off to `cuda-v100` only after the boundary is stable.
+4. Hand off to `cuda` only after the boundary is stable.
 
 ### Path: Low-Level ML Boundary
 
@@ -59,11 +59,11 @@ Choose the first statement that is true. Load only the file named in that row fi
 2. Define which ownership moves below the framework boundary: forward only, forward plus backward, forward plus backward plus optimizer, or most of the trainer.
 3. Specify parameter state, saved state, optimizer state, and layout assumptions before implementation talk starts.
 4. Keep the rest of the model high-level unless the low-level path is clearly justified.
-5. Hand off to `cuda-v100` only after the low-level ML boundary and contracts are stable.
+5. Hand off to `cuda` only after the low-level ML boundary and contracts are stable.
 
 ## Handoff Rule
 
-Use `cuda-v100` for:
+Use `cuda` for:
 
 - memory budgeting
 - DDP or NCCL topology
@@ -71,7 +71,7 @@ Use `cuda-v100` for:
 - Torch CUDA extension implementation
 - low-level CUDA or profiler-driven optimization
 
-Do not bounce between this skill and `cuda-v100` repeatedly. Stay here until the model decision is stable.
+Do not bounce between this skill and `cuda` repeatedly. Stay here until the model decision is stable.
 
 ## Reference Map
 

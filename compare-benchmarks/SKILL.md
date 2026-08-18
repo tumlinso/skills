@@ -1,6 +1,6 @@
 ---
 name: compare-benchmarks
-description: Standalone skill for comparative benchmarking between two implementations or libraries. Use when Codex should pit implementation A against implementation B under one shared benchmark contract, scaffold comparison wrappers, serialize benchmark runs with a mutex, collect concise benchmark and profiler summaries, and identify which components explain the performance delta. Keep this separate from `cuda-v100`; route there only after the comparison already shows a CUDA-specific hotspot worth deeper tuning.
+description: Standalone skill for comparative benchmarking between two implementations or libraries. Use when Codex should pit implementation A against implementation B under one shared benchmark contract, scaffold comparison wrappers, serialize benchmark runs with a mutex, collect concise benchmark and profiler summaries, and identify which components explain the performance delta. Keep this separate from `cuda`; route there only after the comparison already shows a CUDA-specific hotspot worth deeper tuning.
 ---
 
 # Compare Benchmarks
@@ -39,7 +39,7 @@ Keep `SKILL.md` small. Treat it as a router. Load only the workflow or reference
 
 7. If correctness or result equivalence is in doubt, read `references/correctness-and-equivalence.md`.
 
-8. Only route into `references/cuda-follow-on.md` when the comparison already shows a CUDA-specific hotspot that belongs in `cuda-v100`.
+8. Only route into `references/cuda-follow-on.md` when the comparison already shows a CUDA-specific hotspot that belongs in `cuda`.
 
 ## Script Map
 
@@ -76,4 +76,4 @@ Be explicit about:
 - whether benchmark runs were serialized through the mutex
 - whether the result is benchmark-only or benchmark-plus-profiler
 - which phase or component explains the largest delta
-- whether the next step belongs in this skill or should route into `cuda-v100`
+- whether the next step belongs in this skill or should route into `cuda`

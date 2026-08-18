@@ -49,4 +49,4 @@ State:
 
 ## Handoff Rule
 
-Once the layout boundary and ownership rules are stable, use `cuda-v100` for implementation, kernel decomposition, profiling, and V100-specific optimization.
+Once the layout boundary and ownership rules are stable, use `cuda` for implementation, kernel decomposition, profiling, and V100-specific optimization.
