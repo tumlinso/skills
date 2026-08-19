@@ -6,6 +6,7 @@ import argparse
 import concurrent.futures
 import os
 import time
+import traceback
 
 from .runner import run_job
 from .host import HostCoordinator
@@ -52,6 +53,16 @@ def _reap_done(active: set[concurrent.futures.Future]) -> None:
             pass
 
 
+def _record_supervisor_error(store: BackgroundStore, error: Exception) -> None:
+    path = store.paths.root / "worker-errors.log"
+    try:
+        prior = path.read_text(encoding="utf-8")[-12000:] if path.exists() else ""
+        detail = "".join(traceback.format_exception_only(type(error), error)).strip()
+        path.write_text(f"{prior}{time.time():.6f} {detail}\n"[-16000:], encoding="utf-8")
+    except OSError:
+        pass
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--project", required=True)
@@ -89,10 +100,11 @@ def main() -> int:
                     active.add(executor.submit(_execute, store, worker_id, claimed))
                     launched = True
                 consecutive_supervisor_errors = 0
-            except Exception:
+            except Exception as error:
                 _reap_done(active)
                 consecutive_supervisor_errors += 1
-                if consecutive_supervisor_errors >= 20:
+                _record_supervisor_error(store, error)
+                if consecutive_supervisor_errors >= 20 and not store.paths.database.exists():
                     return 1
                 time.sleep(0.25)
                 continue

@@ -122,7 +122,6 @@ class BackgroundStore:
         conn.row_factory = sqlite3.Row
         conn.execute(f"PRAGMA busy_timeout={self.busy_timeout_ms}")
         if not readonly:
-            conn.execute("PRAGMA journal_mode=WAL")
             conn.execute("PRAGMA synchronous=NORMAL")
             conn.execute("PRAGMA foreign_keys=ON")
         return conn
@@ -130,6 +129,7 @@ class BackgroundStore:
     def initialize(self) -> None:
         conn = self.connect()
         try:
+            conn.execute("PRAGMA journal_mode=WAL")
             conn.executescript(SCHEMA)
         finally:
             conn.close()
@@ -415,8 +415,10 @@ class BackgroundStore:
                 )
             conn.execute("UPDATE background_attempts SET state=?,finished_at=?,returncode=?,reason=?,stdout_path=?,stderr_path=?,stdout_tail=?,stderr_tail=?,metadata_json=? WHERE id=?",
                          (state, now, returncode, reason, stdout_path, stderr_path, stdout_tail, stderr_tail, canonical_json(metadata), attempt_id))
-            conn.execute("UPDATE background_jobs SET state=?,retries_used=?,result_id=?,pid=NULL,process_start=NULL,cancel_requested=0,updated_at=? WHERE id=?",
-                         (final_state, retries, result_id, now, job_id))
+            defer_until = now + 2.0 if state == JobState.PREEMPTED.value and final_state == JobState.QUEUED.value else 0.0
+            conn.execute("UPDATE background_jobs SET state=?,retries_used=?,result_id=?,pid=NULL,process_start=NULL,"
+                         "cancel_requested=0,not_before=MAX(not_before,?),updated_at=? WHERE id=?",
+                         (final_state, retries, result_id, defer_until, now, job_id))
             conn.execute("UPDATE background_reservations SET state='released',heartbeat_at=? WHERE owner_id=? AND state='active'", (now, job_id))
             conn.commit()
             return result_id

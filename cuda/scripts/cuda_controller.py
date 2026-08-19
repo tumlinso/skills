@@ -524,7 +524,7 @@ def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: d
 
 
 def sync_watch(project: Path, watch_id: str) -> dict[str, object]:
-    store = BackgroundStore(project)
+    store = BackgroundStore(project, create=False)
     watch = store.watch(watch_id)
     if not watch or watch["state"] != "armed":
         return {"queued": 0}
@@ -815,7 +815,7 @@ def _focused_ncu_kernel_filter(store: BackgroundStore, watch_id: str, fingerprin
 
 
 def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str, object]) -> dict[str, object]:
-    store = BackgroundStore(project)
+    store = BackgroundStore(project, create=False)
     watch = store.watch(watch_id)
     if not watch:
         return {"valid": False, "status": "failed", "classification": "watch-missing", "severity": 0}
