@@ -21,13 +21,36 @@ LOCK_FILE="${CUDA_V100_BENCHMARK_MUTEX_PATH:-${TMPDIR:-/tmp}/cuda_v100_benchmark
 LABEL=""
 LOCK_FD=""
 LOCK_HELD=0
+COORDINATION_MODE="${CUDA_BENCHMARK_COORDINATION_MODE:-foreground}"
+FOREGROUND_MARKER="${CUDA_BENCHMARK_FOREGROUND_INTENT_PATH:-}"
+FOREGROUND_MARKER_OWNED=0
+GPU_LOCK_FDS=()
+BACKGROUND_PID=""
 
 release_lock() {
+  if [[ -n "${BACKGROUND_PID}" ]]; then
+    kill -- "-${BACKGROUND_PID}" 2>/dev/null || true
+    wait "${BACKGROUND_PID}" 2>/dev/null || true
+    BACKGROUND_PID=""
+  fi
+  if ((${#GPU_LOCK_FDS[@]} > 0)); then
+    for fd in "${GPU_LOCK_FDS[@]}"; do
+      flock -u "${fd}" 2>/dev/null || true
+      eval "exec ${fd}>&-"
+    done
+  fi
+  GPU_LOCK_FDS=()
   if [[ "${LOCK_HELD}" == "1" && -n "${LOCK_FD}" ]]; then
     flock -u "${LOCK_FD}" || true
     printf '[benchmark-mutex] released %s via %s\n' "${LABEL}" "${LOCK_FILE}" >&2
     eval "exec ${LOCK_FD}>&-"
     LOCK_HELD=0
+  fi
+  if [[ "${FOREGROUND_MARKER_OWNED}" == "1" ]]; then
+    if [[ "$(cat "${FOREGROUND_MARKER}" 2>/dev/null || true)" == "$$" ]]; then
+      rm -f -- "${FOREGROUND_MARKER}"
+    fi
+    FOREGROUND_MARKER_OWNED=0
   fi
 }
 
@@ -74,6 +97,57 @@ fi
 
 LABEL="${LABEL:-$(basename "$1")}"
 mkdir -p "$(dirname "${LOCK_FILE}")"
+FOREGROUND_MARKER="${FOREGROUND_MARKER:-${LOCK_FILE}.foreground-intent}"
+
+if [[ "${COORDINATION_MODE}" == "background" ]]; then
+  if ! command -v setsid >/dev/null 2>&1; then
+    printf 'Could not find setsid. Install util-linux or add setsid to PATH.\n' >&2
+    exit 127
+  fi
+  exec {LOCK_FD}> "${LOCK_FILE}"
+  flock -s "${LOCK_FD}"
+  LOCK_HELD=1
+  if [[ -n "${CUDA_BACKGROUND_GPU_UUIDS:-}" ]]; then
+    mapfile -t GPU_UUID_LIST < <(tr ',' '\n' <<<"${CUDA_BACKGROUND_GPU_UUIDS}" | sed '/^[[:space:]]*$/d' | sort -u)
+    for uuid in "${GPU_UUID_LIST[@]}"; do
+      safe_uuid="${uuid//[^A-Za-z0-9_.-]/_}"
+      exec {gpu_fd}> "${LOCK_FILE}.gpu.${safe_uuid}.lock"
+      flock "${gpu_fd}"
+      GPU_LOCK_FDS+=("${gpu_fd}")
+    done
+  fi
+  if [[ -e "${FOREGROUND_MARKER}" ]]; then
+    exit 75
+  fi
+  printf '[benchmark-mutex] acquired %s via %s\n' "${LABEL}" "${LOCK_FILE}" >&2
+  set +e
+  setsid -- "$@" &
+  BACKGROUND_PID=$!
+  while kill -0 "${BACKGROUND_PID}" 2>/dev/null; do
+    if [[ -e "${FOREGROUND_MARKER}" ]]; then
+      kill -TERM -- "-${BACKGROUND_PID}" 2>/dev/null || true
+      for _ in {1..20}; do
+        kill -0 "${BACKGROUND_PID}" 2>/dev/null || break
+        sleep 0.1
+      done
+      kill -KILL -- "-${BACKGROUND_PID}" 2>/dev/null || true
+      wait "${BACKGROUND_PID}" 2>/dev/null || true
+      BACKGROUND_PID=""
+      exit 75
+    fi
+    sleep 0.1
+  done
+  wait "${BACKGROUND_PID}"
+  STATUS=$?
+  BACKGROUND_PID=""
+  set -e
+  exit "${STATUS}"
+fi
+
+if [[ "${CUDA_BENCHMARK_FOREGROUND_INTENT_HELD:-0}" != "1" ]]; then
+  printf '%s\n' "$$" > "${FOREGROUND_MARKER}"
+  FOREGROUND_MARKER_OWNED=1
+fi
 
 exec {LOCK_FD}> "${LOCK_FILE}"
 if ! flock -n "${LOCK_FD}"; then

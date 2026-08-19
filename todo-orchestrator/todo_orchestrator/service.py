@@ -104,6 +104,16 @@ class Service:
             for change in result.get("barrier_changes", []):
                 changed_tasks.update(str(value) for value in change.get("affected_active_tasks", []))
         projection = self.refresh(None if full_projection else changed_tasks)
+        # Private, best-effort wake.  It is a no-op unless an external CUDA
+        # controller has explicitly armed a sidecar watch for this project.
+        # Import lazily so ordinary todo commands retain their startup and
+        # output behavior and background failures cannot affect the commit.
+        try:
+            from .background.wake import wake_after_commit
+
+            wake_after_commit(self.paths.repo_root, revision)
+        except Exception:
+            pass
         return result, revision, projection
 
     def continue_work(self, *, session_token: str | None = None, task_id: str | None = None) -> dict[str, object]:
