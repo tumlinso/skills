@@ -92,23 +92,20 @@ def background_environment(request: dict[str, object]) -> dict[str, str]:
     }
 
 
-def lower_process_priority() -> None:
+def lower_process_priority(pid: int) -> None:
+    """Lower a child after spawn without using unsafe threaded preexec hooks."""
     try:
-        os.nice(10)
-    except OSError:
-        pass
-    try:
-        os.setpriority(os.PRIO_PROCESS, 0, 10)
+        os.setpriority(os.PRIO_PROCESS, pid, 10)
     except (AttributeError, OSError):
         pass
     try:
-        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-    except (ValueError, OSError):
+        resource.prlimit(pid, resource.RLIMIT_CORE, (0, 0))
+    except (AttributeError, ProcessLookupError, ValueError, OSError):
         pass
     try:
         import ctypes
 
         libc = ctypes.CDLL(None)
-        libc.syscall(251, 1, 7, os.getpid())  # ioprio_set: process, idle class
+        libc.syscall(251, 1, 7, pid)  # ioprio_set: process, idle class
     except Exception:
         pass

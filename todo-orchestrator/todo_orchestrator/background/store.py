@@ -254,12 +254,25 @@ class BackgroundStore:
 
     def _sweep_stale_locked(self, conn: sqlite3.Connection, stale_seconds: float = 30.0) -> None:
         cutoff = time.time() - stale_seconds
-        attempts = conn.execute("SELECT * FROM background_attempts WHERE state='running' AND heartbeat_at<?", (cutoff,)).fetchall()
+        attempts = conn.execute(
+            "SELECT a.*,j.cancel_requested,w.state AS watch_state FROM background_attempts a "
+            "JOIN background_jobs j ON j.id=a.job_id "
+            "LEFT JOIN background_watches w ON w.id=j.watch_id "
+            "WHERE a.state='running' AND a.heartbeat_at<?", (cutoff,),
+        ).fetchall()
         for attempt in attempts:
             if _alive(attempt["pid"], attempt["process_start"]):
                 continue
-            conn.execute("UPDATE background_attempts SET state='preempted',finished_at=?,reason='stale-worker' WHERE id=?", (time.time(), attempt["id"]))
-            conn.execute("UPDATE background_jobs SET state='queued',pid=NULL,process_start=NULL,cancel_requested=0,updated_at=? WHERE id=?", (time.time(), attempt["job_id"]))
+            canceled = bool(attempt["cancel_requested"]) or attempt["watch_state"] == "stopped"
+            attempt_state, job_state = ("canceled", "canceled") if canceled else ("preempted", "queued")
+            conn.execute(
+                "UPDATE background_attempts SET state=?,finished_at=?,reason=? WHERE id=?",
+                (attempt_state, time.time(), "stale-worker-canceled" if canceled else "stale-worker", attempt["id"]),
+            )
+            conn.execute(
+                "UPDATE background_jobs SET state=?,pid=NULL,process_start=NULL,cancel_requested=0,updated_at=? WHERE id=?",
+                (job_state, time.time(), attempt["job_id"]),
+            )
             conn.execute("UPDATE background_reservations SET state='released',heartbeat_at=? WHERE owner_id=? AND state='active'", (time.time(), attempt["job_id"]))
         workers = conn.execute("SELECT * FROM background_workers WHERE state='running' AND heartbeat_at<?", (cutoff,)).fetchall()
         for worker in workers:
@@ -378,11 +391,16 @@ class BackgroundStore:
         conn = self._tx()
         try:
             now = time.time()
-            job = conn.execute("SELECT retries_used,retry_limit FROM background_jobs WHERE id=?", (job_id,)).fetchone()
+            job = conn.execute(
+                "SELECT j.retries_used,j.retry_limit,j.cancel_requested,w.state AS watch_state "
+                "FROM background_jobs j LEFT JOIN background_watches w ON w.id=j.watch_id WHERE j.id=?",
+                (job_id,),
+            ).fetchone()
             final_state = state
             retries = int(job["retries_used"])
             if state == JobState.PREEMPTED.value:
-                final_state = JobState.QUEUED.value
+                final_state = (JobState.CANCELED.value if bool(job["cancel_requested"]) or
+                               job["watch_state"] == "stopped" else JobState.QUEUED.value)
             elif state == JobState.FAILED.value and retries < int(job["retry_limit"]):
                 retries += 1
                 final_state = JobState.QUEUED.value
@@ -495,6 +513,22 @@ class BackgroundStore:
         value["summary"] = json.loads(value.pop("summary_json"))
         value["snapshot"] = json.loads(value.pop("snapshot_json") or "{}")
         value["artifacts"] = artifacts
+        return value
+
+    def latest_valid_result(self, *, watch_id: str, kind: str, source_fingerprint: str) -> dict[str, object] | None:
+        """Return one private cached result without exposing it through todo APIs."""
+        with closing(self.connect(readonly=True)) as conn:
+            row = conn.execute(
+                "SELECT r.*,j.snapshot_json FROM background_results r JOIN background_jobs j ON j.id=r.job_id "
+                "WHERE j.watch_id=? AND j.kind=? AND j.source_fingerprint=? AND r.valid=1 AND r.contaminated=0 "
+                "ORDER BY r.created_at DESC LIMIT 1",
+                (watch_id, kind, source_fingerprint),
+            ).fetchone()
+        if not row:
+            return None
+        value = dict(row)
+        value["summary"] = json.loads(value.pop("summary_json"))
+        value["snapshot"] = json.loads(value.pop("snapshot_json") or "{}")
         return value
 
     def visible_findings(self, *, focus: str = "", limit: int = 3) -> list[dict[str, object]]:

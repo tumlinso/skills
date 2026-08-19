@@ -41,6 +41,7 @@ from todo_orchestrator.config import project_paths  # noqa: E402
 from cuda_guidance import retrieve  # noqa: E402
 
 PARSER_VERSION = "cuda-controller/1"
+BACKGROUND_PIPELINE_VERSION = 6
 MUTEX = SCRIPT_DIR / "with_benchmark_mutex.sh"
 
 
@@ -259,9 +260,23 @@ def validate_watch_spec(spec: dict[str, object]) -> None:
         raise ValueError("background spec requires benchmark.correctness_argv")
     if not benchmark.get("metric") or benchmark.get("direction") not in {"minimize", "maximize"}:
         raise ValueError("background spec requires metric and minimize|maximize direction")
-    for key in ("argv", "correctness_argv"):
+    for key in ("argv", "correctness_argv", "build_argv"):
+        if key not in benchmark:
+            continue
         if not all(isinstance(item, str) for item in benchmark[key]):
             raise ValueError(f"benchmark.{key} must be structured argv strings")
+
+
+def _base_stage_commands(benchmark: dict[str, object]) -> tuple[list[str], list[str]]:
+    """Return CPU build and GPU correctness commands, including legacy ctest specs."""
+    correctness = [str(item) for item in benchmark["correctness_argv"]]
+    explicit = benchmark.get("build_argv")
+    if isinstance(explicit, list) and explicit:
+        return [str(item) for item in explicit], correctness
+    if "--build-and-test" in correctness and "--test-command" in correctness:
+        split = correctness.index("--test-command")
+        return [*correctness[:split + 1], "/usr/bin/true"], correctness[split + 1:]
+    return [], correctness
 
 
 def _path_matches(path: str, patterns: list[str]) -> bool:
@@ -279,8 +294,15 @@ def relevant_task(connection: sqlite3.Connection, task_id: str | None, watch: di
     patterns = [str(item) for item in watch.get("paths", [])]
     if patterns:
         scopes = [row[0] for row in connection.execute("SELECT path FROM ownership_scopes WHERE task_id=?", (task_id,))]
-        return any(_path_matches(scope, patterns) or any(_path_matches(pattern.rstrip("*"), [scope]) for pattern in patterns) for scope in scopes)
-    return not ids and not prefixes and not patterns and not watch.get("symbols")
+        if any(_path_matches(scope, patterns) or any(_path_matches(pattern.rstrip("*"), [scope]) for pattern in patterns) for scope in scopes):
+            return True
+    symbols = [str(item).lower() for item in watch.get("symbols", []) if str(item).strip()]
+    if symbols:
+        row = connection.execute("SELECT title,objective,next_action,notes FROM tasks WHERE id=?", (task_id,)).fetchone()
+        task_text = " ".join(str(value or "") for value in row).lower() if row else ""
+        if any(symbol in task_text for symbol in symbols):
+            return True
+    return not ids and not prefixes and not patterns and not symbols
 
 
 def event_task(connection: sqlite3.Connection, event: sqlite3.Row) -> str | None:
@@ -354,17 +376,50 @@ def create_snapshot(root: Path, artifact_root: Path, scopes: list[str], *, allow
     }
 
 
+def create_commit_snapshot(root: Path, artifact_root: Path, revision: str) -> dict[str, object]:
+    """Materialize an immutable historical revision without touching the worktree."""
+    root = git_root(root)
+    resolved = git(root, "rev-parse", "--verify", f"{revision}^{{commit}}")
+    if resolved.returncode != 0:
+        return {"safe": False, "reason": "invalid-source-revision", "revision": revision}
+    commit = resolved.stdout.strip()
+    fingerprint = hashlib.sha256(json.dumps({
+        "head": commit, "patch": _hash_bytes(b""), "untracked": [],
+    }, sort_keys=True).encode()).hexdigest()
+    target = artifact_root / "snapshots" / fingerprint
+    source_dir = target / "source"
+    if not source_dir.exists():
+        target.mkdir(parents=True, exist_ok=True)
+        archive = run(["git", "-C", str(root), "archive", "--format=tar", commit], timeout=60)
+        if archive.returncode != 0:
+            return {"safe": False, "reason": "git-archive-failed", "revision": revision,
+                    "stderr": archive.stderr.decode(errors="replace")[-500:]}
+        source_dir.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode="r:") as bundle:
+            bundle.extractall(source_dir, filter="data")
+    return {
+        "safe": True, "project_root": str(root), "source_root": str(source_dir),
+        "fingerprint": fingerprint, "commit": commit, "dirty": False,
+        "patch_hash": _hash_bytes(b""), "untracked": [],
+    }
+
+
 def _resource_request(spec: dict[str, object], stage: str = "benchmark") -> dict[str, object]:
     policy = spec.get("policy", {})
     benchmark = spec.get("benchmark", {})
     explicit = [str(item) for item in benchmark.get("gpu_uuids", [])]
     count = int(benchmark.get("gpus", 1))
     count = min(count, int(policy.get("max_background_gpus", 4)))
-    profiler = stage.removeprefix("candidate-") in {"nsys", "ncu"}
+    base_stage = stage.removeprefix("candidate-")
+    profiler = base_stage in {"nsys", "ncu"}
+    build = base_stage == "build"
+    build_threads = min(8, max(1, cpu_capacity() // 4))
     return {
-        "kind": "accelerator", "ids": [f"accelerator:{item}" for item in explicit],
-        "count": 0 if explicit else count, "cpu_heavy": bool(benchmark.get("cpu_heavy", False)),
-        "cpu_threads": int(benchmark.get("background_cpu_threads", 0) or 0),
+        "kind": "accelerator", "ids": [] if build else [f"accelerator:{item}" for item in explicit],
+        "count": 0 if build or explicit else count,
+        "cpu_heavy": build or bool(benchmark.get("cpu_heavy", False)),
+        "cpu_threads": int(benchmark.get("build_cpu_threads", build_threads) if build else
+                           benchmark.get("background_cpu_threads", 0) or 0),
         "ram_bytes": int(benchmark.get("background_ram_bytes", 0) or 0),
         "tags": ({"architecture": str(benchmark["architecture"])} if benchmark.get("architecture") else {}),
         "exclusive_resources": ["profiler:nvidia"] if profiler else [],
@@ -379,57 +434,91 @@ def stage_argv(project: Path, watch_id: str, kind: str, snapshot: dict[str, obje
 
 
 def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: dict[str, object], *,
-                   task_id: str | None, revision: int, initial: bool = False) -> list[str]:
+                   task_id: str | None, revision: int, initial: bool = False,
+                   benchmark_override: dict[str, object] | None = None,
+                   update_last_relevant: bool = True) -> list[str]:
     if not snapshot.get("safe"):
         store.set_meta(f"skip:{watch['id']}:{revision}", {"reason": snapshot.get("reason"), "task_id": task_id})
         return []
     fingerprint = str(snapshot["fingerprint"])
-    if store.get_meta(f"queued:{watch['id']}:{revision}:{fingerprint}"):
+    effective_benchmark = {**watch["spec"]["benchmark"], **(benchmark_override or {})}
+    effective_spec = {**watch["spec"], "benchmark": effective_benchmark}
+    contract_hash = hashlib.sha256(json.dumps(
+        {"pipeline_version": BACKGROUND_PIPELINE_VERSION, "benchmark": effective_benchmark},
+        sort_keys=True, separators=(",", ":"),
+    ).encode()).hexdigest()[:16]
+    queue_key = f"{watch['id']}:{revision}:{fingerprint}:{contract_hash}"
+    if store.get_meta(f"queued:{queue_key}"):
         return []
-    request = _resource_request(watch["spec"], "benchmark")
+    queued_snapshot = {**snapshot, "_benchmark_override": benchmark_override} if benchmark_override else snapshot
+    request = _resource_request(effective_spec, "benchmark")
     common = {
         "watch_id": watch["id"], "cwd": snapshot["source_root"], "resources": request,
         "source_fingerprint": fingerprint, "task_id": task_id, "todo_revision": revision,
-        "snapshot": snapshot, "retry_limit": 1,
+        "snapshot": queued_snapshot, "retry_limit": 1,
     }
-    correctness, created = store.enqueue({**common, "kind": "correctness", "priority": 40,
-        "argv": stage_argv(store.project_root, str(watch["id"]), "correctness", snapshot),
-        "dedup_key": f"{watch['id']}:{fingerprint}:correctness"})
-    benchmark, _ = store.enqueue({**common, "kind": "benchmark", "priority": 40,
-        "argv": stage_argv(store.project_root, str(watch["id"]), "benchmark", snapshot),
-        "dedup_key": f"{watch['id']}:{fingerprint}:benchmark"}, [correctness])
-    jobs = [correctness, benchmark]
+    build_command, _ = _base_stage_commands(effective_benchmark)
+    dependency: list[str] = []
+    pipeline: list[str] = []
+    created_jobs: list[str] = []
+    if build_command:
+        build, build_created = store.enqueue({**common, "resources": _resource_request(effective_spec, "build"),
+            "kind": "build", "priority": 30, "retry_limit": 1,
+            "argv": stage_argv(store.project_root, str(watch["id"]), "build", queued_snapshot),
+            "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:build"})
+        dependency = [build]
+        pipeline.append(build)
+        if build_created:
+            created_jobs.append(build)
+    correctness, created = store.enqueue({**common, "kind": "correctness", "priority": 20, "retry_limit": 0,
+        "argv": stage_argv(store.project_root, str(watch["id"]), "correctness", queued_snapshot),
+        "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:correctness"}, dependency)
+    benchmark, benchmark_created = store.enqueue({**common, "kind": "benchmark", "priority": 40,
+        "argv": stage_argv(store.project_root, str(watch["id"]), "benchmark", queued_snapshot),
+        "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:benchmark"}, [correctness])
+    pipeline.extend((correctness, benchmark))
+    created_jobs.extend(([correctness] if created else []) + ([benchmark] if benchmark_created else []))
     if initial and bool(watch["spec"].get("policy", {}).get("initial_characterization", True)):
-        nsys, _ = store.enqueue({**common, "resources": _resource_request(watch["spec"], "nsys"), "kind": "nsys", "priority": 50,
-            "argv": stage_argv(store.project_root, str(watch["id"]), "nsys", snapshot),
-            "dedup_key": f"{watch['id']}:{fingerprint}:nsys", "retry_limit": 0}, [benchmark])
-        ncu, _ = store.enqueue({**common, "resources": _resource_request(watch["spec"], "ncu"), "kind": "ncu", "priority": 50,
-            "argv": stage_argv(store.project_root, str(watch["id"]), "ncu", snapshot),
-            "dedup_key": f"{watch['id']}:{fingerprint}:ncu", "retry_limit": 0}, [nsys])
-        jobs.extend((nsys, ncu))
+        nsys, nsys_created = store.enqueue({**common, "resources": _resource_request(effective_spec, "nsys"), "kind": "nsys", "priority": 50,
+            "argv": stage_argv(store.project_root, str(watch["id"]), "nsys", queued_snapshot),
+            "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:nsys", "retry_limit": 0}, [benchmark])
+        ncu, ncu_created = store.enqueue({**common, "resources": _resource_request(effective_spec, "ncu"), "kind": "ncu", "priority": 50,
+            "argv": stage_argv(store.project_root, str(watch["id"]), "ncu", queued_snapshot),
+            "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:ncu", "retry_limit": 0}, [nsys])
+        pipeline.extend((nsys, ncu))
+        created_jobs.extend(([nsys] if nsys_created else []) + ([ncu] if ncu_created else []))
     for position, raw_candidate in enumerate(watch["spec"].get("candidates", [])):
         if not isinstance(raw_candidate, dict):
             continue
         candidate = dict(raw_candidate)
         candidate_id = str(candidate.get("id") or f"candidate-{position}")
-        candidate_snapshot = {**snapshot, "_candidate": {**candidate, "id": candidate_id}}
+        candidate_snapshot = {**queued_snapshot, "_candidate": {**candidate, "id": candidate_id}}
         candidate_common = {**common, "snapshot": candidate_snapshot}
         dependency = benchmark
         if candidate.get("build_argv"):
-            dependency, _ = store.enqueue({**candidate_common, "kind": "candidate-build", "priority": 50,
+            dependency, candidate_build_created = store.enqueue({**candidate_common,
+                "resources": _resource_request(effective_spec, "candidate-build"),
+                "kind": "candidate-build", "priority": 50,
                 "argv": stage_argv(store.project_root, str(watch["id"]), "candidate-build", candidate_snapshot),
-                "dedup_key": f"{watch['id']}:{fingerprint}:{candidate_id}:build"}, [correctness])
-            jobs.append(dependency)
-        candidate_correctness, _ = store.enqueue({**candidate_common, "kind": "candidate-correctness", "priority": 50,
+                "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:{candidate_id}:build"}, [correctness])
+            pipeline.append(dependency)
+            if candidate_build_created:
+                created_jobs.append(dependency)
+        candidate_correctness, candidate_correctness_created = store.enqueue({**candidate_common, "kind": "candidate-correctness", "priority": 50,
             "argv": stage_argv(store.project_root, str(watch["id"]), "candidate-correctness", candidate_snapshot),
-            "dedup_key": f"{watch['id']}:{fingerprint}:{candidate_id}:correctness"}, [dependency])
-        candidate_benchmark, _ = store.enqueue({**candidate_common, "kind": "candidate-benchmark", "priority": 50,
+            "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:{candidate_id}:correctness"}, [dependency])
+        candidate_benchmark, candidate_benchmark_created = store.enqueue({**candidate_common, "kind": "candidate-benchmark", "priority": 50,
             "argv": stage_argv(store.project_root, str(watch["id"]), "candidate-benchmark", candidate_snapshot),
-            "dedup_key": f"{watch['id']}:{fingerprint}:{candidate_id}:benchmark"}, [candidate_correctness, benchmark])
-        jobs.extend((candidate_correctness, candidate_benchmark))
-    store.set_meta(f"queued:{watch['id']}:{revision}:{fingerprint}", jobs)
-    store.set_meta(f"last-relevant:{watch['id']}", {"task_id": task_id, "revision": revision, "snapshot": snapshot})
-    return jobs
+            "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:{candidate_id}:benchmark"}, [candidate_correctness, benchmark])
+        pipeline.extend((candidate_correctness, candidate_benchmark))
+        if candidate_correctness_created:
+            created_jobs.append(candidate_correctness)
+        if candidate_benchmark_created:
+            created_jobs.append(candidate_benchmark)
+    store.set_meta(f"queued:{queue_key}", pipeline)
+    if update_last_relevant:
+        store.set_meta(f"last-relevant:{watch['id']}", {"task_id": task_id, "revision": revision, "snapshot": snapshot})
+    return created_jobs
 
 
 def sync_watch(project: Path, watch_id: str) -> dict[str, object]:
@@ -469,6 +558,73 @@ def sync_watch(project: Path, watch_id: str) -> dict[str, object]:
     finally:
         connection.close()
     return {"queued": len(set(queued)), "job_ids": sorted(set(queued))}
+
+
+def _selected_watch(store: BackgroundStore, watch_id: str | None) -> dict[str, object]:
+    watches = []
+    for state in ("armed", "paused", "stopped"):
+        watches.extend(store.watches(state))
+    if watch_id:
+        watch = next((item for item in watches if item["id"] == watch_id), None)
+        if not watch:
+            raise ValueError(f"unknown background watch: {watch_id}")
+        return watch
+    if len(watches) != 1:
+        raise ValueError("watch_id is required unless the project has exactly one watch")
+    return watches[0]
+
+
+def enqueue_supplied_revisions(spec: dict[str, object], *, backfill: bool) -> dict[str, object]:
+    """Queue agent/project supplied immutable revisions without changing todo history."""
+    if int(spec.get("schema_version", 0)) != 1 or not spec.get("project_root"):
+        raise ValueError("revision queue spec requires schema_version=1 and project_root")
+    project = git_root(Path(str(spec["project_root"])))
+    store = BackgroundStore(project)
+    watch = _selected_watch(store, str(spec["watch_id"]) if spec.get("watch_id") else None)
+    if watch["state"] == "stopped":
+        raise ValueError("cannot enqueue work for a stopped watch")
+    raw_mappings = spec.get("mappings") if backfill else [spec.get("mapping", spec)]
+    if not isinstance(raw_mappings, list) or not raw_mappings:
+        raise ValueError("backfill requires a non-empty mappings list")
+    queued: list[str] = []
+    skipped: list[dict[str, object]] = []
+    for position, raw in enumerate(raw_mappings):
+        if not isinstance(raw, dict):
+            skipped.append({"index": position, "reason": "mapping-must-be-object"})
+            continue
+        mapping = dict(raw)
+        source_revision = mapping.get("source_revision") or mapping.get("commit")
+        if source_revision is None and isinstance(mapping.get("revision"), str):
+            source_revision = mapping["revision"]
+        if source_revision is not None:
+            snapshot = create_commit_snapshot(project, store.paths.artifacts, str(source_revision))
+        else:
+            paths = [str(item) for item in mapping.get("paths", watch["spec"].get("watch", {}).get("paths", []))]
+            snapshot = create_snapshot(project, store.paths.artifacts, paths, allow_dirty=bool(mapping.get("allow_dirty", False)))
+        if not snapshot.get("safe"):
+            skipped.append({"index": position, "task_id": mapping.get("task_id"), "reason": snapshot.get("reason")})
+            continue
+        benchmark_override = mapping.get("benchmark")
+        if benchmark_override is not None and not isinstance(benchmark_override, dict):
+            skipped.append({"index": position, "task_id": mapping.get("task_id"), "reason": "benchmark-must-be-object"})
+            continue
+        if benchmark_override:
+            validate_watch_spec({**watch["spec"], "benchmark": {**watch["spec"]["benchmark"], **benchmark_override}})
+        todo_value = mapping.get("todo_revision")
+        if todo_value is None and isinstance(mapping.get("revision"), int):
+            todo_value = mapping["revision"]
+        revision = int(todo_value if todo_value is not None else todo_revision(project))
+        queued.extend(queue_revision(
+            store, watch, snapshot, task_id=str(mapping["task_id"]) if mapping.get("task_id") else None,
+            revision=revision, initial=bool(mapping.get("initial_characterization", False)),
+            benchmark_override=dict(benchmark_override) if benchmark_override else None, update_last_relevant=False,
+        ))
+    if queued and watch["state"] == "armed":
+        wake_worker(project)
+    return {
+        "schema_version": 1, "watch_id": watch["id"], "operation": "backfill" if backfill else "enqueue",
+        "mappings": len(raw_mappings), "jobs_queued": len(set(queued)), "job_ids": sorted(set(queued)), "skipped": skipped,
+    }
 
 
 def _allocated_gpus() -> tuple[list[str], list[int]]:
@@ -623,10 +779,37 @@ def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, o
         classification, severity = "severe-variance", 70
     result = {**outcome, "status": "succeeded", "classification": classification, "severity": severity,
               "metric": benchmark["metric"], "direction": direction, "comparison_percent": delta,
-              "baseline": baseline, "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
+              "baseline": baseline, "target": benchmark.get("target"),
+              "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
     if not baseline:
         store.set_meta(baseline_key, {"valid": True, "median": current, "source_fingerprint": fingerprint})
     return result
+
+
+def _cheap_failure_classification(record: dict[str, object], snapshot: dict[str, object]) -> dict[str, object]:
+    output = Path(str(record["stderr"])).parent / "failure-classification.json"
+    returncode = int(record.get("returncode", 1) or 1)
+    argv = [
+        sys.executable, str(SCRIPT_DIR / "classify_cuda_failure.py"), "--mode", "crash",
+        "--stdout", str(record["stdout"]), "--stderr", str(record["stderr"]),
+        "--exit-code", str(returncode), "--json-out", str(output),
+    ]
+    if returncode < 0:
+        argv.extend(("--signal", str(-returncode)))
+    classified = text_run(argv, timeout=15)
+    payload = _load_json_output(output) if classified.returncode == 0 else None
+    detail = payload if isinstance(payload, dict) else {"crash_class": "unknown", "likely_domain": "unknown"}
+    likely = str(detail.get("crash_class") or detail.get("likely_domain") or "unknown").replace("-", " ")
+    revision = str(snapshot.get("commit") or snapshot.get("fingerprint") or "revision")[:12]
+    return {"failure_classifier": detail, "summary": f"{revision}: crash, likely {likely}."}
+
+
+def _focused_ncu_kernel_filter(store: BackgroundStore, watch_id: str, fingerprint: str) -> str | None:
+    cached = store.latest_valid_result(watch_id=watch_id, kind="nsys", source_fingerprint=fingerprint)
+    summary = cached.get("summary", {}).get("summary") if cached else None
+    kernels = summary.get("top_kernels", []) if isinstance(summary, dict) else []
+    names = [str(item.get("name")) for item in kernels[:2] if isinstance(item, dict) and item.get("name")]
+    return "regex:^(" + "|".join(re.escape(name) for name in names) + ")$" if names else None
 
 
 def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str, object]) -> dict[str, object]:
@@ -636,7 +819,7 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
         return {"valid": False, "status": "failed", "classification": "watch-missing", "severity": 0}
     spec = watch["spec"]
     candidate = snapshot.get("_candidate", {})
-    benchmark = {**spec["benchmark"]}
+    benchmark = {**spec["benchmark"], **dict(snapshot.get("_benchmark_override") or {})}
     if isinstance(candidate, dict):
         for key in ("argv", "correctness_argv", "metric", "direction", "target", "practical_regression_percent"):
             if key in candidate:
@@ -660,22 +843,48 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
     fingerprint = str(snapshot["fingerprint"])
     base_kind = kind.removeprefix("candidate-")
     if base_kind == "build":
-        command = [str(item).replace("{snapshot}", str(cwd)) for item in candidate.get("build_argv", [])]
-        record = _capture(command, cwd, env, artifact_dir, "candidate-build", float(candidate.get("build_timeout", 3600)))
+        base_build, _ = _base_stage_commands(benchmark)
+        raw_command = candidate.get("build_argv", []) if isinstance(candidate, dict) and candidate else base_build
+        command = [str(item).replace("{snapshot}", str(cwd)) for item in raw_command]
+        record = _capture(command, cwd, env, artifact_dir, "candidate-build" if candidate else "build",
+                          float(candidate.get("build_timeout", benchmark.get("build_timeout", 3600))))
         valid = bool(command) and record["returncode"] == 0
         result = {"valid": valid, "status": "succeeded" if valid else "failed",
-                  "classification": "candidate-built" if valid else "candidate-build-failure", "severity": 0,
+                  "classification": ("candidate-built" if candidate else "built") if valid else "build-failure",
+                  "severity": 0,
                   "record": record, "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
     elif base_kind == "correctness":
-        command = [str(item).replace("{snapshot}", str(cwd)) for item in benchmark["correctness_argv"]]
-        record = _capture(command, cwd, env, artifact_dir, "correctness", float(benchmark.get("correctness_timeout", 1800)))
-        valid = record["returncode"] == 0
+        _, raw_command = _base_stage_commands(benchmark)
+        command = [str(item).replace("{snapshot}", str(cwd)) for item in raw_command]
+        repetitions = max(1, int(benchmark.get("correctness_repetitions", 3)))
+        minimum_seconds = max(0.0, float(benchmark.get("correctness_minimum_seconds", 15)))
+        maximum_repetitions = max(repetitions, int(benchmark.get("correctness_maximum_repetitions", 64)))
+        records = []
+        correctness_started = time.monotonic()
+        for index in range(maximum_repetitions):
+            records.append(_capture(command, cwd, env, artifact_dir, f"correctness-{index}",
+                                    float(benchmark.get("correctness_timeout", 1800))))
+            if records[-1]["returncode"] != 0:
+                break
+            if len(records) >= repetitions and time.monotonic() - correctness_started >= minimum_seconds:
+                break
+        record = records[-1]
+        elapsed = time.monotonic() - correctness_started
+        valid = (len(records) >= repetitions and all(item["returncode"] == 0 for item in records) and
+                 (elapsed >= minimum_seconds or len(records) == maximum_repetitions))
         result = {"valid": valid, "status": "succeeded" if valid else "failed",
                   "classification": "healthy" if valid else "correctness-failure", "severity": 0 if valid else 100,
-                  "record": record, "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
+                  "record": record, "records": records, "parser_version": PARSER_VERSION,
+                  "correctness_elapsed_seconds": round(elapsed, 6),
+                  "source_fingerprint": fingerprint}
+        if not valid:
+            result.update(_cheap_failure_classification(record, snapshot))
     elif base_kind == "benchmark":
         outcome = _benchmark(effective_spec, cwd, env, artifact_dir, background=True)
         result = _classify_benchmark(store, watch_id, effective_spec, outcome, fingerprint)
+        failed_record = next((item for item in outcome["records"] if item["returncode"] != 0), None)
+        if failed_record:
+            result.update(_cheap_failure_classification(failed_record, snapshot))
         if isinstance(candidate, dict) and candidate:
             result["candidate_id"] = candidate.get("id")
         if result["severity"] >= 70:
@@ -683,14 +892,25 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
             common = {"watch_id": watch_id, "cwd": str(cwd), "resources": request, "source_fingerprint": fingerprint,
                       "snapshot": snapshot, "priority": 50, "retry_limit": 0}
             limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
+            dependency: list[str] = []
             for profile_kind in ("nsys", "ncu")[:max(0, min(2, limit))]:
-                store.enqueue({**common, "resources": _resource_request(spec, profile_kind), "kind": profile_kind, "argv": stage_argv(project, watch_id, profile_kind, snapshot),
-                               "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:{profile_kind}"})
+                profile_job, _ = store.enqueue(
+                    {**common, "resources": _resource_request(effective_spec, profile_kind), "kind": profile_kind,
+                     "argv": stage_argv(project, watch_id, profile_kind, snapshot),
+                     "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:{profile_kind}"},
+                    dependency,
+                )
+                dependency = [profile_job]
     elif base_kind in {"nsys", "ncu"}:
         wrapper = SCRIPT_DIR / f"profile_{base_kind}.sh"
         command = [str(item).replace("{snapshot}", str(cwd)) for item in benchmark["argv"]]
         output = artifact_dir / base_kind
-        argv = [str(wrapper), "--out-dir", str(output), "--label", "run", "--", *command]
+        profile_args = [str(wrapper), "--out-dir", str(output), "--label", "run"]
+        if base_kind == "ncu":
+            kernel_filter = _focused_ncu_kernel_filter(store, watch_id, fingerprint)
+            if kernel_filter:
+                profile_args.extend(("--kernel-name", kernel_filter))
+        argv = [*profile_args, "--", *command]
         record = _capture(argv, cwd, env, artifact_dir, base_kind, float(benchmark.get("profile_timeout", 3600)))
         summary_path = output / "run" / "summary.json"
         summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else None
@@ -703,7 +923,8 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
     if after.get("foreign_processes"):
         result.update(valid=False, contaminated=True, status="skipped", classification="measurement-contaminated", severity=0)
     result["resource_samples"] = {"before": before, "after": after}
-    command = candidate.get("build_argv", []) if base_kind == "build" else benchmark["correctness_argv"] if base_kind == "correctness" else benchmark["argv"]
+    base_build, base_correctness = _base_stage_commands(benchmark)
+    command = (candidate.get("build_argv", []) if isinstance(candidate, dict) and candidate else base_build) if base_kind == "build" else base_correctness if base_kind == "correctness" else benchmark["argv"]
     result["provenance"] = provenance(project, snapshot, [str(item) for item in command], probe_gpus(dynamic=False), benchmark)
     return result
 
@@ -909,7 +1130,32 @@ def evidence(project: Path, identifier: str, focus: str) -> dict[str, object]:
     findings = store.visible_findings(focus=focus, limit=3)
     if not findings:
         return {"message": "No action-worthy result; evidence stored.", "findings": []}
-    return {"findings": findings}
+    return {"findings": [_compact_finding(item) for item in findings]}
+
+
+def _compact_finding(item: dict[str, object]) -> dict[str, object]:
+    summary = item.get("summary", {}) if isinstance(item.get("summary"), dict) else {}
+    classification = str(item.get("classification") or summary.get("classification") or "finding")
+    evidence_id = str(item["id"])
+    task = str(item.get("task_id") or "REVISION")
+    if summary.get("summary"):
+        line = f"{summary['summary']} [e:{evidence_id}]"
+    elif classification == "material-regression":
+        stats = summary.get("statistics") or {}
+        baseline = summary.get("baseline") or {}
+        line = (f"REGRESSION {float(summary.get('comparison_percent') or 0):.1f}%: "
+                f"{float(stats.get('median') or 0):g} vs {float(baseline.get('median') or 0):g} after {task}. [e:{evidence_id}]")
+    elif classification == "target-missed":
+        stats = summary.get("statistics") or {}
+        line = f"TARGET MISSED: {summary.get('metric')}={float(stats.get('median') or 0):g}, target={summary.get('target')}. [e:{evidence_id}]"
+    elif classification == "severe-variance":
+        stats = summary.get("statistics") or {}
+        line = f"SEVERE VARIANCE: median={float(stats.get('median') or 0):g}, MAD={float(stats.get('mad') or 0):g}. [e:{evidence_id}]"
+    elif classification == "correctness-failure":
+        line = f"CORRECTNESS FAILURE: {task} failed its background check. [e:{evidence_id}]"
+    else:
+        line = f"{classification.replace('-', ' ').upper()}: {task}. [e:{evidence_id}]"
+    return {"id": evidence_id, "classification": classification, "severity": int(item.get("severity", 0)), "line": line}
 
 
 def parser() -> argparse.ArgumentParser:
@@ -918,6 +1164,8 @@ def parser() -> argparse.ArgumentParser:
     inspect = sub.add_parser("inspect"); inspect.add_argument("--project", required=True); inspect.add_argument("--json", action="store_true")
     background = sub.add_parser("background"); background_sub = background.add_subparsers(dest="background_command", required=True)
     arm = background_sub.add_parser("arm"); arm.add_argument("--spec", required=True); arm.add_argument("--json", action="store_true")
+    enqueue = background_sub.add_parser("enqueue"); enqueue.add_argument("--spec", required=True); enqueue.add_argument("--json", action="store_true")
+    backfill = background_sub.add_parser("backfill"); backfill.add_argument("--spec", required=True); backfill.add_argument("--json", action="store_true")
     for name in ("pause", "resume", "stop"):
         item = background_sub.add_parser(name); item.add_argument("--project", required=True); item.add_argument("--json", action="store_true")
     execute = sub.add_parser("run"); execute.add_argument("--spec", required=True); execute.add_argument("--json", action="store_true")
@@ -936,6 +1184,8 @@ def main() -> int:
         elif args.command == "background":
             if args.background_command == "arm":
                 payload = arm_background(load_spec(args.spec))
+            elif args.background_command in {"enqueue", "backfill"}:
+                payload = enqueue_supplied_revisions(load_spec(args.spec), backfill=args.background_command == "backfill")
             else:
                 state = {"pause": "paused", "resume": "armed", "stop": "stopped"}[args.background_command]
                 payload = control_background(Path(args.project), state)

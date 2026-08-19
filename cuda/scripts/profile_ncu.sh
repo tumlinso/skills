@@ -15,6 +15,7 @@ Options:
   --kernel-name-base X  Kernel naming mode. Default: demangled
   --target-processes X  Nsight Compute target process mode. Default: all
   --launch-count N      Optional launch count limit
+  --kernel-name X       Optional exact/regex kernel filter passed to NCU
   --benchmark-summary P Optional benchmark summary JSON to combine with this profile
   --show-command-output Stream the target command output instead of capturing it to files
   -h, --help            Show this help
@@ -33,6 +34,7 @@ SET_NAME=""
 KERNEL_NAME_BASE="demangled"
 TARGET_PROCESSES="all"
 LAUNCH_COUNT=""
+KERNEL_NAME=""
 METRICS=""
 BENCHMARK_SUMMARY=""
 SHOW_COMMAND_OUTPUT=0
@@ -92,6 +94,10 @@ while (($# > 0)); do
       ;;
     --launch-count)
       LAUNCH_COUNT="$2"
+      shift 2
+      ;;
+    --kernel-name)
+      KERNEL_NAME="$2"
       shift 2
       ;;
     --benchmark-summary)
@@ -164,6 +170,9 @@ mkdir -p "${RUN_DIR}"
   if [[ -n "${LAUNCH_COUNT}" ]]; then
     printf 'launch_count=%s\n' "${LAUNCH_COUNT}"
   fi
+  if [[ -n "${KERNEL_NAME}" ]]; then
+    printf 'kernel_name=%s\n' "${KERNEL_NAME}"
+  fi
   printf 'command='
   printf '%q ' "$@"
   printf '\n'
@@ -199,6 +208,10 @@ fi
 
 if [[ -n "${LAUNCH_COUNT}" ]]; then
   NCU_ARGS+=("--launch-count" "${LAUNCH_COUNT}")
+fi
+
+if [[ -n "${KERNEL_NAME}" ]]; then
+  NCU_ARGS+=("--kernel-name" "${KERNEL_NAME}")
 fi
 
 for section in "${SECTIONS[@]}"; do

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import signal
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -36,6 +38,65 @@ class ControllerTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.host_environment.stop()
         self.host_runtime.cleanup()
+
+    def test_background_mutex_child_cannot_inherit_lock(self) -> None:
+        lock = Path(os.environ["CUDA_V100_BENCHMARK_MUTEX_PATH"])
+        probe = (
+            "import os,sys; target=os.path.realpath(os.environ['CUDA_V100_BENCHMARK_MUTEX_PATH']); "
+            "links=[]; "
+            "[(links.append(os.path.realpath('/proc/self/fd/'+fd)) if os.path.exists('/proc/self/fd/'+fd) else None) "
+            "for fd in os.listdir('/proc/self/fd')]; sys.exit(target in links)"
+        )
+        environment = {**os.environ, "CUDA_BENCHMARK_COORDINATION_MODE": "background"}
+        completed = subprocess.run(
+            [str(controller.MUTEX), "--", sys.executable, "-c", probe],
+            env=environment, text=True, capture_output=True, timeout=5, check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(subprocess.run(
+            ["flock", "-n", str(lock), "-c", "true"], check=False,
+        ).returncode, 0)
+
+    def test_background_mutex_releases_after_abrupt_wrapper_death(self) -> None:
+        lock = Path(os.environ["CUDA_V100_BENCHMARK_MUTEX_PATH"])
+        pid_file = lock.with_suffix(".child")
+        child = (
+            "import os,time; from pathlib import Path; "
+            f"Path({str(pid_file)!r}).write_text(str(os.getpid())); time.sleep(60)"
+        )
+        environment = {**os.environ, "CUDA_BENCHMARK_COORDINATION_MODE": "background"}
+        wrapper = subprocess.Popen(
+            [str(controller.MUTEX), "--", sys.executable, "-c", child],
+            env=environment, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        child_pid = None
+        try:
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline and not pid_file.exists():
+                time.sleep(0.02)
+            self.assertTrue(pid_file.exists())
+            child_pid = int(pid_file.read_text())
+            wrapper.kill()
+            wrapper.wait(timeout=5)
+            lock_deadline = time.monotonic() + 1
+            available = False
+            while time.monotonic() < lock_deadline:
+                available = subprocess.run(
+                    ["flock", "-n", str(lock), "-c", "true"], check=False,
+                ).returncode == 0
+                if available:
+                    break
+                time.sleep(0.02)
+            self.assertTrue(available)
+        finally:
+            if wrapper.poll() is None:
+                wrapper.kill()
+                wrapper.wait(timeout=5)
+            if child_pid is not None:
+                try:
+                    os.killpg(child_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
 
     def test_arm_is_explicit_and_persistent(self) -> None:
         repo = V2Repo()
@@ -98,6 +159,16 @@ class ControllerTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_symbol_watch_matches_existing_todo_task_text(self) -> None:
+        repo = V2Repo()
+        try:
+            repo.apply(base_plan([safe_task("CUDA-A", "src/a.cu", objective="Optimize fused_attention_kernel")]))
+            with sqlite3.connect(repo.service.paths.db_file) as connection:
+                self.assertTrue(controller.relevant_task(connection, "CUDA-A", {"symbols": ["fused_attention_kernel"]}))
+                self.assertFalse(controller.relevant_task(connection, "CUDA-A", {"symbols": ["unrelated_kernel"]}))
+        finally:
+            repo.close()
+
     def test_background_crash_is_compact_and_healthy_results_stay_silent(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -112,6 +183,30 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(len(visible["findings"]), 1)
             self.assertEqual(visible["findings"][0]["id"], bad)
             self.assertNotEqual(visible["findings"][0]["id"], good)
+            self.assertEqual(set(visible["findings"][0]), {"id", "classification", "severity", "line"})
+            self.assertNotIn("record", visible["findings"][0]["line"])
+
+    def test_background_failure_uses_only_the_cheap_classifier(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "snapshot"
+            source.mkdir()
+            store = BackgroundStore(root)
+            watch_id = store.arm_watch({
+                "project_root": str(root), "watch": {},
+                "benchmark": {
+                    "argv": [sys.executable, "-c", "print('{\"latency\":1.0}')"],
+                    "correctness_argv": [sys.executable, "-c", "import sys; sys.stderr.write('illegal memory access\\n'); sys.exit(1)"],
+                    "metric": "latency", "direction": "minimize",
+                },
+            })
+            snapshot = {"safe": True, "source_root": str(source), "fingerprint": "failure", "commit": "deadbeef"}
+            with mock.patch.object(controller, "probe_gpus", return_value=[]):
+                result = controller.background_stage(root, watch_id, "correctness", snapshot)
+            self.assertEqual(result["classification"], "correctness-failure")
+            self.assertEqual(result["failure_classifier"]["crash_class"], "device-memory-fault")
+            self.assertEqual(result["summary"], "deadbeef: crash, likely device memory fault.")
+            self.assertFalse(any("sanitizer" in str(item) or "cuda-gdb" in str(item) for item in result["record"]["argv"]))
 
     def test_cpp_context_slice_uses_public_api_and_fallback_is_read_only(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -147,6 +242,141 @@ class ControllerTests(unittest.TestCase):
             self.assertEqual(kinds, ["correctness", "benchmark", "candidate-build", "candidate-correctness", "candidate-benchmark"])
         finally:
             repo.close()
+
+    def test_legacy_build_and_test_releases_gpu_during_build(self) -> None:
+        repo = V2Repo()
+        try:
+            source = repo.root / "snapshot"
+            source.mkdir()
+            spec = {
+                "project_root": str(repo.root), "watch": {},
+                "benchmark": {
+                    "argv": ["bench"],
+                    "correctness_argv": ["ctest", "--build-and-test", "{snapshot}", "build",
+                                         "--build-target", "bench", "--test-command", "bench", "--check"],
+                    "metric": "latency", "direction": "minimize", "gpus": 1,
+                },
+                "policy": {"initial_characterization": False, "max_background_gpus": 1},
+            }
+            store = BackgroundStore(repo.root)
+            watch_id = store.arm_watch(spec)
+            watch = store.watch(watch_id)
+            snapshot = {"safe": True, "source_root": str(source), "fingerprint": "split", "commit": "deadbeef"}
+            jobs = controller.queue_revision(store, watch, snapshot, task_id="A", revision=1)
+            with store.connect(readonly=True) as connection:
+                rows = connection.execute(
+                    "SELECT id,kind,resource_json FROM background_jobs ORDER BY created_at"
+                ).fetchall()
+                correctness_parent = connection.execute(
+                    "SELECT depends_on_job_id FROM background_dependencies WHERE job_id=?", (rows[1]["id"],)
+                ).fetchone()[0]
+            self.assertEqual(len(jobs), 3)
+            self.assertEqual([row["kind"] for row in rows], ["build", "correctness", "benchmark"])
+            self.assertEqual(json.loads(rows[0]["resource_json"])["count"], 0)
+            self.assertTrue(json.loads(rows[0]["resource_json"])["cpu_heavy"])
+            self.assertGreater(json.loads(rows[0]["resource_json"])["cpu_threads"], 0)
+            self.assertEqual(json.loads(rows[1]["resource_json"])["count"], 1)
+            self.assertEqual(correctness_parent, rows[0]["id"])
+            build, correctness = controller._base_stage_commands(spec["benchmark"])
+            self.assertEqual(build[-1], "/usr/bin/true")
+            self.assertEqual(correctness, ["bench", "--check"])
+        finally:
+            repo.close()
+
+    def test_correctness_repeats_and_stops_at_first_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "snapshot"
+            source.mkdir()
+            store = BackgroundStore(root)
+            watch_id = store.arm_watch({
+                "project_root": str(root), "watch": {},
+                "benchmark": {
+                    "argv": ["bench"], "correctness_argv": ["check"],
+                    "correctness_repetitions": 5, "metric": "latency", "direction": "minimize",
+                },
+            })
+            records = [
+                {"returncode": 0, "stdout": str(source / "out0"), "stderr": str(source / "err0")},
+                {"returncode": 1, "stdout": str(source / "out1"), "stderr": str(source / "err1")},
+            ]
+            for name in ("out0", "err0", "out1", "err1"):
+                (source / name).write_text("", encoding="utf-8")
+            snapshot = {"safe": True, "source_root": str(source), "fingerprint": "repeat", "commit": "deadbeef"}
+            with mock.patch.object(controller, "_capture", side_effect=records) as capture, \
+                    mock.patch.object(controller, "probe_gpus", return_value=[]), \
+                    mock.patch.object(controller, "_cheap_failure_classification", return_value={}):
+                result = controller.background_stage(root, watch_id, "correctness", snapshot)
+            self.assertFalse(result["valid"])
+            self.assertEqual(len(result["records"]), 2)
+            self.assertEqual(capture.call_count, 2)
+
+    def test_backfill_queues_historical_immutable_revisions_once(self) -> None:
+        repo = V2Repo()
+        try:
+            (repo.root / "kernel.cu").write_text("__global__ void old_kernel() {}\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo.root), "add", "kernel.cu"], check=True)
+            subprocess.run(["git", "-C", str(repo.root), "-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-qm", "old"], check=True)
+            old = subprocess.check_output(["git", "-C", str(repo.root), "rev-parse", "HEAD"], text=True).strip()
+            (repo.root / "kernel.cu").write_text("__global__ void new_kernel() {}\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo.root), "add", "kernel.cu"], check=True)
+            subprocess.run(["git", "-C", str(repo.root), "-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-qm", "new"], check=True)
+            new = subprocess.check_output(["git", "-C", str(repo.root), "rev-parse", "HEAD"], text=True).strip()
+            watch_spec = {
+                "schema_version": 1, "project_root": str(repo.root), "watch": {"paths": ["kernel.cu"]},
+                "benchmark": {"argv": ["bench"], "correctness_argv": ["check"], "metric": "latency", "direction": "minimize"},
+                "policy": {"initial_characterization": False},
+            }
+            with mock.patch.object(controller, "probe_gpus", return_value=[]), mock.patch.object(controller, "wake_worker"):
+                armed = controller.arm_background(watch_spec)
+                request = {
+                    "schema_version": 1, "project_root": str(repo.root), "watch_id": armed["watch_id"],
+                    "mappings": [
+                        {"task_id": "OLD", "source_revision": old, "todo_revision": 10,
+                         "benchmark": {"argv": ["bench", "--old"]}},
+                        {"task_id": "NEW", "source_revision": new, "todo_revision": 20},
+                    ],
+                }
+                first = controller.enqueue_supplied_revisions(request, backfill=True)
+                second = controller.enqueue_supplied_revisions(request, backfill=True)
+            self.assertEqual(first["jobs_queued"], 4)
+            self.assertEqual(second["jobs_queued"], 0)
+            with BackgroundStore(repo.root).connect(readonly=True) as connection:
+                rows = connection.execute("SELECT task_id,todo_revision,snapshot_json FROM background_jobs WHERE kind='benchmark' ORDER BY todo_revision").fetchall()
+            self.assertEqual([(row["task_id"], row["todo_revision"]) for row in rows], [("OLD", 10), ("NEW", 20)])
+            snapshots = [json.loads(row["snapshot_json"]) for row in rows]
+            self.assertIn("old_kernel", (Path(snapshots[0]["source_root"]) / "kernel.cu").read_text(encoding="utf-8"))
+            self.assertIn("new_kernel", (Path(snapshots[1]["source_root"]) / "kernel.cu").read_text(encoding="utf-8"))
+            self.assertEqual(snapshots[0]["_benchmark_override"]["argv"], ["bench", "--old"])
+        finally:
+            repo.close()
+
+    def test_initial_characterization_chains_nsys_before_ncu_and_focuses_two_kernels(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "snapshot"
+            source.mkdir()
+            store = BackgroundStore(root)
+            watch_id = store.arm_watch({
+                "project_root": str(root), "watch": {},
+                "benchmark": {"argv": ["bench"], "correctness_argv": ["check"], "metric": "latency", "direction": "minimize"},
+                "policy": {"initial_characterization": True},
+            })
+            watch = store.watch(watch_id)
+            snapshot = {"safe": True, "source_root": str(source), "fingerprint": "profile", "commit": "deadbeef"}
+            controller.queue_revision(store, watch, snapshot, task_id="A", revision=1, initial=True)
+            with store.connect(readonly=True) as connection:
+                nsys = connection.execute("SELECT id FROM background_jobs WHERE kind='nsys'").fetchone()[0]
+                ncu = connection.execute("SELECT id FROM background_jobs WHERE kind='ncu'").fetchone()[0]
+                dependency = connection.execute("SELECT depends_on_job_id FROM background_dependencies WHERE job_id=?", (ncu,)).fetchone()[0]
+            self.assertEqual(dependency, nsys)
+            cached = {"summary": {"summary": {"top_kernels": [{"name": "kernel<int>"}, {"name": "kernel2"}, {"name": "kernel3"}]}}}
+            fake_store = mock.Mock()
+            fake_store.latest_valid_result.return_value = cached
+            kernel_filter = controller._focused_ncu_kernel_filter(fake_store, "watch", "profile")
+            self.assertIn("kernel<int>", kernel_filter)
+            self.assertIn("kernel2", kernel_filter)
+            self.assertNotIn("kernel3", kernel_filter)
 
     def test_private_runtime_is_not_source_or_dirty_provenance(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

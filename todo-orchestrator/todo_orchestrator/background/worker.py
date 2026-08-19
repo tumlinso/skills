@@ -25,10 +25,31 @@ def _execute(store: BackgroundStore, worker_id: str, claimed) -> None:
             "result": {"valid": False, "status": "failed", "classification": "background-command-failure", "severity": 0},
         }
     try:
-        store.finish(str(job["id"]), attempt_id, **outcome)
+        for attempt in range(3):
+            try:
+                store.finish(str(job["id"]), attempt_id, **outcome)
+                break
+            except Exception:
+                if attempt == 2:
+                    break
+                time.sleep(0.1 * (attempt + 1))
     finally:
         if job.get("host_owner_id"):
-            HostCoordinator().release(str(job["host_owner_id"]))
+            try:
+                HostCoordinator().release(str(job["host_owner_id"]))
+            except Exception:
+                pass
+
+
+def _reap_done(active: set[concurrent.futures.Future]) -> None:
+    """Consume completed jobs without allowing one failure to stop the queue."""
+    done = {future for future in active if future.done()}
+    for future in done:
+        active.remove(future)
+        try:
+            future.result()
+        except Exception:
+            pass
 
 
 def main() -> int:
@@ -42,21 +63,28 @@ def main() -> int:
     idle_since = time.monotonic()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.max_children), thread_name_prefix="todo-background")
     active: set[concurrent.futures.Future] = set()
+    consecutive_supervisor_errors = 0
     try:
         while True:
-            store.heartbeat(worker_id)
-            dispatch_watch_handlers(store)
-            done = {future for future in active if future.done()}
-            for future in done:
-                active.remove(future)
-                future.result()
             launched = False
-            while len(active) < max(1, args.max_children):
-                claimed = claim_runnable(store, worker_id)
-                if not claimed:
-                    break
-                active.add(executor.submit(_execute, store, worker_id, claimed))
-                launched = True
+            try:
+                store.heartbeat(worker_id)
+                dispatch_watch_handlers(store)
+                _reap_done(active)
+                while len(active) < max(1, args.max_children):
+                    claimed = claim_runnable(store, worker_id)
+                    if not claimed:
+                        break
+                    active.add(executor.submit(_execute, store, worker_id, claimed))
+                    launched = True
+                consecutive_supervisor_errors = 0
+            except Exception:
+                _reap_done(active)
+                consecutive_supervisor_errors += 1
+                if consecutive_supervisor_errors >= 20:
+                    return 1
+                time.sleep(0.25)
+                continue
             if not active and not launched:
                 if time.monotonic() - idle_since >= args.idle_seconds:
                     return 0
@@ -66,7 +94,10 @@ def main() -> int:
             time.sleep(0.1)
     finally:
         executor.shutdown(wait=True, cancel_futures=False)
-        store.stop_worker(worker_id)
+        try:
+            store.stop_worker(worker_id)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

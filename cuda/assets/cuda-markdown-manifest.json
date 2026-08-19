@@ -1,525 +1,530 @@
 {
+  "schema_version": 1,
   "files": [
     {
-      "bytes": 2580,
       "path": "SKILL.md",
-      "sha256": "0072451cf271bad5b785997c047626142378a348cc13c85f254e858a4f8b9e6f"
+      "bytes": 3212,
+      "sha256": "c20b4c467adc3b5ca22e57ef062d494d3abf9a41d67d2d942d38c10535961a46"
     },
     {
-      "bytes": 2294,
       "path": "references/addendum-bio-data-layouts.md",
+      "bytes": 2294,
       "sha256": "a6115330fce6c5e86bb1d2aee163292865167d97d327a62e8a0b0547e2b29aa9"
     },
     {
-      "bytes": 2348,
       "path": "references/addendum-cpu-porting.md",
+      "bytes": 2348,
       "sha256": "9dab44bd3332c2f2f846fd5d175d58e7bd8dbe09990da2e66f3b4d7fe45a5efb"
     },
     {
-      "bytes": 1837,
       "path": "references/addendum-crash-debugging.md",
+      "bytes": 1837,
       "sha256": "506284aedcb8f6f64b4e2f381602076e53dddb766a7ce0b2673f87573dbc3dcc"
     },
     {
-      "bytes": 1687,
       "path": "references/addendum-ddp-topology.md",
+      "bytes": 1687,
       "sha256": "1249255512010b89e688701f3fc259fa7109b0a181822a540dcd5eea00928415"
     },
     {
-      "bytes": 1485,
       "path": "references/addendum-host-device-pipeline.md",
+      "bytes": 1485,
       "sha256": "3caa062445b50dca267659f89676f6520233f27069217c074ed0d978b570349f"
     },
     {
-      "bytes": 10186,
       "path": "references/addendum-kernel-mechanics.md",
+      "bytes": 10186,
       "sha256": "059eb56579b35cfb5af45b10c7cec706e69f5374b694da5cc21b8b10b8ae0f39"
     },
     {
-      "bytes": 2499,
       "path": "references/addendum-kernel-roofline-lab.md",
+      "bytes": 2499,
       "sha256": "ae82ce666974c5524b82af516ac6acc3ce1a6936c5db8e180c91d8a4f1ac1540"
     },
     {
-      "bytes": 1790,
       "path": "references/addendum-memory-budgeting.md",
+      "bytes": 1790,
       "sha256": "daaa9250d6bf31feba6fb29753c740f2cc7955e567038f79184f58e92c51733a"
     },
     {
-      "bytes": 2106,
       "path": "references/addendum-nvhpc-cpp.md",
+      "bytes": 2106,
       "sha256": "c274884e6c20b80df4b68b7cda0a9529efa184dd16b001e3d30ffe355e6356fb"
     },
     {
-      "bytes": 5599,
       "path": "references/addendum-ptx-routing.md",
+      "bytes": 5599,
       "sha256": "9f43f2f51be586991542181e5fc35bae1a9a4de13a0285c429a8ec0b9ae0154e"
     },
     {
-      "bytes": 6462,
       "path": "references/addendum-tensor-core-routing.md",
+      "bytes": 6462,
       "sha256": "888838ca4ad7d361d311275f23b94256aea6ea369ac92a1868923c1ce3fe29e3"
     },
     {
-      "bytes": 4793,
       "path": "references/addendum-torch-extensions.md",
+      "bytes": 4793,
       "sha256": "61e652ef2a64d40c60b6c3ff201499a4266655914213c2b11b0b60cfe6ab9a65"
     },
     {
-      "bytes": 351,
       "path": "references/architectures/ampere/addendum-host-device-pipeline.md",
+      "bytes": 351,
       "sha256": "22c63b15d15d824019268e39f317ea512d4afd44ceee96931fa8a95ef1c5702b"
     },
     {
-      "bytes": 410,
       "path": "references/architectures/ampere/addendum-kernel-mechanics.md",
+      "bytes": 410,
       "sha256": "10439859b773739b098ea3000e91c63c7c1a4aeb1e8754c6898729ebe0a27e49"
     },
     {
-      "bytes": 312,
       "path": "references/architectures/ampere/addendum-kernel-roofline-lab.md",
+      "bytes": 312,
       "sha256": "cc2cf2cb39256cbd81870dfa9df6ea0d4d689b9ba7482294171ea1c0b0cbca7b"
     },
     {
-      "bytes": 656,
       "path": "references/architectures/ampere/addendum-memory-topology.md",
+      "bytes": 656,
       "sha256": "f4c4d980734978be922aba2253909b2741c307e9ece6767b73b741fdf82e306b"
     },
     {
-      "bytes": 289,
       "path": "references/architectures/ampere/addendum-ptx-routing.md",
+      "bytes": 289,
       "sha256": "fbfd4e09952f82396309d83a57d9dcaf20047b13b89b9c4889465e39f0270922"
     },
     {
-      "bytes": 603,
       "path": "references/architectures/ampere/addendum-tensor-core-routing.md",
+      "bytes": 603,
       "sha256": "732f80db19cf054af28f0569fe8a3ff7dc68a384e20c2b782f592a8820604282"
     },
     {
-      "bytes": 2972,
       "path": "references/architectures/ampere/low-level-optimization.md",
+      "bytes": 2972,
       "sha256": "b5aab3fbe6e2ad702a57d4bb141e4fc273d306f288f29b7b7aa9759dfa949b56"
     },
     {
-      "bytes": 644,
       "path": "references/architectures/ampere/profiling-interpretation.md",
+      "bytes": 644,
       "sha256": "8e4d1f8f71826027e5e46d1a089e9975db4983d31bbfd6c4a22229642143db25"
     },
     {
-      "bytes": 722,
       "path": "references/architectures/ampere/programming-guide.md",
+      "bytes": 722,
       "sha256": "f51bec2562b1e0762e4298ef5aa27bc37aae61979fe8208b0b908691c32d4e30"
     },
     {
-      "bytes": 3377,
       "path": "references/architectures/ampere/router.md",
+      "bytes": 3377,
       "sha256": "0b07b83828f20a1a0431648bcc218d3cff3fb1e12a170e30b1dc4b28ffb2543f"
     },
     {
-      "bytes": 293,
       "path": "references/architectures/blackwell/addendum-host-device-pipeline.md",
+      "bytes": 293,
       "sha256": "957e19ae92dfd7d0fa7fb6fb9c67e28246f14d60b6c7bc5fa2f9e84da8206b9d"
     },
     {
-      "bytes": 410,
       "path": "references/architectures/blackwell/addendum-kernel-mechanics.md",
+      "bytes": 410,
       "sha256": "343b8ef9ada8e91cae54ab456d68efdc517a9f6b248f4f69cc023bbdd5cf82c3"
     },
     {
-      "bytes": 286,
       "path": "references/architectures/blackwell/addendum-kernel-roofline-lab.md",
+      "bytes": 286,
       "sha256": "94baf3e5468a25e22bd86a333b74001740dc5fed99484f541efd179060e61f8c"
     },
     {
-      "bytes": 386,
       "path": "references/architectures/blackwell/addendum-memory-topology.md",
+      "bytes": 386,
       "sha256": "ebc5b9fb51ee925df118c9a01e086689ed0a24e0b0ecebbad1c984bb6fa908ac"
     },
     {
-      "bytes": 353,
       "path": "references/architectures/blackwell/addendum-ptx-routing.md",
+      "bytes": 353,
       "sha256": "e7c2f3117d7eee79c64fea2b72ea2428d115494f3d1fc79ce1e1c41d1273af96"
     },
     {
-      "bytes": 621,
       "path": "references/architectures/blackwell/addendum-tensor-core-routing.md",
+      "bytes": 621,
       "sha256": "c210a66e44115a8794b24afe913ce31887f34a6dfe787afd0b05bb5b03c2438c"
     },
     {
-      "bytes": 3061,
       "path": "references/architectures/blackwell/low-level-optimization.md",
+      "bytes": 3061,
       "sha256": "d837f64e19f10735477fb65f066d2aa27a9139d320dee728724419c4b142586c"
     },
     {
-      "bytes": 354,
       "path": "references/architectures/blackwell/profiling-interpretation.md",
+      "bytes": 354,
       "sha256": "8144e1075422ce03616dbf80f7b8545200390abc504a6776f51e1921092793c5"
     },
     {
-      "bytes": 734,
       "path": "references/architectures/blackwell/programming-guide.md",
+      "bytes": 734,
       "sha256": "8a68f3cbd4aaf27a86125c06090082dfb62e4ddf667dfd625a7fecdee9cf57bf"
     },
     {
-      "bytes": 3424,
       "path": "references/architectures/blackwell/router.md",
+      "bytes": 3424,
       "sha256": "c897714ede417a02c35a7628df679b32a23b9478d9eeb552d445498c53ac0b79"
     },
     {
-      "bytes": 261,
       "path": "references/architectures/hopper/addendum-host-device-pipeline.md",
+      "bytes": 261,
       "sha256": "77c1797667d6546cfceb8d4f9c3c58783913d5189805cfeab4ed6f1900d43ae1"
     },
     {
-      "bytes": 409,
       "path": "references/architectures/hopper/addendum-kernel-mechanics.md",
+      "bytes": 409,
       "sha256": "0c385724fc5e5c7225ba3c0bbe8507064b32865cfb79359f578f6f6188c77a2e"
     },
     {
-      "bytes": 261,
       "path": "references/architectures/hopper/addendum-kernel-roofline-lab.md",
+      "bytes": 261,
       "sha256": "d81718eb683959a85258c476e8fb6a6eea948cbc024ad0efa3831bf84a072b3a"
     },
     {
-      "bytes": 534,
       "path": "references/architectures/hopper/addendum-memory-topology.md",
+      "bytes": 534,
       "sha256": "c7440ab4240e054793f51a700c8e400abeba1958c94e4c6daf91a584c4921491"
     },
     {
-      "bytes": 289,
       "path": "references/architectures/hopper/addendum-ptx-routing.md",
+      "bytes": 289,
       "sha256": "58f8687046ec73d63e19e7a190b9f935e04cf1dca4f80d969576bb6b59b0dc92"
     },
     {
-      "bytes": 473,
       "path": "references/architectures/hopper/addendum-tensor-core-routing.md",
+      "bytes": 473,
       "sha256": "3f0a2bc57a50dec56352ac091a6b5f1dbdc55b4952b42c6c2c32265f3761d3ae"
     },
     {
-      "bytes": 2564,
       "path": "references/architectures/hopper/low-level-optimization.md",
+      "bytes": 2564,
       "sha256": "28de58f628eaa7a40b005db47672da878fea6990e6a34431c2725f5feb628e85"
     },
     {
-      "bytes": 366,
       "path": "references/architectures/hopper/profiling-interpretation.md",
+      "bytes": 366,
       "sha256": "249e9e3c92f13fe3dbbeb9f8c3c5ce6d212fd3aab54f21c7ccc7256ee7292da0"
     },
     {
-      "bytes": 639,
       "path": "references/architectures/hopper/programming-guide.md",
+      "bytes": 639,
       "sha256": "dfd5afbf1af41bc6d16bd85743ec5d00315342e37fa6cad83f21829ddbbb1c64"
     },
     {
-      "bytes": 3166,
       "path": "references/architectures/hopper/router.md",
+      "bytes": 3166,
       "sha256": "a003f924c8b79ca90547aa13f6ac1fd958ac409d6ce51a2ded5aeadde5a90a7e"
     },
     {
-      "bytes": 2075,
       "path": "references/architectures/volta/fusion-and-specialization.md",
+      "bytes": 2075,
       "sha256": "bdab8035516715fe022a624f20283a03bf7312b643b936f0f16474e2f129761a"
     },
     {
-      "bytes": 1127,
       "path": "references/architectures/volta/native-benchmark-loop.md",
+      "bytes": 1127,
       "sha256": "6b8a05105a25fe326aedef93aeaf2325ac4dba92f0769a5c270477c101b3ccda"
     },
     {
-      "bytes": 2755,
       "path": "references/architectures/volta/native-v100-extreme.md",
+      "bytes": 2755,
       "sha256": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32"
     },
     {
-      "bytes": 1466,
       "path": "references/architectures/volta/register-pressure-and-occupancy.md",
+      "bytes": 1466,
       "sha256": "110be7edc594bb26d22988a94d14f3d99fec74e60cbc245af76453d688e85212"
     },
     {
-      "bytes": 5333,
       "path": "references/architectures/volta/router.md",
+      "bytes": 5333,
       "sha256": "3ea24c6f691113be2bfa956a21e14873c87d9ed7c4b4cc4df8b2b2e0589fc363"
     },
     {
-      "bytes": 635,
       "path": "references/architectures/volta/routes/benchmark.md",
+      "bytes": 635,
       "sha256": "fea0973055f53dfac70ef365080fef4245180cf007711a20ca4651efbd1e664f"
     },
     {
-      "bytes": 844,
       "path": "references/architectures/volta/routes/fusion.md",
+      "bytes": 844,
       "sha256": "2e9010b438a6cbaaf572593bb283e12b79a3bfbe7f9fda06a4df6c91ebee672d"
     },
     {
-      "bytes": 784,
       "path": "references/architectures/volta/routes/hot-kernel.md",
+      "bytes": 784,
       "sha256": "e8e9198c65e3b914fa1671136c307643d7acb9b3c591362a70accabfbd1e08c7"
     },
     {
-      "bytes": 837,
       "path": "references/architectures/volta/routes/native.md",
+      "bytes": 837,
       "sha256": "7a49dbab92e432b7162152c30e83515d9e006741c41e24b1208675d8e22f14b0"
     },
     {
-      "bytes": 828,
       "path": "references/architectures/volta/routes/tensor.md",
+      "bytes": 828,
       "sha256": "9fa0a3f1fd6175c6af1543a43ea75f666b2d66fda925a3ba9315de95f1eb983a"
     },
     {
-      "bytes": 801,
       "path": "references/architectures/volta/routes/torch-op.md",
+      "bytes": 801,
       "sha256": "301a1b9edac8bdb905f8558ee28b03f9cd896c458d7c987a93740d99dc0f7a2b"
     },
     {
-      "bytes": 1141,
       "path": "references/architectures/volta/sass-and-ptx-triage.md",
+      "bytes": 1141,
       "sha256": "8dab89bdfbf260bd79811794a3717b9feb802d86e6ea8a9455388218f001a6e3"
     },
     {
-      "bytes": 4861,
       "path": "references/benchmark-large-data.md",
+      "bytes": 4861,
       "sha256": "70f3fdcf35a50b150f82ba6199d7b1de4715b1a72377a746356577c7c226f255"
     },
     {
-      "bytes": 2767,
       "path": "references/benchmark-real-data.md",
+      "bytes": 2767,
       "sha256": "812dfb3cb333b7471af6cdead1fbd8e89344801ac817eae6ff5ec9b50d611054"
     },
     {
-      "bytes": 5987,
       "path": "references/benchmark-standardization.md",
+      "bytes": 5987,
       "sha256": "56f1da5e6adcf5aff7268544b929c5155cd76b9a6e7d09748d29240bce686f81"
     },
     {
-      "bytes": 4554,
       "path": "references/benchmark-target-authoring.md",
+      "bytes": 4554,
       "sha256": "a17618a0a7f2649fc7ca5828fe98ce59b812987b7a10eabfab11985926688358"
     },
     {
-      "bytes": 1924,
       "path": "references/bio-data-phases.md",
+      "bytes": 1924,
       "sha256": "bfcdca8be8b6e028ca2797c6886a77d8fd73a9b485574ac68d67d9d7ac18ada3"
     },
     {
-      "bytes": 1726,
       "path": "references/bio-format-decision-tables.md",
+      "bytes": 1726,
       "sha256": "6017236cd1db953c30b950973ec88b9dd1dd977f07e86a8360e67e5a430a6400"
     },
     {
-      "bytes": 2645,
       "path": "references/common/code-organization.md",
+      "bytes": 2645,
       "sha256": "c7637b919a9e5db4bc62e25f523155163eb6e1b36acb69919fdc274d312b04ba"
     },
     {
-      "bytes": 8711,
       "path": "references/common/compute-libraries.md",
+      "bytes": 8711,
       "sha256": "926116c46c28cc11787c5d3ef1527d4be3f6e62e65e3b29b5081e59860e5c044"
     },
     {
-      "bytes": 1621,
       "path": "references/common/diagnostics-workflow.md",
+      "bytes": 1621,
       "sha256": "54a1715810bac204f5644ece9123584cd246c46e350f63ab0d3b3895ff172b97"
     },
     {
-      "bytes": 1913,
       "path": "references/compute-sanitizer-playbook.md",
+      "bytes": 1913,
       "sha256": "80a687fe3de534226b7f3ae8496f5e36f49fbaf7c9678e5f7f0a52f3e3fbdb7f"
     },
     {
-      "bytes": 2078,
+      "path": "references/controller-background-contract.md",
+      "bytes": 3412,
+      "sha256": "2b621475ae749a0542369de133e9245876bdd5bcdd8db39380a6df7543fceb04"
+    },
+    {
       "path": "references/cpu-porting-decision-tree.md",
+      "bytes": 2078,
       "sha256": "710a9267e905995dad5ab9c5566ba5a47ae081faf325ad593100d059aa16ee5e"
     },
     {
-      "bytes": 2372,
       "path": "references/cpu-porting-sparse-bio.md",
+      "bytes": 2372,
       "sha256": "fa534eeeb433b175755601732bd4557f3016f96bdf698ab3bf58cd523af1e16e"
     },
     {
-      "bytes": 2928,
       "path": "references/cpu-to-cuda-rewrite-patterns.md",
+      "bytes": 2928,
       "sha256": "eb4d5e12193d9d18984e432ec20224d8c187684d73044521b1ceef5c65249e52"
     },
     {
-      "bytes": 1440,
       "path": "references/crash-signature-map.md",
+      "bytes": 1440,
       "sha256": "574fde92376bb12c8918af004aa2a0fc141f345130a2fea8dbbf4e60555d29b1"
     },
     {
-      "bytes": 1896,
       "path": "references/crash-triage-playbook.md",
+      "bytes": 1896,
       "sha256": "d0c98c1c0b87b1738478209d7022348dc71da7ba2b45d1c7e86613c4e73114cd"
     },
     {
-      "bytes": 1535,
       "path": "references/cuda-gdb-playbook.md",
+      "bytes": 1535,
       "sha256": "44946b6f6a3743ab6b53a669c5cee11859994d8be4b9624d632f23a473215f94"
     },
     {
-      "bytes": 1632,
       "path": "references/custom-torch-ops-registry.md",
+      "bytes": 1632,
       "sha256": "4f78fc202b54a7fb6f60d434e61d8a5981cec1ac3b7ae42bef1fe200043934cd"
     },
     {
-      "bytes": 1209,
       "path": "references/ddp-benchmark-interpretation.md",
+      "bytes": 1209,
       "sha256": "d3d1c4cb22e807fb374855f9210a84352a248399032546791af06511849fad6d"
     },
     {
-      "bytes": 792,
       "path": "references/ddp-hierarchy-patterns.md",
+      "bytes": 792,
       "sha256": "aaea2e6ebc37acf67fa89fb776a30d1d04230f0a07904280567eae0cebeedc41"
     },
     {
-      "bytes": 962,
       "path": "references/ddp-nccl-experiments.md",
+      "bytes": 962,
       "sha256": "22e1f540c592a1e477c08833c7e5a117378f7293bcc8e0bd3c2df8754d8437e4"
     },
     {
-      "bytes": 603,
       "path": "references/ddp-rank-layouts.md",
+      "bytes": 603,
       "sha256": "ac5dfebc379aeff4ab122f67bce7b3d4aeda02e747b1212751ea2245daebf3a3"
     },
     {
-      "bytes": 1530,
       "path": "references/ddp-topology-playbook.md",
+      "bytes": 1530,
       "sha256": "07927c1ece39ac6514a78b2f97bd57f1c28f51bc8ed7b3224582eeb804e63f9a"
     },
     {
-      "bytes": 7104,
       "path": "references/legacy-skill-router.md",
+      "bytes": 7104,
       "sha256": "2d5d7dbb0fef393b3b87e3e62fd0c49444341e714f0260f410c083673420c26d"
     },
     {
-      "bytes": 2253,
       "path": "references/memory-accounting.md",
+      "bytes": 2253,
       "sha256": "8af39c7b4c5e8bc8f5dcbd816bd5a52760f0084d57177561f7391d9ce01c1aaf"
     },
     {
-      "bytes": 968,
       "path": "references/memory-fit-strategy.md",
+      "bytes": 968,
       "sha256": "fc1cd3a7df6bbb23a3e78e100cb14d1c681d6f67364e7ba2d8d40e7f8e718952"
     },
     {
-      "bytes": 1190,
       "path": "references/memory-scenario-formulas.md",
+      "bytes": 1190,
       "sha256": "cad4d3e7926b3eb19ea793ef0c71c592ca7afb4f0ed2843cae210be849231a7c"
     },
     {
-      "bytes": 1296,
       "path": "references/nvhpc-case-notes.md",
+      "bytes": 1296,
       "sha256": "32f9a2707c796b878adb065e7d4394ee41e231e452812661f8792a3f58178ff9"
     },
     {
-      "bytes": 1273,
       "path": "references/nvhpc-data-movement-modes.md",
+      "bytes": 1273,
       "sha256": "e4bfb17919ae1ceb8a157f813695038da892481be404254e707d545bf0a6054f"
     },
     {
-      "bytes": 893,
       "path": "references/nvhpc-library-interop.md",
+      "bytes": 893,
       "sha256": "30de6eb10b2b4414ccd22b7a697ab737999b64cef0c25147d9ee75258c3f8082"
     },
     {
-      "bytes": 983,
       "path": "references/nvhpc-offload-models.md",
+      "bytes": 983,
       "sha256": "421c0c69e3623df2e93ec78238e68099920ff70065f4ac3c6ea01a90eb2b2aeb"
     },
     {
-      "bytes": 2287,
       "path": "references/nvhpc-tradeoffs.md",
+      "bytes": 2287,
       "sha256": "7acac34d106631f7819d1a1b9bda08cba4904b99b8b9bd03878cb8d9ee177951"
     },
     {
-      "bytes": 1301,
       "path": "references/pipeline-bottlenecks.md",
+      "bytes": 1301,
       "sha256": "fe8941beff5d416845dca2da2d8ee2f516b111c25e903cfca11e6fe5aefc2ca1"
     },
     {
-      "bytes": 670,
       "path": "references/pipeline-overlap-rules.md",
+      "bytes": 670,
       "sha256": "5f6bb4a63dbdc36943bc2aafbcbb0d744a7252699d822a2f74cb044e3682258f"
     },
     {
-      "bytes": 6118,
       "path": "references/ptx-general-guidelines.md",
+      "bytes": 6118,
       "sha256": "5aaf7fa690af32724a61614b88c662fb0ca1c521149574c7aff18dffa0c3186a"
     },
     {
-      "bytes": 4643,
       "path": "references/ptx-sparse-bio-hotpaths.md",
+      "bytes": 4643,
       "sha256": "724b2d90de8360c76dc107c395ec2751c0ea7b24b3efb5da48e30025adda8897"
     },
     {
-      "bytes": 9480,
       "path": "references/ptx-volta-extreme.md",
+      "bytes": 9480,
       "sha256": "4269f7a1ff85805fcac6d8b8142807dd9dd909ad7c9a0326efcb4876c7242868"
     },
     {
-      "bytes": 2332,
       "path": "references/roofline-counter-triage.md",
+      "bytes": 2332,
       "sha256": "856d5cece36769b8b87ba59ce3d8523e14e034358ed361b50497dead08044834"
     },
     {
-      "bytes": 1482,
       "path": "references/roofline-cutlass-vs-handwritten.md",
+      "bytes": 1482,
       "sha256": "8211970717ae164ccdb7cc40d0af725048c99a8653f798f3d7763dda3228c232"
     },
     {
-      "bytes": 1830,
       "path": "references/roofline-example-tuning-loops.md",
+      "bytes": 1830,
       "sha256": "17bd53eeee80e0cd0c925bd5e1c43418c3b327bccaaf691aa36db1f7fd043f18"
     },
     {
-      "bytes": 1880,
       "path": "references/roofline-launch-bound-patterns.md",
+      "bytes": 1880,
       "sha256": "bac7cf28ca4e131db829632dc5f777bf84833dd6e08433f1d58f262f4b20f425"
     },
     {
-      "bytes": 3006,
       "path": "references/roofline-playbook.md",
+      "bytes": 3006,
       "sha256": "ca85552dd9803a446c1d2976ab5cf502d60a5460c55372364fd7739a29359841"
     },
     {
-      "bytes": 1654,
       "path": "references/systems/gb200-nvl72.md",
+      "bytes": 1654,
       "sha256": "c4d0a695786d80c8ca42e455e91899b8a31665bde48d1a05d72ebba7e0d6ba93"
     },
     {
-      "bytes": 1623,
       "path": "references/systems/native.md",
+      "bytes": 1623,
       "sha256": "2f59e82ed7108f0f6267569a049d95819ec554bafd3d5190cad84b1e334b56db"
     },
     {
-      "bytes": 6526,
       "path": "references/torch-extension-playbook.md",
+      "bytes": 6526,
       "sha256": "f4b01bf09159a8915c505eef199f5546e96bfdd947c5b221a488611afcc91d3d"
     },
     {
-      "bytes": 11593,
       "path": "references/v100_bioinformatics_guide.md",
+      "bytes": 11593,
       "sha256": "dab7266ca3af112cf013f6bb3bdd8dc250306d3d35e9ab43bf49168e47d11852"
     },
     {
-      "bytes": 13938,
       "path": "references/v100_cuda_cpp_optimize.md",
+      "bytes": 13938,
       "sha256": "82a796ce8d4d90f9390d2eaca5b0e4f38ebe74c05190323fb3e59bdf0b30dd58"
     },
     {
-      "bytes": 6943,
       "path": "references/v100_profiling_interpretation.md",
+      "bytes": 6943,
       "sha256": "4eac0481e2b087e453b2f106c69cc4d5d75ef47212bbcfa9d113b084e8bcd56e"
     },
     {
-      "bytes": 16142,
       "path": "references/v100_programming_guide.md",
+      "bytes": 16142,
       "sha256": "9816ac78e6ccb23b8ca575219cb60d68699a6e5f2ae24e3c089fb922e2b04f24"
     },
     {
-      "bytes": 6203,
       "path": "references/volta-tensor-core-low-level.md",
+      "bytes": 6203,
       "sha256": "b86d2720869d6f697815c646293b5356bbaa3f7a6f394d32f04d3cf94f0b7335"
     }
-  ],
-  "schema_version": 1
+  ]
 }

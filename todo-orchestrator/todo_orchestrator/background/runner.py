@@ -56,8 +56,8 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
         process = subprocess.Popen(
             list(job["argv"]), cwd=str(job["cwd"]), env=env,
             stdout=stdout, stderr=stderr, start_new_session=True,
-            preexec_fn=lower_process_priority,
         )
+        lower_process_priority(process.pid)
         store.heartbeat(worker_id, str(job["id"]), attempt_id, process.pid)
         if host:
             host.heartbeat(host_owner_id, process.pid)

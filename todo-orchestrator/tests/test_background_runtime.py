@@ -15,6 +15,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
 from todo_orchestrator.background.store import BackgroundStore
 from todo_orchestrator.background.host import HostCoordinator
 from todo_orchestrator.background.runner import run_job
+from todo_orchestrator.background.worker import _reap_done
 from todo_orchestrator.background.wake import wake_worker
 
 
@@ -150,6 +151,64 @@ class BackgroundRuntimeTests(unittest.TestCase):
         with self.store.connect(readonly=True) as connection:
             row = connection.execute("SELECT state,retries_used,result_id FROM background_jobs WHERE id=?", (job_id,)).fetchone()
         self.assertEqual(dict(row), {"state": "queued", "retries_used": 0, "result_id": None})
+
+    def test_failed_worker_future_does_not_stop_supervisor_reaping(self) -> None:
+        import concurrent.futures
+
+        failed = concurrent.futures.Future()
+        failed.set_exception(RuntimeError("synthetic completion failure"))
+        succeeded = concurrent.futures.Future()
+        succeeded.set_result(None)
+        active = {failed, succeeded}
+        _reap_done(active)
+        self.assertEqual(active, set())
+
+    def test_canceled_stale_job_is_not_resurrected(self) -> None:
+        watch_id = self._arm()
+        job_id, _ = self.store.enqueue({
+            "watch_id": watch_id, "kind": "stale", "argv": ["true"], "cwd": str(self.repo.root),
+        })
+        worker = self.store.register_worker()
+        job, attempt = self.store.claim(worker)
+        self.assertEqual(job["id"], job_id)
+        connection = self.store._tx()
+        try:
+            connection.execute(
+                "UPDATE background_attempts SET heartbeat_at=0,pid=? WHERE id=?", (99999999, attempt)
+            )
+            connection.execute("UPDATE background_jobs SET cancel_requested=1 WHERE id=?", (job_id,))
+            connection.commit()
+        finally:
+            connection.close()
+        replacement = self.store.register_worker()
+        self.assertIsNone(self.store.claim(replacement))
+        with self.store.connect(readonly=True) as connection:
+            state = connection.execute("SELECT state FROM background_jobs WHERE id=?", (job_id,)).fetchone()[0]
+            attempt_state = connection.execute(
+                "SELECT state FROM background_attempts WHERE id=?", (attempt,)
+            ).fetchone()[0]
+        self.assertEqual(state, "canceled")
+        self.assertEqual(attempt_state, "canceled")
+        self.store.stop_worker(worker)
+        self.store.stop_worker(replacement)
+
+    def test_requested_cancellation_finishes_canceled_not_queued(self) -> None:
+        watch_id = self._arm()
+        job_id, _ = self.store.enqueue({
+            "watch_id": watch_id, "kind": "cancel", "argv": ["true"], "cwd": str(self.repo.root),
+        })
+        worker = self.store.register_worker()
+        job, attempt = self.store.claim(worker)
+        self.assertEqual(job["id"], job_id)
+        self.store.cancel_background()
+        self.store.finish(
+            job_id, attempt, state="preempted", returncode=-15, reason="requested-cancellation",
+            stdout_path="", stderr_path="", stdout_tail="", stderr_tail="", metadata={}, result=None,
+        )
+        with self.store.connect(readonly=True) as connection:
+            state = connection.execute("SELECT state FROM background_jobs WHERE id=?", (job_id,)).fetchone()[0]
+        self.assertEqual(state, "canceled")
+        self.store.stop_worker(worker)
 
 
 if __name__ == "__main__":

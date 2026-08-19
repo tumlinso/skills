@@ -16,6 +16,7 @@ Use one high-level controller call:
 python <skill-dir>/scripts/cuda_controller.py inspect --project <repo> --json
 python <skill-dir>/scripts/cuda_controller.py run --spec <spec.json|-> --json
 python <skill-dir>/scripts/cuda_controller.py background arm --spec <spec.json|-> --json
+python <skill-dir>/scripts/cuda_controller.py background enqueue --spec <spec.json|-> --json
 ```
 
 Arming is explicit and persistent. Once armed, relevant todo completion,
@@ -24,6 +25,14 @@ polling or changing todo output. An explicit `run` is foreground work: it
 preempts conflicting background activity and reserves its GPUs atomically.
 Campaign state stays project-local; physical GPU, profiler, interference-domain,
 and host-pressure interlocks are host-global.
+Keep builds in `benchmark.build_argv`; they run without a GPU lease. Background
+correctness repeats, fails fast, and skips only its dependent measurement chain,
+so unrelated watches keep using available devices. Comparable benchmark and
+profiler timing remains serialized through the host mutex.
+Use `background backfill --spec ...` once for project-supplied historical
+task/source-revision/benchmark mappings; it never rewrites todo history.
+Read `references/controller-background-contract.md` only when authoring these
+controller specs.
 
 Retrieve only what the current decision needs:
 
