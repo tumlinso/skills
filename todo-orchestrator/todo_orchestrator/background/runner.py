@@ -15,6 +15,20 @@ from .models import JobState
 from .resources import background_environment, cpp_context_active, lower_process_priority
 
 
+def _best_effort(callable_, *args) -> None:
+    try:
+        callable_(*args)
+    except Exception:
+        pass
+
+
+def _best_effort_bool(callable_, *args) -> bool:
+    try:
+        return bool(callable_(*args))
+    except Exception:
+        return False
+
+
 def terminate_group(pid: int, grace_seconds: float = 2.0) -> None:
     try:
         os.killpg(pid, signal.SIGTERM)
@@ -58,12 +72,13 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
             stdout=stdout, stderr=stderr, start_new_session=True,
         )
         lower_process_priority(process.pid)
-        store.heartbeat(worker_id, str(job["id"]), attempt_id, process.pid)
+        _best_effort(store.heartbeat, worker_id, str(job["id"]), attempt_id, process.pid)
         if host:
-            host.heartbeat(host_owner_id, process.pid)
+            _best_effort(host.heartbeat, host_owner_id, process.pid)
         deadline = started + float(job.get("timeout_seconds", 3600))
         while process.poll() is None:
-            if store.cancellation_requested(str(job["id"])) or bool(host and host.preempt_requested(host_owner_id)):
+            if (_best_effort_bool(store.cancellation_requested, str(job["id"])) or
+                    bool(host and _best_effort_bool(host.preempt_requested, host_owner_id))):
                 reason = "foreground-preemption"
                 terminate_group(process.pid)
                 state = JobState.PREEMPTED.value
@@ -78,13 +93,14 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
                 terminate_group(process.pid)
                 state = JobState.FAILED.value
                 break
-            store.heartbeat(worker_id, str(job["id"]), attempt_id, process.pid)
+            _best_effort(store.heartbeat, worker_id, str(job["id"]), attempt_id, process.pid)
             if host:
-                host.heartbeat(host_owner_id, process.pid)
+                _best_effort(host.heartbeat, host_owner_id, process.pid)
             time.sleep(0.2)
         returncode = process.wait()
         if reason == "completed":
-            if store.cancellation_requested(str(job["id"])) or bool(host and host.preempt_requested(host_owner_id)):
+            if (_best_effort_bool(store.cancellation_requested, str(job["id"])) or
+                    bool(host and _best_effort_bool(host.preempt_requested, host_owner_id))):
                 state, reason = JobState.PREEMPTED.value, "foreground-preemption"
             elif returncode == 0:
                 state = JobState.SUCCEEDED.value

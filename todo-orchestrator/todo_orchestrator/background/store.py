@@ -385,6 +385,11 @@ class BackgroundStore:
             row = conn.execute("SELECT cancel_requested FROM background_jobs WHERE id=?", (job_id,)).fetchone()
         return bool(row and row[0])
 
+    def has_pending_jobs(self) -> bool:
+        with closing(self.connect(readonly=True)) as conn:
+            row = conn.execute("SELECT 1 FROM background_jobs WHERE state IN ('queued','running') LIMIT 1").fetchone()
+        return row is not None
+
     def finish(self, job_id: str, attempt_id: str, *, state: str, returncode: int | None, reason: str,
                stdout_path: str, stderr_path: str, stdout_tail: str, stderr_tail: str,
                metadata: dict[str, object], result: dict[str, object] | None = None) -> str | None:

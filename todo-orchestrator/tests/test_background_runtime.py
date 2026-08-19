@@ -163,6 +163,23 @@ class BackgroundRuntimeTests(unittest.TestCase):
         _reap_done(active)
         self.assertEqual(active, set())
 
+    def test_runner_reaps_child_when_queue_heartbeat_is_temporarily_unavailable(self) -> None:
+        watch_id = self._arm()
+        job_id, _ = self.store.enqueue({
+            "watch_id": watch_id, "kind": "heartbeat-fault",
+            "argv": [sys.executable, "-c", "print('completed')"],
+            "cwd": str(self.repo.root), "timeout": 5,
+        })
+        worker = self.store.register_worker()
+        job, attempt = self.store.claim(worker)
+        with mock.patch.object(self.store, "heartbeat", side_effect=RuntimeError("database busy")):
+            outcome = run_job(self.store, worker, job, attempt)
+        self.assertEqual(outcome["state"], "succeeded")
+        self.assertEqual(outcome["returncode"], 0)
+        self.store.finish(job_id, attempt, **outcome)
+        self.assertFalse(self.store.has_pending_jobs())
+        self.store.stop_worker(worker)
+
     def test_canceled_stale_job_is_not_resurrected(self) -> None:
         watch_id = self._arm()
         job_id, _ = self.store.enqueue({

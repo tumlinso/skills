@@ -109,6 +109,15 @@ def main() -> int:
                 time.sleep(0.25)
                 continue
             if not active and not launched:
+                try:
+                    if store.has_pending_jobs():
+                        idle_since = time.monotonic()
+                        time.sleep(0.25)
+                        continue
+                except Exception as error:
+                    _record_supervisor_error(store, error)
+                    time.sleep(0.25)
+                    continue
                 if time.monotonic() - idle_since >= args.idle_seconds:
                     return 0
                 time.sleep(0.25)
