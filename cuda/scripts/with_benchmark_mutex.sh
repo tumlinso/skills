@@ -27,12 +27,23 @@ FOREGROUND_MARKER_OWNED=0
 GPU_LOCK_FDS=()
 BACKGROUND_PID=""
 
-release_lock() {
-  if [[ -n "${BACKGROUND_PID}" ]]; then
-    kill -- "-${BACKGROUND_PID}" 2>/dev/null || true
-    wait "${BACKGROUND_PID}" 2>/dev/null || true
-    BACKGROUND_PID=""
+terminate_background() {
+  if [[ -z "${BACKGROUND_PID}" ]]; then
+    return 0
   fi
+  kill -TERM -- "-${BACKGROUND_PID}" 2>/dev/null || true
+  for _ in {1..10}; do
+    kill -0 "${BACKGROUND_PID}" 2>/dev/null || break
+    sleep 0.1
+  done
+  kill -KILL -- "-${BACKGROUND_PID}" 2>/dev/null || true
+  wait "${BACKGROUND_PID}" 2>/dev/null || true
+  BACKGROUND_PID=""
+  return 0
+}
+
+release_lock() {
+  terminate_background
   if ((${#GPU_LOCK_FDS[@]} > 0)); then
     for fd in "${GPU_LOCK_FDS[@]}"; do
       flock -u "${fd}" 2>/dev/null || true
@@ -121,18 +132,17 @@ if [[ "${COORDINATION_MODE}" == "background" ]]; then
   fi
   printf '[benchmark-mutex] acquired %s via %s\n' "${LABEL}" "${LOCK_FILE}" >&2
   set +e
-  setsid -- "$@" &
+  (
+    eval "exec ${LOCK_FD}>&-"
+    for fd in "${GPU_LOCK_FDS[@]}"; do
+      eval "exec ${fd}>&-"
+    done
+    exec setsid -- "$@"
+  ) &
   BACKGROUND_PID=$!
   while kill -0 "${BACKGROUND_PID}" 2>/dev/null; do
     if [[ -e "${FOREGROUND_MARKER}" ]]; then
-      kill -TERM -- "-${BACKGROUND_PID}" 2>/dev/null || true
-      for _ in {1..20}; do
-        kill -0 "${BACKGROUND_PID}" 2>/dev/null || break
-        sleep 0.1
-      done
-      kill -KILL -- "-${BACKGROUND_PID}" 2>/dev/null || true
-      wait "${BACKGROUND_PID}" 2>/dev/null || true
-      BACKGROUND_PID=""
+      terminate_background
       exit 75
     fi
     sleep 0.1

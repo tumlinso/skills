@@ -8,6 +8,7 @@ import socket
 import sqlite3
 import time
 import uuid
+from contextlib import closing
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable
@@ -159,7 +160,7 @@ class BackgroundStore:
             conn.close()
 
     def watch(self, watch_id: str) -> dict[str, object] | None:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             row = conn.execute("SELECT * FROM background_watches WHERE id=?", (watch_id,)).fetchone()
         if not row:
             return None
@@ -168,7 +169,7 @@ class BackgroundStore:
         return value
 
     def watches(self, state: str = "armed") -> list[dict[str, object]]:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             rows = conn.execute("SELECT * FROM background_watches WHERE state=? ORDER BY created_at", (state,)).fetchall()
         result = []
         for row in rows:
@@ -367,7 +368,7 @@ class BackgroundStore:
             conn.close()
 
     def cancellation_requested(self, job_id: str) -> bool:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             row = conn.execute("SELECT cancel_requested FROM background_jobs WHERE id=?", (job_id,)).fetchone()
         return bool(row and row[0])
 
@@ -476,7 +477,7 @@ class BackgroundStore:
             conn.close()
 
     def running_conflicts(self, resource_ids: list[str]) -> list[dict[str, object]]:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             if resource_ids:
                 marks = ",".join("?" for _ in resource_ids)
                 rows = conn.execute(f"SELECT j.* FROM background_jobs j JOIN background_reservations r ON r.owner_id=j.id WHERE j.state='running' AND r.state='active' AND r.resource_id IN ({marks})", resource_ids).fetchall()
@@ -485,7 +486,7 @@ class BackgroundStore:
         return [self._decode_job(row) for row in rows]
 
     def result(self, identifier: str) -> dict[str, object] | None:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             row = conn.execute("SELECT r.*,j.kind,j.task_id,j.todo_revision,j.source_fingerprint,j.snapshot_json FROM background_results r JOIN background_jobs j ON j.id=r.job_id WHERE r.id=? OR r.job_id=? ORDER BY r.created_at DESC LIMIT 1", (identifier, identifier)).fetchone()
             if not row:
                 return None
@@ -497,7 +498,7 @@ class BackgroundStore:
         return value
 
     def visible_findings(self, *, focus: str = "", limit: int = 3) -> list[dict[str, object]]:
-        with self.connect(readonly=True) as conn:
+        with closing(self.connect(readonly=True)) as conn:
             rows = conn.execute("SELECT r.*,j.kind,j.task_id,j.todo_revision,j.source_fingerprint FROM background_results r JOIN background_jobs j ON j.id=r.job_id WHERE r.severity>0 AND r.contaminated=0 AND r.status!='preempted' ORDER BY r.severity DESC,r.created_at DESC LIMIT 50").fetchall()
         terms = {term.lower() for term in focus.split() if term}
         result = []
@@ -559,7 +560,7 @@ class BackgroundStore:
 
     def get_meta(self, key: str, default: Any = None) -> Any:
         try:
-            with self.connect(readonly=True) as conn:
+            with closing(self.connect(readonly=True)) as conn:
                 row = conn.execute("SELECT value FROM background_meta WHERE key=?", (key,)).fetchone()
             return json.loads(row[0]) if row else default
         except sqlite3.OperationalError:
