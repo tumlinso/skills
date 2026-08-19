@@ -48,11 +48,12 @@ _No staleness review recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `122`
+Project revision: `157`
 
 ## Workstreams
 - `TO-V2-01` | status: done | execution: closed | next: Preserve and prove legacy behavior before semantic changes.
 - `TO-V2-02` | status: done | execution: closed | next: Implement project identity, migrations, revisions, events, snapshots, and projections.
+- `CTXPP-PERF` | status: done | execution: closed | next: Capture compatibility goldens and timing/RSS/work-counter baselines before changing implementation, then implement the cheapest correct query path and adaptive semantic scheduler.
 - `TO-V2-03` | status: done | execution: closed | next: Freeze the modular command, token, event, and atomic pickup contracts.
 - `TO-V2-04` | status: done | execution: closed | next: Implement typed graph semantics and computed readiness.
 - `TO-V2-05` | status: done | execution: closed | next: Schedule generic resources and capture gate evidence transactionally.
@@ -63,5 +64,6 @@ Project revision: `122`
 - `TO-V2-10` | status: done | execution: closed | next: Prove multiprocess, migration, resource, recovery, and compatibility behavior.
 - `TO-V2-11` | status: done | execution: closed | next: Prove the generic abstraction replaces project-specific orchestration prose.
 - `TO-V2-12` | status: done | execution: closed | next: Integrate and verify the complete v2 skill without disturbing unrelated work.
+- `CTXPP-REPAIR` | status: done | execution: closed | next: Freeze focused behavior, patch the existing discovery and retrieval pipeline, then run only the six focused regressions and one read-only smoke check.
 - `TO-V2-00` | status: done | execution: closed | next: Replace cooperative Markdown synchronization with a project-agnostic transactional coordination system.
 <!-- todo-orchestrator:v2-managed:end -->

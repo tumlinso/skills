@@ -269,11 +269,12 @@ _None recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `122`
+Project revision: `157`
 
 ## Workstreams
 - `TO-V2-01` | kind: workstream | status: done | parent: TO-V2-00 | objective: Preserve and prove legacy behavior before semantic changes.
 - `TO-V2-02` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement project identity, migrations, revisions, events, snapshots, and projections.
+- `CTXPP-PERF` | kind: workstream | status: done | parent: - | objective: Freeze compatibility, measure the existing implementation, add zero-parse hot queries, lazy local freshness, a private query store, automatic CPU and memory scheduling, targeted semantic refresh, concurrency safety, and measured regression coverage.
 - `TO-V2-03` | kind: workstream | status: done | parent: TO-V2-00 | objective: Freeze the modular command, token, event, and atomic pickup contracts.
 - `TO-V2-04` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement typed graph semantics and computed readiness.
 - `TO-V2-05` | kind: workstream | status: done | parent: TO-V2-00 | objective: Schedule generic resources and capture gate evidence transactionally.
@@ -284,5 +285,6 @@ Project revision: `122`
 - `TO-V2-10` | kind: validation_task | status: done | parent: TO-V2-00 | objective: Prove multiprocess, migration, resource, recovery, and compatibility behavior.
 - `TO-V2-11` | kind: validation_task | status: done | parent: TO-V2-00 | objective: Prove the generic abstraction replaces project-specific orchestration prose.
 - `TO-V2-12` | kind: integration_task | status: done | parent: TO-V2-00 | objective: Integrate and verify the complete v2 skill without disturbing unrelated work.
+- `CTXPP-REPAIR` | kind: task | status: done | parent: - | objective: Inventory orphan C++ and CUDA sources, resolve effective semantic recipes, translate NVCC commands for Clang, rank multi-term lexical fallback structurally, and bound diagnostics without changing the public API or rewrite trust.
 - `TO-V2-00` | kind: epic | status: done | parent: - | objective: Replace cooperative Markdown synchronization with a project-agnostic transactional coordination system.
 <!-- todo-orchestrator:v2-managed:end -->
