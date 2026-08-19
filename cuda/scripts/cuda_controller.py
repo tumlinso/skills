@@ -32,6 +32,8 @@ if str(TODO_ROOT) not in sys.path:
     sys.path.insert(0, str(TODO_ROOT))
 
 from todo_orchestrator.background.artifacts import file_digest  # noqa: E402
+from todo_orchestrator.background.host import HostCoordinator  # noqa: E402
+from todo_orchestrator.background.resources import cpu_capacity  # noqa: E402
 from todo_orchestrator.background.store import BackgroundStore  # noqa: E402
 from todo_orchestrator.background.wake import wake_worker  # noqa: E402
 from todo_orchestrator.config import project_paths  # noqa: E402
@@ -352,18 +354,22 @@ def create_snapshot(root: Path, artifact_root: Path, scopes: list[str], *, allow
     }
 
 
-def _resource_request(spec: dict[str, object]) -> dict[str, object]:
+def _resource_request(spec: dict[str, object], stage: str = "benchmark") -> dict[str, object]:
     policy = spec.get("policy", {})
     benchmark = spec.get("benchmark", {})
     explicit = [str(item) for item in benchmark.get("gpu_uuids", [])]
     count = int(benchmark.get("gpus", 1))
     count = min(count, int(policy.get("max_background_gpus", 4)))
+    profiler = stage.removeprefix("candidate-") in {"nsys", "ncu"}
     return {
         "kind": "accelerator", "ids": [f"accelerator:{item}" for item in explicit],
         "count": 0 if explicit else count, "cpu_heavy": bool(benchmark.get("cpu_heavy", False)),
         "cpu_threads": int(benchmark.get("background_cpu_threads", 0) or 0),
         "ram_bytes": int(benchmark.get("background_ram_bytes", 0) or 0),
         "tags": ({"architecture": str(benchmark["architecture"])} if benchmark.get("architecture") else {}),
+        "exclusive_resources": ["profiler:nvidia"] if profiler else [],
+        "isolate_pcie_root": bool(benchmark.get("isolate_pcie_root", profiler)),
+        "isolate_nvlink_domain": bool(benchmark.get("isolate_nvlink_domain", profiler)),
     }
 
 
@@ -380,7 +386,7 @@ def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: d
     fingerprint = str(snapshot["fingerprint"])
     if store.get_meta(f"queued:{watch['id']}:{revision}:{fingerprint}"):
         return []
-    request = _resource_request(watch["spec"])
+    request = _resource_request(watch["spec"], "benchmark")
     common = {
         "watch_id": watch["id"], "cwd": snapshot["source_root"], "resources": request,
         "source_fingerprint": fingerprint, "task_id": task_id, "todo_revision": revision,
@@ -394,10 +400,10 @@ def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: d
         "dedup_key": f"{watch['id']}:{fingerprint}:benchmark"}, [correctness])
     jobs = [correctness, benchmark]
     if initial and bool(watch["spec"].get("policy", {}).get("initial_characterization", True)):
-        nsys, _ = store.enqueue({**common, "kind": "nsys", "priority": 50,
+        nsys, _ = store.enqueue({**common, "resources": _resource_request(watch["spec"], "nsys"), "kind": "nsys", "priority": 50,
             "argv": stage_argv(store.project_root, str(watch["id"]), "nsys", snapshot),
             "dedup_key": f"{watch['id']}:{fingerprint}:nsys", "retry_limit": 0}, [benchmark])
-        ncu, _ = store.enqueue({**common, "kind": "ncu", "priority": 50,
+        ncu, _ = store.enqueue({**common, "resources": _resource_request(watch["spec"], "ncu"), "kind": "ncu", "priority": 50,
             "argv": stage_argv(store.project_root, str(watch["id"]), "ncu", snapshot),
             "dedup_key": f"{watch['id']}:{fingerprint}:ncu", "retry_limit": 0}, [nsys])
         jobs.extend((nsys, ncu))
@@ -673,12 +679,12 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
         if isinstance(candidate, dict) and candidate:
             result["candidate_id"] = candidate.get("id")
         if result["severity"] >= 70:
-            request = _resource_request(spec)
+            request = _resource_request(spec, "benchmark")
             common = {"watch_id": watch_id, "cwd": str(cwd), "resources": request, "source_fingerprint": fingerprint,
                       "snapshot": snapshot, "priority": 50, "retry_limit": 0}
             limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
             for profile_kind in ("nsys", "ncu")[:max(0, min(2, limit))]:
-                store.enqueue({**common, "kind": profile_kind, "argv": stage_argv(project, watch_id, profile_kind, snapshot),
+                store.enqueue({**common, "resources": _resource_request(spec, profile_kind), "kind": profile_kind, "argv": stage_argv(project, watch_id, profile_kind, snapshot),
                                "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:{profile_kind}"})
     elif base_kind in {"nsys", "ncu"}:
         wrapper = SCRIPT_DIR / f"profile_{base_kind}.sh"
@@ -752,22 +758,37 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     project = git_root(Path(str(spec.get("project_root", "."))))
     store = BackgroundStore(project)
     devices = probe_gpus(dynamic=True)
-    store.upsert_resources(resource_facts(devices))
+    facts = resource_facts(devices)
+    store.upsert_resources(facts)
+    host = HostCoordinator()
+    host.upsert_resources(facts)
     resources = spec.get("resources", {})
     requested = [str(item) for item in resources.get("gpu_uuids", [])] if isinstance(resources, dict) else []
     count = int(resources.get("gpus", 1)) if isinstance(resources, dict) else 1
     if not requested:
         requested = [str(item["uuid"]) for item in devices[:count]]
     resource_ids = [f"accelerator:{item}" for item in requested]
-    intent = store.foreground_intent(resource_ids)
+    recipe = str(spec.get("recipe", "baseline"))
+    host_request = {
+        "kind": "accelerator", "ids": resource_ids, "count": 0,
+        "exclusive_resources": ["profiler:nvidia"] if recipe in {"nsys", "ncu", "cuda-gdb", "compute-sanitizer"} else [],
+        "isolate_pcie_root": bool(resources.get("isolate_pcie_root", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
+        "isolate_nvlink_domain": bool(resources.get("isolate_nvlink_domain", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
+        "cpu_threads": int(resources.get("cpu_threads", max(1, cpu_capacity() // 4))) if isinstance(resources, dict) else max(1, cpu_capacity() // 4),
+        "ram_bytes": int(resources.get("ram_bytes", 0) or 0) if isinstance(resources, dict) else 0,
+    }
     marker = Path(os.environ.get("CUDA_BENCHMARK_FOREGROUND_INTENT_PATH", os.environ.get("CUDA_V100_BENCHMARK_MUTEX_PATH", f"{os.environ.get('TMPDIR', '/tmp')}/cuda_v100_benchmark.lock") + ".foreground-intent"))
-    marker.parent.mkdir(parents=True, exist_ok=True)
-    marker.write_text(f"controller:{intent}\n", encoding="utf-8")
+    host_owner = None
+    intent = None
     try:
+        host_owner, host_resources = host.begin_foreground(project_root=project, request=host_request, pid=os.getpid())
+        intent = store.foreground_intent(resource_ids)
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(f"controller:{intent}\n", encoding="utf-8")
         deadline = time.monotonic() + float(spec.get("preempt_grace_seconds", 5))
-        while store.running_conflicts(resource_ids) and time.monotonic() < deadline:
+        while (store.running_conflicts(resource_ids) or host.conflicts(host_resources)) and time.monotonic() < deadline:
             time.sleep(0.1)
-        if store.running_conflicts(resource_ids) or not store.reserve_foreground(intent, resource_ids):
+        if store.running_conflicts(resource_ids) or host.conflicts(host_resources) or not host.activate_foreground(host_owner, host_resources) or not store.reserve_foreground(intent, resource_ids):
             return {"ok": False, "code": "foreground_resource_contention"}
         sample = sample_devices(requested)
         if requested and sample["foreign_processes"]:
@@ -826,9 +847,12 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
                 "returncode": record["returncode"], "evidence_id": evidence_id,
                 "message": "No action-worthy result; evidence stored." if valid else f"MEASUREMENT FAILURE: foreground recipe failed. [e:{evidence_id}]"}
     finally:
-        store.clear_foreground(intent)
+        if host_owner:
+            host.release(host_owner)
+        if intent:
+            store.clear_foreground(intent)
         try:
-            if marker.read_text(encoding="utf-8").strip() == f"controller:{intent}":
+            if intent and marker.read_text(encoding="utf-8").strip() == f"controller:{intent}":
                 marker.unlink()
         except OSError:
             pass
@@ -841,7 +865,9 @@ def arm_background(spec: dict[str, object]) -> dict[str, object]:
     spec["project_root"] = str(project)
     store = BackgroundStore(project)
     devices = probe_gpus(dynamic=True)
-    store.upsert_resources(resource_facts(devices))
+    facts = resource_facts(devices)
+    store.upsert_resources(facts)
+    HostCoordinator().upsert_resources(facts)
     store.set_meta("cuda-machine-facts", {"gpus": devices, "tools": {name: tool_version(name) for name in ("nvcc", "nsys", "ncu")}})
     runtime = dict(spec.get("_runtime", {}))
     provisional = str(spec.get("watch_id") or hashlib.sha256(json.dumps({"root": str(project), "watch": spec.get("watch", {})}, sort_keys=True).encode()).hexdigest()[:24])

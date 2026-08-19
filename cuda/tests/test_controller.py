@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -17,10 +19,24 @@ for value in (CUDA_ROOT / "scripts", TODO_ROOT, TODO_ROOT / "tests"):
 
 import cuda_controller as controller  # noqa: E402
 from todo_orchestrator.background.store import BackgroundStore  # noqa: E402
+from todo_orchestrator.background.host import HostCoordinator  # noqa: E402
 from v2_helpers import V2Repo, base_plan, safe_task  # noqa: E402
 
 
 class ControllerTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.host_runtime = tempfile.TemporaryDirectory()
+        self.host_environment = mock.patch.dict(os.environ, {
+            "TODO_BACKGROUND_HOST_RUNTIME_DIR": self.host_runtime.name,
+            "CUDA_V100_BENCHMARK_MUTEX_PATH": str(Path(self.host_runtime.name) / "benchmark.lock"),
+            "CUDA_BENCHMARK_FOREGROUND_INTENT_PATH": str(Path(self.host_runtime.name) / "benchmark.intent"),
+        })
+        self.host_environment.start()
+
+    def tearDown(self) -> None:
+        self.host_environment.stop()
+        self.host_runtime.cleanup()
+
     def test_arm_is_explicit_and_persistent(self) -> None:
         repo = V2Repo()
         try:
@@ -146,6 +162,50 @@ class ControllerTests(unittest.TestCase):
             self.assertFalse(snapshot["dirty"])
             self.assertEqual(snapshot["untracked"], [])
             self.assertFalse((Path(snapshot["source_root"]) / ".todo-orchestrator" / "runtime").exists())
+
+    def test_foreground_run_preempts_another_projects_host_reservation(self) -> None:
+        repo = V2Repo()
+        try:
+            (repo.root / "benchmark.txt").write_text("fixture\n", encoding="utf-8")
+            subprocess.run(["git", "-C", str(repo.root), "add", "benchmark.txt"], check=True)
+            subprocess.run(["git", "-C", str(repo.root), "-c", "user.name=test", "-c", "user.email=test@example.invalid", "commit", "-qm", "base"], check=True)
+            device = {"index": 0, "uuid": "GPU-cross-project", "name": "fake", "compute_capability": "7.0",
+                      "memory_total_mib": 16000, "pci_bus_id": "0000:01:00.0", "driver_version": "test"}
+            fact = {"id": "accelerator:GPU-cross-project", "kind": "accelerator", "tags": {"architecture": "volta"}}
+            host = HostCoordinator()
+            host.upsert_resources([fact])
+            background = host.reserve_background(
+                project_root=repo.root / "other", job_id="background", attempt_id="one",
+                request={"ids": [fact["id"]]}, pid=os.getpid(),
+            )
+            released = threading.Event()
+
+            def release_on_preempt():
+                deadline = time.monotonic() + 5
+                while time.monotonic() < deadline and not host.preempt_requested(background[0]):
+                    time.sleep(0.01)
+                if host.preempt_requested(background[0]):
+                    host.release(background[0])
+                    released.set()
+
+            thread = threading.Thread(target=release_on_preempt)
+            thread.start()
+            spec = {
+                "project_root": str(repo.root), "recipe": "baseline",
+                "argv": [sys.executable, "-c", "print('{\"latency\":1.0}')"],
+                "metric": "latency", "warmups": 0, "repetitions": 1,
+                "resources": {"gpu_uuids": ["GPU-cross-project"], "cpu_threads": 1},
+            }
+            idle = {"idle": True, "busy": False, "foreign_processes": False, "samples": []}
+            with mock.patch.object(controller, "probe_gpus", return_value=[device]), \
+                 mock.patch.object(controller, "resource_facts", return_value=[fact]), \
+                 mock.patch.object(controller, "sample_devices", return_value=idle):
+                result = controller.foreground_run(spec)
+            thread.join(timeout=5)
+            self.assertTrue(released.is_set())
+            self.assertTrue(result["ok"], result)
+        finally:
+            repo.close()
 
 
 if __name__ == "__main__":

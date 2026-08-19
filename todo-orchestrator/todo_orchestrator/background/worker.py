@@ -8,6 +8,7 @@ import os
 import time
 
 from .runner import run_job
+from .host import HostCoordinator
 from .scheduler import claim_runnable, dispatch_watch_handlers
 from .store import BackgroundStore
 
@@ -23,7 +24,11 @@ def _execute(store: BackgroundStore, worker_id: str, claimed) -> None:
             "metadata": {"error": type(error).__name__},
             "result": {"valid": False, "status": "failed", "classification": "background-command-failure", "severity": 0},
         }
-    store.finish(str(job["id"]), attempt_id, **outcome)
+    try:
+        store.finish(str(job["id"]), attempt_id, **outcome)
+    finally:
+        if job.get("host_owner_id"):
+            HostCoordinator().release(str(job["host_owner_id"]))
 
 
 def main() -> int:

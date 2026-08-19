@@ -22,6 +22,8 @@ Arming is explicit and persistent. Once armed, relevant todo completion,
 checkpoint, and handoff events wake private correctness/benchmark work without
 polling or changing todo output. An explicit `run` is foreground work: it
 preempts conflicting background activity and reserves its GPUs atomically.
+Campaign state stays project-local; physical GPU, profiler, interference-domain,
+and host-pressure interlocks are host-global.
 
 Retrieve only what the current decision needs:
 

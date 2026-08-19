@@ -265,7 +265,7 @@ class BackgroundStore:
             if not _alive(worker["pid"], worker["process_start"]):
                 conn.execute("UPDATE background_workers SET state='stale',stopped_at=? WHERE id=?", (time.time(), worker["id"]))
 
-    def claim(self, worker_id: str) -> tuple[dict[str, object], str] | None:
+    def claim(self, worker_id: str, *, defer_resources: bool = False) -> tuple[dict[str, object], str] | None:
         conn = self._tx()
         try:
             self._sweep_stale_locked(conn)
@@ -287,8 +287,8 @@ class BackgroundStore:
             resources: list[str] = []
             for row in rows:
                 request = json.loads(row["resource_json"] or "{}")
-                resources = self._select_resources_locked(conn, request)
-                if resources or not request.get("count") and not request.get("ids"):
+                resources = [] if defer_resources else self._select_resources_locked(conn, request)
+                if defer_resources or resources or not request.get("count") and not request.get("ids"):
                     selected = row
                     break
             if selected is None:
@@ -308,6 +308,15 @@ class BackgroundStore:
         except Exception:
             conn.rollback()
             raise
+        finally:
+            conn.close()
+
+    def defer_job(self, job_id: str, delay_seconds: float = 0.5) -> None:
+        conn = self._tx()
+        try:
+            conn.execute("UPDATE background_jobs SET not_before=MAX(not_before,?),updated_at=? WHERE id=? AND state='queued'",
+                         (time.time() + max(0.0, delay_seconds), time.time(), job_id))
+            conn.commit()
         finally:
             conn.close()
 
@@ -416,6 +425,15 @@ class BackgroundStore:
             conn.commit()
         finally:
             conn.close()
+        # Physical inventory is mirrored lazily into the host authority. The
+        # project table remains for compatibility and contains no migrated
+        # ownership state.
+        try:
+            from .host import HostCoordinator
+
+            HostCoordinator().upsert_resources(resources)
+        except Exception:
+            pass
 
     def foreground_intent(self, resource_ids: list[str]) -> str:
         intent_id = str(uuid.uuid4())

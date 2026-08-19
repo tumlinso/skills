@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 from .artifacts import attempt_directory, bounded_tail, file_digest
+from .host import HostCoordinator
 from .models import JobState
 from .resources import background_environment, cpp_context_active, lower_process_priority
 
@@ -49,6 +50,8 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
     reason = "completed"
     state = JobState.FAILED.value
     returncode = None
+    host_owner_id = str(job.get("host_owner_id", ""))
+    host = HostCoordinator() if host_owner_id else None
     with stdout_path.open("wb") as stdout, stderr_path.open("wb") as stderr:
         process = subprocess.Popen(
             list(job["argv"]), cwd=str(job["cwd"]), env=env,
@@ -56,9 +59,11 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
             preexec_fn=lower_process_priority,
         )
         store.heartbeat(worker_id, str(job["id"]), attempt_id, process.pid)
+        if host:
+            host.heartbeat(host_owner_id, process.pid)
         deadline = started + float(job.get("timeout_seconds", 3600))
         while process.poll() is None:
-            if store.cancellation_requested(str(job["id"])):
+            if store.cancellation_requested(str(job["id"])) or bool(host and host.preempt_requested(host_owner_id)):
                 reason = "foreground-preemption"
                 terminate_group(process.pid)
                 state = JobState.PREEMPTED.value
@@ -74,10 +79,12 @@ def run_job(store, worker_id: str, job: dict[str, object], attempt_id: str) -> d
                 state = JobState.FAILED.value
                 break
             store.heartbeat(worker_id, str(job["id"]), attempt_id, process.pid)
+            if host:
+                host.heartbeat(host_owner_id, process.pid)
             time.sleep(0.2)
         returncode = process.wait()
         if reason == "completed":
-            if store.cancellation_requested(str(job["id"])):
+            if store.cancellation_requested(str(job["id"])) or bool(host and host.preempt_requested(host_owner_id)):
                 state, reason = JobState.PREEMPTED.value, "foreground-preemption"
             elif returncode == 0:
                 state = JobState.SUCCEEDED.value

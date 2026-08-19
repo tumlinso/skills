@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-19T07:52:01Z",
+  "generated_at": "2026-08-19T08:44:49Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "9d0f506f-8677-4660-ac11-e64ab40f6026",
     "schema_version": 2
   },
-  "project_revision": 157,
+  "project_revision": 164,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1689,6 +1689,76 @@
         "revision": 157,
         "seq": 157,
         "timestamp": "2026-08-19T07:52:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "9d0f506f-8677-4660-ac11-e64ab40f6026",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/ctxpp-slice-truth-plan.json\"}",
+        "revision": 158,
+        "seq": 158,
+        "timestamp": "2026-08-19T08:36:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-TRUTH",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 159,
+        "seq": 159,
+        "timestamp": "2026-08-19T08:36:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-FOCUSED",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CTXPP-SLICE-FOCUSED\"}",
+        "revision": 160,
+        "seq": 160,
+        "timestamp": "2026-08-19T08:44:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-FOCUSED",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"07c90a66-a2d7-47e4-9e9f-0ecb77a72912\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 161,
+        "seq": 161,
+        "timestamp": "2026-08-19T08:44:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-SKILL",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CTXPP-SLICE-SKILL\"}",
+        "revision": 162,
+        "seq": 162,
+        "timestamp": "2026-08-19T08:44:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-SKILL",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a3ca0168-6013-4ff8-a199-f1eb1fe452f4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 163,
+        "seq": 163,
+        "timestamp": "2026-08-19T08:44:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CTXPP-SLICE-TRUTH",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 164,
+        "seq": 164,
+        "timestamp": "2026-08-19T08:44:49Z"
       }
     ],
     "evidence": [
@@ -1703,6 +1773,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"21ff976b86523b5775422945890a0366e4f6370e033a0748e1d4bfba746aa23a\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/SKILL.md\", \"cpp-context-compiler/agents/openai.yaml\", \"cpp-context-compiler/references/configuration.md\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/tests/test_integration.py\", \"cpp-context-compiler/tests/test_skill_metadata.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/agents/openai.yaml\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/references/examples.md\", \"todo-orchestrator/references/execution-rules.md\", \"todo-orchestrator/references/planning-workflow.md\", \"todo-orchestrator/references/project-plan-v2.md\", \"todo-orchestrator/references/status-and-cleanup.md\", \"todo-orchestrator/references/todo-format.md\", \"todo-orchestrator/references/v2-architecture.md\", \"todo-orchestrator/references/v2-overhaul-dogfood.plan.json\", \"todo-orchestrator/schemas/project-plan-v2.schema.json\", \"todo-orchestrator/scripts/cleanup_todos.py\", \"todo-orchestrator/scripts/init_todos.py\", \"todo-orchestrator/scripts/review_staleness.py\", \"todo-orchestrator/scripts/summarize_todos.py\", \"todo-orchestrator/scripts/todo.py\", \"todo-orchestrator/scripts/update_todos.py\", \"todo-orchestrator/scripts/v2_compat.py\", \"todo-orchestrator/tests/fixtures/legacy/todo-status.md\", \"todo-orchestrator/tests/fixtures/legacy/todos.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/alpha.md\", \"todo-orchestrator/tests/fixtures/legacy/todos/beta.md\", \"todo-orchestrator/tests/fixtures/v2/generic-parallel-project.json\", \"todo-orchestrator/tests/test_v2_concurrency.py\", \"todo-orchestrator/tests/test_v2_foundation.py\", \"todo-orchestrator/tests/test_v2_graph_coordination.py\", \"todo-orchestrator/tests/test_v2_recovery_migration_context.py\", \"todo-orchestrator/tests/test_v2_resources_gates.py\", \"todo-orchestrator/tests/v2_helpers.py\", \"todo-orchestrator/todo_orchestrator/__init__.py\", \"todo-orchestrator/todo_orchestrator/audit.py\", \"todo-orchestrator/todo_orchestrator/barriers.py\", \"todo-orchestrator/todo_orchestrator/checkpoints.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/cli.py\", \"todo-orchestrator/todo_orchestrator/commands/__init__.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/core.py\", \"todo-orchestrator/todo_orchestrator/commands/migration.py\", \"todo-orchestrator/todo_orchestrator/commands/plan_commands.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/config.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/db.py\", \"todo-orchestrator/todo_orchestrator/events.py\", \"todo-orchestrator/todo_orchestrator/evidence.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/git_state.py\", \"todo-orchestrator/todo_orchestrator/graph.py\", \"todo-orchestrator/todo_orchestrator/interfaces.py\", \"todo-orchestrator/todo_orchestrator/legacy.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/models.py\", \"todo-orchestrator/todo_orchestrator/ownership.py\", \"todo-orchestrator/todo_orchestrator/plan.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/readiness.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-orchestrator/todo_orchestrator/resources.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/sessions.py\", \"todo-status.md\", \"todos.md\", \"todos/to-v2-00.md\", \"todos/to-v2-01.md\", \"todos/to-v2-02.md\", \"todos/to-v2-03.md\", \"todos/to-v2-04.md\", \"todos/to-v2-05.md\", \"todos/to-v2-06.md\", \"todos/to-v2-07.md\", \"todos/to-v2-08.md\", \"todos/to-v2-09.md\", \"todos/to-v2-10.md\", \"todos/to-v2-11.md\", \"todos/to-v2-12.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"de56e76a7388d7b3ea65bf46e37d3c01e03197cb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 107}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/061ae74c-8b69-4d97-a368-109a3eb0d7e7",
         "revision": 108,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-19T08:44:42Z",
+        "gate_id": "CTXPP-SLICE-FOCUSED",
+        "id": "07c90a66-a2d7-47e4-9e9f-0ecb77a72912",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"tests.test_slice_truth\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"tests.test_slice_truth\"], \"cwd\": \"cpp-context-compiler\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"db99ca26cacd0c46e6714d5d3230f2a15da498657f82733d34bdde1463161f69\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_slice_truth.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_guidance.py\", \"cuda/scripts/with_benchmark_mutex.sh\", \"todo-orchestrator/tests/test_background_runtime.py\", \"todo-orchestrator/todo_orchestrator/background/__init__.py\", \"todo-orchestrator/todo_orchestrator/background/artifacts.py\", \"todo-orchestrator/todo_orchestrator/background/models.py\", \"todo-orchestrator/todo_orchestrator/background/resources.py\", \"todo-orchestrator/todo_orchestrator/background/runner.py\", \"todo-orchestrator/todo_orchestrator/background/scheduler.py\", \"todo-orchestrator/todo_orchestrator/background/store.py\", \"todo-orchestrator/todo_orchestrator/background/wake.py\", \"todo-orchestrator/todo_orchestrator/background/worker.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/ctxpp-slice-truth.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler/tests/test_slice_truth.py\", \"sha256\": \"7d168d45188aa89ca884089f19dd109127c19ad39752e81e16f710d5958a763c\"}], \"interfaces\": [], \"recorded_git_head\": \"b7d68e6978b220726f910664856ed0a986d550b5\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 160}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/07c90a66-a2d7-47e4-9e9f-0ecb77a72912",
+        "revision": 161,
         "status": "passed"
       },
       {
@@ -2099,6 +2182,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-19T08:44:43Z",
+        "gate_id": "CTXPP-SLICE-SKILL",
+        "id": "a3ca0168-6013-4ff8-a199-f1eb1fe452f4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"/home/tumlinson/.codex/skills/.system/skill-creator/scripts/quick_validate.py\", \".\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"/home/tumlinson/.codex/skills/.system/skill-creator/scripts/quick_validate.py\", \".\"], \"cwd\": \"cpp-context-compiler\", \"expected_exit_code\": 0}, \"diff_fingerprint\": \"db99ca26cacd0c46e6714d5d3230f2a15da498657f82733d34bdde1463161f69\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_slice_truth.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_guidance.py\", \"cuda/scripts/with_benchmark_mutex.sh\", \"todo-orchestrator/tests/test_background_runtime.py\", \"todo-orchestrator/todo_orchestrator/background/__init__.py\", \"todo-orchestrator/todo_orchestrator/background/artifacts.py\", \"todo-orchestrator/todo_orchestrator/background/models.py\", \"todo-orchestrator/todo_orchestrator/background/resources.py\", \"todo-orchestrator/todo_orchestrator/background/runner.py\", \"todo-orchestrator/todo_orchestrator/background/scheduler.py\", \"todo-orchestrator/todo_orchestrator/background/store.py\", \"todo-orchestrator/todo_orchestrator/background/wake.py\", \"todo-orchestrator/todo_orchestrator/background/worker.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/ctxpp-slice-truth.md\"], \"files\": [{\"path\": \"cpp-context-compiler/SKILL.md\", \"sha256\": \"87424cb2b16e41a28e9daea7f84df4b8689494440cfd7a68e1f5dfc1658b884d\"}], \"interfaces\": [], \"recorded_git_head\": \"b7d68e6978b220726f910664856ed0a986d550b5\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 162}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/9d0f506f-8677-4660-ac11-e64ab40f6026/evidence/a3ca0168-6013-4ff8-a199-f1eb1fe452f4",
+        "revision": 163,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-18T19:19:50Z",
         "gate_id": "CTXPP-SKILL-VALID",
         "id": "a65b8a18-f014-4b41-92ec-d5e5025a99cd",
@@ -2328,6 +2424,32 @@
         "revision": 145,
         "status": "passed",
         "task_id": "CTXPP-PERF",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"tests.test_slice_truth\"], \"cwd\": \"cpp-context-compiler\", \"expected_exit_code\": 0, \"input_paths\": [\"cpp-context-compiler/scripts\", \"cpp-context-compiler/tests/test_slice_truth.py\"]}",
+        "id": "CTXPP-SLICE-FOCUSED",
+        "input_fingerprint": "662d52b23b5f340ab9193fa1b02fdf0dc1fee629e7de0ab049c5abb1edaf7d87",
+        "last_run_at": "2026-08-19T08:44:42Z",
+        "required": 1,
+        "revision": 161,
+        "status": "passed",
+        "task_id": "CTXPP-SLICE-TRUTH",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"/home/tumlinson/.codex/skills/.system/skill-creator/scripts/quick_validate.py\", \".\"], \"cwd\": \"cpp-context-compiler\", \"expected_exit_code\": 0, \"input_paths\": [\"cpp-context-compiler/SKILL.md\"]}",
+        "id": "CTXPP-SLICE-SKILL",
+        "input_fingerprint": "d1582e57e6475520fcf8353f642936b53578e6cc8a40193afaaef27f5a6c9db7",
+        "last_run_at": "2026-08-19T08:44:43Z",
+        "required": 1,
+        "revision": 163,
+        "status": "passed",
+        "task_id": "CTXPP-SLICE-TRUTH",
         "type": "command",
         "valid": 1
       },
@@ -2717,6 +2839,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-19T08:44:49Z",
+        "id": "de5921d7-ac7f-4b2c-92fb-8e0c8b921700",
+        "kind": "complete",
+        "note": "Complete lexical definitions now reach API slices; canonical fallback and conservative coverage prevent false sufficiency. Focused regressions and skill validation passed; live PreparedExecution slice was read-only.",
+        "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_slice_truth.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CTXPP-SLICE-FOCUSED\", \"last_run_at\": \"2026-08-19T08:44:42Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CTXPP-SLICE-SKILL\", \"last_run_at\": \"2026-08-19T08:44:43Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json         | 179 ++++++++++-\\n cpp-context-compiler/scripts/ctxpp_lib.py      | 403 ++++++++++++++++++++++---\\n cuda/scripts/with_benchmark_mutex.sh           |  72 ++++-\\n todo-orchestrator/todo_orchestrator/service.py |  10 +\\n todo-status.md                                 |   3 +-\\n todos.md                                       |   3 +-\\n 6 files changed, 623 insertions(+), 47 deletions(-)\", \"git_head\": \"b7d68e6978b220726f910664856ed0a986d550b5\", \"interfaces\": [], \"note\": \"Complete lexical definitions now reach API slices; canonical fallback and conservative coverage prevent false sufficiency. Focused regressions and skill validation passed; live PreparedExecution slice was read-only.\", \"resources\": [], \"task_id\": \"CTXPP-SLICE-TRUTH\"}",
+        "revision": 164,
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-19T07:52:01Z",
         "id": "e19ca4fe-62ae-4cbd-91ec-a5382051ed1e",
         "kind": "complete",
@@ -2783,6 +2915,13 @@
         "enforcement": null,
         "id": "CTXPP-REPAIR-SCOPE",
         "rule": "Preserve the cpp-context-compiler public API and rewrite safety; do not modify CP-MATH source, plans, TODOs, tests, or build definitions.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "CTXPP-SLICE-SAFETY",
+        "rule": "Preserve the public API, semantic compression, scheduler, mutation safety, and all CP-MATH source and planning state.",
         "scope_json": "{}",
         "severity": "error"
       },
@@ -2914,6 +3053,36 @@
         "mode": "read",
         "path": "AGENTS.md",
         "task_id": "CTXPP-REPAIR"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todo-orchestrator",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todo-status.md",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todos",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todos.md",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "CTXPP-SLICE-TRUTH"
       },
       {
         "mode": "exclusive",
@@ -3305,6 +3474,10 @@
         "task_id": "CTXPP-REPAIR"
       },
       {
+        "invariant_id": "CTXPP-SLICE-SAFETY",
+        "task_id": "CTXPP-SLICE-TRUTH"
+      },
+      {
         "invariant_id": "generic-production",
         "task_id": "TO-V2-00"
       },
@@ -3422,6 +3595,28 @@
         "tags_json": "[]",
         "title": "Repair cpp-context coverage, CUDA translation, retrieval relevance, and diagnostics",
         "updated_at": "2026-08-19T07:52:01Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "created_at": "2026-08-19T08:36:13Z",
+        "id": "CTXPP-SLICE-TRUTH",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Trace the lexical symbol through render_bundle, patch only range selection and coverage accounting, then run focused slice regressions and one live read-only smoke.",
+        "notes": "",
+        "objective": "Recover complete canonical lexical targets, prefer definitions by intent, account mandatory source tokens, and prevent false sufficiency without changing existing interfaces.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 100,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"failed\"]}",
+        "revision": 164,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Make degraded C++ slices complete and truthful",
+        "updated_at": "2026-08-19T08:44:49Z",
         "version": 3
       },
       {

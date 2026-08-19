@@ -269,12 +269,13 @@ _None recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `157`
+Project revision: `164`
 
 ## Workstreams
 - `TO-V2-01` | kind: workstream | status: done | parent: TO-V2-00 | objective: Preserve and prove legacy behavior before semantic changes.
 - `TO-V2-02` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement project identity, migrations, revisions, events, snapshots, and projections.
 - `CTXPP-PERF` | kind: workstream | status: done | parent: - | objective: Freeze compatibility, measure the existing implementation, add zero-parse hot queries, lazy local freshness, a private query store, automatic CPU and memory scheduling, targeted semantic refresh, concurrency safety, and measured regression coverage.
+- `CTXPP-SLICE-TRUTH` | kind: task | status: done | parent: - | objective: Recover complete canonical lexical targets, prefer definitions by intent, account mandatory source tokens, and prevent false sufficiency without changing existing interfaces.
 - `TO-V2-03` | kind: workstream | status: done | parent: TO-V2-00 | objective: Freeze the modular command, token, event, and atomic pickup contracts.
 - `TO-V2-04` | kind: workstream | status: done | parent: TO-V2-00 | objective: Implement typed graph semantics and computed readiness.
 - `TO-V2-05` | kind: workstream | status: done | parent: TO-V2-00 | objective: Schedule generic resources and capture gate evidence transactionally.

@@ -48,12 +48,13 @@ _No staleness review recorded yet._
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `157`
+Project revision: `164`
 
 ## Workstreams
 - `TO-V2-01` | status: done | execution: closed | next: Preserve and prove legacy behavior before semantic changes.
 - `TO-V2-02` | status: done | execution: closed | next: Implement project identity, migrations, revisions, events, snapshots, and projections.
 - `CTXPP-PERF` | status: done | execution: closed | next: Capture compatibility goldens and timing/RSS/work-counter baselines before changing implementation, then implement the cheapest correct query path and adaptive semantic scheduler.
+- `CTXPP-SLICE-TRUTH` | status: done | execution: closed | next: Trace the lexical symbol through render_bundle, patch only range selection and coverage accounting, then run focused slice regressions and one live read-only smoke.
 - `TO-V2-03` | status: done | execution: closed | next: Freeze the modular command, token, event, and atomic pickup contracts.
 - `TO-V2-04` | status: done | execution: closed | next: Implement typed graph semantics and computed readiness.
 - `TO-V2-05` | status: done | execution: closed | next: Schedule generic resources and capture gate evidence transactionally.

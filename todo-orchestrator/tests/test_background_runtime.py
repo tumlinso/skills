@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 from pathlib import Path
@@ -12,18 +13,24 @@ from unittest import mock
 from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.background.store import BackgroundStore
+from todo_orchestrator.background.host import HostCoordinator
 from todo_orchestrator.background.runner import run_job
 from todo_orchestrator.background.wake import wake_worker
 
 
 class BackgroundRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
+        self.host_runtime = tempfile.TemporaryDirectory()
+        self.host_environment = mock.patch.dict(os.environ, {"TODO_BACKGROUND_HOST_RUNTIME_DIR": self.host_runtime.name})
+        self.host_environment.start()
         self.repo = V2Repo()
         self.store = BackgroundStore(self.repo.root)
 
     def tearDown(self) -> None:
         self.store.set_watch_state("stopped")
         self.repo.close()
+        self.host_environment.stop()
+        self.host_runtime.cleanup()
 
     def _arm(self) -> str:
         return self.store.arm_watch({"schema_version": 1, "project_root": str(self.repo.root), "watch": {}})
@@ -112,15 +119,18 @@ class BackgroundRuntimeTests(unittest.TestCase):
             "resources": {"kind": "accelerator", "ids": ["accelerator:GPU-a"]},
         })
         self.assertTrue(wake_worker(self.repo.root))
-        self._wait(lambda: self.store.running_conflicts(["accelerator:GPU-a"]))
-        intent = self.store.foreground_intent(["accelerator:GPU-a"])
-        self._wait(lambda: not self.store.running_conflicts(["accelerator:GPU-a"]))
+        host = HostCoordinator()
+        self._wait(lambda: host.conflicts(["accelerator:GPU-a"]))
+        owner, resources = host.begin_foreground(
+            project_root=self.repo.root / "other-project", request={"ids": ["accelerator:GPU-a"]}, pid=os.getpid()
+        )
+        self._wait(lambda: not host.conflicts(resources))
         with self.store.connect(readonly=True) as conn:
             job = conn.execute("SELECT state,retries_used,result_id FROM background_jobs WHERE id=?", (job_id,)).fetchone()
             attempt = conn.execute("SELECT state FROM background_attempts WHERE job_id=?", (job_id,)).fetchone()
         self.assertEqual(dict(job), {"state": "queued", "retries_used": 0, "result_id": None})
         self.assertEqual(attempt["state"], "preempted")
-        self.store.clear_foreground(intent)
+        host.release(owner)
 
     def test_cpu_heavy_background_yields_to_context_compiler(self) -> None:
         watch_id = self._arm()
