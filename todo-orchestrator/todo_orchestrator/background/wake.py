@@ -72,6 +72,11 @@ def wake_worker(project_root: str | Path) -> bool:
             start_new_session=True, close_fds=True, env=environment,
         )
         process.returncode = 0
+        deadline = time.monotonic() + 1.0
+        while time.monotonic() < deadline:
+            if _worker_is_live(paths.database):
+                break
+            time.sleep(0.025)
         return True
     except Exception:
         return False

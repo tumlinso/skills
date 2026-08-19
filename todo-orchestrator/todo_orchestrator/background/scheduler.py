@@ -20,7 +20,7 @@ def dispatch_watch_handlers(store) -> None:
             continue
         try:
             subprocess.run(argv, cwd=watch["project_root"], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                           stderr=subprocess.DEVNULL, timeout=15, check=False)
+                           stderr=subprocess.DEVNULL, timeout=2, check=False)
         except (OSError, subprocess.TimeoutExpired):
             continue
 

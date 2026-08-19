@@ -56,6 +56,10 @@ at its first failure and skips that revision's dependent benchmark/profile
 stages while independent watches continue. Set the correctness bounds
 explicitly when another validation intensity is justified.
 
+Ready measurements outrank additional builds. Benchmark and profiler jobs share
+one host-global scheduling resource, so jobs waiting for serialized timing do
+not reserve otherwise usable GPUs.
+
 ## Explicit revision enqueue
 
 Use `background enqueue --spec ...` for one revision. `source_revision` is a

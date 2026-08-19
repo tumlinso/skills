@@ -265,7 +265,7 @@ class ControllerTests(unittest.TestCase):
             jobs = controller.queue_revision(store, watch, snapshot, task_id="A", revision=1)
             with store.connect(readonly=True) as connection:
                 rows = connection.execute(
-                    "SELECT id,kind,resource_json FROM background_jobs ORDER BY created_at"
+                    "SELECT id,kind,priority,resource_json FROM background_jobs ORDER BY created_at"
                 ).fetchall()
                 correctness_parent = connection.execute(
                     "SELECT depends_on_job_id FROM background_dependencies WHERE job_id=?", (rows[1]["id"],)
@@ -277,6 +277,8 @@ class ControllerTests(unittest.TestCase):
             self.assertGreater(json.loads(rows[0]["resource_json"])["cpu_threads"], 0)
             self.assertEqual(json.loads(rows[1]["resource_json"])["count"], 1)
             self.assertEqual(correctness_parent, rows[0]["id"])
+            self.assertEqual(rows[2]["priority"], 25)
+            self.assertEqual(json.loads(rows[2]["resource_json"])["exclusive_resources"], ["benchmark:cuda"])
             build, correctness = controller._base_stage_commands(spec["benchmark"])
             self.assertEqual(build[-1], "/usr/bin/true")
             self.assertEqual(correctness, ["bench", "--check"])

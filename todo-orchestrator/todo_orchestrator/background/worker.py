@@ -62,6 +62,9 @@ def main() -> int:
     worker_id = store.register_worker()
     idle_since = time.monotonic()
     executor = concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.max_children), thread_name_prefix="todo-background")
+    handler_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix="todo-background-watch")
+    handler_future: concurrent.futures.Future | None = None
+    next_handler_dispatch = 0.0
     active: set[concurrent.futures.Future] = set()
     consecutive_supervisor_errors = 0
     try:
@@ -69,8 +72,16 @@ def main() -> int:
             launched = False
             try:
                 store.heartbeat(worker_id)
-                dispatch_watch_handlers(store)
                 _reap_done(active)
+                if handler_future and handler_future.done():
+                    try:
+                        handler_future.result()
+                    except Exception:
+                        pass
+                    handler_future = None
+                if handler_future is None and time.monotonic() >= next_handler_dispatch:
+                    handler_future = handler_executor.submit(dispatch_watch_handlers, store)
+                    next_handler_dispatch = time.monotonic() + 5.0
                 while len(active) < max(1, args.max_children):
                     claimed = claim_runnable(store, worker_id)
                     if not claimed:
@@ -94,6 +105,7 @@ def main() -> int:
             time.sleep(0.1)
     finally:
         executor.shutdown(wait=True, cancel_futures=False)
+        handler_executor.shutdown(wait=False, cancel_futures=True)
         try:
             store.stop_worker(worker_id)
         except Exception:

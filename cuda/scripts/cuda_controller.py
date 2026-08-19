@@ -413,6 +413,7 @@ def _resource_request(spec: dict[str, object], stage: str = "benchmark") -> dict
     base_stage = stage.removeprefix("candidate-")
     profiler = base_stage in {"nsys", "ncu"}
     build = base_stage == "build"
+    measured = base_stage in {"benchmark", "nsys", "ncu"}
     build_threads = min(8, max(1, cpu_capacity() // 4))
     return {
         "kind": "accelerator", "ids": [] if build else [f"accelerator:{item}" for item in explicit],
@@ -422,7 +423,8 @@ def _resource_request(spec: dict[str, object], stage: str = "benchmark") -> dict
                            benchmark.get("background_cpu_threads", 0) or 0),
         "ram_bytes": int(benchmark.get("background_ram_bytes", 0) or 0),
         "tags": ({"architecture": str(benchmark["architecture"])} if benchmark.get("architecture") else {}),
-        "exclusive_resources": ["profiler:nvidia"] if profiler else [],
+        "exclusive_resources": (["benchmark:cuda", "profiler:nvidia"] if profiler else
+                                ["benchmark:cuda"] if measured else []),
         "isolate_pcie_root": bool(benchmark.get("isolate_pcie_root", profiler)),
         "isolate_nvlink_domain": bool(benchmark.get("isolate_nvlink_domain", profiler)),
     }
@@ -473,7 +475,7 @@ def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: d
     correctness, created = store.enqueue({**common, "kind": "correctness", "priority": 20, "retry_limit": 0,
         "argv": stage_argv(store.project_root, str(watch["id"]), "correctness", queued_snapshot),
         "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:correctness"}, dependency)
-    benchmark, benchmark_created = store.enqueue({**common, "kind": "benchmark", "priority": 40,
+    benchmark, benchmark_created = store.enqueue({**common, "kind": "benchmark", "priority": 25,
         "argv": stage_argv(store.project_root, str(watch["id"]), "benchmark", queued_snapshot),
         "dedup_key": f"{watch['id']}:{fingerprint}:{contract_hash}:benchmark"}, [correctness])
     pipeline.extend((correctness, benchmark))
