@@ -1,4 +1,0 @@
-interface:
-  display_name: "Native Debugging"
-  short_description: "Linux C/C++ debugging router"
-  default_prompt: "Use $native-debugging to triage a crashing C or C++ binary, choose the right native debugging route, and emit compact summaries before reading raw logs."

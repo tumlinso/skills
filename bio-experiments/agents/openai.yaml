@@ -1,4 +1,0 @@
-version: 1
-display_name: Bio Experiments
-short_description: Scientifically correct single-cell omics handling
-default_prompt: Use $bio-experiments to implement omics preprocessing, assay-aware data handling, or dataset unification correctly.

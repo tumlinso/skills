@@ -1,3 +1,0 @@
-## Introduction
-
-This introduction lives in a subsection file.

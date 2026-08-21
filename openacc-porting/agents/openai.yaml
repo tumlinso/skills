@@ -1,6 +1,0 @@
-interface:
-  display_name: "OpenACC Porting"
-  short_description: "Review-first OpenACC assessment and porting"
-  default_prompt: "Use $openacc-porting to assess OpenACC suitability, write a staged review artifact, and port appropriate regions incrementally with correctness-first validation."
-policy:
-  allow_implicit_invocation: true

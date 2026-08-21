@@ -1,3 +1,0 @@
-Run	Experiment	BioSample	BioProject	SRAStudy	LibraryName	LibraryStrategy	LibraryLayout	Platform	Model	ScientificName	Study_Pubmed_id	download_path	Body_Site
-SRR100	SRX100	SAMN100	PRJNA720779	SRP300001	adult human liver single-cell	RNA-Seq	PAIRED	ILLUMINA	NextSeq 2000	Homo sapiens	34567890	ftp://example/SRR100	liver
-SRR101	SRX101	SAMN101	PRJNA720779	SRP300001	adult human liver single-cell replicate	RNA-Seq	PAIRED	ILLUMINA	NextSeq 2000	Homo sapiens	34567890	ftp://example/SRR101	liver
