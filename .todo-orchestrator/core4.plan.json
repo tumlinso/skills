@@ -132,7 +132,7 @@
     {
       "id": "core4-runtime-v1",
       "owner_task_id": "CORE4-03",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "contracts/command-spec-v1.schema.json",
@@ -146,7 +146,7 @@
     {
       "id": "todo-child-execution-v1",
       "owner_task_id": "CORE4-05",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "todo-orchestrator/schemas/child-execution-v1.schema.json",
@@ -156,7 +156,7 @@
     {
       "id": "ctxpp-context-packet-v1",
       "owner_task_id": "CORE4-06",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "cpp-context-compiler/schemas/context-packet-v1.schema.json",
@@ -166,7 +166,7 @@
     {
       "id": "cuda-campaign-v1",
       "owner_task_id": "CORE4-08",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "cuda/schemas/benchmark-registry-v1.schema.json",
@@ -176,7 +176,7 @@
     {
       "id": "cuda-performance-fact-v1",
       "owner_task_id": "CORE4-09",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "cuda/schemas/performance-fact-v1.schema.json",
@@ -186,7 +186,7 @@
     {
       "id": "local-worker-delegation-v1",
       "owner_task_id": "CORE4-10",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "local-coding-worker/schemas/delegation-spec-v1.schema.json",
@@ -196,7 +196,7 @@
     {
       "id": "local-worker-write-v1",
       "owner_task_id": "CORE4-12",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "local-coding-worker/references/writable-work-contract.md"
@@ -205,7 +205,7 @@
     {
       "id": "core4-resource-policy-v1",
       "owner_task_id": "CORE4-13",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "todo-orchestrator/references/runtime-resource-contract.md",
@@ -215,7 +215,7 @@
     {
       "id": "core4-integrated-flow-v1",
       "owner_task_id": "CORE4-14",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
       "contract_paths": [
         "local-coding-worker/references/integration-contract.md"
@@ -2156,7 +2156,8 @@
           "local-coding-worker/agents/openai.yaml",
           "scripts/core4_validate.py",
           ".github/workflows/core4.yml",
-          "core4-tests/software-ready"
+          "core4-tests/software-ready",
+          "cuda/assets/cuda-markdown-manifest.json"
         ],
         "read_paths": [
           "todo-orchestrator",

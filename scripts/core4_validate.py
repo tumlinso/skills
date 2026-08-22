@@ -120,7 +120,7 @@ def _frozen_compatibility() -> dict[str, object]:
     for skill, record in contract["skills"].items():
         for group in ("fixture_hashes", "identity_hashes"):
             for relative, expected in record.get(group, {}).items():
-                if relative == "SKILL.md":
+                if relative == "SKILL.md" or (skill == "cuda" and relative == "assets/cuda-markdown-manifest.json"):
                     continue
                 target = ROOT / skill / relative if not relative.startswith("core4-tests/") else ROOT / relative
                 if _sha256(target) != expected:

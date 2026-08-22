@@ -287,6 +287,11 @@
       "sha256": "812dfb3cb333b7471af6cdead1fbd8e89344801ac817eae6ff5ec9b50d611054"
     },
     {
+      "path": "references/benchmark-registry.md",
+      "bytes": 3307,
+      "sha256": "b6b40dc8649384b41cacbfed80c8d673f778478d953ad3bc0d1961232ed1bae3"
+    },
+    {
       "path": "references/benchmark-standardization.md",
       "bytes": 5987,
       "sha256": "56f1da5e6adcf5aff7268544b929c5155cd76b9a6e7d09748d29240bce686f81"
@@ -435,6 +440,11 @@
       "path": "references/nvhpc-tradeoffs.md",
       "bytes": 2287,
       "sha256": "7acac34d106631f7819d1a1b9bda08cba4904b99b8b9bd03878cb8d9ee177951"
+    },
+    {
+      "path": "references/performance-facts.md",
+      "bytes": 3123,
+      "sha256": "7480ca2595829dbbc2eb23a4f7819cde16e96211bf924e03721679847ac45a94"
     },
     {
       "path": "references/pipeline-bottlenecks.md",

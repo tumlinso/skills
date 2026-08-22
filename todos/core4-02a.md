@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-02A: Resolve ctxpp targeted-refresh baseline contract
 
-Task revision: `29`; current project revision is in `todo-status.md`.
+Task revision: `140`; current project revision is in `todo-status.md`.
 
 ## Objective
 Determine whether a newly populated included header may be served by the lexical-overlay fast path or must trigger one semantic TU refresh, then make the smallest backwards-compatible implementation or test correction and restore the ctxpp baseline.

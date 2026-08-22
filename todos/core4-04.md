@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-04: Implement restricted todo child-execution core
 
-Task revision: `46`; current project revision is in `todo-status.md`.
+Task revision: `140`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add generic child-execution authorization, restricted child tokens, subset scope leases, lifecycle state, heartbeat, attempts, recovery, and cancellation without granting parent completion or creating a second task graph.

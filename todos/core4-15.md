@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-15: Preserve backward compatibility and minimize all four skill surfaces
 
-Task revision: `131`; current project revision is in `todo-status.md`.
+Task revision: `151`; current project revision is in `todo-status.md`.
 
 ## Objective
 Remove private cross-skill imports, keep the three existing public workflows compatible, keep the new local-worker SKILL.md extremely small, correct root routing and ignore rules, add one repository validation entry point, and establish software-ready evidence without real model assets.
 
 ## State
-- Lifecycle: `blocked`
-- Execution: `blocked_dependency`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Update only public docs and compatibility adapters after the integrated flow works. Run the existing full suites once here, not during every prior task.
@@ -26,6 +26,7 @@ Update only public docs and compatibility adapters after the integrated flow wor
 - `exclusive`: `cpp-context-compiler/agents/openai.yaml`
 - `exclusive`: `cuda/SKILL.md`
 - `exclusive`: `cuda/agents/openai.yaml`
+- `exclusive`: `cuda/assets/cuda-markdown-manifest.json`
 - `exclusive`: `local-coding-worker/SKILL.md`
 - `exclusive`: `local-coding-worker/agents/openai.yaml`
 - `exclusive`: `scripts/core4_validate.py`

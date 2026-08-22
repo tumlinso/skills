@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-18: Tune reviewer, double-solve, context, and delegation policy
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `140`; current project revision is in `todo-status.md`.
 
 ## Objective
 Use the host bake-off evidence to enable reviewer or independent-double-solve only where it lowers frontier rework, tune delegation eligibility and context budgets by task class, set hot-idle and preemption policies, and preserve explicit NEEDS_CODEX behavior.

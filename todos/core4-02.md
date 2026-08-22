@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-02: Freeze behavior and compatibility baselines
 
-Task revision: `31`; current project revision is in `todo-status.md`.
+Task revision: `140`; current project revision is in `todo-status.md`.
 
 ## Objective
 Capture the exact existing public behavior of todo-orchestrator, cuda, and cpp-context-compiler before semantic changes, including CLI commands, JSON envelopes, core tests, performance fixture identities, and substantive guidance preservation requirements.
