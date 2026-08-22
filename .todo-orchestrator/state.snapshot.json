@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T11:06:28Z",
+  "generated_at": "2026-08-22T11:17:29Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 114,
+  "project_revision": 123,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,13 +105,13 @@
     ],
     "barriers": [
       {
-        "explanation": "5/6 requirements satisfied; target=6",
+        "explanation": "6/6 requirements satisfied; target=6",
         "id": "CORE4-LANES-READY",
         "mode": "all",
-        "opened_at": null,
+        "opened_at": "2026-08-22 11:17:29",
         "quorum": null,
-        "revision": 114,
-        "state": "closed",
+        "revision": 123,
+        "state": "open",
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
       {
@@ -429,10 +429,10 @@
       {
         "id": "CORE4-RESOURCE-POLICY-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T11:17:23Z",
+        "revision": 122,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-13",
         "title": "Host-global inference and CUDA priority policy frozen"
       },
@@ -1633,6 +1633,96 @@
         "revision": 114,
         "seq": 114,
         "timestamp": "2026-08-22T11:06:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 115,
+        "seq": 115,
+        "timestamp": "2026-08-22T11:07:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-TODO-RESOURCE-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-13-TODO-RESOURCE-POLICY\"}",
+        "revision": 116,
+        "seq": 116,
+        "timestamp": "2026-08-22T11:17:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-TODO-RESOURCE-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"bda49345-72c7-4dfe-9ce5-9807bab5de77\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 117,
+        "seq": 117,
+        "timestamp": "2026-08-22T11:17:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-LOCAL-RESOURCE-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-13-LOCAL-RESOURCE-POLICY\"}",
+        "revision": 118,
+        "seq": 118,
+        "timestamp": "2026-08-22T11:17:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-LOCAL-RESOURCE-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b9f80e49-f875-4491-b3ef-3af997a0cc2e\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 119,
+        "seq": 119,
+        "timestamp": "2026-08-22T11:17:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-CUDA-INTERLOCK",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-13-CUDA-INTERLOCK\"}",
+        "revision": 120,
+        "seq": 120,
+        "timestamp": "2026-08-22T11:17:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13-CUDA-INTERLOCK",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"19aec5c7-385f-4f82-86f5-cb88902c9b2f\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 121,
+        "seq": 121,
+        "timestamp": "2026-08-22T11:17:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-RESOURCE-POLICY-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 122,
+        "seq": 122,
+        "timestamp": "2026-08-22T11:17:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-13",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 123,
+        "seq": 123,
+        "timestamp": "2026-08-22T11:17:29Z"
       }
     ],
     "evidence": [
@@ -1648,6 +1738,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/08978b35-af4a-434d-ac93-0501b78b3e8d",
         "revision": 6,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:17:14Z",
+        "gate_id": "CORE4-13-CUDA-INTERLOCK",
+        "id": "19aec5c7-385f-4f82-86f5-cb88902c9b2f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_core4_interlock.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2788ae106caa5129153cd93a89227cb7d97e6f8afcf5d6a8a0919384f49be84a\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_core4_interlock.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"9ef7116361a71959bba65b5035e669c000ad4b15ee235cf0b7339fd33b51fb24\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_core4_interlock.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/tests/test_resource_policy.py\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_core4_resource_policy.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/resources.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-13.md\"], \"files\": [{\"path\": \"cuda/scripts/cuda_controller.py\", \"sha256\": \"2a4c48f55348ee4e9b3e3279d893542567d4e42c33876c5a9785fc70c03f73dd\"}, {\"path\": \"cuda/scripts/cuda_quiescence.py\", \"sha256\": \"89085455e041a5a124adccfb2e64fb62d569f9b365268126c8290117029412da\"}, {\"path\": \"cuda/tests/test_core4_interlock.py\", \"sha256\": \"e01e7a583626b9af5fb3de00cf3d58a820e696817cd54a22963efc02acfdc182\"}], \"interfaces\": [], \"recorded_git_head\": \"9d2429edd06f38255e01e78abd607c381d22ea26\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 120}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/19aec5c7-385f-4f82-86f5-cb88902c9b2f",
+        "revision": 121,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -1887,6 +1990,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T11:17:14Z",
+        "gate_id": "CORE4-13-LOCAL-RESOURCE-POLICY",
+        "id": "b9f80e49-f875-4491-b3ef-3af997a0cc2e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_resource_policy.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6207cade65d1263b7059b72ef1d3d2b8d441f17b8d707a3b21d61dd015810170\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_resource_policy.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"9ef7116361a71959bba65b5035e669c000ad4b15ee235cf0b7339fd33b51fb24\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_core4_interlock.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/tests/test_resource_policy.py\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_core4_resource_policy.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/resources.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-13.md\"], \"files\": [{\"path\": \"local-coding-worker/local_worker/service.py\", \"sha256\": \"ea58d7a01e2008dc2e1e6a80a8e8c9f5302a63129e201a3b8c3e45dd7c8fdc1e\"}, {\"path\": \"local-coding-worker/tests/test_resource_policy.py\", \"sha256\": \"a7f0f8bca49bd0fb1b813b7628eb68c338c7581ac16b28450a0c94e260840edd\"}], \"interfaces\": [], \"recorded_git_head\": \"9d2429edd06f38255e01e78abd607c381d22ea26\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 118}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/b9f80e49-f875-4491-b3ef-3af997a0cc2e",
+        "revision": 119,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:39:00Z",
         "gate_id": "CORE4-02-TODO-BASELINE",
         "id": "bc7dd482-be86-4039-bfe5-8b6ec9d1881d",
@@ -1894,6 +2010,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"e3758a6da29c328887db629b07fc881264cadd3b79e074c26d477042735f49b6\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\", \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 9}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/bc7dd482-be86-4039-bfe5-8b6ec9d1881d",
         "revision": 10,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:17:07Z",
+        "gate_id": "CORE4-13-TODO-RESOURCE-POLICY",
+        "id": "bda49345-72c7-4dfe-9ce5-9807bab5de77",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_core4_resource_policy.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1b3b2bc6cf06788ae3fa945a554eb64fff4c4f5b6d244377aaab02a75c4f3277\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_core4_resource_policy.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"9ef7116361a71959bba65b5035e669c000ad4b15ee235cf0b7339fd33b51fb24\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_core4_interlock.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/tests/test_resource_policy.py\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_core4_resource_policy.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/resources.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-13.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_core4_resource_policy.py\", \"sha256\": \"be3ae9ba88955fd8de35dc022a9b2650f82ad1cf733c50d3dadafc5461470550\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/background/host.py\", \"sha256\": \"a81b49e4d9aa994c36fa59d74c529a855243d87cb2342198c7e06562013a420d\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/runtime/resources.py\", \"sha256\": \"cc76afcc4a29646a069a26b92c7631e1290edbb829580c2d77d3d4a37bdc8961\"}], \"interfaces\": [], \"recorded_git_head\": \"9d2429edd06f38255e01e78abd607c381d22ea26\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 116}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/bda49345-72c7-4dfe-9ce5-9807bab5de77",
+        "revision": 117,
         "status": "passed"
       },
       {
@@ -2240,40 +2369,40 @@
         "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_core4_interlock.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_quiescence.py\", \"cuda/tests/test_core4_interlock.py\"], \"timeout\": 1200}",
         "id": "CORE4-13-CUDA-INTERLOCK",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "2788ae106caa5129153cd93a89227cb7d97e6f8afcf5d6a8a0919384f49be84a",
+        "last_run_at": "2026-08-22T11:17:14Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 121,
+        "status": "passed",
         "task_id": "CORE4-13",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_resource_policy.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/local_worker/service.py\", \"local-coding-worker/tests/test_resource_policy.py\"], \"timeout\": 1200}",
         "id": "CORE4-13-LOCAL-RESOURCE-POLICY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6207cade65d1263b7059b72ef1d3d2b8d441f17b8d707a3b21d61dd015810170",
+        "last_run_at": "2026-08-22T11:17:14Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 119,
+        "status": "passed",
         "task_id": "CORE4-13",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_core4_resource_policy.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/resources.py\", \"todo-orchestrator/tests/test_core4_resource_policy.py\"], \"timeout\": 1200}",
         "id": "CORE4-13-TODO-RESOURCE-POLICY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1b3b2bc6cf06788ae3fa945a554eb64fff4c4f5b6d244377aaab02a75c4f3277",
+        "last_run_at": "2026-08-22T11:17:07Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 117,
+        "status": "passed",
         "task_id": "CORE4-13",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
@@ -2476,6 +2605,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\"], \"checkpoints\": [{\"id\": \"CORE4-TODO-DELEGATION-FROZEN\", \"reached_at\": \"2026-08-22T10:03:44Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-05-CHILD-INTEGRATION\", \"last_run_at\": \"2026-08-22T10:03:34Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-05-TODO-REGRESSION\", \"last_run_at\": \"2026-08-22T10:03:36Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 679 ++++++++++++++++++++--\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 ++++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |   8 +-\\n todos.md                                          |   8 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   6 +-\\n todos/core4-06.md                                 |   8 +-\\n 11 files changed, 930 insertions(+), 94 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [{\"content_hash\": \"44907f4441252e89a936ecd769c362938f47d5440b9222cd10842332e639dc21\", \"id\": \"todo-child-execution-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated restricted child gate candidates, evidence artifacts, compact completed/needs_codex/no_change/failed capsule results, claim-handoff surfacing, and guarded current-source parent acceptance. Stale candidates fall back to ordinary gate execution; normal gate and capsule shapes remain unchanged without child results. CORE4-05-CHILD-INTEGRATION and CORE4-05-TODO-REGRESSION passed; todo-child-execution-v1 frozen.\", \"resources\": [], \"task_id\": \"CORE4-05\"}",
         "revision": 79,
         "task_id": "CORE4-05"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T11:17:29Z",
+        "id": "99b4ddd4-25e8-4cf4-9c4b-b43734194154",
+        "kind": "complete",
+        "note": "Added the fixed host priority vocabulary, cooperative service-owner drain and eviction, explicit clean-CUDA override, runtime topology selection, stale recovery, and focused passing evidence.",
+        "payload_json": "{\"changed_owned_paths\": [\"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_core4_interlock.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/tests/test_resource_policy.py\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_core4_resource_policy.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/resources.py\"], \"checkpoints\": [{\"id\": \"CORE4-RESOURCE-POLICY-FROZEN\", \"reached_at\": \"2026-08-22T11:17:23Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-13-TODO-RESOURCE-POLICY\", \"last_run_at\": \"2026-08-22T11:17:07Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-13-LOCAL-RESOURCE-POLICY\", \"last_run_at\": \"2026-08-22T11:17:14Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-13-CUDA-INTERLOCK\", \"last_run_at\": \"2026-08-22T11:17:14Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 175 ++++++++++++++++---\\n cuda/scripts/cuda_controller.py                    |   5 +-\\n local-coding-worker/local_worker/service.py        | 153 ++++++++++++++++-\\n .../todo_orchestrator/background/host.py           | 188 ++++++++++++++++++---\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/core4-13.md                                  |   6 +-\\n 7 files changed, 469 insertions(+), 66 deletions(-)\", \"git_head\": \"9d2429edd06f38255e01e78abd607c381d22ea26\", \"interfaces\": [{\"content_hash\": \"00b84582cc8045bedc449a7617167aaf18df6897a73b1df0cefb3a13239d45da\", \"id\": \"core4-resource-policy-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Added the fixed host priority vocabulary, cooperative service-owner drain and eviction, explicit clean-CUDA override, runtime topology selection, stale recovery, and focused passing evidence.\", \"resources\": [], \"task_id\": \"CORE4-13\"}",
+        "revision": 123,
+        "task_id": "CORE4-13"
       },
       {
         "claim_id": null,
@@ -2798,14 +2937,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "00b84582cc8045bedc449a7617167aaf18df6897a73b1df0cefb3a13239d45da",
         "contract_paths_json": "[\"todo-orchestrator/references/runtime-resource-contract.md\", \"local-coding-worker/references/resource-policy.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T11:17:23Z",
         "id": "core4-resource-policy-v1",
         "owner_task_id": "CORE4-13",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 122,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -5453,14 +5592,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": "CORE4-00",
         "priority": 30,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 123,
+        "status": "done",
         "tags_json": "[\"resources\", \"gpu\", \"preemption\", \"integration\"]",
         "title": "Implement priority-aware GPU service interlocks and preemption",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T11:17:29Z",
+        "version": 5
       },
       {
         "attention_reason": null,

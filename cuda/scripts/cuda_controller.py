@@ -1157,7 +1157,10 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     host_owner = None
     intent = None
     try:
-        host_owner, host_resources = host.begin_foreground(project_root=project, request=host_request, pid=os.getpid())
+        host_owner, host_resources = host.begin_foreground(
+            project_root=project, request=host_request, pid=os.getpid(),
+            priority_class="clean_cuda_foreground",
+        )
         intent = store.foreground_intent(resource_ids)
         marker.parent.mkdir(parents=True, exist_ok=True)
         marker.write_text(f"controller:{intent}\n", encoding="utf-8")

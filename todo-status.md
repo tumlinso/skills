@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `114`
+Project revision: `123`
 
 ## Workstreams
 - `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
@@ -13,7 +13,7 @@ Project revision: `114`
 - `CORE4-16` | status: planned | execution: ready | next: Generate an acquisition request containing candidate model files or repositories, quantizations, expected sizes, destinations, checksums when available, and harness prerequisites. If assets are absent, finish this task, then halt and ask the user once.
 - `CORE4-15` | status: planned | execution: ready | next: Update only public docs and compatibility adapters after the integrated flow works. Run the existing full suites once here, not during every prior task.
 - `CORE4-14` | status: planned | execution: ready | next: Wire only stable interfaces. Do not bypass them with private imports. Prove read-only, writable, NEEDS_CODEX, stale patch, preemption, accepted patch, and CUDA-trigger cases.
-- `CORE4-13` | status: planned | execution: ready | next: Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.
+- `CORE4-13` | status: done | execution: closed | next: Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.
 - `CORE4-07` | status: done | execution: closed | next: Add private bounded telemetry and a fixture evaluation that compares packet layouts at fixed budgets. Do not optimize solely for token reduction.
 - `CORE4-11` | status: done | execution: closed | next: Implement adapters against current documented protocols and test them with fakes. Probe installed binaries but do not install or download anything.
 - `CORE4-12` | status: done | execution: closed | next: Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.

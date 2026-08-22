@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-13: Implement priority-aware GPU service interlocks and preemption
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `123`; current project revision is in `todo-status.md`.
 
 ## Objective
 Extend the supported host resource facade minimally so active local delegation normally outranks background CUDA work, explicit clean CUDA foreground work overrides and drains local inference, idle model residency is lowest priority, preemption preserves task state, and topology bundles are discovered rather than hard-coded.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.
