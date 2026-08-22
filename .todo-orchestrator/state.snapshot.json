@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T20:01:06Z",
+  "generated_at": "2026-08-22T20:08:50Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 234,
+  "project_revision": 242,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -115,13 +115,13 @@
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
       {
-        "explanation": "0/1 requirements satisfied; target=1",
+        "explanation": "1/1 requirements satisfied; target=1",
         "id": "CORE4-RELEASE-BARRIER",
         "mode": "all",
-        "opened_at": null,
+        "opened_at": "2026-08-22 20:08:50",
         "quorum": null,
-        "revision": 184,
-        "state": "closed",
+        "revision": 242,
+        "state": "open",
         "title": "CORE4 final release task completed"
       },
       {
@@ -419,10 +419,10 @@
       {
         "id": "CORE4-RELEASED",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 184,
+        "reached_at": "2026-08-22T20:08:50Z",
+        "revision": 241,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-19",
         "title": "CORE4 release validated"
       },
@@ -2833,6 +2833,86 @@
         "revision": 234,
         "seq": 234,
         "timestamp": "2026-08-22T20:01:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-19\"}",
+        "revision": 235,
+        "seq": 235,
+        "timestamp": "2026-08-22T20:03:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-19-RELEASE\"}",
+        "revision": 236,
+        "seq": 236,
+        "timestamp": "2026-08-22T20:03:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"4c68b7ca-8741-406c-a674-3c0062c95025\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 237,
+        "seq": 237,
+        "timestamp": "2026-08-22T20:03:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-19-RELEASE\"}",
+        "revision": 238,
+        "seq": 238,
+        "timestamp": "2026-08-22T20:05:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.heartbeat",
+        "payload_json": "{}",
+        "revision": 239,
+        "seq": 239,
+        "timestamp": "2026-08-22T20:07:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"50b77e22-93a4-4988-8af9-acaf0f245edf\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 240,
+        "seq": 240,
+        "timestamp": "2026-08-22T20:08:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-RELEASED",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 241,
+        "seq": 241,
+        "timestamp": "2026-08-22T20:08:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-19",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 242,
+        "seq": 242,
+        "timestamp": "2026-08-22T20:08:50Z"
       }
     ],
     "evidence": [
@@ -3016,6 +3096,32 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_policy.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"caa71209e5b7e619d617225834ba834435a0f6459f7841674d1d2ef80ee805d3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_policy.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"b17a6e7c977ae86e3d18664501998b1c2a83365df1974afbe86cfbda6e0ec4c5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"hf-cli/.hf-skill-manifest.json\", \"hf-cli/SKILL.md\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/host-bakeoff.json\", \"local-coding-worker/evals/results/policy-report.json\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/gpt-oss-20b-mxfp4/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/local_worker/policy.py\", \"local-coding-worker/local_worker/reviewer.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/tests/test_policy.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-18.md\"], \"files\": [{\"path\": \"local-coding-worker/local_worker/policy.py\", \"sha256\": \"b97fa777b7eb4a94586973097e99c1839ab17419b50fb53177ae40e8c06d2188\"}, {\"path\": \"local-coding-worker/local_worker/reviewer.py\", \"sha256\": \"5cfe1aa05fa843176a991ef5acb6c3684300f13e377281e98b79d760c8061695\"}, {\"path\": \"local-coding-worker/local_worker/telemetry.py\", \"sha256\": \"ad369d3483346f536e1cbaa54c1013f9adbe2228885a7ffd4afa66d3ee71b370\"}, {\"path\": \"local-coding-worker/tests/test_policy.py\", \"sha256\": \"ef42c17251f8810189bcf9ad05cf429705654b553863f54a63b8b259f355a687\"}], \"interfaces\": [], \"recorded_git_head\": \"429a2c4c4784b7f42f17554150bb0d49c8c04661\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 229}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/477b98ed-59bd-4d5f-a024-958461325605",
         "revision": 230,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T20:03:23Z",
+        "gate_id": "CORE4-19-RELEASE",
+        "id": "4c68b7ca-8741-406c-a674-3c0062c95025",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--full\", \"--output\", \"core4-tests/release\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"813749e4f597c830c72aad030ea214b51c9e1cd758072ede8c9c35a56bef2e5e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--full\", \"--output\", \"core4-tests/release\"], \"cwd\": \".\", \"timeout\": 14400}, \"diff_fingerprint\": \"2bb6d832058da86f5fc202bd583e0136ce0eaa897e972f63c864de5e21cd053e\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"hf-cli/.hf-skill-manifest.json\", \"hf-cli/SKILL.md\", \"local-coding-worker/evals/results/host-bakeoff.json\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/gpt-oss-20b-mxfp4/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/server-8080.log\", \"todo-status.md\", \"todos.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \".gitignore\", \"sha256\": \"d7c8c6441f2e016316a5d27c06297f443e72be8a2bdb5ea0f728c02421797918\"}, {\"path\": \"AGENTS.md\", \"sha256\": \"0be8b21bc8f35be789ea1aaa49e09058ba21158d5939a357cc63d5b8eaa05c78\"}, {\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"git_head\": \"82aeb6cbd1da096aeeeb18e4fff347bfaeb830d8\", \"interfaces\": [], \"recorded_git_head\": \"82aeb6cbd1da096aeeeb18e4fff347bfaeb830d8\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"started_revision\": 236}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/4c68b7ca-8741-406c-a674-3c0062c95025",
+        "revision": 237,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T20:08:38Z",
+        "gate_id": "CORE4-19-RELEASE",
+        "id": "50b77e22-93a4-4988-8af9-acaf0f245edf",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--full\", \"--output\", \"core4-tests/release\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"813749e4f597c830c72aad030ea214b51c9e1cd758072ede8c9c35a56bef2e5e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--full\", \"--output\", \"core4-tests/release\"], \"cwd\": \".\", \"timeout\": 14400}, \"diff_fingerprint\": \"f8cca1fd88c774c1be5e174164ecb78adf51fcecdc4a56d9fc94498f70635386\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"hf-cli/.hf-skill-manifest.json\", \"hf-cli/SKILL.md\", \"local-coding-worker/evals/results/host-bakeoff.json\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/gpt-oss-20b-mxfp4/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/server-8080.log\", \"scripts/core4_validate.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \".gitignore\", \"sha256\": \"d7c8c6441f2e016316a5d27c06297f443e72be8a2bdb5ea0f728c02421797918\"}, {\"path\": \"AGENTS.md\", \"sha256\": \"0be8b21bc8f35be789ea1aaa49e09058ba21158d5939a357cc63d5b8eaa05c78\"}, {\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"git_head\": \"82aeb6cbd1da096aeeeb18e4fff347bfaeb830d8\", \"interfaces\": [], \"recorded_git_head\": \"82aeb6cbd1da096aeeeb18e4fff347bfaeb830d8\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 238}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/50b77e22-93a4-4988-8af9-acaf0f245edf",
+        "revision": 240,
         "status": "passed"
       },
       {
@@ -3856,14 +3962,14 @@
         "checkpoint_id": "CORE4-RELEASED",
         "config_json": "{\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--full\", \"--output\", \"core4-tests/release\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator\", \"cpp-context-compiler\", \"cuda\", \"local-coding-worker\", \"contracts\", \"AGENTS.md\", \".gitignore\"], \"timeout\": 14400, \"track_git_head\": true}",
         "id": "CORE4-19-RELEASE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "813749e4f597c830c72aad030ea214b51c9e1cd758072ede8c9c35a56bef2e5e",
+        "last_run_at": "2026-08-22T20:08:38Z",
         "required": 1,
-        "revision": 184,
-        "status": "pending",
+        "revision": 240,
+        "status": "passed",
         "task_id": "CORE4-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -4066,6 +4172,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"core4-tests/integration/scenarios.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\"], \"checkpoints\": [{\"id\": \"CORE4-INTEGRATED-FLOW-FROZEN\", \"reached_at\": \"2026-08-22T11:26:11Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-14-INTEGRATION\", \"last_run_at\": \"2026-08-22T11:26:00Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-14-SCENARIOS\", \"last_run_at\": \"2026-08-22T11:26:07Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json      | 132 +++++++++++++++++++++++-----\\n local-coding-worker/scripts/local_worker.py |  48 +++++++++-\\n todo-status.md                              |   4 +-\\n todos.md                                    |   4 +-\\n todos/core4-14.md                           |   6 +-\\n 5 files changed, 162 insertions(+), 32 deletions(-)\", \"git_head\": \"659190eeca26199d127a99f63ff6ecae75f8e888\", \"interfaces\": [{\"content_hash\": \"b781565881a4f095828b162e66f5fdce759f9c8d3f16034143c3f7c3fc33306e\", \"id\": \"core4-integrated-flow-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated parent-authorized child execution, bounded ctxpp terminal work, isolated writable verification and guarded acceptance, compact NEEDS_CODEX/preemption handling, and accepted-patch CUDA discovery through frozen public interfaces.\", \"resources\": [], \"task_id\": \"CORE4-14\"}",
         "revision": 130,
         "task_id": "CORE4-14"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T20:08:50Z",
+        "id": "ea962ff7-0780-4315-b72b-6ac4160d5da0",
+        "kind": "complete",
+        "note": "Full CORE4 release gate passed all todo-orchestrator, cpp-context-compiler, cuda, and local-coding-worker suites plus metadata, compatibility, boundary, host-profile, staging-cleanliness, projection, database-integrity, and resource-recovery checks.",
+        "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/state.snapshot.json\", \"core4-tests/release/report.json\", \"scripts/core4_validate.py\", \"todo-status.md\", \"todos.md\"], \"checkpoints\": [{\"id\": \"CORE4-RELEASED\", \"reached_at\": \"2026-08-22T20:08:50Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-19-RELEASE\", \"last_run_at\": \"2026-08-22T20:08:38Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 124 +++++++++++++++++++++++++++++----\\n scripts/core4_validate.py              | 109 +++++++++++++++++++++++++++--\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-19.md                      |   6 +-\\n 5 files changed, 219 insertions(+), 28 deletions(-)\", \"git_head\": \"82aeb6cbd1da096aeeeb18e4fff347bfaeb830d8\", \"interfaces\": [], \"note\": \"Full CORE4 release gate passed all todo-orchestrator, cpp-context-compiler, cuda, and local-coding-worker suites plus metadata, compatibility, boundary, host-profile, staging-cleanliness, projection, database-integrity, and resource-recovery checks.\", \"resources\": [], \"task_id\": \"CORE4-19\"}",
+        "revision": 242,
+        "task_id": "CORE4-19"
       },
       {
         "claim_id": null,
@@ -7267,14 +7383,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": "CORE4-00",
         "priority": 60,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 184,
-        "status": "planned",
+        "revision": 242,
+        "status": "done",
         "tags_json": "[\"release\", \"validation\", \"handoff\"]",
         "title": "Final release validation and handoff",
-        "updated_at": "2026-08-22T19:02:25Z",
-        "version": 9
+        "updated_at": "2026-08-22T20:08:50Z",
+        "version": 11
       }
     ]
   }

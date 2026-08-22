@@ -12,6 +12,7 @@ import re
 import subprocess
 import sys
 import time
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -197,36 +198,130 @@ def _suite(name: str, argv: list[str]) -> dict[str, object]:
     return result
 
 
+def _json_command(argv: list[str]) -> object:
+    process = _run(argv)
+    if process.returncode != 0:
+        raise ValidationError(f"JSON command failed: {argv}")
+    try:
+        value = json.loads(process.stdout)
+    except json.JSONDecodeError as error:
+        raise ValidationError(f"JSON command returned invalid output: {argv}") from error
+    if isinstance(value, dict) and value.get("ok") is True:
+        return value.get("data")
+    raise ValidationError(f"JSON command returned an error envelope: {argv}")
+
+
+def _release_validation() -> dict[str, object]:
+    profile_path = ROOT / "local-coding-worker/config/production-profile.toml"
+    profile = tomllib.loads(profile_path.read_text(encoding="utf-8"))
+    storage = profile.get("storage", {})
+    deployment = profile.get("deployment_policy", {})
+    for field in ("canonical_root", "staging_root"):
+        path = Path(str(storage.get(field, "")))
+        if not path.is_absolute() or path == ROOT or ROOT in path.parents:
+            raise ValidationError(f"production profile {field} must be an absolute external path")
+    required_disabled = ("real_local_enabled", "reviewer_enabled", "double_solve_enabled")
+    if any(deployment.get(field) is not False for field in required_disabled):
+        raise ValidationError("unmeasured local deployment features must remain disabled")
+    if int(deployment.get("hot_idle_seconds", -1)) != 0 or int(deployment.get("max_real_workers", -1)) != 0:
+        raise ValidationError("unpromoted local inference must not retain a hot model or workers")
+    if deployment.get("needs_codex_is_success") is not True:
+        raise ValidationError("NEEDS_CODEX must remain a successful hand-back")
+
+    policy_report = json.loads((ROOT / "local-coding-worker/evals/results/policy-report.json").read_text(encoding="utf-8"))
+    if policy_report.get("format") != "CORE4-POLICY-REPORT/1":
+        raise ValidationError("policy report format is invalid")
+    if policy_report.get("deployment", {}).get("selected_candidate") is not None:
+        raise ValidationError("policy report must not invent a selected candidate")
+    if policy_report.get("policy", {}).get("real_local_enabled") is not False:
+        raise ValidationError("policy report contradicts the unpromoted host result")
+
+    model_files = [str(path.relative_to(ROOT)) for suffix in ("*.gguf", "*.safetensors")
+                   for path in ROOT.rglob(suffix)]
+    if model_files:
+        raise ValidationError(f"model weights are present in the repository: {model_files[:8]}")
+    staging_root = Path(str(storage["staging_root"]))
+    staged_entries = sorted(item.name for item in staging_root.iterdir()) if staging_root.is_dir() else []
+    if staged_entries:
+        raise ValidationError(f"SSD staging was not cleaned: {staged_entries[:8]}")
+
+    todo = [sys.executable, "todo-orchestrator/scripts/todo.py"]
+    doctor = _json_command([*todo, "doctor", "--repo-root", str(ROOT), "--json"])
+    if not isinstance(doctor, dict) or doctor.get("database", {}).get("integrity") != "ok":
+        raise ValidationError("todo database integrity check failed")
+    if doctor.get("database", {}).get("foreign_key_errors"):
+        raise ValidationError("todo database has foreign-key errors")
+    active_claims = doctor.get("audit", {}).get("active_claims", [])
+    unexpected_claims = [item for item in active_claims
+                         if not isinstance(item, dict) or item.get("task_id") != "CORE4-19" or item.get("state") != "active"]
+    if unexpected_claims or len(active_claims) > 1:
+        raise ValidationError(f"unexpected live todo claims: {unexpected_claims or active_claims}")
+    resources = _json_command([*todo, "resource", "list", "--repo-root", str(ROOT), "--json"])
+    if not isinstance(resources, list) or any(int(item.get("active", 0)) for item in resources if isinstance(item, dict)):
+        raise ValidationError("todo resource leases remain active")
+
+    project = json.loads((ROOT / ".todo-orchestrator/project.json").read_text(encoding="utf-8"))
+    snapshot = json.loads((ROOT / ".todo-orchestrator/state.snapshot.json").read_text(encoding="utf-8"))
+    if snapshot.get("project", {}).get("project_uuid") != project.get("project_uuid"):
+        raise ValidationError("todo snapshot project identity does not match project.json")
+    status_text = (ROOT / "todo-status.md").read_text(encoding="utf-8")
+    if f"Project revision: `{snapshot.get('project_revision')}`" not in status_text:
+        raise ValidationError("todo-status.md does not project the current snapshot revision")
+    return {
+        "host_profile": {
+            "canonical_root": str(storage["canonical_root"]),
+            "staging_root": str(staging_root),
+            "real_local_enabled": False,
+            "staging_clean": True,
+        },
+        "policy_report": {"format": policy_report["format"], "selected_candidate": None},
+        "todo": {"database_integrity": "ok", "active_claims": len(active_claims),
+                 "active_resource_leases": 0, "project_revision": snapshot.get("project_revision")},
+        "model_weights_in_repository": 0,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--software-ready", action="store_true")
     parser.add_argument("--metadata-only", action="store_true")
+    parser.add_argument("--full", action="store_true")
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    if args.software_ready == args.metadata_only:
-        parser.error("choose exactly one of --software-ready or --metadata-only")
+    if sum((args.software_ready, args.metadata_only, args.full)) != 1:
+        parser.error("choose exactly one of --software-ready, --metadata-only, or --full")
+    if args.output is not None and not args.full:
+        parser.error("--output is supported only with --full")
+    artifact = ARTIFACT
+    if args.full:
+        output_dir = (args.output or Path("core4-tests/release")).resolve()
+        artifact = output_dir / "report.json"
     report: dict[str, Any] = {
-        "format": "CORE4-SOFTWARE-READY/1",
+        "format": "CORE4-RELEASE/1" if args.full else "CORE4-SOFTWARE-READY/1",
         "schema_version": 1,
         "git_head": subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True, check=True).stdout.strip(),
         "metadata": None,
         "suites": {},
         "software_ready": False,
+        "release": None,
         "external_assets_used": False,
     }
     try:
         report["metadata"] = metadata_validation()
-        if args.software_ready:
+        if args.software_ready or args.full:
             report["suites"] = {name: _suite(name, argv) for name, argv in SUITES.items()}
             failures = [name for name, result in report["suites"].items() if result["returncode"] != 0]
             if failures:
                 raise ValidationError(f"software-ready suites failed: {failures}")
-        report["software_ready"] = args.software_ready
+        report["software_ready"] = args.software_ready or args.full
+        if args.full:
+            report["release"] = _release_validation()
         report["ok"] = True
     except (OSError, ValueError, SyntaxError, ValidationError) as error:
         report["ok"] = False
         report["error"] = str(error)
-    ARTIFACT.parent.mkdir(parents=True, exist_ok=True)
-    ARTIFACT.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report, sort_keys=True, separators=(",", ":")))
     return 0 if report["ok"] else 1
 
