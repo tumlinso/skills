@@ -1,0 +1,24 @@
+# Writable work contract
+
+Writable delegation begins from a current `source-identity-v1` record and
+repository-relative write scopes authorized by the parent todo child execution.
+It never grants task completion, scope expansion, commit, push, architecture,
+or recursive-agent authority.
+
+Materialization creates a detached temporary Git worktree at the exact commit,
+applies tracked dirty bytes, copies untracked dirty files, and verifies declared
+dirty-path content. A separate temporary index records the full initial tree,
+including dirty overlay state. Baseline commands must pass before worker work.
+
+After the worker, external verification must pass. The patch is the delta from
+the temporary baseline tree, not from `HEAD`; existing user changes therefore
+are not attributed to or replayed by the worker. Every changed path must remain
+inside the declared write scopes. Patch bytes and metadata are stored as
+content-hashed evidence outside the source worktree.
+
+Acceptance is a parent-side operation. It requires the primary worktree's
+source fingerprint and commit to still match the materialization identity,
+rechecks patch scope and hash, and runs `git apply --check` before applying.
+Current-source acceptance commands then run in the primary worktree. On gate
+failure the patch is reversed; on stale source or conflict nothing is applied.
+Successful acceptance still does not complete the parent todo task.

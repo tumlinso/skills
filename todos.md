@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `95`
+Project revision: `100`
 
 ## Workstreams
 - `CORE4-00` | kind: epic | status: planned | parent: - | objective: Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
@@ -16,7 +16,7 @@ Project revision: `95`
 - `CORE4-13` | kind: workstream | status: planned | parent: CORE4-00 | objective: Extend the supported host resource facade minimally so active local delegation normally outranks background CUDA work, explicit clean CUDA foreground work overrides and drains local inference, idle model residency is lowest priority, preemption preserves task state, and topology bundles are discovered rather than hard-coded.
 - `CORE4-07` | kind: workstream | status: done | parent: CORE4-00 | objective: Measure packet latency, freshness, exact versus compact tokens, canonical source avoided, expansions, broad source fallbacks, local-worker success, accepted patches, and Codex reinvestigation without adding routine output or a dashboard.
 - `CORE4-11` | kind: workstream | status: done | parent: CORE4-00 | objective: Add replaceable adapters for llama.cpp serving and existing coding harnesses, initially Qwen Code and Codex CLI, with inspect/start/health/run/cancel/drain/evict/usage APIs, disposable task contexts, fake servers, and no asset installation.
-- `CORE4-12` | kind: workstream | status: planned | parent: CORE4-00 | objective: Add detached worktree materialization from exact source identity, dirty overlay application, subset write-scope enforcement, baseline gates, external verification, patch artifacts, stale detection, guarded acceptance into the current primary worktree, and current-source acceptance gates.
+- `CORE4-12` | kind: workstream | status: done | parent: CORE4-00 | objective: Add detached worktree materialization from exact source identity, dirty overlay application, subset write-scope enforcement, baseline gates, external verification, patch artifacts, stale detection, guarded acceptance into the current primary worktree, and current-source acceptance gates.
 - `CORE4-05` | kind: workstream | status: done | parent: CORE4-00 | objective: Let child executions run only authorized gates, attach evidence and artifacts, return compact completed/needs_codex/no_change/failed results, surface ready results in the next todo capsule, and require guarded parent acceptance before current-source completion.
 - `CORE4-09` | kind: workstream | status: planned | parent: CORE4-00 | objective: Replace first-result-only baseline semantics with accepted/previous/candidate/historical compatibility, store reusable performance facts, make profiler escalation decision-driven, adapt correctness repetition, and prove post-inference GPU quiescence before uncontaminated measurements.
 - `CORE4-10` | kind: workstream | status: done | parent: CORE4-00 | objective: Create the fourth skill with a tiny model-facing surface, deterministic delegation eligibility, todo child authorization, ctxpp context assembly, isolated read-only source snapshots, compact result normalization, NEEDS_CODEX escalation, local telemetry, and fake-backend tests.

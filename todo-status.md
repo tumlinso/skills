@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `95`
+Project revision: `100`
 
 ## Workstreams
 - `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
@@ -16,7 +16,7 @@ Project revision: `95`
 - `CORE4-13` | status: planned | execution: ready | next: Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.
 - `CORE4-07` | status: done | execution: closed | next: Add private bounded telemetry and a fixture evaluation that compares packet layouts at fixed budgets. Do not optimize solely for token reduction.
 - `CORE4-11` | status: done | execution: closed | next: Implement adapters against current documented protocols and test them with fakes. Probe installed binaries but do not install or download anything.
-- `CORE4-12` | status: planned | execution: ready | next: Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.
+- `CORE4-12` | status: done | execution: closed | next: Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.
 - `CORE4-05` | status: done | execution: closed | next: Wire child results into service/context/reporting and publish the stable child-execution contract. Keep normal continue output unchanged when no child result is ready.
 - `CORE4-09` | status: planned | execution: ready | next: Implement new fact and compatibility modules, preserve raw evidence, and update controller classification without changing existing commands.
 - `CORE4-10` | status: done | execution: closed | next: Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.

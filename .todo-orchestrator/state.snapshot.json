@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T10:27:06Z",
+  "generated_at": "2026-08-22T10:34:52Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 95,
+  "project_revision": 100,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,12 +105,12 @@
     ],
     "barriers": [
       {
-        "explanation": "3/6 requirements satisfied; target=6",
+        "explanation": "4/6 requirements satisfied; target=6",
         "id": "CORE4-LANES-READY",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 95,
+        "revision": 100,
         "state": "closed",
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
@@ -399,10 +399,10 @@
       {
         "id": "CORE4-LOCAL-WRITE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T10:34:48Z",
+        "revision": 99,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-12",
         "title": "Isolated writable delegation and guarded acceptance contract frozen"
       },
@@ -1443,6 +1443,56 @@
         "revision": 95,
         "seq": 95,
         "timestamp": "2026-08-22T10:27:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-12",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 96,
+        "seq": 96,
+        "timestamp": "2026-08-22T10:29:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-12-WRITABLE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-12-WRITABLE\"}",
+        "revision": 97,
+        "seq": 97,
+        "timestamp": "2026-08-22T10:34:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-12-WRITABLE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"fe7f385e-6094-4a7c-9fb4-1ebf67b0bf66\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 98,
+        "seq": 98,
+        "timestamp": "2026-08-22T10:34:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-LOCAL-WRITE-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 99,
+        "seq": 99,
+        "timestamp": "2026-08-22T10:34:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-12",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 100,
+        "seq": 100,
+        "timestamp": "2026-08-22T10:34:52Z"
       }
     ],
     "evidence": [
@@ -1731,6 +1781,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/f01f6654-27da-438c-88de-742d0a0f2e12",
         "revision": 34,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:34:40Z",
+        "gate_id": "CORE4-12-WRITABLE",
+        "id": "fe7f385e-6094-4a7c-9fb4-1ebf67b0bf66",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_writable_work.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b771d5fde1b766e16c1de299b0173e99cca53eb69ceaf5e6dadf6c2a4468cf56\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_writable_work.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1500}, \"diff_fingerprint\": \"b1c48f7b1232b354d43a8d1299a80b4909b23f862aa91e2bbf0bacada818478b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/acceptance.py\", \"local-coding-worker/local_worker/verification.py\", \"local-coding-worker/local_worker/workspace.py\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/tests/test_writable_work.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-12.md\"], \"files\": [{\"path\": \"local-coding-worker/local_worker/acceptance.py\", \"sha256\": \"e93a76bd5aa41f0c4f5dc6021502b23587f428f82f470a31d91bcbad6864f98b\"}, {\"path\": \"local-coding-worker/local_worker/verification.py\", \"sha256\": \"35567ca55ffed8edcaa4117610579492b98b815f259d47f7995077d210eb55e9\"}, {\"path\": \"local-coding-worker/local_worker/workspace.py\", \"sha256\": \"a623627a42274865ffc5ecc8175cda85965dbfd78e75d88fcf2c9f6b1c9c89d5\"}, {\"path\": \"local-coding-worker/tests/test_writable_work.py\", \"sha256\": \"958764f4515a7a57f9e539880a0e9174ddb2fcaa7db0111bdbc984c4210bc8b1\"}], \"interfaces\": [], \"recorded_git_head\": \"bcb7f56fc7753c650bfade33e4937f6892ab14bd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 97}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/fe7f385e-6094-4a7c-9fb4-1ebf67b0bf66",
+        "revision": 98,
+        "status": "passed"
       }
     ],
     "gates": [
@@ -1972,14 +2035,14 @@
         "checkpoint_id": "CORE4-LOCAL-WRITE-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_writable_work.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/local_worker/workspace.py\", \"local-coding-worker/local_worker/acceptance.py\", \"local-coding-worker/local_worker/verification.py\", \"local-coding-worker/tests/test_writable_work.py\"], \"timeout\": 1500}",
         "id": "CORE4-12-WRITABLE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "b771d5fde1b766e16c1de299b0173e99cca53eb69ceaf5e6dadf6c2a4468cf56",
+        "last_run_at": "2026-08-22T10:34:40Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 98,
+        "status": "passed",
         "task_id": "CORE4-12",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
@@ -2152,6 +2215,16 @@
       }
     ],
     "handoffs": [
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T10:34:52Z",
+        "id": "012a8c41-a676-44a1-8dac-495fae67a368",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/acceptance.py\", \"local-coding-worker/local_worker/verification.py\", \"local-coding-worker/local_worker/workspace.py\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/tests/test_writable_work.py\"], \"checkpoints\": [{\"id\": \"CORE4-LOCAL-WRITE-FROZEN\", \"reached_at\": \"2026-08-22T10:34:48Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-12-WRITABLE\", \"last_run_at\": \"2026-08-22T10:34:40Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 89 +++++++++++++++++++++++++++-------\\n todo-status.md                         |  4 +-\\n todos.md                               |  4 +-\\n todos/core4-12.md                      |  6 +--\\n 4 files changed, 78 insertions(+), 25 deletions(-)\", \"git_head\": \"bcb7f56fc7753c650bfade33e4937f6892ab14bd\", \"interfaces\": [{\"content_hash\": \"158d8c37c17a55a4304a6a578e5b791639c1e21cecab0c15d99be8d5586c7872\", \"id\": \"local-worker-write-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-12\"}",
+        "revision": 100,
+        "task_id": "CORE4-12"
+      },
       {
         "claim_id": null,
         "created_at": "2026-08-22T10:09:56Z",
@@ -2579,14 +2652,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "158d8c37c17a55a4304a6a578e5b791639c1e21cecab0c15d99be8d5586c7872",
         "contract_paths_json": "[\"local-coding-worker/references/writable-work-contract.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T10:34:48Z",
         "id": "local-worker-write-v1",
         "owner_task_id": "CORE4-12",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 99,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -5146,14 +5219,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CORE4-00",
         "priority": 25,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 100,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"worktree\", \"acceptance\"]",
         "title": "Implement isolated writable worktrees and guarded acceptance",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:34:52Z",
+        "version": 5
       },
       {
         "attention_reason": null,
