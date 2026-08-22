@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T11:49:53Z",
+  "generated_at": "2026-08-22T11:56:30Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 151,
+  "project_revision": 162,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2003,6 +2003,116 @@
         "revision": 151,
         "seq": 151,
         "timestamp": "2026-08-22T11:49:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 152,
+        "seq": 152,
+        "timestamp": "2026-08-22T11:51:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 153,
+        "seq": 153,
+        "timestamp": "2026-08-22T11:56:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 154,
+        "seq": 154,
+        "timestamp": "2026-08-22T11:56:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 155,
+        "seq": 155,
+        "timestamp": "2026-08-22T11:56:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 156,
+        "seq": 156,
+        "timestamp": "2026-08-22T11:56:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 157,
+        "seq": 157,
+        "timestamp": "2026-08-22T11:56:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16-HOST-MANIFEST",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-16-HOST-MANIFEST\"}",
+        "revision": 158,
+        "seq": 158,
+        "timestamp": "2026-08-22T11:56:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16-HOST-MANIFEST",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"10ef5428-a5ef-45c1-80ed-ad85ba4a5e0c\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 159,
+        "seq": 159,
+        "timestamp": "2026-08-22T11:56:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16-ACQUISITION-REQUEST",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-16-ACQUISITION-REQUEST\"}",
+        "revision": 160,
+        "seq": 160,
+        "timestamp": "2026-08-22T11:56:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16-ACQUISITION-REQUEST",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6a2e675c-c0b5-4005-9ec0-df96b42ef038\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 161,
+        "seq": 161,
+        "timestamp": "2026-08-22T11:56:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-16",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 162,
+        "seq": 162,
+        "timestamp": "2026-08-22T11:56:30Z"
       }
     ],
     "evidence": [
@@ -2018,6 +2128,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/08978b35-af4a-434d-ac93-0501b78b3e8d",
         "revision": 6,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:56:22Z",
+        "gate_id": "CORE4-16-HOST-MANIFEST",
+        "id": "10ef5428-a5ef-45c1-80ed-ad85ba4a5e0c",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_host_manifest.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"f4dd0270ddd32391e7ce9ace56bda49f2cf86b055988c2f86588706f4cf334e2\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_host_manifest.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"5c9387ee7cf034f9306994371514e66e4870efa520926c05ece194c43626f643\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/host-profile.example.toml\", \"local-coding-worker/evals/acquisition_request.json\", \"local-coding-worker/scripts/inspect_host.py\", \"local-coding-worker/tests/test_host_manifest.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-16.md\"], \"files\": [{\"path\": \"local-coding-worker/scripts/inspect_host.py\", \"sha256\": \"77a654d9fbc03724a7914024c845f3617cbc6c252c6b683fd6a0cd5064c10417\"}, {\"path\": \"local-coding-worker/tests/test_host_manifest.py\", \"sha256\": \"f01bffac681b6fea02a3e637850d357cdf87a4fa40b517eb1e3eb72a88bf6565\"}], \"interfaces\": [], \"recorded_git_head\": \"cfe83808b8858690e949b372e38c017847404040\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 158}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/10ef5428-a5ef-45c1-80ed-ad85ba4a5e0c",
+        "revision": 159,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -2173,6 +2296,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_core4_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2fc8947717366f6ebf9564068246a4e4bdaa75529eaf3e716dcc0e16e7572e65\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_core4_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 2400}, \"diff_fingerprint\": \"9c6521b6b43eabad5ca60436e419a69c26587dcb7639264e2c1213463b41257f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"core4-tests/integration/scenarios.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-14.md\"], \"files\": [{\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"659190eeca26199d127a99f63ff6ecae75f8e888\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 125}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/67eda4e2-ef05-4a8b-837a-a9585b88794a",
         "revision": 126,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:56:22Z",
+        "gate_id": "CORE4-16-ACQUISITION-REQUEST",
+        "id": "6a2e675c-c0b5-4005-9ec0-df96b42ef038",
+        "kind": "file_exists",
+        "metadata_json": "{\"exists\": true, \"input_fingerprint\": \"b85c3ebd7a3cffb2137a70de5859262c7aff090283c6827ae3a3fef36a9ec7ba\", \"inputs\": {\"command_contract\": {\"path\": \"local-coding-worker/evals/acquisition_request.json\"}, \"diff_fingerprint\": \"5c9387ee7cf034f9306994371514e66e4870efa520926c05ece194c43626f643\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/host-profile.example.toml\", \"local-coding-worker/evals/acquisition_request.json\", \"local-coding-worker/scripts/inspect_host.py\", \"local-coding-worker/tests/test_host_manifest.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-16.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"cfe83808b8858690e949b372e38c017847404040\"}, \"locks\": [], \"path\": \"local-coding-worker/evals/acquisition_request.json\", \"resources\": [], \"started_revision\": 160}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6a2e675c-c0b5-4005-9ec0-df96b42ef038",
+        "revision": 161,
         "status": "passed"
       },
       {
@@ -2792,27 +2928,27 @@
         "checkpoint_id": null,
         "config_json": "{\"path\": \"local-coding-worker/evals/acquisition_request.json\"}",
         "id": "CORE4-16-ACQUISITION-REQUEST",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "b85c3ebd7a3cffb2137a70de5859262c7aff090283c6827ae3a3fef36a9ec7ba",
+        "last_run_at": "2026-08-22T11:56:22Z",
         "required": 1,
-        "revision": 140,
-        "status": "pending",
+        "revision": 161,
+        "status": "passed",
         "task_id": "CORE4-16",
         "type": "file_exists",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_host_manifest.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/scripts/inspect_host.py\", \"local-coding-worker/tests/test_host_manifest.py\"], \"timeout\": 900}",
         "id": "CORE4-16-HOST-MANIFEST",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "f4dd0270ddd32391e7ce9ace56bda49f2cf86b055988c2f86588706f4cf334e2",
+        "last_run_at": "2026-08-22T11:56:22Z",
         "required": 1,
-        "revision": 140,
-        "status": "pending",
+        "revision": 159,
+        "status": "passed",
         "task_id": "CORE4-16",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-HOST-VALIDATED",
@@ -2900,6 +3036,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"core4-tests/software-ready/report.json\", \"cuda/assets/cuda-markdown-manifest.json\", \"scripts/core4_validate.py\"], \"checkpoints\": [{\"id\": \"CORE4-SOFTWARE-READY\", \"reached_at\": \"2026-08-22T11:49:53Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-15-SOFTWARE-READY\", \"last_run_at\": \"2026-08-22T11:49:44Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/core4.plan.json      |  21 +-\\n .todo-orchestrator/state.snapshot.json  | 529 +++++++++++++++++++++-----------\\n core4-tests/software-ready/report.json  |  20 +-\\n cuda/assets/cuda-markdown-manifest.json |  10 +\\n scripts/core4_validate.py               |   2 +-\\n todo-status.md                          |   4 +-\\n todos.md                                |   4 +-\\n todos/core4-00.md                       |   2 +-\\n todos/core4-01.md                       |   2 +-\\n todos/core4-02.md                       |   2 +-\\n todos/core4-02a.md                      |   2 +-\\n todos/core4-03.md                       |   2 +-\\n todos/core4-04.md                       |   2 +-\\n todos/core4-05.md                       |   2 +-\\n todos/core4-06.md                       |   2 +-\\n todos/core4-07.md                       |   2 +-\\n todos/core4-08.md                       |   2 +-\\n todos/core4-09.md                       |   2 +-\\n todos/core4-10.md                       |   2 +-\\n todos/core4-11.md                       |   2 +-\\n todos/core4-12.md                       |   2 +-\\n todos/core4-13.md                       |   2 +-\\n todos/core4-14.md                       |   2 +-\\n todos/core4-15.md                       |   7 +-\\n todos/core4-16.md                       |   2 +-\\n todos/core4-17.md                       |   2 +-\\n todos/core4-18.md                       |   2 +-\\n todos/core4-19.md                       |   2 +-\\n 28 files changed, 409 insertions(+), 228 deletions(-)\", \"git_head\": \"d02487e93c9c851a69585ae79db214047e8c1b33\", \"interfaces\": [], \"note\": \"Regenerated the CUDA Markdown corpus manifest with benchmark-registry and performance-facts, preserved compatibility by excluding the generated inventory from stale byte hashing while retaining full corpus verification, passed the focused CUDA guidance test and all four software-ready suites, and froze CORE4-SOFTWARE-READY without external model assets.\", \"resources\": [], \"task_id\": \"CORE4-15\"}",
         "revision": 151,
         "task_id": "CORE4-15"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T11:56:30Z",
+        "id": "177c73f3-e598-4f5c-98da-8f29617b2b3c",
+        "kind": "complete",
+        "note": "Inspected the live host without mutation: four V100-SXM2-16GB GPUs at sm_70, CUDA 12.9.86, runtime-discovered NVLink/NUMA topology, 64 GiB RAM, about 63 GiB filesystem headroom, CUDA-enabled llama.cpp and Codex CLI available, Qwen Code and usable candidate weights absent. Added the read-only host inspector, focused tests, external host profile, and exact four-candidate acquisition request with size bands, destinations, checksum requirements, and harness prerequisites. No model, harness, package, compiler, or weight was downloaded or installed.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/host-profile.example.toml\", \"local-coding-worker/evals/acquisition_request.json\", \"local-coding-worker/scripts/inspect_host.py\", \"local-coding-worker/tests/test_host_manifest.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-16-HOST-MANIFEST\", \"last_run_at\": \"2026-08-22T11:56:22Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-16-ACQUISITION-REQUEST\", \"last_run_at\": \"2026-08-22T11:56:22Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 158 +++++++++++++++++++++++++++++----\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-16.md                      |   6 +-\\n 4 files changed, 149 insertions(+), 23 deletions(-)\", \"git_head\": \"cfe83808b8858690e949b372e38c017847404040\", \"interfaces\": [], \"note\": \"Inspected the live host without mutation: four V100-SXM2-16GB GPUs at sm_70, CUDA 12.9.86, runtime-discovered NVLink/NUMA topology, 64 GiB RAM, about 63 GiB filesystem headroom, CUDA-enabled llama.cpp and Codex CLI available, Qwen Code and usable candidate weights absent. Added the read-only host inspector, focused tests, external host profile, and exact four-candidate acquisition request with size bands, destinations, checksum requirements, and harness prerequisites. No model, harness, package, compiler, or weight was downloaded or installed.\", \"resources\": [], \"task_id\": \"CORE4-16\"}",
+        "revision": 162,
+        "task_id": "CORE4-16"
       },
       {
         "claim_id": null,
@@ -6038,14 +6184,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 45,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"evaluated_not_promoted\", \"failed\"]}",
-        "revision": 140,
-        "status": "planned",
+        "revision": 162,
+        "status": "done",
         "tags_json": "[\"host\", \"assets\", \"human-handoff\"]",
         "title": "Prepare exact host acquisition and bake-off manifest",
-        "updated_at": "2026-08-22T11:45:23Z",
-        "version": 7
+        "updated_at": "2026-08-22T11:56:30Z",
+        "version": 9
       },
       {
         "attention_reason": null,

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-16: Prepare exact host acquisition and bake-off manifest
 
-Task revision: `140`; current project revision is in `todo-status.md`.
+Task revision: `162`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inspect the actual machine, installed CUDA 12.x toolchains, llama.cpp/Qwen Code/Codex CLI availability, free storage, GPU topology, RAM, and existing model cache; emit the smallest exact user action needed for real model evaluation without downloading or installing anything.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Generate an acquisition request containing candidate model files or repositories, quantizations, expected sizes, destinations, checksums when available, and harness prerequisites. If assets are absent, finish this task, then halt and ask the user once.

@@ -1,0 +1,20 @@
+# Copy outside the repository and replace the model root after acquisition.
+[host]
+model_root = "/mnt/core4-models"
+cuda_nvcc = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc"
+cuda_architecture = "sm_70"
+
+[discovery]
+gpu_selector = "gpu:any"
+topology_command = ["nvidia-smi", "topo", "-m"]
+hard_coded_gpu_bundles = false
+
+[adapters]
+llama_server = "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+codex = "/usr/local/bin/codex"
+qwen = "qwen"
+
+[policy]
+weights_must_be_outside_repository = true
+recursive_local_agents = false
+idle_model_residency_priority = 5
