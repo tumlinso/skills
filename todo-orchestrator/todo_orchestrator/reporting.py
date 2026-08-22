@@ -6,8 +6,93 @@ import json
 import sqlite3
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from .readiness import explain_task, ready_tasks
+
+
+def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[str, object]]:
+    """Return compact terminal child results without granting them task authority."""
+    rows = conn.execute(
+        "SELECT id,state,objective,gates_json,result_json,completed_at FROM child_executions "
+        "WHERE task_id=? AND state IN ('succeeded','needs_codex','failed') ORDER BY completed_at DESC,id DESC LIMIT 8",
+        (task_id,),
+    )
+    valid_gates = {str(row["id"]) for row in conn.execute("SELECT id FROM gates WHERE task_id=? AND valid=1", (task_id,))}
+    task_evidence: list[tuple[sqlite3.Row, dict[str, Any]]] = []
+    for evidence in conn.execute(
+        "SELECT e.* FROM evidence e JOIN gates g ON g.id=e.gate_id WHERE g.task_id=? ORDER BY e.created_at,e.id",
+        (task_id,),
+    ):
+        try:
+            task_evidence.append((evidence, json.loads(evidence["metadata_json"] or "{}")))
+        except json.JSONDecodeError:
+            continue
+    results: list[dict[str, object]] = []
+    for row in rows:
+        raw_result = json.loads(row["result_json"] or "{}")
+        changed_paths = [str(path) for path in raw_result.get("changed_paths", [])]
+        visible_status = str(row["state"])
+        if visible_status == "succeeded":
+            visible_status = "completed" if changed_paths else "no_change"
+        candidates: list[dict[str, object]] = []
+        accepted_evidence: set[str] = set()
+        for evidence, metadata in task_evidence:
+            if metadata.get("accepted_child_execution_id") == row["id"] and metadata.get("accepted_evidence_id"):
+                accepted_evidence.add(str(metadata["accepted_evidence_id"]))
+            if metadata.get("child_execution_id") != row["id"] or not metadata.get("candidate_evidence"):
+                continue
+            candidates.append({
+                "evidence_id": evidence["id"],
+                "gate_id": evidence["gate_id"],
+                "status": evidence["status"],
+                "accepted": False,
+                "artifact": {
+                    "schema_version": 1,
+                    "artifact_id": evidence["id"],
+                    "kind": "gate-evidence",
+                    "path": evidence["path"],
+                    "content_hash": None,
+                    "complete": True,
+                },
+            })
+        for candidate in candidates:
+            candidate["accepted"] = candidate["evidence_id"] in accepted_evidence
+        pending = sorted({
+            str(candidate["gate_id"])
+            for candidate in candidates
+            if candidate["status"] in {"passed", "evaluated_not_promoted"}
+            and not candidate["accepted"]
+            and candidate["gate_id"] not in valid_gates
+        })
+        authorized = sorted(str(gate) for gate in json.loads(row["gates_json"] or "[]"))
+        if visible_status in {"needs_codex", "failed"}:
+            acceptance_state = "not_applicable"
+        elif pending:
+            acceptance_state = "ready"
+        elif candidates and all(candidate["accepted"] for candidate in candidates):
+            acceptance_state = "accepted"
+        elif candidates:
+            acceptance_state = "superseded"
+        else:
+            acceptance_state = "no_evidence"
+        results.append({
+            "format": "TODO-CHILD-RESULT/1",
+            "schema_version": 1,
+            "child_execution_id": row["id"],
+            "parent_task_id": task_id,
+            "status": visible_status,
+            "objective": str(row["objective"])[:500],
+            "summary": str(raw_result.get("summary", ""))[:500],
+            "changed_paths": changed_paths[:64],
+            "changed_paths_omitted": max(0, len(changed_paths) - 64),
+            "authorized_gates": authorized,
+            "evidence": candidates[:32],
+            "evidence_omitted": max(0, len(candidates) - 32),
+            "acceptance": {"state": acceptance_state, "pending_gates": pending},
+            "completed_at": row["completed_at"],
+        })
+    return results
 
 
 def project_status(conn: sqlite3.Connection) -> dict[str, object]:

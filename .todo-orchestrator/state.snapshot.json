@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T09:11:36Z",
+  "generated_at": "2026-08-22T10:09:56Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 38,
+  "project_revision": 83,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,12 +105,12 @@
     ],
     "barriers": [
       {
-        "explanation": "0/6 requirements satisfied; target=6",
+        "explanation": "2/6 requirements satisfied; target=6",
         "id": "CORE4-LANES-READY",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 23,
+        "revision": 83,
         "state": "closed",
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
@@ -319,20 +319,20 @@
       {
         "id": "CORE4-CHILD-CORE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T09:24:09Z",
+        "revision": 45,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-04",
         "title": "Restricted child lifecycle and privilege model proven"
       },
       {
         "id": "CORE4-CTXPP-PACKET-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T09:50:27Z",
+        "revision": 61,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-06",
         "title": "Task-oriented context packet contract frozen"
       },
@@ -459,10 +459,10 @@
       {
         "id": "CORE4-TODO-DELEGATION-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T10:03:44Z",
+        "revision": 78,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-05",
         "title": "Todo child execution and acceptance contract frozen"
       }
@@ -873,6 +873,456 @@
         "revision": 38,
         "seq": 38,
         "timestamp": "2026-08-22T09:11:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-04\"}",
+        "revision": 39,
+        "seq": 39,
+        "timestamp": "2026-08-22T09:16:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 40,
+        "seq": 40,
+        "timestamp": "2026-08-22T09:17:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 41,
+        "seq": 41,
+        "timestamp": "2026-08-22T09:23:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 42,
+        "seq": 42,
+        "timestamp": "2026-08-22T09:23:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04-CHILD-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-04-CHILD-CORE\"}",
+        "revision": 43,
+        "seq": 43,
+        "timestamp": "2026-08-22T09:24:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04-CHILD-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a44db723-4115-447a-9437-b9d809a92a7b\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 44,
+        "seq": 44,
+        "timestamp": "2026-08-22T09:24:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-CHILD-CORE-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 45,
+        "seq": 45,
+        "timestamp": "2026-08-22T09:24:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-04",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 46,
+        "seq": 46,
+        "timestamp": "2026-08-22T09:24:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-06\"}",
+        "revision": 47,
+        "seq": 47,
+        "timestamp": "2026-08-22T09:39:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 48,
+        "seq": 48,
+        "timestamp": "2026-08-22T09:40:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 49,
+        "seq": 49,
+        "timestamp": "2026-08-22T09:45:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 50,
+        "seq": 50,
+        "timestamp": "2026-08-22T09:45:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 51,
+        "seq": 51,
+        "timestamp": "2026-08-22T09:48:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-06-PACKET\"}",
+        "revision": 52,
+        "seq": 52,
+        "timestamp": "2026-08-22T09:48:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"861d2dc1-80e1-468e-ab33-da3883992b81\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 53,
+        "seq": 53,
+        "timestamp": "2026-08-22T09:48:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-SLICE-TRUTH",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-06-SLICE-TRUTH\"}",
+        "revision": 54,
+        "seq": 54,
+        "timestamp": "2026-08-22T09:48:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-SLICE-TRUTH",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d72d6d45-e9cf-4542-92a4-986403752fc5\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 55,
+        "seq": 55,
+        "timestamp": "2026-08-22T09:48:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-06-PACKET\"}",
+        "revision": 56,
+        "seq": 56,
+        "timestamp": "2026-08-22T09:49:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6b986c5d-0f30-4289-abc2-9e5532301d6b\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 57,
+        "seq": 57,
+        "timestamp": "2026-08-22T09:50:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-SLICE-TRUTH",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-06-SLICE-TRUTH\"}",
+        "revision": 58,
+        "seq": 58,
+        "timestamp": "2026-08-22T09:50:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06-SLICE-TRUTH",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"88a99213-9e49-4177-ab1e-64b438606e5a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 59,
+        "seq": 59,
+        "timestamp": "2026-08-22T09:50:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 60,
+        "seq": 60,
+        "timestamp": "2026-08-22T09:50:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-CTXPP-PACKET-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 61,
+        "seq": 61,
+        "timestamp": "2026-08-22T09:50:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-06",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 62,
+        "seq": 62,
+        "timestamp": "2026-08-22T09:50:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-05\"}",
+        "revision": 63,
+        "seq": 63,
+        "timestamp": "2026-08-22T09:51:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 64,
+        "seq": 64,
+        "timestamp": "2026-08-22T09:52:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 65,
+        "seq": 65,
+        "timestamp": "2026-08-22T10:01:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-CHILD-INTEGRATION\"}",
+        "revision": 66,
+        "seq": 66,
+        "timestamp": "2026-08-22T10:01:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e77198aa-69b3-467a-b2ba-aedb55334c47\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 67,
+        "seq": 67,
+        "timestamp": "2026-08-22T10:01:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-TODO-REGRESSION\"}",
+        "revision": 68,
+        "seq": 68,
+        "timestamp": "2026-08-22T10:01:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a543003e-fafe-40b6-8682-38f5628d47c6\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 69,
+        "seq": 69,
+        "timestamp": "2026-08-22T10:01:59Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-CHILD-INTEGRATION\"}",
+        "revision": 70,
+        "seq": 70,
+        "timestamp": "2026-08-22T10:02:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"2b687595-1223-41fd-a4e4-97530007480a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 71,
+        "seq": 71,
+        "timestamp": "2026-08-22T10:02:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-TODO-REGRESSION\"}",
+        "revision": 72,
+        "seq": 72,
+        "timestamp": "2026-08-22T10:02:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"bf437feb-2ee4-4b8e-b533-4901786b25fc\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 73,
+        "seq": 73,
+        "timestamp": "2026-08-22T10:02:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-CHILD-INTEGRATION\"}",
+        "revision": 74,
+        "seq": 74,
+        "timestamp": "2026-08-22T10:03:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-CHILD-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5daa28fb-bebd-4239-a7e8-15435b1486ed\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 75,
+        "seq": 75,
+        "timestamp": "2026-08-22T10:03:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-05-TODO-REGRESSION\"}",
+        "revision": 76,
+        "seq": 76,
+        "timestamp": "2026-08-22T10:03:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05-TODO-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6ebea5e0-0a5d-40ab-b3e1-8813765b8189\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 77,
+        "seq": 77,
+        "timestamp": "2026-08-22T10:03:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-TODO-DELEGATION-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 78,
+        "seq": 78,
+        "timestamp": "2026-08-22T10:03:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-05",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 79,
+        "seq": 79,
+        "timestamp": "2026-08-22T10:03:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-07",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-07\"}",
+        "revision": 80,
+        "seq": 80,
+        "timestamp": "2026-08-22T10:05:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-07-PACKET-ECONOMICS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-07-PACKET-ECONOMICS\"}",
+        "revision": 81,
+        "seq": 81,
+        "timestamp": "2026-08-22T10:09:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-07-PACKET-ECONOMICS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d561a2bd-620b-4d24-85bf-9e5bd438ac02\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 82,
+        "seq": 82,
+        "timestamp": "2026-08-22T10:09:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-07",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 83,
+        "seq": 83,
+        "timestamp": "2026-08-22T10:09:56Z"
       }
     ],
     "evidence": [
@@ -893,6 +1343,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T10:02:36Z",
+        "gate_id": "CORE4-05-CHILD-INTEGRATION",
+        "id": "2b687595-1223-41fd-a4e4-97530007480a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2dfad395d8a7f06a0a8e1b8753be672b7b0168569495a4cb5dcc6f0492eb67da\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_integration.py\", \"sha256\": \"06668147fabe7ea52240387cb43d62f01eb549223866e5d1d93088210287a203\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"sha256\": \"f4bb6cf86eab47da66daef63aa68a38c3de9bf44ad08e608e3ae17a215a1e85b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"be23045c2aed1b413584c64885d0b2f913deff5cfc2b1a2a8e2e7d3842b8fb50\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 70}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/2b687595-1223-41fd-a4e4-97530007480a",
+        "revision": 71,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:52:47Z",
         "gate_id": "CORE4-02-CTXPP-BASELINE",
         "id": "387e49d4-fbca-4d25-882e-76e7b3b0832f",
@@ -900,6 +1363,32 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 3600}, \"diff_fingerprint\": \"501097749229e35d71dbaeb65f7c530d15b1352a9bac1ab97a347241e8613096\", \"dirty_paths\": [\".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 19}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/387e49d4-fbca-4d25-882e-76e7b3b0832f",
         "revision": 20,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:03:34Z",
+        "gate_id": "CORE4-05-CHILD-INTEGRATION",
+        "id": "5daa28fb-bebd-4239-a7e8-15435b1486ed",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"760eda28e33c949d0d5d7d42b034e71395aade225534393782f8f067b3d3a2fe\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_integration.py\", \"sha256\": \"acd47a3fdce4457908080fe44cb789a42e391484ed85372461e9f057557ab905\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"sha256\": \"f4bb6cf86eab47da66daef63aa68a38c3de9bf44ad08e608e3ae17a215a1e85b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"2a21cf9dfd57f553bfee11be107aa02f5a22dbe633fe5e6fc80e768191711acc\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 74}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/5daa28fb-bebd-4239-a7e8-15435b1486ed",
+        "revision": 75,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:50:11Z",
+        "gate_id": "CORE4-06-PACKET",
+        "id": "6b986c5d-0f30-4289-abc2-9e5532301d6b",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"90e418b932cee7c1d8146c4fa9bebfaf8fc20e56ae9a78d7ff489358bfac7e7f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp\", \"sha256\": \"1edb419a45346229e1bab62ac539bdcd17e95a23646603899fbd643afe5828bc\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"sha256\": \"f7594982972bb402065b949218c87676b4aa57db59f53f32cde27633802b326b\"}, {\"path\": \"cpp-context-compiler/tests/test_context_packet.py\", \"sha256\": \"e509e1a46cd3f1ced9e3ed07b9cf3ece92e1ba8609a3736be0a0fff79eb1e765\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 56}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6b986c5d-0f30-4289-abc2-9e5532301d6b",
+        "revision": 57,
         "status": "passed"
       },
       {
@@ -919,6 +1408,45 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T10:03:36Z",
+        "gate_id": "CORE4-05-TODO-REGRESSION",
+        "id": "6ebea5e0-0a5d-40ab-b3e1-8813765b8189",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50cff52d1b8d7f3a12ac95cbdd59243e8f8d1b0f6d82100c630457af8e2c3e45\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"2a21cf9dfd57f553bfee11be107aa02f5a22dbe633fe5e6fc80e768191711acc\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 76}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6ebea5e0-0a5d-40ab-b3e1-8813765b8189",
+        "revision": 77,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:48:54Z",
+        "gate_id": "CORE4-06-PACKET",
+        "id": "861d2dc1-80e1-468e-ab33-da3883992b81",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"90e418b932cee7c1d8146c4fa9bebfaf8fc20e56ae9a78d7ff489358bfac7e7f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp\", \"sha256\": \"1edb419a45346229e1bab62ac539bdcd17e95a23646603899fbd643afe5828bc\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"sha256\": \"9260ec1309606650f746cb1b7244495fe9300a105d5c844f09b0313f340233cb\"}, {\"path\": \"cpp-context-compiler/tests/test_context_packet.py\", \"sha256\": \"8ea284df9c310d7ec0cb503ce31ccd564c3176a6245622183b2341e3b30af840\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 52}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/861d2dc1-80e1-468e-ab33-da3883992b81",
+        "revision": 53,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:50:12Z",
+        "gate_id": "CORE4-06-SLICE-TRUTH",
+        "id": "88a99213-9e49-4177-ab1e-64b438606e5a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_slice_truth.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_slice_truth.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"90e418b932cee7c1d8146c4fa9bebfaf8fc20e56ae9a78d7ff489358bfac7e7f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp\", \"sha256\": \"1edb419a45346229e1bab62ac539bdcd17e95a23646603899fbd643afe5828bc\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 58}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/88a99213-9e49-4177-ab1e-64b438606e5a",
+        "revision": 59,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:51:01Z",
         "gate_id": "CORE4-02A-CTXPP-FOCUSED",
         "id": "8e98500b-2ebb-493f-a769-20a5d3604034",
@@ -926,6 +1454,32 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"test_integration.IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"test_integration.IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh\"], \"cwd\": \"cpp-context-compiler/tests\", \"timeout\": 300}, \"diff_fingerprint\": \"501097749229e35d71dbaeb65f7c530d15b1352a9bac1ab97a347241e8613096\", \"dirty_paths\": [\".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp_fast.py\", \"sha256\": \"19dac7e03b033103c482da8c01ddf719e251f922c7941f41c40c3c0aeb3d7abf\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}, {\"path\": \"cpp-context-compiler/tests/test_integration.py\", \"sha256\": \"577e3928f2f857b8dc0e86bc06934bfb690a19edb537eba8db4ee3112790b127\"}], \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 17}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/8e98500b-2ebb-493f-a769-20a5d3604034",
         "revision": 18,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:24:04Z",
+        "gate_id": "CORE4-04-CHILD-CORE",
+        "id": "a44db723-4115-447a-9437-b9d809a92a7b",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_core.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_core.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"fdad932a8323bcdf98cbbe8a3c449c2fb0188508120befddea002757b14ba5d6\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_core.py\", \"sha256\": \"cbea32eb1800cf8c1371ae0c8a230ef3f4f2097dd62c4c666888650fb9b70653\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"sha256\": \"f4bb6cf86eab47da66daef63aa68a38c3de9bf44ad08e608e3ae17a215a1e85b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/migrations.py\", \"sha256\": \"4362eae621cd376714c5d13ca4633b2f9fcfed1650126bb4fff46a742266afb6\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 43}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/a44db723-4115-447a-9437-b9d809a92a7b",
+        "revision": 44,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:01:59Z",
+        "gate_id": "CORE4-05-TODO-REGRESSION",
+        "id": "a543003e-fafe-40b6-8682-38f5628d47c6",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5782268c0296150d7504a84325d89da5034222afe9982b58a5ec14e4e9f0ea32\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"be23045c2aed1b413584c64885d0b2f913deff5cfc2b1a2a8e2e7d3842b8fb50\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 68}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/a543003e-fafe-40b6-8682-38f5628d47c6",
+        "revision": 69,
         "status": "passed"
       },
       {
@@ -945,6 +1499,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T10:02:38Z",
+        "gate_id": "CORE4-05-TODO-REGRESSION",
+        "id": "bf437feb-2ee4-4b8e-b533-4901786b25fc",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"5782268c0296150d7504a84325d89da5034222afe9982b58a5ec14e4e9f0ea32\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"be23045c2aed1b413584c64885d0b2f913deff5cfc2b1a2a8e2e7d3842b8fb50\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 72}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/bf437feb-2ee4-4b8e-b533-4901786b25fc",
+        "revision": 73,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:38:37Z",
         "gate_id": "CORE4-02-CUDA-BASELINE",
         "id": "c87b3e67-d59a-47ef-a069-5bd9e660cb22",
@@ -952,6 +1519,45 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"e3758a6da29c328887db629b07fc881264cadd3b79e074c26d477042735f49b6\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cuda\", \"sha256\": \"missing\"}], \"git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\", \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 7}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/c87b3e67-d59a-47ef-a069-5bd9e660cb22",
         "revision": 8,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:09:50Z",
+        "gate_id": "CORE4-07-PACKET-ECONOMICS",
+        "id": "d561a2bd-620b-4d24-85bf-9e5bd438ac02",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet_economics.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"3d2b2c7bc46a89bfe0e78195f7a7c9e4b3c40ad67b6a50b947dfd7ba8f5005d4\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet_economics.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"31de40b7b69ca13a21482791be5ceda3bc68cd0f03dac7d87ccc7dd18615621b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/evals/README.md\", \"cpp-context-compiler/evals/run_packet_economics.py\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/expected/context-packet-economics.json\", \"cpp-context-compiler/tests/test_context_packet.py\", \"cpp-context-compiler/tests/test_context_packet_economics.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"sha256\": \"f7594982972bb402065b949218c87676b4aa57db59f53f32cde27633802b326b\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"sha256\": \"05b76abb6e6dbeedf572ff602f055acc211a71a417372cda9519ca03bf725c3f\"}, {\"path\": \"cpp-context-compiler/tests/test_context_packet_economics.py\", \"sha256\": \"66ab4fad32283c8ea66ac56ea33f768653171e87e111d915094cfffe78509039\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 81}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/d561a2bd-620b-4d24-85bf-9e5bd438ac02",
+        "revision": 82,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:48:55Z",
+        "gate_id": "CORE4-06-SLICE-TRUTH",
+        "id": "d72d6d45-e9cf-4542-92a4-986403752fc5",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_slice_truth.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_slice_truth.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"90e418b932cee7c1d8146c4fa9bebfaf8fc20e56ae9a78d7ff489358bfac7e7f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp\", \"sha256\": \"1edb419a45346229e1bab62ac539bdcd17e95a23646603899fbd643afe5828bc\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 54}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/d72d6d45-e9cf-4542-92a4-986403752fc5",
+        "revision": 55,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:01:57Z",
+        "gate_id": "CORE4-05-CHILD-INTEGRATION",
+        "id": "e77198aa-69b3-467a-b2ba-aedb55334c47",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e51631d5fdee2db564c40256c3f7fbbc4fc9145145c0443ee41a968190a8c453\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_integration.py\", \"sha256\": \"e81084b1182c661b78603f3076128d210fe0bd5c8c6b2fe12fbb332cbfbc276b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"sha256\": \"f4bb6cf86eab47da66daef63aa68a38c3de9bf44ad08e608e3ae17a215a1e85b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"be23045c2aed1b413584c64885d0b2f913deff5cfc2b1a2a8e2e7d3842b8fb50\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 66}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/e77198aa-69b3-467a-b2ba-aedb55334c47",
+        "revision": 67,
         "status": "passed"
       },
       {
@@ -1051,79 +1657,79 @@
         "checkpoint_id": "CORE4-CHILD-CORE-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_core.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/tests/test_child_execution_core.py\"], \"timeout\": 900}",
         "id": "CORE4-04-CHILD-CORE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "5e18542fb029cf73f9284008b639100dcfda1e5662afc1ca12c828387da7ea99",
+        "last_run_at": "2026-08-22T09:24:04Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 44,
+        "status": "passed",
         "task_id": "CORE4-04",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\"], \"timeout\": 1200}",
         "id": "CORE4-05-CHILD-INTEGRATION",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "760eda28e33c949d0d5d7d42b034e71395aade225534393782f8f067b3d3a2fe",
+        "last_run_at": "2026-08-22T10:03:34Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 75,
+        "status": "passed",
         "task_id": "CORE4-05",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/service.py\"], \"timeout\": 900}",
         "id": "CORE4-05-TODO-REGRESSION",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "50cff52d1b8d7f3a12ac95cbdd59243e8f8d1b0f6d82100c630457af8e2c3e45",
+        "last_run_at": "2026-08-22T10:03:36Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 77,
+        "status": "passed",
         "task_id": "CORE4-05",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_context_packet.py\"], \"timeout\": 1200}",
         "id": "CORE4-06-PACKET",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "373fffad394129053e4e16d96af4e2e78ee60dc8a76bc2ad5d4a9a8ca7a25bd6",
+        "last_run_at": "2026-08-22T09:50:11Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 57,
+        "status": "passed",
         "task_id": "CORE4-06",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_slice_truth.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_lib.py\"], \"timeout\": 1200}",
         "id": "CORE4-06-SLICE-TRUTH",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "657f83d0d854b33b68ac44347b09e448e32a3f05babd3ccad4c702c80e2e5061",
+        "last_run_at": "2026-08-22T09:50:12Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 59,
+        "status": "passed",
         "task_id": "CORE4-06",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-p\", \"test_context_packet_economics.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/test_context_packet_economics.py\"], \"timeout\": 1200}",
         "id": "CORE4-07-PACKET-ECONOMICS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "3d2b2c7bc46a89bfe0e78195f7a7c9e4b3c40ad67b6a50b947dfd7ba8f5005d4",
+        "last_run_at": "2026-08-22T10:09:50Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 82,
+        "status": "passed",
         "task_id": "CORE4-07",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
@@ -1389,6 +1995,16 @@
     "handoffs": [
       {
         "claim_id": null,
+        "created_at": "2026-08-22T10:09:56Z",
+        "id": "319370e8-75eb-4133-9f96-c14d10504622",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/evals/README.md\", \"cpp-context-compiler/evals/run_packet_economics.py\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/expected/context-packet-economics.json\", \"cpp-context-compiler/tests/test_context_packet_economics.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-07-PACKET-ECONOMICS\", \"last_run_at\": \"2026-08-22T10:09:50Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 766 ++++++++++++++++++++--\\n cpp-context-compiler/evals/README.md              |   3 +\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 +++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |  10 +-\\n todos.md                                          |  10 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   8 +-\\n todos/core4-06.md                                 |   8 +-\\n todos/core4-07.md                                 |   6 +-\\n 13 files changed, 1014 insertions(+), 112 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-07\"}",
+        "revision": 83,
+        "task_id": "CORE4-07"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-22T09:01:43Z",
         "id": "7cac683e-cc39-4dc2-a59f-0ec347d0a218",
         "kind": "complete",
@@ -1409,6 +2025,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-22T10:03:51Z",
+        "id": "94d73849-f4ed-445f-b2b4-dc70964522ba",
+        "kind": "complete",
+        "note": "Integrated restricted child gate candidates, evidence artifacts, compact completed/needs_codex/no_change/failed capsule results, claim-handoff surfacing, and guarded current-source parent acceptance. Stale candidates fall back to ordinary gate execution; normal gate and capsule shapes remain unchanged without child results. CORE4-05-CHILD-INTEGRATION and CORE4-05-TODO-REGRESSION passed; todo-child-execution-v1 frozen.",
+        "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\"], \"checkpoints\": [{\"id\": \"CORE4-TODO-DELEGATION-FROZEN\", \"reached_at\": \"2026-08-22T10:03:44Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-05-CHILD-INTEGRATION\", \"last_run_at\": \"2026-08-22T10:03:34Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-05-TODO-REGRESSION\", \"last_run_at\": \"2026-08-22T10:03:36Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 679 ++++++++++++++++++++--\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 ++++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |   8 +-\\n todos.md                                          |   8 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   6 +-\\n todos/core4-06.md                                 |   8 +-\\n 11 files changed, 930 insertions(+), 94 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [{\"content_hash\": \"44907f4441252e89a936ecd769c362938f47d5440b9222cd10842332e639dc21\", \"id\": \"todo-child-execution-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated restricted child gate candidates, evidence artifacts, compact completed/needs_codex/no_change/failed capsule results, claim-handoff surfacing, and guarded current-source parent acceptance. Stale candidates fall back to ordinary gate execution; normal gate and capsule shapes remain unchanged without child results. CORE4-05-CHILD-INTEGRATION and CORE4-05-TODO-REGRESSION passed; todo-child-execution-v1 frozen.\", \"resources\": [], \"task_id\": \"CORE4-05\"}",
+        "revision": 79,
+        "task_id": "CORE4-05"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-22T09:11:36Z",
         "id": "9b223c52-797b-4e55-b119-f32aa9150ad8",
         "kind": "complete",
@@ -1426,6 +2052,26 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CORE4-BASELINE-FROZEN\", \"reached_at\": \"2026-08-22T08:55:37Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-02-CTXPP-BASELINE\", \"last_run_at\": \"2026-08-22T08:52:47Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02A-CTXPP-FOCUSED\", \"last_run_at\": \"2026-08-22T08:51:01Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 20 +++++++++++++++-----\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/core4-02a.md                     |  4 ++--\\n 4 files changed, 20 insertions(+), 10 deletions(-)\", \"git_head\": \"11568b6dbaee1923beef8748858920c0f070e575\", \"interfaces\": [], \"note\": \"Resolved the ctxpp baseline contract by retaining lexical-only routing for orphaned files while requiring one targeted semantic TU refresh for indexed changed dependencies. Focused and full 48-test ctxpp gates passed; CORE4-BASELINE-FROZEN and core4-compatibility-v1 were frozen, and commit 11568b6dbaee1923beef8748858920c0f070e575 records the baseline.\", \"resources\": [], \"task_id\": \"CORE4-02A\"}",
         "revision": 29,
         "task_id": "CORE4-02A"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T09:24:19Z",
+        "id": "ecbde6f5-2086-4204-b785-0092e49d4c76",
+        "kind": "complete",
+        "note": "Added subordinate child-execution storage and CLI with separate restricted tokens, normalized subset scope leases, heartbeat, bounded attempts, parent-controlled recovery and cancellation, stale-parent invalidation, and terminal NEEDS_CODEX. The child credential cannot authenticate as a claim or complete the parent. CORE4-04-CHILD-CORE passed and CORE4-CHILD-CORE-FROZEN was reached.",
+        "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\"], \"checkpoints\": [{\"id\": \"CORE4-CHILD-CORE-FROZEN\", \"reached_at\": \"2026-08-22T09:24:09Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-04-CHILD-CORE\", \"last_run_at\": \"2026-08-22T09:24:04Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 111 +++++++++++++++++++---\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +++++++++-\\n todo-status.md                                    |   4 +-\\n todos.md                                          |   4 +-\\n todos/core4-04.md                                 |   6 +-\\n 5 files changed, 151 insertions(+), 22 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [], \"note\": \"Added subordinate child-execution storage and CLI with separate restricted tokens, normalized subset scope leases, heartbeat, bounded attempts, parent-controlled recovery and cancellation, stale-parent invalidation, and terminal NEEDS_CODEX. The child credential cannot authenticate as a claim or complete the parent. CORE4-04-CHILD-CORE passed and CORE4-CHILD-CORE-FROZEN was reached.\", \"resources\": [], \"task_id\": \"CORE4-04\"}",
+        "revision": 46,
+        "task_id": "CORE4-04"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T09:50:33Z",
+        "id": "fe986d8a-b38d-4796-b505-2ec3acd19911",
+        "kind": "complete",
+        "note": "Added CTXPP-CONTEXT-PACKET/1 with exact hash-verified canonical targets, bounded typed relationships, tests/invariants, trust and source identity metadata, deterministic expansion handles, token-budget reporting, plus a human-first inspect command. CORE4-06-PACKET and CORE4-06-SLICE-TRUTH passed; ctxpp-context-packet-v1 frozen.",
+        "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\"], \"checkpoints\": [{\"id\": \"CORE4-CTXPP-PACKET-FROZEN\", \"reached_at\": \"2026-08-22T09:50:27Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-06-PACKET\", \"last_run_at\": \"2026-08-22T09:50:11Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-06-SLICE-TRUTH\", \"last_run_at\": \"2026-08-22T09:50:12Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 377 +++++++++++++++++++---\\n cpp-context-compiler/scripts/ctxpp                |  22 ++\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 ++-\\n todo-status.md                                    |   6 +-\\n todos.md                                          |   6 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-06.md                                 |   6 +-\\n 7 files changed, 423 insertions(+), 50 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [{\"content_hash\": \"a84b10708e8342d00c515595a86788f7478e6b6c9bfbabfcdec649bffdee6dde\", \"id\": \"ctxpp-context-packet-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Added CTXPP-CONTEXT-PACKET/1 with exact hash-verified canonical targets, bounded typed relationships, tests/invariants, trust and source identity metadata, deterministic expansion handles, token-budget reporting, plus a human-first inspect command. CORE4-06-PACKET and CORE4-06-SLICE-TRUTH passed; ctxpp-context-packet-v1 frozen.\", \"resources\": [], \"task_id\": \"CORE4-06\"}",
+        "revision": 62,
+        "task_id": "CORE4-06"
       }
     ],
     "interface_consumers": [
@@ -1710,14 +2356,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "a84b10708e8342d00c515595a86788f7478e6b6c9bfbabfcdec649bffdee6dde",
         "contract_paths_json": "[\"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/references/context-packets.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T09:50:27Z",
         "id": "ctxpp-context-packet-v1",
         "owner_task_id": "CORE4-06",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 61,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -1765,14 +2411,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "44907f4441252e89a936ecd769c362938f47d5440b9222cd10842332e639dc21",
         "contract_paths_json": "[\"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/references/child-execution-contract.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T10:03:44Z",
         "id": "todo-child-execution-v1",
         "owner_task_id": "CORE4-05",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 78,
+        "state": "frozen",
         "version": "1"
       }
     ],
@@ -4145,14 +4791,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 15,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 46,
+        "status": "done",
         "tags_json": "[\"todo\", \"delegation\"]",
         "title": "Implement restricted todo child-execution core",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T09:24:19Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4167,14 +4813,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 20,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 79,
+        "status": "done",
         "tags_json": "[\"todo\", \"delegation\", \"evidence\"]",
         "title": "Integrate child evidence, gates, acceptance, and capsule surfacing",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:03:51Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4189,14 +4835,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CORE4-00",
         "priority": 15,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 62,
+        "status": "done",
         "tags_json": "[\"ctxpp\", \"context\"]",
         "title": "Add task-oriented cpp-context packets and one inspect front door",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T09:50:33Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4211,14 +4857,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 25,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 83,
+        "status": "done",
         "tags_json": "[\"ctxpp\", \"telemetry\", \"evaluation\"]",
         "title": "Instrument ctxpp consumer economics and worker packet evaluation",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:09:56Z",
+        "version": 5
       },
       {
         "attention_reason": null,

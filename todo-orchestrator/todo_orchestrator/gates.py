@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from .child_execution import authenticate_child_token, heartbeat_child_execution
 from .config import utc_now
 from .claims import pulse_claim
 from .evidence import gate_input_fingerprint
@@ -21,6 +22,38 @@ from .ownership import acquire_named_locks, release_lock
 from .projections import atomic_write_text
 from .resources import acquire_resource, release_resource, resource_environment
 from .sessions import authenticate_claim
+
+
+def _child_candidate(conn, gate_id: str, fingerprint: str) -> dict[str, object] | None:
+    """Return the newest successful, reported child candidate for current inputs."""
+    rows = conn.execute(
+        "SELECT e.* FROM evidence e WHERE e.gate_id=? AND e.status IN ('passed','evaluated_not_promoted') "
+        "ORDER BY e.created_at DESC",
+        (gate_id,),
+    )
+    for row in rows:
+        try:
+            metadata = json.loads(row["metadata_json"] or "{}")
+        except json.JSONDecodeError:
+            continue
+        child_id = metadata.get("child_execution_id")
+        if not child_id or metadata.get("input_fingerprint") != fingerprint:
+            continue
+        child = conn.execute("SELECT state,gates_json FROM child_executions WHERE id=?", (child_id,)).fetchone()
+        if not child or child["state"] != "succeeded" or gate_id not in json.loads(child["gates_json"] or "[]"):
+            continue
+        accepted = False
+        for acceptance in conn.execute("SELECT metadata_json FROM evidence WHERE gate_id=? ORDER BY created_at DESC", (gate_id,)):
+            try:
+                accepted_metadata = json.loads(acceptance["metadata_json"] or "{}")
+            except json.JSONDecodeError:
+                continue
+            if accepted_metadata.get("accepted_evidence_id") == row["id"]:
+                accepted = True
+                break
+        if not accepted:
+            return {"evidence": dict(row), "metadata": metadata, "child_execution_id": child_id}
+    return None
 
 
 def list_gates(conn, task_id: str | None = None) -> list[dict[str, object]]:
@@ -104,19 +137,48 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
         gate = conn.execute("SELECT * FROM gates WHERE id=?", (gate_id,)).fetchone()
         if not gate:
             raise TodoError("gate_not_found", f"Unknown gate {gate_id}")
-        if gate["task_id"]:
-            pulse_claim(conn, claim_token, claim_seconds)
-        claim = authenticate_claim(conn, claim_token) if gate["task_id"] else None
+        config = json.loads(gate["config_json"])
+        child = None
+        if gate["task_id"] and str(claim_token or "").startswith("toch_"):
+            attempt = authenticate_child_token(conn, claim_token)
+            execution = conn.execute(
+                "SELECT id,gates_json FROM child_executions WHERE id=?",
+                (attempt["child_execution_id"],),
+            ).fetchone()
+            allowed_gates = json.loads(execution["gates_json"] or "[]") if execution else []
+            if gate_id not in allowed_gates:
+                raise TodoError(
+                    "child_gate_unauthorized",
+                    f"Child execution is not authorized to run gate {gate_id}",
+                    ExitCode.BLOCKED,
+                    {"allowed_gates": allowed_gates},
+                )
+            if attempt["task_id"] != gate["task_id"]:
+                raise TodoError("child_gate_task_mismatch", "Child gate does not belong to the parent task", ExitCode.INVALID_TOKEN)
+            claim = conn.execute("SELECT * FROM claims WHERE id=?", (attempt["parent_claim_id"],)).fetchone()
+            lease_seconds = max(resource_seconds, int(float(config.get("timeout", 3600))) + 30)
+            heartbeat_child_execution(conn, claim_token, lease_seconds=lease_seconds)
+            child = {
+                "child_execution_id": attempt["child_execution_id"],
+                "attempt_id": attempt["id"],
+                "attempt_number": attempt["attempt_number"],
+                "lease_seconds": lease_seconds,
+            }
+        else:
+            if gate["task_id"]:
+                pulse_claim(conn, claim_token, claim_seconds)
+            claim = authenticate_claim(conn, claim_token) if gate["task_id"] else None
         if claim and claim["task_id"] != gate["task_id"]:
             raise TodoError("claim_task_mismatch", "Gate does not belong to the claimed task", ExitCode.INVALID_TOKEN)
-        config = json.loads(gate["config_json"])
         session_id = claim["session_id"] if claim else config.get("session_id")
         if not session_id:
             raise TodoError("gate_session_required", "Gate execution requires an active claim")
+        fingerprint, inputs = gate_input_fingerprint(conn, paths.repo_root, config)
+        accept_candidate = _child_candidate(conn, gate_id, fingerprint) if claim and not child else None
         resources = []
         selectors = sorted(str(item) for item in config.get("resources", []))
         argv = [str(item) for item in config.get("argv", [])]
-        for selector in selectors:
+        for selector in [] if accept_candidate else selectors:
             lease, token = acquire_resource(
                 conn,
                 selector=selector,
@@ -130,7 +192,7 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
             raw_tokens[f"resource:{lease['lease_id']}"] = token
         locks = acquire_named_locks(
             conn,
-            [str(item) for item in config.get("locks", [])],
+            [] if accept_candidate else [str(item) for item in config.get("locks", [])],
             claim_id=claim["id"] if claim else None,
             session_id=session_id,
             lease_seconds=resource_seconds,
@@ -138,8 +200,11 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
         )
         for lock in locks:
             raw_tokens[f"lock:{lock['lease_id']}"] = lock["token"]
-        fingerprint, inputs = gate_input_fingerprint(conn, paths.repo_root, config)
-        acquired.update(gate=dict(gate), config=config, claim=dict(claim) if claim else None, resources=resources, locks=locks, fingerprint=fingerprint, inputs=inputs)
+        acquired.update(
+            gate=dict(gate), config=config, claim=dict(claim) if claim else None, child=child,
+            accept_candidate=accept_candidate, resources=resources, locks=locks,
+            fingerprint=fingerprint, inputs=inputs,
+        )
         return {"gate_id": gate_id, "resources": resources, "locks": [{k: v for k, v in item.items() if k != "token"} for item in locks]}
 
     _, acquire_revision = db.mutate(
@@ -165,6 +230,11 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
                     conn.execute("UPDATE resource_leases SET heartbeat_at=?,expires_at=? WHERE id=? AND state='active'", (now, expires, lease["lease_id"]))
                 for lease in acquired.get("locks", []):
                     conn.execute("UPDATE lock_leases SET heartbeat_at=?,expires_at=? WHERE id=? AND state='active'", (now, expires, lease["lease_id"]))
+                child = acquired.get("child")
+                if child:
+                    child_expires = (datetime.now(timezone.utc) + timedelta(seconds=int(child["lease_seconds"]))).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+                    conn.execute("UPDATE child_attempts SET heartbeat_at=?,expires_at=? WHERE id=? AND state='active'", (now, child_expires, child["attempt_id"]))
+                    conn.execute("UPDATE child_executions SET heartbeat_at=? WHERE id=?", (now, child["child_execution_id"]))
                 return True
             try:
                 db.mutate(actor_session_id=None, entity_type="gate", entity_id=gate_id, event_type="gate.heartbeat", payload={}, operation=refresh)
@@ -184,7 +254,16 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
     valid = False
     details: dict[str, Any] = {}
     try:
-        if gate_type in {"command", "benchmark", "json_predicate"}:
+        if acquired.get("accept_candidate"):
+            candidate = acquired["accept_candidate"]
+            status, valid = "passed", True
+            details = {
+                "accepted_child_evidence": True,
+                "accepted_evidence_id": candidate["evidence"]["id"],
+                "accepted_child_execution_id": candidate["child_execution_id"],
+                "input_fingerprint": acquired["fingerprint"],
+            }
+        elif gate_type in {"command", "benchmark", "json_predicate"}:
             argv = config.get("argv")
             if not isinstance(argv, list) or not argv:
                 raise TodoError("invalid_gate_command", "Command gates require a non-empty argv array")
@@ -241,11 +320,15 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
     atomic_write_text(evidence_dir / "stderr.txt", stderr)
     metadata = {
         **details,
+        "input_fingerprint": acquired["fingerprint"],
         "inputs": acquired["inputs"],
         "resources": acquired["resources"],
         "locks": [{k: v for k, v in item.items() if k != "token"} for item in acquired["locks"]],
         "started_revision": acquire_revision,
     }
+    if acquired.get("child"):
+        metadata.update(acquired["child"])
+        metadata["candidate_evidence"] = True
 
     def finish(conn, revision):
         for key, token in raw_tokens.items():
@@ -253,17 +336,19 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
                 release_resource(conn, token)
             else:
                 release_lock(conn, token)
-        conn.execute(
-            "UPDATE gates SET status=?,valid=?,input_fingerprint=?,last_run_at=?,revision=? WHERE id=?",
-            (status, int(valid), acquired["fingerprint"], utc_now(), revision, gate_id),
-        )
+        if not acquired.get("child"):
+            conn.execute(
+                "UPDATE gates SET status=?,valid=?,input_fingerprint=?,last_run_at=?,revision=? WHERE id=?",
+                (status, int(valid), acquired["fingerprint"], utc_now(), revision, gate_id),
+            )
+        evidence_kind = "child_gate_candidate" if acquired.get("child") else ("child_acceptance" if acquired.get("accept_candidate") else gate_type)
         conn.execute(
             "INSERT INTO evidence(id,gate_id,claim_id,kind,status,path,metadata_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?,?)",
             (
                 evidence_id,
                 gate_id,
                 acquired["claim"]["id"] if acquired["claim"] else None,
-                gate_type,
+                evidence_kind,
                 status,
                 str(evidence_dir),
                 json.dumps(metadata, sort_keys=True),
@@ -271,8 +356,22 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
                 revision,
             ),
         )
-        barriers = reevaluate_barriers(conn, revision)
-        return {"gate_id": gate_id, "task_id": gate["task_id"], "status": status, "valid": valid, "evidence_id": evidence_id, "evidence_path": str(evidence_dir), "details": details, "barrier_changes": barriers}
+        barriers = [] if acquired.get("child") else reevaluate_barriers(conn, revision)
+        report = {
+            "gate_id": gate_id,
+            "task_id": gate["task_id"],
+            "status": status,
+            "valid": bool(valid),
+            "evidence_id": evidence_id,
+            "evidence_path": str(evidence_dir),
+            "details": details,
+            "barrier_changes": barriers,
+        }
+        if acquired.get("child"):
+            report.update(candidate_valid=bool(valid), accepted=False)
+        elif acquired.get("accept_candidate"):
+            report["accepted"] = bool(valid)
+        return report
 
     report, revision = db.mutate(
         actor_session_id=acquired["claim"]["session_id"] if acquired["claim"] else None,

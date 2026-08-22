@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-06: Add task-oriented cpp-context packets and one inspect front door
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `62`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add a machine-oriented ctxpp packet command and an ordinary inspect command that select exact canonical edit targets plus compact types, dependencies, callers/callees, tests, invariants, source locations, trust metadata, hashes, and bounded expansion handles.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Implement additive inspect/packet commands without weakening fast where/route/status behavior or source-authority guarantees.

@@ -178,4 +178,50 @@ ALTER TABLE lock_leases ADD COLUMN command_json TEXT;
 CREATE INDEX IF NOT EXISTS idx_lock_leases_expiry ON lock_leases(state,expires_at);
 """
 
-MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3}
+MIGRATION_4 = r"""
+CREATE TABLE IF NOT EXISTS child_executions(
+  id TEXT PRIMARY KEY,
+  parent_claim_id TEXT NOT NULL REFERENCES claims(id),
+  task_id TEXT NOT NULL REFERENCES tasks(id),
+  objective TEXT NOT NULL,
+  gates_json TEXT NOT NULL DEFAULT '[]',
+  state TEXT NOT NULL,
+  max_attempts INTEGER NOT NULL DEFAULT 1,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  cancel_requested INTEGER NOT NULL DEFAULT 0,
+  result_json TEXT,
+  created_at TEXT NOT NULL,
+  started_at TEXT,
+  heartbeat_at TEXT,
+  completed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_child_executions_parent
+  ON child_executions(parent_claim_id,state,created_at);
+CREATE TABLE IF NOT EXISTS child_scope_leases(
+  child_execution_id TEXT NOT NULL REFERENCES child_executions(id) ON DELETE CASCADE,
+  path TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'active',
+  acquired_at TEXT NOT NULL,
+  released_at TEXT,
+  PRIMARY KEY(child_execution_id,path)
+);
+CREATE INDEX IF NOT EXISTS idx_child_scope_leases_active
+  ON child_scope_leases(path,state);
+CREATE TABLE IF NOT EXISTS child_attempts(
+  id TEXT PRIMARY KEY,
+  child_execution_id TEXT NOT NULL REFERENCES child_executions(id) ON DELETE CASCADE,
+  attempt_number INTEGER NOT NULL,
+  token_hash TEXT NOT NULL UNIQUE,
+  state TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  heartbeat_at TEXT NOT NULL,
+  expires_at TEXT NOT NULL,
+  completed_at TEXT,
+  result_json TEXT,
+  UNIQUE(child_execution_id,attempt_number)
+);
+CREATE INDEX IF NOT EXISTS idx_child_attempts_expiry
+  ON child_attempts(state,expires_at);
+"""
+
+MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4}

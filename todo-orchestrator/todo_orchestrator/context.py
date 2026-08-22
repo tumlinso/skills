@@ -11,6 +11,7 @@ from pathlib import Path
 from .barriers import barrier_report
 from .graph import evaluate_dependencies
 from .readiness import explain_task
+from .reporting import child_results_for_task
 
 
 def _json_rows(rows) -> list[dict[str, object]]:
@@ -62,6 +63,24 @@ def build_context(
     )})
     script = Path(__file__).resolve().parents[1] / "scripts" / "todo.py"
     base_command = f"{shlex.quote(sys.executable)} {shlex.quote(str(script))} --repo-root ."
+    child_results = child_results_for_task(conn, task_id)
+    for child_result in child_results:
+        child_result["acceptance"]["commands"] = [
+            {
+                "gate_id": gate_id,
+                "command": {
+                    "schema_version": 1,
+                    "argv": [
+                        sys.executable, str(script), "--repo-root", ".", "gate", "run", gate_id,
+                        "--claim-token", "<claim-token>", "--json",
+                    ],
+                    "cwd": ".",
+                    "env": {},
+                    "timeout_seconds": 3600.0,
+                },
+            }
+            for gate_id in child_result["acceptance"]["pending_gates"]
+        ]
     capsule: dict[str, object] = {
         "schema_version": 2,
         "project_revision": project_revision,
@@ -103,6 +122,8 @@ def build_context(
         },
         "delta_cursor": project_revision,
     }
+    if child_results:
+        capsule["child_results"] = child_results
     encoded = json.dumps(capsule, separators=(",", ":"), sort_keys=True).encode("utf-8")
     if len(encoded) > budget:
         capsule["prerequisites"] = {
