@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T08:56:50Z",
+  "generated_at": "2026-08-22T09:11:36Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 29,
+  "project_revision": 38,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -439,10 +439,10 @@
       {
         "id": "CORE4-RUNTIME-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T09:11:24Z",
+        "revision": 37,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-03",
         "title": "Supported cross-skill runtime facade is additive and stable"
       },
@@ -783,6 +783,96 @@
         "revision": 29,
         "seq": 29,
         "timestamp": "2026-08-22T08:56:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-02",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-02\"}",
+        "revision": 30,
+        "seq": 30,
+        "timestamp": "2026-08-22T09:01:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 31,
+        "seq": 31,
+        "timestamp": "2026-08-22T09:01:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 32,
+        "seq": 32,
+        "timestamp": "2026-08-22T09:02:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03-BACKGROUND-COMPAT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-03-BACKGROUND-COMPAT\"}",
+        "revision": 33,
+        "seq": 33,
+        "timestamp": "2026-08-22T09:11:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03-BACKGROUND-COMPAT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f01f6654-27da-438c-88de-742d0a0f2e12\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 34,
+        "seq": 34,
+        "timestamp": "2026-08-22T09:11:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03-FACADE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-03-FACADE\"}",
+        "revision": 35,
+        "seq": 35,
+        "timestamp": "2026-08-22T09:11:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03-FACADE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6d76a3d4-430a-43ff-af4e-1fc2b4928bc6\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 36,
+        "seq": 36,
+        "timestamp": "2026-08-22T09:11:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-RUNTIME-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 37,
+        "seq": 37,
+        "timestamp": "2026-08-22T09:11:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-03",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 38,
+        "seq": 38,
+        "timestamp": "2026-08-22T09:11:36Z"
       }
     ],
     "evidence": [
@@ -810,6 +900,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 3600}, \"diff_fingerprint\": \"501097749229e35d71dbaeb65f7c530d15b1352a9bac1ab97a347241e8613096\", \"dirty_paths\": [\".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 19}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/387e49d4-fbca-4d25-882e-76e7b3b0832f",
         "revision": 20,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:11:12Z",
+        "gate_id": "CORE4-03-FACADE",
+        "id": "6d76a3d4-430a-43ff-af4e-1fc2b4928bc6",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_runtime_facade.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_runtime_facade.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 600}, \"diff_fingerprint\": \"d62052526e417e769fbf9792eeed35981138f4bea7396696942cbc2da394d8ce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"contracts/artifact-ref-v1.schema.json\", \"contracts/command-spec-v1.schema.json\", \"contracts/evidence-summary-v1.schema.json\", \"contracts/resource-request-v1.schema.json\", \"contracts/source-identity-v1.schema.json\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/contracts.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/source.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-02.md\", \"todos/core4-03.md\"], \"files\": [{\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator/tests/test_runtime_facade.py\", \"sha256\": \"98fc57df3d5f3f161abe7224bb8d1ae0a02a4cd78fa275e4e9d872711eea738e\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/runtime\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9ec96f5965812dd274b89972eebaf45844cf3d79\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 35}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6d76a3d4-430a-43ff-af4e-1fc2b4928bc6",
+        "revision": 36,
         "status": "passed"
       },
       {
@@ -849,6 +952,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"e3758a6da29c328887db629b07fc881264cadd3b79e074c26d477042735f49b6\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cuda\", \"sha256\": \"missing\"}], \"git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\", \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 7}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/c87b3e67-d59a-47ef-a069-5bd9e660cb22",
         "revision": 8,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T09:11:12Z",
+        "gate_id": "CORE4-03-BACKGROUND-COMPAT",
+        "id": "f01f6654-27da-438c-88de-742d0a0f2e12",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_background_runtime.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_background_runtime.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"d62052526e417e769fbf9792eeed35981138f4bea7396696942cbc2da394d8ce\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"contracts/artifact-ref-v1.schema.json\", \"contracts/command-spec-v1.schema.json\", \"contracts/evidence-summary-v1.schema.json\", \"contracts/resource-request-v1.schema.json\", \"contracts/source-identity-v1.schema.json\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/contracts.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/source.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-02.md\", \"todos/core4-03.md\"], \"files\": [{\"path\": \"todo-orchestrator/todo_orchestrator/background\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/runtime\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9ec96f5965812dd274b89972eebaf45844cf3d79\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 33}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/f01f6654-27da-438c-88de-742d0a0f2e12",
+        "revision": 34,
         "status": "passed"
       }
     ],
@@ -909,27 +1025,27 @@
         "checkpoint_id": "CORE4-RUNTIME-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_background_runtime.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/runtime\", \"todo-orchestrator/todo_orchestrator/background\"], \"timeout\": 900}",
         "id": "CORE4-03-BACKGROUND-COMPAT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "a67a1cfe7ed9e9bd46a337478b24472c502b37f766c022dece242483fd93e34b",
+        "last_run_at": "2026-08-22T09:11:12Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 34,
+        "status": "passed",
         "task_id": "CORE4-03",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-RUNTIME-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_runtime_facade.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"contracts\", \"todo-orchestrator/todo_orchestrator/runtime\", \"todo-orchestrator/tests/test_runtime_facade.py\"], \"timeout\": 600}",
         "id": "CORE4-03-FACADE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "a882cce99eaa549c4c9b5d65ca0fa0578b40c482b1055cde79f23ad0167b8a7c",
+        "last_run_at": "2026-08-22T09:11:12Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 36,
+        "status": "passed",
         "task_id": "CORE4-03",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CHILD-CORE-FROZEN",
@@ -1273,6 +1389,16 @@
     "handoffs": [
       {
         "claim_id": null,
+        "created_at": "2026-08-22T09:01:43Z",
+        "id": "7cac683e-cc39-4dc2-a59f-0ec347d0a218",
+        "kind": "complete",
+        "note": "Verified CORE4-02 baseline artifacts and all recorded identity/fixture hashes at committed source identity. CORE4-BASELINE-FROZEN is reached, core4-compatibility-v1 is frozen at version 1, and todo, CUDA, focused ctxpp, and full ctxpp baseline gates are valid. No suites were rerun and no downstream task was claimed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-02-TODO-BASELINE\", \"last_run_at\": \"2026-08-22T08:39:00Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02-CUDA-BASELINE\", \"last_run_at\": \"2026-08-22T08:38:37Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 22 ++++++++++++++++------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/core4-02.md                      |  6 +++---\\n 4 files changed, 23 insertions(+), 13 deletions(-)\", \"git_head\": \"9ec96f5965812dd274b89972eebaf45844cf3d79\", \"interfaces\": [{\"content_hash\": \"a6ad16799eb220fccd5f6d162367fda791bb3665a4d9196fec101b44dab5352d\", \"id\": \"core4-compatibility-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Verified CORE4-02 baseline artifacts and all recorded identity/fixture hashes at committed source identity. CORE4-BASELINE-FROZEN is reached, core4-compatibility-v1 is frozen at version 1, and todo, CUDA, focused ctxpp, and full ctxpp baseline gates are valid. No suites were rerun and no downstream task was claimed.\", \"resources\": [], \"task_id\": \"CORE4-02\"}",
+        "revision": 31,
+        "task_id": "CORE4-02"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-22T08:42:23Z",
         "id": "88d59176-6b6b-4125-9c4d-73bb3df640bb",
         "kind": "handoff",
@@ -1280,6 +1406,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\"], \"checkpoints\": [{\"id\": \"CORE4-BASELINE-FROZEN\", \"reached_at\": null, \"state\": \"pending\"}], \"gates\": [{\"id\": \"CORE4-02-TODO-BASELINE\", \"last_run_at\": \"2026-08-22T08:39:00Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02-CUDA-BASELINE\", \"last_run_at\": \"2026-08-22T08:38:37Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02-CTXPP-BASELINE\", \"last_run_at\": \"2026-08-22T08:37:58Z\", \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 182 +++++++++++++++++++++++++++++----\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n 3 files changed, 165 insertions(+), 25 deletions(-)\", \"git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\", \"interfaces\": [{\"content_hash\": null, \"id\": \"core4-compatibility-v1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-02\"}",
         "revision": 13,
         "task_id": "CORE4-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T09:11:36Z",
+        "id": "9b223c52-797b-4e55-b119-f32aa9150ad8",
+        "kind": "complete",
+        "note": "Added five strict v1 contracts plus supported runtime facades for jobs, snapshots, artifacts, source identity, and host resources. CORE4-03-FACADE and CORE4-03-BACKGROUND-COMPAT passed; CORE4-RUNTIME-FROZEN published core4-runtime-v1.",
+        "payload_json": "{\"changed_owned_paths\": [\"contracts/artifact-ref-v1.schema.json\", \"contracts/command-spec-v1.schema.json\", \"contracts/evidence-summary-v1.schema.json\", \"contracts/resource-request-v1.schema.json\", \"contracts/source-identity-v1.schema.json\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/contracts.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/source.py\"], \"checkpoints\": [{\"id\": \"CORE4-RUNTIME-FROZEN\", \"reached_at\": \"2026-08-22T09:11:24Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-03-FACADE\", \"last_run_at\": \"2026-08-22T09:11:12Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-03-BACKGROUND-COMPAT\", \"last_run_at\": \"2026-08-22T09:11:12Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 174 +++++++++++++++++++++++++++------\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/core4-02.md                      |   8 +-\\n todos/core4-03.md                      |   6 +-\\n 5 files changed, 158 insertions(+), 42 deletions(-)\", \"git_head\": \"9ec96f5965812dd274b89972eebaf45844cf3d79\", \"interfaces\": [{\"content_hash\": \"74878187872b3c3b9227869e67dda9a03434ada7e8e85093d18dda4a9baade66\", \"id\": \"core4-runtime-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Added five strict v1 contracts plus supported runtime facades for jobs, snapshots, artifacts, source identity, and host resources. CORE4-03-FACADE and CORE4-03-BACKGROUND-COMPAT passed; CORE4-RUNTIME-FROZEN published core4-runtime-v1.\", \"resources\": [], \"task_id\": \"CORE4-03\"}",
+        "revision": 38,
+        "task_id": "CORE4-03"
       },
       {
         "claim_id": null,
@@ -1563,14 +1699,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "74878187872b3c3b9227869e67dda9a03434ada7e8e85093d18dda4a9baade66",
         "contract_paths_json": "[\"contracts/command-spec-v1.schema.json\", \"contracts/source-identity-v1.schema.json\", \"contracts/resource-request-v1.schema.json\", \"contracts/artifact-ref-v1.schema.json\", \"contracts/evidence-summary-v1.schema.json\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T09:11:24Z",
         "id": "core4-runtime-v1",
         "owner_task_id": "CORE4-03",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 37,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -3931,7 +4067,7 @@
         "version": 3
       },
       {
-        "attention_reason": "Required gate CORE4-02-CTXPP-BASELINE fails consistently: IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh expects tus_parsed=1 but observes 0 because the newly populated included header is satisfied by the lexical-overlay fast path. CORE4-02 owns only contracts/core4-compatibility-v1.json and core4-tests/baseline, so cpp-context-compiler source/tests cannot be changed under this claim. Todo passed 66/66 and CUDA passed 19/19; the ctxpp 47/48 evidence and compatibility artifacts are preserved for recovery.",
+        "attention_reason": null,
         "created_at": "2026-08-22T08:27:56Z",
         "id": "CORE4-02",
         "kind": "workstream",
@@ -3943,14 +4079,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 5,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 31,
+        "status": "done",
         "tags_json": "[\"foundation\", \"compatibility\"]",
         "title": "Freeze behavior and compatibility baselines",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 5
+        "updated_at": "2026-08-22T09:01:43Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3987,14 +4123,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 10,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 38,
+        "status": "done",
         "tags_json": "[\"foundation\", \"runtime\"]",
         "title": "Expose minimal shared runtime contracts and facade",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T09:11:36Z",
+        "version": 5
       },
       {
         "attention_reason": null,
