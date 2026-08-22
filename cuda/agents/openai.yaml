@@ -1,4 +1,6 @@
-version: 1
-display_name: CUDA
-short_description: Primary CUDA routing for datacenter GPU optimization, diagnostics, profiling, and low-level tuning across V100, A100, H100, B100-B200, and GB200 NVL72
-default_prompt: Use $cuda to route CUDA build, profiling, debugging, architecture-specific optimization, and low-level tuning work for datacenter NVIDIA GPUs. Choose the system route first when topology matters, then the architecture family, keep binaries narrow while tuning, prefer compact profiler and debugger summaries over raw logs, and use request-only PTX workflows only after the hot path is isolated.
+interface:
+  display_name: "CUDA"
+  short_description: "CUDA correctness, profiling, and GPU optimization"
+  default_prompt: "Use $cuda to route CUDA correctness, build, profiling, debugging, and architecture-specific optimization work with host-global GPU interlocks."
+policy:
+  allow_implicit_invocation: true

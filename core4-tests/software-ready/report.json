@@ -1,0 +1,142 @@
+{
+  "error": "software-ready suites failed: ['cuda']",
+  "external_assets_used": false,
+  "format": "CORE4-SOFTWARE-READY/1",
+  "git_head": "e0c9a6af5b6781689cb4397e14054ea7f31c28cc",
+  "metadata": {
+    "compatibility": {
+      "frozen_hashes_checked": 13,
+      "public_help": {
+        "cpp-context-compiler": {
+          "commands_preserved": 16
+        },
+        "cuda": {
+          "commands_preserved": 5
+        },
+        "todo-orchestrator": {
+          "commands_preserved": 31
+        }
+      }
+    },
+    "cross_skill_boundaries": {
+      "legacy_cuda_compatibility_modules": [
+        "todo_orchestrator.background.artifacts",
+        "todo_orchestrator.background.host",
+        "todo_orchestrator.background.resources",
+        "todo_orchestrator.background.store",
+        "todo_orchestrator.background.wake",
+        "todo_orchestrator.config"
+      ],
+      "supported_new_import": "todo_orchestrator.runtime"
+    },
+    "root": {
+      "required_ignore_entries": [
+        "*.pyc",
+        ".ctxpp/",
+        ".pytest_cache/",
+        ".todo-orchestrator/runtime/",
+        "__pycache__/"
+      ]
+    },
+    "skills": {
+      "cpp-context-compiler": {
+        "agent": {
+          "short_description_chars": 36
+        },
+        "surface": {
+          "bytes": "3374",
+          "lines": "39"
+        }
+      },
+      "cuda": {
+        "agent": {
+          "short_description_chars": 49
+        },
+        "surface": {
+          "bytes": "3212",
+          "lines": "59"
+        }
+      },
+      "local-coding-worker": {
+        "agent": {
+          "short_description_chars": 47
+        },
+        "surface": {
+          "bytes": "1840",
+          "lines": "37"
+        }
+      },
+      "todo-orchestrator": {
+        "agent": {
+          "short_description_chars": 51
+        },
+        "surface": {
+          "bytes": "2671",
+          "lines": "52"
+        }
+      }
+    }
+  },
+  "ok": false,
+  "schema_version": 1,
+  "software_ready": false,
+  "suites": {
+    "cpp-context-compiler": {
+      "command": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "cpp-context-compiler/tests",
+        "-v"
+      ],
+      "duration_seconds": 129.255,
+      "returncode": 0,
+      "tests_run": 56
+    },
+    "cuda": {
+      "command": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "cuda/tests",
+        "-v"
+      ],
+      "duration_seconds": 7.241,
+      "failure_tail": "rollerTests.test_initial_characterization_chains_nsys_before_ncu_and_focuses_two_kernels) ... ok\ntest_legacy_build_and_test_releases_gpu_during_build (test_controller.ControllerTests.test_legacy_build_and_test_releases_gpu_during_build) ... ok\ntest_model_supplied_candidate_queues_build_correctness_and_benchmark (test_controller.ControllerTests.test_model_supplied_candidate_queues_build_correctness_and_benchmark) ... ok\ntest_private_runtime_is_not_source_or_dirty_provenance (test_controller.ControllerTests.test_private_runtime_is_not_source_or_dirty_provenance) ... ok\ntest_relevant_completion_queues_one_immutable_benchmark_and_next_start_does_not_duplicate (test_controller.ControllerTests.test_relevant_completion_queues_one_immutable_benchmark_and_next_start_does_not_duplicate) ... /home/tumlinson/.agents/skills/todo-orchestrator/todo_orchestrator/projections.py:123: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa2c6a70>\n  primary = [row[\"name\"] for row in sorted((row for row in info if row[\"pk\"]), key=lambda row: row[\"pk\"])]\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/tumlinson/.agents/skills/todo-orchestrator/todo_orchestrator/projections.py:123: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa2c66b0>\n  primary = [row[\"name\"] for row in sorted((row for row in info if row[\"pk\"]), key=lambda row: row[\"pk\"])]\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/tumlinson/.agents/skills/todo-orchestrator/todo_orchestrator/projections.py:123: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa2c6c50>\n  primary = [row[\"name\"] for row in sorted((row for row in info if row[\"pk\"]), key=lambda row: row[\"pk\"])]\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/tumlinson/.agents/skills/todo-orchestrator/todo_orchestrator/projections.py:123: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa2c67a0>\n  primary = [row[\"name\"] for row in sorted((row for row in info if row[\"pk\"]), key=lambda row: row[\"pk\"])]\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_symbol_watch_matches_existing_todo_task_text (test_controller.ControllerTests.test_symbol_watch_matches_existing_todo_task_text) ... ok\ntest_clean_foreground_waits_for_service_release_then_quiescence_can_pass (test_core4_interlock.Core4CudaInterlockTests.test_clean_foreground_waits_for_service_release_then_quiescence_can_pass) ... ok\ntest_controller_declares_clean_foreground_priority (test_core4_interlock.Core4CudaInterlockTests.test_controller_declares_clean_foreground_priority) ... ok\ntest_manifest_preserves_entire_markdown_corpus (test_guidance.GuidanceTests.test_manifest_preserves_entire_markdown_corpus) ... FAIL\ntest_retrieval_is_exact_bounded_and_architecture_first (test_guidance.GuidanceTests.test_retrieval_is_exact_bounded_and_architecture_first) ... ok\ntest_direct_mode_retains_output_status_and_cleanup (test_mutex_compatibility.MutexCompatibilityTests.test_direct_mode_retains_output_status_and_cleanup) ... ok\ntest_opt_in_background_relinquishes_for_foreground_marker (test_mutex_compatibility.MutexCompatibilityTests.test_opt_in_background_relinquishes_for_foreground_marker) ... ok\ntest_adaptive_correctness_and_profiler_decisions_are_bounded (test_performance_facts.PerformanceFactsTests.test_adaptive_correctness_and_profiler_decisions_are_bounded) ... ok\ntest_backfill_labels_historical_and_explicitly_accepted_sources (test_performance_facts.PerformanceFactsTests.test_backfill_labels_historical_and_explicitly_accepted_sources) ... ok\ntest_baseline_precedence_and_explicit_acceptance_are_deterministic (test_performance_facts.PerformanceFactsTests.test_baseline_precedence_and_explicit_acceptance_are_deterministic) ... ok\ntest_compatibility_ignores_uuid_index_source_and_candidate_argv (test_performance_facts.PerformanceFactsTests.test_compatibility_ignores_uuid_index_source_and_candidate_argv) ... ok\ntest_contaminated_or_evidence_free_measurements_do_not_become_facts (test_performance_facts.PerformanceFactsTests.test_contaminated_or_evidence_free_measurements_do_not_become_facts) ... ok\ntest_controller_queues_timeline_only_after_actionable_regression (test_performance_facts.PerformanceFactsTests.test_controller_queues_timeline_only_after_actionable_regression) ... ok\ntest_controller_refuses_measurement_without_quiescence (test_performance_facts.PerformanceFactsTests.test_controller_refuses_measurement_without_quiescence) ... ok\ntest_controller_uses_previous_fact_for_candidate_regression (test_performance_facts.PerformanceFactsTests.test_controller_uses_previous_fact_for_candidate_regression) ... ok\ntest_fact_store_preserves_hashed_raw_evidence_and_can_accept (test_performance_facts.PerformanceFactsTests.test_fact_store_preserves_hashed_raw_evidence_and_can_accept) ... ok\ntest_quiescence_requires_consecutive_idle_samples_and_times_out (test_performance_facts.PerformanceFactsTests.test_quiescence_requires_consecutive_idle_samples_and_times_out) ... ok\ntest_schema_is_present_and_strict (test_performance_facts.PerformanceFactsTests.test_schema_is_present_and_strict) ... ok\ntest_topology_shape_is_compatible_but_relationship_change_is_not (test_performance_facts.PerformanceFactsTests.test_topology_shape_is_compatible_but_relationship_change_is_not) ... ok\ntest_all_supported_evidence_sources_match (test_registry_discovery.RegistryDiscoveryTests.test_all_supported_evidence_sources_match) ... ok\ntest_controller_auto_queue_arms_only_one_unambiguous_campaign (test_registry_discovery.RegistryDiscoveryTests.test_controller_auto_queue_arms_only_one_unambiguous_campaign) ... ok\ntest_discovery_is_deterministic_and_ambiguity_never_selects (test_registry_discovery.RegistryDiscoveryTests.test_discovery_is_deterministic_and_ambiguity_never_selects) ... ok\ntest_registry_rejects_duplicate_ids_unsafe_paths_and_unknown_fields (test_registry_discovery.RegistryDiscoveryTests.test_registry_rejects_duplicate_ids_unsafe_paths_and_unknown_fields) ... ok\ntest_registry_validates_and_compiles_to_legacy_watch_contract (test_registry_discovery.RegistryDiscoveryTests.test_registry_validates_and_compiles_to_legacy_watch_contract) ... ok\ntest_schemas_and_controller_subcommands_are_available (test_registry_discovery.RegistryDiscoveryTests.test_schemas_and_controller_subcommands_are_available) ... /home/tumlinson/Software/miniconda3/lib/python3.13/argparse.py:2382: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa49ea70>\n  if option_string.startswith(option_prefix):\nResourceWarning: Enable tracemalloc to get the object allocation traceback\n/home/tumlinson/Software/miniconda3/lib/python3.13/argparse.py:2382: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x7cd9aa2c5300>\n  if option_string.startswith(option_prefix):\nResourceWarning: Enable tracemalloc to get the object allocation traceback\nok\ntest_todo_glob_scope_overlaps_a_specific_campaign_path (test_registry_discovery.RegistryDiscoveryTests.test_todo_glob_scope_overlaps_a_specific_campaign_path) ... ok\n\n======================================================================\nFAIL: test_manifest_preserves_entire_markdown_corpus (test_guidance.GuidanceTests.test_manifest_preserves_entire_markdown_corpus)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/tumlinson/.agents/skills/cuda/tests/test_guidance.py\", line 19, in test_manifest_preserves_entire_markdown_corpus\n    self.assertEqual({item[\"path\"] for item in payload[\"files\"]}, expected)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Items in the second set but not the first:\n'references/benchmark-registry.md'\n'references/performance-facts.md'\n\n----------------------------------------------------------------------\nRan 40 tests in 7.087s\n\nFAILED (failures=1)\n",
+      "returncode": 1,
+      "tests_run": 40
+    },
+    "local-coding-worker": {
+      "command": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "local-coding-worker/tests",
+        "-v"
+      ],
+      "duration_seconds": 7.553,
+      "returncode": 0,
+      "tests_run": 21
+    },
+    "todo-orchestrator": {
+      "command": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "todo-orchestrator/tests",
+        "-v"
+      ],
+      "duration_seconds": 37.43,
+      "returncode": 0,
+      "tests_run": 83
+    }
+  }
+}

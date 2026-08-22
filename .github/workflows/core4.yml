@@ -1,0 +1,35 @@
+name: CORE4 software-ready validation
+
+on:
+  push:
+    paths:
+      - "todo-orchestrator/**"
+      - "cpp-context-compiler/**"
+      - "cuda/**"
+      - "local-coding-worker/**"
+      - "contracts/**"
+      - "scripts/core4_validate.py"
+      - "AGENTS.md"
+      - ".gitignore"
+      - ".github/workflows/core4.yml"
+  pull_request:
+    paths:
+      - "todo-orchestrator/**"
+      - "cpp-context-compiler/**"
+      - "cuda/**"
+      - "local-coding-worker/**"
+      - "contracts/**"
+      - "scripts/core4_validate.py"
+      - "AGENTS.md"
+      - ".gitignore"
+      - ".github/workflows/core4.yml"
+  workflow_dispatch:
+
+jobs:
+  software-ready:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate CORE4 software paths
+        run: python3 scripts/core4_validate.py --software-ready

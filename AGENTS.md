@@ -14,5 +14,5 @@
 - Use `todo-orchestrator` for persistent project state, decomposition, concurrency, recovery, gates, and evidence.
 - Use `cpp-context-compiler` before broad C++ or CUDA source reads in configured repositories; edit canonical source only.
 - Use `cuda` for CUDA correctness, benchmarking, profiling, architecture guidance, and GPU resource-sensitive work.
-- `local-coding-worker` is introduced by CORE4 and must not be invoked until its software-ready checkpoint exists.
+- Use `local-coding-worker` only for bounded child work authorized by an active todo parent claim; it never owns architecture or task completion.
 - Do not route work to removed or archived skills.

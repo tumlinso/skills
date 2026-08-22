@@ -1,4 +1,6 @@
 interface:
   display_name: "Local Coding Worker"
-  short_description: "Delegate bounded coding work to local models"
-  default_prompt: "Use $local-coding-worker to run a bounded read-only coding investigation with compact evidence."
+  short_description: "Bounded todo-authorized local coding delegation"
+  default_prompt: "Use $local-coding-worker for one bounded child execution authorized by the active todo parent claim, then return compact evidence."
+policy:
+  allow_implicit_invocation: true

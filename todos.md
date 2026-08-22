@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `130`
+Project revision: `136`
 
 ## Workstreams
 - `CORE4-00` | kind: epic | status: planned | parent: - | objective: Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
@@ -11,7 +11,7 @@ Project revision: `130`
 - `CORE4-18` | kind: workstream | status: planned | parent: CORE4-00 | objective: Use the host bake-off evidence to enable reviewer or independent-double-solve only where it lowers frontier rework, tune delegation eligibility and context budgets by task class, set hot-idle and preemption policies, and preserve explicit NEEDS_CODEX behavior.
 - `CORE4-17` | kind: workstream | status: planned | parent: CORE4-00 | objective: Using only user-provided assets, evaluate task-level accepted engineering economics across candidate models, quantizations, 8K/16K/32K contexts, Qwen Code and Codex CLI adapters, one-island balanced, two-island throughput, and all-GPU single-wide profiles; select production defaults from accepted-task results rather than generation speed.
 - `CORE4-16` | kind: workstream | status: planned | parent: CORE4-00 | objective: Inspect the actual machine, installed CUDA 12.x toolchains, llama.cpp/Qwen Code/Codex CLI availability, free storage, GPU topology, RAM, and existing model cache; emit the smallest exact user action needed for real model evaluation without downloading or installing anything.
-- `CORE4-15` | kind: workstream | status: planned | parent: CORE4-00 | objective: Remove private cross-skill imports, keep the three existing public workflows compatible, keep the new local-worker SKILL.md extremely small, correct root routing and ignore rules, add one repository validation entry point, and establish software-ready evidence without real model assets.
+- `CORE4-15` | kind: workstream | status: blocked | parent: CORE4-00 | objective: Remove private cross-skill imports, keep the three existing public workflows compatible, keep the new local-worker SKILL.md extremely small, correct root routing and ignore rules, add one repository validation entry point, and establish software-ready evidence without real model assets.
 - `CORE4-14` | kind: workstream | status: done | parent: CORE4-00 | objective: Build the complete fake-backend software flow: delegate by todo task identity, compile a bounded ctxpp packet, run a terminal local worker, externally verify, surface a compact result, guardedly accept a patch, and trigger relevant CUDA campaign discovery while healthy evidence remains silent.
 - `CORE4-13` | kind: workstream | status: done | parent: CORE4-00 | objective: Extend the supported host resource facade minimally so active local delegation normally outranks background CUDA work, explicit clean CUDA foreground work overrides and drains local inference, idle model residency is lowest priority, preemption preserves task state, and topology bundles are discovered rather than hard-coded.
 - `CORE4-07` | kind: workstream | status: done | parent: CORE4-00 | objective: Measure packet latency, freshness, exact versus compact tokens, canonical source avoided, expansions, broad source fallbacks, local-worker success, accepted patches, and Codex reinvestigation without adding routine output or a dashboard.

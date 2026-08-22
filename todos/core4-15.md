@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-15: Preserve backward compatibility and minimize all four skill surfaces
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `131`; current project revision is in `todo-status.md`.
 
 ## Objective
 Remove private cross-skill imports, keep the three existing public workflows compatible, keep the new local-worker SKILL.md extremely small, correct root routing and ignore rules, add one repository validation entry point, and establish software-ready evidence without real model assets.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `blocked`
+- Execution: `blocked_dependency`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 

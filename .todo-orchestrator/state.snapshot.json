@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T11:26:17Z",
+  "generated_at": "2026-08-22T11:36:44Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 130,
+  "project_revision": 136,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1793,6 +1793,66 @@
         "revision": 130,
         "seq": 130,
         "timestamp": "2026-08-22T11:26:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 131,
+        "seq": 131,
+        "timestamp": "2026-08-22T11:27:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-15-SOFTWARE-READY\"}",
+        "revision": 132,
+        "seq": 132,
+        "timestamp": "2026-08-22T11:32:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.heartbeat",
+        "payload_json": "{}",
+        "revision": 133,
+        "seq": 133,
+        "timestamp": "2026-08-22T11:34:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"372fb74d-79f2-4ee6-8400-3cd09094b804\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 134,
+        "seq": 134,
+        "timestamp": "2026-08-22T11:35:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 135,
+        "seq": 135,
+        "timestamp": "2026-08-22T11:36:25Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-15",
+        "entity_type": "handoff",
+        "event_type": "task.handed_off",
+        "payload_json": "{\"status\": \"blocked\"}",
+        "revision": 136,
+        "seq": 136,
+        "timestamp": "2026-08-22T11:36:44Z"
       }
     ],
     "evidence": [
@@ -1847,6 +1907,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/2b687595-1223-41fd-a4e4-97530007480a",
         "revision": 71,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:35:44Z",
+        "gate_id": "CORE4-15-SOFTWARE-READY",
+        "id": "372fb74d-79f2-4ee6-8400-3cd09094b804",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--software-ready\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0c627d6ea4d46746b313a8d0234801a7c45bc3d44077f8bad82b0ecdc53e0e17\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--software-ready\"], \"cwd\": \".\", \"timeout\": 7200}, \"diff_fingerprint\": \"b674ec678a8abf03cfae18d0798f2f1e3e4090a030f73ce27cf371316dbe07d9\", \"dirty_paths\": [\".github/workflows/core4.yml\", \".todo-orchestrator/state.snapshot.json\", \"AGENTS.md\", \"core4-tests/software-ready/report.json\", \"cpp-context-compiler/agents/openai.yaml\", \"cuda/agents/openai.yaml\", \"local-coding-worker/SKILL.md\", \"local-coding-worker/agents/openai.yaml\", \"scripts/core4_validate.py\", \"todo-orchestrator/agents/openai.yaml\", \"todo-status.md\", \"todos.md\", \"todos/core4-15.md\"], \"files\": [{\"path\": \".gitignore\", \"sha256\": \"d7c8c6441f2e016316a5d27c06297f443e72be8a2bdb5ea0f728c02421797918\"}, {\"path\": \"AGENTS.md\", \"sha256\": \"0be8b21bc8f35be789ea1aaa49e09058ba21158d5939a357cc63d5b8eaa05c78\"}, {\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"git_head\": \"e0c9a6af5b6781689cb4397e14054ea7f31c28cc\", \"interfaces\": [], \"recorded_git_head\": \"e0c9a6af5b6781689cb4397e14054ea7f31c28cc\"}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"started_revision\": 132}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/372fb74d-79f2-4ee6-8400-3cd09094b804",
+        "revision": 134,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -2530,11 +2603,11 @@
         "checkpoint_id": "CORE4-SOFTWARE-READY",
         "config_json": "{\"argv\": [\"python\", \"scripts/core4_validate.py\", \"--software-ready\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator\", \"cpp-context-compiler\", \"cuda\", \"local-coding-worker\", \"contracts\", \"AGENTS.md\", \".gitignore\"], \"timeout\": 7200, \"track_git_head\": true}",
         "id": "CORE4-15-SOFTWARE-READY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "0c627d6ea4d46746b313a8d0234801a7c45bc3d44077f8bad82b0ecdc53e0e17",
+        "last_run_at": "2026-08-22T11:35:44Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 134,
+        "status": "failed",
         "task_id": "CORE4-15",
         "type": "command",
         "valid": 0
@@ -2741,6 +2814,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CORE4-BASELINE-FROZEN\", \"reached_at\": \"2026-08-22T08:55:37Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-02-CTXPP-BASELINE\", \"last_run_at\": \"2026-08-22T08:52:47Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02A-CTXPP-FOCUSED\", \"last_run_at\": \"2026-08-22T08:51:01Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 20 +++++++++++++++-----\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/core4-02a.md                     |  4 ++--\\n 4 files changed, 20 insertions(+), 10 deletions(-)\", \"git_head\": \"11568b6dbaee1923beef8748858920c0f070e575\", \"interfaces\": [], \"note\": \"Resolved the ctxpp baseline contract by retaining lexical-only routing for orphaned files while requiring one targeted semantic TU refresh for indexed changed dependencies. Focused and full 48-test ctxpp gates passed; CORE4-BASELINE-FROZEN and core4-compatibility-v1 were frozen, and commit 11568b6dbaee1923beef8748858920c0f070e575 records the baseline.\", \"resources\": [], \"task_id\": \"CORE4-02A\"}",
         "revision": 29,
         "task_id": "CORE4-02A"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T11:36:44Z",
+        "id": "d5524a63-63b7-4102-a1cf-790205da146c",
+        "kind": "handoff",
+        "note": "Metadata validation and the todo (83), ctxpp (56), and local-worker (21) suites pass. CUDA ran 40 tests with only test_guidance.GuidanceTests.test_manifest_preserves_entire_markdown_corpus failing because the two CORE4 references are absent from the preserved corpus manifest. Add cuda/assets/cuda-markdown-manifest.json to authorized scope, regenerate it with cuda_guidance.manifest, rerun CORE4-15-SOFTWARE-READY, and complete.",
+        "payload_json": "{\"changed_owned_paths\": [\".github/workflows/core4.yml\", \"AGENTS.md\", \"core4-tests/software-ready/report.json\", \"cpp-context-compiler/agents/openai.yaml\", \"cuda/agents/openai.yaml\", \"local-coding-worker/SKILL.md\", \"local-coding-worker/agents/openai.yaml\", \"scripts/core4_validate.py\", \"todo-orchestrator/agents/openai.yaml\"], \"checkpoints\": [{\"id\": \"CORE4-SOFTWARE-READY\", \"reached_at\": null, \"state\": \"pending\"}], \"gates\": [{\"id\": \"CORE4-15-SOFTWARE-READY\", \"last_run_at\": \"2026-08-22T11:35:44Z\", \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json  | 83 +++++++++++++++++++++++++++++----\\n AGENTS.md                               |  2 +-\\n cpp-context-compiler/agents/openai.yaml |  2 +\\n cuda/agents/openai.yaml                 | 10 ++--\\n local-coding-worker/SKILL.md            | 37 ++++++++-------\\n local-coding-worker/agents/openai.yaml  |  6 ++-\\n todo-orchestrator/agents/openai.yaml    |  2 +-\\n todo-status.md                          |  4 +-\\n todos.md                                |  4 +-\\n todos/core4-15.md                       |  6 +--\\n 10 files changed, 114 insertions(+), 42 deletions(-)\", \"git_head\": \"e0c9a6af5b6781689cb4397e14054ea7f31c28cc\", \"interfaces\": [], \"note\": \"Metadata validation and the todo (83), ctxpp (56), and local-worker (21) suites pass. CUDA ran 40 tests with only test_guidance.GuidanceTests.test_manifest_preserves_entire_markdown_corpus failing because the two CORE4 references are absent from the preserved corpus manifest. Add cuda/assets/cuda-markdown-manifest.json to authorized scope, regenerate it with cuda_guidance.manifest, rerun CORE4-15-SOFTWARE-READY, and complete.\", \"resources\": [], \"task_id\": \"CORE4-15\"}",
+        "revision": 136,
+        "task_id": "CORE4-15"
       },
       {
         "claim_id": null,
@@ -5730,7 +5813,7 @@
         "version": 5
       },
       {
-        "attention_reason": null,
+        "attention_reason": "CORE4-15 full CUDA suite requires regenerating cuda/assets/cuda-markdown-manifest.json for references/benchmark-registry.md and references/performance-facts.md, but todo guard confirms that manifest is outside this claim scope.",
         "created_at": "2026-08-22T08:27:56Z",
         "id": "CORE4-15",
         "kind": "workstream",
@@ -5744,12 +5827,12 @@
         "priority": 40,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 131,
+        "status": "blocked",
         "tags_json": "[\"compatibility\", \"docs\", \"ci\", \"software-ready\"]",
         "title": "Preserve backward compatibility and minimize all four skill surfaces",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T11:36:44Z",
+        "version": 5
       },
       {
         "attention_reason": null,

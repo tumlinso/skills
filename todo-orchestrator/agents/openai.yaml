@@ -1,6 +1,6 @@
 interface:
   display_name: "Todo Orchestrator"
-  short_description: "Transactional parallel task pickup, interlocks, resources, and evidence"
+  short_description: "Transactional claims, gates, recovery, and evidence"
   default_prompt: "Use $todo-orchestrator and continue. Bootstrap the project, atomically claim safe ready work, follow the compact task capsule, and finish through the structured CLI."
 policy:
   allow_implicit_invocation: true
