@@ -1,0 +1,11 @@
+usage: cuda_controller.py [-h]
+                          {inspect,background,run,evidence,guide,_sync-watch,_stage} ...
+
+One-call CUDA reconnaissance, measurement, background watches, and evidence
+retrieval.
+
+positional arguments:
+  {inspect,background,run,evidence,guide,_sync-watch,_stage}
+
+options:
+  -h, --help            show this help message and exit

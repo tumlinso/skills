@@ -1,0 +1,184 @@
+{
+  "schema_version": 1,
+  "contract_id": "core4-compatibility-v1",
+  "baseline_git_head": "a7c0060eab831871dfe4343d0185cc77dc6ddbbd",
+  "authority": {
+    "work_state": "todo-orchestrator SQLite",
+    "code": "canonical repository source",
+    "evidence_only": [
+      "Markdown projections",
+      "context packets",
+      "worker reports",
+      "benchmark summaries",
+      "profiler summaries"
+    ]
+  },
+  "skills": {
+    "todo-orchestrator": {
+      "entrypoint": "python todo-orchestrator/scripts/todo.py",
+      "public_commands": [
+        "checkpoint",
+        "barrier",
+        "interface",
+        "decision",
+        "lock",
+        "resource",
+        "gate",
+        "guard",
+        "audit",
+        "reconcile",
+        "recover",
+        "exec",
+        "bootstrap",
+        "init",
+        "status",
+        "doctor",
+        "export",
+        "cleanup",
+        "migrate",
+        "plan",
+        "continue",
+        "claim",
+        "ready",
+        "explain",
+        "context",
+        "changes",
+        "pulse",
+        "release",
+        "block",
+        "handoff",
+        "complete"
+      ],
+      "json_envelope": {
+        "required_keys": [
+          "code",
+          "data",
+          "ok",
+          "schema_version"
+        ],
+        "schema_version": 2
+      },
+      "test_suite": {
+        "command": "python -m unittest discover -s todo-orchestrator/tests -v",
+        "modules": 14,
+        "tests_run": 66,
+        "result": "passed",
+        "evidence_id": "bc7dd482-be86-4039-bfe5-8b6ec9d1881d"
+      },
+      "preserve": [
+        "SQLite remains the sole operational work-state authority",
+        "continue atomically claims work and returns a bounded capsule",
+        "claims, locks, resources, gates, recovery, and completion remain CLI-mediated",
+        "snapshot remains durable recovery state and Markdown remains generated projection",
+        "existing commands and success/error JSON envelopes remain compatible"
+      ],
+      "identity_hashes": {
+        "SKILL.md": "781e85562fcb72e7fdaadeac91112ec070bea8e5adc05c54ae4c34c20002bd56",
+        "references/cli-reference.md": "3ce276140f795f2f4dcdf13af969c6bc920fc13ec7826a4dd6e62fb34b545741",
+        "references/full-workflow-compatibility.md": "9fe6f21d95fc0e6b41dbc981c7b1a66a1299278708d5e69deaa39bd250773a2d",
+        "core4-tests/baseline/todo-help.txt": "dcc18cb9b3bc1adba57d992bbd9f2f048ecf3fe90f1362c6ea3e5a1460900d30"
+      }
+    },
+    "cpp-context-compiler": {
+      "entrypoint": "cpp-context-compiler/scripts/ctxpp",
+      "public_commands": [
+        "init",
+        "doctor",
+        "status",
+        "scan",
+        "where",
+        "route",
+        "slice",
+        "view",
+        "explain",
+        "expand",
+        "audit",
+        "plan",
+        "shard",
+        "apply",
+        "verify",
+        "lint"
+      ],
+      "json_contract": {
+        "format_pattern": "CTXPP-<COMMAND>/1",
+        "stable_json_flag": "--json"
+      },
+      "test_suite": {
+        "command": "python -m unittest discover -s cpp-context-compiler/tests -v",
+        "modules": 6,
+        "tests_run": 48,
+        "tests_passed": 48,
+        "result": "passed",
+        "evidence_id": "387e49d4-fbca-4d25-882e-76e7b3b0832f",
+        "focused_evidence_id": "8e98500b-2ebb-493f-a769-20a5d3604034",
+        "resolved_baseline_discrepancy": "Indexed changed dependencies require targeted semantic refresh; lexical-only routing remains valid for orphaned files"
+      },
+      "preserve": [
+        "canonical C++ remains authoritative and generated context remains read-only",
+        "ordinary retrieval remains narrow and lazy",
+        "source mutation requires explicit intent, a revalidated plan, verification, and reverse data",
+        "semantic operations require compiler identities and ranges",
+        "tool failure falls back to readable canonical inspection, never hand-minification",
+        "existing public commands and CTXPP format identities remain compatible"
+      ],
+      "fixture_hashes": {
+        "tests/expected/compatibility-v1.json": "0e54e151803bdd098aafd61ad4d28a1bbdde76c63b2f20e0d5389216744a0b65",
+        "tests/expected/performance-baseline.json": "4c94db6284914504462107aaa4e7e7be60236f3612cff61e84cee03254fdc022",
+        "tests/expected/performance-optimized.json": "d82cf4830e99dbbe1a709405b78619272e8af780b29efff016f24cde302fe8b9",
+        "tests/expected/performance-scaling.json": "0a09b1aecf68b6d9f482f0d9df08f4dfa6a80bea754690f0731cb73fdf7bf3c6"
+      },
+      "identity_hashes": {
+        "SKILL.md": "87424cb2b16e41a28e9daea7f84df4b8689494440cfd7a68e1f5dfc1658b884d",
+        "core4-tests/baseline/ctxpp-help.txt": "a21709d502978e06c96e856a8870aecd8aedc950fee8b3297a79ce80f9123abc"
+      }
+    },
+    "cuda": {
+      "entrypoint": "python cuda/scripts/cuda_controller.py",
+      "controller_commands": [
+        "inspect",
+        "background",
+        "run",
+        "evidence",
+        "guide"
+      ],
+      "internal_compatibility_dispatch": [
+        "_sync-watch",
+        "_stage"
+      ],
+      "json_contract": {
+        "guide_required_keys": [
+          "kind",
+          "query",
+          "sections",
+          "token_estimate"
+        ],
+        "guide_kind": "collected-guidance"
+      },
+      "test_suite": {
+        "command": "python -m unittest discover -s cuda/tests -v",
+        "modules": 3,
+        "tests_run": 19,
+        "result": "passed",
+        "evidence_id": "c87b3e67-d59a-47ef-a069-5bd9e660cb22"
+      },
+      "preserve": [
+        "correctness precedes performance and raw artifacts remain authoritative",
+        "explicit foreground work preempts conflicting background work",
+        "builds do not reserve GPUs and comparable measurements remain serialized",
+        "healthy background results remain silent while material findings stay bounded",
+        "topology and architecture are discovered or explicitly selected rather than assumed",
+        "existing scripts, routes, architecture labels, statuses, benchmark contracts, debug capture, and mutex remain compatible"
+      ],
+      "fixture_hashes": {
+        "assets/benchmark_manifest.template.json": "bd7f8b45ed098cbb13928583b362b338706dcfd3b5bd1b8efaa7adcc8982f2b5",
+        "assets/benchmark_results.template.json": "8cddb9baa929105b956e56fa53e8eac9a4e5587c69667ce4ed2934f74bf8021b",
+        "assets/cuda-markdown-manifest.json": "202483c62a2de58b3af587d080dba16ce2aa6747e10808cefdc8e85dfcfcfdeb"
+      },
+      "identity_hashes": {
+        "SKILL.md": "c20b4c467adc3b5ca22e57ef062d494d3abf9a41d67d2d942d38c10535961a46",
+        "references/legacy-skill-router.md": "2d5d7dbb0fef393b3b87e3e62fd0c49444341e714f0260f410c083673420c26d",
+        "core4-tests/baseline/cuda-controller-help.txt": "2b3dc75da21d38a7610ad84cdafde5ab8c7bc118600c751207d411cbdcff00e5"
+      }
+    }
+  }
+}

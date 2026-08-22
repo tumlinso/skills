@@ -1,0 +1,12 @@
+usage: todo [-h]
+            {checkpoint,barrier,interface,decision,lock,resource,gate,guard,audit,reconcile,recover,exec,bootstrap,init,status,doctor,export,cleanup,migrate,plan,continue,claim,ready,explain,context,changes,pulse,release,block,handoff,complete} ...
+
+Transactional todo-orchestrator v2
+
+positional arguments:
+  {checkpoint,barrier,interface,decision,lock,resource,gate,guard,audit,reconcile,recover,exec,bootstrap,init,status,doctor,export,cleanup,migrate,plan,continue,claim,ready,explain,context,changes,pulse,release,block,handoff,complete}
+    bootstrap           Create or recover the v2 project and live database.
+    init                Create or recover the v2 project and live database.
+
+options:
+  -h, --help            show this help message and exit

@@ -122,8 +122,9 @@
     {
       "id": "core4-compatibility-v1",
       "owner_task_id": "CORE4-02",
-      "state": "draft",
+      "state": "frozen",
       "version": "1",
+      "content_hash": "a6ad16799eb220fccd5f6d162367fda791bb3665a4d9196fec101b44dab5352d",
       "contract_paths": [
         "contracts/core4-compatibility-v1.json"
       ]
@@ -428,11 +429,16 @@
       "status": "planned",
       "priority": 5,
       "parallel_policy": "serial",
-      "next_action": "Create the compatibility manifest, capture focused baseline outputs, run each existing skill suite once, and reach CORE4-BASELINE-FROZEN.",
+      "next_action": "After CORE4-02A resolves the ctxpp baseline contract and freezes CORE4-BASELINE-FROZEN, resume only to verify and close the baseline task.",
       "depends_on": [
         {
           "type": "task",
           "task_id": "CORE4-01",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "task_id": "CORE4-02A",
           "state": "done"
         }
       ],
@@ -457,18 +463,6 @@
         "CORE4-ECONOMY",
         "CORE4-USER-WORK",
         "CORE4-TESTING"
-      ],
-      "checkpoints": [
-        {
-          "id": "CORE4-BASELINE-FROZEN",
-          "title": "Existing public behavior and preservation requirements captured",
-          "publishes_interfaces": [
-            {
-              "id": "core4-compatibility-v1",
-              "version": "1"
-            }
-          ]
-        }
       ],
       "gates": [
         {
@@ -512,6 +506,94 @@
             "cuda"
           ],
           "track_git_head": true
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "compatibility-manifest",
+          "path": "contracts/core4-compatibility-v1.json"
+        },
+        {
+          "kind": "baseline-evidence",
+          "path": "core4-tests/baseline"
+        }
+      ],
+      "tags": [
+        "foundation",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "CORE4-02A",
+      "parent_id": "CORE4-00",
+      "kind": "validation_task",
+      "title": "Resolve ctxpp targeted-refresh baseline contract",
+      "objective": "Determine whether a newly populated included header may be served by the lexical-overlay fast path or must trigger one semantic TU refresh, then make the smallest backwards-compatible implementation or test correction and restore the ctxpp baseline.",
+      "status": "planned",
+      "priority": 6,
+      "parallel_policy": "serial",
+      "next_action": "Inspect the targeted refresh implementation, failing test, and existing ctxpp retrieval/freshness contract; change only the test if lexical-only freshness is contract-valid, otherwise repair the implementation; run the focused test and full ctxpp suite, then freeze CORE4-BASELINE-FROZEN.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CORE4-01",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "cpp-context-compiler/scripts/ctxpp_fast.py",
+          "cpp-context-compiler/scripts/ctxpp_lib.py",
+          "cpp-context-compiler/tests/test_integration.py",
+          "contracts/core4-compatibility-v1.json",
+          "core4-tests/baseline/README.md"
+        ],
+        "read_paths": [
+          "cpp-context-compiler/SKILL.md",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests/expected"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING"
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-BASELINE-FROZEN",
+          "title": "Existing public behavior and preservation requirements captured",
+          "publishes_interfaces": [
+            {
+              "id": "core4-compatibility-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-02A-CTXPP-FOCUSED",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "-v",
+            "test_integration.IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh"
+          ],
+          "cwd": "cpp-context-compiler/tests",
+          "timeout": 300,
+          "input_paths": [
+            "cpp-context-compiler/scripts/ctxpp_fast.py",
+            "cpp-context-compiler/scripts/ctxpp_lib.py",
+            "cpp-context-compiler/tests/test_integration.py"
+          ],
+          "track_git_head": false
         },
         {
           "id": "CORE4-02-CTXPP-BASELINE",
@@ -532,23 +614,21 @@
           "input_paths": [
             "cpp-context-compiler"
           ],
-          "track_git_head": true
-        }
-      ],
-      "produced_artifacts": [
-        {
-          "kind": "compatibility-manifest",
-          "path": "contracts/core4-compatibility-v1.json"
-        },
-        {
-          "kind": "baseline-evidence",
-          "path": "core4-tests/baseline"
+          "track_git_head": false
         }
       ],
       "tags": [
         "foundation",
-        "compatibility"
-      ]
+        "compatibility",
+        "ctxpp",
+        "prerequisite"
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "implemented"
+        ]
+      }
     },
     {
       "id": "CORE4-03",
