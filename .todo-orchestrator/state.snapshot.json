@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T10:18:49Z",
+  "generated_at": "2026-08-22T10:27:06Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 90,
+  "project_revision": 95,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,12 +105,12 @@
     ],
     "barriers": [
       {
-        "explanation": "2/6 requirements satisfied; target=6",
+        "explanation": "3/6 requirements satisfied; target=6",
         "id": "CORE4-LANES-READY",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 83,
+        "revision": 95,
         "state": "closed",
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
@@ -379,10 +379,10 @@
       {
         "id": "CORE4-LOCAL-ADAPTERS-READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T10:27:02Z",
+        "revision": 94,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-11",
         "title": "Replaceable harness and server adapters pass fake-backend tests"
       },
@@ -1393,6 +1393,56 @@
         "revision": 90,
         "seq": 90,
         "timestamp": "2026-08-22T10:18:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-11",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 91,
+        "seq": 91,
+        "timestamp": "2026-08-22T10:21:46Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-11-ADAPTERS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-11-ADAPTERS\"}",
+        "revision": 92,
+        "seq": 92,
+        "timestamp": "2026-08-22T10:26:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-11-ADAPTERS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"229019f7-e2a7-464d-a9e6-ddbe4c46a7b0\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 93,
+        "seq": 93,
+        "timestamp": "2026-08-22T10:26:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-LOCAL-ADAPTERS-READY",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 94,
+        "seq": 94,
+        "timestamp": "2026-08-22T10:27:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-11",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 95,
+        "seq": 95,
+        "timestamp": "2026-08-22T10:27:06Z"
       }
     ],
     "evidence": [
@@ -1408,6 +1458,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/08978b35-af4a-434d-ac93-0501b78b3e8d",
         "revision": 6,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:26:57Z",
+        "gate_id": "CORE4-11-ADAPTERS",
+        "id": "229019f7-e2a7-464d-a9e6-ddbe4c46a7b0",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_adapters.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"a09682f16ba8fb872e16f7fb4ff677fa64728624a41425354a3816d84f491518\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_adapters.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"f1db3e6837d19b3ef5032c969dc136d8288d6785521accb296794679f599dbe8\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/__init__.py\", \"local-coding-worker/local_worker/harnesses/__init__.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/codex_cli.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/servers/__init__.py\", \"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/adapter-contract.md\", \"local-coding-worker/tests/test_adapters.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-11.md\"], \"files\": [{\"path\": \"local-coding-worker/local_worker/harnesses\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker/local_worker/servers\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker/local_worker/service.py\", \"sha256\": \"d80028087879a4f67f74934a19863313ee5b6312987f796eba8001bbb7c91c35\"}, {\"path\": \"local-coding-worker/tests/test_adapters.py\", \"sha256\": \"5c50c46056b7642748256b7d120f42266e3776f1703618651c9b8dac340dbef8\"}], \"interfaces\": [], \"recorded_git_head\": \"375229e4667d0492261f10c388fc586ecc65d51e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 92}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/229019f7-e2a7-464d-a9e6-ddbe4c46a7b0",
+        "revision": 93,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -1896,14 +1959,14 @@
         "checkpoint_id": "CORE4-LOCAL-ADAPTERS-READY",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_adapters.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/local_worker/harnesses\", \"local-coding-worker/local_worker/servers\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/tests/test_adapters.py\"], \"timeout\": 1200}",
         "id": "CORE4-11-ADAPTERS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "a09682f16ba8fb872e16f7fb4ff677fa64728624a41425354a3816d84f491518",
+        "last_run_at": "2026-08-22T10:26:57Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 93,
+        "status": "passed",
         "task_id": "CORE4-11",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-LOCAL-WRITE-FROZEN",
@@ -2148,6 +2211,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"contracts/artifact-ref-v1.schema.json\", \"contracts/command-spec-v1.schema.json\", \"contracts/evidence-summary-v1.schema.json\", \"contracts/resource-request-v1.schema.json\", \"contracts/source-identity-v1.schema.json\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/contracts.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/source.py\"], \"checkpoints\": [{\"id\": \"CORE4-RUNTIME-FROZEN\", \"reached_at\": \"2026-08-22T09:11:24Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-03-FACADE\", \"last_run_at\": \"2026-08-22T09:11:12Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-03-BACKGROUND-COMPAT\", \"last_run_at\": \"2026-08-22T09:11:12Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 174 +++++++++++++++++++++++++++------\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/core4-02.md                      |   8 +-\\n todos/core4-03.md                      |   6 +-\\n 5 files changed, 158 insertions(+), 42 deletions(-)\", \"git_head\": \"9ec96f5965812dd274b89972eebaf45844cf3d79\", \"interfaces\": [{\"content_hash\": \"74878187872b3c3b9227869e67dda9a03434ada7e8e85093d18dda4a9baade66\", \"id\": \"core4-runtime-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Added five strict v1 contracts plus supported runtime facades for jobs, snapshots, artifacts, source identity, and host resources. CORE4-03-FACADE and CORE4-03-BACKGROUND-COMPAT passed; CORE4-RUNTIME-FROZEN published core4-runtime-v1.\", \"resources\": [], \"task_id\": \"CORE4-03\"}",
         "revision": 38,
         "task_id": "CORE4-03"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T10:27:06Z",
+        "id": "ae9efce9-b22e-48c7-b753-7cf96042329b",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/harnesses/__init__.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/codex_cli.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/servers/__init__.py\", \"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/adapter-contract.md\", \"local-coding-worker/tests/test_adapters.py\"], \"checkpoints\": [{\"id\": \"CORE4-LOCAL-ADAPTERS-READY\", \"reached_at\": \"2026-08-22T10:27:02Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-11-ADAPTERS\", \"last_run_at\": \"2026-08-22T10:26:57Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 81 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +-\\n todos.md                               |  4 +-\\n todos/core4-11.md                      |  6 +--\\n 4 files changed, 74 insertions(+), 21 deletions(-)\", \"git_head\": \"375229e4667d0492261f10c388fc586ecc65d51e\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-11\"}",
+        "revision": 95,
+        "task_id": "CORE4-11"
       },
       {
         "claim_id": null,
@@ -5051,14 +5124,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CORE4-00",
         "priority": 25,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 95,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"adapters\", \"llama-cpp\", \"qwen-code\", \"codex-cli\"]",
         "title": "Implement model-server and coding-harness adapters",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:27:06Z",
+        "version": 5
       },
       {
         "attention_reason": null,
