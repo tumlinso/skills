@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cuda.local/schemas/performance-fact-v1.schema.json",
+  "title": "CUDA performance fact v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schema_version", "fact_id", "campaign_id", "role", "source", "compatibility", "measurement", "classification", "baseline", "raw_evidence", "created_at"],
+  "properties": {
+    "format": {"const": "CUDA-PERFORMANCE-FACT/1"},
+    "schema_version": {"const": 1},
+    "fact_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "campaign_id": {"type": "string", "minLength": 1},
+    "role": {"enum": ["accepted", "previous", "candidate", "historical"]},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fingerprint", "commit", "dirty"],
+      "properties": {
+        "fingerprint": {"type": "string", "minLength": 1},
+        "commit": {"type": ["string", "null"]},
+        "dirty": {"type": "boolean"}
+      }
+    },
+    "compatibility": {
+      "type": "object", "additionalProperties": false,
+      "required": ["campaign_id", "protocol", "machine", "key"],
+      "properties": {
+        "campaign_id": {"type": "string", "minLength": 1},
+        "key": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "protocol": {
+          "type": "object", "additionalProperties": false,
+          "required": ["benchmark_id", "metric", "direction", "warmups", "repetitions", "declared_workload", "toolchain_id"],
+          "properties": {
+            "benchmark_id": {"type": "string", "minLength": 1},
+            "metric": {"type": "string", "minLength": 1},
+            "direction": {"enum": ["minimize", "maximize"]},
+            "warmups": {"type": "integer", "minimum": 0},
+            "repetitions": {"type": "integer", "minimum": 1},
+            "declared_workload": {"type": "object"},
+            "toolchain_id": {"type": "string"}
+          }
+        },
+        "machine": {
+          "type": "object", "additionalProperties": false,
+          "required": ["devices", "topology"],
+          "properties": {
+            "devices": {
+              "type": "array",
+              "items": {
+                "type": "object", "additionalProperties": false,
+                "required": ["model", "compute_capability", "memory_total_mib", "driver_version"],
+                "properties": {
+                  "model": {"type": "string"},
+                  "compute_capability": {"type": "string"},
+                  "memory_total_mib": {"type": "integer", "minimum": 0},
+                  "driver_version": {"type": "string"}
+                }
+              }
+            },
+            "topology": {
+              "type": "object", "additionalProperties": false,
+              "required": ["nvlink_group_sizes", "pcie_group_sizes"],
+              "properties": {
+                "nvlink_group_sizes": {"type": "array", "items": {"type": "integer", "minimum": 1}},
+                "pcie_group_sizes": {"type": "array", "items": {"type": "integer", "minimum": 1}}
+              }
+            }
+          }
+        }
+      }
+    },
+    "measurement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["metric", "direction", "statistics", "uncontaminated", "quiescence"],
+      "properties": {
+        "metric": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["minimize", "maximize"]},
+        "statistics": {"type": "object", "required": ["median", "mad", "values"]},
+        "uncontaminated": {"const": true},
+        "quiescence": {"type": "object", "required": ["format", "schema_version", "state", "uncontaminated"]}
+      }
+    },
+    "classification": {"type": "string", "minLength": 1},
+    "baseline": {"type": ["object", "null"]},
+    "raw_evidence": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["kind", "path", "sha256", "complete"],
+        "properties": {
+          "kind": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "complete": {"const": true}
+        }
+      }
+    },
+    "created_at": {"type": "number", "minimum": 0}
+  }
+}

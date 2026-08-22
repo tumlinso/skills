@@ -41,9 +41,19 @@ from todo_orchestrator.config import project_paths  # noqa: E402
 from cuda_guidance import retrieve  # noqa: E402
 from cuda_discovery import discover_campaigns  # noqa: E402
 from cuda_registry import load_registry  # noqa: E402
+from cuda_baselines import (  # noqa: E402
+    adaptive_correctness_target,
+    comparison_percent,
+    compatibility_descriptor,
+    machine_class,
+    profiler_escalation,
+    select_baseline,
+)
+from cuda_facts import FactError, PerformanceFactStore, build_performance_fact  # noqa: E402
+from cuda_quiescence import prove_quiescence  # noqa: E402
 
 PARSER_VERSION = "cuda-controller/1"
-BACKGROUND_PIPELINE_VERSION = 6
+BACKGROUND_PIPELINE_VERSION = 7
 MUTEX = SCRIPT_DIR / "with_benchmark_mutex.sh"
 
 
@@ -182,6 +192,7 @@ def topology_tags(devices: list[dict[str, object]]) -> dict[str, dict[str, str]]
         return tags
     count = len(devices)
     parent = list(range(count))
+    physical_to_local = {int(item["index"]): position for position, item in enumerate(devices)}
     def find(value):
         while parent[value] != value:
             parent[value] = parent[parent[value]]
@@ -197,12 +208,16 @@ def topology_tags(devices: list[dict[str, object]]) -> dict[str, dict[str, str]]
         fields = [field.strip() for field in line.split("\t")]
         if fields and re.fullmatch(r"GPU\d+", fields[0]):
             index = int(fields[0][3:])
-            rows[index] = fields
-            for peer, link in enumerate(fields[1:1 + count]):
-                if link.startswith("NV"):
-                    union(index, peer)
+            local_index = physical_to_local.get(index)
+            if local_index is None:
+                continue
+            rows[local_index] = fields
+            for peer, link in enumerate(fields[1:]):
+                local_peer = physical_to_local.get(peer)
+                if local_peer is not None and link.startswith("NV"):
+                    union(local_index, local_peer)
     domains = {root: number for number, root in enumerate(sorted({find(index) for index in range(count)}))}
-    by_index = {int(item["index"]): str(item["uuid"]) for item in devices}
+    by_index = {position: str(item["uuid"]) for position, item in enumerate(devices)}
     for index, gpu_uuid in by_index.items():
         tags[gpu_uuid]["nvlink_domain"] = f"domain-{domains[find(index)]}"
         fields = rows.get(index, [])
@@ -247,6 +262,23 @@ def sample_devices(uuids: list[str], samples: int = 3, interval: float = 0.2) ->
     contaminated = any(item["foreign_processes"] for item in observations)
     busy = any(any(float(gpu.get("utilization_percent", 0)) > 5.0 for gpu in item["devices"]) for item in observations)
     return {"samples": observations, "foreign_processes": contaminated, "busy": busy, "idle": not contaminated and not busy}
+
+
+def quiescence_proof(uuids: list[str], config: dict[str, object] | None = None) -> dict[str, object]:
+    config = config or {}
+    return prove_quiescence(
+        uuids,
+        lambda selected: sample_devices(selected, samples=1, interval=0),
+        timeout_seconds=float(config.get("timeout_seconds", 10.0)),
+        consecutive_idle_samples=int(config.get("consecutive_idle_samples", 3)),
+        interval_seconds=float(config.get("interval_seconds", 0.2)),
+    )
+
+
+def measurement_machine(uuids: list[str]) -> tuple[list[dict[str, object]], dict[str, object]]:
+    all_devices = probe_gpus(dynamic=False)
+    selected = [item for item in all_devices if str(item.get("uuid")) in set(uuids)]
+    return selected, machine_class(selected, topology_tags(all_devices))
 
 
 def project_inspect(project: Path) -> dict[str, object]:
@@ -540,7 +572,7 @@ def queue_revision(store: BackgroundStore, watch: dict[str, object], snapshot: d
             continue
         candidate = dict(raw_candidate)
         candidate_id = str(candidate.get("id") or f"candidate-{position}")
-        candidate_snapshot = {**queued_snapshot, "_candidate": {**candidate, "id": candidate_id}}
+        candidate_snapshot = {**queued_snapshot, "_candidate": {**candidate, "id": candidate_id}, "_fact_role": "candidate"}
         candidate_common = {**common, "snapshot": candidate_snapshot}
         dependency = benchmark
         if candidate.get("build_argv"):
@@ -658,6 +690,8 @@ def enqueue_supplied_revisions(spec: dict[str, object], *, backfill: bool) -> di
             continue
         if benchmark_override:
             validate_watch_spec({**watch["spec"], "benchmark": {**watch["spec"]["benchmark"], **benchmark_override}})
+        if backfill:
+            snapshot = {**snapshot, "_fact_role": "accepted" if mapping.get("accepted_baseline") is True else "historical"}
         todo_value = mapping.get("todo_revision")
         if todo_value is None and isinstance(mapping.get("revision"), int):
             todo_value = mapping["revision"]
@@ -801,21 +835,48 @@ def _benchmark(spec: dict[str, object], cwd: Path, env: dict[str, str], output_d
     return {"valid": valid, "records": records, "statistics": _robust(included) if included else None}
 
 
-def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, object], outcome: dict[str, object], fingerprint: str) -> dict[str, object]:
+def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, object], outcome: dict[str, object], fingerprint: str,
+                        *, snapshot: dict[str, object] | None = None, devices: list[dict[str, object]] | None = None,
+                        machine: dict[str, object] | None = None, quiescence: dict[str, object] | None = None) -> dict[str, object]:
     benchmark = spec["benchmark"]
     if not outcome["valid"]:
         return {**outcome, "status": "failed", "classification": "correctness-or-measurement-failure", "severity": 100, "valid": False,
                 "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
+    snapshot = snapshot or {"fingerprint": fingerprint}
+    devices = devices or []
+    quiescence = quiescence or {
+        "format": "CUDA-QUIESCENCE/1", "schema_version": 1, "state": "quiescent",
+        "uncontaminated": True, "device_uuids": [], "observations": [],
+    }
     current = float(outcome["statistics"]["median"])
     baseline_key = f"baseline:{watch_id}"
-    baseline = store.get_meta(baseline_key)
     direction = str(benchmark["direction"])
     threshold = float(benchmark.get("practical_regression_percent", 2.0))
+    campaign_id = str(spec.get("registry_campaign_id") or watch_id)
+    if machine is None:
+        machine = machine_class(devices)
+    compatibility = compatibility_descriptor(campaign_id=campaign_id, benchmark=benchmark, machine=machine)
+    fact_store = PerformanceFactStore(store, watch_id)
+    selection = select_baseline(
+        fact_store.list(), {"compatibility": compatibility},
+        accepted_fact_id=str(benchmark["accepted_baseline_fact_id"]) if benchmark.get("accepted_baseline_fact_id") else None,
+    )
+    baseline_fact = selection.get("fact") if selection.get("status") == "compatible" else None
+    baseline = None
+    if isinstance(baseline_fact, dict):
+        prior_statistics = baseline_fact.get("measurement", {}).get("statistics", {})
+        baseline = {
+            "status": "compatible", "relation": selection["relation"], "fact_id": baseline_fact["fact_id"],
+            "median": prior_statistics.get("median"), "source_fingerprint": baseline_fact.get("source", {}).get("fingerprint"),
+            "compatibility_key": compatibility["key"],
+        }
+    else:
+        baseline = {"status": "absent", "reason": selection.get("reason"), "compatibility_key": compatibility["key"]}
     classification, severity, delta = "healthy", 0, None
-    if baseline and baseline.get("valid"):
-        prior = float(baseline["median"])
-        delta = ((current - prior) / abs(prior) * 100.0) if direction == "minimize" else ((prior - current) / abs(prior) * 100.0)
-        if delta > threshold:
+    if isinstance(baseline_fact, dict):
+        prior = float(baseline_fact["measurement"]["statistics"]["median"])
+        delta = comparison_percent(current, prior, direction)
+        if delta is not None and delta > threshold:
             classification, severity = "material-regression", 90
     target = benchmark.get("target")
     if target is not None:
@@ -829,7 +890,21 @@ def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, o
               "metric": benchmark["metric"], "direction": direction, "comparison_percent": delta,
               "baseline": baseline, "target": benchmark.get("target"),
               "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
-    if not baseline:
+    role = str(snapshot.get("_fact_role", "previous"))
+    if role not in {"accepted", "previous", "candidate", "historical"}:
+        role = "previous"
+    try:
+        fact = build_performance_fact(
+            campaign_id=campaign_id, role=role, source=snapshot, compatibility=compatibility,
+            metric=str(benchmark["metric"]), direction=direction, statistics=outcome["statistics"],
+            classification=classification, records=outcome["records"], quiescence=quiescence,
+            baseline=baseline if baseline.get("status") == "compatible" else None,
+        )
+        result["performance_fact"] = fact_store.append(fact)
+    except FactError as exc:
+        result["performance_fact_error"] = str(exc)
+    legacy_baseline = store.get_meta(baseline_key)
+    if not legacy_baseline:
         store.set_meta(baseline_key, {"valid": True, "median": current, "source_fingerprint": fingerprint})
     return result
 
@@ -876,20 +951,27 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
     cwd = Path(str(snapshot["source_root"]))
     artifact_dir = Path(os.environ.get("TODO_BACKGROUND_ARTIFACT_DIR", store.paths.artifacts / "unbound")) / "cuda"
     uuids, indices = _allocated_gpus()
-    before = sample_devices(uuids) if uuids else {"idle": True, "samples": []}
+    base_kind = kind.removeprefix("candidate-")
+    measured = base_kind in {"benchmark", "nsys", "ncu"}
+    quiescence = (quiescence_proof(uuids, dict(benchmark.get("quiescence", {}))) if uuids and measured
+                  else {"format": "CUDA-QUIESCENCE/1", "schema_version": 1, "state": "not_required",
+                        "uncontaminated": True, "device_uuids": uuids, "observations": []})
+    before = (quiescence["observations"][-1] if quiescence.get("observations") else
+              sample_devices(uuids) if uuids else {"idle": True, "samples": []})
     required_free = int(spec["benchmark"].get("gpu_memory_headroom_mib", 0) or 0)
     memory_low = required_free and any(
         int(gpu.get("memory_free_mib", 0)) < required_free
         for observation in before.get("samples", []) for gpu in observation.get("devices", [])
     )
-    if uuids and (not before["idle"] or memory_low):
-        return {"valid": False, "contaminated": True, "status": "skipped", "classification": "resource-busy", "severity": 0,
-                "resource_samples": before, "parser_version": PARSER_VERSION}
+    if uuids and ((measured and not quiescence["uncontaminated"]) or not before["idle"] or memory_low):
+        return {"valid": False, "contaminated": True, "status": "skipped",
+                "classification": "gpu-not-quiescent" if measured and not quiescence["uncontaminated"] else "resource-busy",
+                "severity": 0, "resource_samples": {"before": before, "quiescence": quiescence},
+                "parser_version": PARSER_VERSION}
     env = _command_environment(indices, uuids, background=True)
     if isinstance(candidate, dict):
         env.update({str(key): str(value) for key, value in dict(candidate.get("env", {})).items()})
     fingerprint = str(snapshot["fingerprint"])
-    base_kind = kind.removeprefix("candidate-")
     if base_kind == "build":
         base_build, _ = _base_stage_commands(benchmark)
         raw_command = candidate.get("build_argv", []) if isinstance(candidate, dict) and candidate else base_build
@@ -909,12 +991,17 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
         maximum_repetitions = max(repetitions, int(benchmark.get("correctness_maximum_repetitions", 64)))
         records = []
         correctness_started = time.monotonic()
+        adaptive_target = repetitions
         for index in range(maximum_repetitions):
             records.append(_capture(command, cwd, env, artifact_dir, f"correctness-{index}",
                                     float(benchmark.get("correctness_timeout", 1800))))
             if records[-1]["returncode"] != 0:
                 break
-            if len(records) >= repetitions and time.monotonic() - correctness_started >= minimum_seconds:
+            adaptive_target = adaptive_correctness_target(
+                configured_repetitions=repetitions, minimum_seconds=minimum_seconds,
+                maximum_repetitions=maximum_repetitions, completed_records=records,
+            )
+            if len(records) >= adaptive_target and time.monotonic() - correctness_started >= minimum_seconds:
                 break
         record = records[-1]
         elapsed = time.monotonic() - correctness_started
@@ -923,32 +1010,38 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
         result = {"valid": valid, "status": "succeeded" if valid else "failed",
                   "classification": "healthy" if valid else "correctness-failure", "severity": 0 if valid else 100,
                   "record": record, "records": records, "parser_version": PARSER_VERSION,
+                  "correctness_target_repetitions": adaptive_target,
                   "correctness_elapsed_seconds": round(elapsed, 6),
                   "source_fingerprint": fingerprint}
         if not valid:
             result.update(_cheap_failure_classification(record, snapshot))
     elif base_kind == "benchmark":
         outcome = _benchmark(effective_spec, cwd, env, artifact_dir, background=True)
-        result = _classify_benchmark(store, watch_id, effective_spec, outcome, fingerprint)
+        selected_devices, machine = measurement_machine(uuids)
+        result = _classify_benchmark(
+            store, watch_id, effective_spec, outcome, fingerprint,
+            snapshot=snapshot, devices=selected_devices, machine=machine, quiescence=quiescence,
+        )
         failed_record = next((item for item in outcome["records"] if item["returncode"] != 0), None)
         if failed_record:
             result.update(_cheap_failure_classification(failed_record, snapshot))
         if isinstance(candidate, dict) and candidate:
             result["candidate_id"] = candidate.get("id")
-        if result["severity"] >= 70:
-            request = _resource_request(spec, "benchmark")
-            common = {"watch_id": watch_id, "cwd": str(cwd), "resources": request, "source_fingerprint": fingerprint,
-                      "snapshot": snapshot, "priority": 50, "retry_limit": 0}
+        decision = profiler_escalation(
+            str(result["classification"]),
+            max_profiles=int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2)),
+        )
+        result["profiler_decision"] = decision
+        if decision["profile"] == "nsys":
             limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
-            dependency: list[str] = []
-            for profile_kind in ("nsys", "ncu")[:max(0, min(2, limit))]:
-                profile_job, _ = store.enqueue(
-                    {**common, "resources": _resource_request(effective_spec, profile_kind), "kind": profile_kind,
-                     "argv": stage_argv(project, watch_id, profile_kind, snapshot),
-                     "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:{profile_kind}"},
-                    dependency,
-                )
-                dependency = [profile_job]
+            profile_snapshot = {**snapshot, "_profile_escalation": result["classification"], "_max_profiles": limit}
+            store.enqueue(
+                {"watch_id": watch_id, "cwd": str(cwd), "resources": _resource_request(effective_spec, "nsys"),
+                 "source_fingerprint": fingerprint, "snapshot": profile_snapshot, "priority": 50, "retry_limit": 0,
+                 "kind": "nsys", "argv": stage_argv(project, watch_id, "nsys", profile_snapshot),
+                 "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:nsys"},
+                [],
+            )
     elif base_kind in {"nsys", "ncu"}:
         wrapper = SCRIPT_DIR / f"profile_{base_kind}.sh"
         command = [str(item).replace("{snapshot}", str(cwd)) for item in benchmark["argv"]]
@@ -965,12 +1058,26 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
         result = {"valid": record["returncode"] == 0 and summary is not None, "status": "succeeded" if record["returncode"] == 0 else "failed",
                   "classification": "profile-observation", "severity": 0, "record": record, "summary": summary,
                   "raw_report_root": str(output / "run"), "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
+        if base_kind == "nsys" and result["valid"] and snapshot.get("_profile_escalation"):
+            decision = profiler_escalation(
+                str(snapshot["_profile_escalation"]), timeline_summary=summary,
+                max_profiles=int(snapshot.get("_max_profiles", 2)),
+            )
+            result["profiler_decision"] = decision
+            if decision["profile"] == "ncu":
+                store.enqueue(
+                    {"watch_id": watch_id, "cwd": str(cwd), "resources": _resource_request(effective_spec, "ncu"),
+                     "source_fingerprint": fingerprint, "snapshot": snapshot, "priority": 50, "retry_limit": 0,
+                     "kind": "ncu", "argv": stage_argv(project, watch_id, "ncu", snapshot),
+                     "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:ncu"},
+                    [],
+                )
     else:
         result = {"valid": False, "status": "failed", "classification": "unknown-stage", "severity": 0}
     after = sample_devices(uuids) if uuids else {"idle": True, "samples": []}
     if after.get("foreign_processes"):
         result.update(valid=False, contaminated=True, status="skipped", classification="measurement-contaminated", severity=0)
-    result["resource_samples"] = {"before": before, "after": after}
+    result["resource_samples"] = {"before": before, "after": after, "quiescence": quiescence}
     base_build, base_correctness = _base_stage_commands(benchmark)
     command = (candidate.get("build_argv", []) if isinstance(candidate, dict) and candidate else base_build) if base_kind == "build" else base_correctness if base_kind == "correctness" else benchmark["argv"]
     result["provenance"] = provenance(project, snapshot, [str(item) for item in command], probe_gpus(dynamic=False), benchmark)
@@ -1059,9 +1166,13 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
             time.sleep(0.1)
         if store.running_conflicts(resource_ids) or host.conflicts(host_resources) or not host.activate_foreground(host_owner, host_resources) or not store.reserve_foreground(intent, resource_ids):
             return {"ok": False, "code": "foreground_resource_contention"}
-        sample = sample_devices(requested)
-        if requested and sample["foreign_processes"]:
-            return {"ok": False, "code": "foreign_gpu_activity", "resources": sample}
+        quiescence = (quiescence_proof(requested, dict(spec.get("quiescence", {}))) if requested else
+                      {"format": "CUDA-QUIESCENCE/1", "schema_version": 1, "state": "not_required",
+                       "uncontaminated": True, "device_uuids": [], "observations": []})
+        sample = quiescence["observations"][-1] if quiescence.get("observations") else {"idle": True, "samples": []}
+        if requested and not quiescence["uncontaminated"]:
+            code = "foreign_gpu_activity" if sample.get("foreign_processes") else "gpu_not_quiescent"
+            return {"ok": False, "code": code, "resources": sample, "quiescence": quiescence}
         snapshot = create_snapshot(project, store.paths.artifacts, [str(item) for item in spec.get("paths", [])], allow_dirty=True)
         if not snapshot.get("safe"):
             return {"ok": False, "code": "snapshot_failed", "reason": snapshot.get("reason")}
@@ -1089,7 +1200,10 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
                 "argv": [str(item) for item in spec["argv"]], "metric": spec["metric"],
                 "direction": spec.get("direction", "minimize"), "warmups": spec.get("warmups", 1),
                 "repetitions": spec.get("repetitions", 5), "timeout": spec.get("timeout", 3600),
-            }}
+                "practical_regression_percent": spec.get("practical_regression_percent", 2.0),
+                "target": spec.get("target"), "compatibility": spec.get("compatibility", {}),
+                "toolchain_id": spec.get("toolchain_id", ""),
+            }, "registry_campaign_id": str(spec.get("campaign_id", "foreground"))}
             benchmark_outcome = _benchmark(benchmark_spec, project, environment, artifact_dir, background=False)
             record = {"argv": argv, "returncode": 0 if benchmark_outcome["valid"] else 1,
                       "statistics": benchmark_outcome["statistics"], "records": benchmark_outcome["records"]}
@@ -1097,12 +1211,25 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
             record = _foreground_capture(argv, project, environment, artifact_dir, float(spec.get("timeout", 3600)))
         after = sample_devices(requested)
         valid = record["returncode"] == 0 and not after.get("foreign_processes")
+        classified = None
+        if benchmark_outcome and benchmark_outcome["valid"]:
+            selected_devices, machine = measurement_machine(requested)
+            classified = _classify_benchmark(
+                store, f"foreground:{spec.get('campaign_id', 'default')}", benchmark_spec,
+                benchmark_outcome, str(snapshot.get("fingerprint", "")), snapshot=snapshot,
+                devices=selected_devices, machine=machine, quiescence=quiescence,
+            )
         result = {"status": "succeeded" if valid else "failed", "valid": valid,
                   "classification": "decision-result" if valid else "measurement-failure", "severity": 0 if valid else 90,
-                  "record": record, "correctness": correctness, "resource_samples": {"before": sample, "after": after},
+                  "record": record, "correctness": correctness,
+                  "resource_samples": {"before": sample, "after": after, "quiescence": quiescence},
                   "context": _ctxpp_context(spec, project), "benchmark": benchmark_outcome,
                   "provenance": provenance(project, snapshot, [str(item) for item in spec["argv"]], [item for item in devices if item["uuid"] in requested], spec),
                   "parser_version": PARSER_VERSION}
+        if classified:
+            for field in ("classification", "severity", "comparison_percent", "baseline", "performance_fact", "performance_fact_error"):
+                if field in classified:
+                    result[field] = classified[field]
         artifacts = []
         if benchmark_outcome:
             for item in benchmark_outcome["records"]:

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-09: Add CUDA compatible baselines, performance facts, and quiescence
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `114`; current project revision is in `todo-status.md`.
 
 ## Objective
 Replace first-result-only baseline semantics with accepted/previous/candidate/historical compatibility, store reusable performance facts, make profiler escalation decision-driven, adapt correctness repetition, and prove post-inference GPU quiescence before uncontaminated measurements.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Implement new fact and compatibility modules, preserve raw evidence, and update controller classification without changing existing commands.

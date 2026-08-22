@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T10:50:34Z",
+  "generated_at": "2026-08-22T11:06:28Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 107,
+  "project_revision": 114,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,12 +105,12 @@
     ],
     "barriers": [
       {
-        "explanation": "4/6 requirements satisfied; target=6",
+        "explanation": "5/6 requirements satisfied; target=6",
         "id": "CORE4-LANES-READY",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 100,
+        "revision": 114,
         "state": "closed",
         "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented"
       },
@@ -349,10 +349,10 @@
       {
         "id": "CORE4-CUDA-FACTS-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T11:06:21Z",
+        "revision": 113,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-09",
         "title": "Durable performance fact and clean-measurement contract frozen"
       },
@@ -1563,6 +1563,76 @@
         "revision": 107,
         "seq": 107,
         "timestamp": "2026-08-22T10:50:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 108,
+        "seq": 108,
+        "timestamp": "2026-08-22T10:52:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09-PERFORMANCE-FACTS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-09-PERFORMANCE-FACTS\"}",
+        "revision": 109,
+        "seq": 109,
+        "timestamp": "2026-08-22T11:06:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09-PERFORMANCE-FACTS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"89e1dbb1-de92-4040-831b-c997553c1b9d\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 110,
+        "seq": 110,
+        "timestamp": "2026-08-22T11:06:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09-CONTROLLER-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-09-CONTROLLER-REGRESSION\"}",
+        "revision": 111,
+        "seq": 111,
+        "timestamp": "2026-08-22T11:06:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09-CONTROLLER-REGRESSION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"94796a51-5409-45ab-a497-87326519d632\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 112,
+        "seq": 112,
+        "timestamp": "2026-08-22T11:06:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-CUDA-FACTS-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 113,
+        "seq": 113,
+        "timestamp": "2026-08-22T11:06:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-09",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 114,
+        "seq": 114,
+        "timestamp": "2026-08-22T11:06:28Z"
       }
     ],
     "evidence": [
@@ -1752,6 +1822,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T11:06:08Z",
+        "gate_id": "CORE4-09-PERFORMANCE-FACTS",
+        "id": "89e1dbb1-de92-4040-831b-c997553c1b9d",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_performance_facts.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"12d5abca0a5e75ff3cd26ecab204a6d05240f677745ae1b91a34d21122b7c904\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_performance_facts.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"4bf60f011453e9f6ac826367c55209457d7f9981e397be298875f3c2fb997636\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/performance-facts.md\", \"cuda/schemas/performance-fact-v1.schema.json\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_facts.py\", \"cuda/scripts/cuda_quiescence.py\", \"cuda/tests/test_performance_facts.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-09.md\"], \"files\": [{\"path\": \"cuda/scripts/cuda_baselines.py\", \"sha256\": \"1f1e2540188b193c5facf62c99ab619aaf5bc10928638c7d8843ee136f5d7964\"}, {\"path\": \"cuda/scripts/cuda_controller.py\", \"sha256\": \"6a164e91254071bf73459a1c038bd4bdae96495b3d5e4e27b871f52075ab5471\"}, {\"path\": \"cuda/scripts/cuda_facts.py\", \"sha256\": \"03b74ddec8a68c724a88e7af72cb33ed75d4d4e6b187c00906afcc0932596ce8\"}, {\"path\": \"cuda/scripts/cuda_quiescence.py\", \"sha256\": \"89085455e041a5a124adccfb2e64fb62d569f9b365268126c8290117029412da\"}, {\"path\": \"cuda/tests/test_performance_facts.py\", \"sha256\": \"312a1a0fc09b09faf90ab474a7244411a1176e9afc06f8f5ced9f55b68e3a5a5\"}], \"interfaces\": [], \"recorded_git_head\": \"a4fcaa9bdea348f8b9c5a0b6a3989240b320bb36\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 109}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/89e1dbb1-de92-4040-831b-c997553c1b9d",
+        "revision": 110,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:51:01Z",
         "gate_id": "CORE4-02A-CTXPP-FOCUSED",
         "id": "8e98500b-2ebb-493f-a769-20a5d3604034",
@@ -1759,6 +1842,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"test_integration.IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"-v\", \"test_integration.IntegrationTests.test_new_symbol_in_previously_empty_included_header_routes_via_targeted_refresh\"], \"cwd\": \"cpp-context-compiler/tests\", \"timeout\": 300}, \"diff_fingerprint\": \"501097749229e35d71dbaeb65f7c530d15b1352a9bac1ab97a347241e8613096\", \"dirty_paths\": [\".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cpp-context-compiler/scripts/ctxpp_fast.py\", \"sha256\": \"19dac7e03b033103c482da8c01ddf719e251f922c7941f41c40c3c0aeb3d7abf\"}, {\"path\": \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"sha256\": \"78c668f5aa585b087306c6bec2910832a880938c3a819f6e91447d1ab9ac3415\"}, {\"path\": \"cpp-context-compiler/tests/test_integration.py\", \"sha256\": \"577e3928f2f857b8dc0e86bc06934bfb690a19edb537eba8db4ee3112790b127\"}], \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 17}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/8e98500b-2ebb-493f-a769-20a5d3604034",
         "revision": 18,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:06:17Z",
+        "gate_id": "CORE4-09-CONTROLLER-REGRESSION",
+        "id": "94796a51-5409-45ab-a497-87326519d632",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"59f9fe8a401bdcb76a16aaac82226b76acaf1678321c54e86425473eb0f764e6\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4bf60f011453e9f6ac826367c55209457d7f9981e397be298875f3c2fb997636\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/performance-facts.md\", \"cuda/schemas/performance-fact-v1.schema.json\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_facts.py\", \"cuda/scripts/cuda_quiescence.py\", \"cuda/tests/test_performance_facts.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-09.md\"], \"files\": [{\"path\": \"cuda/scripts/cuda_baselines.py\", \"sha256\": \"1f1e2540188b193c5facf62c99ab619aaf5bc10928638c7d8843ee136f5d7964\"}, {\"path\": \"cuda/scripts/cuda_controller.py\", \"sha256\": \"6a164e91254071bf73459a1c038bd4bdae96495b3d5e4e27b871f52075ab5471\"}, {\"path\": \"cuda/scripts/cuda_facts.py\", \"sha256\": \"03b74ddec8a68c724a88e7af72cb33ed75d4d4e6b187c00906afcc0932596ce8\"}, {\"path\": \"cuda/scripts/cuda_quiescence.py\", \"sha256\": \"89085455e041a5a124adccfb2e64fb62d569f9b365268126c8290117029412da\"}], \"interfaces\": [], \"recorded_git_head\": \"a4fcaa9bdea348f8b9c5a0b6a3989240b320bb36\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 111}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/94796a51-5409-45ab-a497-87326519d632",
+        "revision": 112,
         "status": "passed"
       },
       {
@@ -2079,27 +2175,27 @@
         "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_facts.py\", \"cuda/scripts/cuda_quiescence.py\"], \"timeout\": 1800}",
         "id": "CORE4-09-CONTROLLER-REGRESSION",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "59f9fe8a401bdcb76a16aaac82226b76acaf1678321c54e86425473eb0f764e6",
+        "last_run_at": "2026-08-22T11:06:17Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 112,
+        "status": "passed",
         "task_id": "CORE4-09",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_performance_facts.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_facts.py\", \"cuda/scripts/cuda_quiescence.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_performance_facts.py\"], \"timeout\": 1200}",
         "id": "CORE4-09-PERFORMANCE-FACTS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "12d5abca0a5e75ff3cd26ecab204a6d05240f677745ae1b91a34d21122b7c904",
+        "last_run_at": "2026-08-22T11:06:08Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 110,
+        "status": "passed",
         "task_id": "CORE4-09",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-LOCAL-READONLY-FROZEN",
@@ -2330,6 +2426,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/evals/README.md\", \"cpp-context-compiler/evals/run_packet_economics.py\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/expected/context-packet-economics.json\", \"cpp-context-compiler/tests/test_context_packet_economics.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-07-PACKET-ECONOMICS\", \"last_run_at\": \"2026-08-22T10:09:50Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 766 ++++++++++++++++++++--\\n cpp-context-compiler/evals/README.md              |   3 +\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 +++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |  10 +-\\n todos.md                                          |  10 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   8 +-\\n todos/core4-06.md                                 |   8 +-\\n todos/core4-07.md                                 |   6 +-\\n 13 files changed, 1014 insertions(+), 112 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-07\"}",
         "revision": 83,
         "task_id": "CORE4-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T11:06:28Z",
+        "id": "6586aa95-28f2-4a70-9274-a59a1c039112",
+        "kind": "complete",
+        "note": "Added exact compatible accepted/previous/candidate/historical CUDA baselines, raw-evidence-backed performance facts, adaptive correctness repetition, decision-driven profiler escalation, and bounded runtime-discovered GPU quiescence while preserving controller commands.",
+        "payload_json": "{\"changed_owned_paths\": [\"cuda/references/performance-facts.md\", \"cuda/schemas/performance-fact-v1.schema.json\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_facts.py\", \"cuda/scripts/cuda_quiescence.py\", \"cuda/tests/test_performance_facts.py\"], \"checkpoints\": [{\"id\": \"CORE4-CUDA-FACTS-FROZEN\", \"reached_at\": \"2026-08-22T11:06:21Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-09-PERFORMANCE-FACTS\", \"last_run_at\": \"2026-08-22T11:06:08Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-09-CONTROLLER-REGRESSION\", \"last_run_at\": \"2026-08-22T11:06:17Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 132 +++++++++++++++++----\\n cuda/scripts/cuda_controller.py        | 207 ++++++++++++++++++++++++++-------\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-09.md                      |   6 +-\\n 5 files changed, 283 insertions(+), 70 deletions(-)\", \"git_head\": \"a4fcaa9bdea348f8b9c5a0b6a3989240b320bb36\", \"interfaces\": [{\"content_hash\": \"aaefa73025ef3ccb4bdc5aadbbcce5a89e2634aaa167edc223fe08db09e6ce65\", \"id\": \"cuda-performance-fact-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Added exact compatible accepted/previous/candidate/historical CUDA baselines, raw-evidence-backed performance facts, adaptive correctness repetition, decision-driven profiler escalation, and bounded runtime-discovered GPU quiescence while preserving controller commands.\", \"resources\": [], \"task_id\": \"CORE4-09\"}",
+        "revision": 114,
+        "task_id": "CORE4-09"
       },
       {
         "claim_id": null,
@@ -2736,14 +2842,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "aaefa73025ef3ccb4bdc5aadbbcce5a89e2634aaa167edc223fe08db09e6ce65",
         "contract_paths_json": "[\"cuda/schemas/performance-fact-v1.schema.json\", \"cuda/references/performance-facts.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T11:06:21Z",
         "id": "cuda-performance-fact-v1",
         "owner_task_id": "CORE4-09",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 113,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -5259,14 +5365,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 20,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 114,
+        "status": "done",
         "tags_json": "[\"cuda\", \"baselines\", \"facts\", \"quiescence\"]",
         "title": "Add CUDA compatible baselines, performance facts, and quiescence",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T11:06:28Z",
+        "version": 5
       },
       {
         "attention_reason": null,
