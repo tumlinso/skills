@@ -1,8 +1,18 @@
-# Copy outside the repository and replace the model root after acquisition.
+# Model assets remain external; this file contains paths and policy only.
 [host]
-model_root = "/mnt/core4-models"
+model_root = "/mnt/block/core4-models"
 cuda_nvcc = "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc"
 cuda_architecture = "sm_70"
+
+[storage]
+canonical_root = "/mnt/block/core4-models"
+staging_root = "/home/tumlinson/.local/share/core4/staging"
+minimum_headroom_bytes = 17179869184
+one_candidate_at_a_time = true
+verify_sha256_before_execution = true
+cleanup_after_execution = true
+allow_ram_filesystem = false
+allow_direct_cold_storage_measurement = false
 
 [discovery]
 gpu_selector = "gpu:any"

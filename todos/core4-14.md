@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-14: Integrate todo to ctxpp to local worker to acceptance to CUDA discovery
 
-Task revision: `140`; current project revision is in `todo-status.md`.
+Task revision: `163`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build the complete fake-backend software flow: delegate by todo task identity, compile a bounded ctxpp packet, run a terminal local worker, externally verify, surface a compact result, guardedly accept a patch, and trigger relevant CUDA campaign discovery while healthy evidence remains silent.

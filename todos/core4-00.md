@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-00: CORE4 frontier-efficiency stack
 
-Task revision: `140`; current project revision is in `todo-status.md`.
+Task revision: `163`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.

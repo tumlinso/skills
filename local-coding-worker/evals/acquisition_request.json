@@ -42,7 +42,9 @@
     "qwen_code": {
       "available": false,
       "binary": null,
-      "required_mode": "headless JSON mode compatible with the CORE4 qwen adapter"
+      "required_mode": "headless JSON mode compatible with the CORE4 qwen adapter",
+      "requested_package": "@qwen-code/qwen-code@0.21.15",
+      "package_integrity": "sha512-f4ER/SRVLpwhcqzuytK3Qeq8bG9HnVhv7f7wsf3cpE/AkRfzKSvaeURnW7s7zI3nWkEqA7DM6njSLYS2s6DWDg=="
     }
   },
   "existing_assets": {
@@ -51,89 +53,157 @@
     "repository_model_weights_present": false
   },
   "storage_requirement": {
-    "required_external_root": "/mnt/core4-models",
-    "minimum_free_bytes": 150323855360,
-    "reason": "The current filesystem cannot safely hold the complete four-candidate quantized bake-off set plus temporary files. A sequential one-model-at-a-time workflow may instead use at least 64424509440 free bytes.",
+    "canonical_cold_storage_root": "/mnt/block/core4-models",
+    "canonical_filesystem": "ext4",
+    "canonical_available_bytes_at_inspection": 10825354612736,
+    "canonical_direct_read_bytes_per_second_observed": 460813824,
+    "ssd_staging_root": "/home/tumlinson/.local/share/core4/staging",
+    "minimum_ssd_headroom_after_staging_bytes": 17179869184,
+    "one_candidate_on_ssd_at_a_time": true,
+    "reason": "The mounted disk bank is canonical cold storage. Each candidate is copied to SSD, verified, evaluated, evicted, and removed before the next candidate is staged.",
     "weights_must_remain_outside_repository": true
   },
   "candidate_assets": [
     {
       "candidate": "Qwen3-Coder-30B-A3B-Instruct",
-      "source_repository": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
-      "source_url": "https://huggingface.co/Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "base_repository": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+      "source_repository": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "source_revision": "b17cb02dd882d5b6ab62fc777ad2995f19668350",
+      "source_url": "https://huggingface.co/unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/blob/b17cb02dd882d5b6ab62fc777ad2995f19668350/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf",
       "total_parameters_billions": 30.5,
       "required_quantization": "GGUF Q4_K_M",
       "expected_bytes": {
         "minimum": 17179869184,
         "maximum": 23622320128
       },
-      "destination": "/mnt/core4-models/qwen3-coder-30b-a3b-instruct/q4_k_m/",
+      "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+      "destination": "/mnt/block/core4-models/qwen3-coder-30b-a3b-instruct-q4-k-m/",
+      "artifact": "Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf",
+      "artifact_bytes": 18556689568,
       "required_files": [
         "one complete GGUF file or every shard of one Q4_K_M split",
-        "SHA256SUMS"
+        "asset-manifest.json using CORE4-MODEL-ASSET/1 with source repository, source revision, byte counts, and SHA256 for every file"
       ],
-      "sha256": null
+      "sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad"
     },
     {
       "candidate": "Qwen3-Coder-Next",
-      "source_repository": "Qwen/Qwen3-Coder-Next",
-      "source_url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+      "base_repository": "Qwen/Qwen3-Coder-Next",
+      "source_repository": "unsloth/Qwen3-Coder-Next-GGUF",
+      "source_revision": "ed8a2c9e4155eea11183d85e8840849984008ab4",
+      "source_url": "https://huggingface.co/unsloth/Qwen3-Coder-Next-GGUF/blob/ed8a2c9e4155eea11183d85e8840849984008ab4/Qwen3-Coder-Next-Q4_K_M.gguf",
       "total_parameters_billions": 79.7,
       "required_quantization": "GGUF Q4_K_M",
       "expected_bytes": {
         "minimum": 45097156608,
         "maximum": 57982058496
       },
-      "destination": "/mnt/core4-models/qwen3-coder-next/q4_k_m/",
+      "candidate_id": "qwen3-coder-next-q4-k-m",
+      "destination": "/mnt/block/core4-models/qwen3-coder-next-q4-k-m/",
+      "artifact": "Qwen3-Coder-Next-Q4_K_M.gguf",
+      "artifact_bytes": 48528320544,
       "required_files": [
         "every shard of one Q4_K_M split",
-        "SHA256SUMS"
+        "asset-manifest.json using CORE4-MODEL-ASSET/1 with source repository, source revision, byte counts, and SHA256 for every file"
       ],
-      "sha256": null
+      "sha256": "9e6032d2f3b50a60f17ce8bf5a1d85c71af9b53b89c7978020ae7c660f29b090"
     },
     {
       "candidate": "GLM-4.7-Flash",
-      "source_repository": "zai-org/GLM-4.7-Flash",
-      "source_url": "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "base_repository": "zai-org/GLM-4.7-Flash",
+      "source_repository": "unsloth/GLM-4.7-Flash-GGUF",
+      "source_revision": "bc383b21e43b880a69b6a0a3d41f26710c3608f3",
+      "source_url": "https://huggingface.co/unsloth/GLM-4.7-Flash-GGUF/blob/bc383b21e43b880a69b6a0a3d41f26710c3608f3/GLM-4.7-Flash-Q4_K_M.gguf",
       "total_parameters_billions": 31.2,
       "required_quantization": "GGUF Q4_K_M",
       "expected_bytes": {
         "minimum": 17179869184,
         "maximum": 24696061952
       },
-      "destination": "/mnt/core4-models/glm-4.7-flash/q4_k_m/",
+      "candidate_id": "glm-4.7-flash-q4-k-m",
+      "destination": "/mnt/block/core4-models/glm-4.7-flash-q4-k-m/",
+      "artifact": "GLM-4.7-Flash-Q4_K_M.gguf",
+      "artifact_bytes": 18312339808,
       "required_files": [
         "one complete GGUF file or every shard of one Q4_K_M split",
-        "SHA256SUMS"
+        "asset-manifest.json using CORE4-MODEL-ASSET/1 with source repository, source revision, byte counts, and SHA256 for every file"
       ],
-      "sha256": null
+      "sha256": "29837ed2c0fc5f51981adf8ac8083fcf80743c598381f13e9f06cbad0498b174"
     },
     {
       "candidate": "gpt-oss-20b",
-      "source_repository": "openai/gpt-oss-20b",
-      "source_url": "https://huggingface.co/openai/gpt-oss-20b",
+      "base_repository": "openai/gpt-oss-20b",
+      "source_repository": "ggml-org/gpt-oss-20b-GGUF",
+      "source_revision": "f15aaee352ed7b29e0bd46554ed3dcb720ee380a",
+      "source_url": "https://huggingface.co/ggml-org/gpt-oss-20b-GGUF/blob/f15aaee352ed7b29e0bd46554ed3dcb720ee380a/gpt-oss-20b-mxfp4.gguf",
       "total_parameters_billions": 21.5,
       "required_quantization": "provider-native MXFP4 GGUF or verified llama.cpp-compatible equivalent",
       "expected_bytes": {
         "minimum": 11811160064,
         "maximum": 17179869184
       },
-      "destination": "/mnt/core4-models/gpt-oss-20b/mxfp4/",
+      "candidate_id": "gpt-oss-20b-mxfp4",
+      "destination": "/mnt/block/core4-models/gpt-oss-20b-mxfp4/",
+      "artifact": "gpt-oss-20b-mxfp4.gguf",
+      "artifact_bytes": 12109566560,
       "required_files": [
         "one complete GGUF file or every shard of the selected split",
-        "SHA256SUMS"
+        "asset-manifest.json using CORE4-MODEL-ASSET/1 with source repository, source revision, byte counts, and SHA256 for every file"
       ],
-      "sha256": null
+      "sha256": "be37a636aca0fc1aae0d32325f82f6b4d21495f06823b5fbc1898ae0303e9935"
     }
   ],
+  "additional_quantization_assets": [
+    {
+      "candidate_id": "qwen3-coder-30b-a3b-instruct-q5-k-m",
+      "source_repository": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "source_revision": "b17cb02dd882d5b6ab62fc777ad2995f19668350",
+      "artifact": "Qwen3-Coder-30B-A3B-Instruct-Q5_K_M.gguf",
+      "artifact_bytes": 21725584544,
+      "sha256": "4b78837bbec5ee248e4a5642bf608b6793721af41b92589e40c8da0bce58b907",
+      "destination": "/mnt/block/core4-models/qwen3-coder-30b-a3b-instruct-q5-k-m/"
+    },
+    {
+      "candidate_id": "qwen3-coder-30b-a3b-instruct-q6-k",
+      "source_repository": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "source_revision": "b17cb02dd882d5b6ab62fc777ad2995f19668350",
+      "artifact": "Qwen3-Coder-30B-A3B-Instruct-Q6_K.gguf",
+      "artifact_bytes": 25092535456,
+      "sha256": "100b5121d09553fb1af3b873b21fb3ec3da5c306fc5cb09bd338c48e21b10875",
+      "destination": "/mnt/block/core4-models/qwen3-coder-30b-a3b-instruct-q6-k/"
+    },
+    {
+      "candidate_id": "glm-4.7-flash-q5-k-m",
+      "source_repository": "unsloth/GLM-4.7-Flash-GGUF",
+      "source_revision": "bc383b21e43b880a69b6a0a3d41f26710c3608f3",
+      "artifact": "GLM-4.7-Flash-Q5_K_M.gguf",
+      "artifact_bytes": 21408850240,
+      "sha256": "aeb3898c36d1850dd228774327ebe3b646fcfa9c785c251f3602b30a01ef1c9c",
+      "destination": "/mnt/block/core4-models/glm-4.7-flash-q5-k-m/"
+    },
+    {
+      "candidate_id": "glm-4.7-flash-q6-k",
+      "source_repository": "unsloth/GLM-4.7-Flash-GGUF",
+      "source_revision": "bc383b21e43b880a69b6a0a3d41f26710c3608f3",
+      "artifact": "GLM-4.7-Flash-Q6_K.gguf",
+      "artifact_bytes": 24693098816,
+      "sha256": "17773ff25d01b6383a00e4a6d649c72103d566e05b67160edba45b96689681b7",
+      "destination": "/mnt/block/core4-models/glm-4.7-flash-q6-k/"
+    }
+  ],
+  "quantization_arm_status": {
+    "primary_assets_above": "Exact Q4_K_M or provider-native MXFP4 artifacts needed for the first model and harness screen.",
+    "additional_assets_required_before_quantization_comparison": true,
+    "policy": "The four pinned Q5_K_M and Q6_K artifacts above provide the bounded quantization arm for the two smaller Q4_K_M families. Record each as its own candidate_id and canonical manifest. Do not represent the primary-only acquisition as a completed Q5/Q6 comparison.",
+    "qwen3_coder_next_constraint": "Do not acquire or stage a larger Qwen3-Coder-Next quantization until its exact artifact size plus 17179869184 bytes of headroom fits the SSD; model_staging.py reports the exact additional bytes required."
+  },
   "required_user_actions": [
-    "Provide either at least 140 GiB free at /mnt/core4-models for the complete set or at least 60 GiB for sequential single-model staging.",
-    "Acquire the four listed model quantizations from trusted providers into their exact destination directories; do not place weights in this repository.",
-    "Generate SHA256SUMS from the final local files and retain the source repository revision or release identifier beside each model.",
-    "Install or expose a qwen executable supporting the recorded headless JSON contract, or explicitly waive the Qwen Code adapter arm before the bake-off.",
+    "Acquire all four exact pinned primary artifacts and all four pinned additional quantization artifacts into their exact /mnt/block/core4-models candidate directories; do not place weights in this repository.",
+    "Create asset-manifest.json in each of the eight candidate directories with format CORE4-MODEL-ASSET/1, its candidate_id, source repository and immutable revision, and every relative file path, byte count, and lowercase SHA256.",
+    "Install or expose @qwen-code/qwen-code@0.21.15 as qwen and retain its recorded package integrity; confirm that the installed executable supports the CORE4 adapter's bounded headless JSON flags.",
     "Configure Codex CLI with a local OpenAI-compatible provider without committing credentials or provider secrets.",
-    "Run local-coding-worker/scripts/inspect_host.py --json and verify usable_model_weights_present is true.",
-    "Then set CORE4-MODEL-ASSETS to ready with the todo-orchestrator decision command."
+    "Run local-coding-worker/evals/model_staging.py verify --config local-coding-worker/config/host-profile.example.toml --candidate <candidate-id> for all eight candidate ids and resolve any exact SSD headroom error.",
+    "Set CORE4-MODEL-ASSETS to ready only after all eight manifests verify, qwen passes its adapter compatibility check, and Codex CLI has a working local provider configuration."
   ],
   "prohibited_actions_for_this_task": [
     "download model weights",

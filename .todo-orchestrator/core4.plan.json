@@ -2348,6 +2348,103 @@
       ]
     },
     {
+      "id": "CORE4-17A",
+      "parent_id": "CORE4-00",
+      "kind": "task",
+      "title": "Prepare external cold-storage staging for the host bake-off",
+      "objective": "Add a configuration-driven, model-independent staging utility that copies one user-provided candidate from canonical cold storage to SSD, verifies SHA256 before execution, preserves source metadata, and removes staged files after success, failure, or interruption without downloading or installing assets.",
+      "status": "planned",
+      "priority": 49,
+      "parallel_policy": "serial",
+      "next_action": "Use /mnt/block/core4-models as canonical cold storage, revise the acquisition destinations, and prove checksum, capacity, and failure-safe cleanup behavior with focused tests. Leave CORE4-MODEL-ASSETS absent.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CORE4-16",
+          "state": "done",
+          "dispositions": [
+            "validated"
+          ]
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/config/host-profile.example.toml",
+          "local-coding-worker/evals/acquisition_request.json",
+          "local-coding-worker/evals/model_staging.py",
+          "local-coding-worker/tests/test_model_staging.py"
+        ],
+        "read_paths": [
+          "local-coding-worker/scripts/inspect_host.py",
+          "local-coding-worker/local_worker/harnesses",
+          "local-coding-worker/local_worker/servers"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "gates": [
+        {
+          "id": "CORE4-17A-STAGING",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_model_staging.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 900,
+          "input_paths": [
+            "local-coding-worker/evals/model_staging.py",
+            "local-coding-worker/tests/test_model_staging.py"
+          ]
+        },
+        {
+          "id": "CORE4-17A-ACQUISITION",
+          "type": "file_exists",
+          "required": true,
+          "path": "local-coding-worker/evals/acquisition_request.json"
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "staging-utility",
+          "path": "local-coding-worker/evals/model_staging.py"
+        },
+        {
+          "kind": "acquisition-request",
+          "path": "local-coding-worker/evals/acquisition_request.json"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "implemented",
+          "validated",
+          "failed"
+        ]
+      },
+      "tags": [
+        "storage",
+        "staging",
+        "pre-acquisition"
+      ]
+    },
+    {
       "id": "CORE4-17",
       "parent_id": "CORE4-00",
       "kind": "workstream",
@@ -2365,6 +2462,15 @@
           "dispositions": [
             "validated",
             "evaluated_not_promoted"
+          ]
+        },
+        {
+          "type": "task",
+          "task_id": "CORE4-17A",
+          "state": "done",
+          "dispositions": [
+            "implemented",
+            "validated"
           ]
         },
         {
