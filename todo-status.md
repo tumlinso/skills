@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `83`
+Project revision: `90`
 
 ## Workstreams
 - `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
@@ -19,7 +19,7 @@ Project revision: `83`
 - `CORE4-12` | status: planned | execution: ready | next: Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.
 - `CORE4-05` | status: done | execution: closed | next: Wire child results into service/context/reporting and publish the stable child-execution contract. Keep normal continue output unchanged when no child result is ready.
 - `CORE4-09` | status: planned | execution: ready | next: Implement new fact and compatibility modules, preserve raw evidence, and update controller classification without changing existing commands.
-- `CORE4-10` | status: planned | execution: ready | next: Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.
+- `CORE4-10` | status: done | execution: closed | next: Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.
 - `CORE4-04` | status: done | execution: closed | next: Implement the smallest additive schema and CLI surface for child executions, then prove token privilege and recovery behavior.
 - `CORE4-06` | status: done | execution: closed | next: Implement additive inspect/packet commands without weakening fast where/route/status behavior or source-authority guarantees.
 - `CORE4-08` | status: planned | execution: ready | next: Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.

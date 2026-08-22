@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T10:09:56Z",
+  "generated_at": "2026-08-22T10:18:49Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 83,
+  "project_revision": 90,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -389,10 +389,10 @@
       {
         "id": "CORE4-LOCAL-READONLY-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T10:18:43Z",
+        "revision": 89,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-10",
         "title": "Read-only bounded local-worker contract frozen"
       },
@@ -1323,6 +1323,76 @@
         "revision": 83,
         "seq": 83,
         "timestamp": "2026-08-22T10:09:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 84,
+        "seq": 84,
+        "timestamp": "2026-08-22T10:12:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10-READONLY-MVP",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-10-READONLY-MVP\"}",
+        "revision": 85,
+        "seq": 85,
+        "timestamp": "2026-08-22T10:17:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10-READONLY-MVP",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"37dc1e23-bea7-4068-b126-2bc17baae29c\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 86,
+        "seq": 86,
+        "timestamp": "2026-08-22T10:17:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10-READONLY-MVP",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-10-READONLY-MVP\"}",
+        "revision": 87,
+        "seq": 87,
+        "timestamp": "2026-08-22T10:18:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10-READONLY-MVP",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"56c51c7f-fc25-4f96-a67d-b53c885682ea\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 88,
+        "seq": 88,
+        "timestamp": "2026-08-22T10:18:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-LOCAL-READONLY-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 89,
+        "seq": 89,
+        "timestamp": "2026-08-22T10:18:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 90,
+        "seq": 90,
+        "timestamp": "2026-08-22T10:18:49Z"
       }
     ],
     "evidence": [
@@ -1356,6 +1426,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T10:17:42Z",
+        "gate_id": "CORE4-10-READONLY-MVP",
+        "id": "37dc1e23-bea7-4068-b126-2bc17baae29c",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_read_only_mvp.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"703d0c621a5323610c27fc6ba03877e2445c5c87704211b5a45baba362969eaa\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_read_only_mvp.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"39f2201911eae136eee2d3cb11fa04fbbc6943bb0dce2f474008c562bc2418b0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/SKILL.md\", \"local-coding-worker/agents/openai.yaml\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/request-v1.schema.json\", \"local-coding-worker/schemas/result-v1.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_read_only_mvp.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"07ff7562788a86f43374df280f63726ef4657b9c\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 85}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/37dc1e23-bea7-4068-b126-2bc17baae29c",
+        "revision": 86,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T08:52:47Z",
         "gate_id": "CORE4-02-CTXPP-BASELINE",
         "id": "387e49d4-fbca-4d25-882e-76e7b3b0832f",
@@ -1363,6 +1446,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cpp-context-compiler/tests\", \"-v\"], \"cwd\": \".\", \"timeout\": 3600}, \"diff_fingerprint\": \"501097749229e35d71dbaeb65f7c530d15b1352a9bac1ab97a347241e8613096\", \"dirty_paths\": [\".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\", \"cpp-context-compiler/scripts/ctxpp_lib.py\", \"cpp-context-compiler/tests/test_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 19}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/387e49d4-fbca-4d25-882e-76e7b3b0832f",
         "revision": 20,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:18:35Z",
+        "gate_id": "CORE4-10-READONLY-MVP",
+        "id": "56c51c7f-fc25-4f96-a67d-b53c885682ea",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_read_only_mvp.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"703d0c621a5323610c27fc6ba03877e2445c5c87704211b5a45baba362969eaa\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_read_only_mvp.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"864a961044934b23602a358a1f1d4c6a41aa3d9b03f4047f3f0b308f4d2d775c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/SKILL.md\", \"local-coding-worker/agents/openai.yaml\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v1.schema.json\", \"local-coding-worker/schemas/worker-result-v1.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_read_only_mvp.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"07ff7562788a86f43374df280f63726ef4657b9c\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 87}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/56c51c7f-fc25-4f96-a67d-b53c885682ea",
+        "revision": 88,
         "status": "passed"
       },
       {
@@ -1787,14 +1883,14 @@
         "checkpoint_id": "CORE4-LOCAL-READONLY-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_read_only_mvp.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker\", \"todo-orchestrator\", \"cpp-context-compiler\"], \"timeout\": 1200}",
         "id": "CORE4-10-READONLY-MVP",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "703d0c621a5323610c27fc6ba03877e2445c5c87704211b5a45baba362969eaa",
+        "last_run_at": "2026-08-22T10:18:35Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 88,
+        "status": "passed",
         "task_id": "CORE4-10",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-LOCAL-ADAPTERS-READY",
@@ -2002,6 +2098,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/evals/README.md\", \"cpp-context-compiler/evals/run_packet_economics.py\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/expected/context-packet-economics.json\", \"cpp-context-compiler/tests/test_context_packet_economics.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-07-PACKET-ECONOMICS\", \"last_run_at\": \"2026-08-22T10:09:50Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 766 ++++++++++++++++++++--\\n cpp-context-compiler/evals/README.md              |   3 +\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 +++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |  10 +-\\n todos.md                                          |  10 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   8 +-\\n todos/core4-06.md                                 |   8 +-\\n todos/core4-07.md                                 |   6 +-\\n 13 files changed, 1014 insertions(+), 112 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-07\"}",
         "revision": 83,
         "task_id": "CORE4-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T10:18:49Z",
+        "id": "72119e37-e08d-4502-a62b-c4466b0f5072",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/SKILL.md\", \"local-coding-worker/agents/openai.yaml\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v1.schema.json\", \"local-coding-worker/schemas/worker-result-v1.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_read_only_mvp.py\"], \"checkpoints\": [{\"id\": \"CORE4-LOCAL-READONLY-FROZEN\", \"reached_at\": \"2026-08-22T10:18:43Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-10-READONLY-MVP\", \"last_run_at\": \"2026-08-22T10:18:35Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 122 ++++++++++++++++++++++++++++-----\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-10.md                      |   6 +-\\n 4 files changed, 111 insertions(+), 25 deletions(-)\", \"git_head\": \"07ff7562788a86f43374df280f63726ef4657b9c\", \"interfaces\": [{\"content_hash\": \"2d8152e871a9af0bb472f0a4d53052bb467107222b8ef3936158549a5f05831a\", \"id\": \"local-worker-delegation-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-10\"}",
+        "revision": 90,
+        "task_id": "CORE4-10"
       },
       {
         "claim_id": null,
@@ -2389,14 +2495,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "2d8152e871a9af0bb472f0a4d53052bb467107222b8ef3936158549a5f05831a",
         "contract_paths_json": "[\"local-coding-worker/schemas/delegation-spec-v1.schema.json\", \"local-coding-worker/schemas/worker-result-v1.schema.json\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T10:18:43Z",
         "id": "local-worker-delegation-v1",
         "owner_task_id": "CORE4-10",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 89,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -4923,14 +5029,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CORE4-00",
         "priority": 20,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 90,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"read-only\", \"mvp\"]",
         "title": "Create local-coding-worker read-only MVP",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:18:49Z",
+        "version": 5
       },
       {
         "attention_reason": null,

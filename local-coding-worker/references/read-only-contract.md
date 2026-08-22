@@ -1,0 +1,22 @@
+# Read-only worker contract
+
+`local-coding-worker` is a bounded executor, not a task system or architect.
+Todo-orchestrator owns authorization and completion; ctxpp packets are routing
+evidence; canonical repository source is code authority.
+
+The controller accepts one `LCW-REQUEST/1`, validates deterministic eligibility,
+heartbeats the child token through the public todo CLI, and requests one
+`CTXPP-CONTEXT-PACKET/1`. Only declared repository-relative scopes are copied
+to a temporary snapshot. Symlinks are rejected and all copied paths have write
+bits removed before the backend sees them. The snapshot is deleted afterward.
+
+The read-only roles are `explain`, `debug`, `review`, and `test_plan`. The only
+MVP backend is deterministic `fake`; real harness adapters are later CORE4
+work. There is one backend call and no recursive delegation or general agent
+loop.
+
+The controller reports `succeeded` for normalized `no_change` and reports
+`needs_codex` when canonical target freshness, semantic relationship trust, or
+packet coverage is insufficient. `NEEDS_CODEX` is a successful hand-back for
+frontier judgment. The result always has an empty `changed_paths` array and
+never contains credentials.
