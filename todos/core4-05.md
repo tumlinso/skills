@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-05: Integrate child evidence, gates, acceptance, and capsule surfacing
 
-Task revision: `163`; current project revision is in `todo-status.md`.
+Task revision: `184`; current project revision is in `todo-status.md`.
 
 ## Objective
 Let child executions run only authorized gates, attach evidence and artifacts, return compact completed/needs_codex/no_change/failed results, surface ready results in the next todo capsule, and require guarded parent acceptance before current-source completion.

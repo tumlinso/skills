@@ -3,13 +3,13 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `170`
+Project revision: `226`
 
 ## Workstreams
 - `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
 - `CORE4-19` | status: planned | execution: ready | next: Run the single full release gate, inspect only failures, fix regressions narrowly, export the todo snapshot, and publish a compact handoff.
 - `CORE4-18` | status: planned | execution: ready | next: Implement only policies supported by measured marginal value. Keep defaults conservative and reversible.
-- `CORE4-17` | status: planned | execution: ready | next: After the user sets CORE4-MODEL-ASSETS to ready, run the bounded real-task corpus, record frontier-visible inputs/outputs/tool calls and local costs, set the harness/profile decisions, and reach CORE4-HOST-VALIDATED.
+- `CORE4-17` | status: done | execution: closed | next: After the user sets CORE4-MODEL-ASSETS to ready, run the bounded real-task corpus, record frontier-visible inputs/outputs/tool calls and local costs, set the harness/profile decisions, and reach CORE4-HOST-VALIDATED.
 - `CORE4-17A` | status: done | execution: closed | next: Use /mnt/block/core4-models as canonical cold storage, revise the acquisition destinations, and prove checksum, capacity, and failure-safe cleanup behavior with focused tests. Leave CORE4-MODEL-ASSETS absent.
 - `CORE4-16` | status: done | execution: closed | next: Generate an acquisition request containing candidate model files or repositories, quantizations, expected sizes, destinations, checksums when available, and harness prerequisites. If assets are absent, finish this task, then halt and ask the user once.
 - `CORE4-15` | status: done | execution: closed | next: Update only public docs and compatibility adapters after the integrated flow works. Run the existing full suites once here, not during every prior task.

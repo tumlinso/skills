@@ -1,0 +1,23 @@
+{
+  "format": "CORE4-HOST-TASKS/1",
+  "tasks": [
+    {
+      "id": "contract-authority",
+      "prompt": "Read local-coding-worker/references/read-only-contract.md. State, in at most three short lines, which component owns work authorization and completion and which source is code authority. Include the exact strings todo-orchestrator and canonical repository source. Do not modify files.",
+      "expected_all": ["todo-orchestrator", "canonical repository source"],
+      "outcome": "answer"
+    },
+    {
+      "id": "needs-codex",
+      "prompt": "A requested public numerical convention is not established by source, tests, or a frozen contract. Return exactly NEEDS_CODEX because choosing the convention requires frontier judgment. Do not modify files.",
+      "expected_all": ["NEEDS_CODEX"],
+      "outcome": "needs_codex"
+    },
+    {
+      "id": "resource-policy",
+      "prompt": "Read local-coding-worker/references/resource-policy.md. In at most three short lines, name the priority used while a bounded local run is executing and the successful outcome returned when preemption occurs before work starts. Include the exact strings active local delegation and NEEDS_CODEX. Do not modify files.",
+      "expected_all": ["active local delegation", "NEEDS_CODEX"],
+      "outcome": "answer"
+    }
+  ]
+}

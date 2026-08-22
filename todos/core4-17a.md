@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-17A: Prepare external cold-storage staging for the host bake-off
 
-Task revision: `170`; current project revision is in `todo-status.md`.
+Task revision: `184`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add a configuration-driven, model-independent staging utility that copies one user-provided candidate from canonical cold storage to SSD, verifies SHA256 before execution, preserves source metadata, and removes staged files after success, failure, or interruption without downloading or installing assets.
