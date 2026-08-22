@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cuda.local/schemas/benchmark-registry-v1.schema.json",
+  "title": "CUDA benchmark registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schema_version", "project_root", "campaigns"],
+  "properties": {
+    "format": {"const": "CUDA-BENCHMARK-REGISTRY/1"},
+    "schema_version": {"const": 1},
+    "project_root": {"type": "string", "minLength": 1},
+    "campaigns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/campaign"}
+    }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "default": 3600}
+      }
+    },
+    "correctness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "default": 3600},
+        "repetitions": {"type": "integer", "minimum": 1, "default": 3},
+        "minimum_seconds": {"type": "number", "minimum": 0, "default": 15},
+        "maximum_repetitions": {"type": "integer", "minimum": 1, "default": 64}
+      }
+    },
+    "benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "timeout_seconds": {"type": "number", "exclusiveMinimum": 0, "default": 3600},
+        "warmups": {"type": "integer", "minimum": 0, "default": 1},
+        "repetitions": {"type": "integer", "minimum": 1, "default": 5}
+      }
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "gpu_count": {"type": "integer", "minimum": 1, "default": 1},
+        "gpu_uuids": {"$ref": "#/$defs/strings"},
+        "architecture": {"type": "string", "minLength": 1},
+        "gpu_memory_headroom_mib": {"type": "integer", "minimum": 0},
+        "isolate_pcie_root": {"type": "boolean"},
+        "isolate_nvlink_domain": {"type": "boolean"},
+        "cpu_heavy": {"type": "boolean"},
+        "build_cpu_threads": {"type": "integer", "minimum": 0},
+        "background_cpu_threads": {"type": "integer", "minimum": 0},
+        "background_ram_bytes": {"type": "integer", "minimum": 0}
+      },
+      "not": {"required": ["gpu_count", "gpu_uuids"]}
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "initial_characterization": {"type": "boolean", "default": false},
+        "benchmark_completed_steps": {"type": "boolean", "default": true},
+        "max_background_gpus": {"type": "integer", "minimum": 1, "default": 4},
+        "max_deep_profiles_per_revision": {"type": "integer", "minimum": 0, "default": 2}
+      }
+    },
+    "campaign": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "targets", "paths", "symbols", "correctness", "benchmark", "metric", "resources"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "targets": {"$ref": "#/$defs/strings"},
+        "paths": {"$ref": "#/$defs/strings"},
+        "symbols": {"$ref": "#/$defs/strings"},
+        "task_ids": {"$ref": "#/$defs/strings"},
+        "task_prefixes": {"$ref": "#/$defs/strings"},
+        "build": {"oneOf": [{"$ref": "#/$defs/command"}, {"type": "null"}]},
+        "correctness": {"$ref": "#/$defs/correctness"},
+        "benchmark": {"$ref": "#/$defs/benchmark"},
+        "metric": {"$ref": "metric-v1.schema.json"},
+        "resources": {"$ref": "#/$defs/resources"},
+        "policy": {"$ref": "#/$defs/policy"}
+      },
+      "anyOf": [
+        {"properties": {"targets": {"minItems": 1}}},
+        {"properties": {"paths": {"minItems": 1}}},
+        {"properties": {"symbols": {"minItems": 1}}},
+        {"properties": {"task_ids": {"minItems": 1}}, "required": ["task_ids"]},
+        {"properties": {"task_prefixes": {"minItems": 1}}, "required": ["task_prefixes"]}
+      ]
+    }
+  }
+}

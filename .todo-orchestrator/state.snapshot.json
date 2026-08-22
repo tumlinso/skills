@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T10:34:52Z",
+  "generated_at": "2026-08-22T10:50:34Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 100,
+  "project_revision": 107,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -339,10 +339,10 @@
       {
         "id": "CORE4-CUDA-CAMPAIGN-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T10:50:21Z",
+        "revision": 106,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-08",
         "title": "Registered and discovered CUDA campaign contract frozen"
       },
@@ -1493,6 +1493,76 @@
         "revision": 100,
         "seq": 100,
         "timestamp": "2026-08-22T10:34:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 101,
+        "seq": 101,
+        "timestamp": "2026-08-22T10:40:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08-REGISTRY-DISCOVERY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-08-REGISTRY-DISCOVERY\"}",
+        "revision": 102,
+        "seq": 102,
+        "timestamp": "2026-08-22T10:49:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08-REGISTRY-DISCOVERY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"76e97825-05f5-471d-b3e8-3a9fa5bbffd6\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 103,
+        "seq": 103,
+        "timestamp": "2026-08-22T10:49:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08-CONTROLLER-COMPAT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-08-CONTROLLER-COMPAT\"}",
+        "revision": 104,
+        "seq": 104,
+        "timestamp": "2026-08-22T10:49:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08-CONTROLLER-COMPAT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"39f46bbf-2672-4826-b3f0-06769f8b505f\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 105,
+        "seq": 105,
+        "timestamp": "2026-08-22T10:49:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 106,
+        "seq": 106,
+        "timestamp": "2026-08-22T10:50:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-08",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 107,
+        "seq": 107,
+        "timestamp": "2026-08-22T10:50:34Z"
       }
     ],
     "evidence": [
@@ -1565,6 +1635,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T10:49:58Z",
+        "gate_id": "CORE4-08-CONTROLLER-COMPAT",
+        "id": "39f46bbf-2672-4826-b3f0-06769f8b505f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4d633710b4f37fdf9a0b392e53d878d6144e08aae9560d07f601556b61e254fe\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"46f7b69d12022631075638d5bba7fbbcafd7ad70ce91be44bcd146f8bdd7cd7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/benchmark-registry.md\", \"cuda/schemas/benchmark-registry-v1.schema.json\", \"cuda/schemas/metric-v1.schema.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_discovery.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_registry_discovery.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-08.md\"], \"files\": [{\"path\": \"cuda/scripts/cuda_controller.py\", \"sha256\": \"fa3dab64ba43dc128b6607857598b92f2ed98828e60c4da34e7fbd24e5d1eb9b\"}, {\"path\": \"cuda/scripts/cuda_discovery.py\", \"sha256\": \"b9a6362a5cd61c12609a8ecb46bb4091e74ef975840e197509b21a189437f407\"}, {\"path\": \"cuda/scripts/cuda_registry.py\", \"sha256\": \"6d344129282bd127678ed7e7c4844ff1ef7c3fe2c31357bc67e2438061f284c9\"}], \"interfaces\": [], \"recorded_git_head\": \"c5143e841fa4e6bf9de06f52bfb4a44f08e741f4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 104}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/39f46bbf-2672-4826-b3f0-06769f8b505f",
+        "revision": 105,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T10:18:35Z",
         "gate_id": "CORE4-10-READONLY-MVP",
         "id": "56c51c7f-fc25-4f96-a67d-b53c885682ea",
@@ -1624,6 +1707,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50cff52d1b8d7f3a12ac95cbdd59243e8f8d1b0f6d82100c630457af8e2c3e45\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_v2_recovery_migration_context.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 900}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"2a21cf9dfd57f553bfee11be107aa02f5a22dbe633fe5e6fc80e768191711acc\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 76}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6ebea5e0-0a5d-40ab-b3e1-8813765b8189",
         "revision": 77,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T10:49:48Z",
+        "gate_id": "CORE4-08-REGISTRY-DISCOVERY",
+        "id": "76e97825-05f5-471d-b3e8-3a9fa5bbffd6",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_registry_discovery.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e3da46e5666606d161b8a8e78bb2c1283704b59aad59c09a82508cd33204b67c\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_registry_discovery.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"46f7b69d12022631075638d5bba7fbbcafd7ad70ce91be44bcd146f8bdd7cd7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/benchmark-registry.md\", \"cuda/schemas/benchmark-registry-v1.schema.json\", \"cuda/schemas/metric-v1.schema.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_discovery.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_registry_discovery.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-08.md\"], \"files\": [{\"path\": \"cuda/scripts/cuda_controller.py\", \"sha256\": \"fa3dab64ba43dc128b6607857598b92f2ed98828e60c4da34e7fbd24e5d1eb9b\"}, {\"path\": \"cuda/scripts/cuda_discovery.py\", \"sha256\": \"b9a6362a5cd61c12609a8ecb46bb4091e74ef975840e197509b21a189437f407\"}, {\"path\": \"cuda/scripts/cuda_registry.py\", \"sha256\": \"6d344129282bd127678ed7e7c4844ff1ef7c3fe2c31357bc67e2438061f284c9\"}, {\"path\": \"cuda/tests/test_registry_discovery.py\", \"sha256\": \"2d43618f4ca7ccb9599f4a5752195ee5c4cd9ef2c2dec639551e463f21136bff\"}], \"interfaces\": [], \"recorded_git_head\": \"c5143e841fa4e6bf9de06f52bfb4a44f08e741f4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 102}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/76e97825-05f5-471d-b3e8-3a9fa5bbffd6",
+        "revision": 103,
         "status": "passed"
       },
       {
@@ -1957,27 +2053,27 @@
         "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_controller.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/scripts/cuda_discovery.py\"], \"timeout\": 1800}",
         "id": "CORE4-08-CONTROLLER-COMPAT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "4d633710b4f37fdf9a0b392e53d878d6144e08aae9560d07f601556b61e254fe",
+        "last_run_at": "2026-08-22T10:49:58Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 105,
+        "status": "passed",
         "task_id": "CORE4-08",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"cuda/tests\", \"-p\", \"test_registry_discovery.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts/cuda_registry.py\", \"cuda/scripts/cuda_discovery.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/tests/test_registry_discovery.py\"], \"timeout\": 1200}",
         "id": "CORE4-08-REGISTRY-DISCOVERY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e3da46e5666606d161b8a8e78bb2c1283704b59aad59c09a82508cd33204b67c",
+        "last_run_at": "2026-08-22T10:49:48Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 103,
+        "status": "passed",
         "task_id": "CORE4-08",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
@@ -2307,6 +2403,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-22T10:50:34Z",
+        "id": "da5f4fa3-b442-4396-b83c-25da2ef6f141",
+        "kind": "complete",
+        "note": "Registered reusable CUDA build/correctness/benchmark/metric/resource contracts; added deterministic changed-path, todo-scope, accepted-patch, ctxpp-symbol, target, and task discovery; auto-queue refuses zero or ambiguous matches; preserved controller compatibility.",
+        "payload_json": "{\"changed_owned_paths\": [\"cuda/references/benchmark-registry.md\", \"cuda/schemas/benchmark-registry-v1.schema.json\", \"cuda/schemas/metric-v1.schema.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_discovery.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_registry_discovery.py\"], \"checkpoints\": [{\"id\": \"CORE4-CUDA-CAMPAIGN-FROZEN\", \"reached_at\": \"2026-08-22T10:50:21Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-08-REGISTRY-DISCOVERY\", \"last_run_at\": \"2026-08-22T10:49:48Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-08-CONTROLLER-COMPAT\", \"last_run_at\": \"2026-08-22T10:49:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 132 +++++++++++++++++++++++++++------\\n cuda/scripts/cuda_controller.py        |  55 ++++++++++++++\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-08.md                      |   6 +-\\n 5 files changed, 171 insertions(+), 30 deletions(-)\", \"git_head\": \"c5143e841fa4e6bf9de06f52bfb4a44f08e741f4\", \"interfaces\": [{\"content_hash\": \"a56920859297bf079c41cb8e967e159f988a5a31b5e41dfd8c8b2e538994d0dd\", \"id\": \"cuda-campaign-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Registered reusable CUDA build/correctness/benchmark/metric/resource contracts; added deterministic changed-path, todo-scope, accepted-patch, ctxpp-symbol, target, and task discovery; auto-queue refuses zero or ambiguous matches; preserved controller compatibility.\", \"resources\": [], \"task_id\": \"CORE4-08\"}",
+        "revision": 107,
+        "task_id": "CORE4-08"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-22T09:24:19Z",
         "id": "ecbde6f5-2086-4204-b785-0092e49d4c76",
         "kind": "complete",
@@ -2619,14 +2725,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "a56920859297bf079c41cb8e967e159f988a5a31b5e41dfd8c8b2e538994d0dd",
         "contract_paths_json": "[\"cuda/schemas/benchmark-registry-v1.schema.json\", \"cuda/schemas/metric-v1.schema.json\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T10:50:21Z",
         "id": "cuda-campaign-v1",
         "owner_task_id": "CORE4-08",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 106,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -5131,14 +5237,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "CORE4-00",
         "priority": 15,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 107,
+        "status": "done",
         "tags_json": "[\"cuda\", \"discovery\", \"benchmark\"]",
         "title": "Add CUDA benchmark registry and changed-code discovery",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T10:50:34Z",
+        "version": 5
       },
       {
         "attention_reason": null,

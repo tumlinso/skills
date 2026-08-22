@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-08: Add CUDA benchmark registry and changed-code discovery
 
-Task revision: `23`; current project revision is in `todo-status.md`.
+Task revision: `107`; current project revision is in `todo-status.md`.
 
 ## Objective
 Let projects register build, correctness, benchmark, metric, resource, path, symbol, and target contracts once; discover matching campaigns from changed files, todo scopes, accepted local-worker patches, and ctxpp symbol identity; auto-queue only unambiguous matches.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.

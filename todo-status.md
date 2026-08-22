@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `100`
+Project revision: `107`
 
 ## Workstreams
 - `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
@@ -22,7 +22,7 @@ Project revision: `100`
 - `CORE4-10` | status: done | execution: closed | next: Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.
 - `CORE4-04` | status: done | execution: closed | next: Implement the smallest additive schema and CLI surface for child executions, then prove token privilege and recovery behavior.
 - `CORE4-06` | status: done | execution: closed | next: Implement additive inspect/packet commands without weakening fast where/route/status behavior or source-authority guarantees.
-- `CORE4-08` | status: planned | execution: ready | next: Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.
+- `CORE4-08` | status: done | execution: closed | next: Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.
 - `CORE4-03` | status: done | execution: closed | next: Add schemas and thin adapters around current background primitives. Do not redesign the scheduler or move skill-specific semantics into the facade.
 - `CORE4-02A` | status: done | execution: closed | next: Inspect the targeted refresh implementation, failing test, and existing ctxpp retrieval/freshness contract; change only the test if lexical-only freshness is contract-valid, otherwise repair the implementation; run the focused test and full ctxpp suite, then freeze CORE4-BASELINE-FROZEN.
 - `CORE4-02` | status: done | execution: closed | next: After CORE4-02A resolves the ctxpp baseline contract and freezes CORE4-BASELINE-FROZEN, resume only to verify and close the baseline task.

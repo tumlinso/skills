@@ -39,6 +39,8 @@ from todo_orchestrator.background.wake import wake_worker  # noqa: E402
 from todo_orchestrator.config import project_paths  # noqa: E402
 
 from cuda_guidance import retrieve  # noqa: E402
+from cuda_discovery import discover_campaigns  # noqa: E402
+from cuda_registry import load_registry  # noqa: E402
 
 PARSER_VERSION = "cuda-controller/1"
 BACKGROUND_PIPELINE_VERSION = 6
@@ -55,6 +57,50 @@ def load_spec(value: str) -> dict[str, object]:
     if not isinstance(payload, dict):
         raise ValueError("spec must be a JSON object")
     return payload
+
+
+def registry_validate(path: str) -> dict[str, object]:
+    registry = load_registry(path)
+    return {
+        "format": "CUDA-BENCHMARK-REGISTRY-VALIDATION/1",
+        "schema_version": 1,
+        "valid": True,
+        "project_root": registry["project_root"],
+        "campaigns": len(registry["campaigns"]),
+        "campaign_ids": [item["id"] for item in registry["campaigns"]],
+    }
+
+
+def changed_paths(project: Path, base: str = "HEAD") -> list[str]:
+    """Return tracked and untracked repository-relative paths without mutating Git."""
+    if not base or base.startswith("-"):
+        raise ValueError("changed-path base must be a non-option Git revision")
+    root = git_root(project)
+    tracked = git(root, "diff", "--name-only", "--diff-filter=ACDMRTUXB", base, "--")
+    if tracked.returncode != 0:
+        raise ValueError(f"unable to inspect changed paths from {base}: {tracked.stderr.strip()[:300]}")
+    untracked = git(root, "ls-files", "--others", "--exclude-standard")
+    if untracked.returncode != 0:
+        raise ValueError(f"unable to inspect untracked paths: {untracked.stderr.strip()[:300]}")
+    return sorted(set(tracked.stdout.splitlines()) | set(untracked.stdout.splitlines()))
+
+
+def registry_discover(path: str, request: dict[str, object] | None = None, *,
+                      base: str = "HEAD", auto_queue: bool = False) -> dict[str, object]:
+    registry = load_registry(path)
+    evidence = dict(request) if request is not None else {
+        "schema_version": 1,
+        "changed_paths": changed_paths(Path(str(registry["project_root"])), base),
+    }
+    result = discover_campaigns(registry, evidence)
+    if not auto_queue:
+        result["auto_queue"] = {"state": "not_requested"}
+    elif not result["auto_queue_safe"]:
+        result["auto_queue"] = {"state": "not_queued", "reason": result["status"]}
+    else:
+        armed = arm_background(dict(result["watch_spec"]))
+        result["auto_queue"] = {"state": "queued", "controller": armed}
+    return result
 
 
 def run(argv: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None,
@@ -1164,6 +1210,9 @@ def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(description=__doc__)
     sub = root.add_subparsers(dest="command", required=True)
     inspect = sub.add_parser("inspect"); inspect.add_argument("--project", required=True); inspect.add_argument("--json", action="store_true")
+    registry = sub.add_parser("registry"); registry_sub = registry.add_subparsers(dest="registry_command", required=True)
+    validate = registry_sub.add_parser("validate"); validate.add_argument("--registry", "--file", dest="registry", required=True); validate.add_argument("--json", action="store_true")
+    discover = registry_sub.add_parser("discover"); discover.add_argument("--registry", "--file", dest="registry", required=True); discover.add_argument("--input"); discover.add_argument("--base", default="HEAD"); discover.add_argument("--auto-queue", action="store_true"); discover.add_argument("--json", action="store_true")
     background = sub.add_parser("background"); background_sub = background.add_subparsers(dest="background_command", required=True)
     arm = background_sub.add_parser("arm"); arm.add_argument("--spec", required=True); arm.add_argument("--json", action="store_true")
     enqueue = background_sub.add_parser("enqueue"); enqueue.add_argument("--spec", required=True); enqueue.add_argument("--json", action="store_true")
@@ -1183,6 +1232,12 @@ def main() -> int:
     try:
         if args.command == "inspect":
             payload = project_inspect(Path(args.project))
+        elif args.command == "registry":
+            if args.registry_command == "validate":
+                payload = registry_validate(args.registry)
+            else:
+                request = load_spec(args.input) if args.input else None
+                payload = registry_discover(args.registry, request, base=args.base, auto_queue=args.auto_queue)
         elif args.command == "background":
             if args.background_command == "arm":
                 payload = arm_background(load_spec(args.spec))

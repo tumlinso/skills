@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cuda.local/schemas/metric-v1.schema.json",
+  "title": "CUDA benchmark metric v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "schema_version", "name", "path", "direction", "unit"],
+  "properties": {
+    "format": {"const": "CUDA-METRIC/1"},
+    "schema_version": {"const": 1},
+    "name": {"type": "string", "minLength": 1},
+    "path": {"type": "string", "minLength": 1},
+    "direction": {"enum": ["minimize", "maximize"]},
+    "unit": {"type": "string", "minLength": 1},
+    "practical_regression_percent": {"type": "number", "minimum": 0, "default": 2.0},
+    "target": {"type": ["number", "null"], "default": null}
+  }
+}
