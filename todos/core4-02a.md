@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-02A: Resolve ctxpp targeted-refresh baseline contract
 
-Task revision: `24`; current project revision is in `todo-status.md`.
+Task revision: `29`; current project revision is in `todo-status.md`.
 
 ## Objective
 Determine whether a newly populated included header may be served by the lexical-overlay fast path or must trigger one semantic TU refresh, then make the smallest backwards-compatible implementation or test correction and restore the ctxpp baseline.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `idle`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 Inspect the targeted refresh implementation, failing test, and existing ctxpp retrieval/freshness contract; change only the test if lexical-only freshness is contract-valid, otherwise repair the implementation; run the focused test and full ctxpp suite, then freeze CORE4-BASELINE-FROZEN.

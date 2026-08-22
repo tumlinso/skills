@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T08:56:05Z",
+  "generated_at": "2026-08-22T08:56:50Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 27,
+  "project_revision": 29,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -763,6 +763,26 @@
         "revision": 27,
         "seq": 27,
         "timestamp": "2026-08-22T08:56:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-02A",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-02A\"}",
+        "revision": 28,
+        "seq": 28,
+        "timestamp": "2026-08-22T08:56:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-02A",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 29,
+        "seq": 29,
+        "timestamp": "2026-08-22T08:56:50Z"
       }
     ],
     "evidence": [
@@ -1260,6 +1280,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"contracts/core4-compatibility-v1.json\", \"core4-tests/baseline/README.md\", \"core4-tests/baseline/ctxpp-help.txt\", \"core4-tests/baseline/cuda-controller-help.txt\", \"core4-tests/baseline/representative-json.json\", \"core4-tests/baseline/todo-help.txt\"], \"checkpoints\": [{\"id\": \"CORE4-BASELINE-FROZEN\", \"reached_at\": null, \"state\": \"pending\"}], \"gates\": [{\"id\": \"CORE4-02-TODO-BASELINE\", \"last_run_at\": \"2026-08-22T08:39:00Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02-CUDA-BASELINE\", \"last_run_at\": \"2026-08-22T08:38:37Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02-CTXPP-BASELINE\", \"last_run_at\": \"2026-08-22T08:37:58Z\", \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 182 +++++++++++++++++++++++++++++----\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n 3 files changed, 165 insertions(+), 25 deletions(-)\", \"git_head\": \"a7c0060eab831871dfe4343d0185cc77dc6ddbbd\", \"interfaces\": [{\"content_hash\": null, \"id\": \"core4-compatibility-v1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-02\"}",
         "revision": 13,
         "task_id": "CORE4-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T08:56:50Z",
+        "id": "d42e830c-1197-45f4-ac1f-242d81dba525",
+        "kind": "complete",
+        "note": "Resolved the ctxpp baseline contract by retaining lexical-only routing for orphaned files while requiring one targeted semantic TU refresh for indexed changed dependencies. Focused and full 48-test ctxpp gates passed; CORE4-BASELINE-FROZEN and core4-compatibility-v1 were frozen, and commit 11568b6dbaee1923beef8748858920c0f070e575 records the baseline.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"CORE4-BASELINE-FROZEN\", \"reached_at\": \"2026-08-22T08:55:37Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-02-CTXPP-BASELINE\", \"last_run_at\": \"2026-08-22T08:52:47Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-02A-CTXPP-FOCUSED\", \"last_run_at\": \"2026-08-22T08:51:01Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 20 +++++++++++++++-----\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/core4-02a.md                     |  4 ++--\\n 4 files changed, 20 insertions(+), 10 deletions(-)\", \"git_head\": \"11568b6dbaee1923beef8748858920c0f070e575\", \"interfaces\": [], \"note\": \"Resolved the ctxpp baseline contract by retaining lexical-only routing for orphaned files while requiring one targeted semantic TU refresh for indexed changed dependencies. Focused and full 48-test ctxpp gates passed; CORE4-BASELINE-FROZEN and core4-compatibility-v1 were frozen, and commit 11568b6dbaee1923beef8748858920c0f070e575 records the baseline.\", \"resources\": [], \"task_id\": \"CORE4-02A\"}",
+        "revision": 29,
+        "task_id": "CORE4-02A"
       }
     ],
     "interface_consumers": [
@@ -3923,7 +3953,7 @@
         "version": 5
       },
       {
-        "attention_reason": "Persist the refrozen compatibility interface hash in the canonical plan and commit the coherent baseline before final prerequisite closure.",
+        "attention_reason": null,
         "created_at": "2026-08-22T08:49:34Z",
         "id": "CORE4-02A",
         "kind": "validation_task",
@@ -3935,14 +3965,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 6,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"implemented\"]}",
-        "revision": 24,
-        "status": "in_progress",
+        "revision": 29,
+        "status": "done",
         "tags_json": "[\"foundation\", \"compatibility\", \"ctxpp\", \"prerequisite\"]",
         "title": "Resolve ctxpp targeted-refresh baseline contract",
-        "updated_at": "2026-08-22T08:56:05Z",
-        "version": 6
+        "updated_at": "2026-08-22T08:56:50Z",
+        "version": 8
       },
       {
         "attention_reason": null,

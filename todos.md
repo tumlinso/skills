@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `27`
+Project revision: `29`
 
 ## Workstreams
 - `CORE4-00` | kind: epic | status: planned | parent: - | objective: Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
@@ -24,7 +24,7 @@ Project revision: `27`
 - `CORE4-06` | kind: workstream | status: planned | parent: CORE4-00 | objective: Add a machine-oriented ctxpp packet command and an ordinary inspect command that select exact canonical edit targets plus compact types, dependencies, callers/callees, tests, invariants, source locations, trust metadata, hashes, and bounded expansion handles.
 - `CORE4-08` | kind: workstream | status: planned | parent: CORE4-00 | objective: Let projects register build, correctness, benchmark, metric, resource, path, symbol, and target contracts once; discover matching campaigns from changed files, todo scopes, accepted local-worker patches, and ctxpp symbol identity; auto-queue only unambiguous matches.
 - `CORE4-03` | kind: workstream | status: planned | parent: CORE4-00 | objective: Define tiny cross-skill command, source-identity, resource-request, artifact-reference, and evidence-summary contracts; expose supported todo runtime facades for jobs, snapshots, artifacts, and host resources while preserving all existing private background compatibility.
-- `CORE4-02A` | kind: validation_task | status: in_progress | parent: CORE4-00 | objective: Determine whether a newly populated included header may be served by the lexical-overlay fast path or must trigger one semantic TU refresh, then make the smallest backwards-compatible implementation or test correction and restore the ctxpp baseline.
+- `CORE4-02A` | kind: validation_task | status: done | parent: CORE4-00 | objective: Determine whether a newly populated included header may be served by the lexical-overlay fast path or must trigger one semantic TU refresh, then make the smallest backwards-compatible implementation or test correction and restore the ctxpp baseline.
 - `CORE4-02` | kind: workstream | status: planned | parent: CORE4-00 | objective: Capture the exact existing public behavior of todo-orchestrator, cuda, and cpp-context-compiler before semantic changes, including CLI commands, JSON envelopes, core tests, performance fixture identities, and substantive guidance preservation requirements.
 - `CORE4-01` | kind: workstream | status: done | parent: CORE4-00 | objective: Record that the previous completed todo program was exported and archived outside the worktree, stale legacy projections were removed, a fresh v2 project identity was created, and this plan was transactionally applied.
 <!-- todo-orchestrator:v2-managed:end -->
