@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T11:17:29Z",
+  "generated_at": "2026-08-22T11:26:17Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 123,
+  "project_revision": 130,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -369,10 +369,10 @@
       {
         "id": "CORE4-INTEGRATED-FLOW-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 23,
+        "reached_at": "2026-08-22T11:26:11Z",
+        "revision": 129,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-14",
         "title": "Complete fake-backend CORE4 flow frozen"
       },
@@ -1723,6 +1723,76 @@
         "revision": 123,
         "seq": 123,
         "timestamp": "2026-08-22T11:17:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 124,
+        "seq": 124,
+        "timestamp": "2026-08-22T11:19:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-14-INTEGRATION\"}",
+        "revision": 125,
+        "seq": 125,
+        "timestamp": "2026-08-22T11:25:59Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"67eda4e2-ef05-4a8b-837a-a9585b88794a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 126,
+        "seq": 126,
+        "timestamp": "2026-08-22T11:26:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14-SCENARIOS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-14-SCENARIOS\"}",
+        "revision": 127,
+        "seq": 127,
+        "timestamp": "2026-08-22T11:26:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14-SCENARIOS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6b71abbc-5287-455a-9fee-e8f7a430d04a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 128,
+        "seq": 128,
+        "timestamp": "2026-08-22T11:26:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-INTEGRATED-FLOW-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 129,
+        "seq": 129,
+        "timestamp": "2026-08-22T11:26:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-14",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 130,
+        "seq": 130,
+        "timestamp": "2026-08-22T11:26:17Z"
       }
     ],
     "evidence": [
@@ -1841,6 +1911,32 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"760eda28e33c949d0d5d7d42b034e71395aade225534393782f8f067b3d3a2fe\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_child_execution_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"50b86245d79a41b31a2f774bb5f012d4a72dd53af497a9702cf1e9f90039965b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v1.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v1.schema.json\", \"todo-orchestrator/tests/test_child_execution_core.py\", \"todo-orchestrator/tests/test_child_execution_integration.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/context.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_integration.py\", \"sha256\": \"acd47a3fdce4457908080fe44cb789a42e391484ed85372461e9f057557ab905\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"sha256\": \"f4bb6cf86eab47da66daef63aa68a38c3de9bf44ad08e608e3ae17a215a1e85b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/context.py\", \"sha256\": \"2a21cf9dfd57f553bfee11be107aa02f5a22dbe633fe5e6fc80e768191711acc\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"db6a37282b76a2844a584534a98d132fc842911ff69c710cc3756795b0c0171d\"}], \"interfaces\": [], \"recorded_git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 74}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/5daa28fb-bebd-4239-a7e8-15435b1486ed",
         "revision": 75,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:26:00Z",
+        "gate_id": "CORE4-14-INTEGRATION",
+        "id": "67eda4e2-ef05-4a8b-837a-a9585b88794a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_core4_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2fc8947717366f6ebf9564068246a4e4bdaa75529eaf3e716dcc0e16e7572e65\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_core4_integration.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 2400}, \"diff_fingerprint\": \"9c6521b6b43eabad5ca60436e419a69c26587dcb7639264e2c1213463b41257f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"core4-tests/integration/scenarios.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-14.md\"], \"files\": [{\"path\": \"contracts\", \"sha256\": \"missing\"}, {\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"659190eeca26199d127a99f63ff6ecae75f8e888\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 125}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/67eda4e2-ef05-4a8b-837a-a9585b88794a",
+        "revision": 126,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T11:26:07Z",
+        "gate_id": "CORE4-14-SCENARIOS",
+        "id": "6b71abbc-5287-455a-9fee-e8f7a430d04a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"local-coding-worker/scripts/local_worker.py\", \"self-test\", \"--repo\", \".\", \"--json\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"54156c741e56dc7f8ed78d5eb80635f2a3c9fe2a98c80bf318ef938ea5fdea4f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"local-coding-worker/scripts/local_worker.py\", \"self-test\", \"--repo\", \".\", \"--json\"], \"cwd\": \".\", \"timeout\": 2400}, \"diff_fingerprint\": \"9c6521b6b43eabad5ca60436e419a69c26587dcb7639264e2c1213463b41257f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"core4-tests/integration/scenarios.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-14.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"659190eeca26199d127a99f63ff6ecae75f8e888\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 127}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6b71abbc-5287-455a-9fee-e8f7a430d04a",
+        "revision": 128,
         "status": "passed"
       },
       {
@@ -2408,27 +2504,27 @@
         "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_core4_integration.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker\", \"todo-orchestrator\", \"cpp-context-compiler\", \"cuda\", \"contracts\"], \"timeout\": 2400}",
         "id": "CORE4-14-INTEGRATION",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "2fc8947717366f6ebf9564068246a4e4bdaa75529eaf3e716dcc0e16e7572e65",
+        "last_run_at": "2026-08-22T11:26:00Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 126,
+        "status": "passed",
         "task_id": "CORE4-14",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
         "config_json": "{\"argv\": [\"python\", \"local-coding-worker/scripts/local_worker.py\", \"self-test\", \"--repo\", \".\", \"--json\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker\", \"todo-orchestrator\", \"cpp-context-compiler\", \"cuda\"], \"timeout\": 2400}",
         "id": "CORE4-14-SCENARIOS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "54156c741e56dc7f8ed78d5eb80635f2a3c9fe2a98c80bf318ef938ea5fdea4f",
+        "last_run_at": "2026-08-22T11:26:07Z",
         "required": 1,
-        "revision": 23,
-        "status": "pending",
+        "revision": 128,
+        "status": "passed",
         "task_id": "CORE4-14",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-SOFTWARE-READY",
@@ -2655,6 +2751,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cuda/references/benchmark-registry.md\", \"cuda/schemas/benchmark-registry-v1.schema.json\", \"cuda/schemas/metric-v1.schema.json\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_discovery.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_registry_discovery.py\"], \"checkpoints\": [{\"id\": \"CORE4-CUDA-CAMPAIGN-FROZEN\", \"reached_at\": \"2026-08-22T10:50:21Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-08-REGISTRY-DISCOVERY\", \"last_run_at\": \"2026-08-22T10:49:48Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-08-CONTROLLER-COMPAT\", \"last_run_at\": \"2026-08-22T10:49:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 132 +++++++++++++++++++++++++++------\\n cuda/scripts/cuda_controller.py        |  55 ++++++++++++++\\n todo-status.md                         |   4 +-\\n todos.md                               |   4 +-\\n todos/core4-08.md                      |   6 +-\\n 5 files changed, 171 insertions(+), 30 deletions(-)\", \"git_head\": \"c5143e841fa4e6bf9de06f52bfb4a44f08e741f4\", \"interfaces\": [{\"content_hash\": \"a56920859297bf079c41cb8e967e159f988a5a31b5e41dfd8c8b2e538994d0dd\", \"id\": \"cuda-campaign-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Registered reusable CUDA build/correctness/benchmark/metric/resource contracts; added deterministic changed-path, todo-scope, accepted-patch, ctxpp-symbol, target, and task discovery; auto-queue refuses zero or ambiguous matches; preserved controller compatibility.\", \"resources\": [], \"task_id\": \"CORE4-08\"}",
         "revision": 107,
         "task_id": "CORE4-08"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T11:26:17Z",
+        "id": "e3dac930-9951-4914-aabf-f2044f1a67a7",
+        "kind": "complete",
+        "note": "Integrated parent-authorized child execution, bounded ctxpp terminal work, isolated writable verification and guarded acceptance, compact NEEDS_CODEX/preemption handling, and accepted-patch CUDA discovery through frozen public interfaces.",
+        "payload_json": "{\"changed_owned_paths\": [\"core4-tests/integration/scenarios.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\"], \"checkpoints\": [{\"id\": \"CORE4-INTEGRATED-FLOW-FROZEN\", \"reached_at\": \"2026-08-22T11:26:11Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-14-INTEGRATION\", \"last_run_at\": \"2026-08-22T11:26:00Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-14-SCENARIOS\", \"last_run_at\": \"2026-08-22T11:26:07Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json      | 132 +++++++++++++++++++++++-----\\n local-coding-worker/scripts/local_worker.py |  48 +++++++++-\\n todo-status.md                              |   4 +-\\n todos.md                                    |   4 +-\\n todos/core4-14.md                           |   6 +-\\n 5 files changed, 162 insertions(+), 32 deletions(-)\", \"git_head\": \"659190eeca26199d127a99f63ff6ecae75f8e888\", \"interfaces\": [{\"content_hash\": \"b781565881a4f095828b162e66f5fdce759f9c8d3f16034143c3f7c3fc33306e\", \"id\": \"core4-integrated-flow-v1\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated parent-authorized child execution, bounded ctxpp terminal work, isolated writable verification and guarded acceptance, compact NEEDS_CODEX/preemption handling, and accepted-patch CUDA discovery through frozen public interfaces.\", \"resources\": [], \"task_id\": \"CORE4-14\"}",
+        "revision": 130,
+        "task_id": "CORE4-14"
       },
       {
         "claim_id": null,
@@ -2926,14 +3032,14 @@
         "version": "1"
       },
       {
-        "content_hash": null,
+        "content_hash": "b781565881a4f095828b162e66f5fdce759f9c8d3f16034143c3f7c3fc33306e",
         "contract_paths_json": "[\"local-coding-worker/references/integration-contract.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-22T11:26:11Z",
         "id": "core4-integrated-flow-v1",
         "owner_task_id": "CORE4-14",
         "revised_at": null,
-        "revision": 23,
-        "state": "draft",
+        "revision": 129,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -5614,14 +5720,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": "CORE4-00",
         "priority": 35,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 23,
-        "status": "planned",
+        "revision": 130,
+        "status": "done",
         "tags_json": "[\"integration\", \"fake-backend\", \"end-to-end\"]",
         "title": "Integrate todo to ctxpp to local worker to acceptance to CUDA discovery",
-        "updated_at": "2026-08-22T08:54:56Z",
-        "version": 3
+        "updated_at": "2026-08-22T11:26:17Z",
+        "version": 5
       },
       {
         "attention_reason": null,

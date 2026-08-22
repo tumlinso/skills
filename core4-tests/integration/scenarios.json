@@ -1,0 +1,15 @@
+{
+  "format": "CORE4-INTEGRATION-SCENARIOS/1",
+  "schema_version": 1,
+  "scenarios": [
+    "readonly",
+    "writable",
+    "needs_codex",
+    "stale_patch",
+    "preemption",
+    "accepted_patch",
+    "cuda_trigger"
+  ],
+  "external_assets_required": false,
+  "cuda_execution_required": false
+}
