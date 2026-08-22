@@ -1,19 +1,18 @@
 # Repo Guidance
 
-<!-- todo-orchestrator:start -->
-## Workflow Ledger
+## Authoritative workflow
 
-- For substantial multi-step work, consult `todos.md` first.
-- Consult `todo-status.md` for pickup-ready, claimed, and idle workstreams before starting parallel work.
-- Treat `todos.md` as the canonical active plan and progress ledger.
-- For concurrent workstreams, consult the relevant file under `todos/`.
-- In plan mode, consult `todo-orchestrator/references/planning-workflow.md`.
-- In implementation mode, continue from the recorded plan non-interactively unless truly blocked.
-- Prefer relevant repo-local skills and reference files when they match the task.
-<!-- todo-orchestrator:end -->
+- For substantial multi-step work, use `todo-orchestrator`.
+- SQLite is todo-orchestrator's operational authority.
+- `.todo-orchestrator/state.snapshot.json` is versionable recovery state.
+- `todos.md` and `todo-status.md` are generated human projections, never synchronization or authority.
+- Use the task capsule returned by `todo continue` instead of rereading whole ledgers.
+- Preserve unrelated user changes and obey declared scopes, gates, resources, and interlocks.
 
-## Skill Routing
+## Core skill routing
 
-- Route OpenACC assessment and incremental OpenACC porting work to `openacc-porting`.
-- Default OpenACC work to a review-first workflow with an `openacc-review.md` artifact.
-- Compare CPU and OpenACC paths only after correctness is stable; use `compare-benchmarks` if the real task becomes building a fair A/B benchmark harness.
+- Use `todo-orchestrator` for persistent project state, decomposition, concurrency, recovery, gates, and evidence.
+- Use `cpp-context-compiler` before broad C++ or CUDA source reads in configured repositories; edit canonical source only.
+- Use `cuda` for CUDA correctness, benchmarking, profiling, architecture guidance, and GPU resource-sensitive work.
+- `local-coding-worker` is introduced by CORE4 and must not be invoked until its software-ready checkpoint exists.
+- Do not route work to removed or archived skills.

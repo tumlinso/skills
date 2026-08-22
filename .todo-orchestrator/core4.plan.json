@@ -1,0 +1,2636 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "CORE4 Agent Efficiency Stack"
+  },
+  "invariants": [
+    {
+      "id": "CORE4-AUTHORITY",
+      "rule": "todo-orchestrator SQLite is the sole work-state authority; canonical repository source is the sole code authority. Markdown projections, context packets, worker reports, benchmark summaries, and profiler summaries are evidence only.",
+      "severity": "error",
+      "enforcement": "CLI and integration tests"
+    },
+    {
+      "id": "CORE4-BACKCOMPAT",
+      "rule": "Preserve the existing todo-orchestrator, cuda, and cpp-context-compiler public commands, JSON envelopes, normal workflows, and substantive guidance. Additive adapters are preferred over rewrites.",
+      "severity": "error",
+      "enforcement": "compatibility fixtures and full-suite release gate"
+    },
+    {
+      "id": "CORE4-ECONOMY",
+      "rule": "Optimize Codex-visible tokens, source reads, retries, and tool calls per accepted task. Keep SKILL.md files and routine outputs bounded; prefer deterministic helpers before local-model inference.",
+      "severity": "error",
+      "enforcement": "telemetry and interface review"
+    },
+    {
+      "id": "CORE4-DELEGATION-SAFETY",
+      "rule": "Local workers receive bounded child work, isolated writable state, restricted scope, objective gates, and no parent-completion privilege. They do not choose architecture, widen requirements, commit or push user branches, recurse into arbitrary subagents, or treat NEEDS_CODEX as failure.",
+      "severity": "error",
+      "enforcement": "child-token, scope, worktree, and result-contract tests"
+    },
+    {
+      "id": "CORE4-GPU-SAFETY",
+      "rule": "All physical GPU ownership is host-global. Local inference must not coexist with CUDA timing, profiling, topology characterization, or other uncontaminated performance work. Topology is discovered at runtime and is negotiable, not hard-coded.",
+      "severity": "error",
+      "enforcement": "host-coordinator and quiescence tests"
+    },
+    {
+      "id": "CORE4-VOLTA-TOOLCHAIN",
+      "rule": "Treat V100 as compute capability 7.0/sm_70 and use an explicit CUDA 12.x build toolchain for Volta software; never confuse the driver-reported CUDA compatibility level with GPU compute capability.",
+      "severity": "error",
+      "enforcement": "machine-fact and toolchain diagnostics"
+    },
+    {
+      "id": "CORE4-EXTERNAL-ASSETS",
+      "rule": "Do not download model weights, install large model-serving stacks, alter GPU cabling, or make other substantial external acquisitions without the user. Finish all independent software work, then halt once with an exact acquisition request.",
+      "severity": "error",
+      "enforcement": "host-acquisition task and decision gate"
+    },
+    {
+      "id": "CORE4-TESTING",
+      "rule": "Run the smallest decisive test or gate while implementing. Run existing full skill suites only at the baseline/software-ready/final checkpoints, not after every edit.",
+      "severity": "warning",
+      "enforcement": "task gate design"
+    },
+    {
+      "id": "CORE4-USER-WORK",
+      "rule": "Preserve unrelated user changes. Never reset, clean, overwrite, stage, commit, or attribute paths outside the active task scope without audit.",
+      "severity": "error",
+      "enforcement": "todo ownership and Git audit"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "CORE4-MODEL-ASSETS",
+      "title": "Required local model and harness assets are present",
+      "value": "absent",
+      "allowed": [
+        "absent",
+        "ready"
+      ]
+    },
+    {
+      "id": "CORE4-PRIMARY-HARNESS",
+      "title": "Selected production local coding harness",
+      "value": "undecided",
+      "allowed": [
+        "undecided",
+        "qwen-code",
+        "codex-cli",
+        "custom"
+      ]
+    },
+    {
+      "id": "CORE4-PRODUCTION-PROFILE",
+      "title": "Selected production inference topology/profile",
+      "value": "undecided",
+      "allowed": [
+        "undecided",
+        "balanced",
+        "dual-island",
+        "single-wide"
+      ]
+    }
+  ],
+  "locks": [
+    {
+      "name": "core4-runtime-contract",
+      "capacity": 1
+    },
+    {
+      "name": "core4-todo-entrypoints",
+      "capacity": 1
+    },
+    {
+      "name": "core4-ctxpp-entrypoint",
+      "capacity": 1
+    },
+    {
+      "name": "core4-cuda-entrypoint",
+      "capacity": 1
+    },
+    {
+      "name": "core4-local-worker-entrypoint",
+      "capacity": 1
+    },
+    {
+      "name": "core4-final-integration",
+      "capacity": 1
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "core4-compatibility-v1",
+      "owner_task_id": "CORE4-02",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "contracts/core4-compatibility-v1.json"
+      ]
+    },
+    {
+      "id": "core4-runtime-v1",
+      "owner_task_id": "CORE4-03",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "contracts/command-spec-v1.schema.json",
+        "contracts/source-identity-v1.schema.json",
+        "contracts/resource-request-v1.schema.json",
+        "contracts/artifact-ref-v1.schema.json",
+        "contracts/evidence-summary-v1.schema.json",
+        "todo-orchestrator/todo_orchestrator/runtime/__init__.py"
+      ]
+    },
+    {
+      "id": "todo-child-execution-v1",
+      "owner_task_id": "CORE4-05",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "todo-orchestrator/schemas/child-execution-v1.schema.json",
+        "todo-orchestrator/references/child-execution-contract.md"
+      ]
+    },
+    {
+      "id": "ctxpp-context-packet-v1",
+      "owner_task_id": "CORE4-06",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cpp-context-compiler/schemas/context-packet-v1.schema.json",
+        "cpp-context-compiler/references/context-packets.md"
+      ]
+    },
+    {
+      "id": "cuda-campaign-v1",
+      "owner_task_id": "CORE4-08",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cuda/schemas/benchmark-registry-v1.schema.json",
+        "cuda/schemas/metric-v1.schema.json"
+      ]
+    },
+    {
+      "id": "cuda-performance-fact-v1",
+      "owner_task_id": "CORE4-09",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "cuda/schemas/performance-fact-v1.schema.json",
+        "cuda/references/performance-facts.md"
+      ]
+    },
+    {
+      "id": "local-worker-delegation-v1",
+      "owner_task_id": "CORE4-10",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "local-coding-worker/schemas/delegation-spec-v1.schema.json",
+        "local-coding-worker/schemas/worker-result-v1.schema.json"
+      ]
+    },
+    {
+      "id": "local-worker-write-v1",
+      "owner_task_id": "CORE4-12",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "local-coding-worker/references/writable-work-contract.md"
+      ]
+    },
+    {
+      "id": "core4-resource-policy-v1",
+      "owner_task_id": "CORE4-13",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "todo-orchestrator/references/runtime-resource-contract.md",
+        "local-coding-worker/references/resource-policy.md"
+      ]
+    },
+    {
+      "id": "core4-integrated-flow-v1",
+      "owner_task_id": "CORE4-14",
+      "state": "draft",
+      "version": "1",
+      "contract_paths": [
+        "local-coding-worker/references/integration-contract.md"
+      ]
+    }
+  ],
+  "barriers": [
+    {
+      "id": "CORE4-LANES-READY",
+      "title": "Todo, context, CUDA, local-worker, writable, and resource lanes are implemented",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "task",
+          "id": "CORE4-05",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CORE4-07",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CORE4-09",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CORE4-11",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CORE4-12",
+          "state": "done"
+        },
+        {
+          "type": "task",
+          "id": "CORE4-13",
+          "state": "done"
+        }
+      ]
+    },
+    {
+      "id": "CORE4-RELEASE-CANDIDATE",
+      "title": "Software, real-host validation, and policy tuning are complete",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "checkpoint",
+          "id": "CORE4-SOFTWARE-READY",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "id": "CORE4-HOST-VALIDATED",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "id": "CORE4-POLICY-VALIDATED",
+          "state": "reached"
+        }
+      ]
+    },
+    {
+      "id": "CORE4-RELEASE-BARRIER",
+      "title": "CORE4 final release task completed",
+      "mode": "all",
+      "requirements": [
+        {
+          "type": "task",
+          "id": "CORE4-19",
+          "state": "done"
+        }
+      ]
+    }
+  ],
+  "resource_classes": [
+    {
+      "id": "accelerator",
+      "mode": "exclusive",
+      "metadata": {
+        "provider": "runtime-discovered",
+        "authority": "host-global"
+      }
+    },
+    {
+      "id": "benchmark",
+      "mode": "exclusive",
+      "metadata": {
+        "purpose": "uncontaminated measurement critical section"
+      },
+      "instances": [
+        {
+          "id": "benchmark:cuda",
+          "capacity": 1,
+          "hostname": null,
+          "metadata": {}
+        }
+      ]
+    },
+    {
+      "id": "profiler",
+      "mode": "exclusive",
+      "metadata": {
+        "purpose": "global NVIDIA profiler critical section"
+      },
+      "instances": [
+        {
+          "id": "profiler:nvidia",
+          "capacity": 1,
+          "hostname": null,
+          "metadata": {}
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "CORE4-00",
+      "parent_id": null,
+      "kind": "epic",
+      "title": "CORE4 frontier-efficiency stack",
+      "objective": "Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.",
+      "status": "planned",
+      "priority": 100,
+      "parallel_policy": "serial",
+      "next_action": "After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.",
+      "depends_on": [
+        {
+          "type": "barrier",
+          "barrier_id": "CORE4-RELEASE-BARRIER",
+          "state": "open"
+        }
+      ],
+      "scope": {
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "local-coding-worker",
+          "contracts"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-EXTERNAL-ASSETS",
+        "CORE4-USER-WORK"
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "failed"
+        ]
+      },
+      "tags": [
+        "core4",
+        "epic"
+      ]
+    },
+    {
+      "id": "CORE4-01",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Archive the previous ledger and bootstrap CORE4",
+      "objective": "Record that the previous completed todo program was exported and archived outside the worktree, stale legacy projections were removed, a fresh v2 project identity was created, and this plan was transactionally applied.",
+      "status": "done",
+      "priority": 1,
+      "parallel_policy": "project_exclusive",
+      "next_action": "Bootstrap complete; implementation begins at CORE4-02.",
+      "notes": "Archived prior project 9d0f506f-8677-4660-ac11-e64ab40f6026 at revision 164 under /home/tumlinson/.agents/skills/.git/todo-orchestrator/archive/9d0f506f-8677-4660-ac11-e64ab40f6026; bootstrapped fresh project 13723302-e234-48f7-9f6d-3fd15934d928. The prior live SQLite state was preserved outside the worktree.",
+      "scope": {
+        "exclusive_paths": [
+          ".todo-orchestrator/project.json",
+          ".todo-orchestrator/state.snapshot.json",
+          ".todo-orchestrator/core4.plan.json",
+          "todos.md",
+          "todo-status.md",
+          "AGENTS.md",
+          ".gitignore"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-USER-WORK"
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "plan",
+          "path": ".todo-orchestrator/core4.plan.json"
+        }
+      ],
+      "result": "validated",
+      "tags": [
+        "bootstrap",
+        "ledger"
+      ]
+    },
+    {
+      "id": "CORE4-02",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Freeze behavior and compatibility baselines",
+      "objective": "Capture the exact existing public behavior of todo-orchestrator, cuda, and cpp-context-compiler before semantic changes, including CLI commands, JSON envelopes, core tests, performance fixture identities, and substantive guidance preservation requirements.",
+      "status": "planned",
+      "priority": 5,
+      "parallel_policy": "serial",
+      "next_action": "Create the compatibility manifest, capture focused baseline outputs, run each existing skill suite once, and reach CORE4-BASELINE-FROZEN.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CORE4-01",
+          "state": "done"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "contracts/core4-compatibility-v1.json",
+          "core4-tests/baseline"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "AGENTS.md"
+        ],
+        "forbidden_paths": [
+          "local-coding-worker"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING"
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-BASELINE-FROZEN",
+          "title": "Existing public behavior and preservation requirements captured",
+          "publishes_interfaces": [
+            {
+              "id": "core4-compatibility-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-02-TODO-BASELINE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1800,
+          "input_paths": [
+            "todo-orchestrator"
+          ],
+          "track_git_head": true
+        },
+        {
+          "id": "CORE4-02-CUDA-BASELINE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1800,
+          "input_paths": [
+            "cuda"
+          ],
+          "track_git_head": true
+        },
+        {
+          "id": "CORE4-02-CTXPP-BASELINE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cpp-context-compiler/tests",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 3600,
+          "input_paths": [
+            "cpp-context-compiler"
+          ],
+          "track_git_head": true
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "compatibility-manifest",
+          "path": "contracts/core4-compatibility-v1.json"
+        },
+        {
+          "kind": "baseline-evidence",
+          "path": "core4-tests/baseline"
+        }
+      ],
+      "tags": [
+        "foundation",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "CORE4-03",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Expose minimal shared runtime contracts and facade",
+      "objective": "Define tiny cross-skill command, source-identity, resource-request, artifact-reference, and evidence-summary contracts; expose supported todo runtime facades for jobs, snapshots, artifacts, and host resources while preserving all existing private background compatibility.",
+      "status": "planned",
+      "priority": 10,
+      "parallel_policy": "serial",
+      "next_action": "Add schemas and thin adapters around current background primitives. Do not redesign the scheduler or move skill-specific semantics into the facade.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "contracts/command-spec-v1.schema.json",
+          "contracts/source-identity-v1.schema.json",
+          "contracts/resource-request-v1.schema.json",
+          "contracts/artifact-ref-v1.schema.json",
+          "contracts/evidence-summary-v1.schema.json",
+          "todo-orchestrator/todo_orchestrator/runtime",
+          "todo-orchestrator/tests/test_runtime_facade.py"
+        ],
+        "read_paths": [
+          "todo-orchestrator/todo_orchestrator/background",
+          "todo-orchestrator/tests/test_background_runtime.py",
+          "todo-orchestrator/tests/test_host_coordination.py"
+        ],
+        "shared_locks": [
+          "core4-runtime-contract"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-compatibility-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-RUNTIME-FROZEN",
+          "title": "Supported cross-skill runtime facade is additive and stable",
+          "publishes_interfaces": [
+            {
+              "id": "core4-runtime-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-03-FACADE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_runtime_facade.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 600,
+          "input_paths": [
+            "contracts",
+            "todo-orchestrator/todo_orchestrator/runtime",
+            "todo-orchestrator/tests/test_runtime_facade.py"
+          ]
+        },
+        {
+          "id": "CORE4-03-BACKGROUND-COMPAT",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_background_runtime.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 900,
+          "input_paths": [
+            "todo-orchestrator/todo_orchestrator/runtime",
+            "todo-orchestrator/todo_orchestrator/background"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "contracts/command-spec-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "contracts/source-identity-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "contracts/resource-request-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "contracts/artifact-ref-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "contracts/evidence-summary-v1.schema.json"
+        }
+      ],
+      "tags": [
+        "foundation",
+        "runtime"
+      ]
+    },
+    {
+      "id": "CORE4-04",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Implement restricted todo child-execution core",
+      "objective": "Add generic child-execution authorization, restricted child tokens, subset scope leases, lifecycle state, heartbeat, attempts, recovery, and cancellation without granting parent completion or creating a second task graph.",
+      "status": "planned",
+      "priority": 15,
+      "parallel_policy": "serial",
+      "next_action": "Implement the smallest additive schema and CLI surface for child executions, then prove token privilege and recovery behavior.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "todo-orchestrator/todo_orchestrator/migrations.py",
+          "todo-orchestrator/todo_orchestrator/child_execution.py",
+          "todo-orchestrator/todo_orchestrator/commands/child_execution.py",
+          "todo-orchestrator/todo_orchestrator/commands/__init__.py",
+          "todo-orchestrator/tests/test_child_execution_core.py"
+        ],
+        "read_paths": [
+          "todo-orchestrator/todo_orchestrator/claims.py",
+          "todo-orchestrator/todo_orchestrator/ownership.py",
+          "todo-orchestrator/todo_orchestrator/sessions.py",
+          "todo-orchestrator/todo_orchestrator/runtime"
+        ],
+        "shared_locks": [
+          "core4-todo-entrypoints"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-CHILD-CORE-FROZEN",
+          "title": "Restricted child lifecycle and privilege model proven"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-04-CHILD-CORE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CHILD-CORE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_child_execution_core.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 900,
+          "input_paths": [
+            "todo-orchestrator/todo_orchestrator/child_execution.py",
+            "todo-orchestrator/todo_orchestrator/migrations.py",
+            "todo-orchestrator/tests/test_child_execution_core.py"
+          ]
+        }
+      ],
+      "tags": [
+        "todo",
+        "delegation"
+      ]
+    },
+    {
+      "id": "CORE4-05",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Integrate child evidence, gates, acceptance, and capsule surfacing",
+      "objective": "Let child executions run only authorized gates, attach evidence and artifacts, return compact completed/needs_codex/no_change/failed results, surface ready results in the next todo capsule, and require guarded parent acceptance before current-source completion.",
+      "status": "planned",
+      "priority": 20,
+      "parallel_policy": "serial",
+      "next_action": "Wire child results into service/context/reporting and publish the stable child-execution contract. Keep normal continue output unchanged when no child result is ready.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CHILD-CORE-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "todo-orchestrator/todo_orchestrator/service.py",
+          "todo-orchestrator/todo_orchestrator/context.py",
+          "todo-orchestrator/todo_orchestrator/reporting.py",
+          "todo-orchestrator/todo_orchestrator/gates.py",
+          "todo-orchestrator/schemas/child-execution-v1.schema.json",
+          "todo-orchestrator/references/child-execution-contract.md",
+          "todo-orchestrator/tests/test_child_execution_integration.py"
+        ],
+        "read_paths": [
+          "todo-orchestrator/todo_orchestrator/child_execution.py",
+          "todo-orchestrator/todo_orchestrator/evidence.py"
+        ],
+        "shared_locks": [
+          "core4-todo-entrypoints"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-TODO-DELEGATION-FROZEN",
+          "title": "Todo child execution and acceptance contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "todo-child-execution-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-05-CHILD-INTEGRATION",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_child_execution_integration.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "todo-orchestrator/todo_orchestrator/service.py",
+            "todo-orchestrator/todo_orchestrator/context.py",
+            "todo-orchestrator/todo_orchestrator/child_execution.py",
+            "todo-orchestrator/tests/test_child_execution_integration.py"
+          ]
+        },
+        {
+          "id": "CORE4-05-TODO-REGRESSION",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_v2_recovery_migration_context.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 900,
+          "input_paths": [
+            "todo-orchestrator/todo_orchestrator/context.py",
+            "todo-orchestrator/todo_orchestrator/service.py"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "todo-orchestrator/schemas/child-execution-v1.schema.json"
+        }
+      ],
+      "tags": [
+        "todo",
+        "delegation",
+        "evidence"
+      ]
+    },
+    {
+      "id": "CORE4-06",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Add task-oriented cpp-context packets and one inspect front door",
+      "objective": "Add a machine-oriented ctxpp packet command and an ordinary inspect command that select exact canonical edit targets plus compact types, dependencies, callers/callees, tests, invariants, source locations, trust metadata, hashes, and bounded expansion handles.",
+      "status": "planned",
+      "priority": 15,
+      "parallel_policy": "parallel_safe",
+      "next_action": "Implement additive inspect/packet commands without weakening fast where/route/status behavior or source-authority guarantees.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-BASELINE-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "cpp-context-compiler/scripts/ctxpp",
+          "cpp-context-compiler/scripts/ctxpp_packet.py",
+          "cpp-context-compiler/scripts/ctxpp_lib.py",
+          "cpp-context-compiler/schemas/context-packet-v1.schema.json",
+          "cpp-context-compiler/references/context-packets.md",
+          "cpp-context-compiler/tests/test_context_packet.py"
+        ],
+        "read_paths": [
+          "cpp-context-compiler/scripts/ctxpp_fast.py",
+          "cpp-context-compiler/tests/fixtures",
+          "contracts/source-identity-v1.schema.json"
+        ],
+        "shared_locks": [
+          "core4-ctxpp-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-compatibility-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-CTXPP-PACKET-FROZEN",
+          "title": "Task-oriented context packet contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "ctxpp-context-packet-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-06-PACKET",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cpp-context-compiler/tests",
+            "-p",
+            "test_context_packet.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cpp-context-compiler/scripts/ctxpp",
+            "cpp-context-compiler/scripts/ctxpp_packet.py",
+            "cpp-context-compiler/scripts/ctxpp_lib.py",
+            "cpp-context-compiler/tests/test_context_packet.py"
+          ]
+        },
+        {
+          "id": "CORE4-06-SLICE-TRUTH",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cpp-context-compiler/tests",
+            "-p",
+            "test_slice_truth.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cpp-context-compiler/scripts/ctxpp",
+            "cpp-context-compiler/scripts/ctxpp_lib.py"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "cpp-context-compiler/schemas/context-packet-v1.schema.json"
+        }
+      ],
+      "tags": [
+        "ctxpp",
+        "context"
+      ]
+    },
+    {
+      "id": "CORE4-07",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Instrument ctxpp consumer economics and worker packet evaluation",
+      "objective": "Measure packet latency, freshness, exact versus compact tokens, canonical source avoided, expansions, broad source fallbacks, local-worker success, accepted patches, and Codex reinvestigation without adding routine output or a dashboard.",
+      "status": "planned",
+      "priority": 25,
+      "parallel_policy": "serial",
+      "next_action": "Add private bounded telemetry and a fixture evaluation that compares packet layouts at fixed budgets. Do not optimize solely for token reduction.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "cpp-context-compiler/scripts/ctxpp_packet.py",
+          "cpp-context-compiler/scripts/ctxpp_telemetry.py",
+          "cpp-context-compiler/evals",
+          "cpp-context-compiler/tests/test_context_packet_economics.py",
+          "cpp-context-compiler/tests/expected/context-packet-economics.json"
+        ],
+        "read_paths": [
+          "cpp-context-compiler/tests/fixtures",
+          "local-coding-worker"
+        ],
+        "shared_locks": [
+          "core4-ctxpp-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "ctxpp-context-packet-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-07-PACKET-ECONOMICS",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cpp-context-compiler/tests",
+            "-p",
+            "test_context_packet_economics.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cpp-context-compiler/scripts/ctxpp_packet.py",
+            "cpp-context-compiler/scripts/ctxpp_telemetry.py",
+            "cpp-context-compiler/tests/test_context_packet_economics.py"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "evaluation",
+          "path": "cpp-context-compiler/tests/expected/context-packet-economics.json"
+        }
+      ],
+      "tags": [
+        "ctxpp",
+        "telemetry",
+        "evaluation"
+      ]
+    },
+    {
+      "id": "CORE4-08",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Add CUDA benchmark registry and changed-code discovery",
+      "objective": "Let projects register build, correctness, benchmark, metric, resource, path, symbol, and target contracts once; discover matching campaigns from changed files, todo scopes, accepted local-worker patches, and ctxpp symbol identity; auto-queue only unambiguous matches.",
+      "status": "planned",
+      "priority": 15,
+      "parallel_policy": "parallel_safe",
+      "next_action": "Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "cuda/scripts/cuda_registry.py",
+          "cuda/scripts/cuda_discovery.py",
+          "cuda/scripts/cuda_controller.py",
+          "cuda/schemas/benchmark-registry-v1.schema.json",
+          "cuda/schemas/metric-v1.schema.json",
+          "cuda/references/benchmark-registry.md",
+          "cuda/tests/test_registry_discovery.py"
+        ],
+        "read_paths": [
+          "cuda/tests/test_controller.py",
+          "todo-orchestrator/todo_orchestrator/runtime",
+          "cpp-context-compiler/scripts/ctxpp"
+        ],
+        "shared_locks": [
+          "core4-cuda-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "ctxpp-context-packet-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-CUDA-CAMPAIGN-FROZEN",
+          "title": "Registered and discovered CUDA campaign contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "cuda-campaign-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-08-REGISTRY-DISCOVERY",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-p",
+            "test_registry_discovery.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cuda/scripts/cuda_registry.py",
+            "cuda/scripts/cuda_discovery.py",
+            "cuda/scripts/cuda_controller.py",
+            "cuda/tests/test_registry_discovery.py"
+          ]
+        },
+        {
+          "id": "CORE4-08-CONTROLLER-COMPAT",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-p",
+            "test_controller.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1800,
+          "input_paths": [
+            "cuda/scripts/cuda_controller.py",
+            "cuda/scripts/cuda_registry.py",
+            "cuda/scripts/cuda_discovery.py"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "cuda/schemas/benchmark-registry-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "cuda/schemas/metric-v1.schema.json"
+        }
+      ],
+      "tags": [
+        "cuda",
+        "discovery",
+        "benchmark"
+      ]
+    },
+    {
+      "id": "CORE4-09",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Add CUDA compatible baselines, performance facts, and quiescence",
+      "objective": "Replace first-result-only baseline semantics with accepted/previous/candidate/historical compatibility, store reusable performance facts, make profiler escalation decision-driven, adapt correctness repetition, and prove post-inference GPU quiescence before uncontaminated measurements.",
+      "status": "planned",
+      "priority": 20,
+      "parallel_policy": "serial",
+      "next_action": "Implement new fact and compatibility modules, preserve raw evidence, and update controller classification without changing existing commands.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CUDA-CAMPAIGN-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "cuda/scripts/cuda_controller.py",
+          "cuda/scripts/cuda_baselines.py",
+          "cuda/scripts/cuda_facts.py",
+          "cuda/scripts/cuda_quiescence.py",
+          "cuda/schemas/performance-fact-v1.schema.json",
+          "cuda/references/performance-facts.md",
+          "cuda/tests/test_performance_facts.py"
+        ],
+        "read_paths": [
+          "cuda/tests/test_controller.py",
+          "todo-orchestrator/todo_orchestrator/runtime"
+        ],
+        "shared_locks": [
+          "core4-cuda-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "cuda-campaign-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-CUDA-FACTS-FROZEN",
+          "title": "Durable performance fact and clean-measurement contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "cuda-performance-fact-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-09-PERFORMANCE-FACTS",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-p",
+            "test_performance_facts.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cuda/scripts/cuda_baselines.py",
+            "cuda/scripts/cuda_facts.py",
+            "cuda/scripts/cuda_quiescence.py",
+            "cuda/scripts/cuda_controller.py",
+            "cuda/tests/test_performance_facts.py"
+          ]
+        },
+        {
+          "id": "CORE4-09-CONTROLLER-REGRESSION",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-p",
+            "test_controller.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1800,
+          "input_paths": [
+            "cuda/scripts/cuda_controller.py",
+            "cuda/scripts/cuda_baselines.py",
+            "cuda/scripts/cuda_facts.py",
+            "cuda/scripts/cuda_quiescence.py"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "cuda/schemas/performance-fact-v1.schema.json"
+        }
+      ],
+      "tags": [
+        "cuda",
+        "baselines",
+        "facts",
+        "quiescence"
+      ]
+    },
+    {
+      "id": "CORE4-10",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Create local-coding-worker read-only MVP",
+      "objective": "Create the fourth skill with a tiny model-facing surface, deterministic delegation eligibility, todo child authorization, ctxpp context assembly, isolated read-only source snapshots, compact result normalization, NEEDS_CODEX escalation, local telemetry, and fake-backend tests.",
+      "status": "planned",
+      "priority": 20,
+      "parallel_policy": "parallel_safe",
+      "next_action": "Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CTXPP-PACKET-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "contracts"
+        ],
+        "shared_locks": [
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "todo-child-execution-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "ctxpp-context-packet-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-LOCAL-READONLY-FROZEN",
+          "title": "Read-only bounded local-worker contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "local-worker-delegation-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-10-READONLY-MVP",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-LOCAL-READONLY-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_read_only_mvp.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "local-coding-worker",
+            "todo-orchestrator",
+            "cpp-context-compiler"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "schema",
+          "path": "local-coding-worker/schemas/delegation-spec-v1.schema.json"
+        },
+        {
+          "kind": "schema",
+          "path": "local-coding-worker/schemas/worker-result-v1.schema.json"
+        },
+        {
+          "kind": "skill",
+          "path": "local-coding-worker/SKILL.md"
+        }
+      ],
+      "tags": [
+        "local-worker",
+        "read-only",
+        "mvp"
+      ]
+    },
+    {
+      "id": "CORE4-11",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Implement model-server and coding-harness adapters",
+      "objective": "Add replaceable adapters for llama.cpp serving and existing coding harnesses, initially Qwen Code and Codex CLI, with inspect/start/health/run/cancel/drain/evict/usage APIs, disposable task contexts, fake servers, and no asset installation.",
+      "status": "planned",
+      "priority": 25,
+      "parallel_policy": "parallel_safe",
+      "next_action": "Implement adapters against current documented protocols and test them with fakes. Probe installed binaries but do not install or download anything.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-LOCAL-READONLY-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/local_worker/harnesses",
+          "local-coding-worker/local_worker/servers",
+          "local-coding-worker/local_worker/service.py",
+          "local-coding-worker/tests/test_adapters.py",
+          "local-coding-worker/references/adapter-contract.md"
+        ],
+        "read_paths": [
+          "local-coding-worker/local_worker/controller.py",
+          "todo-orchestrator/todo_orchestrator/runtime"
+        ],
+        "shared_locks": [
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "local-worker-delegation-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-LOCAL-ADAPTERS-READY",
+          "title": "Replaceable harness and server adapters pass fake-backend tests"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-11-ADAPTERS",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-LOCAL-ADAPTERS-READY",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_adapters.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "local-coding-worker/local_worker/harnesses",
+            "local-coding-worker/local_worker/servers",
+            "local-coding-worker/local_worker/service.py",
+            "local-coding-worker/tests/test_adapters.py"
+          ]
+        }
+      ],
+      "tags": [
+        "local-worker",
+        "adapters",
+        "llama-cpp",
+        "qwen-code",
+        "codex-cli"
+      ]
+    },
+    {
+      "id": "CORE4-12",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Implement isolated writable worktrees and guarded acceptance",
+      "objective": "Add detached worktree materialization from exact source identity, dirty overlay application, subset write-scope enforcement, baseline gates, external verification, patch artifacts, stale detection, guarded acceptance into the current primary worktree, and current-source acceptance gates.",
+      "status": "planned",
+      "priority": 25,
+      "parallel_policy": "parallel_safe",
+      "next_action": "Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-LOCAL-READONLY-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-TODO-DELEGATION-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/local_worker/workspace.py",
+          "local-coding-worker/local_worker/acceptance.py",
+          "local-coding-worker/local_worker/verification.py",
+          "local-coding-worker/references/writable-work-contract.md",
+          "local-coding-worker/tests/test_writable_work.py"
+        ],
+        "read_paths": [
+          "todo-orchestrator/todo_orchestrator/runtime",
+          "todo-orchestrator/todo_orchestrator/child_execution.py",
+          "contracts/source-identity-v1.schema.json"
+        ],
+        "shared_locks": [
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "local-worker-delegation-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "todo-child-execution-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-LOCAL-WRITE-FROZEN",
+          "title": "Isolated writable delegation and guarded acceptance contract frozen",
+          "publishes_interfaces": [
+            {
+              "id": "local-worker-write-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-12-WRITABLE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-LOCAL-WRITE-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_writable_work.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1500,
+          "input_paths": [
+            "local-coding-worker/local_worker/workspace.py",
+            "local-coding-worker/local_worker/acceptance.py",
+            "local-coding-worker/local_worker/verification.py",
+            "local-coding-worker/tests/test_writable_work.py"
+          ]
+        }
+      ],
+      "tags": [
+        "local-worker",
+        "worktree",
+        "acceptance"
+      ]
+    },
+    {
+      "id": "CORE4-13",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Implement priority-aware GPU service interlocks and preemption",
+      "objective": "Extend the supported host resource facade minimally so active local delegation normally outranks background CUDA work, explicit clean CUDA foreground work overrides and drains local inference, idle model residency is lowest priority, preemption preserves task state, and topology bundles are discovered rather than hard-coded.",
+      "status": "planned",
+      "priority": 30,
+      "parallel_policy": "integration_exclusive",
+      "next_action": "Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-LOCAL-ADAPTERS-READY",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-CUDA-FACTS-FROZEN",
+          "state": "reached"
+        },
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-RUNTIME-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "todo-orchestrator/todo_orchestrator/background/host.py",
+          "todo-orchestrator/todo_orchestrator/runtime/resources.py",
+          "todo-orchestrator/references/runtime-resource-contract.md",
+          "todo-orchestrator/tests/test_core4_resource_policy.py",
+          "local-coding-worker/local_worker/service.py",
+          "local-coding-worker/references/resource-policy.md",
+          "local-coding-worker/tests/test_resource_policy.py",
+          "cuda/scripts/cuda_controller.py",
+          "cuda/tests/test_core4_interlock.py"
+        ],
+        "read_paths": [
+          "todo-orchestrator/todo_orchestrator/background/runner.py",
+          "cuda/scripts/cuda_quiescence.py"
+        ],
+        "shared_locks": [
+          "core4-runtime-contract",
+          "core4-cuda-entrypoint",
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-runtime-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "cuda-performance-fact-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "local-worker-delegation-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-RESOURCE-POLICY-FROZEN",
+          "title": "Host-global inference and CUDA priority policy frozen",
+          "publishes_interfaces": [
+            {
+              "id": "core4-resource-policy-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-13-TODO-RESOURCE-POLICY",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "todo-orchestrator/tests",
+            "-p",
+            "test_core4_resource_policy.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "todo-orchestrator/todo_orchestrator/background/host.py",
+            "todo-orchestrator/todo_orchestrator/runtime/resources.py",
+            "todo-orchestrator/tests/test_core4_resource_policy.py"
+          ]
+        },
+        {
+          "id": "CORE4-13-LOCAL-RESOURCE-POLICY",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_resource_policy.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "local-coding-worker/local_worker/service.py",
+            "local-coding-worker/tests/test_resource_policy.py"
+          ]
+        },
+        {
+          "id": "CORE4-13-CUDA-INTERLOCK",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RESOURCE-POLICY-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "cuda/tests",
+            "-p",
+            "test_core4_interlock.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "cuda/scripts/cuda_controller.py",
+            "cuda/scripts/cuda_quiescence.py",
+            "cuda/tests/test_core4_interlock.py"
+          ]
+        }
+      ],
+      "tags": [
+        "resources",
+        "gpu",
+        "preemption",
+        "integration"
+      ]
+    },
+    {
+      "id": "CORE4-14",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Integrate todo to ctxpp to local worker to acceptance to CUDA discovery",
+      "objective": "Build the complete fake-backend software flow: delegate by todo task identity, compile a bounded ctxpp packet, run a terminal local worker, externally verify, surface a compact result, guardedly accept a patch, and trigger relevant CUDA campaign discovery while healthy evidence remains silent.",
+      "status": "planned",
+      "priority": 35,
+      "parallel_policy": "integration_exclusive",
+      "next_action": "Wire only stable interfaces. Do not bypass them with private imports. Prove read-only, writable, NEEDS_CODEX, stale patch, preemption, accepted patch, and CUDA-trigger cases.",
+      "depends_on": [
+        {
+          "type": "barrier",
+          "barrier_id": "CORE4-LANES-READY",
+          "state": "open"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/local_worker/controller.py",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/references/integration-contract.md",
+          "local-coding-worker/tests/test_core4_integration.py",
+          "core4-tests/integration"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "contracts"
+        ],
+        "shared_locks": [
+          "core4-final-integration",
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "todo-child-execution-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "ctxpp-context-packet-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "cuda-campaign-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "cuda-performance-fact-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "local-worker-delegation-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "local-worker-write-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-resource-policy-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-INTEGRATED-FLOW-FROZEN",
+          "title": "Complete fake-backend CORE4 flow frozen",
+          "publishes_interfaces": [
+            {
+              "id": "core4-integrated-flow-v1",
+              "version": "1"
+            }
+          ]
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-14-INTEGRATION",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_core4_integration.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 2400,
+          "input_paths": [
+            "local-coding-worker",
+            "todo-orchestrator",
+            "cpp-context-compiler",
+            "cuda",
+            "contracts"
+          ]
+        },
+        {
+          "id": "CORE4-14-SCENARIOS",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
+          "argv": [
+            "python",
+            "local-coding-worker/scripts/local_worker.py",
+            "self-test",
+            "--repo",
+            ".",
+            "--json"
+          ],
+          "cwd": ".",
+          "timeout": 2400,
+          "input_paths": [
+            "local-coding-worker",
+            "todo-orchestrator",
+            "cpp-context-compiler",
+            "cuda"
+          ]
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "integration-evidence",
+          "path": "core4-tests/integration"
+        }
+      ],
+      "tags": [
+        "integration",
+        "fake-backend",
+        "end-to-end"
+      ]
+    },
+    {
+      "id": "CORE4-15",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Preserve backward compatibility and minimize all four skill surfaces",
+      "objective": "Remove private cross-skill imports, keep the three existing public workflows compatible, keep the new local-worker SKILL.md extremely small, correct root routing and ignore rules, add one repository validation entry point, and establish software-ready evidence without real model assets.",
+      "status": "planned",
+      "priority": 40,
+      "parallel_policy": "integration_exclusive",
+      "next_action": "Update only public docs and compatibility adapters after the integrated flow works. Run the existing full suites once here, not during every prior task.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-INTEGRATED-FLOW-FROZEN",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "AGENTS.md",
+          ".gitignore",
+          "todo-orchestrator/SKILL.md",
+          "cuda/SKILL.md",
+          "cpp-context-compiler/SKILL.md",
+          "local-coding-worker/SKILL.md",
+          "todo-orchestrator/agents/openai.yaml",
+          "cuda/agents/openai.yaml",
+          "cpp-context-compiler/agents/openai.yaml",
+          "local-coding-worker/agents/openai.yaml",
+          "scripts/core4_validate.py",
+          ".github/workflows/core4.yml",
+          "core4-tests/software-ready"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "local-coding-worker",
+          "contracts"
+        ],
+        "shared_locks": [
+          "core4-final-integration",
+          "core4-todo-entrypoints",
+          "core4-ctxpp-entrypoint",
+          "core4-cuda-entrypoint",
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-compatibility-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-integrated-flow-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-SOFTWARE-READY",
+          "title": "All software paths and compatibility suites pass without external model assets"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-15-SOFTWARE-READY",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-SOFTWARE-READY",
+          "argv": [
+            "python",
+            "scripts/core4_validate.py",
+            "--software-ready"
+          ],
+          "cwd": ".",
+          "timeout": 7200,
+          "input_paths": [
+            "todo-orchestrator",
+            "cpp-context-compiler",
+            "cuda",
+            "local-coding-worker",
+            "contracts",
+            "AGENTS.md",
+            ".gitignore"
+          ],
+          "track_git_head": true
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "validation",
+          "path": "core4-tests/software-ready"
+        }
+      ],
+      "tags": [
+        "compatibility",
+        "docs",
+        "ci",
+        "software-ready"
+      ]
+    },
+    {
+      "id": "CORE4-16",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Prepare exact host acquisition and bake-off manifest",
+      "objective": "Inspect the actual machine, installed CUDA 12.x toolchains, llama.cpp/Qwen Code/Codex CLI availability, free storage, GPU topology, RAM, and existing model cache; emit the smallest exact user action needed for real model evaluation without downloading or installing anything.",
+      "status": "planned",
+      "priority": 45,
+      "parallel_policy": "serial",
+      "next_action": "Generate an acquisition request containing candidate model files or repositories, quantizations, expected sizes, destinations, checksums when available, and harness prerequisites. If assets are absent, finish this task, then halt and ask the user once.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-SOFTWARE-READY",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/config/host-profile.example.toml",
+          "local-coding-worker/evals/acquisition_request.json",
+          "local-coding-worker/scripts/inspect_host.py",
+          "local-coding-worker/tests/test_host_manifest.py"
+        ],
+        "read_paths": [
+          "cuda/scripts/cuda_controller.py",
+          "local-coding-worker/local_worker/servers",
+          "local-coding-worker/local_worker/harnesses"
+        ],
+        "forbidden_paths": [
+          "models",
+          "weights"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-integrated-flow-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-resource-policy-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-16-HOST-MANIFEST",
+          "type": "command",
+          "required": true,
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_host_manifest.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 900,
+          "input_paths": [
+            "local-coding-worker/scripts/inspect_host.py",
+            "local-coding-worker/tests/test_host_manifest.py"
+          ]
+        },
+        {
+          "id": "CORE4-16-ACQUISITION-REQUEST",
+          "type": "file_exists",
+          "required": true,
+          "path": "local-coding-worker/evals/acquisition_request.json"
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "host-manifest",
+          "path": "local-coding-worker/evals/acquisition_request.json"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "evaluated_not_promoted",
+          "failed"
+        ]
+      },
+      "tags": [
+        "host",
+        "assets",
+        "human-handoff"
+      ]
+    },
+    {
+      "id": "CORE4-17",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Run real model, harness, topology, quantization, and context bake-off",
+      "objective": "Using only user-provided assets, evaluate task-level accepted engineering economics across candidate models, quantizations, 8K/16K/32K contexts, Qwen Code and Codex CLI adapters, one-island balanced, two-island throughput, and all-GPU single-wide profiles; select production defaults from accepted-task results rather than generation speed.",
+      "status": "planned",
+      "priority": 50,
+      "parallel_policy": "project_exclusive",
+      "next_action": "After the user sets CORE4-MODEL-ASSETS to ready, run the bounded real-task corpus, record frontier-visible inputs/outputs/tool calls and local costs, set the harness/profile decisions, and reach CORE4-HOST-VALIDATED.",
+      "depends_on": [
+        {
+          "type": "task",
+          "task_id": "CORE4-16",
+          "state": "done",
+          "dispositions": [
+            "validated",
+            "evaluated_not_promoted"
+          ]
+        },
+        {
+          "type": "decision",
+          "decision_id": "CORE4-MODEL-ASSETS",
+          "operator": "equals",
+          "value": "ready"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/evals/host_bakeoff.py",
+          "local-coding-worker/evals/tasks",
+          "local-coding-worker/evals/results",
+          "local-coding-worker/config/production-profile.toml"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "local-coding-worker",
+          "contracts"
+        ],
+        "shared_locks": [
+          "core4-final-integration"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-integrated-flow-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-resource-policy-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-HOST-VALIDATED",
+          "title": "Real local-worker production profile validated on the host"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-17-HOST-BAKEOFF",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-HOST-VALIDATED",
+          "argv": [
+            "python",
+            "local-coding-worker/evals/host_bakeoff.py",
+            "--repo",
+            ".",
+            "--output",
+            "local-coding-worker/evals/results/host-bakeoff.json"
+          ],
+          "cwd": ".",
+          "timeout": 28800,
+          "input_paths": [
+            "local-coding-worker/evals/tasks",
+            "local-coding-worker/config/production-profile.toml",
+            "local-coding-worker",
+            "todo-orchestrator",
+            "cpp-context-compiler",
+            "cuda"
+          ],
+          "track_git_head": true
+        },
+        {
+          "id": "CORE4-17-HOST-RESULT",
+          "type": "file_exists",
+          "required": true,
+          "checkpoint_id": "CORE4-HOST-VALIDATED",
+          "path": "local-coding-worker/evals/results/host-bakeoff.json"
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "evaluation",
+          "path": "local-coding-worker/evals/results/host-bakeoff.json"
+        },
+        {
+          "kind": "config",
+          "path": "local-coding-worker/config/production-profile.toml"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "evaluated_not_promoted",
+          "failed"
+        ]
+      },
+      "tags": [
+        "host",
+        "model-eval",
+        "harness-eval",
+        "topology"
+      ]
+    },
+    {
+      "id": "CORE4-18",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Tune reviewer, double-solve, context, and delegation policy",
+      "objective": "Use the host bake-off evidence to enable reviewer or independent-double-solve only where it lowers frontier rework, tune delegation eligibility and context budgets by task class, set hot-idle and preemption policies, and preserve explicit NEEDS_CODEX behavior.",
+      "status": "planned",
+      "priority": 55,
+      "parallel_policy": "serial",
+      "next_action": "Implement only policies supported by measured marginal value. Keep defaults conservative and reversible.",
+      "depends_on": [
+        {
+          "type": "checkpoint",
+          "checkpoint_id": "CORE4-HOST-VALIDATED",
+          "state": "reached"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "local-coding-worker/local_worker/policy.py",
+          "local-coding-worker/local_worker/reviewer.py",
+          "local-coding-worker/local_worker/telemetry.py",
+          "local-coding-worker/config/production-profile.toml",
+          "local-coding-worker/tests/test_policy.py",
+          "local-coding-worker/evals/results/policy-report.json"
+        ],
+        "read_paths": [
+          "local-coding-worker/evals/results/host-bakeoff.json",
+          "cpp-context-compiler/evals"
+        ],
+        "shared_locks": [
+          "core4-local-worker-entrypoint"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "local-worker-delegation-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "local-worker-write-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-POLICY-VALIDATED",
+          "title": "Measured delegation and review policy validated"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-18-POLICY",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-POLICY-VALIDATED",
+          "argv": [
+            "python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "local-coding-worker/tests",
+            "-p",
+            "test_policy.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "timeout": 1200,
+          "input_paths": [
+            "local-coding-worker/local_worker/policy.py",
+            "local-coding-worker/local_worker/reviewer.py",
+            "local-coding-worker/local_worker/telemetry.py",
+            "local-coding-worker/tests/test_policy.py"
+          ]
+        },
+        {
+          "id": "CORE4-18-POLICY-REPORT",
+          "type": "file_exists",
+          "required": true,
+          "checkpoint_id": "CORE4-POLICY-VALIDATED",
+          "path": "local-coding-worker/evals/results/policy-report.json"
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "evaluation",
+          "path": "local-coding-worker/evals/results/policy-report.json"
+        }
+      ],
+      "tags": [
+        "policy",
+        "reviewer",
+        "telemetry"
+      ]
+    },
+    {
+      "id": "CORE4-19",
+      "parent_id": "CORE4-00",
+      "kind": "workstream",
+      "title": "Final release validation and handoff",
+      "objective": "Run one complete release validation, verify backward compatibility, clean resource recovery, real host profile, bounded skill surfaces, generated projections, and concise operator workflows; export the final snapshot and leave no stale claims or runtime ownership.",
+      "status": "planned",
+      "priority": 60,
+      "parallel_policy": "project_exclusive",
+      "next_action": "Run the single full release gate, inspect only failures, fix regressions narrowly, export the todo snapshot, and publish a compact handoff.",
+      "depends_on": [
+        {
+          "type": "barrier",
+          "barrier_id": "CORE4-RELEASE-CANDIDATE",
+          "state": "open"
+        }
+      ],
+      "scope": {
+        "exclusive_paths": [
+          "scripts/core4_validate.py",
+          "core4-tests/release",
+          ".todo-orchestrator/state.snapshot.json",
+          "todos.md",
+          "todo-status.md",
+          "AGENTS.md",
+          ".gitignore",
+          "todo-orchestrator/SKILL.md",
+          "cpp-context-compiler/SKILL.md",
+          "cuda/SKILL.md",
+          "local-coding-worker/SKILL.md"
+        ],
+        "read_paths": [
+          "todo-orchestrator",
+          "cpp-context-compiler",
+          "cuda",
+          "local-coding-worker",
+          "contracts"
+        ],
+        "shared_locks": [
+          "core4-final-integration"
+        ]
+      },
+      "invariants": [
+        "CORE4-AUTHORITY",
+        "CORE4-BACKCOMPAT",
+        "CORE4-ECONOMY",
+        "CORE4-USER-WORK",
+        "CORE4-TESTING",
+        "CORE4-DELEGATION-SAFETY",
+        "CORE4-GPU-SAFETY",
+        "CORE4-VOLTA-TOOLCHAIN",
+        "CORE4-EXTERNAL-ASSETS"
+      ],
+      "consumes_interfaces": [
+        {
+          "id": "core4-compatibility-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-integrated-flow-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        },
+        {
+          "id": "core4-resource-policy-v1",
+          "required_state": "frozen",
+          "required_version": "1"
+        }
+      ],
+      "checkpoints": [
+        {
+          "id": "CORE4-RELEASED",
+          "title": "CORE4 release validated"
+        }
+      ],
+      "gates": [
+        {
+          "id": "CORE4-19-RELEASE",
+          "type": "command",
+          "required": true,
+          "checkpoint_id": "CORE4-RELEASED",
+          "argv": [
+            "python",
+            "scripts/core4_validate.py",
+            "--full",
+            "--output",
+            "core4-tests/release"
+          ],
+          "cwd": ".",
+          "timeout": 14400,
+          "input_paths": [
+            "todo-orchestrator",
+            "cpp-context-compiler",
+            "cuda",
+            "local-coding-worker",
+            "contracts",
+            "AGENTS.md",
+            ".gitignore"
+          ],
+          "track_git_head": true
+        }
+      ],
+      "produced_artifacts": [
+        {
+          "kind": "release-evidence",
+          "path": "core4-tests/release"
+        },
+        {
+          "kind": "snapshot",
+          "path": ".todo-orchestrator/state.snapshot.json"
+        }
+      ],
+      "result_policy": {
+        "allowed_dispositions": [
+          "validated",
+          "failed"
+        ]
+      },
+      "tags": [
+        "release",
+        "validation",
+        "handoff"
+      ]
+    }
+  ]
+}
