@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-03: Expose minimal shared runtime contracts and facade
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Define tiny cross-skill command, source-identity, resource-request, artifact-reference, and evidence-summary contracts; expose supported todo runtime facades for jobs, snapshots, artifacts, and host resources while preserving all existing private background compatibility.

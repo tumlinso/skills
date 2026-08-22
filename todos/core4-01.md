@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-01: Archive the previous ledger and bootstrap CORE4
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record that the previous completed todo program was exported and archived outside the worktree, stale legacy projections were removed, a fresh v2 project identity was created, and this plan was transactionally applied.

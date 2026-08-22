@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-12: Implement isolated writable worktrees and guarded acceptance
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add detached worktree materialization from exact source identity, dirty overlay application, subset write-scope enforcement, baseline gates, external verification, patch artifacts, stale detection, guarded acceptance into the current primary worktree, and current-source acceptance gates.

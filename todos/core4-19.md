@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-19: Final release validation and handoff
 
-Task revision: `242`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run one complete release validation, verify backward compatibility, clean resource recovery, real host profile, bounded skill surfaces, generated projections, and concise operator workflows; export the final snapshot and leave no stale claims or runtime ownership.

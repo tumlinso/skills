@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-16: Prepare exact host acquisition and bake-off manifest
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Inspect the actual machine, installed CUDA 12.x toolchains, llama.cpp/Qwen Code/Codex CLI availability, free storage, GPU topology, RAM, and existing model cache; emit the smallest exact user action needed for real model evaluation without downloading or installing anything.

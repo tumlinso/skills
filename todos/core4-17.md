@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-17: Run real model, harness, topology, quantization, and context bake-off
 
-Task revision: `226`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Using only user-provided assets, evaluate task-level accepted engineering economics across candidate models, quantizations, 8K/16K/32K contexts, Qwen Code and Codex CLI adapters, one-island balanced, two-island throughput, and all-GPU single-wide profiles; select production defaults from accepted-task results rather than generation speed.

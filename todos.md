@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `242`
+Project revision: `243`
 
 ## Workstreams
-- `CORE4-00` | kind: epic | status: planned | parent: - | objective: Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
+- `CORE4-00` | kind: epic | status: done | parent: - | objective: Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
 - `CORE4-19` | kind: workstream | status: done | parent: CORE4-00 | objective: Run one complete release validation, verify backward compatibility, clean resource recovery, real host profile, bounded skill surfaces, generated projections, and concise operator workflows; export the final snapshot and leave no stale claims or runtime ownership.
 - `CORE4-18` | kind: workstream | status: done | parent: CORE4-00 | objective: Use the host bake-off evidence to enable reviewer or independent-double-solve only where it lowers frontier rework, tune delegation eligibility and context budgets by task class, set hot-idle and preemption policies, and preserve explicit NEEDS_CODEX behavior.
 - `CORE4-17` | kind: workstream | status: done | parent: CORE4-00 | objective: Using only user-provided assets, evaluate task-level accepted engineering economics across candidate models, quantizations, 8K/16K/32K contexts, Qwen Code and Codex CLI adapters, one-island balanced, two-island throughput, and all-GPU single-wide profiles; select production defaults from accepted-task results rather than generation speed.

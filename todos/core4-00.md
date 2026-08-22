@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-00: CORE4 frontier-efficiency stack
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Deliver four mutually reinforcing skills in which todo-orchestrator owns work truth, cpp-context-compiler owns source-grounded context, local-coding-worker executes bounded cheap work, and cuda owns uncontaminated empirical GPU evidence.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `inactive`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.

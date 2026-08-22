@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `242`
+Project revision: `243`
 
 ## Workstreams
-- `CORE4-00` | status: planned | execution: inactive | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
+- `CORE4-00` | status: done | execution: closed | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
 - `CORE4-19` | status: done | execution: closed | next: Run the single full release gate, inspect only failures, fix regressions narrowly, export the todo snapshot, and publish a compact handoff.
 - `CORE4-18` | status: done | execution: closed | next: Implement only policies supported by measured marginal value. Keep defaults conservative and reversible.
 - `CORE4-17` | status: done | execution: closed | next: After the user sets CORE4-MODEL-ASSETS to ready, run the bounded real-task corpus, record frontier-visible inputs/outputs/tool calls and local costs, set the harness/profile decisions, and reach CORE4-HOST-VALIDATED.

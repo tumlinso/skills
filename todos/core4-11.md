@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CORE4-11: Implement model-server and coding-harness adapters
 
-Task revision: `184`; current project revision is in `todo-status.md`.
+Task revision: `243`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add replaceable adapters for llama.cpp serving and existing coding harnesses, initially Qwen Code and Codex CLI, with inspect/start/health/run/cancel/drain/evict/usage APIs, disposable task contexts, fake servers, and no asset installation.
