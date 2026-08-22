@@ -33,6 +33,15 @@ minimum_phase_b_acceptance = 0.6666666667
 maximum_phase_a_seconds_per_task = 300
 raw_evidence = true
 
+[deployment_policy]
+real_local_enabled = false
+reviewer_enabled = false
+double_solve_enabled = false
+hot_idle_seconds = 0
+max_real_workers = 0
+needs_codex_is_success = true
+reason = "No CORE4-17 configuration met the accepted-task threshold."
+
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
 family = "qwen3-coder-30b-a3b-instruct"

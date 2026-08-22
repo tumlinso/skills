@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-22T19:55:40Z",
+  "generated_at": "2026-08-22T20:01:06Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "13723302-e234-48f7-9f6d-3fd15934d928",
     "schema_version": 2
   },
-  "project_revision": 226,
+  "project_revision": 234,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -125,13 +125,13 @@
         "title": "CORE4 final release task completed"
       },
       {
-        "explanation": "2/3 requirements satisfied; target=3",
+        "explanation": "3/3 requirements satisfied; target=3",
         "id": "CORE4-RELEASE-CANDIDATE",
         "mode": "all",
-        "opened_at": null,
+        "opened_at": "2026-08-22 20:01:06",
         "quorum": null,
-        "revision": 225,
-        "state": "closed",
+        "revision": 233,
+        "state": "open",
         "title": "Software, real-host validation, and policy tuning are complete"
       }
     ],
@@ -409,10 +409,10 @@
       {
         "id": "CORE4-POLICY-VALIDATED",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 184,
+        "reached_at": "2026-08-22T20:01:06Z",
+        "revision": 233,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "CORE4-18",
         "title": "Measured delegation and review policy validated"
       },
@@ -2753,6 +2753,86 @@
         "revision": 226,
         "seq": 226,
         "timestamp": "2026-08-22T19:55:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CORE4-18\"}",
+        "revision": 227,
+        "seq": 227,
+        "timestamp": "2026-08-22T19:57:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 228,
+        "seq": 228,
+        "timestamp": "2026-08-22T20:00:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-18-POLICY\"}",
+        "revision": 229,
+        "seq": 229,
+        "timestamp": "2026-08-22T20:00:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"477b98ed-59bd-4d5f-a024-958461325605\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 230,
+        "seq": 230,
+        "timestamp": "2026-08-22T20:00:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18-POLICY-REPORT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CORE4-18-POLICY-REPORT\"}",
+        "revision": 231,
+        "seq": 231,
+        "timestamp": "2026-08-22T20:00:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18-POLICY-REPORT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6acbeacf-6f32-4eb8-bb36-93bbd3785f96\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 232,
+        "seq": 232,
+        "timestamp": "2026-08-22T20:00:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-POLICY-VALIDATED",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 233,
+        "seq": 233,
+        "timestamp": "2026-08-22T20:01:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CORE4-18",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 234,
+        "seq": 234,
+        "timestamp": "2026-08-22T20:01:06Z"
       }
     ],
     "evidence": [
@@ -2929,6 +3009,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-22T20:00:57Z",
+        "gate_id": "CORE4-18-POLICY",
+        "id": "477b98ed-59bd-4d5f-a024-958461325605",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_policy.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"caa71209e5b7e619d617225834ba834435a0f6459f7841674d1d2ef80ee805d3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_policy.py\", \"-v\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"b17a6e7c977ae86e3d18664501998b1c2a83365df1974afbe86cfbda6e0ec4c5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"hf-cli/.hf-skill-manifest.json\", \"hf-cli/SKILL.md\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/host-bakeoff.json\", \"local-coding-worker/evals/results/policy-report.json\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/gpt-oss-20b-mxfp4/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/local_worker/policy.py\", \"local-coding-worker/local_worker/reviewer.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/tests/test_policy.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-18.md\"], \"files\": [{\"path\": \"local-coding-worker/local_worker/policy.py\", \"sha256\": \"b97fa777b7eb4a94586973097e99c1839ab17419b50fb53177ae40e8c06d2188\"}, {\"path\": \"local-coding-worker/local_worker/reviewer.py\", \"sha256\": \"5cfe1aa05fa843176a991ef5acb6c3684300f13e377281e98b79d760c8061695\"}, {\"path\": \"local-coding-worker/local_worker/telemetry.py\", \"sha256\": \"ad369d3483346f536e1cbaa54c1013f9adbe2228885a7ffd4afa66d3ee71b370\"}, {\"path\": \"local-coding-worker/tests/test_policy.py\", \"sha256\": \"ef42c17251f8810189bcf9ad05cf429705654b553863f54a63b8b259f355a687\"}], \"interfaces\": [], \"recorded_git_head\": \"429a2c4c4784b7f42f17554150bb0d49c8c04661\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 229}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/477b98ed-59bd-4d5f-a024-958461325605",
+        "revision": 230,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-22T10:18:35Z",
         "gate_id": "CORE4-10-READONLY-MVP",
         "id": "56c51c7f-fc25-4f96-a67d-b53c885682ea",
@@ -2988,6 +3081,19 @@
         "metadata_json": "{\"exists\": true, \"input_fingerprint\": \"b85c3ebd7a3cffb2137a70de5859262c7aff090283c6827ae3a3fef36a9ec7ba\", \"inputs\": {\"command_contract\": {\"path\": \"local-coding-worker/evals/acquisition_request.json\"}, \"diff_fingerprint\": \"5c9387ee7cf034f9306994371514e66e4870efa520926c05ece194c43626f643\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/host-profile.example.toml\", \"local-coding-worker/evals/acquisition_request.json\", \"local-coding-worker/scripts/inspect_host.py\", \"local-coding-worker/tests/test_host_manifest.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-16.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"cfe83808b8858690e949b372e38c017847404040\"}, \"locks\": [], \"path\": \"local-coding-worker/evals/acquisition_request.json\", \"resources\": [], \"started_revision\": 160}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6a2e675c-c0b5-4005-9ec0-df96b42ef038",
         "revision": 161,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-22T20:00:58Z",
+        "gate_id": "CORE4-18-POLICY-REPORT",
+        "id": "6acbeacf-6f32-4eb8-bb36-93bbd3785f96",
+        "kind": "file_exists",
+        "metadata_json": "{\"exists\": true, \"input_fingerprint\": \"6bcd64aebd525b3e1d0d46d843088e020894c4c778978d31bcafbd6f14f230e4\", \"inputs\": {\"command_contract\": {\"path\": \"local-coding-worker/evals/results/policy-report.json\"}, \"diff_fingerprint\": \"b17a6e7c977ae86e3d18664501998b1c2a83365df1974afbe86cfbda6e0ec4c5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"hf-cli/.hf-skill-manifest.json\", \"hf-cli/SKILL.md\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/host-bakeoff.json\", \"local-coding-worker/evals/results/policy-report.json\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/glm-4.7-flash-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/gpt-oss-20b-mxfp4/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q5-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-30b-a3b-instruct-q6-k/16384-qwen/server-8080.log\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/contract-authority.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/needs-codex.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/resource-policy.json\", \"local-coding-worker/evals/results/raw/qwen3-coder-next-q4-k-m/16384-qwen/server-8080.log\", \"local-coding-worker/local_worker/policy.py\", \"local-coding-worker/local_worker/reviewer.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/tests/test_policy.py\", \"todo-status.md\", \"todos.md\", \"todos/core4-18.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"429a2c4c4784b7f42f17554150bb0d49c8c04661\"}, \"locks\": [], \"path\": \"local-coding-worker/evals/results/policy-report.json\", \"resources\": [], \"started_revision\": 231}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/13723302-e234-48f7-9f6d-3fd15934d928/evidence/6acbeacf-6f32-4eb8-bb36-93bbd3785f96",
+        "revision": 232,
         "status": "passed"
       },
       {
@@ -3724,27 +3830,27 @@
         "checkpoint_id": "CORE4-POLICY-VALIDATED",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_policy.py\", \"-v\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/local_worker/policy.py\", \"local-coding-worker/local_worker/reviewer.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/tests/test_policy.py\"], \"timeout\": 1200}",
         "id": "CORE4-18-POLICY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "caa71209e5b7e619d617225834ba834435a0f6459f7841674d1d2ef80ee805d3",
+        "last_run_at": "2026-08-22T20:00:57Z",
         "required": 1,
-        "revision": 184,
-        "status": "pending",
+        "revision": 230,
+        "status": "passed",
         "task_id": "CORE4-18",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-POLICY-VALIDATED",
         "config_json": "{\"path\": \"local-coding-worker/evals/results/policy-report.json\"}",
         "id": "CORE4-18-POLICY-REPORT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6bcd64aebd525b3e1d0d46d843088e020894c4c778978d31bcafbd6f14f230e4",
+        "last_run_at": "2026-08-22T20:00:58Z",
         "required": 1,
-        "revision": 184,
-        "status": "pending",
+        "revision": 232,
+        "status": "passed",
         "task_id": "CORE4-18",
         "type": "file_exists",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": "CORE4-RELEASED",
@@ -3810,6 +3916,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/evals/README.md\", \"cpp-context-compiler/evals/run_packet_economics.py\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/expected/context-packet-economics.json\", \"cpp-context-compiler/tests/test_context_packet_economics.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CORE4-07-PACKET-ECONOMICS\", \"last_run_at\": \"2026-08-22T10:09:50Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json            | 766 ++++++++++++++++++++--\\n cpp-context-compiler/evals/README.md              |   3 +\\n cpp-context-compiler/scripts/ctxpp                |  22 +\\n todo-orchestrator/todo_orchestrator/context.py    |  21 +\\n todo-orchestrator/todo_orchestrator/gates.py      | 131 +++-\\n todo-orchestrator/todo_orchestrator/migrations.py |  48 +-\\n todo-orchestrator/todo_orchestrator/reporting.py  |  85 +++\\n todo-status.md                                    |  10 +-\\n todos.md                                          |  10 +-\\n todos/core4-04.md                                 |   8 +-\\n todos/core4-05.md                                 |   8 +-\\n todos/core4-06.md                                 |   8 +-\\n todos/core4-07.md                                 |   6 +-\\n 13 files changed, 1014 insertions(+), 112 deletions(-)\", \"git_head\": \"323b7e4c34e34b868b93c714d86065c834baa833\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CORE4-07\"}",
         "revision": 83,
         "task_id": "CORE4-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-22T20:01:06Z",
+        "id": "61872adb-06f5-4a48-bb7b-ca0db81a880f",
+        "kind": "complete",
+        "note": "Derived conservative delegation policy from CORE4-17 negative promotion evidence and ctxpp fixed budget tiers. Real local delegation, reviewer, double-solve, hot residency, and multiple workers remain disabled; fake-backend compatibility and successful NEEDS_CODEX hand-back are preserved.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/policy-report.json\", \"local-coding-worker/local_worker/policy.py\", \"local-coding-worker/local_worker/reviewer.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/tests/test_policy.py\"], \"checkpoints\": [{\"id\": \"CORE4-POLICY-VALIDATED\", \"reached_at\": \"2026-08-22T20:01:06Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"CORE4-18-POLICY\", \"last_run_at\": \"2026-08-22T20:00:57Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CORE4-18-POLICY-REPORT\", \"last_run_at\": \"2026-08-22T20:00:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 142 +++++++++++++++++----\\n local-coding-worker/config/production-profile.toml |   9 ++\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/core4-18.md                                  |   6 +-\\n 5 files changed, 135 insertions(+), 30 deletions(-)\", \"git_head\": \"429a2c4c4784b7f42f17554150bb0d49c8c04661\", \"interfaces\": [], \"note\": \"Derived conservative delegation policy from CORE4-17 negative promotion evidence and ctxpp fixed budget tiers. Real local delegation, reviewer, double-solve, hot residency, and multiple workers remain disabled; fake-backend compatibility and successful NEEDS_CODEX hand-back are preserved.\", \"resources\": [], \"task_id\": \"CORE4-18\"}",
+        "revision": 234,
+        "task_id": "CORE4-18"
       },
       {
         "claim_id": null,
@@ -7129,14 +7245,14 @@
         "parallel_policy": "serial",
         "parent_id": "CORE4-00",
         "priority": 55,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 184,
-        "status": "planned",
+        "revision": 234,
+        "status": "done",
         "tags_json": "[\"policy\", \"reviewer\", \"telemetry\"]",
         "title": "Tune reviewer, double-solve, context, and delegation policy",
-        "updated_at": "2026-08-22T19:02:25Z",
-        "version": 9
+        "updated_at": "2026-08-22T20:01:06Z",
+        "version": 11
       },
       {
         "attention_reason": null,

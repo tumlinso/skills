@@ -1,0 +1,58 @@
+{
+  "context": {
+    "model_context_default": null,
+    "packet_budget_basis": "CTXPP fixed budget tiers; consumer outcomes were unavailable."
+  },
+  "deployment": {
+    "idle_model_residency": false,
+    "selected_candidate": null,
+    "selected_harness": null,
+    "selected_quantization": null,
+    "selected_worker_layout": null
+  },
+  "format": "CORE4-POLICY-REPORT/1",
+  "measurement": {
+    "accepted_task_attempts": 4,
+    "frontier_rework_events": 4,
+    "nearest_candidate": {
+      "acceptance_rate": 0.6666666666666666,
+      "candidate_id": "qwen3-coder-next-q4-k-m"
+    },
+    "phase_a_candidates": 8,
+    "phase_a_survivors": 4,
+    "phase_b_survivors": 0,
+    "phase_b_task_attempts": 8
+  },
+  "policy": {
+    "double_solve_enabled": false,
+    "hot_idle_seconds": 0,
+    "max_real_workers": 0,
+    "needs_codex_is_success": true,
+    "packet_budget_tokens_by_role": {
+      "debug": 10000,
+      "explain": 1200,
+      "review": 2500,
+      "test_plan": 2500
+    },
+    "priority_order": [
+      "clean_cuda_foreground",
+      "active_local_delegation",
+      "other_foreground_gpu",
+      "background_cuda_campaign",
+      "idle_model_residency"
+    ],
+    "real_local_enabled": false,
+    "reason": "No CORE4-17 configuration met the accepted-task threshold.",
+    "reviewer_enabled": false
+  },
+  "review": {
+    "double_solve_default": false,
+    "reason": "CORE4-17 measured no accepted production profile or marginal reviewer value.",
+    "reviewer_default": false
+  },
+  "schema_version": 1,
+  "source": {
+    "format": "CORE4-HOST-BAKEOFF/1",
+    "sha256": "fdb41ba04b88dcd8ec72f6636783f50f766676ce33d4423599bc1c1ef097c9df"
+  }
+}
