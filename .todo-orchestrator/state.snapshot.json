@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:47:58Z",
+  "generated_at": "2026-08-23T19:54:47Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 66,
+  "project_revision": 72,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -79,10 +79,10 @@
       {
         "id": "C4P-SOFTWARE-READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 21,
+        "reached_at": "2026-08-23T19:54:47Z",
+        "revision": 71,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "C4P-13",
         "title": "All software-only production paths are validated"
       }
@@ -781,6 +781,66 @@
         "revision": 66,
         "seq": 66,
         "timestamp": "2026-08-23T19:47:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-13",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 67,
+        "seq": 67,
+        "timestamp": "2026-08-23T19:48:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-SOFTWARE-READY\"}",
+        "revision": 68,
+        "seq": 68,
+        "timestamp": "2026-08-23T19:51:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.heartbeat",
+        "payload_json": "{}",
+        "revision": 69,
+        "seq": 69,
+        "timestamp": "2026-08-23T19:53:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-SOFTWARE-READY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"17efd600-50e2-49d9-bf62-d4838c48a44c\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 70,
+        "seq": 70,
+        "timestamp": "2026-08-23T19:54:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-SOFTWARE-READY",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 71,
+        "seq": 71,
+        "timestamp": "2026-08-23T19:54:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-13",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 72,
+        "seq": 72,
+        "timestamp": "2026-08-23T19:54:47Z"
       }
     ],
     "evidence": [
@@ -808,6 +868,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c70b6997981dfe0b0e1c7348f8036c0fb265645c073fbc09f62829193231015b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"54c9a7cebf52cea3f699862084c971787c834c14386de083f3169ed6df94efcb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v2.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-06.md\"], \"files\": [], \"git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\", \"interfaces\": [], \"recorded_git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 36}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/0512cac9-c39b-4764-936d-b0de9de87dd9",
         "revision": 37,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:54:47Z",
+        "gate_id": "C4P-GATE-SOFTWARE-READY",
+        "id": "17efd600-50e2-49d9-bf62-d4838c48a44c",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"software-ready\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"19693013d7d7d756dfd620215fb2197333bc2606744f85a137dbbe117ae76f2f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"software-ready\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1800}, \"diff_fingerprint\": \"049c9f960e00a8352c12c32babb0c5562bd157a8aecd8ec94ea534bb7c960593\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-13.md\"], \"files\": [], \"git_head\": \"faeb347f19fb844a4f8fa2eb1c76dd210a5ea411\", \"interfaces\": [], \"recorded_git_head\": \"faeb347f19fb844a4f8fa2eb1c76dd210a5ea411\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 68}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/17efd600-50e2-49d9-bf62-d4838c48a44c",
+        "revision": 70,
         "status": "passed"
       },
       {
@@ -1167,14 +1240,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"software-ready\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1800, \"track_git_head\": true}",
         "id": "C4P-GATE-SOFTWARE-READY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "19693013d7d7d756dfd620215fb2197333bc2606744f85a137dbbe117ae76f2f",
+        "last_run_at": "2026-08-23T19:54:47Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 70,
+        "status": "passed",
         "task_id": "C4P-13",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1389,6 +1462,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"scripts/core4_extension_validate.py\"], \"checkpoints\": [{\"id\": \"C4P-BASELINE-FROZEN\", \"reached_at\": \"2026-08-23T19:04:40Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-BASELINE\", \"last_run_at\": \"2026-08-23T19:04:28Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 94 ++++++++++++++++++++++++++++------\\n core4-tests/software-ready/report.json | 64 ++---------------------\\n todo-status.md                         |  4 +-\\n todos.md                               |  4 +-\\n todos/c4p-02.md                        |  8 +--\\n 5 files changed, 92 insertions(+), 82 deletions(-)\", \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"note\": \"Focused validator created; baseline public metadata and all four existing skill suites passed. Compact evidence: .git/core4-production-extension/evidence/baseline.json.\", \"resources\": [], \"task_id\": \"C4P-02\"}",
         "revision": 10,
         "task_id": "C4P-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:54:47Z",
+        "id": "f821f736-5621-4063-8a13-c58a2ce96cff",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"C4P-SOFTWARE-READY\", \"reached_at\": \"2026-08-23T19:54:47Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-SOFTWARE-READY\", \"last_run_at\": \"2026-08-23T19:54:47Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 91 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +-\\n todos.md                               |  4 +-\\n todos/c4p-13.md                        |  6 +--\\n 4 files changed, 84 insertions(+), 21 deletions(-)\", \"git_head\": \"faeb347f19fb844a4f8fa2eb1c76dd210a5ea411\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-13\"}",
+        "revision": 72,
+        "task_id": "C4P-13"
       }
     ],
     "interface_consumers": [],
@@ -3892,14 +3975,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 50,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 72,
+        "status": "done",
         "tags_json": "[\"validation\", \"software-ready\"]",
         "title": "Validate all software-only production paths",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:54:47Z",
+        "version": 5
       },
       {
         "attention_reason": null,
