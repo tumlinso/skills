@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `4`
+Project revision: `10`
 
 ## Workstreams
 - `C4P-00` | kind: epic | status: planned | parent: - | objective: Convert the CORE4 architectural scaffold into a production local-coding-worker system with durable acceptance, persistent SSD model caching, trustworthy CUDA evidence, task-oriented context packets, real bounded local execution, meaningful evaluation, and final repository cleanup.
@@ -29,6 +29,6 @@ Project revision: `4`
 - `C4P-06` | kind: task | status: planned | parent: - | objective: Add multi-target task-spec packets driven by objectives, scopes, symbols, diagnostics, tests, interfaces, changed files, and role; intent-aware ranking; sufficient_for and missing-required trust fields; bounded expansion; and use the canonical todo source-identity implementation when available while keeping standalone fallback and v1 packet compatibility.
 - `C4P-07` | kind: task | status: planned | parent: - | objective: Replace eval-only transient staging with production cache commands that install once from the cold block store into a content-addressed SSD cache using a lock, partial directory, full install-time hash, atomic rename, manifest, READY marker, quick verification, full verification, active-profile pointer, safe removal, and free-space checks.
 - `C4P-09` | kind: task | status: planned | parent: - | objective: Create per-task ephemeral Qwen settings with explicit sandboxing and a strict tool allowlist; disable agents, subagents, web, computer use, memory, skills, MCP, cron, todo, and unrelated tools; enforce wall-time, turn, and tool budgets; parse nested tool_use events and harness statistics; normalize budget, preemption, failure, and NEEDS_CODEX outcomes. Preserve Codex CLI as an optional adapter.
-- `C4P-02` | kind: validation | status: planned | parent: - | objective: Record current branch ancestry, current public CLI and JSON behavior, existing test counts, known P0/P1 review findings, and current disabled real-local policy. Create one temporary sectioned validator that emits compact JSON evidence under the Git common directory.
+- `C4P-02` | kind: validation | status: done | parent: - | objective: Record current branch ancestry, current public CLI and JSON behavior, existing test counts, known P0/P1 review findings, and current disabled real-local policy. Create one temporary sectioned validator that emits compact JSON evidence under the Git common directory.
 - `C4P-01` | kind: workstream | status: done | parent: - | objective: Archive the completed CORE4 project, old projections, raw evaluation evidence, release scripts, and runtime state under the Git common directory; remove only the old tracked ledger controls/projections; bootstrap the fresh project; apply this exact plan.
 <!-- todo-orchestrator:v2-managed:end -->

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T18:59:47Z",
+  "generated_at": "2026-08-23T19:04:40Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 4,
+  "project_revision": 10,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -29,10 +29,10 @@
       {
         "id": "C4P-BASELINE-FROZEN",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 2,
+        "reached_at": "2026-08-23T19:04:40Z",
+        "revision": 9,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "C4P-02",
         "title": "Pre-extension behavior and findings are recorded"
       },
@@ -161,22 +161,96 @@
         "revision": 4,
         "seq": 4,
         "timestamp": "2026-08-23T18:59:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-02",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 5,
+        "seq": 5,
+        "timestamp": "2026-08-23T19:00:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-BASELINE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-BASELINE\"}",
+        "revision": 6,
+        "seq": 6,
+        "timestamp": "2026-08-23T19:01:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-BASELINE",
+        "entity_type": "gate",
+        "event_type": "gate.heartbeat",
+        "payload_json": "{}",
+        "revision": 7,
+        "seq": 7,
+        "timestamp": "2026-08-23T19:03:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-BASELINE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6690d8fe-3719-4f80-9a71-debddc647e24\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 8,
+        "seq": 8,
+        "timestamp": "2026-08-23T19:04:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-BASELINE-FROZEN",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 9,
+        "seq": 9,
+        "timestamp": "2026-08-23T19:04:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 10,
+        "seq": 10,
+        "timestamp": "2026-08-23T19:04:40Z"
       }
     ],
-    "evidence": [],
+    "evidence": [
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:04:28Z",
+        "gate_id": "C4P-GATE-BASELINE",
+        "id": "6690d8fe-3719-4f80-9a71-debddc647e24",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"730d1d1185710bd56dd49880cce797deb5b502e5668bb02a5897ec2923d540b4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"scripts/core4_extension_validate.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-02.md\"], \"files\": [], \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"recorded_git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 6}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/6690d8fe-3719-4f80-9a71-debddc647e24",
+        "revision": 8,
+        "status": "passed"
+      }
+    ],
     "gates": [
       {
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-BASELINE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3",
+        "last_run_at": "2026-08-23T19:04:28Z",
         "required": 1,
-        "revision": 2,
-        "status": "pending",
+        "revision": 8,
+        "status": "passed",
         "task_id": "C4P-02",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -475,6 +549,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/core4.plan.json\", \".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\", \"todos/core4-00.md\", \"todos/core4-01.md\", \"todos/core4-02.md\", \"todos/core4-02a.md\", \"todos/core4-03.md\", \"todos/core4-04.md\", \"todos/core4-05.md\", \"todos/core4-06.md\", \"todos/core4-07.md\", \"todos/core4-08.md\", \"todos/core4-09.md\", \"todos/core4-10.md\", \"todos/core4-11.md\", \"todos/core4-12.md\", \"todos/core4-13.md\", \"todos/core4-14.md\", \"todos/core4-15.md\", \"todos/core4-16.md\", \"todos/core4-17.md\", \"todos/core4-17a.md\", \"todos/core4-18.md\", \"todos/core4-19.md\"], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \"\", \"git_head\": \"993fde95e23bf158d7ab61b70a09deb8f67da42c\", \"interfaces\": [], \"note\": \"Archived completed CORE4 project and release material under /home/tumlinson/.agents/skills/.git/core4-production-extension/archive/20260823T185814Z-pre-extension; bootstrapped CORE4 Production Extension project 95e96992-bf74-4dd5-9984-a44885069a27 and applied the checksum-verified prescribed plan.\", \"resources\": [], \"task_id\": \"C4P-01\"}",
         "revision": 4,
         "task_id": "C4P-01"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:04:40Z",
+        "id": "f808b9cb-2325-4448-be43-a467c4f4db22",
+        "kind": "complete",
+        "note": "Focused validator created; baseline public metadata and all four existing skill suites passed. Compact evidence: .git/core4-production-extension/evidence/baseline.json.",
+        "payload_json": "{\"changed_owned_paths\": [\"scripts/core4_extension_validate.py\"], \"checkpoints\": [{\"id\": \"C4P-BASELINE-FROZEN\", \"reached_at\": \"2026-08-23T19:04:40Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-BASELINE\", \"last_run_at\": \"2026-08-23T19:04:28Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 94 ++++++++++++++++++++++++++++------\\n core4-tests/software-ready/report.json | 64 ++---------------------\\n todo-status.md                         |  4 +-\\n todos.md                               |  4 +-\\n todos/c4p-02.md                        |  8 +--\\n 5 files changed, 92 insertions(+), 82 deletions(-)\", \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"note\": \"Focused validator created; baseline public metadata and all four existing skill suites passed. Compact evidence: .git/core4-production-extension/evidence/baseline.json.\", \"resources\": [], \"task_id\": \"C4P-02\"}",
+        "revision": 10,
+        "task_id": "C4P-02"
       }
     ],
     "interface_consumers": [],
@@ -2721,14 +2805,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 2,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 2,
-        "status": "planned",
+        "revision": 10,
+        "status": "done",
         "tags_json": "[\"baseline\", \"compatibility\"]",
         "title": "Freeze extension baseline and create focused validator",
-        "updated_at": "2026-08-23T18:59:35Z",
-        "version": 1
+        "updated_at": "2026-08-23T19:04:40Z",
+        "version": 3
       },
       {
         "attention_reason": null,
