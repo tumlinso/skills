@@ -37,10 +37,24 @@ def _child_candidate(conn, gate_id: str, fingerprint: str) -> dict[str, object] 
         except json.JSONDecodeError:
             continue
         child_id = metadata.get("child_execution_id")
-        if not child_id or metadata.get("input_fingerprint") != fingerprint:
+        if not child_id:
             continue
-        child = conn.execute("SELECT state,gates_json FROM child_executions WHERE id=?", (child_id,)).fetchone()
-        if not child or child["state"] != "succeeded" or gate_id not in json.loads(child["gates_json"] or "[]"):
+        child = conn.execute(
+            "SELECT state,gates_json,candidate_gates_json FROM child_executions WHERE id=?",
+            (child_id,),
+        ).fetchone()
+        if metadata.get("input_fingerprint") != fingerprint:
+            if child and child["state"] == "ready_for_acceptance":
+                now = utc_now()
+                conn.execute("UPDATE child_executions SET state='stale',completed_at=? WHERE id=?", (now, child_id))
+                conn.execute(
+                    "UPDATE child_scope_leases SET state='released',released_at=? "
+                    "WHERE child_execution_id=? AND state='active'",
+                    (now, child_id),
+                )
+            continue
+        allowed = json.loads(child["candidate_gates_json"] or child["gates_json"] or "[]") if child else []
+        if not child or child["state"] not in {"succeeded", "ready_for_acceptance"} or gate_id not in allowed:
             continue
         accepted = False
         for acceptance in conn.execute("SELECT metadata_json FROM evidence WHERE gate_id=? ORDER BY created_at DESC", (gate_id,)):
@@ -356,6 +370,27 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
                 revision,
             ),
         )
+        if acquired.get("accept_candidate") and valid:
+            candidate = acquired["accept_candidate"]
+            child = conn.execute(
+                "SELECT candidate_gates_json,gates_json,acceptance_gates_json FROM child_executions WHERE id=?",
+                (candidate["child_execution_id"],),
+            ).fetchone()
+            if child:
+                accepted_gates = set(json.loads(child["acceptance_gates_json"] or "[]"))
+                accepted_gates.add(gate_id)
+                required_gates = set(json.loads(child["candidate_gates_json"] or child["gates_json"] or "[]"))
+                state = "accepted" if required_gates <= accepted_gates else "ready_for_acceptance"
+                conn.execute(
+                    "UPDATE child_executions SET acceptance_gates_json=?,state=?,completed_at=? WHERE id=?",
+                    (json.dumps(sorted(accepted_gates)), state, utc_now(), candidate["child_execution_id"]),
+                )
+                if state == "accepted":
+                    conn.execute(
+                        "UPDATE child_scope_leases SET state='released',released_at=? "
+                        "WHERE child_execution_id=? AND state='active'",
+                        (utc_now(), candidate["child_execution_id"]),
+                    )
         barriers = [] if acquired.get("child") else reevaluate_barriers(conn, revision)
         report = {
             "gate_id": gate_id,

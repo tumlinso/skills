@@ -224,4 +224,11 @@ CREATE INDEX IF NOT EXISTS idx_child_attempts_expiry
   ON child_attempts(state,expires_at);
 """
 
-MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4}
+MIGRATION_5 = r"""
+ALTER TABLE child_executions ADD COLUMN candidate_gates_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE child_executions ADD COLUMN acceptance_gates_json TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE child_executions ADD COLUMN result_refs_json TEXT NOT NULL DEFAULT '{}';
+ALTER TABLE child_attempts ADD COLUMN result_refs_json TEXT NOT NULL DEFAULT '{}';
+"""
+
+MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4, 5: MIGRATION_5}

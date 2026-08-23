@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `10`
+Project revision: `30`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -24,7 +24,7 @@ Project revision: `10`
 - `C4P-10` | status: planned | execution: ready | next: Prove the full production path with fake server and harness adapters before using real weights.
 - `C4P-08` | status: planned | execution: ready | next: Use a fake llama-server fixture for focused tests; do not require real weights yet.
 - `C4P-04` | status: planned | execution: ready | next: Implement against the existing coordinator rather than creating a second scheduler.
-- `C4P-03` | status: planned | execution: ready | next: Implement the migration and lifecycle first, then focused child, recovery, guard-path, and compatibility tests.
+- `C4P-03` | status: done | execution: closed | next: Implement the migration and lifecycle first, then focused child, recovery, guard-path, and compatibility tests.
 - `C4P-05` | status: planned | execution: ready | next: Fix the evidence-ordering defect first and prove contaminated runs create no durable fact or escalation.
 - `C4P-06` | status: planned | execution: ready | next: Start with schema and source-identity compatibility, then packet ranking and focused worker-oriented fixtures.
 - `C4P-07` | status: planned | execution: ready | next: Implement software and fake-file tests only. Do not copy or download a real model in this task.

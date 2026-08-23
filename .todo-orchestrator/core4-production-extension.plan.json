@@ -513,8 +513,11 @@
       "scope": {
         "exclusive_paths": [
           "todo-orchestrator/todo_orchestrator/child_execution.py",
-          "todo-orchestrator/todo_orchestrator/schema.py",
+          "todo-orchestrator/todo_orchestrator/migrations.py",
           "todo-orchestrator/todo_orchestrator/claims.py",
+          "todo-orchestrator/todo_orchestrator/gates.py",
+          "todo-orchestrator/todo_orchestrator/ownership.py",
+          "todo-orchestrator/todo_orchestrator/reporting.py",
           "todo-orchestrator/todo_orchestrator/commands",
           "todo-orchestrator/schemas/child-execution-v2.schema.json",
           "todo-orchestrator/references/child-execution-contract.md",

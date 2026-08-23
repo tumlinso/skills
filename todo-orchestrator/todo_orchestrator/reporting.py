@@ -14,8 +14,11 @@ from .readiness import explain_task, ready_tasks
 def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[str, object]]:
     """Return compact terminal child results without granting them task authority."""
     rows = conn.execute(
-        "SELECT id,state,objective,gates_json,result_json,completed_at FROM child_executions "
-        "WHERE task_id=? AND state IN ('succeeded','needs_codex','failed') ORDER BY completed_at DESC,id DESC LIMIT 8",
+        "SELECT id,state,objective,gates_json,candidate_gates_json,acceptance_gates_json,"
+        "result_json,result_refs_json,completed_at FROM child_executions "
+        "WHERE task_id=? AND state IN "
+        "('succeeded','ready_for_acceptance','accepted','rejected','stale','needs_codex','failed') "
+        "ORDER BY completed_at DESC,id DESC LIMIT 8",
         (task_id,),
     )
     valid_gates = {str(row["id"]) for row in conn.execute("SELECT id FROM gates WHERE task_id=? AND valid=1", (task_id,))}
@@ -33,7 +36,7 @@ def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[
         raw_result = json.loads(row["result_json"] or "{}")
         changed_paths = [str(path) for path in raw_result.get("changed_paths", [])]
         visible_status = str(row["state"])
-        if visible_status == "succeeded":
+        if visible_status in {"succeeded", "ready_for_acceptance", "accepted"}:
             visible_status = "completed" if changed_paths else "no_change"
         candidates: list[dict[str, object]] = []
         accepted_evidence: set[str] = set()
@@ -65,9 +68,13 @@ def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[
             and not candidate["accepted"]
             and candidate["gate_id"] not in valid_gates
         })
-        authorized = sorted(str(gate) for gate in json.loads(row["gates_json"] or "[]"))
-        if visible_status in {"needs_codex", "failed"}:
+        authorized = sorted(str(gate) for gate in json.loads(row["candidate_gates_json"] or row["gates_json"] or "[]"))
+        if str(row["state"]) in {"needs_codex", "failed", "rejected", "stale"}:
             acceptance_state = "not_applicable"
+        elif row["state"] == "ready_for_acceptance":
+            acceptance_state = "ready"
+        elif row["state"] == "accepted":
+            acceptance_state = "accepted"
         elif pending:
             acceptance_state = "ready"
         elif candidates and all(candidate["accepted"] for candidate in candidates):
@@ -76,7 +83,7 @@ def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[
             acceptance_state = "superseded"
         else:
             acceptance_state = "no_evidence"
-        results.append({
+        item = {
             "format": "TODO-CHILD-RESULT/1",
             "schema_version": 1,
             "child_execution_id": row["id"],
@@ -91,7 +98,11 @@ def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[
             "evidence_omitted": max(0, len(candidates) - 32),
             "acceptance": {"state": acceptance_state, "pending_gates": pending},
             "completed_at": row["completed_at"],
-        })
+        }
+        references = json.loads(row["result_refs_json"] or "{}")
+        if references:
+            item["artifacts"] = references
+        results.append(item)
     return results
 
 

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from ..child_execution import (
+    adopt_child_execution,
     authorize_child_execution,
     cancel_child_execution,
     child_execution_status,
+    disposition_child_execution,
     heartbeat_child_execution,
     recover_child_execution,
     report_child_result,
@@ -18,7 +20,10 @@ def _group(subparsers, helpers):
     root = subparsers.add_parser("child")
     helpers.common(root)
     nested = root.add_subparsers(dest="child_action", required=True)
-    return {name: nested.add_parser(name) for name in ("create", "heartbeat", "report", "cancel", "recover", "status")}
+    return {
+        name: nested.add_parser(name)
+        for name in ("create", "heartbeat", "report", "accept", "reject", "stale", "supersede", "adopt", "cancel", "recover", "status")
+    }
 
 
 def _mutate(service: Service, *, event: str, entity_id, actor, payload, operation):
@@ -77,9 +82,14 @@ def register(subparsers, helpers) -> None:
 
     report = child["report"]
     report.add_argument("--child-token", required=True)
-    report.add_argument("--status", required=True, choices=["succeeded", "failed", "needs_codex"])
+    report.add_argument("--status", required=True, choices=["succeeded", "ready_for_acceptance", "failed", "needs_codex"])
     report.add_argument("--summary", default="")
     report.add_argument("--changed-path", action="append", default=[])
+    for field in (
+        "source-identity", "context-packet", "patch", "candidate-verification",
+        "acceptance-verification", "telemetry", "reviewer-evidence", "compact-logs",
+    ):
+        report.add_argument(f"--{field}-ref")
     report.set_defaults(handler=lambda args: _child_token_mutation(
         args,
         "child.reported",
@@ -89,7 +99,36 @@ def register(subparsers, helpers) -> None:
             status=args.status,
             summary=args.summary,
             changed_paths=args.changed_path,
+            references={
+                field.replace("-", "_"): getattr(args, field.replace("-", "_") + "_ref")
+                for field in (
+                    "source-identity", "context-packet", "patch", "candidate-verification",
+                    "acceptance-verification", "telemetry", "reviewer-evidence", "compact-logs",
+                )
+                if getattr(args, field.replace("-", "_") + "_ref")
+            },
         ),
+    ))
+
+    for action in ("accept", "reject", "stale", "supersede"):
+        parser = child[action]
+        parser.add_argument("child_execution_id")
+        parser.add_argument("--claim-token", required=True)
+        parser.set_defaults(handler=lambda args, selected=action: _parent_mutation(
+            args,
+            f"child.{selected}",
+            lambda conn: disposition_child_execution(
+                conn, args.claim_token, args.child_execution_id, action=selected,
+            ),
+        ))
+
+    adopt = child["adopt"]
+    adopt.add_argument("child_execution_id")
+    adopt.add_argument("--claim-token", required=True)
+    adopt.set_defaults(handler=lambda args: _parent_mutation(
+        args,
+        "child.adopted",
+        lambda conn: adopt_child_execution(conn, args.claim_token, args.child_execution_id),
     ))
 
     cancel = child["cancel"]

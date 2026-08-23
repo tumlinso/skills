@@ -9,3 +9,22 @@ Child gate success creates candidate evidence and artifact files but does not se
 Successful child reports map to `completed` when changed paths are present and `no_change` otherwise. `needs_codex` is a successful hand-back requiring frontier judgment, not a child failure. Exhausted failures map to `failed`. Capsule results include bounded summaries, changed paths, authorized gates, gate evidence, artifact references, omitted counts, acceptance state, and structured `command-spec-v1` acceptance commands. When no terminal child result exists, normal capsules are unchanged.
 
 Only accepted current-source gates satisfy parent completion. Child evidence alone never does. SQLite remains work authority; canonical repository files remain source authority; evidence directories and capsule records are read-only evidence.
+
+## Version 2 lifecycle
+
+Writable results move from `running` to `ready_for_acceptance`; they become
+`accepted` only after current-source acceptance evidence is recorded. A parent
+may instead mark them `rejected` or `stale`. Active child write-scope leases
+continue to block parent edits until acceptance, rejection, staleness,
+supersession, or cancellation. Read-only and no-change v1 results may retain
+the `succeeded` projection.
+
+Durable result references identify source identity, context packets,
+binary-safe patches, candidate and acceptance verification, telemetry,
+reviewer evidence, and compact logs. Candidate gates and current-source
+acceptance gates are stored separately.
+
+A later active claim for the same task may adopt a durable
+`ready_for_acceptance` result only after the originating claim is inactive.
+Child credentials never gain parent completion, graph, interface, or scope
+authority.

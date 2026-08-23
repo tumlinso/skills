@@ -21,8 +21,19 @@ from .models import ExitCode, TodoError
 from .ownership import scopes_for
 from .sessions import authenticate_claim, token_hash
 
-TERMINAL_STATES = {"succeeded", "failed", "needs_codex", "canceled"}
-RESULT_STATES = {"succeeded", "failed", "needs_codex"}
+TERMINAL_STATES = {"succeeded", "failed", "needs_codex", "accepted", "rejected", "stale", "canceled"}
+RESULT_STATES = {"succeeded", "failed", "needs_codex", "ready_for_acceptance"}
+READY_STATES = {"ready_for_acceptance"}
+REFERENCE_FIELDS = {
+    "source_identity",
+    "context_packet",
+    "patch",
+    "candidate_verification",
+    "acceptance_verification",
+    "telemetry",
+    "reviewer_evidence",
+    "compact_logs",
+}
 
 
 def _iso_after(seconds: int) -> str:
@@ -158,9 +169,9 @@ def authorize_child_execution(
     child_id = str(uuid.uuid4())
     unique_gates = sorted({value.strip() for value in gates or [] if value.strip()})
     conn.execute(
-        "INSERT INTO child_executions(id,parent_claim_id,task_id,objective,gates_json,state,max_attempts,created_at) "
-        "VALUES(?,?,?,?,?,'authorized',?,?)",
-        (child_id, claim["id"], claim["task_id"], objective, json.dumps(unique_gates), max_attempts, now),
+        "INSERT INTO child_executions(id,parent_claim_id,task_id,objective,gates_json,candidate_gates_json,state,max_attempts,created_at) "
+        "VALUES(?,?,?,?,?,?,'authorized',?,?)",
+        (child_id, claim["id"], claim["task_id"], objective, json.dumps(unique_gates), json.dumps(unique_gates), max_attempts, now),
     )
     for path in normalized:
         conn.execute(
@@ -168,7 +179,7 @@ def authorize_child_execution(
             (child_id, path, now),
         )
     attempt, raw_token = _start_attempt(conn, child_id, lease_seconds)
-    return {
+    result = {
         "child_execution_id": child_id,
         "task_id": claim["task_id"],
         "state": "running",
@@ -179,6 +190,7 @@ def authorize_child_execution(
         "attempt": attempt,
         "child_token": raw_token,
     }
+    return result
 
 
 def authenticate_child_token(conn: sqlite3.Connection, child_token: str | None) -> sqlite3.Row:
@@ -225,6 +237,7 @@ def report_child_result(
     status: str,
     summary: str = "",
     changed_paths: list[str] | None = None,
+    references: dict[str, str] | None = None,
 ) -> dict[str, object]:
     attempt = authenticate_child_token(conn, child_token)
     if status not in RESULT_STATES:
@@ -235,20 +248,26 @@ def report_child_result(
     denied = [path for path in changed if not any(_inside(path, root) for root in leased)]
     if denied:
         raise TodoError("child_result_scope_violation", "Child reported paths outside its lease", ExitCode.BLOCKED, {"denied": denied})
+    refs = {str(key): str(value) for key, value in (references or {}).items() if value}
+    unknown_refs = sorted(set(refs) - REFERENCE_FIELDS)
+    if unknown_refs:
+        raise TodoError("invalid_child_result_reference", f"Unknown child result references: {unknown_refs}")
     now = utc_now()
     result = {"status": status, "summary": summary, "changed_paths": changed}
+    if refs:
+        result["references"] = refs
     conn.execute(
-        "UPDATE child_attempts SET state=?,completed_at=?,result_json=? WHERE id=?",
-        (status, now, json.dumps(result, sort_keys=True), attempt["id"]),
+        "UPDATE child_attempts SET state=?,completed_at=?,result_json=?,result_refs_json=? WHERE id=?",
+        (status, now, json.dumps(result, sort_keys=True), json.dumps(refs, sort_keys=True), attempt["id"]),
     )
     child = _execution(conn, child_id)
-    execution_state = status
+    execution_state = "ready_for_acceptance" if changed and status in {"succeeded", "ready_for_acceptance"} else status
     if status == "failed" and int(child["attempt_count"]) < int(child["max_attempts"]):
         execution_state = "recovery_required"
     completed_at = None if execution_state == "recovery_required" else now
     conn.execute(
-        "UPDATE child_executions SET state=?,result_json=?,completed_at=? WHERE id=?",
-        (execution_state, json.dumps(result, sort_keys=True), completed_at, child_id),
+        "UPDATE child_executions SET state=?,result_json=?,result_refs_json=?,completed_at=? WHERE id=?",
+        (execution_state, json.dumps(result, sort_keys=True), json.dumps(refs, sort_keys=True), completed_at, child_id),
     )
     if execution_state in TERMINAL_STATES:
         _release_scopes(conn, child_id, now)
@@ -256,9 +275,62 @@ def report_child_result(
         "child_execution_id": child_id,
         "task_id": attempt["task_id"],
         "attempt_number": attempt["attempt_number"],
-        "state": execution_state,
+        "state": "succeeded" if status == "succeeded" else execution_state,
+        "lifecycle_state": execution_state,
         "result": result,
         "parent_task_completed": False,
+    }
+
+
+def disposition_child_execution(
+    conn: sqlite3.Connection,
+    claim_token: str,
+    child_id: str,
+    *,
+    action: str,
+) -> dict[str, object]:
+    claim = _parent_claim(conn, claim_token, child_id)
+    child = _execution(conn, child_id)
+    target = {"accept": "accepted", "reject": "rejected", "stale": "stale", "supersede": "stale"}.get(action)
+    if not target:
+        raise TodoError("invalid_child_disposition", f"Unknown child disposition {action}")
+    if target == "accepted":
+        if child["state"] != "ready_for_acceptance":
+            raise TodoError("child_not_ready", "Child result is not ready for acceptance", ExitCode.BLOCKED)
+        required = set(json.loads(child["candidate_gates_json"] or child["gates_json"] or "[]"))
+        accepted = set(json.loads(child["acceptance_gates_json"] or "[]"))
+        if required - accepted:
+            raise TodoError(
+                "child_acceptance_gates_pending",
+                "Child acceptance gates remain pending",
+                ExitCode.BLOCKED,
+                {"pending_gates": sorted(required - accepted)},
+            )
+    elif child["state"] not in {"running", "recovery_required", "ready_for_acceptance", "succeeded"}:
+        raise TodoError("child_not_disposable", f"Child execution cannot be marked {target}", ExitCode.BLOCKED)
+    now = utc_now()
+    conn.execute("UPDATE child_executions SET state=?,completed_at=? WHERE id=?", (target, now, child_id))
+    _release_scopes(conn, child_id, now)
+    return {"child_execution_id": child_id, "task_id": claim["task_id"], "state": target}
+
+
+def adopt_child_execution(conn: sqlite3.Connection, claim_token: str, child_id: str) -> dict[str, object]:
+    claim = authenticate_claim(conn, claim_token)
+    child = _execution(conn, child_id)
+    if child["task_id"] != claim["task_id"]:
+        raise TodoError("child_parent_mismatch", "Child execution belongs to another task", ExitCode.INVALID_TOKEN)
+    if child["state"] != "ready_for_acceptance":
+        raise TodoError("child_not_adoptable", "Only durable ready results may be adopted", ExitCode.BLOCKED)
+    previous = conn.execute("SELECT state,expires_at FROM claims WHERE id=?", (child["parent_claim_id"],)).fetchone()
+    if previous and previous["state"] == "active" and previous["expires_at"] > utc_now():
+        raise TodoError("child_parent_active", "Originating parent claim is still active", ExitCode.CONTENTION)
+    conn.execute("UPDATE child_executions SET parent_claim_id=? WHERE id=?", (claim["id"], child_id))
+    return {
+        "child_execution_id": child_id,
+        "task_id": claim["task_id"],
+        "state": child["state"],
+        "adopted_from_claim_id": child["parent_claim_id"],
+        "parent_claim_id": claim["id"],
     }
 
 
@@ -304,17 +376,22 @@ def child_execution_status(conn: sqlite3.Connection, claim_token: str, child_id:
         (child_id,),
     )]
     attempts = [dict(row) for row in conn.execute(
-        "SELECT id,attempt_number,state,created_at,heartbeat_at,expires_at,completed_at,result_json "
+        "SELECT id,attempt_number,state,created_at,heartbeat_at,expires_at,completed_at,result_json,result_refs_json "
         "FROM child_attempts WHERE child_execution_id=? ORDER BY attempt_number",
         (child_id,),
     )]
     for attempt in attempts:
         attempt["result"] = json.loads(attempt.pop("result_json") or "null")
-    return {
+        refs = json.loads(attempt.pop("result_refs_json") or "{}")
+        if refs:
+            attempt["references"] = refs
+    result = {
         "child_execution_id": child_id,
         "task_id": claim["task_id"],
         "objective": child["objective"],
         "gates": json.loads(child["gates_json"]),
+        "candidate_gates": json.loads(child["candidate_gates_json"] or "[]"),
+        "acceptance_gates": json.loads(child["acceptance_gates_json"] or "[]"),
         "state": child["state"],
         "max_attempts": child["max_attempts"],
         "attempt_count": child["attempt_count"],
@@ -323,3 +400,7 @@ def child_execution_status(conn: sqlite3.Connection, claim_token: str, child_id:
         "scopes": scopes,
         "attempts": attempts,
     }
+    refs = json.loads(child["result_refs_json"] or "{}")
+    if refs:
+        result["references"] = refs
+    return result

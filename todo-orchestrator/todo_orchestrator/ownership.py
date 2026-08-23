@@ -156,4 +156,25 @@ def guard_paths(conn: sqlite3.Connection, repo_root: Path, claim_id: str, paths:
     denied = sorted(set(normalized) - set(allowed))
     if denied:
         raise TodoError("scope_violation", "Paths are outside the active claim's exclusive scope", ExitCode.BLOCKED, {"denied": denied})
+    delegated: list[dict[str, str]] = []
+    for lease in conn.execute(
+        "SELECT l.child_execution_id,l.path FROM child_scope_leases l "
+        "JOIN child_executions c ON c.id=l.child_execution_id "
+        "WHERE c.parent_claim_id=? AND l.state='active'",
+        (claim_id,),
+    ):
+        for path in allowed:
+            if paths_overlap(path, lease["path"]):
+                delegated.append({
+                    "path": path,
+                    "child_path": lease["path"],
+                    "child_execution_id": lease["child_execution_id"],
+                })
+    if delegated:
+        raise TodoError(
+            "active_child_scope",
+            "Cancel, supersede, reject, stale, or accept the delegated child before editing its paths",
+            ExitCode.BLOCKED,
+            {"conflicts": delegated},
+        )
     return {"allowed": allowed, "task_id": claim["task_id"]}
