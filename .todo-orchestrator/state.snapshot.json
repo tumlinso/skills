@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:14:58Z",
+  "generated_at": "2026-08-23T19:22:57Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 34,
+  "project_revision": 38,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -461,6 +461,46 @@
         "revision": 34,
         "seq": 34,
         "timestamp": "2026-08-23T19:14:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-06",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 35,
+        "seq": 35,
+        "timestamp": "2026-08-23T19:15:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CTXPP-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-CTXPP-PACKET\"}",
+        "revision": 36,
+        "seq": 36,
+        "timestamp": "2026-08-23T19:22:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CTXPP-PACKET",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0512cac9-c39b-4764-936d-b0de9de87dd9\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 37,
+        "seq": 37,
+        "timestamp": "2026-08-23T19:22:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-06",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 38,
+        "seq": 38,
+        "timestamp": "2026-08-23T19:22:57Z"
       }
     ],
     "evidence": [
@@ -475,6 +515,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-child\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"371b3f4d2fc5c28d97135bde0d233063bc88727af361edfbc6def3ddd5eb6349\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-child\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"ed59facce3b0b25677ec0d83180fb75712b38ff4d0e94d059f17cc15bfc05c01\", \"dirty_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v2.schema.json\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/ownership.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\", \"interfaces\": [], \"recorded_git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 28}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/05121bfb-8906-4375-ab49-cd98dd069b27",
         "revision": 29,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:22:50Z",
+        "gate_id": "C4P-GATE-CTXPP-PACKET",
+        "id": "0512cac9-c39b-4764-936d-b0de9de87dd9",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c70b6997981dfe0b0e1c7348f8036c0fb265645c073fbc09f62829193231015b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"54c9a7cebf52cea3f699862084c971787c834c14386de083f3169ed6df94efcb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v2.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-06.md\"], \"files\": [], \"git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\", \"interfaces\": [], \"recorded_git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 36}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/0512cac9-c39b-4764-936d-b0de9de87dd9",
+        "revision": 37,
         "status": "passed"
       },
       {
@@ -548,14 +601,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-CTXPP-PACKET",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "c70b6997981dfe0b0e1c7348f8036c0fb265645c073fbc09f62829193231015b",
+        "last_run_at": "2026-08-23T19:22:50Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 37,
+        "status": "passed",
         "task_id": "C4P-06",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -825,6 +878,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".../core4-production-extension.plan.json           |   7 +-\\n .todo-orchestrator/state.snapshot.json             | 493 ++++++++++++++-------\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n todos/c4p-00.md                                    |   4 +-\\n todos/c4p-01.md                                    |   6 +-\\n todos/c4p-02.md                                    |   6 +-\\n todos/c4p-03.md                                    |   9 +-\\n todos/c4p-04.md                                    |   4 +-\\n todos/c4p-05.md                                    |   4 +-\\n todos/c4p-06.md                                    |   4 +-\\n todos/c4p-07.md                                    |   4 +-\\n todos/c4p-08.md                                    |   4 +-\\n todos/c4p-09.md                                    |   4 +-\\n todos/c4p-10.md                                    |   4 +-\\n todos/c4p-11.md                                    |   4 +-\\n todos/c4p-12.md                                    |   4 +-\\n todos/c4p-13.md                                    |   4 +-\\n todos/c4p-14.md                                    |   4 +-\\n todos/c4p-15.md                                    |   4 +-\\n todos/c4p-16.md                                    |   4 +-\\n todos/c4p-17.md                                    |   4 +-\\n todos/c4p-18.md                                    |   4 +-\\n todos/c4p-19.md                                    |   4 +-\\n todos/c4p-20.md                                    |   4 +-\\n todos/c4p-21.md                                    |   4 +-\\n todos/c4p-22.md                                    |   4 +-\\n todos/c4p-23.md                                    |   4 +-\\n todos/c4p-24.md                                    |   4 +-\\n 29 files changed, 414 insertions(+), 207 deletions(-)\", \"git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\", \"interfaces\": [], \"note\": \"Reconfirmed archived bootstrap after final scope-path correction.\", \"resources\": [], \"task_id\": \"C4P-01\"}",
         "revision": 23,
         "task_id": "C4P-01"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:22:57Z",
+        "id": "47a6faca-609b-4b04-a6f2-e2dc1003a679",
+        "kind": "complete",
+        "note": "Added CTXPP-CONTEXT-PACKET/2 task-spec, multi-target canonical ranges, intent ranking, bounded expansion, granular trust, canonical source identity reuse/fallback, and compatible telemetry. Focused 10 tests passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v2.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/test_context_packet.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-CTXPP-PACKET\", \"last_run_at\": \"2026-08-23T19:22:50Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             |  65 +++++++--\\n cpp-context-compiler/references/context-packets.md |  22 ++++\\n cpp-context-compiler/scripts/ctxpp                 |  67 +++++++++-\\n cpp-context-compiler/scripts/ctxpp_packet.py       | 145 +++++++++++++++++++++\\n cpp-context-compiler/scripts/ctxpp_telemetry.py    |  18 ++-\\n cpp-context-compiler/tests/test_context_packet.py  |  48 +++++++\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-06.md                                    |   6 +-\\n 9 files changed, 355 insertions(+), 24 deletions(-)\", \"git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\", \"interfaces\": [{\"content_hash\": null, \"id\": \"ctxpp-task-packet-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Added CTXPP-CONTEXT-PACKET/2 task-spec, multi-target canonical ranges, intent ranking, bounded expansion, granular trust, canonical source identity reuse/fallback, and compatible telemetry. Focused 10 tests passed.\", \"resources\": [], \"task_id\": \"C4P-06\"}",
+        "revision": 38,
+        "task_id": "C4P-06"
       },
       {
         "claim_id": null,
@@ -3234,14 +3297,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 10,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 38,
+        "status": "done",
         "tags_json": "[\"ctxpp\", \"context\", \"source-identity\"]",
         "title": "Implement task-oriented ctxpp packets and canonical source identity",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:22:57Z",
+        "version": 5
       },
       {
         "attention_reason": null,
