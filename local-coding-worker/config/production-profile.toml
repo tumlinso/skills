@@ -3,6 +3,7 @@ format = "CORE4-PRODUCTION-PROFILE/1"
 [storage]
 canonical_root = "/mnt/block/core4-models"
 staging_root = "/home/tumlinson/.local/share/core4/staging"
+cache_root = "/home/tumlinson/.local/share/core4/models"
 minimum_headroom_bytes = 17179869184
 
 [server]

@@ -5,6 +5,7 @@ import argparse
 import json
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 from worker_core import WorkerError, eligibility, run_controller
@@ -19,6 +20,7 @@ sys.path.insert(0, str(SKILL_ROOT))
 
 from local_worker.acceptance import AcceptanceError  # noqa: E402
 from local_worker.controller import IntegrationController, IntegrationError  # noqa: E402
+from local_worker.model_cache import ModelCache, ModelCacheError  # noqa: E402
 from local_worker.verification import VerificationError  # noqa: E402
 from local_worker.workspace import WorkspaceError  # noqa: E402
 
@@ -27,6 +29,12 @@ def _request(path: str) -> object:
     if path == "-":
         return json.load(sys.stdin)
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _model_cache() -> ModelCache:
+    profile = tomllib.loads((SKILL_ROOT / "config/production-profile.toml").read_text(encoding="utf-8"))
+    storage = profile["storage"]
+    return ModelCache(storage["cache_root"], storage["canonical_root"])
 
 
 def main() -> int:
@@ -40,8 +48,44 @@ def main() -> int:
     self_test = subparsers.add_parser("self-test")
     self_test.add_argument("--repo", default=".")
     self_test.add_argument("--json", action="store_true")
+    model_cache = subparsers.add_parser("model-cache")
+    cache_commands = model_cache.add_subparsers(dest="cache_command", required=True)
+    for name in ("inspect", "list", "install", "verify", "activate", "remove"):
+        command = cache_commands.add_parser(name)
+        command.add_argument("--json", action="store_true")
+    cache_commands.choices["install"].add_argument("--candidate-id", required=True)
+    cache_commands.choices["install"].add_argument("--activate", action="store_true")
+    for name in ("verify", "activate", "remove"):
+        cache_commands.choices[name].add_argument("--candidate-id")
+        cache_commands.choices[name].add_argument("--payload-sha256")
+    cache_commands.choices["verify"].add_argument("--quick", action="store_true")
+    cache_commands.choices["verify"].add_argument("--full", action="store_true")
     args = parser.parse_args()
     try:
+        if args.command == "model-cache":
+            cache = _model_cache()
+            if args.cache_command == "inspect":
+                result = cache.inspect()
+            elif args.cache_command == "list":
+                result = {"format": "CORE4-MODEL-CACHE-LIST/1", "entries": cache.list()}
+            elif args.cache_command == "install":
+                result = cache.install(args.candidate_id, activate=args.activate)
+            else:
+                active = cache.active() or {}
+                candidate_id = args.candidate_id or active.get("candidate_id")
+                payload_sha256 = args.payload_sha256 or active.get("payload_sha256")
+                if not candidate_id or not payload_sha256:
+                    raise ModelCacheError("candidate and payload hash are required when no active profile exists")
+                if args.cache_command == "verify":
+                    if args.quick and args.full:
+                        raise ModelCacheError("choose only one of --quick or --full")
+                    result = cache.verify(candidate_id, payload_sha256, full=bool(args.full))
+                elif args.cache_command == "activate":
+                    result = cache.activate(candidate_id, payload_sha256)
+                else:
+                    result = cache.remove(candidate_id, payload_sha256)
+            print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
         if args.command == "self-test":
             root = Path(args.repo).resolve()
             process = subprocess.run(
@@ -71,7 +115,7 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
         return 0 if result.get("eligible", True) else 2
     except (OSError, json.JSONDecodeError, WorkerError, IntegrationError,
-            AcceptanceError, VerificationError, WorkspaceError) as error:
+            AcceptanceError, VerificationError, WorkspaceError, ModelCacheError) as error:
         print(json.dumps({"format": "LOCAL-CODING-WORKER-ERROR/1", "error": str(error)}, sort_keys=True,
                          separators=(",", ":")))
         return 2

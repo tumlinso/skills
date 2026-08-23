@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `38`
+Project revision: `42`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -27,7 +27,7 @@ Project revision: `38`
 - `C4P-03` | status: done | execution: closed | next: Implement the migration and lifecycle first, then focused child, recovery, guard-path, and compatibility tests.
 - `C4P-05` | status: planned | execution: ready | next: Fix the evidence-ordering defect first and prove contaminated runs create no durable fact or escalation.
 - `C4P-06` | status: done | execution: closed | next: Start with schema and source-identity compatibility, then packet ranking and focused worker-oriented fixtures.
-- `C4P-07` | status: planned | execution: ready | next: Implement software and fake-file tests only. Do not copy or download a real model in this task.
+- `C4P-07` | status: done | execution: closed | next: Implement software and fake-file tests only. Do not copy or download a real model in this task.
 - `C4P-09` | status: planned | execution: ready | next: Inspect the installed Qwen CLI help once, then implement a version adapter. Do not browse or launch a model.
 - `C4P-02` | status: done | execution: closed | next: Run the baseline section once; do not modify public semantics in this task.
 - `C4P-01` | status: done | execution: closed | next: After plan application, record archive paths and complete this task, then continue to C4P-02.
