@@ -3,29 +3,32 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `243`
+Project revision: `4`
 
 ## Workstreams
-- `CORE4-00` | status: done | execution: closed | next: After CORE4-RELEASE-BARRIER opens, verify the release handoff and close the epic.
-- `CORE4-19` | status: done | execution: closed | next: Run the single full release gate, inspect only failures, fix regressions narrowly, export the todo snapshot, and publish a compact handoff.
-- `CORE4-18` | status: done | execution: closed | next: Implement only policies supported by measured marginal value. Keep defaults conservative and reversible.
-- `CORE4-17` | status: done | execution: closed | next: After the user sets CORE4-MODEL-ASSETS to ready, run the bounded real-task corpus, record frontier-visible inputs/outputs/tool calls and local costs, set the harness/profile decisions, and reach CORE4-HOST-VALIDATED.
-- `CORE4-17A` | status: done | execution: closed | next: Use /mnt/block/core4-models as canonical cold storage, revise the acquisition destinations, and prove checksum, capacity, and failure-safe cleanup behavior with focused tests. Leave CORE4-MODEL-ASSETS absent.
-- `CORE4-16` | status: done | execution: closed | next: Generate an acquisition request containing candidate model files or repositories, quantizations, expected sizes, destinations, checksums when available, and harness prerequisites. If assets are absent, finish this task, then halt and ask the user once.
-- `CORE4-15` | status: done | execution: closed | next: Update only public docs and compatibility adapters after the integrated flow works. Run the existing full suites once here, not during every prior task.
-- `CORE4-14` | status: done | execution: closed | next: Wire only stable interfaces. Do not bypass them with private imports. Prove read-only, writable, NEEDS_CODEX, stale patch, preemption, accepted patch, and CUDA-trigger cases.
-- `CORE4-13` | status: done | execution: closed | next: Add named priority classes and service-owner lifecycle without rewriting todo scheduling. Prove drain, eviction, quiescence, stale-owner recovery, and spare-island correctness behavior with simulated processes.
-- `CORE4-07` | status: done | execution: closed | next: Add private bounded telemetry and a fixture evaluation that compares packet layouts at fixed budgets. Do not optimize solely for token reduction.
-- `CORE4-11` | status: done | execution: closed | next: Implement adapters against current documented protocols and test them with fakes. Probe installed binaries but do not install or download anything.
-- `CORE4-12` | status: done | execution: closed | next: Implement writable mechanics independently of any real model. Use a deterministic fake worker to prove patch and conflict behavior.
-- `CORE4-05` | status: done | execution: closed | next: Wire child results into service/context/reporting and publish the stable child-execution contract. Keep normal continue output unchanged when no child result is ready.
-- `CORE4-09` | status: done | execution: closed | next: Implement new fact and compatibility modules, preserve raw evidence, and update controller classification without changing existing commands.
-- `CORE4-10` | status: done | execution: closed | next: Build the controller and read-only roles first. Do not add writable work, model downloads, recursive agents, or a custom general agent loop.
-- `CORE4-04` | status: done | execution: closed | next: Implement the smallest additive schema and CLI surface for child executions, then prove token privilege and recovery behavior.
-- `CORE4-06` | status: done | execution: closed | next: Implement additive inspect/packet commands without weakening fast where/route/status behavior or source-authority guarantees.
-- `CORE4-08` | status: done | execution: closed | next: Implement registry validation and changed-code matching in new modules, then add thin controller commands without guessing among ambiguous production benchmarks.
-- `CORE4-03` | status: done | execution: closed | next: Add schemas and thin adapters around current background primitives. Do not redesign the scheduler or move skill-specific semantics into the facade.
-- `CORE4-02A` | status: done | execution: closed | next: Inspect the targeted refresh implementation, failing test, and existing ctxpp retrieval/freshness contract; change only the test if lexical-only freshness is contract-valid, otherwise repair the implementation; run the focused test and full ctxpp suite, then freeze CORE4-BASELINE-FROZEN.
-- `CORE4-02` | status: done | execution: closed | next: After CORE4-02A resolves the ctxpp baseline contract and freezes CORE4-BASELINE-FROZEN, resume only to verify and close the baseline task.
-- `CORE4-01` | status: done | execution: closed | next: Bootstrap complete; implementation begins at CORE4-02.
+- `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
+- `C4P-24` | status: planned | execution: ready | next: After this task and C4P-00 are completed, archive/remove the active ledger outside todo, run the final static tracked-layout check, commit, and fast-forward push core4-bootstrap. Do not merge main.
+- `C4P-23` | status: planned | execution: ready | next: Commit and push the coherent release candidate on core4-bootstrap, then prepare final ledger archival.
+- `C4P-22` | status: planned | execution: ready | next: Verify the eventual tracked layout contains only the four skills, AGENTS.md, .gitignore, and optional self-contained .github.
+- `C4P-21` | status: planned | execution: ready | next: Run this full gate once. Repair only actual regressions and rerun the affected suite before one final aggregate run.
+- `C4P-20` | status: planned | execution: ready | next: Do not promote from keyword matching. Use objective gates and compact accepted-task comparisons; retain raw artifacts only in the Git common directory.
+- `C4P-19` | status: planned | execution: ready | next: Update minimal SKILL.md routing and versioned policy without exposing server operation details to Codex.
+- `C4P-18` | status: planned | execution: ready | next: Use integer acceptance counts and report unavailable candidates as not_evaluated, not failed.
+- `C4P-17` | status: planned | execution: ready | next: Repair implementation defects revealed by these scenarios, then rerun only the failed scenario set.
+- `C4P-16` | status: planned | execution: ready | next: Use the smallest task set that proves the path; inspect raw logs only on failure.
+- `C4P-15` | status: planned | execution: ready | next: Do not evaluate model quality yet; establish reliable service operation and record compact host evidence.
+- `C4P-14` | status: planned | execution: ready | next: If the active candidate is not READY, stop after emitting the exact request. Do not download, install, copy, or continue to C4P-15.
+- `C4P-13` | status: planned | execution: ready | next: Fix only failures attributable to the extension; do not start a model or GPU benchmark.
+- `C4P-12` | status: planned | execution: ready | next: Test no-match, one-match, ambiguous, contaminated, preempted, and accepted-patch scenarios without real GPU timing.
+- `C4P-11` | status: planned | execution: ready | next: Use simulated model output first, then leave the same normalized path ready for the real host test.
+- `C4P-10` | status: planned | execution: ready | next: Prove the full production path with fake server and harness adapters before using real weights.
+- `C4P-08` | status: planned | execution: ready | next: Use a fake llama-server fixture for focused tests; do not require real weights yet.
+- `C4P-04` | status: planned | execution: ready | next: Implement against the existing coordinator rather than creating a second scheduler.
+- `C4P-03` | status: planned | execution: ready | next: Implement the migration and lifecycle first, then focused child, recovery, guard-path, and compatibility tests.
+- `C4P-05` | status: planned | execution: ready | next: Fix the evidence-ordering defect first and prove contaminated runs create no durable fact or escalation.
+- `C4P-06` | status: planned | execution: ready | next: Start with schema and source-identity compatibility, then packet ranking and focused worker-oriented fixtures.
+- `C4P-07` | status: planned | execution: ready | next: Implement software and fake-file tests only. Do not copy or download a real model in this task.
+- `C4P-09` | status: planned | execution: ready | next: Inspect the installed Qwen CLI help once, then implement a version adapter. Do not browse or launch a model.
+- `C4P-02` | status: planned | execution: ready | next: Run the baseline section once; do not modify public semantics in this task.
+- `C4P-01` | status: done | execution: closed | next: After plan application, record archive paths and complete this task, then continue to C4P-02.
 <!-- todo-orchestrator:v2-managed:end -->
