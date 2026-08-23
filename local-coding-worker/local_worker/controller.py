@@ -9,6 +9,8 @@ import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
+import time
+import uuid
 
 from .acceptance import AcceptanceError, StaleSourceError, accept_patch_artifact, build_patch_artifact
 from .verification import require_verification
@@ -17,6 +19,95 @@ from .workspace import materialize_writable_workspace, normalize_scopes
 
 class IntegrationError(RuntimeError):
     pass
+
+
+class ProductionReadOnlyRuntime:
+    """Compose frozen production interfaces; inject fakes for software-only proof."""
+
+    def __init__(self, *, profile: dict[str, Any] | None = None, cache: Any = None,
+                 runtime: Any = None, service: Any = None, harness_factory: Callable[[str], Any] | None = None) -> None:
+        self._profile, self._cache, self._runtime, self._service = profile, cache, runtime, service
+        self._harness_factory = harness_factory
+
+    def _components(self, root: Path) -> tuple[dict[str, Any], Any, Any, Any]:
+        import tomllib
+        from .model_cache import ModelCache
+        from .servers import LlamaCppServerAdapter
+        from .service import AdapterService
+        skills = Path(__file__).resolve().parents[2]
+        todo = skills / "todo-orchestrator"
+        if str(todo) not in sys.path: sys.path.insert(0, str(todo))
+        from todo_orchestrator.runtime import RuntimeFacade
+        profile = self._profile or tomllib.loads((Path(__file__).resolve().parents[1] / "config/production-profile.toml").read_text(encoding="utf-8"))
+        cache = self._cache or ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+        runtime = self._runtime or RuntimeFacade(root)
+        service = self._service or AdapterService()
+        if self._service is None:
+            service.register("llama", LlamaCppServerAdapter(str(profile["server"]["binary"])))
+        return profile, cache, runtime, service
+
+    def execute(self, request: dict[str, Any], packet: dict[str, Any], snapshot: Any) -> dict[str, Any]:
+        from .harnesses import CodexCliAdapter, QwenCodeAdapter
+        root = Path(request["repo_root"])
+        profile, cache, runtime, service = self._components(root)
+        deployment = profile.get("deployment_policy", {})
+        if deployment.get("real_local_enabled") is not True:
+            return {"status": "needs_codex", "summary": str(deployment.get("reason", "real local execution disabled")),
+                    "findings": [], "tool_calls": 0, "artifacts": []}
+        active = cache.active()
+        if not active:
+            return {"status": "needs_codex", "summary": "Persistent active model cache is missing.",
+                    "findings": [], "tool_calls": 0, "artifacts": []}
+        verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+        execution = request["execution"]
+        count = int(execution.get("gpu_count", 1))
+        runtime.host.discover_gpus()
+        bundles = runtime.host.compound_gpu_bundles(count)
+        if not bundles:
+            return {"status": "preempted", "summary": "No runtime-discovered GPU bundle is available.",
+                    "findings": [], "tool_calls": 0, "artifacts": []}
+        bundle = bundles[0]
+        reservation = runtime.host.reserve_service(
+            project_root=root, service_id=f"lcw-{uuid.uuid4()}", priority_class="active_local_delegation",
+            resource_request={"schema_version": 1, "kind": "accelerator", "ids": bundle["resource_ids"],
+                              "exclusive_resources": bundle["exclusive_resources"]},
+        )
+        if reservation is None:
+            return {"status": "preempted", "summary": "Runtime reservation is pending owner drain.",
+                    "findings": [], "tool_calls": 0, "artifacts": []}
+        uuids = [item.removeprefix("accelerator:") for item in reservation["resource_ids"]]
+        server = profile["server"]
+        service_profile = {
+            **dict(execution.get("service_profile") or {}), "format": "CORE4-MODEL-SERVICE/2",
+            "model_sha256": active["payload_sha256"], "allocated_gpu_uuids": uuids,
+            "split_mode": server.get("split_mode", "layer"), "context_size": int(profile["experiment"]["initial_context"]),
+            "port": int(server["base_port"]), "log_path": str(cache.root / "runtime/llama-server.log"),
+            "startup_timeout_seconds": float(server["startup_timeout_seconds"]),
+            "idle_ttl_seconds": float(deployment.get("hot_idle_seconds", 0)),
+        }
+        harness_name = str(execution.get("harness", "qwen"))
+        harness = (self._harness_factory(harness_name) if self._harness_factory else
+                   QwenCodeAdapter(str(profile["harnesses"]["qwen"])) if harness_name == "qwen" else
+                   CodexCliAdapter(str(profile["harnesses"]["codex"])))
+        server_handle = harness_handle = None
+        try:
+            with cache.lease(str(active["candidate_id"]), str(active["payload_sha256"]), reservation["owner_id"]):
+                server_handle = service.start("llama", {"model_path": verified["payload_path"],
+                    "port": service_profile["port"], "service_profile": service_profile})
+                harness_handle = harness.start({"cwd": str(snapshot.root), **dict(execution.get("harness_config") or {})})
+                result = harness.run(harness_handle, {"prompt": json.dumps({"objective": request["objective"], "packet": packet}, separators=(",", ":"))})
+            status = "completed" if result.get("status") == "succeeded" else str(result.get("status", "failed"))
+            artifact = {"kind": "harness-summary", "harness": harness_name, "model_sha256": active["payload_sha256"],
+                        "usage": result.get("usage", {}), "duration_ms": result.get("duration_ms")}
+            return {"status": status, "summary": str(result.get("text") or result.get("reason") or status)[:500],
+                    "findings": [], "tool_calls": int(result.get("usage", {}).get("core4", {}).get("tool_calls", 0)),
+                    "artifacts": [artifact]}
+        except Exception as error:
+            return {"status": "failed", "summary": str(error)[:500], "findings": [], "tool_calls": 0, "artifacts": []}
+        finally:
+            if harness_handle is not None: harness.evict(harness_handle)
+            if server_handle is not None: service.evict("llama", server_handle)
+            runtime.host.release(reservation["owner_id"])
 
 
 def _runtime_source():
@@ -166,10 +257,12 @@ class IntegrationController:
         }
 
     def _readonly(self, request: dict[str, Any], child: dict[str, Any]) -> dict[str, Any]:
+        execution = dict(request.get("execution") or {})
+        version = 2 if execution else 1
         worker = {
-            "format": "LCW-REQUEST/1",
-            "schema_version": 1,
-            "backend": "fake",
+            "format": f"LCW-REQUEST/{version}",
+            "schema_version": version,
+            "backend": str(execution.get("backend", "fake")),
             "role": request["role"],
             "readonly": True,
             "repo_root": request["repo_root"],
@@ -181,14 +274,16 @@ class IntegrationController:
             "budget_tokens": request["budget_tokens"],
             "max_items": request["max_items"],
         }
+        if execution:
+            worker["execution"] = execution
         terminal = self._terminal(worker)
         status = str(terminal.get("status", "needs_codex"))
-        if status not in {"no_change", "needs_codex"}:
+        if status not in {"completed", "no_change", "needs_codex", "failed", "preempted"}:
             raise IntegrationError(f"terminal read-only worker returned unsupported status: {status}")
         if terminal.get("child_reported") is not True:
             self._report(
                 Path(request["repo_root"]), str(child["child_token"]),
-                "needs_codex" if status == "needs_codex" else "succeeded",
+                "needs_codex" if status in {"needs_codex", "preempted"} else "failed" if status == "failed" else "succeeded",
                 str(terminal.get("summary", status)),
             )
         return {
@@ -273,14 +368,15 @@ class IntegrationController:
 
 def normalize_integration_request(value: object) -> dict[str, Any]:
     request = _object(value, "integration request")
+    version = request.get("schema_version")
     common = {
         "format", "schema_version", "mode", "repo_root", "parent_claim_token", "task_id",
         "objective", "scopes", "gates", "cuda_registry",
     }
-    readonly = {"role", "target", "intent", "budget_tokens", "max_items"}
+    readonly = {"role", "target", "intent", "budget_tokens", "max_items"} | ({"execution"} if version == 2 else set())
     writable = {"fake_changes", "baseline_commands", "verification_commands", "acceptance_commands"}
-    if request.get("format") != "CORE4-INTEGRATION-REQUEST/1" or request.get("schema_version") != 1:
-        raise IntegrationError("integration request must use CORE4-INTEGRATION-REQUEST/1 schema_version 1")
+    if version not in {1, 2} or request.get("format") != f"CORE4-INTEGRATION-REQUEST/{version}":
+        raise IntegrationError("integration request must use matching CORE4-INTEGRATION-REQUEST/1 or /2")
     mode = request.get("mode")
     if mode not in {"readonly", "writable"}:
         raise IntegrationError("integration mode must be readonly or writable")
@@ -316,6 +412,12 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
             raise IntegrationError("budget_tokens must be between 256 and 12000")
         if not isinstance(request["max_items"], int) or not 1 <= request["max_items"] <= 32:
             raise IntegrationError("max_items must be between 1 and 32")
+        if version == 2:
+            execution = _object(request["execution"], "execution")
+            if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config"}:
+                raise IntegrationError("execution contains unknown fields")
+            if execution.get("backend") not in {"fake", "real"}:
+                raise IntegrationError("execution backend must be fake or real")
     else:
         _object(request["fake_changes"], "fake_changes")
         for name in ("baseline_commands", "verification_commands", "acceptance_commands"):

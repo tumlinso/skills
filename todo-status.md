@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `54`
+Project revision: `58`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -21,7 +21,7 @@ Project revision: `54`
 - `C4P-13` | status: planned | execution: ready | next: Fix only failures attributable to the extension; do not start a model or GPU benchmark.
 - `C4P-12` | status: planned | execution: ready | next: Test no-match, one-match, ambiguous, contaminated, preempted, and accepted-patch scenarios without real GPU timing.
 - `C4P-11` | status: planned | execution: ready | next: Use simulated model output first, then leave the same normalized path ready for the real host test.
-- `C4P-10` | status: planned | execution: ready | next: Prove the full production path with fake server and harness adapters before using real weights.
+- `C4P-10` | status: done | execution: closed | next: Prove the full production path with fake server and harness adapters before using real weights.
 - `C4P-08` | status: done | execution: closed | next: Use a fake llama-server fixture for focused tests; do not require real weights yet.
 - `C4P-04` | status: done | execution: closed | next: Implement against the existing coordinator rather than creating a second scheduler.
 - `C4P-03` | status: done | execution: closed | next: Implement the migration and lifecycle first, then focused child, recovery, guard-path, and compatibility tests.

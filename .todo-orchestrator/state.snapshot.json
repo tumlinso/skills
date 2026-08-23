@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:33:47Z",
+  "generated_at": "2026-08-23T19:39:35Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 54,
+  "project_revision": 58,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -661,6 +661,46 @@
         "revision": 54,
         "seq": 54,
         "timestamp": "2026-08-23T19:33:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-10",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 55,
+        "seq": 55,
+        "timestamp": "2026-08-23T19:33:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-WORKER-READONLY-SOFTWARE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-WORKER-READONLY-SOFTWARE\"}",
+        "revision": 56,
+        "seq": 56,
+        "timestamp": "2026-08-23T19:39:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-WORKER-READONLY-SOFTWARE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b14d7e39-d9af-4ccc-bb02-b208bc55f991\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 57,
+        "seq": 57,
+        "timestamp": "2026-08-23T19:39:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 58,
+        "seq": 58,
+        "timestamp": "2026-08-23T19:39:35Z"
       }
     ],
     "evidence": [
@@ -740,6 +780,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-evidence\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"f319bdb4c9b033e7aaa19fd707cff8e13bc960944191494fc488f0390651298f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-evidence\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"3f39afcbdeae76f23e83cba6b79440983dc22f692d284b72c59a33a46aaec1e4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_performance_facts.py\", \"cuda/tests/test_registry_discovery.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-05.md\"], \"files\": [], \"git_head\": \"a8948fa9b2ac67fcc05562db66133212fcd0e6cb\", \"interfaces\": [], \"recorded_git_head\": \"a8948fa9b2ac67fcc05562db66133212fcd0e6cb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 48}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/ac2b7cbe-92fc-446d-bebf-d6105e4265ce",
         "revision": 49,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:39:35Z",
+        "gate_id": "C4P-GATE-WORKER-READONLY-SOFTWARE",
+        "id": "b14d7e39-d9af-4ccc-bb02-b208bc55f991",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-readonly-software\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"41f0cbfb1f2f90220d68907c17372e2ec4b49ac55346db712e163efc381a8716\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-readonly-software\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"e6cb7fc108996f9dc4f2beba0c7acc7294a1308c430404f4920d172e5cda0a0f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/schemas/worker-result-v2.schema.json\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-10.md\"], \"files\": [], \"git_head\": \"4a9b4bc0203f2ff6b24cf3fff632502f9a55a0f1\", \"interfaces\": [], \"recorded_git_head\": \"4a9b4bc0203f2ff6b24cf3fff632502f9a55a0f1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 56}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/b14d7e39-d9af-4ccc-bb02-b208bc55f991",
+        "revision": 57,
         "status": "passed"
       },
       {
@@ -1047,14 +1100,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-readonly-software\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-WORKER-READONLY-SOFTWARE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "41f0cbfb1f2f90220d68907c17372e2ec4b49ac55346db712e163efc381a8716",
+        "last_run_at": "2026-08-23T19:39:35Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 57,
+        "status": "passed",
         "task_id": "C4P-10",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1130,6 +1183,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/references/child-execution-contract.md\", \"todo-orchestrator/schemas/child-execution-v2.schema.json\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/todo_orchestrator/child_execution.py\", \"todo-orchestrator/todo_orchestrator/commands/child_execution.py\", \"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/ownership.py\", \"todo-orchestrator/todo_orchestrator/reporting.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-TODO-CHILD\", \"last_run_at\": \"2026-08-23T19:11:56Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".../core4-production-extension.plan.json           |   7 +-\\n .todo-orchestrator/state.snapshot.json             | 602 +++++++++++++++------\\n .../references/child-execution-contract.md         |  19 +\\n .../todo_orchestrator/child_execution.py           | 109 +++-\\n .../todo_orchestrator/commands/child_execution.py  |  43 +-\\n todo-orchestrator/todo_orchestrator/gates.py       |  41 +-\\n todo-orchestrator/todo_orchestrator/migrations.py  |   9 +-\\n todo-orchestrator/todo_orchestrator/ownership.py   |  21 +\\n todo-orchestrator/todo_orchestrator/reporting.py   |  25 +-\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-00.md                                    |   4 +-\\n todos/c4p-01.md                                    |   2 +-\\n todos/c4p-02.md                                    |   2 +-\\n todos/c4p-03.md                                    |  13 +-\\n todos/c4p-04.md                                    |   4 +-\\n todos/c4p-05.md                                    |   4 +-\\n todos/c4p-06.md                                    |   4 +-\\n todos/c4p-07.md                                    |   4 +-\\n todos/c4p-08.md                                    |   4 +-\\n todos/c4p-09.md                                    |   4 +-\\n todos/c4p-10.md                                    |   4 +-\\n todos/c4p-11.md                                    |   4 +-\\n todos/c4p-12.md                                    |   4 +-\\n todos/c4p-13.md                                    |   4 +-\\n todos/c4p-14.md                                    |   4 +-\\n todos/c4p-15.md                                    |   4 +-\\n todos/c4p-16.md                                    |   4 +-\\n todos/c4p-17.md                                    |   4 +-\\n todos/c4p-18.md                                    |   4 +-\\n todos/c4p-19.md                                    |   4 +-\\n todos/c4p-20.md                                    |   4 +-\\n todos/c4p-21.md                                    |   4 +-\\n todos/c4p-22.md                                    |   4 +-\\n todos/c4p-23.md                                    |   4 +-\\n todos/c4p-24.md                                    |   4 +-\\n 36 files changed, 756 insertions(+), 233 deletions(-)\", \"git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\", \"interfaces\": [{\"content_hash\": null, \"id\": \"todo-child-execution-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Added child lifecycle v2, durable references, separate candidate/acceptance gates, active delegated-path guards, stale/reject/accept/adopt actions, and idempotent migration; focused 15 tests passed.\", \"resources\": [], \"task_id\": \"C4P-03\"}",
         "revision": 30,
         "task_id": "C4P-03"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:39:35Z",
+        "id": "5b05afd7-220f-4a71-94e2-3ea1715d2481",
+        "kind": "complete",
+        "note": "Added additive v2 read-only execution routing through task-oriented CTXPP packing, isolated scopes, verified active cache, runtime-discovered GPU reservation, llama.cpp service, bounded policy-selected harness, compact artifacts, normalized terminal states, and failure-safe cleanup; preserved v1 fake fixtures.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/schemas/worker-result-v2.schema.json\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-WORKER-READONLY-SOFTWARE\", \"last_run_at\": \"2026-08-23T19:39:35Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             |  65 ++++++++++--\\n local-coding-worker/local_worker/controller.py     | 118 +++++++++++++++++++--\\n .../references/integration-contract.md             |   7 ++\\n local-coding-worker/scripts/worker_core.py         |  99 ++++++++++++-----\\n .../tests/test_core4_integration.py                |  50 ++++++++-\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-10.md                                    |   6 +-\\n 8 files changed, 299 insertions(+), 54 deletions(-)\", \"git_head\": \"4a9b4bc0203f2ff6b24cf3fff632502f9a55a0f1\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-execution-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Added additive v2 read-only execution routing through task-oriented CTXPP packing, isolated scopes, verified active cache, runtime-discovered GPU reservation, llama.cpp service, bounded policy-selected harness, compact artifacts, normalized terminal states, and failure-safe cleanup; preserved v1 fake fixtures.\", \"resources\": [], \"task_id\": \"C4P-10\"}",
+        "revision": 58,
+        "task_id": "C4P-10"
       },
       {
         "claim_id": null,
@@ -3637,14 +3700,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": null,
         "priority": 30,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 58,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"real-path\", \"readonly\"]",
         "title": "Wire the real read-only production execution path",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:39:35Z",
+        "version": 5
       },
       {
         "attention_reason": null,

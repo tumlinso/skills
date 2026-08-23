@@ -27,3 +27,10 @@ agents.
 The compact `CORE4-INTEGRATED-RESULT/1` contains task and child identities,
 terminal status, summary, changed paths, guarded acceptance state, CUDA campaign
 IDs, and `parent_task_completed=false`.
+
+V2 is additive. `CORE4-INTEGRATION-REQUEST/2` selects a fixture or measured
+real execution in its `execution` object. `LCW-REQUEST/2` then composes the
+task-oriented packet, authorized read-only snapshot, persistent active cache,
+runtime-discovered GPU reservation, llama.cpp service, bounded harness, and a
+compact normalized result. Cleanup always evicts harness/server and releases
+the runtime owner. V1 remains the deterministic fake fixture.
