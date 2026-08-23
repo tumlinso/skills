@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:39:35Z",
+  "generated_at": "2026-08-23T19:45:21Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 58,
+  "project_revision": 62,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -701,6 +701,46 @@
         "revision": 58,
         "seq": 58,
         "timestamp": "2026-08-23T19:39:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-11",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 59,
+        "seq": 59,
+        "timestamp": "2026-08-23T19:39:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-WORKER-WRITABLE-SOFTWARE\"}",
+        "revision": 60,
+        "seq": 60,
+        "timestamp": "2026-08-23T19:45:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"eb15bede-7692-431f-aa22-59409c9e9820\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 61,
+        "seq": 61,
+        "timestamp": "2026-08-23T19:45:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-11",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 62,
+        "seq": 62,
+        "timestamp": "2026-08-23T19:45:21Z"
       }
     ],
     "evidence": [
@@ -819,6 +859,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"model-service\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"671d2a91cc001a66a93322c7ab427751f375ab6146bcad894a39974f5c2eaf0b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"model-service\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"2a0880eedac252e3a3a8e1299569018c62d3c123028b0e894593923c70c21af5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/schemas/model-service-profile-v2.schema.json\", \"local-coding-worker/tests/test_llama_cpp_server.py\", \"local-coding-worker/tests/test_service.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-08.md\"], \"files\": [], \"git_head\": \"bf647732365326b78c966488d51067dd1a46d243\", \"interfaces\": [], \"recorded_git_head\": \"bf647732365326b78c966488d51067dd1a46d243\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 44}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/ced43e4e-1590-4e8d-bc27-42587bc16ae5",
         "revision": 45,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:45:21Z",
+        "gate_id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
+        "id": "eb15bede-7692-431f-aa22-59409c9e9820",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-writable-software\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2b3d9a8a9dad42b6942e641671094a03fa2888613e7e401136c04af3b458ca83\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-writable-software\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"6f29290869616f676f147d467ac6a7e9b22e39d27c84d62192dfe3b7b1407267\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/acceptance.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/workspace.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_writable_work.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-11.md\"], \"files\": [], \"git_head\": \"0cc393f6b9ffa6593b54da8880d0e27615ea99e4\", \"interfaces\": [], \"recorded_git_head\": \"0cc393f6b9ffa6593b54da8880d0e27615ea99e4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 60}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/eb15bede-7692-431f-aa22-59409c9e9820",
+        "revision": 61,
         "status": "passed"
       }
     ],
@@ -1113,14 +1166,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"worker-writable-software\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "2b3d9a8a9dad42b6942e641671094a03fa2888613e7e401136c04af3b458ca83",
+        "last_run_at": "2026-08-23T19:45:21Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 61,
+        "status": "passed",
         "task_id": "C4P-11",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -1153,6 +1206,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".../core4-production-extension.plan.json           |   7 +-\\n .todo-orchestrator/state.snapshot.json             | 493 ++++++++++++++-------\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n todos/c4p-00.md                                    |   4 +-\\n todos/c4p-01.md                                    |   6 +-\\n todos/c4p-02.md                                    |   6 +-\\n todos/c4p-03.md                                    |   9 +-\\n todos/c4p-04.md                                    |   4 +-\\n todos/c4p-05.md                                    |   4 +-\\n todos/c4p-06.md                                    |   4 +-\\n todos/c4p-07.md                                    |   4 +-\\n todos/c4p-08.md                                    |   4 +-\\n todos/c4p-09.md                                    |   4 +-\\n todos/c4p-10.md                                    |   4 +-\\n todos/c4p-11.md                                    |   4 +-\\n todos/c4p-12.md                                    |   4 +-\\n todos/c4p-13.md                                    |   4 +-\\n todos/c4p-14.md                                    |   4 +-\\n todos/c4p-15.md                                    |   4 +-\\n todos/c4p-16.md                                    |   4 +-\\n todos/c4p-17.md                                    |   4 +-\\n todos/c4p-18.md                                    |   4 +-\\n todos/c4p-19.md                                    |   4 +-\\n todos/c4p-20.md                                    |   4 +-\\n todos/c4p-21.md                                    |   4 +-\\n todos/c4p-22.md                                    |   4 +-\\n todos/c4p-23.md                                    |   4 +-\\n todos/c4p-24.md                                    |   4 +-\\n 29 files changed, 414 insertions(+), 207 deletions(-)\", \"git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\", \"interfaces\": [], \"note\": \"Reconfirmed archived bootstrap after final scope-path correction.\", \"resources\": [], \"task_id\": \"C4P-01\"}",
         "revision": 23,
         "task_id": "C4P-01"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:45:21Z",
+        "id": "3655c33b-f489-4a14-8c2e-19ac285c3562",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/acceptance.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/workspace.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_writable_work.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-WORKER-WRITABLE-SOFTWARE\", \"last_run_at\": \"2026-08-23T19:45:21Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             |  65 ++++++++--\\n local-coding-worker/local_worker/acceptance.py     |  47 ++++++-\\n local-coding-worker/local_worker/controller.py     | 135 +++++++++++++++++----\\n local-coding-worker/local_worker/workspace.py      |  37 +++++-\\n .../tests/test_core4_integration.py                |  21 ++++\\n local-coding-worker/tests/test_writable_work.py    |  22 ++++\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-11.md                                    |   6 +-\\n 9 files changed, 288 insertions(+), 53 deletions(-)\", \"git_head\": \"0cc393f6b9ffa6593b54da8880d0e27615ea99e4\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-11\"}",
+        "revision": 62,
+        "task_id": "C4P-11"
       },
       {
         "claim_id": null,
@@ -3722,14 +3785,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": null,
         "priority": 31,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 62,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"writable\", \"acceptance\"]",
         "title": "Wire real writable execution and guarded acceptance",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:45:21Z",
+        "version": 5
       },
       {
         "attention_reason": null,

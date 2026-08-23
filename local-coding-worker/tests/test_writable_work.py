@@ -95,6 +95,28 @@ class WritableWorkTests(unittest.TestCase):
         self.assertEqual((self.repo / "src/value.txt").read_text(encoding="utf-8"), "base\n")
         self.assertFalse((self.repo / "src/new.txt").exists())
 
+    def test_only_explicitly_approved_dirty_overlays_are_materialized(self) -> None:
+        (self.repo / "src/value.txt").write_text("approved dirty\n", encoding="utf-8")
+        (self.repo / "docs/note.txt").write_text("unrelated dirty\n", encoding="utf-8")
+        identity = capture_source_identity(self.repo)
+        with materialize_writable_workspace(
+            self.repo, identity, ["src"], [command("assert True")],
+            read_dependencies=["docs"], approved_overlays=["src/value.txt"],
+        ) as workspace:
+            self.assertEqual((workspace.path / "src/value.txt").read_text(), "approved dirty\n")
+            self.assertEqual((workspace.path / "docs/note.txt").read_text(), "note\n")
+
+    def test_result_recording_failure_reverses_accepted_patch(self) -> None:
+        _, artifact = self.prepare_artifact(worker_text="candidate\n")
+        def fail_recording(_result):
+            raise RuntimeError("durable result store unavailable")
+        with self.assertRaisesRegex(AcceptanceError, "result recording failed"):
+            accept_patch_artifact(
+                self.repo, artifact, [command("assert True")], result_recorder=fail_recording,
+            )
+        self.assertEqual((self.repo / "src/value.txt").read_text(), "base\n")
+        self.assertFalse((self.repo / "src/new.txt").exists())
+
 
 if __name__ == "__main__":
     unittest.main()

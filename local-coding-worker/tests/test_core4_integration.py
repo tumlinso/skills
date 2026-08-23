@@ -82,6 +82,8 @@ class Core4IntegrationTests(unittest.TestCase):
             " status=args[args.index('--status')+1]; changed=[args[i+1] for i,v in enumerate(args) if v=='--changed-path']; state={'state':status,'result':{'status':status,'changed_paths':changed}}; path.write_text(json.dumps(state)); data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':status,'result':state['result']}\n"
             "elif args[:2]==['child','status']:\n"
             " data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':state['state'],'result':state['result']}\n"
+            "elif len(args)>1 and args[0]=='child' and args[1] in {'accept','reject','stale','supersede'}:\n"
+            " target={'accept':'accepted','reject':'rejected','stale':'stale','supersede':'stale'}[args[1]]; state={'state':target,'result':state['result']}; path.write_text(json.dumps(state)); data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':target}\n"
             "elif args[:2]==['child','cancel']:\n"
             " state={'state':'canceled','result':None}; path.write_text(json.dumps(state)); data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':'canceled'}\n"
             "else: raise SystemExit(3)\n"
@@ -235,6 +237,25 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// baseline\n")
         self.assertEqual((self.root / "docs/note.txt").read_text(encoding="utf-8"), "concurrent user work\n")
         self.assertEqual(result["cuda"]["state"], "silent")
+
+    def test_v2_writable_runner_uses_approved_overlay_and_persists_reviewer_evidence(self) -> None:
+        (self.root / "docs/note.txt").write_text("unrelated user work\n", encoding="utf-8")
+        def runner(worktree: Path, request: dict[str, object]) -> dict[str, object]:
+            self.assertEqual((worktree / "docs/note.txt").read_text(), "stable\n")
+            (worktree / "src/kernel.cu").write_text("// real-path candidate\n", encoding="utf-8")
+            return {"format": "LOCAL-WORKER-REVIEW/1", "verdict": "pass"}
+        request = self.request("writable")
+        request.update(
+            format="CORE4-INTEGRATION-REQUEST/2", schema_version=2,
+            read_dependencies=["docs"], approved_overlays=[], execution={"backend": "real"},
+        )
+        request.pop("fake_changes")
+        result = self.controller(writable_runner=runner).run(request)
+        self.assertEqual((result["status"], result["child_state"]), ("accepted", "accepted"))
+        artifact_root = Path(result["artifact_root"])
+        self.assertTrue((artifact_root / "reviewer-evidence.json").is_file())
+        self.assertTrue((artifact_root / "acceptance-verification.json").is_file())
+        self.assertEqual((self.root / "docs/note.txt").read_text(), "unrelated user work\n")
 
 
 if __name__ == "__main__":

@@ -5,6 +5,8 @@ import json
 import os
 import subprocess
 import uuid
+import fcntl
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -73,8 +75,12 @@ def build_patch_artifact(workspace: WritableWorkspace, artifact_dir: str | Path,
     if not patch or not changed:
         raise AcceptanceError("worker produced no patch")
     destination = Path(artifact_dir).resolve()
+    common_raw = _git(workspace.primary_root, "rev-parse", "--git-common-dir").stdout.decode().strip()
+    common = Path(common_raw) if Path(common_raw).is_absolute() else workspace.primary_root / common_raw
+    common = common.resolve()
+    in_common = destination == common or common in destination.parents
     if (destination == workspace.path or workspace.path in destination.parents
-            or destination == workspace.primary_root or workspace.primary_root in destination.parents):
+            or (destination == workspace.primary_root or workspace.primary_root in destination.parents) and not in_common):
         raise AcceptanceError("patch artifacts must live outside primary and detached worktrees")
     destination.mkdir(parents=True, exist_ok=True)
     artifact_id = str(uuid.uuid4())
@@ -99,8 +105,30 @@ def build_patch_artifact(workspace: WritableWorkspace, artifact_dir: str | Path,
 
 
 def accept_patch_artifact(repo_root: str | Path, artifact: dict[str, Any],
-                          current_source_commands: list[object]) -> dict[str, Any]:
+                          current_source_commands: list[object], *,
+                          result_recorder: Any | None = None) -> dict[str, Any]:
     primary = Path(repo_root).resolve()
+    with _acceptance_locks(primary, artifact.get("write_scopes") or []):
+        return _accept_patch_locked(primary, artifact, current_source_commands, result_recorder=result_recorder)
+
+
+@contextmanager
+def _acceptance_locks(primary: Path, scopes: list[str]):
+    common = _git(primary, "rev-parse", "--git-common-dir").stdout.decode().strip()
+    root = Path(common) if Path(common).is_absolute() else primary / common
+    lock_root = root.resolve() / "local-coding-worker/locks"
+    lock_root.mkdir(parents=True, exist_ok=True)
+    names = ["acceptance", *["scope-" + hashlib.sha256(item.encode()).hexdigest() for item in normalize_scopes(scopes)]]
+    with ExitStack() as stack:
+        streams = [stack.enter_context((lock_root / f"{name}.lock").open("a+b")) for name in sorted(names)]
+        for stream in streams: fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+        try: yield
+        finally:
+            for stream in reversed(streams): fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+
+
+def _accept_patch_locked(primary: Path, artifact: dict[str, Any], current_source_commands: list[object], *,
+                         result_recorder: Any | None = None) -> dict[str, Any]:
     capture_source_identity = _runtime_source()
     expected = artifact.get("baseline_source_identity") or {}
     current = capture_source_identity(primary)
@@ -132,7 +160,7 @@ def accept_patch_artifact(repo_root: str | Path, artifact: dict[str, Any],
             raise AcceptanceError("acceptance gate failed and patch rollback is unsafe") from error
         _git(primary, "apply", "--reverse", "--binary", "-", input_data=patch)
         raise AcceptanceError("current-source acceptance gate failed; patch was reversed") from error
-    return {
+    result = {
         "format": "LOCAL-WORKER-ACCEPTANCE/1",
         "accepted": True,
         "artifact_id": artifact.get("artifact_id"),
@@ -142,3 +170,16 @@ def accept_patch_artifact(repo_root: str | Path, artifact: dict[str, Any],
         "verification": verification,
         "parent_task_completed": False,
     }
+    if result_recorder is not None:
+        try:
+            recorded = result_recorder(result)
+            if recorded is False:
+                raise AcceptanceError("result recorder declined the accepted patch")
+        except Exception as error:
+            reversed_patch = _git(primary, "apply", "--reverse", "--check", "--binary", "-", input_data=patch, check=False)
+            if reversed_patch.returncode != 0:
+                raise AcceptanceError("result recording failed and patch rollback is unsafe") from error
+            _git(primary, "apply", "--reverse", "--binary", "-", input_data=patch)
+            raise AcceptanceError("result recording failed; accepted patch was reversed") from error
+        result["result_recorded"] = True
+    return result

@@ -52,6 +52,10 @@ def normalize_scopes(values: Iterable[str]) -> list[str]:
     return result
 
 
+def _inside(path: str, scope: str) -> bool:
+    return path == scope or path.startswith(scope + "/")
+
+
 def _content_hash(path: Path) -> str | None:
     if path.is_symlink():
         return hashlib.sha256(b"symlink\0" + os.readlink(path).encode()).hexdigest()
@@ -81,7 +85,8 @@ class WritableWorkspace:
 
 
 def _materialize(primary: Path, expected_identity: object, write_scopes: Iterable[str],
-                 baseline_commands: Iterable[object]) -> WritableWorkspace:
+                 baseline_commands: Iterable[object], *, read_dependencies: Iterable[str] = (),
+                 approved_overlays: Iterable[str] | None = None) -> WritableWorkspace:
     capture_source_identity, normalize_source_identity = _runtime_source()
     expected = normalize_source_identity(expected_identity)
     current = capture_source_identity(primary)
@@ -91,12 +96,23 @@ def _materialize(primary: Path, expected_identity: object, write_scopes: Iterabl
         raise WorkspaceError("primary source identity is stale before materialization")
     if expected["git_head"] is None:
         raise WorkspaceError("writable work requires an existing Git commit")
-    scopes = normalize_scopes(write_scopes)
+    scopes = normalize_scopes(list(write_scopes))
+    read_values = list(read_dependencies)
+    approved_values = None if approved_overlays is None else list(approved_overlays)
+    reads = normalize_scopes(read_values) if read_values else []
+    approved = None if approved_values is None else (normalize_scopes(approved_values) if approved_values else [])
+    if approved is not None:
+        denied = [item for item in approved if not any(_inside(item, root) for root in [*scopes, *reads])]
+        if denied:
+            raise WorkspaceError(f"approved overlays exceed write scopes and read dependencies: {denied}")
     temporary = Path(tempfile.mkdtemp(prefix="local-worker-writable-"))
     worktree = temporary / "worktree"
     try:
         _git(primary, "worktree", "add", "--detach", str(worktree), str(expected["git_head"]))
-        tracked_patch = _git(primary, "diff", "--binary", "--full-index", str(expected["git_head"])).stdout
+        diff_args = ["diff", "--binary", "--full-index", str(expected["git_head"])]
+        if approved:
+            diff_args.extend(["--", *approved])
+        tracked_patch = b"" if approved == [] else _git(primary, *diff_args).stdout
         if tracked_patch:
             _git(worktree, "apply", "--binary", "--whitespace=nowarn", "-", input_data=tracked_patch)
         untracked = _git(primary, "ls-files", "--others", "--exclude-standard", "-z").stdout.split(b"\0")
@@ -104,13 +120,19 @@ def _materialize(primary: Path, expected_identity: object, write_scopes: Iterabl
             if not encoded:
                 continue
             relative = encoded.decode("utf-8", errors="surrogateescape")
+            if approved is not None and not any(_inside(relative, item) or _inside(item, relative) for item in approved):
+                continue
             source, destination = primary / relative, worktree / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             if source.is_symlink():
                 destination.symlink_to(os.readlink(source))
             elif source.is_file():
                 shutil.copy2(source, destination)
-        for relative in expected["dirty_paths"]:
+        overlay_paths = expected["dirty_paths"] if approved is None else [
+            relative for relative in expected["dirty_paths"]
+            if any(_inside(relative, item) or _inside(item, relative) for item in approved)
+        ]
+        for relative in overlay_paths:
             if _content_hash(primary / relative) != _content_hash(worktree / relative):
                 raise WorkspaceError(f"dirty overlay mismatch: {relative}")
         index_path = temporary / "baseline.index"
@@ -135,9 +157,12 @@ def _materialize(primary: Path, expected_identity: object, write_scopes: Iterabl
 
 @contextmanager
 def materialize_writable_workspace(repo_root: str | Path, source_identity: object,
-                                   write_scopes: Iterable[str], baseline_commands: Iterable[object]) -> Iterator[WritableWorkspace]:
+                                   write_scopes: Iterable[str], baseline_commands: Iterable[object], *,
+                                   read_dependencies: Iterable[str] = (),
+                                   approved_overlays: Iterable[str] | None = None) -> Iterator[WritableWorkspace]:
     primary = Path(repo_root).resolve()
-    workspace = _materialize(primary, source_identity, write_scopes, baseline_commands)
+    workspace = _materialize(primary, source_identity, write_scopes, baseline_commands,
+                             read_dependencies=read_dependencies, approved_overlays=approved_overlays)
     try:
         yield workspace
     finally:

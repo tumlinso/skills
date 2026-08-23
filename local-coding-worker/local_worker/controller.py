@@ -9,7 +9,6 @@ import sys
 import tempfile
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
-import time
 import uuid
 
 from .acceptance import AcceptanceError, StaleSourceError, accept_patch_artifact, build_patch_artifact
@@ -152,6 +151,7 @@ class IntegrationController:
         environment: dict[str, str] | None = None,
         before_accept: Callable[[Path, dict[str, Any]], None] | None = None,
         terminal_runner: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+        writable_runner: Callable[[Path, dict[str, Any]], dict[str, Any]] | None = None,
     ) -> None:
         skills_root = Path(__file__).resolve().parents[2]
         self.todo_cli = Path(todo_cli or skills_root / "todo-orchestrator/scripts/todo.py")
@@ -161,6 +161,7 @@ class IntegrationController:
         self.environment = dict(environment or {})
         self.before_accept = before_accept
         self.terminal_runner = terminal_runner
+        self.writable_runner = writable_runner
 
     def _run_json(self, argv: list[str], *, cwd: Path, environment: dict[str, str] | None = None) -> dict[str, Any]:
         env = dict(os.environ)
@@ -203,14 +204,40 @@ class IntegrationController:
         return child
 
     def _report(self, root: Path, child_token: str, status: str, summary: str,
-                changed_paths: list[str] | None = None) -> dict[str, Any]:
+                changed_paths: list[str] | None = None,
+                references: dict[str, str] | None = None) -> dict[str, Any]:
         argv = [
             "child", "report", "--child-token", child_token,
             "--status", status, "--summary", summary[:500],
         ]
         for path in changed_paths or []:
             argv.extend(["--changed-path", path])
+        for name, value in sorted((references or {}).items()):
+            argv.extend([f"--{name.replace('_', '-')}-ref", value])
         return self._todo(root, *argv)
+
+    @staticmethod
+    def _candidate_root(root: Path, child_id: str) -> Path:
+        process = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"], cwd=root, text=True,
+            capture_output=True, check=False,
+        )
+        if process.returncode != 0:
+            raise IntegrationError("cannot resolve Git common directory for candidate evidence")
+        common = Path(process.stdout.strip())
+        if not common.is_absolute():
+            common = root / common
+        destination = common.resolve() / "local-coding-worker/candidates" / child_id
+        destination.mkdir(parents=True, exist_ok=True)
+        return destination
+
+    @staticmethod
+    def _write_json(path: Path, value: object) -> str:
+        encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+        temporary = path.with_name(path.name + f".{uuid.uuid4().hex}.tmp")
+        temporary.write_text(encoded, encoding="utf-8")
+        os.replace(temporary, path)
+        return str(path)
 
     def _status(self, request: dict[str, Any], child_id: str) -> dict[str, Any]:
         return self._todo(
@@ -299,43 +326,85 @@ class IntegrationController:
         root = Path(request["repo_root"])
         identity = _runtime_source()(root)
         scopes = normalize_scopes(request["scopes"])
-        changes = _object(request["fake_changes"], "fake_changes")
+        changes = _object(request.get("fake_changes", {}), "fake_changes")
         normalized_changes = {_relative(path): content for path, content in changes.items()}
         if any(not isinstance(content, str) for content in normalized_changes.values()):
             raise IntegrationError("fake_changes values must be UTF-8 text strings")
         denied = [path for path in normalized_changes if not any(_inside(path, scope) for scope in scopes)]
         if denied:
             raise IntegrationError(f"fake changes exceed child scopes: {sorted(denied)}")
-        with tempfile.TemporaryDirectory(prefix="core4-patch-artifacts-") as artifact_root:
-            with materialize_writable_workspace(root, identity, scopes, request["baseline_commands"]) as workspace:
+        artifact_root = self._candidate_root(root, str(child["child_execution_id"]))
+        with materialize_writable_workspace(
+                root, identity, scopes, request["baseline_commands"],
+                read_dependencies=request.get("read_dependencies", []),
+                approved_overlays=request.get("approved_overlays")) as workspace:
+            reviewer = {}
+            if self.writable_runner is not None:
+                reviewer = _object(self.writable_runner(workspace.path, request), "writable runner result")
+            else:
                 for relative, content in sorted(normalized_changes.items()):
                     destination = workspace.path / relative
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     destination.write_text(content, encoding="utf-8")
-                external = require_verification(workspace.path, request["verification_commands"], phase="external")
-                artifact = build_patch_artifact(workspace, artifact_root, external)
-            self._report(root, str(child["child_token"]), "succeeded", "Verified writable fake-backend patch.", artifact["changed_paths"])
-            if self.before_accept is not None:
-                self.before_accept(root, artifact)
-            try:
-                acceptance = accept_patch_artifact(root, artifact, request["acceptance_commands"])
-            except StaleSourceError:
-                return {
-                    "status": "stale_patch", "summary": "Primary source changed before guarded acceptance.",
-                    "changed_paths": [], "accepted": False,
-                    "cuda": {"state": "silent", "campaign_ids": []},
-                }
-            except AcceptanceError as error:
-                return {
-                    "status": "acceptance_failed", "summary": str(error)[:500],
-                    "changed_paths": [], "accepted": False,
-                    "cuda": {"state": "silent", "campaign_ids": []},
-                }
+            external = require_verification(workspace.path, request["verification_commands"], phase="external")
+            artifact = build_patch_artifact(workspace, artifact_root, external)
+        source_path = Path(artifact_root) / "source-identity.json"
+        external_path = Path(artifact_root) / "candidate-verification.json"
+        reviewer_path = Path(artifact_root) / "reviewer-evidence.json"
+        acceptance_path = Path(artifact_root) / "acceptance-verification.json"
+        self._write_json(source_path, identity)
+        self._write_json(external_path, external)
+        references = {
+            "source_identity": str(source_path),
+            "patch": str(artifact["patch"]["path"]),
+            "candidate_verification": str(external_path),
+            "acceptance_verification": str(acceptance_path),
+        }
+        if reviewer:
+            self._write_json(reviewer_path, reviewer)
+            references["reviewer_evidence"] = str(reviewer_path)
+        self._report(
+            root, str(child["child_token"]), "ready_for_acceptance",
+            "Externally verified writable candidate is ready for guarded acceptance.",
+            artifact["changed_paths"], references,
+        )
+        if self.before_accept is not None:
+            self.before_accept(root, artifact)
+        try:
+            def record(result: dict[str, Any]) -> bool:
+                self._write_json(acceptance_path, result)
+                if request["gates"]:
+                    return True
+                self._todo(
+                    root, "child", "accept", str(child["child_execution_id"]),
+                    "--claim-token", request["parent_claim_token"],
+                )
+                return True
+            acceptance = accept_patch_artifact(
+                root, artifact, request["acceptance_commands"], result_recorder=record,
+            )
+        except StaleSourceError:
+            self._todo(root, "child", "stale", str(child["child_execution_id"]),
+                       "--claim-token", request["parent_claim_token"])
+            return {
+                "status": "stale_patch", "summary": "Primary source changed before guarded acceptance.",
+                "changed_paths": [], "accepted": False, "artifact_root": str(artifact_root),
+                "cuda": {"state": "silent", "campaign_ids": []},
+            }
+        except AcceptanceError as error:
+            self._todo(root, "child", "reject", str(child["child_execution_id"]),
+                       "--claim-token", request["parent_claim_token"])
+            return {
+                "status": "acceptance_failed", "summary": str(error)[:500],
+                "changed_paths": [], "accepted": False, "artifact_root": str(artifact_root),
+                "cuda": {"state": "silent", "campaign_ids": []},
+            }
         return {
             "status": "accepted",
             "summary": "Externally verified patch accepted against current canonical source.",
             "changed_paths": list(acceptance["changed_paths"]),
             "accepted": True,
+            "artifact_root": str(artifact_root),
             "cuda": self._cuda_discovery(request, acceptance),
         }
 
@@ -375,6 +444,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
     }
     readonly = {"role", "target", "intent", "budget_tokens", "max_items"} | ({"execution"} if version == 2 else set())
     writable = {"fake_changes", "baseline_commands", "verification_commands", "acceptance_commands"}
+    if version == 2:
+        writable |= {"read_dependencies", "approved_overlays", "execution"}
     if version not in {1, 2} or request.get("format") != f"CORE4-INTEGRATION-REQUEST/{version}":
         raise IntegrationError("integration request must use matching CORE4-INTEGRATION-REQUEST/1 or /2")
     mode = request.get("mode")
@@ -382,7 +453,10 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
         raise IntegrationError("integration mode must be readonly or writable")
     allowed = common | (readonly if mode == "readonly" else writable)
     unknown = sorted(set(request) - allowed)
-    missing = sorted((allowed - {"cuda_registry"}) - set(request))
+    optional = {"cuda_registry"}
+    if mode == "writable" and version == 2:
+        optional |= {"fake_changes", "read_dependencies", "approved_overlays", "execution"}
+    missing = sorted((allowed - optional) - set(request))
     if unknown or missing:
         raise IntegrationError(f"integration request fields invalid: missing={missing} extra={unknown}")
     root = Path(str(request["repo_root"])).resolve()
@@ -419,10 +493,19 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
             if execution.get("backend") not in {"fake", "real"}:
                 raise IntegrationError("execution backend must be fake or real")
     else:
-        _object(request["fake_changes"], "fake_changes")
+        _object(request.get("fake_changes", {}), "fake_changes")
         for name in ("baseline_commands", "verification_commands", "acceptance_commands"):
             if not isinstance(request[name], list) or not request[name]:
                 raise IntegrationError(f"{name} must be a non-empty command list")
+        if version == 2:
+            for name in ("read_dependencies", "approved_overlays"):
+                values = request.get(name, [])
+                if not isinstance(values, list) or any(not isinstance(item, str) or not item for item in values):
+                    raise IntegrationError(f"{name} must be a list of non-empty strings")
+            if "execution" in request:
+                execution = _object(request["execution"], "execution")
+                if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config"}:
+                    raise IntegrationError("execution contains unknown fields")
     registry = request.get("cuda_registry")
     if registry is not None:
         registry_path = Path(str(registry))
