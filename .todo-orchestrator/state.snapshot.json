@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:31:23Z",
+  "generated_at": "2026-08-23T19:33:47Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 50,
+  "project_revision": 54,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -621,6 +621,46 @@
         "revision": 50,
         "seq": 50,
         "timestamp": "2026-08-23T19:31:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-09",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 51,
+        "seq": 51,
+        "timestamp": "2026-08-23T19:31:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-QWEN-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-QWEN-HARNESS\"}",
+        "revision": 52,
+        "seq": 52,
+        "timestamp": "2026-08-23T19:33:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-QWEN-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"66de6eac-aa33-4752-97ea-30459125f03a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 53,
+        "seq": 53,
+        "timestamp": "2026-08-23T19:33:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-09",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 54,
+        "seq": 54,
+        "timestamp": "2026-08-23T19:33:47Z"
       }
     ],
     "evidence": [
@@ -674,6 +714,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"730d1d1185710bd56dd49880cce797deb5b502e5668bb02a5897ec2923d540b4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"scripts/core4_extension_validate.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-02.md\"], \"files\": [], \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"recorded_git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 6}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/6690d8fe-3719-4f80-9a71-debddc647e24",
         "revision": 8,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:33:47Z",
+        "gate_id": "C4P-GATE-QWEN-HARNESS",
+        "id": "66de6eac-aa33-4752-97ea-30459125f03a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"qwen-harness\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"24115da6e4b8804112f608e2dcb5d433a84210f70127613fa2715caa5e832efd\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"qwen-harness\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"e3750804caa20f644a3090b5b22af203ebfca217a50c403d4c1e517ecac53d3c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/schemas/harness-policy-v2.schema.json\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_telemetry.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-09.md\"], \"files\": [], \"git_head\": \"aef12e79b85785acc888d61079c040225ecbadfc\", \"interfaces\": [], \"recorded_git_head\": \"aef12e79b85785acc888d61079c040225ecbadfc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 52}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/66de6eac-aa33-4752-97ea-30459125f03a",
+        "revision": 53,
         "status": "passed"
       },
       {
@@ -929,14 +982,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"qwen-harness\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600, \"track_git_head\": true}",
         "id": "C4P-GATE-QWEN-HARNESS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "24115da6e4b8804112f608e2dcb5d433a84210f70127613fa2715caa5e832efd",
+        "last_run_at": "2026-08-23T19:33:47Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 53,
+        "status": "passed",
         "task_id": "C4P-09",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1127,6 +1180,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/model_cache.py\", \"local-coding-worker/references/model-cache.md\", \"local-coding-worker/schemas/model-cache-v1.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_model_cache.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-MODEL-CACHE\", \"last_run_at\": \"2026-08-23T19:26:39Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 ++++++++++++++++++----\\n local-coding-worker/config/production-profile.toml |  1 +\\n local-coding-worker/scripts/local_worker.py        | 46 ++++++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-07.md                                    |  6 +-\\n 6 files changed, 107 insertions(+), 19 deletions(-)\", \"git_head\": \"62de1c31fedd09cb5ab06325b22a3d7bd49d2a1e\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-cache-v1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"Implemented persistent content-addressed SSD model cache with atomic verified installs, quick/full verification, activation, guarded removal, leases, CLI, schema, documentation, and focused tests.\", \"resources\": [], \"task_id\": \"C4P-07\"}",
         "revision": 42,
         "task_id": "C4P-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:33:47Z",
+        "id": "f4b2bafc-2be7-44e5-af55-7d1cb8c37229",
+        "kind": "complete",
+        "note": "Constrained Qwen Code 0.21.15 with ephemeral QWEN_HOME, safe mode, sandbox, plan approval, strict read-only allowlist, explicit disabled customizations, bounded turns/wall/tool calls, no recursive agents, nested telemetry, and normalized NEEDS_CODEX/budget/preemption outcomes.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/schemas/harness-policy-v2.schema.json\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_telemetry.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-QWEN-HARNESS\", \"last_run_at\": \"2026-08-23T19:33:47Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 ++++++++++++++++++----\\n local-coding-worker/local_worker/harnesses/base.py |  5 +-\\n .../local_worker/harnesses/qwen_code.py            | 36 +++++++++++-\\n local-coding-worker/local_worker/telemetry.py      | 32 +++++++++++\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-09.md                                    |  6 +-\\n 7 files changed, 130 insertions(+), 22 deletions(-)\", \"git_head\": \"aef12e79b85785acc888d61079c040225ecbadfc\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-harness-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Constrained Qwen Code 0.21.15 with ephemeral QWEN_HOME, safe mode, sandbox, plan approval, strict read-only allowlist, explicit disabled customizations, bounded turns/wall/tool calls, no recursive agents, nested telemetry, and normalized NEEDS_CODEX/budget/preemption outcomes.\", \"resources\": [], \"task_id\": \"C4P-09\"}",
+        "revision": 54,
+        "task_id": "C4P-09"
       },
       {
         "claim_id": null,
@@ -3552,14 +3615,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 10,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 54,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"qwen\", \"telemetry\", \"confinement\"]",
         "title": "Constrain Qwen Code and correct harness telemetry",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:33:47Z",
+        "version": 5
       },
       {
         "attention_reason": null,

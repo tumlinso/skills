@@ -14,6 +14,38 @@ from .policy import DelegationPolicy
 FORMAT = "CORE4-POLICY-REPORT/1"
 
 
+def qwen_harness_telemetry(records: object) -> dict[str, Any]:
+    """Compact nested-event telemetry; Qwen result statistics remain evidence."""
+    tool_names: list[str] = []
+    terminal_reason = ""
+    stats: dict[str, Any] = {}
+
+    def visit(value: object) -> None:
+        nonlocal terminal_reason, stats
+        if isinstance(value, list):
+            for item in value: visit(item)
+        elif isinstance(value, dict):
+            if value.get("type") == "tool_use" and value.get("name"):
+                tool_names.append(str(value["name"]))
+            if value.get("type") == "result":
+                terminal_reason = str(value.get("subtype") or value.get("result") or "")
+                if isinstance(value.get("stats"), dict): stats = dict(value["stats"])
+            for item in value.values(): visit(item)
+
+    visit(records)
+    reported = stats.get("tools", {}).get("totalCalls") if isinstance(stats.get("tools"), dict) else None
+    tool_calls = max(len(tool_names), int(reported or 0))
+    lower = terminal_reason.lower()
+    return {
+        "tool_calls": tool_calls,
+        "tool_names": sorted(set(tool_names)),
+        "terminal_reason": terminal_reason[:500],
+        "budget_exhausted": any(token in lower for token in ("budget", "max session turns", "max tool", "wall-clock")),
+        "preempted": "preempt" in lower or "cancel" in lower,
+        "stats": stats,
+    }
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:

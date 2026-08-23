@@ -84,6 +84,9 @@ class OneShotHarnessAdapter:
     def parse_output(self, stdout: str) -> tuple[str, dict[str, Any]]:
         raise NotImplementedError
 
+    def normalize_outcome(self, text: str, usage: dict[str, Any]) -> dict[str, Any]:
+        return {"status": "succeeded"}
+
     def run(self, handle: str, request: dict[str, Any]) -> dict[str, Any]:
         session = self._session(handle)
         prompt = request.get("prompt")
@@ -122,7 +125,7 @@ class OneShotHarnessAdapter:
         text, provider_usage = self.parse_output(stdout)
         session["usage"]["output_chars"] += len(text)
         return {
-            "status": "succeeded", "text": text[:20_000], "usage": provider_usage,
+            **self.normalize_outcome(text, provider_usage), "text": text[:20_000], "usage": provider_usage,
             "duration_ms": round(duration, 3), "raw_output_omitted_chars": max(len(text) - 20_000, 0),
         }
 
