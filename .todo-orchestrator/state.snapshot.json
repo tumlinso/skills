@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:26:39Z",
+  "generated_at": "2026-08-23T19:28:53Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 42,
+  "project_revision": 46,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -541,6 +541,46 @@
         "revision": 42,
         "seq": 42,
         "timestamp": "2026-08-23T19:26:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-08",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 43,
+        "seq": 43,
+        "timestamp": "2026-08-23T19:26:46Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-MODEL-SERVICE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-MODEL-SERVICE\"}",
+        "revision": 44,
+        "seq": 44,
+        "timestamp": "2026-08-23T19:28:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-MODEL-SERVICE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"ced43e4e-1590-4e8d-bc27-42587bc16ae5\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 45,
+        "seq": 45,
+        "timestamp": "2026-08-23T19:28:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-08",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 46,
+        "seq": 46,
+        "timestamp": "2026-08-23T19:28:53Z"
       }
     ],
     "evidence": [
@@ -607,6 +647,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-runtime\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"43d6934e2b383dba990c4ba3bfa09d93544bfaf86088a4c5ecce7d6e97d19f00\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-runtime\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"97709a650ef1474fd0b556cda6e8c923fcc1d9345f2b2246434a5f94cd0970cd\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_host_coordination.py\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/topology.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-04.md\"], \"files\": [], \"git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\", \"interfaces\": [], \"recorded_git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 32}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/c8dabf83-ff89-4f4d-8f28-2fc3886c0076",
         "revision": 33,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:28:53Z",
+        "gate_id": "C4P-GATE-MODEL-SERVICE",
+        "id": "ced43e4e-1590-4e8d-bc27-42587bc16ae5",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"model-service\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"671d2a91cc001a66a93322c7ab427751f375ab6146bcad894a39974f5c2eaf0b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"model-service\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"2a0880eedac252e3a3a8e1299569018c62d3c123028b0e894593923c70c21af5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/schemas/model-service-profile-v2.schema.json\", \"local-coding-worker/tests/test_llama_cpp_server.py\", \"local-coding-worker/tests/test_service.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-08.md\"], \"files\": [], \"git_head\": \"bf647732365326b78c966488d51067dd1a46d243\", \"interfaces\": [], \"recorded_git_head\": \"bf647732365326b78c966488d51067dd1a46d243\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 44}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/ced43e4e-1590-4e8d-bc27-42587bc16ae5",
+        "revision": 45,
         "status": "passed"
       }
     ],
@@ -797,14 +850,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"model-service\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600, \"track_git_head\": true}",
         "id": "C4P-GATE-MODEL-SERVICE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "671d2a91cc001a66a93322c7ab427751f375ab6146bcad894a39974f5c2eaf0b",
+        "last_run_at": "2026-08-23T19:28:53Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 45,
+        "status": "passed",
         "task_id": "C4P-08",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -971,6 +1024,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".../core4-production-extension.plan.json           |   2 +-\\n .todo-orchestrator/state.snapshot.json             | 376 ++++++++++++---------\\n todo-status.md                                     |   6 +-\\n todos.md                                           |   6 +-\\n todos/c4p-00.md                                    |   4 +-\\n todos/c4p-01.md                                    |   6 +-\\n todos/c4p-02.md                                    |   6 +-\\n todos/c4p-03.md                                    |   6 +-\\n todos/c4p-04.md                                    |   4 +-\\n todos/c4p-05.md                                    |   4 +-\\n todos/c4p-06.md                                    |   4 +-\\n todos/c4p-07.md                                    |   4 +-\\n todos/c4p-08.md                                    |   4 +-\\n todos/c4p-09.md                                    |   4 +-\\n todos/c4p-10.md                                    |   4 +-\\n todos/c4p-11.md                                    |   4 +-\\n todos/c4p-12.md                                    |   4 +-\\n todos/c4p-13.md                                    |   4 +-\\n todos/c4p-14.md                                    |   4 +-\\n todos/c4p-15.md                                    |   4 +-\\n todos/c4p-16.md                                    |   4 +-\\n todos/c4p-17.md                                    |   4 +-\\n todos/c4p-18.md                                    |   4 +-\\n todos/c4p-19.md                                    |   4 +-\\n todos/c4p-20.md                                    |   4 +-\\n todos/c4p-21.md                                    |   4 +-\\n todos/c4p-22.md                                    |   4 +-\\n todos/c4p-23.md                                    |   4 +-\\n todos/c4p-24.md                                    |   4 +-\\n 29 files changed, 291 insertions(+), 205 deletions(-)\", \"git_head\": \"3bca0462e8e3bcf77f9240414a86de1be3dbeab2\", \"interfaces\": [], \"note\": \"Reconfirmed existing archive /home/tumlinson/.agents/skills/.git/core4-production-extension/archive/20260823T185814Z-pre-extension after the schema-path-only plan replay.\", \"resources\": [], \"task_id\": \"C4P-01\"}",
         "revision": 15,
         "task_id": "C4P-01"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:28:53Z",
+        "id": "75d7820a-21e6-4a4b-af3b-932858dcf741",
+        "kind": "complete",
+        "note": "Added versioned llama.cpp model-service profiles, detected launch flags, runtime GPU allocation, health-gated startup, retained logs, process-group cancellation, idle eviction, and quiescence with focused compatibility evidence.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/schemas/model-service-profile-v2.schema.json\", \"local-coding-worker/tests/test_llama_cpp_server.py\", \"local-coding-worker/tests/test_service.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-MODEL-SERVICE\", \"last_run_at\": \"2026-08-23T19:28:53Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 +++++++++++++---\\n .../local_worker/servers/llama_cpp.py              | 86 +++++++++++++++++++---\\n local-coding-worker/local_worker/service.py        | 27 +++++++\\n local-coding-worker/references/resource-policy.md  |  7 ++\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-08.md                                    |  6 +-\\n 7 files changed, 172 insertions(+), 27 deletions(-)\", \"git_head\": \"bf647732365326b78c966488d51067dd1a46d243\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-service-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Added versioned llama.cpp model-service profiles, detected launch flags, runtime GPU allocation, health-gated startup, retained logs, process-group cancellation, idle eviction, and quiescence with focused compatibility evidence.\", \"resources\": [], \"task_id\": \"C4P-08\"}",
+        "revision": 46,
+        "task_id": "C4P-08"
       },
       {
         "claim_id": null,
@@ -3404,14 +3467,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 20,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 46,
+        "status": "done",
         "tags_json": "[\"local-worker\", \"llama.cpp\", \"service\"]",
         "title": "Complete llama.cpp model-service profiles and lifecycle",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:28:53Z",
+        "version": 5
       },
       {
         "attention_reason": null,

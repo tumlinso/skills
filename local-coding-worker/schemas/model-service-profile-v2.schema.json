@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "CORE4-MODEL-SERVICE/2",
+  "type": "object",
+  "required": ["format", "model_sha256", "allocated_gpu_uuids", "split_mode", "context_size", "port", "log_path", "startup_timeout_seconds", "idle_ttl_seconds"],
+  "properties": {
+    "format": {"const": "CORE4-MODEL-SERVICE/2"},
+    "model_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "allocated_gpu_uuids": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+    "split_mode": {"enum": ["none", "layer", "row"]},
+    "tensor_split": {"type": "array", "items": {"type": "number", "exclusiveMinimum": 0}},
+    "main_gpu": {"type": "integer", "minimum": 0},
+    "context_size": {"type": "integer", "minimum": 1},
+    "kv_cache_type_k": {"type": "string"},
+    "kv_cache_type_v": {"type": "string"},
+    "fit": {"type": "boolean"},
+    "cpu_threads": {"type": "integer", "minimum": 1},
+    "numa_policy": {"type": "string"},
+    "port": {"type": "integer", "minimum": 1, "maximum": 65535},
+    "log_path": {"type": "string", "minLength": 1},
+    "startup_timeout_seconds": {"type": "number", "exclusiveMinimum": 0},
+    "idle_ttl_seconds": {"type": "number", "minimum": 0},
+    "gpu_layers": {"type": "integer"}
+  },
+  "additionalProperties": false
+}

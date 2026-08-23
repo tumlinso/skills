@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 import subprocess
+import signal
 import time
 import urllib.error
 import urllib.request
@@ -33,11 +34,23 @@ class LlamaCppServerAdapter:
     adapter_name = "llama.cpp-server"
 
     def __init__(self, binary: str = "llama-server", *, process_factory=subprocess.Popen,
-                 transport: Callable[[str, str, dict[str, Any] | None, float], tuple[int, dict[str, Any]]] = _http_json) -> None:
+                 transport: Callable[[str, str, dict[str, Any] | None, float], tuple[int, dict[str, Any]]] = _http_json,
+                 help_runner: Callable[..., Any] = subprocess.run,
+                 sleeper: Callable[[float], None] = time.sleep) -> None:
         self.binary = binary
         self.process_factory = process_factory
         self.transport = transport
+        self.help_runner = help_runner
+        self.sleeper = sleeper
         self._servers: dict[str, dict[str, Any]] = {}
+        self._supported_flags: set[str] | None = None
+
+    def _flags(self, binary: str) -> set[str]:
+        if self._supported_flags is None:
+            result = self.help_runner([binary, "--help"], capture_output=True, text=True, timeout=10, check=False)
+            text = f"{getattr(result, 'stdout', '')}\n{getattr(result, 'stderr', '')}"
+            self._supported_flags = {word.rstrip(",=") for word in text.split() if word.startswith("--")}
+        return self._supported_flags
 
     def _resolved_binary(self) -> str | None:
         if os.path.sep in self.binary:
@@ -72,18 +85,62 @@ class LlamaCppServerAdapter:
         port = int(context.get("port", 8080))
         if not 1 <= port <= 65535:
             raise AdapterError("llama.cpp port is invalid")
+        profile = dict(context.get("service_profile") or {})
+        if profile and profile.get("format") != "CORE4-MODEL-SERVICE/2":
+            raise AdapterError("unsupported model-service profile format")
+        flags = self._flags(binary)
         argv = [binary, "--model", str(model), "--host", host, "--port", str(port)]
-        if context.get("ctx_size"):
-            argv.extend(["--ctx-size", str(int(context["ctx_size"]))])
-        if context.get("gpu_layers") is not None:
-            argv.extend(["--n-gpu-layers", str(int(context["gpu_layers"]))])
-        process = self.process_factory(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, text=True)
+        options = {
+            "--ctx-size": profile.get("context_size", context.get("ctx_size")),
+            "--n-gpu-layers": profile.get("gpu_layers", context.get("gpu_layers")),
+            "--split-mode": profile.get("split_mode"),
+            "--tensor-split": profile.get("tensor_split"),
+            "--main-gpu": profile.get("main_gpu"),
+            "--cache-type-k": profile.get("kv_cache_type_k"),
+            "--cache-type-v": profile.get("kv_cache_type_v"),
+            "--numa": profile.get("numa_policy"),
+            "--threads": profile.get("cpu_threads"),
+        }
+        for flag, value in options.items():
+            if value is not None and flag in flags:
+                if isinstance(value, list):
+                    value = ",".join(str(item) for item in value)
+                argv.extend([flag, str(value)])
+        if profile.get("fit") and "--fit" in flags:
+            argv.append("--fit")
+        log_path = Path(str(profile.get("log_path") or context.get("log_path") or os.devnull)).resolve()
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        log_stream = open(log_path, "a", encoding="utf-8")
+        environment = os.environ.copy()
+        gpu_uuids = profile.get("allocated_gpu_uuids") or context.get("allocated_gpu_uuids")
+        if gpu_uuids:
+            environment["CUDA_VISIBLE_DEVICES"] = ",".join(str(item) for item in gpu_uuids)
+        process = self.process_factory(argv, stdout=log_stream, stderr=subprocess.STDOUT, text=True,
+                                       env=environment, start_new_session=True)
         handle = str(uuid.uuid4())
         self._servers[handle] = {
             "process": process, "base_url": f"http://{host}:{port}", "accepting": True,
-            "evicted": False, "canceled": set(),
+            "evicted": False, "canceled": set(), "log_stream": log_stream, "log_path": str(log_path),
+            "profile": profile,
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
+        timeout = float(profile.get("startup_timeout_seconds", context.get("startup_timeout_seconds", 0)))
+        if timeout > 0:
+            deadline = time.monotonic() + timeout
+            while True:
+                if process.poll() is not None:
+                    self.evict(handle)
+                    raise AdapterError(f"llama-server exited during startup; log: {log_path}")
+                try:
+                    status, _ = self.transport("GET", f"http://{host}:{port}/health", None, 2.0)
+                except (OSError, urllib.error.URLError):
+                    status = 0
+                if status == 200:
+                    break
+                if time.monotonic() >= deadline:
+                    self.evict(handle)
+                    raise AdapterError(f"llama-server startup timed out; log: {log_path}")
+                self.sleeper(min(0.1, timeout))
         return handle
 
     def _server(self, handle: str) -> dict[str, Any]:
@@ -153,14 +210,25 @@ class LlamaCppServerAdapter:
         server = self._server(handle)
         process = server["process"]
         if process.poll() is None:
-            process.terminate()
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except (AttributeError, ProcessLookupError, PermissionError):
+                process.terminate()
             try:
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
-                process.kill()
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except (AttributeError, ProcessLookupError, PermissionError):
+                    process.kill()
+        server["log_stream"].close()
         server["accepting"] = False
         server["evicted"] = True
         return {"evicted": True}
+
+    def quiescent(self, handle: str) -> bool:
+        server = self._server(handle)
+        return bool(server["evicted"] or server["process"].poll() is not None)
 
     def usage(self, handle: str) -> dict[str, Any]:
         usage = dict(self._server(handle)["usage"])

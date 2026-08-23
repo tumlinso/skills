@@ -15,3 +15,10 @@ or modified by this service layer.
 Resource acquisition does not download a model or start an adapter until the
 runtime-discovered bundle is actually reserved. There are no recursive agents
 and no hard-coded GPU indices or topology assumptions.
+
+`CORE4-MODEL-SERVICE/2` profiles bind a verified model hash to the runtime
+allocation and llama.cpp launch settings. GPU UUIDs are supplied through
+`CUDA_VISIBLE_DEVICES`; supported server flags are detected once from the
+installed binary. Startup is health-gated, output is retained at the declared
+log path, eviction terminates the process group, and bounded idle TTL plus
+`wait_for_quiescence` make VRAM release observable.
