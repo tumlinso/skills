@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "qwen",
+    "<bounded-options>"
+  ],
+  "returncode": 53,
+  "stdout": "",
+  "stderr": "\u26a0 SAFE MODE \u2014 all customizations disabled (hooks, extensions, skills, MCP servers, QWEN.md). Restart without --safe-mode to resume normal operation.\n{\n  \"error\": {\n    \"type\": \"FatalTurnLimitedError\",\n    \"message\": \"Reached max session turns for this session. Increase the number of turns by specifying maxSessionTurns in settings.json.\",\n    \"code\": 53\n  }\n}\n"
+}
