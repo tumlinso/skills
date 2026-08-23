@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+import time
+from itertools import combinations
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 
 from ..background.host import HostCoordinator
 from ..background.store import BackgroundStore
@@ -19,6 +21,7 @@ from .contracts import (
     normalize_source_identity,
 )
 from .source import capture_source_identity
+from .topology import discover_gpu_topology
 
 
 def _private_resource_request(value: object | None) -> dict[str, Any]:
@@ -168,6 +171,7 @@ class SnapshotFacade:
 class HostResourceFacade:
     def __init__(self, coordinator: HostCoordinator):
         self._coordinator = coordinator
+        self._drain_callbacks: dict[str, Callable[[], bool | None]] = {}
 
     def upsert(self, resources: list[dict[str, object]]) -> None:
         normalized = []
@@ -209,12 +213,26 @@ class HostResourceFacade:
         )
         return None if reserved is None else {"owner_id": reserved[0], "resource_ids": reserved[1]}
 
+    def reserve_service(self, *, project_root: str | Path, service_id: str,
+                        resource_request: object, priority_class: str = "idle_model_residency",
+                        pid: int | None = None) -> dict[str, object] | None:
+        reserved = self._coordinator.reserve_service(
+            project_root=project_root,
+            service_id=service_id,
+            request=_private_resource_request(resource_request),
+            pid=pid or os.getpid(),
+            priority_class=priority_class,
+        )
+        return None if reserved is None else {"owner_id": reserved[0], "resource_ids": reserved[1]}
+
     def begin_foreground(self, *, project_root: str | Path, resource_request: object,
+                         priority_class: str = "foreground_gpu",
                          pid: int | None = None) -> dict[str, object]:
         owner_id, resources = self._coordinator.begin_foreground(
             project_root=project_root,
             request=_private_resource_request(resource_request),
             pid=pid or os.getpid(),
+            priority_class=priority_class,
         )
         return {"owner_id": owner_id, "resource_ids": resources}
 
@@ -224,11 +242,77 @@ class HostResourceFacade:
     def preempt_requested(self, owner_id: str) -> bool:
         return self._coordinator.preempt_requested(owner_id)
 
+    def request_preemption(self, owner_id: str) -> bool:
+        return self._coordinator.request_preemption(owner_id)
+
+    def set_priority(self, owner_id: str, priority_class: str) -> bool:
+        return self._coordinator.set_priority(owner_id, priority_class)
+
+    def owner(self, owner_id: str) -> dict[str, object] | None:
+        return self._coordinator.owner(owner_id)
+
+    def conflicts(self, resource_ids: Iterable[str]) -> list[str]:
+        return self._coordinator.conflicts(sorted({str(item) for item in resource_ids}))
+
+    def wait_for_quiescence(self, resource_ids: Iterable[str], *, timeout_seconds: float = 30.0,
+                            poll_seconds: float = 0.1) -> bool:
+        resources = sorted({str(item) for item in resource_ids})
+        deadline = time.monotonic() + max(0.0, timeout_seconds)
+        while self.conflicts(resources):
+            if time.monotonic() >= deadline:
+                return False
+            time.sleep(max(0.01, poll_seconds))
+        return True
+
+    def register_drain_callback(self, owner_id: str, callback: Callable[[], bool | None]) -> None:
+        if not callable(callback):
+            raise ContractError("drain callback must be callable")
+        self._drain_callbacks[owner_id] = callback
+
+    def drain_if_requested(self, owner_id: str) -> bool:
+        if not self.preempt_requested(owner_id):
+            return False
+        callback = self._drain_callbacks.get(owner_id)
+        if callback is None or callback() is False:
+            return False
+        self.release(owner_id)
+        return True
+
+    def discover_gpus(self) -> list[dict[str, object]]:
+        resources = discover_gpu_topology()
+        self.upsert(resources)
+        return resources
+
+    def compound_gpu_bundles(self, count: int) -> list[dict[str, object]]:
+        if count < 1:
+            raise ContractError("GPU bundle count must be positive")
+        devices = self.list(kind="accelerator")
+        groups: dict[str, list[dict[str, object]]] = {}
+        for device in devices:
+            domain = str(device["tags"].get("nvlink_domain", device["id"]))
+            groups.setdefault(domain, []).append(device)
+        candidates = [combo for group in groups.values() for combo in combinations(group, count)]
+        if not candidates:
+            candidates = list(combinations(devices, count))
+        bundles = []
+        for combo in candidates:
+            ids = sorted(str(item["id"]) for item in combo)
+            exclusive = sorted({
+                f"interference:nvlink:{item['tags']['nvlink_domain']}"
+                for item in combo if item["tags"].get("nvlink_domain")
+            } | {
+                f"interference:pcie:{item['tags']['pcie_root']}"
+                for item in combo if item["tags"].get("pcie_root")
+            })
+            bundles.append({"resource_ids": ids, "exclusive_resources": exclusive})
+        return sorted(bundles, key=lambda item: item["resource_ids"])
+
     def heartbeat(self, owner_id: str, *, pid: int | None = None) -> None:
         self._coordinator.heartbeat(owner_id, pid)
 
     def release(self, owner_id: str) -> None:
         self._coordinator.release(owner_id)
+        self._drain_callbacks.pop(owner_id, None)
 
 
 class RuntimeFacade:

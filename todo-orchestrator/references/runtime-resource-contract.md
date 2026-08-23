@@ -17,3 +17,13 @@ Service owners use `reserve_service`, `set_priority`, `heartbeat`,
 evicts, and releases physical resources. Stale dead processes are swept without
 altering project task state. Existing background and foreground APIs remain
 supported; CUDA clean-foreground callers opt into the highest named class.
+
+The supported runtime facade exposes service reservation, owner inspection,
+priority changes, explicit preemption requests, heartbeats, cooperative drain
+callbacks, conflict inspection, and bounded quiescence waits. CPU and RAM
+pressure includes every active owner class, including services.
+
+GPU resources are populated from current `nvidia-smi` inventory and topology.
+Compound bundles are derived from runtime NVLink, PCIe, and NUMA tags and
+atomically reserve both physical accelerators and their declared interference
+domains. Device indices and island membership are observations, not contracts.

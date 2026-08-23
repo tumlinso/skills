@@ -93,6 +93,19 @@ class HostCoordinationTests(unittest.TestCase):
             self.host.release(foreground)
         self.assertFalse((Path(self.temporary.name) / "one" / ".todo-orchestrator").exists())
 
+    def test_service_owners_count_toward_cpu_and_ram_pressure(self) -> None:
+        with mock.patch("todo_orchestrator.background.host.cpu_capacity", return_value=4):
+            service = self.host.reserve_service(
+                project_root=Path(self.temporary.name) / "service",
+                service_id="model",
+                request={"count": 0, "cpu_threads": 3},
+                pid=os.getpid(),
+            )
+            self.assertIsNotNone(service)
+            self.assertIsNone(self.reserve("two", "build", {"count": 0, "cpu_threads": 1}))
+            self.host.release(service[0])
+            self.assertIsNotNone(self.reserve("two", "build", {"count": 0, "cpu_threads": 1}))
+
     def test_host_database_contains_no_project_campaign_state(self) -> None:
         connection = self.host.connect(readonly=True)
         try:

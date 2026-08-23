@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:12:09Z",
+  "generated_at": "2026-08-23T19:14:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 30,
+  "project_revision": 34,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -421,6 +421,46 @@
         "revision": 30,
         "seq": 30,
         "timestamp": "2026-08-23T19:12:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-04",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 31,
+        "seq": 31,
+        "timestamp": "2026-08-23T19:12:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-TODO-RUNTIME",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-TODO-RUNTIME\"}",
+        "revision": 32,
+        "seq": 32,
+        "timestamp": "2026-08-23T19:14:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-TODO-RUNTIME",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"c8dabf83-ff89-4f4d-8f28-2fc3886c0076\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 33,
+        "seq": 33,
+        "timestamp": "2026-08-23T19:14:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-04",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 34,
+        "seq": 34,
+        "timestamp": "2026-08-23T19:14:58Z"
       }
     ],
     "evidence": [
@@ -448,6 +488,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"730d1d1185710bd56dd49880cce797deb5b502e5668bb02a5897ec2923d540b4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"scripts/core4_extension_validate.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-02.md\"], \"files\": [], \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"recorded_git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 6}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/6690d8fe-3719-4f80-9a71-debddc647e24",
         "revision": 8,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:14:52Z",
+        "gate_id": "C4P-GATE-TODO-RUNTIME",
+        "id": "c8dabf83-ff89-4f4d-8f28-2fc3886c0076",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-runtime\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"43d6934e2b383dba990c4ba3bfa09d93544bfaf86088a4c5ecce7d6e97d19f00\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-runtime\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"97709a650ef1474fd0b556cda6e8c923fcc1d9345f2b2246434a5f94cd0970cd\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_host_coordination.py\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/topology.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-04.md\"], \"files\": [], \"git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\", \"interfaces\": [], \"recorded_git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 32}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/c8dabf83-ff89-4f4d-8f28-2fc3886c0076",
+        "revision": 33,
         "status": "passed"
       }
     ],
@@ -716,14 +769,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"todo-runtime\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600, \"track_git_head\": true}",
         "id": "C4P-GATE-TODO-RUNTIME",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "43d6934e2b383dba990c4ba3bfa09d93544bfaf86088a4c5ecce7d6e97d19f00",
+        "last_run_at": "2026-08-23T19:14:52Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 33,
+        "status": "passed",
         "task_id": "C4P-04",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -753,6 +806,16 @@
       }
     ],
     "handoffs": [
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:14:58Z",
+        "id": "027d57fe-a847-4faf-82f6-1e9778b2381d",
+        "kind": "complete",
+        "note": "Promoted existing host coordinator capabilities through the supported facade; added service pressure accounting, drain/quiescence/preemption operations, and runtime-derived compound GPU bundles. Focused 18 tests passed.",
+        "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_host_coordination.py\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/topology.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-TODO-RUNTIME\", \"last_run_at\": \"2026-08-23T19:14:52Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 +++++++++++++---\\n .../references/runtime-resource-contract.md        | 10 +++\\n todo-orchestrator/tests/test_host_coordination.py  | 13 ++++\\n todo-orchestrator/tests/test_runtime_facade.py     | 41 +++++++++++\\n .../todo_orchestrator/background/host.py           | 16 +++-\\n .../todo_orchestrator/runtime/__init__.py          |  2 +\\n .../todo_orchestrator/runtime/facade.py            | 86 +++++++++++++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-04.md                                    |  6 +-\\n 10 files changed, 227 insertions(+), 20 deletions(-)\", \"git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\", \"interfaces\": [{\"content_hash\": null, \"id\": \"todo-runtime-service-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Promoted existing host coordinator capabilities through the supported facade; added service pressure accounting, drain/quiescence/preemption operations, and runtime-derived compound GPU bundles. Focused 18 tests passed.\", \"resources\": [], \"task_id\": \"C4P-04\"}",
+        "revision": 34,
+        "task_id": "C4P-04"
+      },
       {
         "claim_id": null,
         "created_at": "2026-08-23T19:06:48Z",
@@ -3127,14 +3190,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 11,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 34,
+        "status": "done",
         "tags_json": "[\"todo\", \"runtime\", \"resources\"]",
         "title": "Complete supported runtime service and topology facade",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:14:58Z",
+        "version": 5
       },
       {
         "attention_reason": null,

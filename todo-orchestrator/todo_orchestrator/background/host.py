@@ -331,6 +331,19 @@ class HostCoordinator:
         finally:
             connection.close()
 
+    def request_preemption(self, owner_id: str) -> bool:
+        connection = self._tx()
+        try:
+            changed = connection.execute(
+                "UPDATE host_owners SET preempt_requested=1,heartbeat_at=? "
+                "WHERE id=? AND state='active' AND preemptible=1",
+                (time.time(), owner_id),
+            ).rowcount
+            connection.commit()
+            return bool(changed)
+        finally:
+            connection.close()
+
     def owner(self, owner_id: str) -> dict[str, object] | None:
         try:
             connection = self.connect(readonly=True)
@@ -373,7 +386,8 @@ class HostCoordinator:
                 (intent_id, owner_id, canonical_json(resources), cpu_threads, ram_bytes, now, now),
             )
             active_cpu, active_ram = connection.execute(
-                "SELECT COALESCE(SUM(cpu_threads),0),COALESCE(SUM(ram_bytes),0) FROM host_owners WHERE state='active' AND owner_kind='background'"
+                "SELECT COALESCE(SUM(cpu_threads),0),COALESCE(SUM(ram_bytes),0) "
+                "FROM host_owners WHERE state='active'"
             ).fetchone()
             pressure_conflict = int(active_cpu) + cpu_threads > max(1, int(cpu_capacity() * 0.75)) or int(active_ram) + ram_bytes > int(memory_capacity_bytes() * 0.80)
             for owner in connection.execute("SELECT * FROM host_owners WHERE state='active'").fetchall():

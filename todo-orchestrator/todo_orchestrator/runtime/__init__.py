@@ -10,6 +10,7 @@ from .contracts import (
 )
 from .facade import ArtifactFacade, HostResourceFacade, JobFacade, RuntimeFacade, SnapshotFacade
 from .source import capture_source_identity
+from .topology import discover_gpu_topology
 
 __all__ = [
     "ArtifactFacade",
@@ -19,6 +20,7 @@ __all__ = [
     "RuntimeFacade",
     "SnapshotFacade",
     "capture_source_identity",
+    "discover_gpu_topology",
     "normalize_artifact_ref",
     "normalize_command_spec",
     "normalize_evidence_summary",

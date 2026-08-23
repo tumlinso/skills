@@ -26,6 +26,7 @@ from todo_orchestrator.runtime import (
     normalize_evidence_summary,
     normalize_resource_request,
     normalize_source_identity,
+    discover_gpu_topology,
 )
 
 
@@ -177,6 +178,46 @@ class RuntimeFacadeTests(unittest.TestCase):
         )
         self.assertIsNotNone(available)
         self.facade.host.release(str(available["owner_id"]))
+
+    def test_service_priority_drain_quiescence_and_runtime_bundles(self) -> None:
+        self.facade.host.upsert([
+            {"id": "accelerator:GPU-a", "kind": "accelerator",
+             "tags": {"nvlink_domain": "island-a", "pcie_root": "root-a"}},
+            {"id": "accelerator:GPU-b", "kind": "accelerator",
+             "tags": {"nvlink_domain": "island-a", "pcie_root": "root-a"}},
+            {"id": "accelerator:GPU-c", "kind": "accelerator",
+             "tags": {"nvlink_domain": "island-b", "pcie_root": "root-b"}},
+        ])
+        bundles = self.facade.host.compound_gpu_bundles(2)
+        self.assertEqual(bundles[0]["resource_ids"], ["accelerator:GPU-a", "accelerator:GPU-b"])
+        service = self.facade.host.reserve_service(
+            project_root=self.root,
+            service_id="llama",
+            resource_request={"schema_version": 1, "ids": bundles[0]["resource_ids"],
+                              "exclusive_resources": bundles[0]["exclusive_resources"]},
+        )
+        self.assertIsNotNone(service)
+        owner_id = str(service["owner_id"])
+        self.assertTrue(self.facade.host.set_priority(owner_id, "active_local_delegation"))
+        drained: list[str] = []
+        self.facade.host.register_drain_callback(owner_id, lambda: drained.append(owner_id) or True)
+        self.assertTrue(self.facade.host.request_preemption(owner_id))
+        self.assertTrue(self.facade.host.drain_if_requested(owner_id))
+        self.assertEqual(drained, [owner_id])
+        self.assertTrue(self.facade.host.wait_for_quiescence(bundles[0]["resource_ids"], timeout_seconds=0.1))
+
+    def test_topology_discovery_derives_islands_from_runtime_output(self) -> None:
+        outputs = iter([
+            "0, GPU-a, 00000000:07:00.0\n1, GPU-b, 00000000:08:00.0\n2, GPU-c, 00000000:80:00.0\n",
+            "GPU0 GPU1 GPU2 CPU_Affinity NUMA_Affinity\n"
+            "GPU0 X NV2 SYS 0-31 0\n"
+            "GPU1 NV2 X SYS 0-31 0\n"
+            "GPU2 SYS SYS X 32-63 1\n",
+        ])
+        resources = discover_gpu_topology(lambda argv: next(outputs))
+        tags = {item["tags"]["uuid"]: item["tags"] for item in resources}
+        self.assertEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-b"]["nvlink_domain"])
+        self.assertNotEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-c"]["nvlink_domain"])
 
 
 if __name__ == "__main__":
