@@ -46,11 +46,15 @@ def campaign(identifier: str, *, paths: list[str] | None = None,
             "repetitions": 3,
             "minimum_seconds": 0,
             "maximum_repetitions": 8,
+            "class": "tolerance",
+            "numerical_contract": {"rtol": 1e-5},
         },
         "benchmark": {"argv": [f"./build/{identifier}", "--json"], "warmups": 1, "repetitions": 5},
         "metric": metric(),
         "resources": {"gpu_count": 1, "architecture": "volta"},
         "policy": {"initial_characterization": False},
+        "compatibility": {"workload": {"id": identifier}, "inputs": {"shape": "fixed"},
+                          "build": {"configuration": "release"}, "toolchain": {"cuda": "12.x"}},
     }
 
 
@@ -74,6 +78,7 @@ class RegistryDiscoveryTests(unittest.TestCase):
         self.assertEqual(watch["benchmark"]["metric"], "metrics.latency_ms")
         self.assertEqual(watch["benchmark"]["architecture"], "volta")
         self.assertEqual(watch["benchmark"]["build_argv"][-1], "attention")
+        self.assertEqual(watch["benchmark"]["correctness_class"], "tolerance")
         controller.validate_watch_spec(watch)
 
     def test_registry_rejects_duplicate_ids_unsafe_paths_and_unknown_fields(self) -> None:

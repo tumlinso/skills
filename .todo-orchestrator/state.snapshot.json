@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:28:53Z",
+  "generated_at": "2026-08-23T19:31:23Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 46,
+  "project_revision": 50,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -581,6 +581,46 @@
         "revision": 46,
         "seq": 46,
         "timestamp": "2026-08-23T19:28:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-05",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 47,
+        "seq": 47,
+        "timestamp": "2026-08-23T19:29:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CUDA-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-CUDA-EVIDENCE\"}",
+        "revision": 48,
+        "seq": 48,
+        "timestamp": "2026-08-23T19:31:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CUDA-EVIDENCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"ac2b7cbe-92fc-446d-bebf-d6105e4265ce\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 49,
+        "seq": 49,
+        "timestamp": "2026-08-23T19:31:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-05",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 50,
+        "seq": 50,
+        "timestamp": "2026-08-23T19:31:23Z"
       }
     ],
     "evidence": [
@@ -634,6 +674,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"baseline\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"730d1d1185710bd56dd49880cce797deb5b502e5668bb02a5897ec2923d540b4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"scripts/core4_extension_validate.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-02.md\"], \"files\": [], \"git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\", \"interfaces\": [], \"recorded_git_head\": \"48f9b8a62d0e67f229c60f8232077f5682bd5da1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 6}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/6690d8fe-3719-4f80-9a71-debddc647e24",
         "revision": 8,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:31:23Z",
+        "gate_id": "C4P-GATE-CUDA-EVIDENCE",
+        "id": "ac2b7cbe-92fc-446d-bebf-d6105e4265ce",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-evidence\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"f319bdb4c9b033e7aaa19fd707cff8e13bc960944191494fc488f0390651298f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-evidence\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"3f39afcbdeae76f23e83cba6b79440983dc22f692d284b72c59a33a46aaec1e4\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_performance_facts.py\", \"cuda/tests/test_registry_discovery.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-05.md\"], \"files\": [], \"git_head\": \"a8948fa9b2ac67fcc05562db66133212fcd0e6cb\", \"interfaces\": [], \"recorded_git_head\": \"a8948fa9b2ac67fcc05562db66133212fcd0e6cb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 48}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/ac2b7cbe-92fc-446d-bebf-d6105e4265ce",
+        "revision": 49,
         "status": "passed"
       },
       {
@@ -720,14 +773,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-evidence\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-CUDA-EVIDENCE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "f319bdb4c9b033e7aaa19fd707cff8e13bc960944191494fc488f0390651298f",
+        "last_run_at": "2026-08-23T19:31:23Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 49,
+        "status": "passed",
         "task_id": "C4P-05",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -965,6 +1018,16 @@
       }
     ],
     "handoffs": [
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:31:23Z",
+        "id": "0200aee4-fa75-4099-b203-aefe38b928f6",
+        "kind": "complete",
+        "note": "Moved post-run contamination checks before classification and persistence; contaminated runs create no fact, baseline, or profiler escalation. Added explicit compatibility identities and correctness classes with v1 registry compatibility.",
+        "payload_json": "{\"changed_owned_paths\": [\"cuda/scripts/cuda_baselines.py\", \"cuda/scripts/cuda_controller.py\", \"cuda/scripts/cuda_registry.py\", \"cuda/tests/test_performance_facts.py\", \"cuda/tests/test_registry_discovery.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-CUDA-EVIDENCE\", \"last_run_at\": \"2026-08-23T19:31:23Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 65 ++++++++++++++++++++++++++++------\\n cuda/scripts/cuda_baselines.py         | 11 ++++--\\n cuda/scripts/cuda_controller.py        | 58 +++++++++++++++++-------------\\n cuda/scripts/cuda_registry.py          | 12 +++++--\\n cuda/tests/test_performance_facts.py   | 45 +++++++++++++++++++++++\\n cuda/tests/test_registry_discovery.py  |  5 +++\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/c4p-05.md                        |  6 ++--\\n 9 files changed, 162 insertions(+), 48 deletions(-)\", \"git_head\": \"a8948fa9b2ac67fcc05562db66133212fcd0e6cb\", \"interfaces\": [{\"content_hash\": null, \"id\": \"cuda-evidence-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Moved post-run contamination checks before classification and persistence; contaminated runs create no fact, baseline, or profiler escalation. Added explicit compatibility identities and correctness classes with v1 registry compatibility.\", \"resources\": [], \"task_id\": \"C4P-05\"}",
+        "revision": 50,
+        "task_id": "C4P-05"
+      },
       {
         "claim_id": null,
         "created_at": "2026-08-23T19:14:58Z",
@@ -3401,14 +3464,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 10,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 50,
+        "status": "done",
         "tags_json": "[\"cuda\", \"evidence\", \"correctness\"]",
         "title": "Make CUDA evidence contamination-safe and compatibility-complete",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:31:23Z",
+        "version": 5
       },
       {
         "attention_reason": null,

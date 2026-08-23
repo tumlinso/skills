@@ -132,7 +132,7 @@ def normalize_campaign(value: object, position: int = 0) -> dict[str, Any]:
     campaign = _object(value, name)
     _extra(campaign, {
         "id", "description", "targets", "paths", "symbols", "task_ids", "task_prefixes",
-        "build", "correctness", "benchmark", "metric", "resources", "policy",
+        "build", "correctness", "benchmark", "metric", "resources", "policy", "compatibility",
     }, name)
     missing = sorted({"id", "targets", "paths", "symbols", "correctness", "benchmark", "metric", "resources"} - set(campaign))
     if missing:
@@ -159,7 +159,7 @@ def normalize_campaign(value: object, position: int = 0) -> dict[str, Any]:
     build = campaign.get("build")
     result["build"] = None if build is None else normalize_command(build, f"{name}.build")
     correctness = _object(campaign.get("correctness"), f"{name}.correctness")
-    _extra(correctness, {"argv", "timeout_seconds", "repetitions", "minimum_seconds", "maximum_repetitions"}, f"{name}.correctness")
+    _extra(correctness, {"argv", "timeout_seconds", "repetitions", "minimum_seconds", "maximum_repetitions", "class", "correctness_class", "numerical_contract"}, f"{name}.correctness")
     result["correctness"] = normalize_command(
         {key: correctness[key] for key in ("argv", "timeout_seconds") if key in correctness},
         f"{name}.correctness",
@@ -172,7 +172,12 @@ def normalize_campaign(value: object, position: int = 0) -> dict[str, Any]:
         repetitions=repetitions,
         minimum_seconds=_number(correctness.get("minimum_seconds", 15), f"{name}.correctness.minimum_seconds"),
         maximum_repetitions=maximum,
+        correctness_class=_string(correctness.get("class", correctness.get("correctness_class", "unspecified")), f"{name}.correctness.class"),
+        numerical_contract=_object(correctness.get("numerical_contract", {}), f"{name}.correctness.numerical_contract"),
     )
+    compatibility = _object(campaign.get("compatibility", {}), f"{name}.compatibility")
+    _extra(compatibility, {"workload", "inputs", "build", "toolchain"}, f"{name}.compatibility")
+    result["compatibility"] = compatibility
     benchmark = _object(campaign.get("benchmark"), f"{name}.benchmark")
     _extra(benchmark, {"argv", "timeout_seconds", "warmups", "repetitions"}, f"{name}.benchmark")
     result["benchmark"] = normalize_command(
@@ -247,6 +252,9 @@ def campaign_watch_spec(registry: dict[str, Any], campaign: dict[str, Any]) -> d
         "correctness_repetitions": campaign["correctness"]["repetitions"],
         "correctness_minimum_seconds": campaign["correctness"]["minimum_seconds"],
         "correctness_maximum_repetitions": campaign["correctness"]["maximum_repetitions"],
+        "correctness_class": campaign["correctness"]["correctness_class"],
+        "numerical_contract": campaign["correctness"]["numerical_contract"],
+        "compatibility": campaign["compatibility"],
         "gpus": resources["gpu_count"],
         "gpu_uuids": resources["gpu_uuids"],
     }

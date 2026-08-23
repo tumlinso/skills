@@ -51,6 +51,7 @@ def machine_class(devices: list[dict[str, object]], topology: Mapping[str, Mappi
 
 def compatibility_descriptor(*, campaign_id: str, benchmark: Mapping[str, object],
                              machine: Mapping[str, object]) -> dict[str, object]:
+    declared = dict(benchmark.get("compatibility", {})) if isinstance(benchmark.get("compatibility"), Mapping) else {}
     protocol = {
         # Command and binary identity remain provenance: candidates may use a
         # different executable while measuring the same registered campaign.
@@ -59,9 +60,13 @@ def compatibility_descriptor(*, campaign_id: str, benchmark: Mapping[str, object
         "direction": str(benchmark.get("direction", "")),
         "warmups": int(benchmark.get("warmups", 1)),
         "repetitions": int(benchmark.get("repetitions", 5)),
-        "declared_workload": dict(benchmark.get("compatibility", {}))
-        if isinstance(benchmark.get("compatibility"), Mapping) else {},
-        "toolchain_id": str(benchmark.get("toolchain_id", "")),
+        "declared_workload": declared,
+        "workload": benchmark.get("workload_identity", declared.get("workload", declared)),
+        "inputs": benchmark.get("input_identity", declared.get("inputs", {})),
+        "build": benchmark.get("build_identity", declared.get("build", {})),
+        "numerical_contract": benchmark.get("numerical_contract", declared.get("numerical_contract", {})),
+        "correctness_class": str(benchmark.get("correctness_class", declared.get("correctness_class", "unspecified"))),
+        "toolchain": benchmark.get("toolchain_identity", benchmark.get("toolchain_id", declared.get("toolchain", ""))),
     }
     body = {"campaign_id": campaign_id, "protocol": protocol, "machine": dict(machine)}
     return {**body, "key": _hash(body)}

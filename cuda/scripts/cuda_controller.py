@@ -1009,6 +1009,8 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
                  (elapsed >= minimum_seconds or len(records) == maximum_repetitions))
         result = {"valid": valid, "status": "succeeded" if valid else "failed",
                   "classification": "healthy" if valid else "correctness-failure", "severity": 0 if valid else 100,
+                  "correctness_class": str(benchmark.get("correctness_class", "unspecified")),
+                  "numerical_contract": dict(benchmark.get("numerical_contract", {})),
                   "record": record, "records": records, "parser_version": PARSER_VERSION,
                   "correctness_target_repetitions": adaptive_target,
                   "correctness_elapsed_seconds": round(elapsed, 6),
@@ -1017,31 +1019,37 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
             result.update(_cheap_failure_classification(record, snapshot))
     elif base_kind == "benchmark":
         outcome = _benchmark(effective_spec, cwd, env, artifact_dir, background=True)
-        selected_devices, machine = measurement_machine(uuids)
-        result = _classify_benchmark(
-            store, watch_id, effective_spec, outcome, fingerprint,
-            snapshot=snapshot, devices=selected_devices, machine=machine, quiescence=quiescence,
-        )
-        failed_record = next((item for item in outcome["records"] if item["returncode"] != 0), None)
-        if failed_record:
-            result.update(_cheap_failure_classification(failed_record, snapshot))
-        if isinstance(candidate, dict) and candidate:
-            result["candidate_id"] = candidate.get("id")
-        decision = profiler_escalation(
-            str(result["classification"]),
-            max_profiles=int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2)),
-        )
-        result["profiler_decision"] = decision
-        if decision["profile"] == "nsys":
-            limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
-            profile_snapshot = {**snapshot, "_profile_escalation": result["classification"], "_max_profiles": limit}
-            store.enqueue(
-                {"watch_id": watch_id, "cwd": str(cwd), "resources": _resource_request(effective_spec, "nsys"),
-                 "source_fingerprint": fingerprint, "snapshot": profile_snapshot, "priority": 50, "retry_limit": 0,
-                 "kind": "nsys", "argv": stage_argv(project, watch_id, "nsys", profile_snapshot),
-                 "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:nsys"},
-                [],
+        after = sample_devices(uuids) if uuids else {"idle": True, "samples": []}
+        if after.get("foreign_processes"):
+            result = {**outcome, "valid": False, "contaminated": True, "status": "skipped",
+                      "classification": "measurement-contaminated", "severity": 0,
+                      "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
+        else:
+            selected_devices, machine = measurement_machine(uuids)
+            result = _classify_benchmark(
+                store, watch_id, effective_spec, outcome, fingerprint,
+                snapshot=snapshot, devices=selected_devices, machine=machine, quiescence=quiescence,
             )
+            failed_record = next((item for item in outcome["records"] if item["returncode"] != 0), None)
+            if failed_record:
+                result.update(_cheap_failure_classification(failed_record, snapshot))
+            if isinstance(candidate, dict) and candidate:
+                result["candidate_id"] = candidate.get("id")
+            decision = profiler_escalation(
+                str(result["classification"]),
+                max_profiles=int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2)),
+            )
+            result["profiler_decision"] = decision
+            if decision["profile"] == "nsys":
+                limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
+                profile_snapshot = {**snapshot, "_profile_escalation": result["classification"], "_max_profiles": limit}
+                store.enqueue(
+                    {"watch_id": watch_id, "cwd": str(cwd), "resources": _resource_request(effective_spec, "nsys"),
+                     "source_fingerprint": fingerprint, "snapshot": profile_snapshot, "priority": 50, "retry_limit": 0,
+                     "kind": "nsys", "argv": stage_argv(project, watch_id, "nsys", profile_snapshot),
+                     "dedup_key": f"{watch_id}:{fingerprint}:{candidate.get('id', 'base')}:nsys"},
+                    [],
+                )
     elif base_kind in {"nsys", "ncu"}:
         wrapper = SCRIPT_DIR / f"profile_{base_kind}.sh"
         command = [str(item).replace("{snapshot}", str(cwd)) for item in benchmark["argv"]]
@@ -1074,7 +1082,7 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
                 )
     else:
         result = {"valid": False, "status": "failed", "classification": "unknown-stage", "severity": 0}
-    after = sample_devices(uuids) if uuids else {"idle": True, "samples": []}
+    after = after if base_kind == "benchmark" else (sample_devices(uuids) if uuids else {"idle": True, "samples": []})
     if after.get("foreign_processes"):
         result.update(valid=False, contaminated=True, status="skipped", classification="measurement-contaminated", severity=0)
     result["resource_samples"] = {"before": before, "after": after, "quiescence": quiescence}

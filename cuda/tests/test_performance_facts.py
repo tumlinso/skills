@@ -74,6 +74,18 @@ class PerformanceFactsTests(unittest.TestCase):
         )
         self.assertNotEqual(first["key"], changed_metric["key"])
 
+    def test_compatibility_covers_workload_inputs_build_numerics_and_toolchain(self) -> None:
+        machine = machine_class([device("GPU-a")])
+        base = benchmark(workload_identity={"kernel": "gemm"}, input_identity={"m": 4096},
+                         build_identity={"flags": ["-O3"]}, numerical_contract={"rtol": 1e-5},
+                         correctness_class="tolerance", toolchain_identity={"nvcc": "12.9"})
+        original = compatibility_descriptor(campaign_id="gemm", benchmark=base, machine=machine)["key"]
+        for field, value in (("workload_identity", {"kernel": "conv"}), ("input_identity", {"m": 8192}),
+                             ("build_identity", {"flags": ["-O2"]}), ("numerical_contract", {"rtol": 1e-3}),
+                             ("correctness_class", "statistical"), ("toolchain_identity", {"nvcc": "12.8"})):
+            changed = {**base, field: value}
+            self.assertNotEqual(original, compatibility_descriptor(campaign_id="gemm", benchmark=changed, machine=machine)["key"])
+
     def test_topology_shape_is_compatible_but_relationship_change_is_not(self) -> None:
         devices = [device("GPU-a", 0), device("GPU-b", 1)]
         linked = machine_class(devices, {
@@ -211,6 +223,39 @@ class PerformanceFactsTests(unittest.TestCase):
             with closing(store.connect(readonly=True)) as connection:
                 kinds = [row[0] for row in connection.execute("SELECT kind FROM background_jobs ORDER BY created_at")]
             self.assertEqual(kinds, ["nsys"])
+
+    def test_post_run_contamination_precedes_fact_baseline_and_profiler_persistence(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); source = root / "source"; source.mkdir()
+            store = BackgroundStore(root)
+            watch_id = store.arm_watch({
+                "schema_version": 1, "project_root": str(root), "watch": {},
+                "benchmark": {**benchmark(target=0.5), "correctness_argv": ["check"]},
+                "policy": {"initial_characterization": False, "max_deep_profiles_per_revision": 2},
+            })
+            stdout = root / "run.stdout.txt"; stderr = root / "run.stderr.txt"
+            stdout.write_text('{"latency_ms": 1.0}', encoding="utf-8"); stderr.write_text("", encoding="utf-8")
+            measured = {"valid": True, "records": [{"stdout": str(stdout), "stderr": str(stderr),
+                        "metric": 1.0, "returncode": 0, "warmup": False}],
+                        "statistics": {"median": 1.0, "mad": 0.0, "values": [1.0]}}
+            clean = {**proof(), "observations": [{"idle": True, "busy": False, "foreign_processes": False, "samples": []}]}
+            contaminated = {"idle": False, "busy": True, "foreign_processes": True, "samples": []}
+            snapshot = {"safe": True, "source_root": str(source), "fingerprint": "source", "commit": "a"}
+            with mock.patch.object(controller, "_allocated_gpus", return_value=(["GPU-a"], [0])), \
+                    mock.patch.object(controller, "quiescence_proof", return_value=clean), \
+                    mock.patch.object(controller, "_benchmark", return_value=measured), \
+                    mock.patch.object(controller, "sample_devices", return_value=contaminated), \
+                    mock.patch.object(controller, "measurement_machine") as machine_probe, \
+                    mock.patch.object(controller, "probe_gpus", return_value=[]):
+                result = controller.background_stage(root, watch_id, "benchmark", snapshot)
+            self.assertEqual(result["classification"], "measurement-contaminated")
+            self.assertNotIn("performance_fact", result)
+            self.assertNotIn("profiler_decision", result)
+            self.assertIsNone(store.get_meta(f"baseline:{watch_id}"))
+            self.assertEqual(PerformanceFactStore(store, watch_id).list(), [])
+            machine_probe.assert_not_called()
+            with closing(store.connect(readonly=True)) as connection:
+                self.assertEqual(connection.execute("SELECT count(*) FROM background_jobs").fetchone()[0], 0)
 
     def test_controller_refuses_measurement_without_quiescence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
