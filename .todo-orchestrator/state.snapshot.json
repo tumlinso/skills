@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:45:21Z",
+  "generated_at": "2026-08-23T19:47:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 62,
+  "project_revision": 66,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -741,6 +741,46 @@
         "revision": 62,
         "seq": 62,
         "timestamp": "2026-08-23T19:45:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-12",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 63,
+        "seq": 63,
+        "timestamp": "2026-08-23T19:45:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CUDA-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-CUDA-INTEGRATION\"}",
+        "revision": 64,
+        "seq": 64,
+        "timestamp": "2026-08-23T19:47:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CUDA-INTEGRATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"813c927a-f563-462e-b1ea-733b5d7c78f9\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 65,
+        "seq": 65,
+        "timestamp": "2026-08-23T19:47:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-12",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 66,
+        "seq": 66,
+        "timestamp": "2026-08-23T19:47:58Z"
       }
     ],
     "evidence": [
@@ -807,6 +847,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"qwen-harness\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"24115da6e4b8804112f608e2dcb5d433a84210f70127613fa2715caa5e832efd\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"qwen-harness\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"e3750804caa20f644a3090b5b22af203ebfca217a50c403d4c1e517ecac53d3c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/telemetry.py\", \"local-coding-worker/schemas/harness-policy-v2.schema.json\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_telemetry.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-09.md\"], \"files\": [], \"git_head\": \"aef12e79b85785acc888d61079c040225ecbadfc\", \"interfaces\": [], \"recorded_git_head\": \"aef12e79b85785acc888d61079c040225ecbadfc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 52}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/66de6eac-aa33-4752-97ea-30459125f03a",
         "revision": 53,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:47:58Z",
+        "gate_id": "C4P-GATE-CUDA-INTEGRATION",
+        "id": "813c927a-f563-462e-b1ea-733b5d7c78f9",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-integration\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d47bfbb62f75c57de50482128f592c829a93b843177741a48cd92554eec200d0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-integration\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"b2c479c8f547b6ca5fa3c72efcf65c9e285ce80a90e2290551ae5770649cce16\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/scripts/cuda_controller.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-12.md\"], \"files\": [], \"git_head\": \"7eb04ac67757ecdbcd2f1c9f4f05fa1a3cfee2ad\", \"interfaces\": [], \"recorded_git_head\": \"7eb04ac67757ecdbcd2f1c9f4f05fa1a3cfee2ad\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 64}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/813c927a-f563-462e-b1ea-733b5d7c78f9",
+        "revision": 65,
         "status": "passed"
       },
       {
@@ -945,14 +998,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cuda-integration\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900, \"track_git_head\": true}",
         "id": "C4P-GATE-CUDA-INTEGRATION",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "d47bfbb62f75c57de50482128f592c829a93b843177741a48cd92554eec200d0",
+        "last_run_at": "2026-08-23T19:47:58Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 65,
+        "status": "passed",
         "task_id": "C4P-12",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1196,6 +1249,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"todo-orchestrator/references/runtime-resource-contract.md\", \"todo-orchestrator/tests/test_host_coordination.py\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/__init__.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/topology.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-TODO-RUNTIME\", \"last_run_at\": \"2026-08-23T19:14:52Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 +++++++++++++---\\n .../references/runtime-resource-contract.md        | 10 +++\\n todo-orchestrator/tests/test_host_coordination.py  | 13 ++++\\n todo-orchestrator/tests/test_runtime_facade.py     | 41 +++++++++++\\n .../todo_orchestrator/background/host.py           | 16 +++-\\n .../todo_orchestrator/runtime/__init__.py          |  2 +\\n .../todo_orchestrator/runtime/facade.py            | 86 +++++++++++++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-04.md                                    |  6 +-\\n 10 files changed, 227 insertions(+), 20 deletions(-)\", \"git_head\": \"b7e98e7ec2cb954d607aecf5ba26d42233629ed4\", \"interfaces\": [{\"content_hash\": null, \"id\": \"todo-runtime-service-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Promoted existing host coordinator capabilities through the supported facade; added service pressure accounting, drain/quiescence/preemption operations, and runtime-derived compound GPU bundles. Focused 18 tests passed.\", \"resources\": [], \"task_id\": \"C4P-04\"}",
         "revision": 34,
         "task_id": "C4P-04"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-23T19:47:58Z",
+        "id": "073d20e0-d301-42e3-a038-8895ea371dda",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"cuda/scripts/cuda_controller.py\", \"local-coding-worker/local_worker/controller.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-CUDA-INTEGRATION\", \"last_run_at\": \"2026-08-23T19:47:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 ++++++++++++++++++----\\n cuda/scripts/cuda_controller.py                    | 23 +++++---\\n local-coding-worker/local_worker/controller.py     | 52 +++++++++++++----\\n .../tests/test_core4_integration.py                | 34 ++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-12.md                                    |  6 +-\\n 7 files changed, 149 insertions(+), 39 deletions(-)\", \"git_head\": \"7eb04ac67757ecdbcd2f1c9f4f05fa1a3cfee2ad\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-12\"}",
+        "revision": 66,
+        "task_id": "C4P-12"
       },
       {
         "claim_id": null,
@@ -3807,14 +3870,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": null,
         "priority": 40,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 66,
+        "status": "done",
         "tags_json": "[\"cuda\", \"local-worker\", \"handoff\"]",
         "title": "Complete accepted-patch CUDA handoff",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:47:58Z",
+        "version": 5
       },
       {
         "attention_reason": null,

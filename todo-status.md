@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `62`
+Project revision: `66`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -19,7 +19,7 @@ Project revision: `62`
 - `C4P-15` | status: planned | execution: ready | next: Do not evaluate model quality yet; establish reliable service operation and record compact host evidence.
 - `C4P-14` | status: planned | execution: ready | next: If the active candidate is not READY, stop after emitting the exact request. Do not download, install, copy, or continue to C4P-15.
 - `C4P-13` | status: planned | execution: ready | next: Fix only failures attributable to the extension; do not start a model or GPU benchmark.
-- `C4P-12` | status: planned | execution: ready | next: Test no-match, one-match, ambiguous, contaminated, preempted, and accepted-patch scenarios without real GPU timing.
+- `C4P-12` | status: done | execution: closed | next: Test no-match, one-match, ambiguous, contaminated, preempted, and accepted-patch scenarios without real GPU timing.
 - `C4P-11` | status: done | execution: closed | next: Use simulated model output first, then leave the same normalized path ready for the real host test.
 - `C4P-10` | status: done | execution: closed | next: Prove the full production path with fake server and harness adapters before using real weights.
 - `C4P-08` | status: done | execution: closed | next: Use a fake llama-server fixture for focused tests; do not require real weights yet.

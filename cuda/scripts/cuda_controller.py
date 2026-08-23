@@ -37,6 +37,7 @@ from todo_orchestrator.background.resources import cpu_capacity  # noqa: E402
 from todo_orchestrator.background.store import BackgroundStore  # noqa: E402
 from todo_orchestrator.background.wake import wake_worker  # noqa: E402
 from todo_orchestrator.config import project_paths  # noqa: E402
+from todo_orchestrator.runtime import RuntimeFacade  # noqa: E402
 
 from cuda_guidance import retrieve  # noqa: E402
 from cuda_discovery import discover_campaigns  # noqa: E402
@@ -1141,11 +1142,11 @@ def _recipe(spec: dict[str, object], artifact_dir: Path) -> tuple[list[str], boo
 def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     project = git_root(Path(str(spec.get("project_root", "."))))
     store = BackgroundStore(project)
+    runtime = RuntimeFacade(project, store=store)
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
     store.upsert_resources(facts)
-    host = HostCoordinator()
-    host.upsert_resources(facts)
+    runtime.host.upsert(facts)
     resources = spec.get("resources", {})
     requested = [str(item) for item in resources.get("gpu_uuids", [])] if isinstance(resources, dict) else []
     count = int(resources.get("gpus", 1)) if isinstance(resources, dict) else 1
@@ -1154,7 +1155,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     resource_ids = [f"accelerator:{item}" for item in requested]
     recipe = str(spec.get("recipe", "baseline"))
     host_request = {
-        "kind": "accelerator", "ids": resource_ids, "count": 0,
+        "kind": "accelerator", "ids": resource_ids,
         "exclusive_resources": ["profiler:nvidia"] if recipe in {"nsys", "ncu", "cuda-gdb", "compute-sanitizer"} else [],
         "isolate_pcie_root": bool(resources.get("isolate_pcie_root", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
         "isolate_nvlink_domain": bool(resources.get("isolate_nvlink_domain", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
@@ -1165,17 +1166,20 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     host_owner = None
     intent = None
     try:
-        host_owner, host_resources = host.begin_foreground(
-            project_root=project, request=host_request, pid=os.getpid(),
+        reservation = runtime.host.begin_foreground(
+            project_root=project, resource_request={"schema_version": 1, **host_request}, pid=os.getpid(),
             priority_class="clean_cuda_foreground",
         )
+        host_owner = str(reservation["owner_id"])
+        host_resources = [str(item) for item in reservation["resource_ids"]]
         intent = store.foreground_intent(resource_ids)
         marker.parent.mkdir(parents=True, exist_ok=True)
         marker.write_text(f"controller:{intent}\n", encoding="utf-8")
         deadline = time.monotonic() + float(spec.get("preempt_grace_seconds", 5))
-        while (store.running_conflicts(resource_ids) or host.conflicts(host_resources)) and time.monotonic() < deadline:
+        while (store.running_conflicts(resource_ids) or runtime.host.conflicts(host_resources)) and time.monotonic() < deadline:
             time.sleep(0.1)
-        if store.running_conflicts(resource_ids) or host.conflicts(host_resources) or not host.activate_foreground(host_owner, host_resources) or not store.reserve_foreground(intent, resource_ids):
+        if (store.running_conflicts(resource_ids) or runtime.host.conflicts(host_resources)
+                or not runtime.host.activate_foreground(reservation) or not store.reserve_foreground(intent, resource_ids)):
             return {"ok": False, "code": "foreground_resource_contention"}
         quiescence = (quiescence_proof(requested, dict(spec.get("quiescence", {}))) if requested else
                       {"format": "CUDA-QUIESCENCE/1", "schema_version": 1, "state": "not_required",
@@ -1255,7 +1259,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
                 "message": "No action-worthy result; evidence stored." if valid else f"MEASUREMENT FAILURE: foreground recipe failed. [e:{evidence_id}]"}
     finally:
         if host_owner:
-            host.release(host_owner)
+            runtime.host.release(host_owner)
         if intent:
             store.clear_foreground(intent)
         try:
@@ -1271,10 +1275,11 @@ def arm_background(spec: dict[str, object]) -> dict[str, object]:
     spec = dict(spec)
     spec["project_root"] = str(project)
     store = BackgroundStore(project)
+    runtime_facade = RuntimeFacade(project, store=store)
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
     store.upsert_resources(facts)
-    HostCoordinator().upsert_resources(facts)
+    runtime_facade.host.upsert(facts)
     store.set_meta("cuda-machine-facts", {"gpus": devices, "tools": {name: tool_version(name) for name in ("nvcc", "nsys", "ncu")}})
     runtime = dict(spec.get("_runtime", {}))
     provisional = str(spec.get("watch_id") or hashlib.sha256(json.dumps({"root": str(project), "watch": spec.get("watch", {})}, sort_keys=True).encode()).hexdigest()[:24])

@@ -152,6 +152,7 @@ class IntegrationController:
         before_accept: Callable[[Path, dict[str, Any]], None] | None = None,
         terminal_runner: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
         writable_runner: Callable[[Path, dict[str, Any]], dict[str, Any]] | None = None,
+        cuda_discovery_runner: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
     ) -> None:
         skills_root = Path(__file__).resolve().parents[2]
         self.todo_cli = Path(todo_cli or skills_root / "todo-orchestrator/scripts/todo.py")
@@ -162,6 +163,7 @@ class IntegrationController:
         self.before_accept = before_accept
         self.terminal_runner = terminal_runner
         self.writable_runner = writable_runner
+        self.cuda_discovery_runner = cuda_discovery_runner
 
     def _run_json(self, argv: list[str], *, cwd: Path, environment: dict[str, str] | None = None) -> dict[str, Any]:
         env = dict(os.environ)
@@ -261,26 +263,54 @@ class IntegrationController:
         registry = request.get("cuda_registry")
         if not registry or not acceptance or acceptance.get("accepted") is not True:
             return {"state": "silent", "campaign_ids": []}
+        packets = []
+        for changed in acceptance.get("changed_paths", []):
+            if Path(str(changed)).suffix.lower() not in {".c", ".cc", ".cpp", ".cxx", ".cu", ".cuh", ".h", ".hpp"}:
+                continue
+            try:
+                packets.append(self._run_json(
+                    [str(self.ctxpp_cli), "--root", request["repo_root"], "--json", "packet", str(changed),
+                     "--consumer", "cuda", "--intent", "performance", "--budget", "1024", "--max-items", "8"],
+                    cwd=Path(request["repo_root"]),
+                ))
+            except IntegrationError:
+                pass
         evidence = {
             "schema_version": 1,
             "accepted_patches": [{"accepted": True, "changed_paths": acceptance["changed_paths"]}],
             "task_ids": [request["task_id"]],
+            "context_packets": packets,
         }
-        with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as handle:
-            json.dump(evidence, handle)
-            handle.flush()
-            result = self._run_json(
-                [sys.executable, str(self.cuda_cli), "registry", "discover", "--registry", str(registry),
-                 "--input", handle.name, "--json"],
-                cwd=Path(request["repo_root"]),
-            )
+        if self.cuda_discovery_runner is not None:
+            result = _object(self.cuda_discovery_runner(evidence), "CUDA discovery result")
+        else:
+            with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8") as handle:
+                json.dump(evidence, handle)
+                handle.flush()
+                result = self._run_json(
+                    [sys.executable, str(self.cuda_cli), "registry", "discover", "--registry", str(registry),
+                     "--input", handle.name, "--auto-queue", "--json"],
+                    cwd=Path(request["repo_root"]),
+                )
         matches = result.get("matches") if isinstance(result.get("matches"), list) else []
         campaign_ids = [str(item["campaign_id"]) for item in matches if isinstance(item, dict) and item.get("campaign_id")]
+        status = str(result.get("status", "no_match"))
+        auto_queue = result.get("auto_queue") if isinstance(result.get("auto_queue"), dict) else {}
+        if status == "no_match":
+            return {"state": "silent", "campaign_ids": [], "context_packets": len(packets)}
+        if status == "ambiguous":
+            return {
+                "state": "choice_required", "campaign_ids": campaign_ids,
+                "choices": [{"campaign_id": str(item["campaign_id"]), "reasons": len(item.get("reasons", []))}
+                            for item in matches if isinstance(item, dict) and item.get("campaign_id")],
+                "context_packets": len(packets), "auto_queued": False,
+            }
         return {
-            "state": "triggered" if campaign_ids else "silent",
-            "status": result.get("status"),
+            "state": "queued" if auto_queue.get("state") == "queued" else "selected",
+            "status": status,
             "campaign_ids": campaign_ids,
-            "auto_queued": False,
+            "context_packets": len(packets),
+            "auto_queued": auto_queue.get("state") == "queued",
         }
 
     def _readonly(self, request: dict[str, Any], child: dict[str, Any]) -> dict[str, Any]:

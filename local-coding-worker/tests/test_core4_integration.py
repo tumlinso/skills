@@ -111,6 +111,11 @@ class Core4IntegrationTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def controller(self, **kwargs) -> IntegrationController:
+        kwargs.setdefault("cuda_discovery_runner", lambda evidence: {
+            "status": "unambiguous", "auto_queue_safe": True,
+            "matches": [{"campaign_id": "fixture-sm70", "reasons": [{"source": "accepted_patch"}]}],
+            "auto_queue": {"state": "queued", "controller": {"watch_id": "fixture-watch"}},
+        })
         return IntegrationController(
             todo_cli=self.fake_todo,
             ctxpp_cli=self.fake_ctxpp,
@@ -222,8 +227,10 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual(result["status"], "accepted")
         self.assertTrue(result["accepted"])
         self.assertEqual(result["changed_paths"], ["src/kernel.cu"])
-        self.assertEqual(result["cuda"]["state"], "triggered")
+        self.assertEqual(result["cuda"]["state"], "queued")
+        self.assertTrue(result["cuda"]["auto_queued"])
         self.assertEqual(result["cuda"]["campaign_ids"], ["fixture-sm70"])
+        self.assertEqual(result["cuda"]["context_packets"], 1)
         self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// accepted candidate\n")
         self.assertFalse(result["parent_task_completed"])
 
@@ -237,6 +244,31 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// baseline\n")
         self.assertEqual((self.root / "docs/note.txt").read_text(encoding="utf-8"), "concurrent user work\n")
         self.assertEqual(result["cuda"]["state"], "silent")
+
+    def test_cuda_handoff_is_silent_on_no_match_and_compact_on_ambiguity(self) -> None:
+        no_match = self.controller(cuda_discovery_runner=lambda evidence: {
+            "status": "no_match", "matches": [], "auto_queue": {"state": "not_queued", "reason": "no_match"},
+        }).run(self.request("writable"))
+        self.assertEqual(no_match["cuda"]["state"], "silent")
+
+        subprocess.run(["git", "add", "src/kernel.cu"], cwd=self.root, check=True)
+        subprocess.run(["git", "commit", "-qm", "accepted fixture"], cwd=self.root, check=True)
+        ambiguous = self.controller(cuda_discovery_runner=lambda evidence: {
+            "status": "ambiguous",
+            "matches": [
+                {"campaign_id": "first", "reasons": [{"source": "accepted_patch"}]},
+                {"campaign_id": "second", "reasons": [{"source": "ctxpp_symbol"}, {"source": "accepted_patch"}]},
+            ],
+            "auto_queue": {"state": "not_queued", "reason": "ambiguous"},
+        }).run(self.request(
+            "writable", fake_changes={"src/kernel.cu": "// next candidate\n"},
+            baseline_commands=[command("from pathlib import Path; assert Path('src/kernel.cu').read_text() == '// accepted candidate\\n'")],
+        ))
+        self.assertEqual(ambiguous["cuda"]["state"], "choice_required")
+        self.assertFalse(ambiguous["cuda"]["auto_queued"])
+        self.assertEqual(ambiguous["cuda"]["choices"], [
+            {"campaign_id": "first", "reasons": 1}, {"campaign_id": "second", "reasons": 2},
+        ])
 
     def test_v2_writable_runner_uses_approved_overlay_and_persists_reviewer_evidence(self) -> None:
         (self.root / "docs/note.txt").write_text("unrelated user work\n", encoding="utf-8")
