@@ -84,7 +84,14 @@ class OneShotHarnessAdapter:
     def parse_output(self, stdout: str) -> tuple[str, dict[str, Any]]:
         raise NotImplementedError
 
-    def normalize_outcome(self, text: str, usage: dict[str, Any]) -> dict[str, Any]:
+    def build_environment(self, session: dict[str, Any], adapter_env: dict[str, str]) -> dict[str, str]:
+        environment = dict(os.environ)
+        environment.update(adapter_env)
+        return environment
+
+    def normalize_outcome(
+        self, text: str, usage: dict[str, Any], session: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         return {"status": "succeeded"}
 
     def run(self, handle: str, request: dict[str, Any]) -> dict[str, Any]:
@@ -98,8 +105,7 @@ class OneShotHarnessAdapter:
             if session["process"] is not None and session["process"].poll() is None:
                 raise AdapterError("harness already has an active run")
             argv, adapter_env = self.build_command(session, prompt)
-            environment = dict(os.environ)
-            environment.update(adapter_env)
+            environment = self.build_environment(session, adapter_env)
             started = time.perf_counter()
             process = self.process_factory(
                 argv, cwd=session["cwd"], env=environment, text=True,
@@ -121,11 +127,14 @@ class OneShotHarnessAdapter:
                 session["usage"]["input_chars"] += len(prompt)
                 session["usage"]["duration_ms"] += duration
         if process.returncode != 0:
-            raise AdapterError(f"{self.adapter_name} exited {process.returncode}: {stderr.strip()[:500]}")
+            diagnostic = " ".join(
+                item for item in (stderr.strip()[-500:], stdout.strip()[-500:]) if item
+            )[-1000:]
+            raise AdapterError(f"{self.adapter_name} exited {process.returncode}: {diagnostic}")
         text, provider_usage = self.parse_output(stdout)
         session["usage"]["output_chars"] += len(text)
         return {
-            **self.normalize_outcome(text, provider_usage), "text": text[:20_000], "usage": provider_usage,
+            **self.normalize_outcome(text, provider_usage, session), "text": text[:20_000], "usage": provider_usage,
             "duration_ms": round(duration, 3), "raw_output_omitted_chars": max(len(text) - 20_000, 0),
         }
 

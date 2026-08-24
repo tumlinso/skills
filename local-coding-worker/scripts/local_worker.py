@@ -21,6 +21,7 @@ sys.path.insert(0, str(SKILL_ROOT))
 from local_worker.acceptance import AcceptanceError  # noqa: E402
 from local_worker.controller import IntegrationController, IntegrationError  # noqa: E402
 from local_worker.model_cache import ModelCache, ModelCacheError  # noqa: E402
+from local_worker.supervisor import SupervisorClient, SupervisorError  # noqa: E402
 from local_worker.production_checks import (ProductionCheckError, evaluate, host_check,
                                             release_check, validate_policy)  # noqa: E402
 from local_worker.verification import VerificationError  # noqa: E402
@@ -47,6 +48,12 @@ def main() -> int:
         command.add_argument("--request", required=True, help="LCW-REQUEST/1 JSON path or - for stdin")
     integrate = subparsers.add_parser("integrate")
     integrate.add_argument("--request", required=True, help="CORE4-INTEGRATION-REQUEST/1 JSON path or -")
+    delegate = subparsers.add_parser("delegate")
+    delegate.add_argument("--claim-token", required=True)
+    delegate.add_argument("--mode", required=True, choices=["readonly", "writable"])
+    delegate.add_argument("--target")
+    delegate.add_argument("--wait", action="store_true")
+    delegate.add_argument("--json", action="store_true")
     self_test = subparsers.add_parser("self-test")
     self_test.add_argument("--repo", default=".")
     self_test.add_argument("--json", action="store_true")
@@ -65,6 +72,11 @@ def main() -> int:
     host = subparsers.add_parser("host-check")
     host.add_argument("--scenario", required=True, choices=["service", "readonly", "writable"])
     host.add_argument("--json", action="store_true")
+    service = subparsers.add_parser("service")
+    service.add_argument("--repo-root", default=".")
+    service_commands = service.add_subparsers(dest="service_command", required=True)
+    for name in ("status", "warm", "drain", "evict", "stop"):
+        service_commands.add_parser(name).add_argument("--json", action="store_true")
     evaluation = subparsers.add_parser("evaluate")
     evaluation.add_argument("--phase", required=True, choices=["focused", "meaningful"])
     evaluation.add_argument("--json", action="store_true")
@@ -72,10 +84,14 @@ def main() -> int:
     policy_subcommands = policy.add_subparsers(dest="policy_command", required=True)
     policy_subcommands.add_parser("validate").add_argument("--json", action="store_true")
     release = subparsers.add_parser("release-check")
-    release.add_argument("--phase", required=True, choices=["cleanup", "release", "handoff"])
+    release.add_argument("--phase", required=True, choices=["cleanup", "integrated", "release", "handoff"])
     release.add_argument("--json", action="store_true")
     args = parser.parse_args()
     try:
+        if args.command == "service":
+            result = SupervisorClient(args.repo_root).request(args.service_command)
+            print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
         if args.command == "host-check":
             print(json.dumps(host_check(args.scenario), ensure_ascii=False, sort_keys=True, separators=(",", ":")))
             return 0
@@ -131,6 +147,10 @@ def main() -> int:
             }
             print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
             return 0 if result["ok"] else 2
+        if args.command == "delegate":
+            result = IntegrationController().delegate(Path.cwd(), args.claim_token, mode=args.mode, target=args.target)
+            print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
         request = _request(args.request)
         if args.command == "eligible":
             result = eligibility(request)
@@ -142,7 +162,7 @@ def main() -> int:
         return 0 if result.get("eligible", True) else 2
     except (OSError, json.JSONDecodeError, WorkerError, IntegrationError,
             AcceptanceError, VerificationError, WorkspaceError, ModelCacheError,
-            ProductionCheckError) as error:
+            ProductionCheckError, SupervisorError) as error:
         print(json.dumps({"format": "LOCAL-CODING-WORKER-ERROR/1", "error": str(error)}, sort_keys=True,
                          separators=(",", ":")))
         return 2

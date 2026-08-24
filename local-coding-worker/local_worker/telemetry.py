@@ -36,13 +36,23 @@ def qwen_harness_telemetry(records: object) -> dict[str, Any]:
     reported = stats.get("tools", {}).get("totalCalls") if isinstance(stats.get("tools"), dict) else None
     tool_calls = max(len(tool_names), int(reported or 0))
     lower = terminal_reason.lower()
+    token_total = None
+    models = stats.get("models")
+    if isinstance(models, dict):
+        totals = []
+        for model in models.values():
+            tokens = model.get("tokens") if isinstance(model, dict) else None
+            if isinstance(tokens, dict) and isinstance(tokens.get("total"), (int, float)):
+                totals.append(int(tokens["total"]))
+        if totals:
+            token_total = sum(totals)
     return {
         "tool_calls": tool_calls,
         "tool_names": sorted(set(tool_names)),
         "terminal_reason": terminal_reason[:500],
         "budget_exhausted": any(token in lower for token in ("budget", "max session turns", "max tool", "wall-clock")),
         "preempted": "preempt" in lower or "cancel" in lower,
-        "stats": stats,
+        "token_total": token_total,
     }
 
 

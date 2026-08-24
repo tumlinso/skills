@@ -158,6 +158,12 @@ class LlamaCppServerAdapter:
         state = "draining" if not server["accepting"] else ("ready" if status == 200 else "loading")
         return {"healthy": status == 200, "state": state, "status_code": status, "details": body}
 
+    def describe(self, handle: str) -> dict[str, Any]:
+        """Return owned process identity without exposing the mutable server record."""
+        server = self._server(handle)
+        return {"base_url": server["base_url"], "pid": int(server["process"].pid),
+                "log_path": server["log_path"], "profile": dict(server["profile"])}
+
     def run(self, handle: str, request: dict[str, Any]) -> dict[str, Any]:
         server = self._server(handle)
         if server["evicted"] or not server["accepting"]:

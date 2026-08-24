@@ -18,7 +18,7 @@ class TelemetryTests(unittest.TestCase):
         result = qwen_harness_telemetry(records)
         self.assertEqual(result["tool_calls"], 3)
         self.assertEqual(result["tool_names"], ["grep_search", "read_file"])
-        self.assertEqual(result["stats"]["models"]["local"]["tokens"]["total"], 10)
+        self.assertEqual(result["token_total"], 10)
 
     def test_budget_and_preemption_terminal_reasons_are_normalized(self):
         self.assertTrue(qwen_harness_telemetry([{"type": "result", "subtype": "max tool budget"}])["budget_exhausted"])

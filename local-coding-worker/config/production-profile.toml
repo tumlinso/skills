@@ -25,7 +25,7 @@ qwen_max_wall_time_seconds = 300
 qwen_max_tool_calls = 12
 
 [experiment]
-initial_context = 16384
+initial_context = 32768
 refinement_contexts = [8192, 16384, 32768]
 phase_a_task_ids = ["contract-authority"]
 phase_b_task_ids = ["contract-authority", "needs-codex", "resource-policy"]
@@ -41,7 +41,7 @@ double_solve_enabled = false
 hot_idle_seconds = 900
 max_real_workers = 1
 needs_codex_is_success = true
-reason = "CORE4 production extension accepted Qwen Code with Q4_K_M at 16K on one runtime-discovered GPU island."
+reason = "Integrated Qwen Code tool and schema overhead requires the measured 32K profile on one runtime-discovered GPU island."
 
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
