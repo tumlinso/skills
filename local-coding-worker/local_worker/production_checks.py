@@ -554,7 +554,43 @@ def evaluate(phase: str) -> dict[str, Any]:
 
 
 def validate_policy() -> dict[str, Any]:
-    raise ProductionCheckError("production policy validation is not implemented yet")
+    repo = _repo()
+    profile = _profile(repo)
+    deployment = profile.get("deployment_policy", {})
+    focused = json.loads((repo / "local-coding-worker/evals/results/compact/focused-comparison.json").read_text())
+    readonly = json.loads((repo / "local-coding-worker/evals/results/compact/host-readonly.json").read_text())
+    writable = json.loads((repo / "local-coding-worker/evals/results/compact/host-writable.json").read_text())
+    service = json.loads((repo / "local-coding-worker/evals/results/compact/host-service.json").read_text())
+    best = focused.get("best_arm") or {}
+    q5 = next((item for item in focused.get("quantizations", [])
+               if item.get("candidate_id") == "qwen3-coder-30b-a3b-instruct-q5-k-m"), {})
+    guards = {
+        "host_service": service.get("ok") is True,
+        "host_readonly": readonly.get("ok") is True,
+        "host_writable": writable.get("ok") is True,
+        "focused_acceptance": best.get("accepted_tasks") == 4 and best.get("tasks_evaluated") == 4,
+        "selected_harness": best.get("harness") == "qwen-code",
+        "selected_context": best.get("context_size") == 16384,
+        "q5_not_promoted_without_cache": q5.get("status") == "not_evaluated",
+        "real_local_enabled": deployment.get("real_local_enabled") is True,
+        "single_worker": deployment.get("max_real_workers") == 1,
+        "bounded_idle": deployment.get("hot_idle_seconds") == 900,
+        "no_extra_model_calls": deployment.get("reviewer_enabled") is False and
+                                deployment.get("double_solve_enabled") is False,
+        "needs_codex_success": deployment.get("needs_codex_is_success") is True,
+        "initial_context": profile.get("experiment", {}).get("initial_context") == 16384,
+    }
+    result = {"format": "CORE4-PRODUCTION-POLICY-VALIDATION/1", "ok": all(guards.values()),
+              "guards": guards, "selection": {"candidate_id": focused.get("candidate_id"),
+              "harness": best.get("harness"), "context_size": best.get("context_size"),
+              "gpu_profile": "runtime-discovered-one-island", "max_real_workers": deployment.get("max_real_workers"),
+              "hot_idle_seconds": deployment.get("hot_idle_seconds")},
+              "fake_backend_preserved": True, "reviewer_enabled": deployment.get("reviewer_enabled"),
+              "double_solve_enabled": deployment.get("double_solve_enabled")}
+    if not result["ok"]:
+        failed = sorted(key for key, value in guards.items() if not value)
+        raise ProductionCheckError(f"production policy guards failed: {', '.join(failed)}")
+    return result
 
 
 def release_check(phase: str) -> dict[str, Any]:

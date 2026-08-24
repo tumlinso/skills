@@ -15,7 +15,9 @@ gate, acceptance, commit, and push authority.
    `scripts/local_worker.py eligible|run`.
 3. For the complete fake-backend flow, run `scripts/local_worker.py integrate`
    with a `CORE4-INTEGRATION-REQUEST/1`.
-4. Treat `needs_codex` as a successful hand-back. Use only the compact result.
+4. Use `CORE4-INTEGRATION-REQUEST/2` for a policy-enabled real execution; the
+   runtime selects the verified cache, service, harness, and GPU island.
+5. Treat `needs_codex` as a successful hand-back. Use only the compact result.
 
 Read [read-only-contract](references/read-only-contract.md) for read-only role
 or packet changes, [writable-work-contract](references/writable-work-contract.md)
@@ -33,5 +35,6 @@ eligibility, authorization, isolation, or result semantics.
 - Never accept shell strings, recursive agents, architecture decisions,
   commits, pushes, scope expansion, or parent lifecycle actions.
 - Never expose the child token in output or telemetry.
-- Do not download or install a backend or model. Until real assets are approved,
-  use the deterministic fake backend only.
+- Never download or install a backend or model. Real execution requires the
+  checked production policy and an already-verified persistent model cache;
+  deterministic fake execution remains available for tests.

@@ -35,13 +35,13 @@ maximum_phase_a_seconds_per_task = 300
 raw_evidence = true
 
 [deployment_policy]
-real_local_enabled = false
+real_local_enabled = true
 reviewer_enabled = false
 double_solve_enabled = false
-hot_idle_seconds = 0
-max_real_workers = 0
+hot_idle_seconds = 900
+max_real_workers = 1
 needs_codex_is_success = true
-reason = "No CORE4-17 configuration met the accepted-task threshold."
+reason = "CORE4 production extension accepted Qwen Code with Q4_K_M at 16K on one runtime-discovered GPU island."
 
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"

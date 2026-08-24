@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T07:49:38Z",
+  "generated_at": "2026-08-24T07:50:50Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 116,
+  "project_revision": 123,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -91,17 +91,17 @@
       {
         "allowed_json": "[\"undecided\", \"qwen3-coder-30b-a3b-q4-k-m\", \"qwen3-coder-30b-a3b-q5-k-m\", \"qwen3-coder-next-q4-k-m\"]",
         "id": "C4P-ACTIVE-MODEL",
-        "revision": 106,
+        "revision": 121,
         "title": "Active local coding model",
-        "updated_at": "2026-08-24T07:43:06Z",
-        "value_json": "\"undecided\""
+        "updated_at": "2026-08-24T07:50:50Z",
+        "value_json": "\"qwen3-coder-30b-a3b-q4-k-m\""
       },
       {
         "allowed_json": "[\"runtime-discovered-one-island\", \"runtime-discovered-dual\", \"single-wide\"]",
         "id": "C4P-GPU-PROFILE",
-        "revision": 106,
+        "revision": 122,
         "title": "Production inference topology policy",
-        "updated_at": "2026-08-24T07:43:06Z",
+        "updated_at": "2026-08-24T07:50:50Z",
         "value_json": "\"runtime-discovered-one-island\""
       },
       {
@@ -115,10 +115,10 @@
       {
         "allowed_json": "[\"undecided\", \"qwen-code\", \"codex-cli\", \"custom\"]",
         "id": "C4P-PRIMARY-HARNESS",
-        "revision": 106,
+        "revision": 120,
         "title": "Production local coding harness",
-        "updated_at": "2026-08-24T07:43:06Z",
-        "value_json": "\"undecided\""
+        "updated_at": "2026-08-24T07:50:49Z",
+        "value_json": "\"qwen-code\""
       }
     ],
     "events": [
@@ -1281,6 +1281,76 @@
         "revision": 116,
         "seq": 116,
         "timestamp": "2026-08-24T07:49:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-19",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 117,
+        "seq": 117,
+        "timestamp": "2026-08-24T07:49:46Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-PRODUCTION-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-PRODUCTION-POLICY\"}",
+        "revision": 118,
+        "seq": 118,
+        "timestamp": "2026-08-24T07:50:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-PRODUCTION-POLICY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"4a1c3e66-e610-4aa7-81ff-b3dc0e229510\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 119,
+        "seq": 119,
+        "timestamp": "2026-08-24T07:50:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-PRIMARY-HARNESS",
+        "entity_type": "decision",
+        "event_type": "decision.set",
+        "payload_json": "{\"value\": \"qwen-code\"}",
+        "revision": 120,
+        "seq": 120,
+        "timestamp": "2026-08-24T07:50:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-ACTIVE-MODEL",
+        "entity_type": "decision",
+        "event_type": "decision.set",
+        "payload_json": "{\"value\": \"qwen3-coder-30b-a3b-q4-k-m\"}",
+        "revision": 121,
+        "seq": 121,
+        "timestamp": "2026-08-24T07:50:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GPU-PROFILE",
+        "entity_type": "decision",
+        "event_type": "decision.set",
+        "payload_json": "{\"value\": \"runtime-discovered-one-island\"}",
+        "revision": 122,
+        "seq": 122,
+        "timestamp": "2026-08-24T07:50:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-19",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 123,
+        "seq": 123,
+        "timestamp": "2026-08-24T07:50:50Z"
       }
     ],
     "evidence": [
@@ -1360,6 +1430,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"host-readonly\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"508ad1ebce02b5a6d3b84db0ff931ba9e2a0c9d793dadbf7577130e45acc7f03\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"host-readonly\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1800}, \"diff_fingerprint\": \"3c2e19c6bf119e3c5a6fa13391026c63acc14baad65369c517cb14c7ee13276e\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/evals/results/compact/host-readonly-runtime/server-8080.log\", \"local-coding-worker/evals/results/compact/host-readonly.json\", \"local-coding-worker/evals/tasks/core4-host-tasks.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"055cd6f7aa1512d7c067d6f6e2416c0375c127fe\", \"interfaces\": [], \"recorded_git_head\": \"055cd6f7aa1512d7c067d6f6e2416c0375c127fe\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 100}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/323ccef5-c146-4cba-b122-bbb26cc62797",
         "revision": 101,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T07:50:40Z",
+        "gate_id": "C4P-GATE-PRODUCTION-POLICY",
+        "id": "4a1c3e66-e610-4aa7-81ff-b3dc0e229510",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"production-policy\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6d5f7ffdaf595595bce6b59dd1490035ff925917ec48b14aa5303dd4499523b5\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"production-policy\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600}, \"diff_fingerprint\": \"7271f36a480e077c5a7428c91d1949d9880f2fd4166a7789e5f651e97e9d2a2b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/SKILL.md\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-19.md\"], \"files\": [], \"git_head\": \"5310811cb4c236491b8674e8c591f86e3e0edcc1\", \"interfaces\": [], \"recorded_git_head\": \"5310811cb4c236491b8674e8c591f86e3e0edcc1\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 118}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/4a1c3e66-e610-4aa7-81ff-b3dc0e229510",
+        "revision": 119,
         "status": "passed"
       },
       {
@@ -1719,14 +1802,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"production-policy\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 600, \"track_git_head\": true}",
         "id": "C4P-GATE-PRODUCTION-POLICY",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6d5f7ffdaf595595bce6b59dd1490035ff925917ec48b14aa5303dd4499523b5",
+        "last_run_at": "2026-08-24T07:50:40Z",
         "required": 1,
-        "revision": 106,
-        "status": "pending",
+        "revision": 119,
+        "status": "passed",
         "task_id": "C4P-19",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1950,6 +2033,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \"local-coding-worker/evals/results/compact/host-writable.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-orchestrator/tests/test_runtime_facade.py\", \"todo-orchestrator/todo_orchestrator/runtime/topology.py\"], \"checkpoints\": [{\"id\": \"C4P-REAL-WORKER-READY\", \"reached_at\": \"2026-08-24T07:45:45Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-HOST-WRITABLE\", \"last_run_at\": \"2026-08-24T07:45:30Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".../core4-production-extension.plan.json           |   2 +\\n .todo-orchestrator/state.snapshot.json             | 449 +++++++++++++--------\\n .../local_worker/production_checks.py              | 194 +++++++++\\n todo-orchestrator/tests/test_runtime_facade.py     |   9 +-\\n .../todo_orchestrator/runtime/topology.py          |  31 +-\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-00.md                                    |   2 +-\\n todos/c4p-01.md                                    |   2 +-\\n todos/c4p-02.md                                    |   2 +-\\n todos/c4p-03.md                                    |   2 +-\\n todos/c4p-04.md                                    |   2 +-\\n todos/c4p-05.md                                    |   2 +-\\n todos/c4p-06.md                                    |   2 +-\\n todos/c4p-07.md                                    |   2 +-\\n todos/c4p-08.md                                    |   2 +-\\n todos/c4p-09.md                                    |   2 +-\\n todos/c4p-10.md                                    |   2 +-\\n todos/c4p-11.md                                    |   2 +-\\n todos/c4p-12.md                                    |   2 +-\\n todos/c4p-13.md                                    |   2 +-\\n todos/c4p-14.md                                    |   2 +-\\n todos/c4p-15.md                                    |   2 +-\\n todos/c4p-16.md                                    |   2 +-\\n todos/c4p-17.md                                    |   8 +-\\n todos/c4p-18.md                                    |   2 +-\\n todos/c4p-19.md                                    |   2 +-\\n todos/c4p-20.md                                    |   2 +-\\n todos/c4p-21.md                                    |   2 +-\\n todos/c4p-22.md                                    |   2 +-\\n todos/c4p-23.md                                    |   2 +-\\n todos/c4p-24.md                                    |   2 +-\\n 32 files changed, 532 insertions(+), 217 deletions(-)\", \"git_head\": \"9cdd411e59a6d12cac2e7f4e1e42f576871f6f3c\", \"interfaces\": [], \"note\": \"Validated real isolated Qwen edit and CUDA 12.9 sm_70 compile/test, guarded acceptance, stale rejection, rollback, scope protection, parent non-completion, accepted-patch CUDA discovery, clean preemption, and pair-local runtime topology parsing after the GPU rewire.\", \"resources\": [], \"task_id\": \"C4P-17\"}",
         "revision": 111,
         "task_id": "C4P-17"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T07:50:50Z",
+        "id": "745c55ff-5285-4fbe-a8fc-fcab6712a17e",
+        "kind": "complete",
+        "note": "Enabled the evidence-backed one-worker profile: Qwen3-Coder-30B-A3B Q4_K_M, Qwen Code, 16K, one runtime-discovered GPU island, 900-second preemptible idle TTL. Fake mode remains available; reviewer and double-solve remain disabled.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/SKILL.md\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/production_checks.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-PRODUCTION-POLICY\", \"last_run_at\": \"2026-08-24T07:50:40Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 111 +++++++++++++++++----\\n local-coding-worker/SKILL.md                       |   9 +-\\n local-coding-worker/config/production-profile.toml |   8 +-\\n .../local_worker/production_checks.py              |  38 ++++++-\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-19.md                                    |   6 +-\\n 7 files changed, 146 insertions(+), 34 deletions(-)\", \"git_head\": \"5310811cb4c236491b8674e8c591f86e3e0edcc1\", \"interfaces\": [{\"content_hash\": null, \"id\": \"core4-production-policy-v1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"Enabled the evidence-backed one-worker profile: Qwen3-Coder-30B-A3B Q4_K_M, Qwen Code, 16K, one runtime-discovered GPU island, 900-second preemptible idle TTL. Fake mode remains available; reviewer and double-solve remain disabled.\", \"resources\": [], \"task_id\": \"C4P-19\"}",
+        "revision": 123,
+        "task_id": "C4P-19"
       },
       {
         "claim_id": null,
@@ -4785,14 +4878,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 100,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 106,
-        "status": "planned",
+        "revision": 123,
+        "status": "done",
         "tags_json": "[\"production\", \"policy\", \"skill-surface\"]",
         "title": "Enable one-worker production policy",
-        "updated_at": "2026-08-24T07:43:06Z",
-        "version": 7
+        "updated_at": "2026-08-24T07:50:50Z",
+        "version": 9
       },
       {
         "attention_reason": null,

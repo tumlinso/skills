@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `116`
+Project revision: `123`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -12,7 +12,7 @@ Project revision: `116`
 - `C4P-22` | status: planned | execution: ready | next: Verify the eventual tracked layout contains only the four skills, AGENTS.md, .gitignore, and optional self-contained .github.
 - `C4P-21` | status: planned | execution: ready | next: Run this full gate once. Repair only actual regressions and rerun the affected suite before one final aggregate run.
 - `C4P-20` | status: planned | execution: ready | next: Do not promote from keyword matching. Use objective gates and compact accepted-task comparisons; retain raw artifacts only in the Git common directory.
-- `C4P-19` | status: planned | execution: ready | next: Update minimal SKILL.md routing and versioned policy without exposing server operation details to Codex.
+- `C4P-19` | status: done | execution: closed | next: Update minimal SKILL.md routing and versioned policy without exposing server operation details to Codex.
 - `C4P-18` | status: done | execution: closed | next: Use integer acceptance counts and report unavailable candidates as not_evaluated, not failed.
 - `C4P-17` | status: done | execution: closed | next: Repair implementation defects revealed by these scenarios, then rerun only the failed scenario set.
 - `C4P-16` | status: done | execution: closed | next: Use the smallest task set that proves the path; inspect raw logs only on failure.
