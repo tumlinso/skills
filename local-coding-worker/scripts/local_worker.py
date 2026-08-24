@@ -174,7 +174,8 @@ def main() -> int:
     cache_commands.choices["verify"].add_argument("--quick", action="store_true")
     cache_commands.choices["verify"].add_argument("--full", action="store_true")
     host = subparsers.add_parser("host-check")
-    host.add_argument("--scenario", required=True, choices=["service", "readonly", "writable"])
+    host.add_argument("--scenario", required=True,
+                      choices=["service", "structured-output", "readonly", "writable"])
     host.add_argument("--json", action="store_true")
     service = subparsers.add_parser("service")
     service.add_argument("--repo-root", default=".")

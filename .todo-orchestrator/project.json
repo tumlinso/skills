@@ -1,0 +1,18 @@
+{
+  "configuration": {
+    "busy_timeout_ms": 5000,
+    "claim_lease_seconds": 7200,
+    "context_budget_bytes": 12000,
+    "legacy_review_days": {
+      "blocked": 7,
+      "in_progress": 3,
+      "planned": 3,
+      "stale": 3
+    },
+    "resource_lease_seconds": 300
+  },
+  "created_at": "2026-08-24T18:21:10Z",
+  "project_name": "CORE4 Qwen Harness Repair",
+  "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "schema_version": 2
+}

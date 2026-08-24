@@ -196,9 +196,13 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
                 harness = QwenCodeAdapter(str(profile["harnesses"]["qwen"]))
                 handle = harness.start({"cwd": str(repo), "model": str(active["candidate_id"]),
                     "base_url": server.base_url + "/v1", "mode": "readonly",
-                    "repository_root": str(repo), "authorized_read_paths": ["."],
+                    "repository_root": str(repo), "authorized_read_paths": [
+                        "local-coding-worker/references/read-only-contract.md",
+                        "local-coding-worker/references/resource-policy.md",
+                    ],
                     "allowed_tools": ["read_file", "structured_output"],
-                    "max_session_turns": 12, "max_tool_calls": 8,
+                    "max_session_turns": 9, "max_tool_calls": 6,
+                    "structured_retry_margin": 2, "turn_limit_is_error": True,
                     "max_wall_time_seconds": 180, "timeout_seconds": 210})
                 try:
                     for task_id in selected_ids:
@@ -323,8 +327,9 @@ def _host_writable(repo: Path) -> dict[str, Any]:
                             "base_url": server.base_url + "/v1", "mode": "writable",
                             "repository_root": str(workspace.path), "write_paths": ["src"],
                             "allowed_tools": ["read_file", "edit", "write_file", "structured_output"],
-                            "max_session_turns": 12,
-                            "max_tool_calls": 8, "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                            "max_session_turns": 11, "max_tool_calls": 8,
+                            "structured_retry_margin": 2, "turn_limit_is_error": True,
+                            "max_wall_time_seconds": 180, "timeout_seconds": 210})
                         try:
                             prompt = json.dumps({
                                 "objective": ("Read src/add.cu. Fix only the add function so the existing executable "
@@ -437,10 +442,140 @@ def _host_writable(repo: Path) -> dict[str, Any]:
     return evidence
 
 
+def _host_structured_output(repo: Path) -> dict[str, Any]:
+    """Three bounded real-model checks for Qwen's terminal tool contract."""
+    from .harnesses import QwenCodeAdapter
+    from .supervisor import SupervisorClient
+
+    profile = _profile(repo)
+    cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active model cache is missing")
+    verified_before = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    fixture_root = Path(os.environ.get("CORE4_QWEN_READ_FIXTURE_ROOT", str(repo))).resolve()
+    fixture_path = os.environ.get("CORE4_QWEN_READ_FIXTURE_PATH", "local-coding-worker/SKILL.md")
+    if not (fixture_root / fixture_path).is_file():
+        raise ProductionCheckError("structured-output read fixture is missing")
+    before_status = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=fixture_root, text=True, capture_output=True, check=True,
+    ).stdout
+    cases = [
+        ("terminal-only", [], 1,
+         "Return outcome completed with a short summary, no claims, no changed paths, low risk, and no blocker."),
+        ("one-read", ["read_file"], 2,
+         f"Read {fixture_path} exactly once and return a completed structured result. Include exactly one claim "
+         f"whose evidence contains path={fixture_path}, line=1, and end_line=1."),
+        ("needs-codex", [], 1,
+         "The required convention is not established. Return outcome needs_codex with a concise explanation."),
+    ]
+    requested_cases = os.environ.get("CORE4_QWEN_DIAGNOSTIC_CASES")
+    if requested_cases:
+        selected = {item.strip() for item in requested_cases.split(",") if item.strip()}
+        known = {item[0] for item in cases}
+        if not selected or not selected.issubset(known):
+            raise ProductionCheckError("CORE4_QWEN_DIAGNOSTIC_CASES contains an unknown case")
+        cases = [item for item in cases if item[0] in selected]
+    supervisor = SupervisorClient(repo)
+    endpoint = supervisor.request("warm")
+    results: list[dict[str, Any]] = []
+    try:
+        for case_id, core_tools, tool_budget, objective in cases:
+            harness = QwenCodeAdapter(str(profile["harnesses"]["qwen"]))
+            with tempfile.TemporaryDirectory(prefix=f"core4-qwen-{case_id}-") as runtime:
+                handle = harness.start({
+                    "cwd": str(fixture_root), "repository_root": str(fixture_root), "mode": "readonly",
+                    "authorized_read_paths": [fixture_path], "core_tools": core_tools,
+                    "allowed_tools": core_tools, "base_url": endpoint["base_url"],
+                    "model": endpoint["model_id"], "runtime_dir": runtime,
+                    "max_tool_calls": tool_budget, "max_session_turns": 1,
+                    "structured_retry_margin": 2, "max_wall_time_seconds": 180,
+                    "timeout_seconds": 210, "turn_limit_is_error": True,
+                    "pure_test_plan": case_id == "terminal-only",
+                })
+                try:
+                    try:
+                        outcome = harness.run(handle, {"prompt": objective, "timeout_seconds": 210})
+                    except Exception as error:
+                        results.append({"id": case_id, "status": "failed",
+                                        "effective_core_tools": core_tools,
+                                        "max_tool_calls": tool_budget,
+                                        "max_session_turns": max(1, tool_budget + 3),
+                                        "error": f"{type(error).__name__}: {str(error)[:500]}"})
+                        continue
+                finally:
+                    harness.evict(handle)
+            telemetry = dict((outcome.get("usage", {}).get("core4", {}) or {}))
+            counts = dict(telemetry.get("tool_name_counts") or {})
+            model_outcome = outcome.get("model_outcome") or {}
+            results.append({
+                "id": case_id, "status": outcome.get("status"),
+                "model_outcome": model_outcome.get("outcome"),
+                "effective_core_tools": core_tools, "max_tool_calls": tool_budget,
+                "max_session_turns": max(1, tool_budget + 3),
+                "tool_name_counts": counts, "tool_names": telemetry.get("tool_names", []),
+                "reason": outcome.get("reason"),
+                "duration_ms": outcome.get("duration_ms"),
+            })
+    finally:
+        supervisor.request("release", service_lease_id=endpoint.get("service_lease_id"))
+    after_status = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=fixture_root, text=True, capture_output=True, check=True,
+    ).stdout
+    verified_after = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    by_id = {item["id"]: item for item in results}
+    terminal = by_id.get("terminal-only", {})
+    one_read = by_id.get("one-read", {})
+    needs = by_id.get("needs-codex", {})
+    case_guards = {
+        "terminal_structured_once": terminal.get("status") == "succeeded" and
+                                    terminal.get("model_outcome") == "completed" and
+                                    terminal.get("tool_name_counts", {}).get("structured_output") == 1,
+        "one_read_structured_once": one_read.get("status") == "succeeded" and
+                                    one_read.get("model_outcome") == "completed" and
+                                    one_read.get("tool_name_counts", {}).get("read_file") == 1 and
+                                    one_read.get("tool_name_counts", {}).get("structured_output") == 1 and
+                                    set(one_read.get("tool_name_counts", {})) == {"read_file", "structured_output"},
+        "needs_codex_structured_once": needs.get("status") == "needs_codex" and
+                                       needs.get("model_outcome") == "needs_codex" and
+                                       needs.get("tool_name_counts", {}).get("structured_output") == 1,
+    }
+    selected_guard_names = {
+        "terminal-only": "terminal_structured_once",
+        "one-read": "one_read_structured_once",
+        "needs-codex": "needs_codex_structured_once",
+    }
+    guards = {
+        selected_guard_names[case_id]: case_guards[selected_guard_names[case_id]]
+        for case_id, *_ in cases
+    }
+    guards.update({
+        "fixture_unchanged": before_status == after_status,
+        "model_cache_unchanged": verified_before["payload_sha256"] == verified_after["payload_sha256"] ==
+                                 active["payload_sha256"],
+    })
+    status = supervisor.request("status")
+    guards["supervisor_idle"] = int(status.get("active_leases", -1)) == 0 and all(
+        slot.get("leased") is False for slot in status.get("slots", [])
+    )
+    result = {"format": "CORE4-QWEN-STRUCTURED-DIAGNOSTIC/1", "ok": all(guards.values()),
+              "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
+              "context_size": profile["experiment"]["initial_context"],
+              "fixture_root": str(fixture_root), "fixture_path": fixture_path,
+              "service": {key: endpoint.get(key) for key in ("slot_id", "server_pid", "gpu_uuids", "reused")},
+              "cases": results, "guards": guards}
+    evidence = _write_compact(repo, "qwen-structured-diagnostic", result)
+    if not result["ok"]:
+        raise ProductionCheckError(f"Qwen structured-output diagnostic failed: {guards}")
+    return evidence
+
+
 def host_check(scenario: str) -> dict[str, Any]:
     repo = _repo()
     if scenario == "service":
         return _host_service(repo)
+    if scenario == "structured-output":
+        return _host_structured_output(repo)
     if scenario == "readonly":
         return _host_readonly(repo)
     if scenario == "writable":

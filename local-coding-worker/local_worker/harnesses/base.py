@@ -94,6 +94,12 @@ class OneShotHarnessAdapter:
     ) -> dict[str, Any]:
         return {"status": "succeeded"}
 
+    def normalize_process_error(
+        self, returncode: int, stdout: str, stderr: str, session: dict[str, Any],
+    ) -> dict[str, Any] | None:
+        """Return a bounded terminal outcome for a recognized process error."""
+        return None
+
     def run(self, handle: str, request: dict[str, Any]) -> dict[str, Any]:
         session = self._session(handle)
         prompt = request.get("prompt")
@@ -127,6 +133,12 @@ class OneShotHarnessAdapter:
                 session["usage"]["input_chars"] += len(prompt)
                 session["usage"]["duration_ms"] += duration
         if process.returncode != 0:
+            normalized = self.normalize_process_error(process.returncode, stdout, stderr, session)
+            if normalized is not None:
+                return {
+                    **normalized, "text": "", "usage": normalized.get("usage", {}),
+                    "duration_ms": round(duration, 3), "raw_output_omitted_chars": 0,
+                }
             diagnostic = " ".join(
                 item for item in (stderr.strip()[-500:], stdout.strip()[-500:]) if item
             )[-1000:]

@@ -23,6 +23,18 @@ class IntegrationError(RuntimeError):
     pass
 
 
+def _qwen_budget_config(profile: dict[str, Any], *, writable: bool) -> dict[str, int]:
+    harness = profile.get("harnesses", {})
+    tool_key = "qwen_writable_max_tool_calls" if writable else "qwen_readonly_max_tool_calls"
+    default_tools = 8 if writable else 6
+    return {
+        "max_session_turns": int(harness.get("qwen_max_session_turns", 0)),
+        "max_tool_calls": int(harness.get(tool_key, harness.get("qwen_max_tool_calls", default_tools))),
+        "structured_retry_margin": int(harness.get("qwen_structured_retry_margin", 2)),
+        "max_wall_time_seconds": int(harness.get("qwen_max_wall_time_seconds", 180)),
+    }
+
+
 class ProductionReadOnlyRuntime:
     """Compose frozen production interfaces; inject fakes for software-only proof."""
 
@@ -60,6 +72,7 @@ class ProductionReadOnlyRuntime:
             task_runtime = tempfile.TemporaryDirectory(prefix="core4-qwen-task-")
             harness_config = {
                 **dict(execution.get("harness_config") or {}),
+                **_qwen_budget_config(profile, writable=False),
                 "cwd": str(snapshot.root), "repository_root": str(snapshot.root),
                 "authorized_read_paths": list(request["scopes"]), "mode": "readonly",
                 "base_url": endpoint["base_url"], "model": endpoint["model_id"],
@@ -301,6 +314,7 @@ class IntegrationController:
         return self.run(self.request_from_claim(repo_root, claim_token, mode=mode, target=target))
 
     def _writable_model(self, workspace: Path, request: dict[str, Any]) -> dict[str, Any]:
+        import tomllib
         from .harnesses import QwenCodeAdapter
         from .result_validation import validate_model_outcome
         from .supervisor import SupervisorClient
@@ -323,6 +337,8 @@ class IntegrationController:
             "--consumer", "local-worker", "--budget", "1536", "--max-items", "4",
         ], cwd=workspace)
         supervisor = SupervisorClient(request["repo_root"])
+        profile = tomllib.loads((Path(__file__).resolve().parents[1] /
+                                 "config/production-profile.toml").read_text(encoding="utf-8"))
         endpoint = supervisor.request("warm")
         harness = QwenCodeAdapter()
         handle = None
@@ -332,7 +348,7 @@ class IntegrationController:
                 "cwd": str(workspace), "repository_root": str(workspace), "mode": "writable",
                 "authorized_read_paths": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
                 "write_paths": request["scopes"], "allowed_tools": ["read_file", "edit", "structured_output"],
-                "max_session_turns": 10, "max_tool_calls": 10, "max_wall_time_seconds": 180,
+                **_qwen_budget_config(profile, writable=True),
                 "base_url": endpoint["base_url"], "model": endpoint["model_id"],
                 "runtime_dir": task_runtime.name,
             })

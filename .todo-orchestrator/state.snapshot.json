@@ -1,0 +1,537 @@
+{
+  "generated_at": "2026-08-24T19:29:41Z",
+  "project": {
+    "configuration": {
+      "busy_timeout_ms": 5000,
+      "claim_lease_seconds": 7200,
+      "context_budget_bytes": 12000,
+      "legacy_review_days": {
+        "blocked": 7,
+        "in_progress": 3,
+        "planned": 3,
+        "stale": 3
+      },
+      "resource_lease_seconds": 300
+    },
+    "created_at": "2026-08-24T18:21:10Z",
+    "project_name": "CORE4 Qwen Harness Repair",
+    "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+    "schema_version": 2
+  },
+  "project_revision": 18,
+  "schema_version": 2,
+  "tables": {
+    "barrier_requirements": [],
+    "barriers": [],
+    "checkpoint_gates": [],
+    "checkpoint_interfaces": [],
+    "checkpoints": [],
+    "decisions": [],
+    "events": [
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "project.bootstrapped",
+        "payload_json": "{\"project_name\": \"CORE4 Qwen Harness Repair\"}",
+        "revision": 1,
+        "seq": 1,
+        "timestamp": "2026-08-24T18:21:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/core4-qwen-repair/plan.json\"}",
+        "revision": 2,
+        "seq": 2,
+        "timestamp": "2026-08-24T18:21:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-01",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 3,
+        "seq": 3,
+        "timestamp": "2026-08-24T18:21:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-UNIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4Q-UNIT\"}",
+        "revision": 4,
+        "seq": 4,
+        "timestamp": "2026-08-24T18:45:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-UNIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0d9f81ab-1365-442a-aec3-1d6899babc99\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 5,
+        "seq": 5,
+        "timestamp": "2026-08-24T18:45:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-01",
+        "entity_type": "handoff",
+        "event_type": "task.handed_off",
+        "payload_json": "{\"status\": \"blocked\"}",
+        "revision": 6,
+        "seq": 6,
+        "timestamp": "2026-08-24T18:45:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/core4-qwen-repair/plan.json\"}",
+        "revision": 7,
+        "seq": 7,
+        "timestamp": "2026-08-24T19:06:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 8,
+        "seq": 8,
+        "timestamp": "2026-08-24T19:06:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/core4-qwen-repair/plan.json\"}",
+        "revision": 9,
+        "seq": 9,
+        "timestamp": "2026-08-24T19:07:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-02",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 10,
+        "seq": 10,
+        "timestamp": "2026-08-24T19:07:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-02",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 11,
+        "seq": 11,
+        "timestamp": "2026-08-24T19:20:25Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/core4-qwen-repair/plan.json\"}",
+        "revision": 12,
+        "seq": 12,
+        "timestamp": "2026-08-24T19:29:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q2-UNIT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4Q2-UNIT\"}",
+        "revision": 13,
+        "seq": 13,
+        "timestamp": "2026-08-24T19:29:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q2-UNIT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7f3c89b4-b9a4-4952-9a07-1c01419ca233\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 14,
+        "seq": 14,
+        "timestamp": "2026-08-24T19:29:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q2-REAL-HOST",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4Q2-REAL-HOST\"}",
+        "revision": 15,
+        "seq": 15,
+        "timestamp": "2026-08-24T19:29:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q2-REAL-HOST",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0393c047-f368-40e6-b337-47c2bef637c7\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 16,
+        "seq": 16,
+        "timestamp": "2026-08-24T19:29:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-02",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 17,
+        "seq": 17,
+        "timestamp": "2026-08-24T19:29:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4Q-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 18,
+        "seq": 18,
+        "timestamp": "2026-08-24T19:29:41Z"
+      }
+    ],
+    "evidence": [
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T19:29:30Z",
+        "gate_id": "C4Q2-REAL-HOST",
+        "id": "0393c047-f368-40e6-b337-47c2bef637c7",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": true, \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"inputs\": {\"command_contract\": {\"accepted\": true}, \"diff_fingerprint\": \"332d9db6f105968adf35341d004923459afce07aaaaf51c029b8863d5ee784dc\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/compact/host-readonly-runtime/server-8080.log\", \"local-coding-worker/evals/results/compact/host-writable-runtime/server-8080.log\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"todo-status.md\", \"todos.md\", \"todos/c4q-01.md\", \"todos/c4q-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\"}, \"locks\": [], \"note\": \"Accepted after A/B/C structured-output diagnostics, real read-only and writable host checks, idle supervisor, and model-cache verification passed on llama.cpp build 10615 (f280b2698); evidence is under /tmp/core4-qwen-repair-evidence.\", \"resources\": [], \"started_revision\": 15}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0393c047-f368-40e6-b337-47c2bef637c7",
+        "revision": 16,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T18:45:12Z",
+        "gate_id": "C4Q-UNIT",
+        "id": "0d9f81ab-1365-442a-aec3-1d6899babc99",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"fcd8c1cd4f27c3a7be019b3fc3ff6b43887b285755ff4ad7023def3a7e0d1c75\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"timeout\": 300}, \"diff_fingerprint\": \"a56900533e6a7afc90f90c1e8f9d8c72dbbc0e4f196e2a55469a2d06d8e05ff0\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"todo-status.md\", \"todos.md\", \"todos/c4q-01.md\"], \"files\": [{\"path\": \"local-coding-worker/config/production-profile.toml\", \"sha256\": \"0b3c4e7c68b4bb9494ad09fe20a4dbfcf233670f85d85e7885b5ef20abf4eeb6\"}, {\"path\": \"local-coding-worker/local_worker/controller.py\", \"sha256\": \"5cc80f52ffaf7bbcc26e71b0436a426730f9b621f7411501f405da1ecb7d364e\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/base.py\", \"sha256\": \"033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"sha256\": \"48944172eccb9519c3583e2fc100270733657c3970dba9f610d0d306dbfb77f8\"}, {\"path\": \"local-coding-worker/local_worker/production_checks.py\", \"sha256\": \"98bfa341f235678359378890b23957e5df40671fe8176231bcb9482a69644c25\"}, {\"path\": \"local-coding-worker/scripts/local_worker.py\", \"sha256\": \"a649f05e2f7f62d243fc95a5c9e3485c0a60fd850fd836a0341e5e04855b7255\"}, {\"path\": \"local-coding-worker/tests/test_harnesses.py\", \"sha256\": \"c5a2888107dd812938791b6e514d45181feaef8e21681239154dcb9c811ee518\"}, {\"path\": \"local-coding-worker/tests/test_production_integration.py\", \"sha256\": \"242ca21af7e765a39ddf5d9048b4946daad53812bab8083f031bd3bce01609c4\"}], \"interfaces\": [], \"recorded_git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 4}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0d9f81ab-1365-442a-aec3-1d6899babc99",
+        "revision": 5,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T19:29:30Z",
+        "gate_id": "C4Q2-UNIT",
+        "id": "7f3c89b4-b9a4-4952-9a07-1c01419ca233",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"19b026d9813c893d4565fda878af7e3b59c31b0d837d3c012b444a9d1bdcb8a1\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"timeout\": 300}, \"diff_fingerprint\": \"332d9db6f105968adf35341d004923459afce07aaaaf51c029b8863d5ee784dc\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/compact/host-readonly-runtime/server-8080.log\", \"local-coding-worker/evals/results/compact/host-writable-runtime/server-8080.log\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"todo-status.md\", \"todos.md\", \"todos/c4q-01.md\", \"todos/c4q-02.md\"], \"files\": [{\"path\": \"local-coding-worker/config/production-profile.toml\", \"sha256\": \"0b3c4e7c68b4bb9494ad09fe20a4dbfcf233670f85d85e7885b5ef20abf4eeb6\"}, {\"path\": \"local-coding-worker/local_worker/controller.py\", \"sha256\": \"5cc80f52ffaf7bbcc26e71b0436a426730f9b621f7411501f405da1ecb7d364e\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/base.py\", \"sha256\": \"033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"sha256\": \"b11bbed7fce1789f2fa949de69d35494a5767f597fa351a980254f37d4b57439\"}, {\"path\": \"local-coding-worker/local_worker/production_checks.py\", \"sha256\": \"a9630a992e404fe64f8a50da76059ecab6b6f1f9601562b4a28191a1083fe4bb\"}, {\"path\": \"local-coding-worker/scripts/local_worker.py\", \"sha256\": \"a649f05e2f7f62d243fc95a5c9e3485c0a60fd850fd836a0341e5e04855b7255\"}, {\"path\": \"local-coding-worker/tests/test_harnesses.py\", \"sha256\": \"5b3e0ea0cfc6f85c9745d05c065e5a5ca5ee82445668280d7fb687b57378ccfc\"}, {\"path\": \"local-coding-worker/tests/test_production_integration.py\", \"sha256\": \"242ca21af7e765a39ddf5d9048b4946daad53812bab8083f031bd3bce01609c4\"}], \"interfaces\": [], \"recorded_git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 13}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7f3c89b4-b9a4-4952-9a07-1c01419ca233",
+        "revision": 14,
+        "status": "passed"
+      }
+    ],
+    "gates": [
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"accepted\": false, \"note\": \"Accept only after A/B/C structured-output diagnostics, real read-only and writable host checks, idle supervisor, and model-cache verification all pass.\"}",
+        "id": "C4Q-REAL-HOST",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 12,
+        "status": "pending",
+        "task_id": "C4Q-01",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"input_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\"], \"timeout\": 300}",
+        "id": "C4Q-UNIT",
+        "input_fingerprint": "fcd8c1cd4f27c3a7be019b3fc3ff6b43887b285755ff4ad7023def3a7e0d1c75",
+        "last_run_at": "2026-08-24T18:45:12Z",
+        "required": 1,
+        "revision": 12,
+        "status": "passed",
+        "task_id": "C4Q-01",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"accepted\": true, \"note\": \"Accepted after A/B/C structured-output diagnostics, real read-only and writable host checks, idle supervisor, and model-cache verification passed on llama.cpp build 10615 (f280b2698); evidence is under /tmp/core4-qwen-repair-evidence.\"}",
+        "id": "C4Q2-REAL-HOST",
+        "input_fingerprint": "9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad",
+        "last_run_at": "2026-08-24T19:29:30Z",
+        "required": 1,
+        "revision": 16,
+        "status": "passed",
+        "task_id": "C4Q-02",
+        "type": "manual",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"input_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\"], \"timeout\": 300}",
+        "id": "C4Q2-UNIT",
+        "input_fingerprint": "19b026d9813c893d4565fda878af7e3b59c31b0d837d3c012b444a9d1bdcb8a1",
+        "last_run_at": "2026-08-24T19:29:30Z",
+        "required": 1,
+        "revision": 14,
+        "status": "passed",
+        "task_id": "C4Q-02",
+        "type": "command",
+        "valid": 1
+      }
+    ],
+    "handoffs": [
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T18:45:12Z",
+        "id": "38c35921-da7b-46df-bbb6-91ce6c367790",
+        "kind": "handoff",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4Q-UNIT\", \"last_run_at\": \"2026-08-24T18:45:12Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"C4Q-REAL-HOST\", \"last_run_at\": null, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \"local-coding-worker/config/production-profile.toml |   9 +-\\n local-coding-worker/local_worker/controller.py     |  18 ++-\\n local-coding-worker/local_worker/harnesses/base.py |  12 ++\\n .../local_worker/harnesses/qwen_code.py            | 134 +++++++++++++++++++--\\n .../local_worker/production_checks.py              | 124 ++++++++++++++++++-\\n local-coding-worker/scripts/local_worker.py        |   3 +-\\n local-coding-worker/tests/test_harnesses.py        |  83 ++++++++++++-\\n 7 files changed, 357 insertions(+), 26 deletions(-)\", \"git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4Q-01\"}",
+        "revision": 6,
+        "task_id": "C4Q-01"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T19:29:41Z",
+        "id": "b5e2977c-dd8c-449b-adfe-a5ced3bad19a",
+        "kind": "complete",
+        "note": "Repaired strict Qwen tool registration, structured-output-aware budgets and bounded terminal retry; A/B/C, real read-only, real writable, focused tests, cache, and supervisor cleanup passed on llama.cpp f280b2698.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4Q2-UNIT\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"C4Q2-REAL-HOST\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"local-coding-worker/config/production-profile.toml |   9 +-\\n local-coding-worker/local_worker/controller.py     |  18 ++-\\n local-coding-worker/local_worker/harnesses/base.py |  12 ++\\n .../local_worker/harnesses/qwen_code.py            | 170 +++++++++++++++++++--\\n .../local_worker/production_checks.py              | 143 ++++++++++++++++-\\n local-coding-worker/scripts/local_worker.py        |   3 +-\\n local-coding-worker/tests/test_harnesses.py        |  86 ++++++++++-\\n 7 files changed, 414 insertions(+), 27 deletions(-)\", \"git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\", \"interfaces\": [], \"note\": \"Repaired strict Qwen tool registration, structured-output-aware budgets and bounded terminal retry; A/B/C, real read-only, real writable, focused tests, cache, and supervisor cleanup passed on llama.cpp f280b2698.\", \"resources\": [], \"task_id\": \"C4Q-02\"}",
+        "revision": 18,
+        "task_id": "C4Q-02"
+      }
+    ],
+    "interface_consumers": [],
+    "interfaces": [],
+    "invariants": [
+      {
+        "enforcement": null,
+        "id": "C4Q-FIXED-RUNTIME",
+        "rule": "Keep context size, model, quantization, GPU topology, and worker count unchanged while repairing Qwen turn and tool registration semantics.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "C4Q-SKILLS-ONLY",
+        "rule": "Modify only local-coding-worker in the skills repository; do not bootstrap, claim, or modify Cellerator or CE-ARCH work.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "C4Q-STRICT-OUTPUT",
+        "rule": "Retain schema-backed structured output and fail closed when the installed Qwen lacks strict core-tool registration.",
+        "scope_json": "{}",
+        "severity": "error"
+      }
+    ],
+    "migration_warnings": [],
+    "named_locks": [],
+    "ownership_scopes": [
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/config/production-profile.toml",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/controller.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/harnesses/base.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/harnesses/qwen_code.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_harnesses.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_production_integration.py",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "C4Q-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/config/production-profile.toml",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/controller.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/harnesses/base.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/harnesses/qwen_code.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_harnesses.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_production_integration.py",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "C4Q-02"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "C4Q-02"
+      }
+    ],
+    "resource_classes": [],
+    "resource_instances": [],
+    "resource_requests": [],
+    "task_artifacts": [],
+    "task_dependencies": [],
+    "task_invariants": [
+      {
+        "invariant_id": "C4Q-FIXED-RUNTIME",
+        "task_id": "C4Q-01"
+      },
+      {
+        "invariant_id": "C4Q-SKILLS-ONLY",
+        "task_id": "C4Q-01"
+      },
+      {
+        "invariant_id": "C4Q-STRICT-OUTPUT",
+        "task_id": "C4Q-01"
+      },
+      {
+        "invariant_id": "C4Q-FIXED-RUNTIME",
+        "task_id": "C4Q-02"
+      },
+      {
+        "invariant_id": "C4Q-SKILLS-ONLY",
+        "task_id": "C4Q-02"
+      },
+      {
+        "invariant_id": "C4Q-STRICT-OUTPUT",
+        "task_id": "C4Q-02"
+      }
+    ],
+    "task_locks": [],
+    "tasks": [
+      {
+        "attention_reason": "Real A/B/C gate blocked by reproducible llama.cpp grammar-engine crash: Unexpected empty grammar stack after accepting piece: =read (89871). Reproduced on fresh 32K cached Q4 server with strict Qwen --core-tools, denied non-terminal tools, disabled project context, and minimal system prompt. Focused 26-test suite and cache verification pass; Cellerator remained clean. Evidence: /tmp/core4-qwen-repair-evidence and ~/.local/state/core4-local-worker/llama-server-slot-*.log.",
+        "created_at": "2026-08-24T18:21:40Z",
+        "id": "C4Q-01",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Use strict --core-tools registration, derive a bounded structured-output-aware turn cap, share the terminal instruction across read-only and writable execution, preserve compact exit-53 diagnostics, and validate the cached Q4 model through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
+        "revision": 12,
+        "status": "blocked",
+        "tags_json": "[]",
+        "title": "Repair Qwen structured-output control contract",
+        "updated_at": "2026-08-24T19:29:29Z",
+        "version": 6
+      },
+      {
+        "attention_reason": null,
+        "created_at": "2026-08-24T19:07:08Z",
+        "id": "C4Q-02",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 110,
+        "result": "validated",
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
+        "revision": 18,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Validate rebuilt llama runtime and finish Qwen repair",
+        "updated_at": "2026-08-24T19:29:41Z",
+        "version": 4
+      }
+    ]
+  }
+}

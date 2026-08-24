@@ -20,9 +20,12 @@ qwen = "qwen"
 codex = "/usr/local/bin/codex"
 codex_profile = "local"
 qwen_minimum_node_major = 22
-qwen_max_session_turns = 6
-qwen_max_wall_time_seconds = 300
-qwen_max_tool_calls = 12
+qwen_max_session_turns = 9
+qwen_max_wall_time_seconds = 180
+qwen_max_tool_calls = 8
+qwen_readonly_max_tool_calls = 6
+qwen_writable_max_tool_calls = 8
+qwen_structured_retry_margin = 2
 
 [experiment]
 initial_context = 32768
