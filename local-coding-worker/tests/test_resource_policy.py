@@ -16,6 +16,8 @@ for item in (SKILL, TODO):
 
 from local_worker.service import AdapterError, AdapterService
 from todo_orchestrator.background.host import HostCoordinator
+from todo_orchestrator.runtime.facade import HostResourceFacade
+from todo_orchestrator.runtime.topology import discover_gpu_topology
 
 
 class FakeAdapter:
@@ -107,6 +109,35 @@ class LocalWorkerResourcePolicyTests(unittest.TestCase):
         handle = service.start("fake", {})
         self.assertEqual(service.run("fake", handle, {})["text"], "bounded")
         self.assertTrue(service.evict("fake", handle)["evicted"])
+
+    def test_runtime_bundle_ranking_prefers_disjoint_nvlink_numa_local_islands(self) -> None:
+        facade = HostResourceFacade(self.host)
+        resources = []
+        for index, (domain, node, free, utilization) in enumerate([
+            ("island-a", "0", "12000", "5"), ("island-a", "0", "11900", "4"),
+            ("island-b", "1", "13000", "2"), ("island-b", "1", "12900", "3"),
+        ]):
+            resources.append({"id": f"accelerator:GPU-{index}", "kind": "accelerator", "enabled": True,
+                              "tags": {"nvlink_domain": domain, "numa_node": node,
+                                       "pcie_root": f"root-{node}", "memory_free_mib": free,
+                                       "utilization_percent": utilization}})
+        facade.upsert(resources)
+        bundles = facade.compound_gpu_bundles(2)
+        self.assertEqual(len(bundles), 2)
+        self.assertEqual(bundles[0]["resource_ids"], ["accelerator:GPU-2", "accelerator:GPU-3"])
+        self.assertTrue(all(bundle["selection"]["numa_local"] for bundle in bundles))
+
+    def test_topology_discovery_records_optional_pcie_and_nvlink_metadata(self) -> None:
+        inventory = ("0, GPU-a, 00000000:02:00.0, 3, 8, 15000, 2\n"
+                     "1, GPU-b, 00000000:03:00.0, 3, 8, 14900, 3\n")
+        topology = ("\tGPU0\tGPU1\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\n"
+                    "GPU0\tX\tNV6\t0-19\t0\tN/A\n"
+                    "GPU1\tNV6\tX\t0-19\t0\tN/A\n")
+        def runner(argv): return topology if argv[1:3] == ["topo", "-m"] else inventory
+        resources = discover_gpu_topology(runner)
+        tags = resources[0]["tags"]
+        self.assertEqual((tags["pcie_generation_current"], tags["pcie_link_width_current"]), ("3", "8"))
+        self.assertEqual((tags["numa_node"], tags["nvlink_domain"]), ("0", "runtime:0-1"))
 
 
 if __name__ == "__main__":

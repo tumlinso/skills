@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
@@ -179,6 +180,12 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual(seen["target"], "")
         self.assertEqual((seen["format"], seen["backend"]), ("LCW-REQUEST/2", "real"))
 
+    def test_public_writable_delegate_forwards_explicit_ctxpp_target(self) -> None:
+        request = self.controller().request_from_claim(
+            self.root, "toc_fixture", mode="writable", target="kernel",
+        )
+        self.assertEqual(request["target"], "kernel")
+
     def test_public_writable_delegate_verifies_applies_credits_and_accepts(self) -> None:
         def runner(worktree: Path, request: dict[str, object]) -> dict[str, object]:
             (worktree / "src/kernel.cu").write_text("// delegated candidate\n", encoding="utf-8")
@@ -217,11 +224,12 @@ class Core4IntegrationTests(unittest.TestCase):
                    "experiment": {"initial_context": 16384}, "harnesses": {"qwen": "qwen", "codex": "codex"},
                    "storage": {"cache_root": "/cache", "canonical_root": "/cold"}}
         class Supervisor:
-            def request(self, operation):
+            def request(self, operation, **parameters):
                 events.append(operation)
                 if operation == "warm":
                     return {"base_url": "http://127.0.0.1:8080/v1", "model_id": "candidate",
-                            "model_sha256": "a" * 64, "gpu_uuids": ["GPU-a"], "reused": True}
+                            "model_sha256": "a" * 64, "gpu_uuids": ["GPU-a"], "reused": True,
+                            "slot_id": "slot-a", "service_lease_id": "lease-a", "server_pid": 42}
                 return {"released": True}
         class Harness:
             def start(self, context): events.append("harness-start"); return "harness"
@@ -236,6 +244,51 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual((result["status"], result["tool_calls"]), ("completed", 2))
         self.assertEqual(events[0], "warm")
         self.assertEqual(events[-2:], ["harness-evict", "release"])
+
+    def test_two_public_runtime_calls_use_isolated_services_and_qwen_runtime_dirs(self) -> None:
+        lock = threading.Lock()
+        barrier = threading.Barrier(2)
+        available = [
+            {"slot_id": "slot-a", "service_lease_id": "lease-a", "server_pid": 41,
+             "gpu_uuids": ["GPU-a", "GPU-b"], "base_url": "http://127.0.0.1:8080/v1"},
+            {"slot_id": "slot-b", "service_lease_id": "lease-b", "server_pid": 42,
+             "gpu_uuids": ["GPU-c", "GPU-d"], "base_url": "http://127.0.0.1:8081/v1"},
+        ]
+        releases = []
+        runtime_dirs = []
+        class Supervisor:
+            def request(self, operation, **parameters):
+                if operation == "warm":
+                    with lock:
+                        endpoint = available.pop(0)
+                    return {**endpoint, "model_id": "candidate", "model_sha256": "a" * 64,
+                            "compatibility_key": "b" * 64, "reused": False}
+                if operation == "release":
+                    releases.append(parameters["service_lease_id"])
+                return {"released": True}
+        class Harness:
+            def start(self, context): runtime_dirs.append(context["runtime_dir"]); return context["runtime_dir"]
+            def run(self, handle, request):
+                barrier.wait(timeout=2)
+                return {"status": "succeeded", "usage": {"core4": {"tool_calls": 1}}, "duration_ms": 1}
+            def evict(self, handle): return None
+        profile = {"deployment_policy": {"real_local_enabled": True},
+                   "harnesses": {"qwen": "qwen", "codex": "codex"}}
+        runtime = ProductionReadOnlyRuntime(profile=profile, supervisor=Supervisor(),
+                                            harness_factory=lambda name: Harness())
+        snapshot = type("Snapshot", (), {"root": self.root})()
+        outputs = []
+        request = {"repo_root": str(self.root), "objective": "bounded", "role": "review",
+                   "scopes": ["src"], "execution": {"backend": "real", "harness": "qwen"}}
+        threads = [threading.Thread(target=lambda: outputs.append(runtime.execute(request, {}, snapshot)))
+                   for _ in range(2)]
+        for thread in threads: thread.start()
+        for thread in threads: thread.join(timeout=3)
+        artifacts = [output["artifacts"][0] for output in outputs]
+        self.assertEqual({item["slot_id"] for item in artifacts}, {"slot-a", "slot-b"})
+        self.assertEqual(set(releases), {"lease-a", "lease-b"})
+        self.assertEqual(len(set(runtime_dirs)), 2)
+        self.assertTrue(set(artifacts[0]["gpu_uuids"]).isdisjoint(artifacts[1]["gpu_uuids"]))
 
     def test_preempted_terminal_worker_returns_needs_codex_without_source_change(self) -> None:
         before = (self.root / "src/kernel.cu").read_bytes()
@@ -262,14 +315,22 @@ class Core4IntegrationTests(unittest.TestCase):
 
     def test_stale_patch_is_rejected_without_overwriting_concurrent_user_change(self) -> None:
         def make_stale(root: Path, artifact: dict[str, object]) -> None:
-            (root / "docs/note.txt").write_text("concurrent user work\n", encoding="utf-8")
+            (root / "src/kernel.cu").write_text("// concurrent user work\n", encoding="utf-8")
 
         result = self.controller(before_accept=make_stale).run(self.request("writable"))
         self.assertEqual(result["status"], "stale_patch")
         self.assertFalse(result["accepted"])
-        self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// baseline\n")
-        self.assertEqual((self.root / "docs/note.txt").read_text(encoding="utf-8"), "concurrent user work\n")
+        self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// concurrent user work\n")
         self.assertEqual(result["cuda"]["state"], "silent")
+
+    def test_disjoint_user_change_does_not_stale_scoped_acceptance(self) -> None:
+        def mutate_disjoint(root: Path, artifact: dict[str, object]) -> None:
+            (root / "docs/note.txt").write_text("independent change\n", encoding="utf-8")
+
+        result = self.controller(before_accept=mutate_disjoint).run(self.request("writable"))
+        self.assertEqual(result["status"], "accepted")
+        self.assertEqual((self.root / "src/kernel.cu").read_text(encoding="utf-8"), "// accepted candidate\n")
+        self.assertEqual((self.root / "docs/note.txt").read_text(encoding="utf-8"), "independent change\n")
 
     def test_cuda_handoff_is_silent_on_no_match_and_compact_on_ambiguity(self) -> None:
         no_match = self.controller(cuda_discovery_runner=lambda evidence: {

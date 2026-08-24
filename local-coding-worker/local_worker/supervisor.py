@@ -10,8 +10,11 @@ import signal
 import socket
 import subprocess
 import sys
+import threading
 import time
 import tomllib
+import uuid
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 from urllib import error as urllib_error
@@ -75,39 +78,60 @@ def _http_json(url: str, timeout: float = 2.0) -> tuple[int, dict[str, Any]]:
 class Backend(Protocol):
     def status(self) -> dict[str, Any]: ...
     def warm(self) -> dict[str, Any]: ...
-    def release(self) -> dict[str, Any]: ...
-    def preemption_status(self) -> dict[str, Any]: ...
+    def release(self, service_lease_id: str | None = None) -> dict[str, Any]: ...
+    def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]: ...
     def drain(self) -> dict[str, Any]: ...
     def evict(self) -> dict[str, Any]: ...
     def poll(self) -> None: ...
     def close(self) -> None: ...
 
 
-class ProductionBackend:
-    """One process owns the model lease, host reservation, and llama process."""
+@dataclass
+class _ServiceSlot:
+    slot_id: str
+    handle: str
+    endpoint_descriptor: dict[str, Any]
+    owner_id: str
+    cache_lease: Any
+    gpu_uuids: tuple[str, ...]
+    compatibility_key: str
+    service_lease_id: str | None = None
+    state: str = "idle"
+    idle_since: float | None = None
 
-    def __init__(self, repo_root: str | Path):
+
+class ProductionBackend:
+    """Own a bounded, demand-driven pool of isolated llama model services."""
+
+    def __init__(self, repo_root: str | Path, *, profile: dict[str, Any] | None = None,
+                 cache: Any = None, runtime: Any = None, adapter: Any = None,
+                 service: Any = None):
         self.repo_root = Path(repo_root).resolve()
         skill_root = Path(__file__).resolve().parents[1]
-        self.profile = tomllib.loads((skill_root / "config/production-profile.toml").read_text(encoding="utf-8"))
+        self.profile = profile or tomllib.loads(
+            (skill_root / "config/production-profile.toml").read_text(encoding="utf-8")
+        )
         storage = self.profile["storage"]
-        self.cache = ModelCache(storage["cache_root"], storage["canonical_root"])
+        self.cache = cache or ModelCache(storage["cache_root"], storage["canonical_root"])
         todo_root = Path(__file__).resolve().parents[2] / "todo-orchestrator"
         if str(todo_root) not in sys.path:
             sys.path.insert(0, str(todo_root))
         from todo_orchestrator.runtime import RuntimeFacade
-        self.runtime = RuntimeFacade(self.repo_root)
-        self.adapter = LlamaCppServerAdapter(str(self.profile["server"]["binary"]))
-        self.service = AdapterService()
-        self.service.register("llama", self.adapter)
-        self.handle: str | None = None
-        self.descriptor: dict[str, Any] | None = None
-        self.owner_id: str | None = None
-        self.lease_context: Any = None
-        self.clients = 0
+        self.runtime = runtime or RuntimeFacade(self.repo_root)
+        self.adapter = adapter or LlamaCppServerAdapter(str(self.profile["server"]["binary"]))
+        self.service = service or AdapterService()
+        if service is None:
+            self.service.register("llama", self.adapter)
+        policy = self.profile.get("deployment_policy", {})
+        configured = int(policy.get("max_real_workers", 1))
+        validation_override = os.environ.get("CORE4_VALIDATION_MAX_REAL_WORKERS")
+        self.max_slots = min(2, max(1, int(validation_override or configured)))
+        self._slots: dict[str, _ServiceSlot] = {}
+        self._leases: dict[str, str] = {}
+        self._preempted_leases: set[str] = set()
+        self._start_lock = threading.Lock()
         self.draining = False
-        self.idle_since: float | None = None
-        self.ttl = float(self.profile.get("deployment_policy", {}).get("hot_idle_seconds", 900))
+        self.ttl = float(policy.get("hot_idle_seconds", 900))
 
     def _candidate(self, candidate_id: str) -> dict[str, Any]:
         candidate = next((item for item in self.profile.get("candidates", []) if item.get("id") == candidate_id), None)
@@ -132,13 +156,11 @@ class ProductionBackend:
                 probe.close()
         raise SupervisorError("no free loopback port is available in the configured range")
 
-    def _healthy(self) -> bool:
-        if self.handle is None or self.descriptor is None:
-            return False
-        health = self.service.health("llama", self.handle)
+    def _healthy(self, slot: _ServiceSlot) -> bool:
+        health = self.service.health("llama", slot.handle)
         if not health.get("healthy"):
             return False
-        base = str(self.descriptor["base_url"]).removesuffix("/v1")
+        base = str(slot.endpoint_descriptor["base_url"]).removesuffix("/v1")
         status, models = _http_json(base + "/v1/models")
         return status == 200 and bool(models.get("data"))
 
@@ -147,46 +169,86 @@ class ProductionBackend:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def status(self) -> dict[str, Any]:
-        healthy = self._healthy() if self.handle else False
+        summaries = []
+        for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
+            summaries.append({
+                **slot.endpoint_descriptor, "slot_id": slot.slot_id,
+                "state": slot.state, "leased": slot.service_lease_id is not None,
+                "healthy": self._healthy(slot),
+            })
+        active = len(self._leases)
+        endpoint = summaries[0] if len(summaries) == 1 else None
         return {
-            "format": "CORE4-MODEL-SUPERVISOR/1", "running": self.handle is not None,
-            "healthy": healthy, "draining": self.draining, "clients": self.clients,
-            "idle_ttl_seconds": self.ttl, "endpoint": self.descriptor,
+            "format": "CORE4-MODEL-SUPERVISOR/1", "running": bool(summaries),
+            "healthy": bool(summaries) and all(item["healthy"] for item in summaries),
+            "draining": self.draining, "clients": active, "active_leases": active,
+            "capacity": self.max_slots, "idle_ttl_seconds": self.ttl,
+            "endpoint": endpoint, "slots": summaries,
+        }
+
+    def _lease(self, slot: _ServiceSlot, *, reused: bool) -> dict[str, Any]:
+        if slot.service_lease_id is not None:
+            raise SupervisorError("model service slot already has an active lease")
+        lease_id = str(uuid.uuid4())
+        if not self.runtime.host.set_priority(slot.owner_id, "active_local_delegation"):
+            self._evict_slot(slot.slot_id)
+            raise SupervisorError("model service lost its host reservation")
+        slot.service_lease_id = lease_id
+        slot.state = "active"
+        slot.idle_since = None
+        self._leases[lease_id] = slot.slot_id
+        return {
+            **slot.endpoint_descriptor, "slot_id": slot.slot_id,
+            "service_lease_id": lease_id, "reused": reused,
         }
 
     def warm(self) -> dict[str, Any]:
         if self.draining:
             raise SupervisorError("model service is draining for foreground preemption")
-        if self.handle is not None and self._healthy():
-            self.clients += 1
-            self.idle_since = None
-            if self.owner_id and not self.runtime.host.set_priority(self.owner_id, "active_local_delegation"):
-                self.evict()
-                raise SupervisorError("model service lost its host reservation")
-            return {**dict(self.descriptor or {}), "reused": True}
-        if self.handle is not None:
-            self.evict()
+        for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
+            if slot.service_lease_id is None and self._healthy(slot):
+                return self._lease(slot, reused=True)
+        for slot in list(self._slots.values()):
+            if slot.service_lease_id is None and not self._healthy(slot):
+                self._evict_slot(slot.slot_id)
+        if len(self._slots) >= self.max_slots:
+            raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
+        with self._start_lock:
+            # A prior request may have populated an idle slot while this caller waited.
+            for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
+                if slot.service_lease_id is None and self._healthy(slot):
+                    return self._lease(slot, reused=True)
+            if len(self._slots) >= self.max_slots:
+                raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
+            return self._start_slot()
+
+    def _start_slot(self) -> dict[str, Any]:
         active = self.cache.active()
         if not active:
             raise SupervisorError("persistent active model cache is missing")
-        verified = self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+        self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         candidate = self._candidate(str(active["candidate_id"]))
         gpu_count = 2 if candidate.get("profile") == "one-island" else 4
         self.runtime.host.discover_gpus()
         bundles = self.runtime.host.compound_gpu_bundles(gpu_count)
         if not bundles:
             raise SupervisorError("no runtime-discovered GPU bundle is available")
-        bundle = bundles[0]
-        reservation = self.runtime.host.reserve_service(
-            project_root=self.repo_root, service_id="core4-local-model",
-            priority_class="active_local_delegation",
-            resource_request={"schema_version": 1, "kind": "accelerator", "ids": bundle["resource_ids"],
-                              "exclusive_resources": bundle["exclusive_resources"]},
-            pid=os.getpid(),
-        )
+        slot_id = f"slot-{uuid.uuid4().hex[:12]}"
+        reservation = None
+        for candidate_bundle in bundles:
+            reservation = self.runtime.host.reserve_service(
+                project_root=self.repo_root, service_id=f"core4-local-model-{slot_id}",
+                priority_class="active_local_delegation",
+                resource_request={"schema_version": 1, "kind": "accelerator",
+                                  "ids": candidate_bundle["resource_ids"],
+                                  "exclusive_resources": candidate_bundle["exclusive_resources"]},
+                pid=os.getpid(),
+            )
+            if reservation is not None:
+                break
         if reservation is None:
-            raise SupervisorError("model service resources are pending another owner drain")
-        self.owner_id = str(reservation["owner_id"])
+            raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=true")
+        owner_id = str(reservation["owner_id"])
         gpu_uuids = [str(item).removeprefix("accelerator:") for item in reservation["resource_ids"]]
         server = self.profile["server"]
         port = self._free_port(int(server["base_port"]))
@@ -200,7 +262,7 @@ class ProductionBackend:
             "kv_cache_type_k": server.get("kv_cache_type_k"), "kv_cache_type_v": server.get("kv_cache_type_v"),
             "numa_policy": server.get("numa_policy"), "cpu_threads": server.get("cpu_threads"),
             "port": port, "startup_timeout_seconds": float(server["startup_timeout_seconds"]),
-            "idle_ttl_seconds": self.ttl, "log_path": str(state_root() / "llama-server.log"),
+            "idle_ttl_seconds": self.ttl, "log_path": str(state_root() / f"llama-server-{slot_id}.log"),
         }
         key_values = {
             "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
@@ -218,79 +280,109 @@ class ProductionBackend:
             rotated.unlink(missing_ok=True)
             log.replace(rotated)
         try:
-            self.lease_context = self.cache.lease(str(active["candidate_id"]), str(active["payload_sha256"]), self.owner_id)
-            model_path = self.lease_context.__enter__()
-            self.handle = self.service.start("llama", {
+            cache_lease = self.cache.lease(str(active["candidate_id"]), str(active["payload_sha256"]), owner_id)
+            model_path = cache_lease.__enter__()
+            handle = self.service.start("llama", {
                 "repo_root": str(self.repo_root), "model_path": str(model_path), "port": port,
                 "service_profile": service_profile,
             })
-            server_info = self.adapter.describe(self.handle)
-            self.descriptor = {
+            server_info = self.adapter.describe(handle)
+            descriptor = {
                 "format": "CORE4-MODEL-ENDPOINT/1", "base_url": server_info["base_url"] + "/v1",
                 "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
-                "server_pid": server_info["pid"], "owner_id": self.owner_id, "gpu_uuids": gpu_uuids,
+                "server_pid": server_info["pid"], "owner_id": owner_id, "gpu_uuids": gpu_uuids,
                 "compatibility_key": self._compatibility(key_values),
             }
-            self.clients = 1
-            self.idle_since = None
-            self.draining = False
-            return {**self.descriptor, "reused": False}
+            slot = _ServiceSlot(
+                slot_id=slot_id, handle=handle, endpoint_descriptor=descriptor,
+                owner_id=owner_id, cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids),
+                compatibility_key=str(descriptor["compatibility_key"]),
+            )
+            self._slots[slot_id] = slot
+            return self._lease(slot, reused=False)
         except Exception:
-            self.evict()
+            try:
+                if "handle" in locals():
+                    self.service.evict("llama", handle)
+            finally:
+                if "cache_lease" in locals():
+                    cache_lease.__exit__(None, None, None)
+                self.runtime.host.release(owner_id)
             raise
 
-    def release(self) -> dict[str, Any]:
-        self.clients = max(0, self.clients - 1)
-        if self.clients == 0:
-            self.idle_since = time.monotonic()
-            if self.owner_id:
-                self.runtime.host.set_priority(self.owner_id, "idle_model_residency")
-        return {"released": True, "clients": self.clients, "idle_ttl_seconds": self.ttl}
+    def release(self, service_lease_id: str | None = None) -> dict[str, Any]:
+        if service_lease_id is None:
+            if len(self._leases) != 1:
+                raise SupervisorError("unqualified release is ambiguous unless exactly one service lease exists")
+            service_lease_id = next(iter(self._leases))
+        slot_id = self._leases.pop(service_lease_id, None)
+        if slot_id is None:
+            raise SupervisorError("unknown or already released service lease")
+        slot = self._slots.get(slot_id)
+        if slot is None or slot.service_lease_id != service_lease_id:
+            raise SupervisorError("service lease does not own the selected slot")
+        slot.service_lease_id = None
+        slot.state = "idle"
+        slot.idle_since = time.monotonic()
+        self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
+        return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
+                "clients": len(self._leases), "idle_ttl_seconds": self.ttl}
 
-    def preemption_status(self) -> dict[str, Any]:
-        requested = bool(self.owner_id and self.runtime.host.preempt_requested(self.owner_id))
-        return {"preempt_requested": requested, "draining": self.draining, "clients": self.clients}
+    def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]:
+        if service_lease_id in self._preempted_leases:
+            self._preempted_leases.discard(service_lease_id)
+            return {"preempt_requested": True, "slot_ids": [], "draining": False,
+                    "clients": len(self._leases), "preempted": True}
+        slots = self._slots.values()
+        if service_lease_id is not None:
+            slot_id = self._leases.get(service_lease_id)
+            slots = [] if slot_id is None else [self._slots[slot_id]]
+        requested = [slot.slot_id for slot in slots if self.runtime.host.preempt_requested(slot.owner_id)]
+        return {"preempt_requested": bool(requested), "slot_ids": requested,
+                "draining": self.draining, "clients": len(self._leases)}
 
     def drain(self) -> dict[str, Any]:
         self.draining = True
-        if self.handle:
-            self.service.drain("llama", self.handle)
-        return {"draining": True, "clients": self.clients}
+        for slot in self._slots.values():
+            slot.state = "draining"
+            self.service.drain("llama", slot.handle)
+        return {"draining": True, "clients": len(self._leases)}
+
+    def _evict_slot(self, slot_id: str, *, preempted: bool = False) -> bool:
+        slot = self._slots.pop(slot_id, None)
+        if slot is None:
+            return False
+        if slot.service_lease_id is not None:
+            self._leases.pop(slot.service_lease_id, None)
+            if preempted:
+                self._preempted_leases.add(slot.service_lease_id)
+        try:
+            self.service.drain("llama", slot.handle)
+        finally:
+            try:
+                self.service.evict("llama", slot.handle)
+            finally:
+                slot.cache_lease.__exit__(None, None, None)
+                self.runtime.host.release(slot.owner_id)
+        return True
 
     def evict(self) -> dict[str, Any]:
-        if self.handle:
-            try:
-                self.service.drain("llama", self.handle)
-            finally:
-                self.service.evict("llama", self.handle)
-        if self.lease_context is not None:
-            self.lease_context.__exit__(None, None, None)
-        if self.owner_id:
-            self.runtime.host.release(self.owner_id)
-        self.handle = None
-        self.descriptor = None
-        self.owner_id = None
-        self.lease_context = None
-        self.clients = 0
-        self.idle_since = None
+        for slot_id in list(self._slots):
+            self._evict_slot(slot_id)
         self.draining = False
         return {"evicted": True, "quiescent": True}
 
     def poll(self) -> None:
-        if self.handle is None:
-            return
-        if self.owner_id:
-            self.runtime.host.heartbeat(self.owner_id, pid=os.getpid())
-        if self.owner_id and self.runtime.host.preempt_requested(self.owner_id):
-            self.drain()
-            deadline = time.monotonic() + 5.0
-            while self.clients and time.monotonic() < deadline:
-                time.sleep(0.05)
-            self.evict()
-            return
-        if self.clients == 0 and self.idle_since is not None and self.ttl >= 0:
-            if time.monotonic() - self.idle_since >= self.ttl:
-                self.evict()
+        for slot in list(self._slots.values()):
+            self.runtime.host.heartbeat(slot.owner_id, pid=os.getpid())
+            if self.runtime.host.preempt_requested(slot.owner_id):
+                slot.state = "draining"
+                self.service.drain("llama", slot.handle)
+                self._evict_slot(slot.slot_id, preempted=True)
+                continue
+            if slot.service_lease_id is None and slot.idle_since is not None and self.ttl >= 0:
+                if time.monotonic() - slot.idle_since >= self.ttl:
+                    self._evict_slot(slot.slot_id)
 
     def close(self) -> None:
         self.evict()
@@ -313,9 +405,9 @@ class SupervisorServer:
         if operation in {"warm", "acquire"}:
             return self.backend.warm()
         if operation == "release":
-            return self.backend.release()
+            return self.backend.release(request.get("service_lease_id"))
         if operation == "preemption-status":
-            return self.backend.preemption_status()
+            return self.backend.preemption_status(request.get("service_lease_id"))
         if operation == "drain":
             return self.backend.drain()
         if operation == "evict":
@@ -364,7 +456,12 @@ class SupervisorServer:
                         response = {"ok": True, "data": self._dispatch(request)}
                     except Exception as exc:
                         response = {"ok": False, "error": str(exc)[:1000]}
-                    connection.sendall(json.dumps(response, separators=(",", ":")).encode("utf-8") + b"\n")
+                    try:
+                        connection.sendall(json.dumps(response, separators=(",", ":")).encode("utf-8") + b"\n")
+                    except (BrokenPipeError, ConnectionResetError):
+                        # A short status probe may leave while a cold start is
+                        # completing. The owner process and service pool remain valid.
+                        pass
             return 0
         finally:
             self.backend.close()
@@ -382,12 +479,12 @@ class SupervisorClient:
         self.root = root or runtime_root()
         self.socket_path = self.root / "supervisor.sock"
 
-    def _request(self, operation: str, *, timeout: float = 660) -> dict[str, Any]:
+    def _request(self, operation: str, *, timeout: float = 660, **parameters: Any) -> dict[str, Any]:
         connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         connection.settimeout(timeout)
         try:
             connection.connect(str(self.socket_path))
-            connection.sendall(json.dumps({"operation": operation}, separators=(",", ":")).encode("utf-8") + b"\n")
+            connection.sendall(json.dumps({"operation": operation, **parameters}, separators=(",", ":")).encode("utf-8") + b"\n")
             data = b""
             while b"\n" not in data and len(data) <= 128 * 1024:
                 block = connection.recv(4096)
@@ -414,6 +511,13 @@ class SupervisorClient:
         (self.root / "supervisor-state.json").unlink(missing_ok=True)
 
     def ensure_running(self) -> None:
+        pid_path = self.root / "supervisor.pid"
+        if self.socket_path.exists():
+            try:
+                if _pid_alive(int(pid_path.read_text(encoding="ascii").strip())):
+                    return
+            except (OSError, ValueError):
+                pass
         try:
             self._request("status", timeout=1)
             return
@@ -441,14 +545,14 @@ class SupervisorClient:
                 time.sleep(0.05)
         raise SupervisorError("persistent model supervisor did not start")
 
-    def request(self, operation: str) -> dict[str, Any]:
+    def request(self, operation: str, **parameters: Any) -> dict[str, Any]:
         if operation in {"warm", "acquire"}:
             self.ensure_running()
         elif not self.socket_path.exists():
             if operation == "status":
                 return {"format": "CORE4-MODEL-SUPERVISOR/1", "running": False, "healthy": False}
             return {"running": False, "operation": operation}
-        return self._request(operation)
+        return self._request(operation, **parameters)
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import fcntl
+import hashlib
 import json
 import os
 import subprocess
@@ -52,13 +54,16 @@ class ProductionReadOnlyRuntime:
                    CodexCliAdapter(str(profile["harnesses"]["codex"])))
         endpoint = None
         harness_handle = None
+        task_runtime = None
         try:
             endpoint = supervisor.request("warm")
+            task_runtime = tempfile.TemporaryDirectory(prefix="core4-qwen-task-")
             harness_config = {
                 **dict(execution.get("harness_config") or {}),
                 "cwd": str(snapshot.root), "repository_root": str(snapshot.root),
                 "authorized_read_paths": list(request["scopes"]), "mode": "readonly",
                 "base_url": endpoint["base_url"], "model": endpoint["model_id"],
+                "runtime_dir": task_runtime.name,
             }
             harness_handle = harness.start(harness_config)
             result = harness.run(harness_handle, {"prompt": json.dumps({
@@ -70,17 +75,41 @@ class ProductionReadOnlyRuntime:
                                 "This is read-only work, so changed_paths must be an empty array."),
             }, separators=(",", ":"))})
             status = "completed" if result.get("status") == "succeeded" else str(result.get("status", "failed"))
-            artifact = {"kind": "harness-summary", "harness": harness_name, "model_sha256": endpoint["model_sha256"],
-                        "usage": result.get("usage", {}), "duration_ms": result.get("duration_ms")}
+            artifact = {
+                "kind": "harness-summary", "harness": harness_name,
+                "model_sha256": endpoint["model_sha256"], "usage": result.get("usage", {}),
+                "duration_ms": result.get("duration_ms"), "slot_id": endpoint.get("slot_id"),
+                "service_lease_id": endpoint.get("service_lease_id"),
+                "server_pid": endpoint.get("server_pid"), "gpu_uuids": endpoint.get("gpu_uuids", []),
+                "reused": endpoint.get("reused"), "qwen_runtime_directory": task_runtime.name,
+            }
             model_outcome = result.get("model_outcome") if isinstance(result.get("model_outcome"), dict) else None
             return {"status": status, "summary": str((model_outcome or {}).get("summary") or result.get("reason") or status)[:500],
                     "findings": [], "tool_calls": int(result.get("usage", {}).get("core4", {}).get("tool_calls", 0)),
                     "artifacts": [artifact], "model_outcome": model_outcome}
         except Exception as error:
-            return {"status": "failed", "summary": str(error)[:500], "findings": [], "tool_calls": 0, "artifacts": []}
+            reason = str(error)[:500]
+            preempted = False
+            if endpoint and endpoint.get("service_lease_id"):
+                try:
+                    preempted = bool(supervisor.request(
+                        "preemption-status", service_lease_id=endpoint["service_lease_id"]
+                    ).get("preempt_requested"))
+                except Exception:
+                    pass
+            retryable = preempted or "resource_unavailable" in reason
+            return {"status": "needs_codex" if retryable else "failed",
+                    "summary": "resource_preempted" if preempted else reason,
+                    "retryable": retryable, "findings": [], "tool_calls": 0, "artifacts": []}
         finally:
             if harness_handle is not None: harness.evict(harness_handle)
-            if endpoint is not None: supervisor.request("release")
+            if endpoint is not None:
+                try:
+                    supervisor.request("release", service_lease_id=endpoint.get("service_lease_id"))
+                except Exception:
+                    pass
+            if task_runtime is not None:
+                task_runtime.cleanup()
 
 
 def _runtime_source():
@@ -110,6 +139,40 @@ def _object(value: object, name: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise IntegrationError(f"{name} must be an object")
     return dict(value)
+
+
+def _scope_state(root: Path, scopes: list[str]) -> dict[str, str]:
+    """Hash only source paths relevant to one delegated task."""
+    state: dict[str, str] = {}
+    for scope in sorted(set(scopes)):
+        candidate = root / scope
+        paths = [candidate] if candidate.is_file() or candidate.is_symlink() else (
+            sorted(path for path in candidate.rglob("*") if path.is_file() or path.is_symlink())
+            if candidate.is_dir() else []
+        )
+        for path in paths:
+            relative = path.relative_to(root).as_posix()
+            payload = (b"symlink\0" + os.readlink(path).encode()) if path.is_symlink() else path.read_bytes()
+            state[relative] = hashlib.sha256(payload).hexdigest()
+    return state
+
+
+class _ControllerAcceptanceLock:
+    def __init__(self, root: Path):
+        common = subprocess.run(["git", "rev-parse", "--git-common-dir"], cwd=root, text=True,
+                                capture_output=True, check=True).stdout.strip()
+        common_path = Path(common) if Path(common).is_absolute() else root / common
+        lock_root = common_path.resolve() / "local-coding-worker/locks"
+        lock_root.mkdir(parents=True, exist_ok=True)
+        self.stream = (lock_root / "controller-acceptance.lock").open("a+b")
+
+    def __enter__(self):
+        fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        fcntl.flock(self.stream.fileno(), fcntl.LOCK_UN)
+        self.stream.close()
 
 
 class IntegrationController:
@@ -209,6 +272,8 @@ class IntegrationController:
         if mode == "readonly":
             request.update(role="review", target=target or "", intent="understand", budget_tokens=4096, max_items=12)
         else:
+            if target:
+                request["target"] = target
             gate_commands = []
             for gate_id in gates:
                 explained = self._todo(root, "gate", "explain", gate_id)
@@ -245,6 +310,10 @@ class IntegrationController:
             "write_paths": request["scopes"], "forbidden_paths": [], "target_symbols": [],
             "failing_tests": [], "interface_ids": [], "acceptance_gates": request["gates"],
         }, separators=(",", ":"))
+        if request.get("target"):
+            task_spec = json.dumps({
+                **json.loads(task_spec), "target_symbols": [str(request["target"])],
+            }, separators=(",", ":"))
         if not (workspace / ".ctxpp/index.jsonl").is_file():
             self._run_json([
                 str(self.ctxpp_cli), "--root", str(workspace), "--json", "scan",
@@ -257,6 +326,7 @@ class IntegrationController:
         endpoint = supervisor.request("warm")
         harness = QwenCodeAdapter()
         handle = None
+        task_runtime = tempfile.TemporaryDirectory(prefix="core4-qwen-task-")
         try:
             handle = harness.start({
                 "cwd": str(workspace), "repository_root": str(workspace), "mode": "writable",
@@ -264,6 +334,7 @@ class IntegrationController:
                 "write_paths": request["scopes"], "allowed_tools": ["read_file", "edit", "structured_output"],
                 "max_session_turns": 10, "max_tool_calls": 10, "max_wall_time_seconds": 180,
                 "base_url": endpoint["base_url"], "model": endpoint["model_id"],
+                "runtime_dir": task_runtime.name,
             })
             model = harness.run(handle, {"prompt": json.dumps({
                 "objective": request["objective"], "role": "implementation",
@@ -287,18 +358,28 @@ class IntegrationController:
             value = model.get("model_outcome")
             if not isinstance(value, dict):
                 return {"status": "needs_codex", "summary": str(model.get("reason", "invalid model outcome"))[:500],
-                        "model_outcome": None, "packet": packet, "usage": model.get("usage", {})}
+                        "model_outcome": None, "packet": packet, "usage": model.get("usage", {}),
+                        "service": {key: endpoint.get(key) for key in
+                                    ("slot_id", "service_lease_id", "server_pid", "gpu_uuids", "reused")},
+                        "qwen_runtime_directory": task_runtime.name}
             validated = validate_model_outcome(
                 value, repository_root=workspace,
                 authorized_read_paths=sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
                 write_paths=request["scopes"], actual_changed_paths=changed, mode="writable",
             )
             return {"status": validated["outcome"], "summary": validated["summary"],
-                    "model_outcome": validated, "packet": packet, "usage": model.get("usage", {})}
+                    "model_outcome": validated, "packet": packet, "usage": model.get("usage", {}),
+                    "service": {key: endpoint.get(key) for key in
+                                ("slot_id", "service_lease_id", "server_pid", "gpu_uuids", "reused")},
+                    "qwen_runtime_directory": task_runtime.name}
         finally:
             if handle is not None:
                 harness.evict(handle)
-            supervisor.request("release")
+            try:
+                supervisor.request("release", service_lease_id=endpoint.get("service_lease_id"))
+            except Exception:
+                pass
+            task_runtime.cleanup()
 
     @staticmethod
     def _reverse_candidate(root: Path, artifact: dict[str, Any]) -> None:
@@ -453,6 +534,8 @@ class IntegrationController:
             "summary": str(terminal.get("summary", status))[:500],
             "changed_paths": [],
             "packet_hash": terminal.get("packet_hash"),
+            "artifacts": list(terminal.get("artifacts", [])) if isinstance(terminal.get("artifacts"), list) else [],
+            "model_outcome": terminal.get("model_outcome"),
             "accepted": False,
             "cuda": {"state": "silent", "campaign_ids": []},
         }
@@ -461,6 +544,8 @@ class IntegrationController:
         root = Path(request["repo_root"])
         identity = _runtime_source()(root)
         scopes = normalize_scopes(request["scopes"])
+        relevant_scopes = sorted(set([*scopes, *request.get("read_dependencies", [])]))
+        relevant_before = _scope_state(root, relevant_scopes)
         changes = _object(request.get("fake_changes", {}), "fake_changes")
         normalized_changes = {_relative(path): content for path, content in changes.items()}
         if any(not isinstance(content, str) for content in normalized_changes.values()):
@@ -514,9 +599,13 @@ class IntegrationController:
             def record(result: dict[str, Any]) -> bool:
                 self._write_json(acceptance_path, result)
                 return True
-            acceptance = accept_patch_artifact(
-                root, artifact, request["acceptance_commands"], result_recorder=record,
-            )
+            with _ControllerAcceptanceLock(root):
+                if _scope_state(root, relevant_scopes) != relevant_before:
+                    raise StaleSourceError("task-relevant source changed after worker materialization")
+                artifact["baseline_source_identity"] = _runtime_source()(root)
+                acceptance = accept_patch_artifact(
+                    root, artifact, request["acceptance_commands"], result_recorder=record,
+                )
         except StaleSourceError:
             self._todo(root, "child", "stale", str(child["child_execution_id"]),
                        "--claim-token", request["parent_claim_token"])
@@ -628,7 +717,7 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
     readonly = {"role", "target", "intent", "budget_tokens", "max_items"} | ({"execution"} if version == 2 else set())
     writable = {"fake_changes", "baseline_commands", "verification_commands", "acceptance_commands"}
     if version == 2:
-        writable |= {"read_dependencies", "approved_overlays", "execution"}
+        writable |= {"read_dependencies", "approved_overlays", "execution", "target"}
     if version not in {1, 2} or request.get("format") != f"CORE4-INTEGRATION-REQUEST/{version}":
         raise IntegrationError("integration request must use matching CORE4-INTEGRATION-REQUEST/1 or /2")
     mode = request.get("mode")
@@ -638,7 +727,7 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
     unknown = sorted(set(request) - allowed)
     optional = {"cuda_registry"}
     if mode == "writable" and version == 2:
-        optional |= {"fake_changes", "read_dependencies", "approved_overlays", "execution"}
+        optional |= {"fake_changes", "read_dependencies", "approved_overlays", "execution", "target"}
     missing = sorted((allowed - optional) - set(request))
     if unknown or missing:
         raise IntegrationError(f"integration request fields invalid: missing={missing} extra={unknown}")
@@ -681,6 +770,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
             if not isinstance(request[name], list) or not request[name]:
                 raise IntegrationError(f"{name} must be a non-empty command list")
         if version == 2:
+            if "target" in request and (not isinstance(request["target"], str) or not request["target"]):
+                raise IntegrationError("writable target must be a non-empty string")
             for name in ("read_dependencies", "approved_overlays"):
                 values = request.get(name, [])
                 if not isinstance(values, list) or any(not isinstance(item, str) or not item for item in values):

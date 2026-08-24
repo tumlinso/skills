@@ -39,9 +39,11 @@ real_local_enabled = true
 reviewer_enabled = false
 double_solve_enabled = false
 hot_idle_seconds = 900
-max_real_workers = 1
+max_real_workers = 2
+initial_warm_workers = 1
+worker_layout = "one-per-runtime-discovered-island"
 needs_codex_is_success = true
-reason = "Integrated Qwen Code tool and schema overhead requires the measured 32K profile on one runtime-discovered GPU island."
+reason = "Measured 32K Q4 services passed the dual-island memory, isolation, hot-reuse, oversubscription, and selective/global preemption guards; allocation remains demand-driven with one active task per runtime-discovered island."
 
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
