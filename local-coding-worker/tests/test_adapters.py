@@ -66,15 +66,30 @@ class AdapterTests(unittest.TestCase):
         self.temp.cleanup()
 
     def test_qwen_adapter_is_bounded_read_only_and_disposable(self) -> None:
-        output = json.dumps([{"type": "result", "is_error": False, "result": "reviewed", "usage": {"input_tokens": 7}}])
+        outcome = {
+            "outcome": "completed", "summary": "reviewed", "changed_paths": [],
+            "claims": [{"statement": "fixture reviewed", "evidence": [
+                {"path": "adapter-bin", "line": 1, "end_line": 1},
+            ]}],
+            "risk": "low", "blocker": None,
+        }
+        output = json.dumps([{"type": "result", "is_error": False, "result": outcome,
+                              "usage": {"input_tokens": 7}}])
         factory = ProcessFactory(output)
         adapter = QwenCodeAdapter(str(self.binary), process_factory=factory)
-        handle = adapter.start({"cwd": str(self.root), "max_wall_time_seconds": 30, "max_tool_calls": 8})
+        handle = adapter.start({
+            "cwd": str(self.root), "repository_root": str(self.root),
+            "authorized_read_paths": ["adapter-bin"],
+            "base_url": "http://127.0.0.1:8080/v1", "model": "local-fixture",
+            "max_wall_time_seconds": 30, "max_tool_calls": 8,
+        })
         result = adapter.run(handle, {"prompt": "Review the packet"})
         argv = factory.processes[0].argv
-        self.assertEqual(result["text"], "reviewed")
-        self.assertIn("--safe-mode", argv)
-        self.assertIn("agent,shell,write,edit", argv)
+        self.assertEqual(result["model_outcome"]["summary"], "reviewed")
+        self.assertIn("--bare", argv)
+        self.assertNotIn("--safe-mode", argv)
+        self.assertEqual(argv[argv.index("--openai-base-url") + 1], "http://127.0.0.1:8080/v1")
+        self.assertIn("agent,shell,run_shell_command,write,edit,write_file", argv)
         self.assertEqual(adapter.usage(handle)["runs"], 1)
         self.assertFalse(adapter.cancel(handle)["canceled"])
         self.assertTrue(adapter.drain(handle)["draining"])
@@ -137,8 +152,11 @@ class AdapterTests(unittest.TestCase):
         self.assertTrue(service.inspect()["qwen"]["available"])
         with disposable_task_context() as context:
             path = context
-            handle = service.start("qwen", {"cwd": str(self.root), "runtime_dir": str(context / "runtime")})
-            self.assertEqual(service.run("qwen", handle, {"prompt": "bounded"})["status"], "succeeded")
+            handle = service.start("qwen", {
+                "cwd": str(self.root), "runtime_dir": str(context / "runtime"),
+                "base_url": "http://127.0.0.1:8080/v1", "model": "local-fixture",
+            })
+            self.assertEqual(service.run("qwen", handle, {"prompt": "bounded"})["status"], "needs_codex")
             self.assertEqual(service.usage("qwen", handle)["runs"], 1)
             service.evict("qwen", handle)
         self.assertFalse(path.exists())

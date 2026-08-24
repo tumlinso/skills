@@ -72,12 +72,14 @@ class PolicyTests(unittest.TestCase):
         self.assertIsNone(report["deployment"]["selected_candidate"])
         self.assertIsNone(report["context"]["model_context_default"])
 
-    def test_checked_in_policy_report_is_conservative_and_secret_free(self) -> None:
-        path = SKILL / "evals/results/policy-report.json"
+    def test_checked_in_integrated_evidence_replaces_stale_policy_report(self) -> None:
+        self.assertFalse((SKILL / "evals/results/policy-report.json").exists())
+        path = SKILL / "evals/results/compact/integrated-evaluation.json"
         report = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual(report["format"], FORMAT)
-        self.assertFalse(report["policy"]["real_local_enabled"])
-        self.assertFalse(report["deployment"]["idle_model_residency"])
+        self.assertEqual(report["format"], "CORE4-INTEGRATED-EVALUATION/1")
+        self.assertTrue(report["ok"])
+        self.assertEqual(report["false_successes"], 0)
+        self.assertEqual(report["scope_violations"], 0)
         encoded = json.dumps(report).casefold()
         for secret_marker in ("toc_", "toch_", "api_key", "password"):
             self.assertNotIn(secret_marker, encoded)
