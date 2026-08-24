@@ -134,6 +134,7 @@ def authorize_child_execution(
     objective: str,
     scopes: list[str],
     gates: list[str] | None = None,
+    access: str = "write",
     max_attempts: int = 1,
     lease_seconds: int = 300,
 ) -> dict[str, object]:
@@ -144,7 +145,9 @@ def authorize_child_execution(
         raise TodoError("invalid_child_objective", "Child objective must not be empty")
     if max_attempts < 1:
         raise TodoError("invalid_child_attempts", "max_attempts must be at least one")
-    parent_scopes = scopes_for(conn, claim["task_id"], "exclusive")
+    if access not in {"read", "write"}:
+        raise TodoError("invalid_child_access", "Child access must be read or write")
+    parent_scopes = scopes_for(conn, claim["task_id"], "exclusive" if access == "write" else None)
     normalized = sorted({canonical_relative(repo_root, value) for value in scopes})
     if not normalized:
         raise TodoError("invalid_child_scope", "At least one child scope is required")
@@ -157,27 +160,29 @@ def authorize_child_execution(
             {"denied": denied, "parent_scopes": parent_scopes},
         )
     sweep_expired_child_executions(conn)
-    for lease in conn.execute("SELECT child_execution_id,path FROM child_scope_leases WHERE state='active'"):
-        if any(paths_overlap(path, lease["path"]) for path in normalized):
-            raise TodoError(
-                "child_scope_unavailable",
-                "A requested child scope is already leased",
-                ExitCode.CONTENTION,
-                {"child_execution_id": lease["child_execution_id"], "path": lease["path"]},
-            )
+    if access == "write":
+        for lease in conn.execute("SELECT child_execution_id,path FROM child_scope_leases WHERE state='active'"):
+            if any(paths_overlap(path, lease["path"]) for path in normalized):
+                raise TodoError(
+                    "child_scope_unavailable",
+                    "A requested child scope is already leased",
+                    ExitCode.CONTENTION,
+                    {"child_execution_id": lease["child_execution_id"], "path": lease["path"]},
+                )
     now = utc_now()
     child_id = str(uuid.uuid4())
     unique_gates = sorted({value.strip() for value in gates or [] if value.strip()})
     conn.execute(
-        "INSERT INTO child_executions(id,parent_claim_id,task_id,objective,gates_json,candidate_gates_json,state,max_attempts,created_at) "
-        "VALUES(?,?,?,?,?,?,'authorized',?,?)",
-        (child_id, claim["id"], claim["task_id"], objective, json.dumps(unique_gates), json.dumps(unique_gates), max_attempts, now),
+        "INSERT INTO child_executions(id,parent_claim_id,task_id,objective,gates_json,candidate_gates_json,state,max_attempts,created_at,access_mode,authorized_scopes_json) "
+        "VALUES(?,?,?,?,?,?,'authorized',?,?,?,?)",
+        (child_id, claim["id"], claim["task_id"], objective, json.dumps(unique_gates), json.dumps(unique_gates), max_attempts, now, access, json.dumps(normalized)),
     )
-    for path in normalized:
-        conn.execute(
-            "INSERT INTO child_scope_leases(child_execution_id,path,state,acquired_at) VALUES(?,?,'active',?)",
-            (child_id, path, now),
-        )
+    if access == "write":
+        for path in normalized:
+            conn.execute(
+                "INSERT INTO child_scope_leases(child_execution_id,path,state,acquired_at) VALUES(?,?,'active',?)",
+                (child_id, path, now),
+            )
     attempt, raw_token = _start_attempt(conn, child_id, lease_seconds)
     result = {
         "child_execution_id": child_id,
@@ -185,6 +190,7 @@ def authorize_child_execution(
         "state": "running",
         "objective": objective,
         "scopes": normalized,
+        "access": access,
         "gates": unique_gates,
         "max_attempts": max_attempts,
         "attempt": attempt,
@@ -243,9 +249,12 @@ def report_child_result(
     if status not in RESULT_STATES:
         raise TodoError("invalid_child_result", f"Child result status must be one of {sorted(RESULT_STATES)}")
     child_id = str(attempt["child_execution_id"])
-    leased = [row[0] for row in conn.execute("SELECT path FROM child_scope_leases WHERE child_execution_id=?", (child_id,))]
+    child = _execution(conn, child_id)
+    authorized = json.loads(child["authorized_scopes_json"] or "[]")
     changed = sorted({_relative_path(path) for path in changed_paths or []})
-    denied = [path for path in changed if not any(_inside(path, root) for root in leased)]
+    if child["access_mode"] == "read" and changed:
+        raise TodoError("child_read_only_change", "Read child cannot report changed paths", ExitCode.BLOCKED)
+    denied = [path for path in changed if not any(_inside(path, root) for root in authorized)]
     if denied:
         raise TodoError("child_result_scope_violation", "Child reported paths outside its lease", ExitCode.BLOCKED, {"denied": denied})
     refs = {str(key): str(value) for key, value in (references or {}).items() if value}
@@ -260,7 +269,6 @@ def report_child_result(
         "UPDATE child_attempts SET state=?,completed_at=?,result_json=?,result_refs_json=? WHERE id=?",
         (status, now, json.dumps(result, sort_keys=True), json.dumps(refs, sort_keys=True), attempt["id"]),
     )
-    child = _execution(conn, child_id)
     execution_state = "ready_for_acceptance" if changed and status in {"succeeded", "ready_for_acceptance"} else status
     if status == "failed" and int(child["attempt_count"]) < int(child["max_attempts"]):
         execution_state = "recovery_required"
@@ -389,6 +397,7 @@ def child_execution_status(conn: sqlite3.Connection, claim_token: str, child_id:
         "child_execution_id": child_id,
         "task_id": claim["task_id"],
         "objective": child["objective"],
+        "access": child["access_mode"],
         "gates": json.loads(child["gates_json"]),
         "candidate_gates": json.loads(child["candidate_gates_json"] or "[]"),
         "acceptance_gates": json.loads(child["acceptance_gates_json"] or "[]"),
@@ -397,7 +406,10 @@ def child_execution_status(conn: sqlite3.Connection, claim_token: str, child_id:
         "attempt_count": child["attempt_count"],
         "cancel_requested": bool(child["cancel_requested"]),
         "result": json.loads(child["result_json"] or "null"),
-        "scopes": scopes,
+        "scopes": scopes if child["access_mode"] == "write" else [
+            {"path": path, "state": "authorized_read", "acquired_at": child["created_at"], "released_at": None}
+            for path in json.loads(child["authorized_scopes_json"] or "[]")
+        ],
         "attempts": attempts,
     }
     refs = json.loads(child["result_refs_json"] or "{}")

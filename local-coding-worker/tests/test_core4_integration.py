@@ -74,7 +74,13 @@ class Core4IntegrationTests(unittest.TestCase):
             "from pathlib import Path\n"
             "args=sys.argv[1:]; path=Path(os.environ['CORE4_FAKE_TODO_STATE']); state=json.loads(path.read_text())\n"
             "data={}\n"
-            "if args[:2]==['child','create']:\n"
+            "if args[:1]==['context']:\n"
+            " data={'task':{'id':os.environ['CORE4_FAKE_TASK_ID'],'objective':'Review the bounded source.'},'scope':{'exclusive_paths':['src'],'read_paths':['docs'],'forbidden_paths':[]},'gates':[{'id':'CHECK','required':1}]}\n"
+            "elif args[:2]==['gate','explain']:\n"
+            " data={'id':'CHECK','type':'command','config':{'argv':[sys.executable,'-c','raise SystemExit(0)'],'cwd':'.','timeout':60}}\n"
+            "elif args[:2]==['gate','run']:\n"
+            " data={'gate_id':args[2],'status':'passed','valid':True}\n"
+            "elif args[:2]==['child','create']:\n"
             " data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':'running','child_token':'toch_fixture'}\n"
             "elif args[:2]==['child','heartbeat']:\n"
             " data={'child_execution_id':'child-fixture','task_id':os.environ['CORE4_FAKE_TASK_ID'],'state':'running'}\n"
@@ -158,6 +164,33 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual((self.root / "src/kernel.cu").read_bytes(), before)
         self.assertFalse(result["parent_task_completed"])
 
+    def test_public_delegate_derives_read_child_request_from_todo_capsule(self) -> None:
+        seen = {}
+        def terminal(request):
+            seen.update(request)
+            return {"status": "completed", "summary": "bounded", "changed_paths": [],
+                    "child_reported": False, "packet_hash": "a" * 64, "artifacts": []}
+        result = self.controller(terminal_runner=terminal).delegate(
+            self.root, "toc_fixture", mode="readonly",
+        )
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(seen["objective"], "Review the bounded source.")
+        self.assertEqual(seen["scopes"], ["docs", "src"])
+        self.assertEqual(seen["target"], "")
+        self.assertEqual((seen["format"], seen["backend"]), ("LCW-REQUEST/2", "real"))
+
+    def test_public_writable_delegate_verifies_applies_credits_and_accepts(self) -> None:
+        def runner(worktree: Path, request: dict[str, object]) -> dict[str, object]:
+            (worktree / "src/kernel.cu").write_text("// delegated candidate\n", encoding="utf-8")
+            return {"format": "LOCAL-WORKER-REVIEW/1", "verdict": "pass"}
+        result = self.controller(writable_runner=runner).delegate(
+            self.root, "toc_fixture", mode="writable",
+        )
+        self.assertEqual((result["status"], result["child_state"]), ("accepted", "accepted"))
+        self.assertEqual(result["changed_paths"], ["src/kernel.cu"])
+        self.assertEqual((self.root / "src/kernel.cu").read_text(), "// delegated candidate\n")
+        self.assertFalse(result["parent_task_completed"])
+
     def test_needs_codex_is_a_successful_terminal_handback(self) -> None:
         result = self.controller().run(self.request("readonly", target="needs"))
         self.assertEqual(result["status"], "needs_codex")
@@ -177,39 +210,32 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual(result["status"], "completed")
         self.assertEqual((seen["format"], seen["backend"]), ("LCW-REQUEST/2", "real"))
 
-    def test_production_runtime_composes_cache_gpu_service_harness_and_cleanup(self) -> None:
+    def test_production_runtime_reuses_supervisor_and_releases_to_idle(self) -> None:
         events = []
         profile = {"deployment_policy": {"real_local_enabled": True, "hot_idle_seconds": 0},
                    "server": {"split_mode": "layer", "base_port": 8080, "startup_timeout_seconds": 5},
                    "experiment": {"initial_context": 16384}, "harnesses": {"qwen": "qwen", "codex": "codex"},
                    "storage": {"cache_root": "/cache", "canonical_root": "/cold"}}
-        class Cache:
-            root = Path(self.temporary.name)
-            def active(self): return {"candidate_id": "candidate", "payload_sha256": "a" * 64}
-            def verify(self, *args, **kwargs): return {"payload_path": "/external/model.gguf"}
-            @contextmanager
-            def lease(self, *args): events.append("lease"); yield Path("/external/model.gguf"); events.append("unlease")
-        class Host:
-            def discover_gpus(self): events.append("discover")
-            def compound_gpu_bundles(self, count): return [{"resource_ids": ["accelerator:GPU-a"], "exclusive_resources": []}]
-            def reserve_service(self, **kwargs): events.append("reserve"); return {"owner_id": "owner", "resource_ids": ["accelerator:GPU-a"]}
-            def release(self, owner): events.append("release")
-        class Runtime: host = Host()
-        class Service:
-            def start(self, name, context): events.append(("server-start", context["service_profile"]["allocated_gpu_uuids"])); return "server"
-            def evict(self, name, handle): events.append("server-evict")
+        class Supervisor:
+            def request(self, operation):
+                events.append(operation)
+                if operation == "warm":
+                    return {"base_url": "http://127.0.0.1:8080/v1", "model_id": "candidate",
+                            "model_sha256": "a" * 64, "gpu_uuids": ["GPU-a"], "reused": True}
+                return {"released": True}
         class Harness:
             def start(self, context): events.append("harness-start"); return "harness"
             def run(self, handle, request): events.append("harness-run"); return {"status": "succeeded", "text": "done", "usage": {"core4": {"tool_calls": 2}}, "duration_ms": 1}
             def evict(self, handle): events.append("harness-evict")
-        runtime = ProductionReadOnlyRuntime(profile=profile, cache=Cache(), runtime=Runtime(), service=Service(),
+        runtime = ProductionReadOnlyRuntime(profile=profile, supervisor=Supervisor(),
                                             harness_factory=lambda name: Harness())
         snapshot = type("Snapshot", (), {"root": self.root})()
-        request = {"repo_root": str(self.root), "objective": "bounded", "execution": {"backend": "real", "harness": "qwen", "gpu_count": 1}}
+        request = {"repo_root": str(self.root), "objective": "bounded", "role": "review", "scopes": ["src"],
+                   "execution": {"backend": "real", "harness": "qwen", "gpu_count": 1}}
         result = runtime.execute(request, {"format": "CTXPP-CONTEXT-PACKET/2"}, snapshot)
         self.assertEqual((result["status"], result["tool_calls"]), ("completed", 2))
-        self.assertIn(("server-start", ["GPU-a"]), events)
-        self.assertEqual(events[-3:], ["harness-evict", "server-evict", "release"])
+        self.assertEqual(events[0], "warm")
+        self.assertEqual(events[-2:], ["harness-evict", "release"])
 
     def test_preempted_terminal_worker_returns_needs_codex_without_source_change(self) -> None:
         before = (self.root / "src/kernel.cu").read_bytes()

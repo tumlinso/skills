@@ -7,6 +7,7 @@ import time
 
 from ..models import ExitCode, TodoError
 from ..service import Service
+from ..gates import run_gate
 
 
 def _group(subparsers, helpers, name, actions):
@@ -112,21 +113,32 @@ def register(subparsers, helpers) -> None:
     gate["run"].add_argument("gate_id", nargs="?")
     gate["run"].add_argument("--claim-token", required=True)
     gate["run"].add_argument("--required", action="store_true")
+    gate["run"].add_argument("--accept-child")
     def run_gates(args):
         service = Service(args.repo_root)
+        def run_one(gate_id):
+            result, revision = run_gate(
+                service.db, service.paths, service.project, gate_id, args.claim_token,
+                accept_child=args.accept_child,
+            )
+            result["project_revision"] = revision
+            result["projection"] = service.refresh({str(result["task_id"])})
+            return result
         if args.required:
+            if args.accept_child:
+                raise TodoError("accept_child_requires_gate", "--accept-child requires one explicit gate ID")
             with service.db.read() as conn:
                 from ..sessions import authenticate_claim
                 claim = authenticate_claim(conn, args.claim_token)
                 ids = [row[0] for row in conn.execute("SELECT id FROM gates WHERE task_id=? AND required=1 ORDER BY id", (claim["task_id"],))]
-            results = [service.gate_run(gate_id, args.claim_token) for gate_id in ids]
+            results = [run_one(gate_id) for gate_id in ids]
             failed = [item for item in results if not item["valid"]]
             if failed:
                 raise TodoError("gate_failed", "One or more required gates failed", ExitCode.GATE_FAILURE, {"results": results, "failed": failed})
             return {"results": results}
         if not args.gate_id:
             raise TodoError("gate_id_required", "gate run requires a gate ID or --required")
-        result = service.gate_run(args.gate_id, args.claim_token)
+        result = run_one(args.gate_id)
         if not result["valid"]:
             raise TodoError("gate_failed", f"Gate {args.gate_id} failed", ExitCode.GATE_FAILURE, result)
         return result

@@ -55,6 +55,32 @@ class ChildExecutionV2Tests(unittest.TestCase):
             gates=[],
         ))
 
+    def test_read_child_records_scope_without_excluding_parent_edits(self) -> None:
+        child = self.mutate(lambda conn: authorize_child_execution(
+            conn, self.repo.root, self.token, objective="bounded read child",
+            scopes=["src/owned/child"], gates=[], access="read",
+        ))
+        self.assertEqual(child["access"], "read")
+        with self.repo.service.db.read() as conn:
+            leases = conn.execute(
+                "SELECT COUNT(*) FROM child_scope_leases WHERE child_execution_id=?",
+                (child["child_execution_id"],),
+            ).fetchone()[0]
+            self.assertEqual(leases, 0)
+            allowed = guard_paths(conn, self.repo.root, self.claim["claim"]["claim_id"], ["src/owned/child/value.py"])
+            self.assertEqual(allowed["allowed"], ["src/owned/child/value.py"])
+        status = self.mutate(lambda conn: __import__(
+            "todo_orchestrator.child_execution", fromlist=["child_execution_status"]
+        ).child_execution_status(conn, self.token, child["child_execution_id"]))
+        self.assertEqual(status["access"], "read")
+        self.assertEqual(status["scopes"][0]["state"], "authorized_read")
+        with self.assertRaises(TodoError) as blocked:
+            self.mutate(lambda conn: report_child_result(
+                conn, child["child_token"], status="succeeded",
+                changed_paths=["src/owned/child/value.py"],
+            ))
+        self.assertEqual(blocked.exception.code, "child_read_only_change")
+
     def test_ready_result_is_durable_and_blocks_parent_until_rejected(self) -> None:
         child = self.child()
         reported = self.mutate(lambda conn: report_child_result(
@@ -118,8 +144,11 @@ class ChildExecutionV2Tests(unittest.TestCase):
             database.initialize(project)
             with database.read() as migrated:
                 columns = {row[1] for row in migrated.execute("PRAGMA table_info(child_executions)")}
-                self.assertTrue({"candidate_gates_json", "acceptance_gates_json", "result_refs_json"} <= columns)
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 5)
+                self.assertTrue({
+                    "candidate_gates_json", "acceptance_gates_json", "result_refs_json",
+                    "access_mode", "authorized_scopes_json",
+                } <= columns)
+                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 6)
 
 
 if __name__ == "__main__":

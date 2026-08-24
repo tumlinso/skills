@@ -7,6 +7,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
 import uuid
@@ -24,89 +25,62 @@ class ProductionReadOnlyRuntime:
     """Compose frozen production interfaces; inject fakes for software-only proof."""
 
     def __init__(self, *, profile: dict[str, Any] | None = None, cache: Any = None,
-                 runtime: Any = None, service: Any = None, harness_factory: Callable[[str], Any] | None = None) -> None:
+                 runtime: Any = None, service: Any = None, supervisor: Any = None,
+                 harness_factory: Callable[[str], Any] | None = None) -> None:
         self._profile, self._cache, self._runtime, self._service = profile, cache, runtime, service
+        self._supervisor = supervisor
         self._harness_factory = harness_factory
 
-    def _components(self, root: Path) -> tuple[dict[str, Any], Any, Any, Any]:
+    def _components(self, root: Path) -> tuple[dict[str, Any], Any]:
         import tomllib
-        from .model_cache import ModelCache
-        from .servers import LlamaCppServerAdapter
-        from .service import AdapterService
-        skills = Path(__file__).resolve().parents[2]
-        todo = skills / "todo-orchestrator"
-        if str(todo) not in sys.path: sys.path.insert(0, str(todo))
-        from todo_orchestrator.runtime import RuntimeFacade
+        from .supervisor import SupervisorClient
         profile = self._profile or tomllib.loads((Path(__file__).resolve().parents[1] / "config/production-profile.toml").read_text(encoding="utf-8"))
-        cache = self._cache or ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
-        runtime = self._runtime or RuntimeFacade(root)
-        service = self._service or AdapterService()
-        if self._service is None:
-            service.register("llama", LlamaCppServerAdapter(str(profile["server"]["binary"])))
-        return profile, cache, runtime, service
+        return profile, self._supervisor or SupervisorClient(root)
 
     def execute(self, request: dict[str, Any], packet: dict[str, Any], snapshot: Any) -> dict[str, Any]:
         from .harnesses import CodexCliAdapter, QwenCodeAdapter
         root = Path(request["repo_root"])
-        profile, cache, runtime, service = self._components(root)
+        profile, supervisor = self._components(root)
         deployment = profile.get("deployment_policy", {})
         if deployment.get("real_local_enabled") is not True:
             return {"status": "needs_codex", "summary": str(deployment.get("reason", "real local execution disabled")),
                     "findings": [], "tool_calls": 0, "artifacts": []}
-        active = cache.active()
-        if not active:
-            return {"status": "needs_codex", "summary": "Persistent active model cache is missing.",
-                    "findings": [], "tool_calls": 0, "artifacts": []}
-        verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         execution = request["execution"]
-        count = int(execution.get("gpu_count", 1))
-        runtime.host.discover_gpus()
-        bundles = runtime.host.compound_gpu_bundles(count)
-        if not bundles:
-            return {"status": "preempted", "summary": "No runtime-discovered GPU bundle is available.",
-                    "findings": [], "tool_calls": 0, "artifacts": []}
-        bundle = bundles[0]
-        reservation = runtime.host.reserve_service(
-            project_root=root, service_id=f"lcw-{uuid.uuid4()}", priority_class="active_local_delegation",
-            resource_request={"schema_version": 1, "kind": "accelerator", "ids": bundle["resource_ids"],
-                              "exclusive_resources": bundle["exclusive_resources"]},
-        )
-        if reservation is None:
-            return {"status": "preempted", "summary": "Runtime reservation is pending owner drain.",
-                    "findings": [], "tool_calls": 0, "artifacts": []}
-        uuids = [item.removeprefix("accelerator:") for item in reservation["resource_ids"]]
-        server = profile["server"]
-        service_profile = {
-            **dict(execution.get("service_profile") or {}), "format": "CORE4-MODEL-SERVICE/2",
-            "model_sha256": active["payload_sha256"], "allocated_gpu_uuids": uuids,
-            "split_mode": server.get("split_mode", "layer"), "context_size": int(profile["experiment"]["initial_context"]),
-            "port": int(server["base_port"]), "log_path": str(cache.root / "runtime/llama-server.log"),
-            "startup_timeout_seconds": float(server["startup_timeout_seconds"]),
-            "idle_ttl_seconds": float(deployment.get("hot_idle_seconds", 0)),
-        }
         harness_name = str(execution.get("harness", "qwen"))
         harness = (self._harness_factory(harness_name) if self._harness_factory else
                    QwenCodeAdapter(str(profile["harnesses"]["qwen"])) if harness_name == "qwen" else
                    CodexCliAdapter(str(profile["harnesses"]["codex"])))
-        server_handle = harness_handle = None
+        endpoint = None
+        harness_handle = None
         try:
-            with cache.lease(str(active["candidate_id"]), str(active["payload_sha256"]), reservation["owner_id"]):
-                server_handle = service.start("llama", {"model_path": verified["payload_path"],
-                    "port": service_profile["port"], "service_profile": service_profile})
-                harness_handle = harness.start({"cwd": str(snapshot.root), **dict(execution.get("harness_config") or {})})
-                result = harness.run(harness_handle, {"prompt": json.dumps({"objective": request["objective"], "packet": packet}, separators=(",", ":"))})
+            endpoint = supervisor.request("warm")
+            harness_config = {
+                **dict(execution.get("harness_config") or {}),
+                "cwd": str(snapshot.root), "repository_root": str(snapshot.root),
+                "authorized_read_paths": list(request["scopes"]), "mode": "readonly",
+                "base_url": endpoint["base_url"], "model": endpoint["model_id"],
+            }
+            harness_handle = harness.start(harness_config)
+            result = harness.run(harness_handle, {"prompt": json.dumps({
+                "objective": request["objective"], "role": request["role"],
+                "authorized_roots": request["scopes"], "packet": packet,
+                "output_contract": "CORE4-MODEL-OUTCOME/1",
+                "escalate_when": "Evidence is insufficient, scope is inadequate, or an architectural decision is required.",
+                "constraints": ("Every evidence path must be repository-relative within the isolated snapshot, never absolute. "
+                                "This is read-only work, so changed_paths must be an empty array."),
+            }, separators=(",", ":"))})
             status = "completed" if result.get("status") == "succeeded" else str(result.get("status", "failed"))
-            artifact = {"kind": "harness-summary", "harness": harness_name, "model_sha256": active["payload_sha256"],
+            artifact = {"kind": "harness-summary", "harness": harness_name, "model_sha256": endpoint["model_sha256"],
                         "usage": result.get("usage", {}), "duration_ms": result.get("duration_ms")}
-            return {"status": status, "summary": str(result.get("text") or result.get("reason") or status)[:500],
+            model_outcome = result.get("model_outcome") if isinstance(result.get("model_outcome"), dict) else None
+            return {"status": status, "summary": str((model_outcome or {}).get("summary") or result.get("reason") or status)[:500],
                     "findings": [], "tool_calls": int(result.get("usage", {}).get("core4", {}).get("tool_calls", 0)),
-                    "artifacts": [artifact]}
+                    "artifacts": [artifact], "model_outcome": model_outcome}
         except Exception as error:
             return {"status": "failed", "summary": str(error)[:500], "findings": [], "tool_calls": 0, "artifacts": []}
         finally:
             if harness_handle is not None: harness.evict(harness_handle)
-            if server_handle is not None: service.evict("llama", server_handle)
-            runtime.host.release(reservation["owner_id"])
+            if endpoint is not None: supervisor.request("release")
 
 
 def _runtime_source():
@@ -171,7 +145,10 @@ class IntegrationController:
         env.update(environment or {})
         process = subprocess.run(argv, cwd=cwd, env=env, text=True, capture_output=True, check=False)
         if process.returncode != 0:
-            raise IntegrationError(f"public integration command failed with exit code {process.returncode}")
+            detail = (process.stdout.strip() or process.stderr.strip())[-1000:]
+            raise IntegrationError(
+                f"public integration command failed with exit code {process.returncode}: {detail}"
+            )
         try:
             value = json.loads(process.stdout)
         except json.JSONDecodeError as error:
@@ -190,6 +167,7 @@ class IntegrationController:
         argv = [
             "child", "create", "--claim-token", request["parent_claim_token"],
             "--objective", request["objective"],
+            "--access", "read" if request["mode"] == "readonly" else "write",
         ]
         for scope in request["scopes"]:
             argv.extend(["--scope", scope])
@@ -204,6 +182,133 @@ class IntegrationController:
         if not isinstance(child.get("child_token"), str) or not str(child["child_token"]).startswith("toch_"):
             raise IntegrationError("todo did not return a restricted child token")
         return child
+
+    def request_from_claim(
+        self, repo_root: str | Path, claim_token: str, *, mode: str, target: str | None = None,
+    ) -> dict[str, Any]:
+        root = Path(repo_root).resolve()
+        capsule = self._todo(root, "context", "--claim-token", claim_token)
+        task = _object(capsule.get("task"), "todo task capsule")
+        scope = _object(capsule.get("scope"), "todo scope capsule")
+        scopes = list(scope.get("exclusive_paths", []))
+        if mode == "readonly":
+            scopes.extend(scope.get("read_paths", []))
+        scopes = sorted({str(item) for item in scopes if (root / str(item)).exists()})
+        if not scopes:
+            raise IntegrationError(f"todo task has no usable {mode} scope")
+        gates = [str(item["id"]) for item in capsule.get("gates", [])
+                 if isinstance(item, dict) and item.get("required") and item.get("id")]
+        request: dict[str, Any] = {
+            "format": "CORE4-INTEGRATION-REQUEST/2", "schema_version": 2,
+            "mode": mode, "repo_root": str(root), "parent_claim_token": claim_token,
+            "task_id": str(task["id"]), "objective": str(task["objective"]),
+            "scopes": scopes, "gates": gates, "execution": {
+                "backend": "real", "harness": "qwen", "gpu_count": 2,
+            },
+        }
+        if mode == "readonly":
+            request.update(role="review", target=target or "", intent="understand", budget_tokens=4096, max_items=12)
+        else:
+            gate_commands = []
+            for gate_id in gates:
+                explained = self._todo(root, "gate", "explain", gate_id)
+                config = explained.get("config") if isinstance(explained.get("config"), dict) else {}
+                argv = config.get("argv")
+                if explained.get("type") in {"command", "benchmark", "json_predicate"} and isinstance(argv, list) and argv:
+                    gate_commands.append({
+                        "schema_version": 1, "argv": [str(item) for item in argv],
+                        "cwd": str(config.get("cwd", ".")),
+                        "env": {str(key): str(value) for key, value in dict(config.get("env") or {}).items()},
+                        "timeout_seconds": float(config.get("timeout", 3600)),
+                    })
+            diff_check = {"schema_version": 1, "argv": ["git", "diff", "--check"],
+                          "cwd": ".", "env": {}, "timeout_seconds": 60}
+            request.update(
+                baseline_commands=[diff_check], verification_commands=[*gate_commands, diff_check],
+                acceptance_commands=[diff_check], read_dependencies=list(scope.get("read_paths", [])),
+                approved_overlays=[],
+            )
+        return request
+
+    def delegate(
+        self, repo_root: str | Path, claim_token: str, *, mode: str, target: str | None = None,
+    ) -> dict[str, Any]:
+        return self.run(self.request_from_claim(repo_root, claim_token, mode=mode, target=target))
+
+    def _writable_model(self, workspace: Path, request: dict[str, Any]) -> dict[str, Any]:
+        from .harnesses import QwenCodeAdapter
+        from .result_validation import validate_model_outcome
+        from .supervisor import SupervisorClient
+        task_spec = json.dumps({
+            "objective": request["objective"], "role": "edit",
+            "read_paths": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
+            "write_paths": request["scopes"], "forbidden_paths": [], "target_symbols": [],
+            "failing_tests": [], "interface_ids": [], "acceptance_gates": request["gates"],
+        }, separators=(",", ":"))
+        if not (workspace / ".ctxpp/index.jsonl").is_file():
+            self._run_json([
+                str(self.ctxpp_cli), "--root", str(workspace), "--json", "scan",
+            ], cwd=workspace)
+        packet = self._run_json([
+            str(self.ctxpp_cli), "--root", str(workspace), "--json", "packet", "--task-spec", task_spec,
+            "--consumer", "local-worker", "--budget", "1536", "--max-items", "4",
+        ], cwd=workspace)
+        supervisor = SupervisorClient(request["repo_root"])
+        endpoint = supervisor.request("warm")
+        harness = QwenCodeAdapter()
+        handle = None
+        try:
+            handle = harness.start({
+                "cwd": str(workspace), "repository_root": str(workspace), "mode": "writable",
+                "authorized_read_paths": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
+                "write_paths": request["scopes"], "allowed_tools": ["read_file", "edit", "structured_output"],
+                "max_session_turns": 10, "max_tool_calls": 10, "max_wall_time_seconds": 180,
+                "base_url": endpoint["base_url"], "model": endpoint["model_id"],
+            })
+            model = harness.run(handle, {"prompt": json.dumps({
+                "objective": request["objective"], "role": "implementation",
+                "authorized_read_roots": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
+                "authorized_write_roots": request["scopes"], "packet": packet,
+                "output_contract": "CORE4-MODEL-OUTCOME/1",
+                "constraints": ("Call read_file once, call edit for the requested change, then call the tool named "
+                                "structured_output as the final action. Do not finish with prose or printed JSON. "
+                                "Every evidence and changed path must be repository-relative, never absolute. "
+                                "Omit content_sha256 for an edited file unless computed after the final edit. "
+                                "Edit only authorized roots. Do not run shell or agents. Escalate ambiguity."),
+            }, separators=(",", ":"))})
+            tracked = subprocess.run(
+                ["git", "diff", "--name-only", "-z"], cwd=workspace, capture_output=True, check=True,
+            ).stdout.split(b"\0")
+            untracked = subprocess.run(
+                ["git", "ls-files", "--others", "--exclude-standard", "-z"], cwd=workspace,
+                capture_output=True, check=True,
+            ).stdout.split(b"\0")
+            changed = sorted({item.decode("utf-8", errors="surrogateescape") for item in [*tracked, *untracked] if item})
+            value = model.get("model_outcome")
+            if not isinstance(value, dict):
+                return {"status": "needs_codex", "summary": str(model.get("reason", "invalid model outcome"))[:500],
+                        "model_outcome": None, "packet": packet, "usage": model.get("usage", {})}
+            validated = validate_model_outcome(
+                value, repository_root=workspace,
+                authorized_read_paths=sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
+                write_paths=request["scopes"], actual_changed_paths=changed, mode="writable",
+            )
+            return {"status": validated["outcome"], "summary": validated["summary"],
+                    "model_outcome": validated, "packet": packet, "usage": model.get("usage", {})}
+        finally:
+            if handle is not None:
+                harness.evict(handle)
+            supervisor.request("release")
+
+    @staticmethod
+    def _reverse_candidate(root: Path, artifact: dict[str, Any]) -> None:
+        patch = Path(str(artifact["patch"]["path"])).read_bytes()
+        checked = subprocess.run(["git", "apply", "--reverse", "--check", "--binary", "-"], cwd=root,
+                                 input=patch, capture_output=True, check=False)
+        if checked.returncode:
+            raise IntegrationError("candidate rollback is unsafe")
+        subprocess.run(["git", "apply", "--reverse", "--binary", "-"], cwd=root,
+                       input=patch, capture_output=True, check=True)
 
     def _report(self, root: Path, child_token: str, status: str, summary: str,
                 changed_paths: list[str] | None = None,
@@ -371,6 +476,16 @@ class IntegrationController:
             reviewer = {}
             if self.writable_runner is not None:
                 reviewer = _object(self.writable_runner(workspace.path, request), "writable runner result")
+            elif request.get("execution", {}).get("backend") == "real":
+                reviewer = self._writable_model(workspace.path, request)
+                if reviewer.get("status") != "completed":
+                    status = "needs_codex" if reviewer.get("status") == "needs_codex" else "failed"
+                    self._report(root, str(child["child_token"]), status, str(reviewer.get("summary", status)))
+                    return {
+                        "status": status, "summary": str(reviewer.get("summary", status))[:500],
+                        "changed_paths": [], "accepted": False, "artifact_root": str(artifact_root),
+                        "cuda": {"state": "silent", "campaign_ids": []},
+                    }
             else:
                 for relative, content in sorted(normalized_changes.items()):
                     destination = workspace.path / relative
@@ -393,22 +508,11 @@ class IntegrationController:
         if reviewer:
             self._write_json(reviewer_path, reviewer)
             references["reviewer_evidence"] = str(reviewer_path)
-        self._report(
-            root, str(child["child_token"]), "ready_for_acceptance",
-            "Externally verified writable candidate is ready for guarded acceptance.",
-            artifact["changed_paths"], references,
-        )
         if self.before_accept is not None:
             self.before_accept(root, artifact)
         try:
             def record(result: dict[str, Any]) -> bool:
                 self._write_json(acceptance_path, result)
-                if request["gates"]:
-                    return True
-                self._todo(
-                    root, "child", "accept", str(child["child_execution_id"]),
-                    "--claim-token", request["parent_claim_token"],
-                )
                 return True
             acceptance = accept_patch_artifact(
                 root, artifact, request["acceptance_commands"], result_recorder=record,
@@ -422,11 +526,44 @@ class IntegrationController:
                 "cuda": {"state": "silent", "campaign_ids": []},
             }
         except AcceptanceError as error:
+            self._report(root, str(child["child_token"]), "ready_for_acceptance", str(error)[:500],
+                         artifact["changed_paths"], references)
             self._todo(root, "child", "reject", str(child["child_execution_id"]),
                        "--claim-token", request["parent_claim_token"])
             return {
                 "status": "acceptance_failed", "summary": str(error)[:500],
                 "changed_paths": [], "accepted": False, "artifact_root": str(artifact_root),
+                "cuda": {"state": "silent", "campaign_ids": []},
+            }
+        try:
+            for gate_id in request["gates"]:
+                self._todo(root, "gate", "run", gate_id, "--claim-token", str(child["child_token"]))
+            self._report(
+                root, str(child["child_token"]), "ready_for_acceptance",
+                "Externally verified writable candidate is ready for guarded acceptance.",
+                artifact["changed_paths"], references,
+            )
+            for gate_id in request["gates"]:
+                self._todo(
+                    root, "gate", "run", gate_id, "--claim-token", request["parent_claim_token"],
+                    "--accept-child", str(child["child_execution_id"]),
+                )
+            self._todo(root, "child", "accept", str(child["child_execution_id"]),
+                       "--claim-token", request["parent_claim_token"])
+        except Exception as error:
+            self._reverse_candidate(root, artifact)
+            try:
+                state = self._status(request, str(child["child_execution_id"])).get("state")
+                if state == "running":
+                    self._report(root, str(child["child_token"]), "ready_for_acceptance", str(error)[:500],
+                                 artifact["changed_paths"], references)
+                self._todo(root, "child", "reject", str(child["child_execution_id"]),
+                           "--claim-token", request["parent_claim_token"])
+            except Exception:
+                pass
+            return {
+                "status": "acceptance_failed", "summary": str(error)[:500], "changed_paths": [],
+                "accepted": False, "artifact_root": str(artifact_root),
                 "cuda": {"state": "silent", "campaign_ids": []},
             }
         return {
@@ -442,6 +579,17 @@ class IntegrationController:
         request = normalize_integration_request(value)
         child = self._create_child(request)
         child_id = str(child["child_execution_id"])
+        stop = threading.Event()
+        heartbeat_errors: list[Exception] = []
+        def heartbeat() -> None:
+            while not stop.wait(60):
+                try:
+                    self._todo(Path(request["repo_root"]), "child", "heartbeat", "--child-token", str(child["child_token"]), "--lease-seconds", "300")
+                except Exception as error:
+                    heartbeat_errors.append(error)
+                    return
+        thread = threading.Thread(target=heartbeat, daemon=True)
+        thread.start()
         try:
             outcome = self._readonly(request, child) if request["mode"] == "readonly" else self._writable(request, child)
         except Exception as error:
@@ -453,6 +601,11 @@ class IntegrationController:
                     "--claim-token", request["parent_claim_token"],
                 )
             raise
+        finally:
+            stop.set()
+            thread.join(timeout=2)
+        if heartbeat_errors:
+            raise IntegrationError(f"child heartbeat failed: {heartbeat_errors[0]}")
         status = self._status(request, child_id)
         return {
             "format": "CORE4-INTEGRATED-RESULT/1",
@@ -510,8 +663,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
             raise IntegrationError("unsupported read-only role")
         if request["intent"] not in {"understand", "debug", "test", "api", "performance"}:
             raise IntegrationError("unsupported ctxpp intent")
-        if not isinstance(request["target"], str) or not request["target"]:
-            raise IntegrationError("target must be a non-empty string")
+        if not isinstance(request["target"], str):
+            raise IntegrationError("target must be a string")
         if not isinstance(request["budget_tokens"], int) or not 256 <= request["budget_tokens"] <= 12000:
             raise IntegrationError("budget_tokens must be between 256 and 12000")
         if not isinstance(request["max_items"], int) or not 1 <= request["max_items"] <= 32:

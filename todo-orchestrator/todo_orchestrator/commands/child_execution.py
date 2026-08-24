@@ -48,6 +48,7 @@ def register(subparsers, helpers) -> None:
     create.add_argument("--objective", required=True)
     create.add_argument("--scope", action="append", required=True)
     create.add_argument("--gate", action="append", default=[])
+    create.add_argument("--access", choices=["read", "write"], default="write")
     create.add_argument("--max-attempts", type=int, default=1)
     create.add_argument("--lease-seconds", type=int, default=300)
     def create_child(args):
@@ -57,7 +58,7 @@ def register(subparsers, helpers) -> None:
             event="child.authorized",
             entity_id=lambda value: value["child_execution_id"],
             actor=_claim_actor(service, args.claim_token),
-            payload={"scopes": args.scope, "gates": args.gate},
+            payload={"scopes": args.scope, "gates": args.gate, "access": args.access},
             operation=lambda conn, revision: authorize_child_execution(
                 conn,
                 service.paths.repo_root,
@@ -65,6 +66,7 @@ def register(subparsers, helpers) -> None:
                 objective=args.objective,
                 scopes=args.scope,
                 gates=args.gate,
+                access=args.access,
                 max_attempts=args.max_attempts,
                 lease_seconds=args.lease_seconds,
             ),

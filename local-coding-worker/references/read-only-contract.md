@@ -10,13 +10,21 @@ heartbeats the child token through the public todo CLI, and requests one
 to a temporary snapshot. Symlinks are rejected and all copied paths have write
 bits removed before the backend sees them. The snapshot is deleted afterward.
 
-The read-only roles are `explain`, `debug`, `review`, and `test_plan`. The only
-MVP backend is deterministic `fake`; real harness adapters are later CORE4
-work. There is one backend call and no recursive delegation or general agent
-loop.
+The read-only roles are `explain`, `debug`, `review`, and `test_plan`. The
+deterministic `fake` backend remains supported; production v2 uses one bounded
+Qwen invocation through the persistent local-model supervisor. There is one
+backend call and no recursive delegation or general agent loop.
 
 The controller reports `succeeded` for normalized `no_change` and reports
 `needs_codex` when canonical target freshness, semantic relationship trust, or
 packet coverage is insufficient. `NEEDS_CODEX` is a successful hand-back for
 frontier judgment. The result always has an empty `changed_paths` array and
 never contains credentials.
+
+The normal production entry point is `local_worker.py delegate --claim-token
+"$CLAIM_TOKEN" --mode readonly --wait --json`. It derives the objective,
+scopes, and required gates from `todo context`, creates a read-access child,
+and keeps that child alive while routing and validating the result. Bounded
+packet, model-outcome, worker-result, and telemetry evidence is stored under
+the Git common directory. The parent token, whole ledger, global Qwen state,
+and previous transcripts are never placed in the model prompt.

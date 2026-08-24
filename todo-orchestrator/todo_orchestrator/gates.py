@@ -24,7 +24,7 @@ from .resources import acquire_resource, release_resource, resource_environment
 from .sessions import authenticate_claim
 
 
-def _child_candidate(conn, gate_id: str, fingerprint: str) -> dict[str, object] | None:
+def _child_candidate(conn, gate_id: str, fingerprint: str, target_child_id: str | None = None) -> dict[str, object] | None:
     """Return the newest successful, reported child candidate for current inputs."""
     rows = conn.execute(
         "SELECT e.* FROM evidence e WHERE e.gate_id=? AND e.status IN ('passed','evaluated_not_promoted') "
@@ -37,7 +37,7 @@ def _child_candidate(conn, gate_id: str, fingerprint: str) -> dict[str, object] 
         except json.JSONDecodeError:
             continue
         child_id = metadata.get("child_execution_id")
-        if not child_id:
+        if not child_id or (target_child_id is not None and child_id != target_child_id):
             continue
         child = conn.execute(
             "SELECT state,gates_json,candidate_gates_json FROM child_executions WHERE id=?",
@@ -140,7 +140,10 @@ def _evaluate_static(repo_root: Path, gate_type: str, config: dict[str, object],
     raise TodoError("unsupported_gate_type", f"Gate type {gate_type} is not executable")
 
 
-def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: str | None) -> tuple[dict[str, object], int]:
+def run_gate(
+    db, paths, project: dict[str, object], gate_id: str, claim_token: str | None,
+    accept_child: str | None = None,
+) -> tuple[dict[str, object], int]:
     configuration = project.get("configuration", {})
     resource_seconds = int(configuration.get("resource_lease_seconds", 300))
     claim_seconds = int(configuration.get("claim_lease_seconds", 7200))
@@ -188,7 +191,31 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
         if not session_id:
             raise TodoError("gate_session_required", "Gate execution requires an active claim")
         fingerprint, inputs = gate_input_fingerprint(conn, paths.repo_root, config)
-        accept_candidate = _child_candidate(conn, gate_id, fingerprint) if claim and not child else None
+        if accept_child and child:
+            raise TodoError("child_acceptance_token_invalid", "Child acceptance requires the parent claim token", ExitCode.INVALID_TOKEN)
+        if accept_child:
+            selected = conn.execute(
+                "SELECT parent_claim_id,task_id,state,gates_json,candidate_gates_json FROM child_executions WHERE id=?",
+                (accept_child,),
+            ).fetchone()
+            if not selected:
+                raise TodoError("unknown_child_execution", f"Child execution {accept_child} does not exist", ExitCode.BLOCKED)
+            if selected["parent_claim_id"] != claim["id"]:
+                raise TodoError("child_parent_mismatch", "Child execution is not owned by this claim", ExitCode.INVALID_TOKEN)
+            if selected["task_id"] != gate["task_id"]:
+                raise TodoError("child_gate_task_mismatch", "Child gate does not belong to the parent task", ExitCode.INVALID_TOKEN)
+            if selected["state"] != "ready_for_acceptance":
+                raise TodoError("child_not_ready", "Child result is not ready for acceptance", ExitCode.BLOCKED)
+            allowed = json.loads(selected["candidate_gates_json"] or selected["gates_json"] or "[]")
+            if gate_id not in allowed:
+                raise TodoError("child_gate_unauthorized", f"Child execution is not authorized for gate {gate_id}", ExitCode.BLOCKED)
+        accept_candidate = _child_candidate(conn, gate_id, fingerprint, accept_child) if claim and not child else None
+        if accept_child and not accept_candidate:
+            raise TodoError(
+                "child_gate_evidence_unavailable",
+                "The named child has no valid gate evidence for the current source",
+                ExitCode.BLOCKED,
+            )
         resources = []
         selectors = sorted(str(item) for item in config.get("resources", []))
         argv = [str(item) for item in config.get("argv", [])]
@@ -218,6 +245,7 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
             gate=dict(gate), config=config, claim=dict(claim) if claim else None, child=child,
             accept_candidate=accept_candidate, resources=resources, locks=locks,
             fingerprint=fingerprint, inputs=inputs,
+            explicit_accept_child=accept_child,
         )
         return {"gate_id": gate_id, "resources": resources, "locks": [{k: v for k, v in item.items() if k != "token"} for item in locks]}
 
@@ -380,7 +408,10 @@ def run_gate(db, paths, project: dict[str, object], gate_id: str, claim_token: s
                 accepted_gates = set(json.loads(child["acceptance_gates_json"] or "[]"))
                 accepted_gates.add(gate_id)
                 required_gates = set(json.loads(child["candidate_gates_json"] or child["gates_json"] or "[]"))
-                state = "accepted" if required_gates <= accepted_gates else "ready_for_acceptance"
+                all_credited = required_gates <= accepted_gates
+                state = "ready_for_acceptance" if acquired.get("explicit_accept_child") else (
+                    "accepted" if all_credited else "ready_for_acceptance"
+                )
                 conn.execute(
                     "UPDATE child_executions SET acceptance_gates_json=?,state=?,completed_at=? WHERE id=?",
                     (json.dumps(sorted(accepted_gates)), state, utc_now(), candidate["child_execution_id"]),

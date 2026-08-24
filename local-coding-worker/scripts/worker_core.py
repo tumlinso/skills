@@ -8,6 +8,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -57,7 +58,8 @@ def normalize_request(value: object) -> dict[str, Any]:
     if not isinstance(value["child_token"], str) or not value["child_token"].startswith("toch_"):
         raise WorkerError("a restricted todo child token is required")
     for key, limit in (("objective", 500), ("target", 300)):
-        if not isinstance(value[key], str) or not value[key].strip() or len(value[key]) > limit:
+        allow_empty = key == "target" and version == 2
+        if not isinstance(value[key], str) or (not allow_empty and not value[key].strip()) or len(value[key]) > limit:
             raise WorkerError(f"{key} must contain 1-{limit} characters")
     if not isinstance(value["repo_root"], str) or not value["repo_root"]:
         raise WorkerError("repo_root must be a non-empty path")
@@ -130,6 +132,29 @@ def _run_json(command: list[str], cwd: Path) -> dict[str, Any]:
 
 def _inside(path: str, scope: str) -> bool:
     return path == scope or path.startswith(scope + "/")
+
+
+def _evidence_root(root: Path, child_token: str) -> Path:
+    process = subprocess.run(["git", "rev-parse", "--git-common-dir"], cwd=root, text=True, capture_output=True, check=False)
+    if process.returncode:
+        raise WorkerError("cannot resolve Git common directory for worker evidence")
+    common = Path(process.stdout.strip())
+    if not common.is_absolute():
+        common = root / common
+    digest = hashlib.sha256(child_token.encode("utf-8")).hexdigest()[:24]
+    destination = common.resolve() / "local-coding-worker/executions" / digest
+    destination.mkdir(parents=True, exist_ok=True)
+    return destination
+
+
+def _write_evidence(path: Path, value: object) -> str:
+    encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+    if len(encoded) > 256 * 1024:
+        raise WorkerError(f"bounded evidence exceeded for {path.name}")
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(encoded, encoding="utf-8")
+    os.replace(temporary, path)
+    return str(path)
 
 
 class ReadOnlySnapshot:
@@ -225,26 +250,39 @@ def run_controller(request_value: object, *, production_runtime: object | None =
     repo_skills = skill_root.parent
     todo_cli = Path(os.environ.get("LCW_TODO_CLI", repo_skills / "todo-orchestrator/scripts/todo.py"))
     ctxpp_cli = Path(os.environ.get("LCW_CTXPP_CLI", repo_skills / "cpp-context-compiler/scripts/ctxpp"))
-    _run_json([
+    heartbeat_command = [
         sys.executable, str(todo_cli), "child", "heartbeat", "--repo-root", str(root),
         "--child-token", request["child_token"], "--lease-seconds", "300", "--json",
-    ], root)
-    if request["schema_version"] == 2:
+    ]
+    _run_json(heartbeat_command, root)
+    stop_heartbeat = threading.Event()
+    heartbeat_failure: list[Exception] = []
+    def heartbeat() -> None:
+        while not stop_heartbeat.wait(60):
+            try:
+                _run_json(heartbeat_command, root)
+            except Exception as error:
+                heartbeat_failure.append(error)
+                return
+    heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
+    heartbeat_thread.start()
+    try:
+      if request["schema_version"] == 2:
         task_spec = json.dumps({"objective": request["objective"], "role": request["role"],
             "read_paths": request["scopes"], "write_paths": [], "forbidden_paths": [],
-            "target_symbols": [request["target"]], "failing_tests": [], "interface_ids": [],
+            "target_symbols": [request["target"]] if request["target"] else [], "failing_tests": [], "interface_ids": [],
             "acceptance_gates": []}, separators=(",", ":"))
         packet_argv = [str(ctxpp_cli), "--root", str(root), "--json", "packet", "--task-spec", task_spec,
                        "--consumer", "local-worker", "--budget", str(request["budget_tokens"]),
                        "--max-items", str(request["max_items"])]
-    else:
+      else:
         packet_argv = [str(ctxpp_cli), "--root", str(root), "--json", "packet", request["target"],
                        "--intent", request["intent"], "--budget", str(request["budget_tokens"]),
                        "--max-items", str(request["max_items"])]
-    packet = _run_json(packet_argv, root)
-    if packet.get("format") not in {"CTXPP-CONTEXT-PACKET/1", "CTXPP-CONTEXT-PACKET/2"} or packet.get("readonly") is not True:
+      packet = _run_json(packet_argv, root)
+      if packet.get("format") not in {"CTXPP-CONTEXT-PACKET/1", "CTXPP-CONTEXT-PACKET/2"} or packet.get("readonly") is not True:
         raise WorkerError("ctxpp did not return a read-only context packet")
-    with ReadOnlySnapshot(root, request["scopes"]) as snapshot:
+      with ReadOnlySnapshot(root, request["scopes"]) as snapshot:
         if request["backend"] == "fake":
             backend = _fake_backend(request, packet, snapshot)
         else:
@@ -261,33 +299,47 @@ def run_controller(request_value: object, *, production_runtime: object | None =
             if not isinstance(backend, dict):
                 raise WorkerError("production runtime result must be an object")
         snapshot_paths = snapshot.paths
-    status = str(backend["status"])
-    if status not in {"completed", "no_change", "needs_codex", "failed", "preempted"}:
+      if heartbeat_failure:
+        raise WorkerError(f"child heartbeat failed: {heartbeat_failure[0]}")
+      status = str(backend["status"])
+      if status not in {"completed", "no_change", "needs_codex", "failed", "preempted"}:
         raise WorkerError("worker backend returned an unsupported status")
-    todo_status = "needs_codex" if status in {"needs_codex", "preempted"} else "failed" if status == "failed" else "succeeded"
-    _run_json([
-        sys.executable, str(todo_cli), "child", "report", "--repo-root", str(root),
-        "--child-token", request["child_token"], "--status", todo_status,
-        "--summary", str(backend["summary"])[:500], "--json",
-    ], root)
-    return {
+      telemetry = {
+        "backend_calls": 1, "tool_calls": int(backend.get("tool_calls", 3)),
+        "packet_tokens": int(packet.get("estimated_tokens", 0)), "snapshot_paths": snapshot_paths,
+        "elapsed_ms": round((time.perf_counter() - started) * 1000, 3),
+      }
+      result = {
         "format": f"LOCAL-CODING-WORKER-RESULT/{request['schema_version']}",
-        "schema_version": request["schema_version"],
-        "status": status,
-        "role": request["role"],
+        "schema_version": request["schema_version"], "status": status, "role": request["role"],
         "summary": str(backend["summary"])[:500],
         "findings": [str(item)[:500] for item in backend.get("findings", [])[:16]],
-        "changed_paths": [],
-        "packet_hash": packet.get("packet_hash"),
-        "source_identity": packet.get("source_identity"),
-        "telemetry": {
-            "backend_calls": 1,
-            "tool_calls": int(backend.get("tool_calls", 3)),
-            "packet_tokens": int(packet.get("estimated_tokens", 0)),
-            "snapshot_paths": snapshot_paths,
-            "elapsed_ms": round((time.perf_counter() - started) * 1000, 3),
-        },
+        "changed_paths": [], "packet_hash": packet.get("packet_hash"),
+        "source_identity": packet.get("source_identity"), "telemetry": telemetry,
         "child_reported": True,
-        **({"backend": request["backend"], "artifacts": list(backend.get("artifacts", []))}
+        **({"backend": request["backend"], "artifacts": list(backend.get("artifacts", [])),
+            **({"model_outcome": backend["model_outcome"]} if isinstance(backend.get("model_outcome"), dict) else {})}
            if request["schema_version"] == 2 else {}),
-    }
+      }
+      references = {}
+      if request["schema_version"] == 2:
+        evidence_root = _evidence_root(root, request["child_token"])
+        references = {
+          "context_packet": _write_evidence(evidence_root / "context-packet.json", packet),
+          "telemetry": _write_evidence(evidence_root / "telemetry.json", telemetry),
+          "compact_logs": _write_evidence(evidence_root / "worker-result.json", result),
+        }
+        if isinstance(backend.get("model_outcome"), dict):
+          references["reviewer_evidence"] = _write_evidence(evidence_root / "model-outcome.json", backend["model_outcome"])
+      todo_status = "needs_codex" if status in {"needs_codex", "preempted"} else "failed" if status == "failed" else "succeeded"
+      _run_json([
+        sys.executable, str(todo_cli), "child", "report", "--repo-root", str(root),
+        "--child-token", request["child_token"], "--status", todo_status,
+        "--summary", str(backend["summary"])[:500],
+        *[item for name, path in sorted(references.items()) for item in (f"--{name.replace('_', '-')}-ref", path)],
+        "--json",
+      ], root)
+      return result
+    finally:
+      stop_heartbeat.set()
+      heartbeat_thread.join(timeout=2)

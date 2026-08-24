@@ -30,7 +30,11 @@ IDs, and `parent_task_completed=false`.
 
 V2 is additive. `CORE4-INTEGRATION-REQUEST/2` selects a fixture or measured
 real execution in its `execution` object. `LCW-REQUEST/2` then composes the
-task-oriented packet, authorized read-only snapshot, persistent active cache,
-runtime-discovered GPU reservation, llama.cpp service, bounded harness, and a
-compact normalized result. Cleanup always evicts harness/server and releases
-the runtime owner. V1 remains the deterministic fake fixture.
+task-oriented packet, authorized read-only snapshot, persistent supervisor,
+bounded harness, and a compact normalized result. Each task evicts its one-shot
+harness and releases the compatible llama.cpp endpoint to its idle TTL; it does
+not evict the shared server. V1 remains the deterministic fake fixture.
+
+For ordinary read-only or writable delegation, prefer the public `delegate` command.
+Expert `integrate --request` and `run --request` surfaces remain available for
+deterministic fixtures and explicit integrations.

@@ -38,17 +38,55 @@ class ChildExecutionIntegrationTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.repo.close()
 
-    def create_child(self, scope: str, *gates: str) -> dict:
+    def create_child(self, scope: str, *gates: str, access: str | None = None) -> dict:
         argv = [
             "child", "create", "--claim-token", self.claim_token,
             "--objective", f"bounded work in {scope}", "--scope", scope,
             "--max-attempts", "1",
         ]
+        if access:
+            argv.extend(["--access", access])
         for gate in gates:
             argv.extend(["--gate", gate])
         process, envelope = self.repo.run(*argv)
         self.assertEqual(process.returncode, 0, process.stderr)
         return envelope["data"]
+
+    def test_explicit_parent_gate_credits_only_named_ready_child(self) -> None:
+        child = self.create_child("src/owned/explicit", "CHECK")
+        process, candidate = self.repo.run("gate", "run", "CHECK", "--claim-token", child["child_token"])
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertTrue(candidate["data"]["candidate_valid"])
+        self.report(child, "succeeded", changed=True)
+
+        process, credited = self.repo.run(
+            "gate", "run", "CHECK", "--claim-token", self.claim_token,
+            "--accept-child", child["child_execution_id"],
+        )
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertEqual(credited["data"]["details"]["accepted_child_execution_id"], child["child_execution_id"])
+        status_process, status = self.repo.run(
+            "child", "status", child["child_execution_id"], "--claim-token", self.claim_token,
+        )
+        self.assertEqual(status_process.returncode, 0, status_process.stderr)
+        self.assertEqual(status["data"]["state"], "ready_for_acceptance")
+        self.assertEqual(status["data"]["acceptance_gates"], ["CHECK"])
+        process, accepted = self.repo.run(
+            "child", "accept", child["child_execution_id"], "--claim-token", self.claim_token,
+        )
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertEqual(accepted["data"]["state"], "accepted")
+
+    def test_child_create_defaults_to_write_and_read_does_not_lease_scope(self) -> None:
+        legacy = self.create_child("src/owned/legacy")
+        self.assertEqual(legacy["access"], "write")
+        read_child = self.create_child("src/owned/read", access="read")
+        self.assertEqual(read_child["access"], "read")
+        process, status = self.repo.run(
+            "child", "status", read_child["child_execution_id"], "--claim-token", self.claim_token,
+        )
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertEqual(status["data"]["scopes"][0]["state"], "authorized_read")
 
     def report(self, child: dict, status: str, *, changed: bool = False) -> dict:
         argv = [
