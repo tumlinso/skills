@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T08:14:08Z",
+  "generated_at": "2026-08-24T08:15:24Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 157,
+  "project_revision": 162,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -69,10 +69,10 @@
       {
         "id": "C4P-RELEASE-READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 153,
+        "reached_at": "2026-08-24T08:15:19Z",
+        "revision": 161,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "C4P-23",
         "title": "CORE4 production extension is release-ready before ledger archival"
       },
@@ -1691,6 +1691,56 @@
         "revision": 157,
         "seq": 157,
         "timestamp": "2026-08-24T08:14:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-23",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 158,
+        "seq": 158,
+        "timestamp": "2026-08-24T08:14:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-RELEASE\"}",
+        "revision": 159,
+        "seq": 159,
+        "timestamp": "2026-08-24T08:15:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f39f815f-fe0e-449b-a0bf-37472c8675f4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 160,
+        "seq": 160,
+        "timestamp": "2026-08-24T08:15:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-RELEASE-READY",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 161,
+        "seq": 161,
+        "timestamp": "2026-08-24T08:15:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-23",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 162,
+        "seq": 162,
+        "timestamp": "2026-08-24T08:15:24Z"
       }
     ],
     "evidence": [
@@ -1992,6 +2042,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/eb15bede-7692-431f-aa22-59409c9e9820",
         "revision": 61,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T08:15:19Z",
+        "gate_id": "C4P-GATE-RELEASE",
+        "id": "f39f815f-fe0e-449b-a0bf-37472c8675f4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"release\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"056f56f0732682176fd0d24ab74b41b5100e796a97dd01b1f27182c3e5453089\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"release\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1800}, \"diff_fingerprint\": \"eee475ac298d8aa9ba6330c93c1dfc4d27d72b36151d380c6a8d7148de26477e\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/evals/results/compact/production-release.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-23.md\"], \"files\": [], \"git_head\": \"ff1efa61850f4abb23763e334382a1c7129ff112\", \"interfaces\": [], \"recorded_git_head\": \"ff1efa61850f4abb23763e334382a1c7129ff112\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 159}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/f39f815f-fe0e-449b-a0bf-37472c8675f4",
+        "revision": 160,
+        "status": "passed"
       }
     ],
     "gates": [
@@ -2220,14 +2283,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"release\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1800, \"track_git_head\": true}",
         "id": "C4P-GATE-RELEASE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "056f56f0732682176fd0d24ab74b41b5100e796a97dd01b1f27182c3e5453089",
+        "last_run_at": "2026-08-24T08:15:19Z",
         "required": 1,
-        "revision": 153,
-        "status": "pending",
+        "revision": 160,
+        "status": "passed",
         "task_id": "C4P-23",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -2335,6 +2398,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cuda/scripts/cuda_controller.py\", \"local-coding-worker/local_worker/controller.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-CUDA-INTEGRATION\", \"last_run_at\": \"2026-08-23T19:47:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 ++++++++++++++++++----\\n cuda/scripts/cuda_controller.py                    | 23 +++++---\\n local-coding-worker/local_worker/controller.py     | 52 +++++++++++++----\\n .../tests/test_core4_integration.py                | 34 ++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-12.md                                    |  6 +-\\n 7 files changed, 149 insertions(+), 39 deletions(-)\", \"git_head\": \"7eb04ac67757ecdbcd2f1c9f4f05fa1a3cfee2ad\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-12\"}",
         "revision": 66,
         "task_id": "C4P-12"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T08:15:24Z",
+        "id": "07538d9c-1f5f-4f09-aeb9-a2a0fa0eccff",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/production-release.json\", \"local-coding-worker/local_worker/production_checks.py\"], \"checkpoints\": [{\"id\": \"C4P-RELEASE-READY\", \"reached_at\": \"2026-08-24T08:15:19Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-RELEASE\", \"last_run_at\": \"2026-08-24T08:15:19Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 81 ++++++++++++++++++----\\n .../local_worker/production_checks.py              | 31 ++++++---\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-23.md                                    |  6 +-\\n 5 files changed, 94 insertions(+), 32 deletions(-)\", \"git_head\": \"ff1efa61850f4abb23763e334382a1c7129ff112\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-23\"}",
+        "revision": 162,
+        "task_id": "C4P-23"
       },
       {
         "claim_id": null,
@@ -5438,14 +5511,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 140,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 153,
-        "status": "planned",
+        "revision": 162,
+        "status": "done",
         "tags_json": "[\"release\", \"evidence\", \"git\"]",
         "title": "Generate current-head release evidence and fast-forward readiness",
-        "updated_at": "2026-08-24T08:11:56Z",
-        "version": 12
+        "updated_at": "2026-08-24T08:15:24Z",
+        "version": 14
       },
       {
         "attention_reason": null,

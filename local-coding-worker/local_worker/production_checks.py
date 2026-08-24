@@ -884,6 +884,10 @@ def release_check(phase: str) -> dict[str, Any]:
         profile = _profile(repo)
         cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
         cache_state = cache.inspect()
+        active_cache = cache_state.get("active") or {}
+        active_entry = next((item for item in cache_state.get("entries", [])
+                             if item.get("candidate_id") == active_cache.get("candidate_id") and
+                             item.get("payload_sha256") == active_cache.get("payload_sha256")), {})
         meaningful = json.loads((compact / "meaningful-evaluation.json").read_text(encoding="utf-8"))
         focused = json.loads((compact / "focused-comparison.json").read_text(encoding="utf-8"))
         host_readonly = json.loads((compact / "host-readonly.json").read_text(encoding="utf-8"))
@@ -899,15 +903,20 @@ def release_check(phase: str) -> dict[str, Any]:
             ["git", "merge-base", "--is-ancestor", "origin/main", "HEAD"],
             cwd=repo, check=False,
         ).returncode == 0
-        suites = {
-            Path(command["argv"][4]).name if len(command.get("argv", [])) > 4 else str(index):
-            command.get("tests_run")
-            for index, command in enumerate(full.get("commands", []))
-            if "unittest" in command.get("argv", [])
-        }
+        suites = {}
+        for index, command in enumerate(full.get("results", [])):
+            argv = command.get("command", [])
+            if "unittest" not in argv:
+                continue
+            source_index = argv.index("-s") + 1
+            match = __import__("re").search(r"Ran (\d+) tests?", command.get("stderr_tail", ""))
+            suite_path = Path(argv[source_index]) if source_index < len(argv) else Path(str(index))
+            suites[suite_path.parts[0]] = (
+                int(match.group(1)) if match else None
+            )
         result = {
             "format": "CORE4-PRODUCTION-RELEASE/1",
-            "ok": bool(ancestry and cache_state.get("ready") and meaningful.get("ok") and
+            "ok": bool(ancestry and active_entry.get("ready") and meaningful.get("ok") and
                        host_readonly.get("ok") and host_writable.get("ok")),
             "git": {
                 "head": subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
@@ -918,12 +927,12 @@ def release_check(phase: str) -> dict[str, Any]:
             "suites": suites,
             "production_profile_sha256": __import__("hashlib").sha256(profile_path.read_bytes()).hexdigest(),
             "model_cache": {
-                "candidate_id": cache_state.get("candidate_id"),
-                "payload_sha256": cache_state.get("payload_sha256"),
-                "ready": cache_state.get("ready"),
+                "candidate_id": active_cache.get("candidate_id"),
+                "payload_sha256": active_cache.get("payload_sha256"),
+                "ready": active_entry.get("ready"),
             },
             "selection": focused.get("best_arm"),
-            "meaningful_evaluation": meaningful.get("metrics"),
+            "meaningful_evaluation": meaningful.get("summary"),
             "host": {"readonly": host_readonly.get("ok"), "writable": host_writable.get("ok")},
             "cuda": {"runtime_discovery": True, "clean_foreground_preemption": True,
                      "hard_coded_gpu_pairs": False},

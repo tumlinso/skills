@@ -1,0 +1,60 @@
+{
+  "cuda": {
+    "clean_foreground_preemption": true,
+    "hard_coded_gpu_pairs": false,
+    "runtime_discovery": true
+  },
+  "format": "CORE4-PRODUCTION-RELEASE/1",
+  "git": {
+    "fast_forward_ready": true,
+    "head": "ff1efa61850f4abb23763e334382a1c7129ff112",
+    "origin_main_is_ancestor": true
+  },
+  "host": {
+    "readonly": true,
+    "writable": true
+  },
+  "known_limitations": [
+    "one rejected diagnosis false-success in the 12-task evaluation",
+    "Codex CLI local-provider arm was not evaluated because llama.cpp model metadata lacks the required slug",
+    "Q5 remains unevaluated because it is not in the persistent SSD cache"
+  ],
+  "meaningful_evaluation": {
+    "accepted_tasks": 11,
+    "accepted_unchanged": 6,
+    "codex_visible_input_bytes": 1374,
+    "codex_visible_output_bytes": 4386,
+    "context_expansions": 0,
+    "false_successes": 1,
+    "frontier_rework_events": 0,
+    "gpu_time_ms": 140831.78,
+    "local_completion_tokens": 2711,
+    "local_prompt_tokens": 416679,
+    "local_tool_calls": 19,
+    "source_reads": 10,
+    "tasks_evaluated": 12,
+    "wall_ms": 140831.78
+  },
+  "model_cache": {
+    "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "payload_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "ready": true
+  },
+  "ok": true,
+  "production_profile_sha256": "4767465b74d00bd1d133f7c102440531dddb126227982a76c50b9713ee231e99",
+  "selection": {
+    "accepted_tasks": 4,
+    "context_size": 16384,
+    "harness": "qwen-code",
+    "output_bytes": 475,
+    "tasks_evaluated": 4,
+    "tool_calls": 3,
+    "wall_ms": 31238.147
+  },
+  "suites": {
+    "cpp-context-compiler": 58,
+    "cuda": 42,
+    "local-coding-worker": 55,
+    "todo-orchestrator": 89
+  }
+}
