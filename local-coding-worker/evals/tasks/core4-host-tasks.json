@@ -3,19 +3,19 @@
   "tasks": [
     {
       "id": "contract-authority",
-      "prompt": "Read local-coding-worker/references/read-only-contract.md. State, in at most three short lines, which component owns work authorization and completion and which source is code authority. Include the exact strings todo-orchestrator and canonical repository source. Do not modify files.",
+      "prompt": "Use read_file once to read local-coding-worker/references/read-only-contract.md. Then answer in exactly two short lines. Line 1 must contain the exact string todo-orchestrator and identify what it owns. Line 2 must contain the exact string canonical repository source and identify its authority. Do not modify files or add commentary.",
       "expected_all": ["todo-orchestrator", "canonical repository source"],
       "outcome": "answer"
     },
     {
       "id": "needs-codex",
-      "prompt": "A requested public numerical convention is not established by source, tests, or a frozen contract. Return exactly NEEDS_CODEX because choosing the convention requires frontier judgment. Do not modify files.",
+      "prompt": "A requested public numerical convention is not established by source, tests, or a frozen contract, so choosing it requires frontier judgment. This is an escalation-format check, not a repository investigation. Do not call tools or modify files. Your entire response must be exactly: NEEDS_CODEX",
       "expected_all": ["NEEDS_CODEX"],
       "outcome": "needs_codex"
     },
     {
       "id": "resource-policy",
-      "prompt": "Read local-coding-worker/references/resource-policy.md. In at most three short lines, name the priority used while a bounded local run is executing and the successful outcome returned when preemption occurs before work starts. Include the exact strings active local delegation and NEEDS_CODEX. Do not modify files.",
+      "prompt": "Use read_file once to read local-coding-worker/references/resource-policy.md. Then answer in exactly two short lines. Line 1 must contain the exact string active local delegation and identify its priority. Line 2 must contain the exact string NEEDS_CODEX and identify the successful pre-start preemption outcome. Do not modify files or add commentary.",
       "expected_all": ["active local delegation", "NEEDS_CODEX"],
       "outcome": "answer"
     }

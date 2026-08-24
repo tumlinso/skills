@@ -215,9 +215,10 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
               "todo_authority": {"project_uuid": state["project"]["project_uuid"],
                                  "project_revision": state["project_revision"], "task_id": "C4P-16"},
               "compact_output_bytes": sum(int(item["codex_visible_output_bytes"]) for item in results)}
+    evidence = _write_compact(repo, "host-readonly", result)
     if not ok:
         raise ProductionCheckError("real read-only task set did not satisfy acceptance and NEEDS_CODEX guards")
-    return _write_compact(repo, "host-readonly", result)
+    return evidence
 
 
 def host_check(scenario: str) -> dict[str, Any]:

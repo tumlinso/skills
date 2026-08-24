@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `94`
+Project revision: `102`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
@@ -15,7 +15,7 @@ Project revision: `94`
 - `C4P-19` | status: planned | execution: ready | next: Update minimal SKILL.md routing and versioned policy without exposing server operation details to Codex.
 - `C4P-18` | status: planned | execution: ready | next: Use integer acceptance counts and report unavailable candidates as not_evaluated, not failed.
 - `C4P-17` | status: planned | execution: ready | next: Repair implementation defects revealed by these scenarios, then rerun only the failed scenario set.
-- `C4P-16` | status: blocked | execution: blocked_dependency | next: Use the smallest task set that proves the path; inspect raw logs only on failure.
+- `C4P-16` | status: done | execution: closed | next: Use the smallest task set that proves the path; inspect raw logs only on failure.
 - `C4P-15` | status: done | execution: closed | next: Do not evaluate model quality yet; establish reliable service operation and record compact host evidence.
 - `C4P-14` | status: done | execution: closed | next: If the active candidate is not READY, stop after emitting the exact request. Do not download, install, copy, or continue to C4P-15.
 - `C4P-13` | status: done | execution: closed | next: Fix only failures attributable to the extension; do not start a model or GPU benchmark.

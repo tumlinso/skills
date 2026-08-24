@@ -1,0 +1,63 @@
+{
+  "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+  "compact_output_bytes": 464,
+  "ctxpp": {
+    "coverage_sufficient": false,
+    "estimated_tokens": 740,
+    "format": "CTXPP-CONTEXT-PACKET/1",
+    "packet_hash": "4a2ffa57055bdabeb09525aa6e116074dc82b461abd1f9e9052c71766e401eb8",
+    "source_fingerprint": "cf20c021642554a413820340c673d9826e6eeecb301f8e373b4013c56cf0c634"
+  },
+  "format": "CORE4-HOST-CHECK/1",
+  "gpu_indices": [
+    2,
+    3
+  ],
+  "ok": true,
+  "payload_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+  "scenario": "readonly",
+  "tasks": [
+    {
+      "accepted": true,
+      "codex_visible_input_bytes": 334,
+      "codex_visible_output_bytes": 203,
+      "duration_ms": 21110.187,
+      "local_tool_calls": 1,
+      "outcome": "answer",
+      "status": "succeeded",
+      "task_id": "contract-authority",
+      "tool_names": [
+        "read_file"
+      ]
+    },
+    {
+      "accepted": true,
+      "codex_visible_input_bytes": 351,
+      "codex_visible_output_bytes": 250,
+      "duration_ms": 4225.301,
+      "local_tool_calls": 1,
+      "outcome": "answer",
+      "status": "succeeded",
+      "task_id": "resource-policy",
+      "tool_names": [
+        "read_file"
+      ]
+    },
+    {
+      "accepted": true,
+      "codex_visible_input_bytes": 294,
+      "codex_visible_output_bytes": 11,
+      "duration_ms": 2861.414,
+      "local_tool_calls": 0,
+      "outcome": "NEEDS_CODEX",
+      "status": "needs_codex",
+      "task_id": "needs-codex",
+      "tool_names": []
+    }
+  ],
+  "todo_authority": {
+    "project_revision": 99,
+    "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
+    "task_id": "C4P-16"
+  }
+}
