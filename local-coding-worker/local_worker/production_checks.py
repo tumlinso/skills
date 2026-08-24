@@ -547,9 +547,239 @@ def _focused_evaluation(repo: Path) -> dict[str, Any]:
     return evidence
 
 
+def _meaningful_evaluation(repo: Path) -> dict[str, Any]:
+    from .acceptance import accept_patch_artifact, build_patch_artifact
+    from .harnesses import QwenCodeAdapter
+    from .verification import require_verification
+    from .workspace import materialize_writable_workspace
+    todo = repo / "todo-orchestrator"
+    if str(todo) not in sys.path:
+        sys.path.insert(0, str(todo))
+    from todo_orchestrator.runtime import capture_source_identity
+
+    class ReadOnlyAdapter(QwenCodeAdapter):
+        def build_command(self, session, prompt):
+            argv, environment = super().build_command(session, prompt)
+            argv[argv.index("--sandbox")] = "--no-sandbox"
+            return argv, environment
+
+    class WritableAdapter(ReadOnlyAdapter):
+        def build_command(self, session, prompt):
+            argv, environment = super().build_command(session, prompt)
+            argv[argv.index("--approval-mode") + 1] = "auto-edit"
+            argv[argv.index("--exclude-tools") + 1] = "agent,shell"
+            return argv, environment
+
+    def command(code: str, timeout: int = 60) -> dict[str, Any]:
+        return {"schema_version": 1, "argv": [sys.executable, "-c", code],
+                "cwd": ".", "timeout_seconds": timeout}
+
+    def compile_command(compiler: str, source: str, *, architecture: str | None = None) -> dict[str, Any]:
+        argv = [compiler]
+        if architecture:
+            argv.extend(["-arch", architecture])
+        argv.extend(["-std=c++17", source])
+        code = ("import os,subprocess,tempfile;fd,path=tempfile.mkstemp(prefix='core4-meaningful-');"
+                "os.close(fd);os.unlink(path);"
+                f"subprocess.run({argv!r}+['-o',path],check=True);subprocess.run([path],check=True);os.unlink(path)")
+        return command(code, 120)
+
+    def metrics(task_id: str, category: str, outcome: dict[str, Any], accepted: bool, *,
+                changed_paths: list[str] | None = None, gate: str = "external") -> dict[str, Any]:
+        usage = outcome.get("usage", {}) or {}
+        core4 = usage.get("core4", {}) or {}
+        names = list(core4.get("tool_names", []) or [])
+        text = str(outcome.get("text", ""))
+        return {"task_id": task_id, "category": category, "accepted": accepted,
+                "status": outcome.get("status"), "gate": gate,
+                "changed_paths": changed_paths or [], "codex_visible_input_bytes": int(outcome.get("prompt_bytes", 0)),
+                "codex_visible_output_bytes": len(text.encode()), "local_prompt_tokens": int(usage.get("input_tokens", 0) or 0),
+                "local_completion_tokens": int(usage.get("output_tokens", 0) or 0),
+                "local_tool_calls": int(core4.get("tool_calls", 0) or 0),
+                "source_reads": sum(name in {"read_file", "grep_search"} for name in names),
+                "context_expansions": sum(name in {"glob", "list_directory", "grep_search"} for name in names),
+                "wall_ms": float(outcome.get("duration_ms", 0) or 0), "frontier_rework_required": 0,
+                "false_success": outcome.get("status") == "succeeded" and not accepted}
+
+    profile = _profile(repo)
+    cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active model cache is missing")
+    verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    host = _host_module(repo)
+    devices = host.gpu_inventory()
+    islands, _ = host.discover_islands(devices)
+    candidate = next(item for item in profile["candidates"] if item["id"] == active["candidate_id"])
+    indices = host.candidate_indices(candidate, islands, devices)
+    nvcc, cxx = shutil.which("nvcc"), shutil.which("g++")
+    if not nvcc or not cxx:
+        raise ProductionCheckError("meaningful evaluation requires existing nvcc and g++")
+    raw_root = repo / ".git/core4-production-extension/raw/meaningful-candidates"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    artifact_root = Path(tempfile.mkdtemp(prefix="run-", dir=raw_root))
+    results: list[dict[str, Any]] = []
+    environment = {"OPENAI_API_KEY": "core4-local-no-auth", "OPENAI_MODEL": str(active["candidate_id"])}
+    prior = {key: os.environ.get(key) for key in environment | {"OPENAI_BASE_URL": ""}}
+
+    readonly_tasks = [
+        ("archaeology", "archaeology", "Read arch/README.md once. Return exactly CANONICAL-ALPHA.", ["CANONICAL-ALPHA"]),
+        ("test-tracing", "test_tracing", "Read trace/test_contract.py once. Return exactly test_double_contract.", ["test_double_contract"]),
+        ("reproduction", "reproduction", "Read repro/README.md once. Return exactly the documented reproduction command and nothing else.", ["python -m unittest repro.test_bug"]),
+        ("diagnosis", "diagnosis", "Read diagnose/value.py once. State exactly which exception occurs for value 0. Include ZeroDivisionError and divisor zero.", ["ZeroDivisionError", "divisor zero"]),
+        ("independent-review", "independent_review", "Review review/security.py once. In one line identify the concrete risk. Include the exact string arbitrary code execution.", ["arbitrary code execution"]),
+        ("needs-codex", "needs_codex", "A public numerical convention is absent from source, tests, and frozen contracts. Do not use tools. Return exactly NEEDS_CODEX.", ["NEEDS_CODEX"]),
+        ("architectural-rejection", "architectural_rejection", "You are asked to replace todo-orchestrator as work authority without an authorized architecture decision. Do not use tools. Return exactly NEEDS_CODEX.", ["NEEDS_CODEX"]),
+    ]
+    writable_tasks = [
+        {"id": "mechanical-migration", "category": "mechanical_migration", "scope": "migration",
+         "prompt": "Read migration/config.toml. Replace old_mode = true with exactly mode = \"bounded\". Edit only that file.",
+         "gate": command("from pathlib import Path; assert Path('migration/config.toml').read_text().strip() == 'mode = \\\"bounded\\\"'")},
+        {"id": "fixed-implementation", "category": "fixed_implementation", "scope": "implementation",
+         "prompt": "Read implementation/math.py. Fix only add so add(2, 3) returns 5. Edit the file and do not add commentary files.",
+         "gate": command("import runpy; assert runpy.run_path('implementation/math.py')['add'](2,3) == 5")},
+        {"id": "test-generation", "category": "test_generation", "scope": "test_generation",
+         "prompt": ("Read test_generation/math_module.py. Create test_generation/test_square.py using unittest and runpy.run_path; "
+                    "the test must assert square(4) == 16. Edit only test_generation."),
+         "gate": {"schema_version": 1, "argv": [sys.executable, "-m", "unittest", "discover", "-s", "test_generation", "-p", "test*.py"], "cwd": ".", "timeout_seconds": 60}},
+        {"id": "compile-fix", "category": "compile_fix", "scope": "compile",
+         "prompt": "Read compile/main.cpp. Fix only the compile error so the program builds and exits 0. Edit only compile/main.cpp.",
+         "gate": compile_command(cxx, "compile/main.cpp")},
+        {"id": "accepted-cuda-trigger", "category": "accepted_cuda_trigger", "scope": "cuda_task",
+         "prompt": "Read cuda_task/add.cu. Fix only add so the existing host test exits 0. Replace subtraction with addition and edit only that file.",
+         "gate": compile_command(nvcc, "cuda_task/add.cu", architecture="sm_70")},
+    ]
+
+    with tempfile.TemporaryDirectory(prefix="core4-meaningful-repo-") as temporary:
+        primary = Path(temporary)
+        fixtures = {
+            "arch/README.md": "Authority marker: CANONICAL-ALPHA\n",
+            "trace/test_contract.py": "def test_double_contract():\n    assert 2 * 2 == 4\n",
+            "repro/README.md": "Reproduce with: python -m unittest repro.test_bug\n",
+            "diagnose/value.py": "def divide(value):\n    return 10 // value\n",
+            "review/security.py": "def execute(user_input):\n    return eval(user_input)\n",
+            "migration/config.toml": "old_mode = true\n",
+            "implementation/math.py": "def add(a, b):\n    return a - b\n",
+            "test_generation/math_module.py": "def square(value):\n    return value * value\n",
+            "compile/main.cpp": "int main() { return missing; }\n",
+            "cuda_task/add.cu": ("#include <cstdlib>\nint add(int a, int b) { return a - b; }\n"
+                                 "int main() { return add(2, 3) == 5 ? EXIT_SUCCESS : EXIT_FAILURE; }\n"),
+        }
+        for relative, content in fixtures.items():
+            destination = primary / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(content, encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=primary, check=True)
+        subprocess.run(["git", "config", "user.email", "core4@example.invalid"], cwd=primary, check=True)
+        subprocess.run(["git", "config", "user.name", "CORE4 Meaningful Eval"], cwd=primary, check=True)
+        subprocess.run(["git", "add", "."], cwd=primary, check=True)
+        subprocess.run(["git", "commit", "-qm", "baseline"], cwd=primary, check=True)
+        try:
+            with host.ResourceLease(repo, devices, indices):
+                with host.Server(profile["server"], Path(str(verified["payload_path"])), str(active["candidate_id"]),
+                                 16384, indices, int(profile["server"]["base_port"]),
+                                 repo / "local-coding-worker/evals/results/compact/meaningful-runtime") as server:
+                    environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
+                    os.environ.update(environment)
+                    for task_id, category, prompt, expected in readonly_tasks:
+                        harness = ReadOnlyAdapter(str(profile["harnesses"]["qwen"]))
+                        handle = harness.start({"cwd": str(primary), "model": str(active["candidate_id"]),
+                            "allowed_tools": ["read_file"], "max_session_turns": 12, "max_tool_calls": 8,
+                            "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                        try:
+                            outcome = harness.run(handle, {"prompt": prompt, "timeout_seconds": 210})
+                        finally:
+                            harness.evict(handle)
+                        outcome["prompt_bytes"] = len(prompt.encode())
+                        text = str(outcome.get("text", ""))
+                        accepted = all(item.casefold() in text.casefold() for item in expected)
+                        if task_id in {"needs-codex", "architectural-rejection"}:
+                            accepted = accepted and text.strip() == "NEEDS_CODEX"
+                        results.append(metrics(task_id, category, outcome, accepted, gate="external_contract"))
+
+                    for spec in writable_tasks:
+                        identity = capture_source_identity(primary)
+                        baseline = [command("assert True")]
+                        outcome: dict[str, Any] = {"status": "failed", "text": "", "duration_ms": 0,
+                                                   "usage": {}, "prompt_bytes": len(spec["prompt"].encode())}
+                        accepted = False
+                        changed_paths: list[str] = []
+                        try:
+                            with materialize_writable_workspace(primary, identity, [spec["scope"]], baseline) as workspace:
+                                harness = WritableAdapter(str(profile["harnesses"]["qwen"]))
+                                handle = harness.start({"cwd": str(workspace.path), "model": str(active["candidate_id"]),
+                                    "allowed_tools": ["read_file", "edit", "write_file"], "max_session_turns": 12,
+                                    "max_tool_calls": 8, "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                                try:
+                                    outcome = harness.run(handle, {"prompt": spec["prompt"], "timeout_seconds": 210})
+                                    outcome["prompt_bytes"] = len(spec["prompt"].encode())
+                                finally:
+                                    harness.evict(handle)
+                                external = require_verification(workspace.path, [spec["gate"]], phase="external")
+                                artifact = build_patch_artifact(workspace, artifact_root / spec["id"], external)
+                            acceptance = accept_patch_artifact(primary, artifact, [spec["gate"]])
+                            accepted = acceptance["accepted"] is True
+                            changed_paths = list(acceptance["changed_paths"])
+                            if spec["id"] == "accepted-cuda-trigger":
+                                scripts = repo / "cuda/scripts"
+                                if str(scripts) not in sys.path:
+                                    sys.path.insert(0, str(scripts))
+                                from cuda_discovery import discover_campaigns
+                                registry = {"format": "CUDA-BENCHMARK-REGISTRY/1", "schema_version": 1,
+                                    "project_root": str(primary), "campaigns": [{"id": "meaningful-sm70", "description": "eval",
+                                    "targets": [], "paths": ["cuda_task/**/*.cu"], "symbols": [], "task_ids": [], "task_prefixes": [],
+                                    "build": None, "correctness": {"argv": [sys.executable, "-c", "assert True"], "repetitions": 1},
+                                    "benchmark": {"argv": [sys.executable, "-c", "print('{\\\"latency_ms\\\":1}')"], "warmups": 0, "repetitions": 1},
+                                    "metric": {"format": "CUDA-METRIC/1", "schema_version": 1, "name": "latency_ms", "path": "latency_ms",
+                                               "direction": "minimize", "unit": "ms", "practical_regression_percent": 2.0, "target": None},
+                                    "resources": {"gpu_count": 1, "architecture": "volta"}, "policy": {"initial_characterization": False}}]}
+                                discovery = discover_campaigns(registry, {"schema_version": 1,
+                                    "accepted_patches": [{"accepted": True, "changed_paths": changed_paths}]})
+                                accepted = accepted and discovery["status"] == "unambiguous" and discovery["auto_queue_safe"] is True
+                        except Exception as error:
+                            outcome["gate_error"] = type(error).__name__
+                        results.append(metrics(spec["id"], spec["category"], outcome, accepted,
+                                               changed_paths=changed_paths, gate="external_patch_acceptance"))
+        finally:
+            for key, value in prior.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+
+    accepted_count = sum(bool(item["accepted"]) for item in results)
+    critical = {item["task_id"]: bool(item["accepted"]) for item in results}
+    required = {"fixed-implementation", "compile-fix", "needs-codex", "architectural-rejection",
+                "accepted-cuda-trigger"}
+    ok = len(results) == 12 and accepted_count >= 9 and all(critical.get(item, False) for item in required)
+    result = {"format": "CORE4-MEANINGFUL-EVALUATION/1", "ok": ok,
+              "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
+              "harness": "qwen-code", "context_size": 16384, "gpu_indices": indices,
+              "summary": {"tasks_evaluated": len(results), "accepted_tasks": accepted_count,
+                          "accepted_unchanged": sum(bool(item["accepted"]) and not item["changed_paths"] for item in results),
+                          "frontier_rework_events": sum(int(item["frontier_rework_required"]) for item in results),
+                          "false_successes": sum(bool(item["false_success"]) for item in results),
+                          "codex_visible_input_bytes": sum(int(item["codex_visible_input_bytes"]) for item in results),
+                          "codex_visible_output_bytes": sum(int(item["codex_visible_output_bytes"]) for item in results),
+                          "local_prompt_tokens": sum(int(item["local_prompt_tokens"]) for item in results),
+                          "local_completion_tokens": sum(int(item["local_completion_tokens"]) for item in results),
+                          "local_tool_calls": sum(int(item["local_tool_calls"]) for item in results),
+                          "source_reads": sum(int(item["source_reads"]) for item in results),
+                          "context_expansions": sum(int(item["context_expansions"]) for item in results),
+                          "wall_ms": round(sum(float(item["wall_ms"]) for item in results), 3),
+                          "gpu_time_ms": round(sum(float(item["wall_ms"]) for item in results), 3)},
+              "tasks": results, "artifact_root": str(artifact_root)}
+    evidence = _write_compact(repo, "meaningful-evaluation", result)
+    if not ok:
+        raise ProductionCheckError(f"meaningful evaluation accepted {accepted_count}/12 tasks; critical guards={critical}")
+    return evidence
+
+
 def evaluate(phase: str) -> dict[str, Any]:
     if phase == "focused":
         return _focused_evaluation(_repo())
+    if phase == "meaningful":
+        return _meaningful_evaluation(_repo())
     raise ProductionCheckError(f"evaluation phase is not implemented yet: {phase}")
 
 

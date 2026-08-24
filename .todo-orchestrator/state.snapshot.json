@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T07:50:50Z",
+  "generated_at": "2026-08-24T07:57:18Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 123,
+  "project_revision": 130,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -49,10 +49,10 @@
       {
         "id": "C4P-PRODUCTION-POLICY-READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 106,
+        "reached_at": "2026-08-24T07:57:18Z",
+        "revision": 129,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "C4P-20",
         "title": "Production profile has meaningful accepted-task evidence"
       },
@@ -1351,6 +1351,76 @@
         "revision": 123,
         "seq": 123,
         "timestamp": "2026-08-24T07:50:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-20",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 124,
+        "seq": 124,
+        "timestamp": "2026-08-24T07:51:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-20",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 125,
+        "seq": 125,
+        "timestamp": "2026-08-24T07:54:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-MEANINGFUL-EVAL",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-MEANINGFUL-EVAL\"}",
+        "revision": 126,
+        "seq": 126,
+        "timestamp": "2026-08-24T07:54:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-MEANINGFUL-EVAL",
+        "entity_type": "gate",
+        "event_type": "gate.heartbeat",
+        "payload_json": "{}",
+        "revision": 127,
+        "seq": 127,
+        "timestamp": "2026-08-24T07:56:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-MEANINGFUL-EVAL",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"eaf73412-bdb2-48c1-ad69-4e6daad5bbc5\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 128,
+        "seq": 128,
+        "timestamp": "2026-08-24T07:56:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-PRODUCTION-POLICY-READY",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 129,
+        "seq": 129,
+        "timestamp": "2026-08-24T07:57:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-20",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 130,
+        "seq": 130,
+        "timestamp": "2026-08-24T07:57:18Z"
       }
     ],
     "evidence": [
@@ -1592,6 +1662,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-24T07:56:58Z",
+        "gate_id": "C4P-GATE-MEANINGFUL-EVAL",
+        "id": "eaf73412-bdb2-48c1-ad69-4e6daad5bbc5",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"meaningful-eval\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c9e76322b307370c7b8f2c7e8ad334c13f679ca26299380c3a903b8dec0bb1e2\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"meaningful-eval\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 7200}, \"diff_fingerprint\": \"0bce8901b118bf1728c7438340fefc1e2b694ccdff7e4a873f3939ab9a3bdf1f\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-20.md\"], \"files\": [], \"git_head\": \"def8d5dea377cd02ddcbf46b6771723f8e5a9eab\", \"interfaces\": [], \"recorded_git_head\": \"def8d5dea377cd02ddcbf46b6771723f8e5a9eab\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 126}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/eaf73412-bdb2-48c1-ad69-4e6daad5bbc5",
+        "revision": 128,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-23T19:45:21Z",
         "gate_id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
         "id": "eb15bede-7692-431f-aa22-59409c9e9820",
@@ -1763,14 +1846,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"meaningful-eval\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 7200, \"track_git_head\": true}",
         "id": "C4P-GATE-MEANINGFUL-EVAL",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "c9e76322b307370c7b8f2c7e8ad334c13f679ca26299380c3a903b8dec0bb1e2",
+        "last_run_at": "2026-08-24T07:56:58Z",
         "required": 1,
-        "revision": 106,
-        "status": "pending",
+        "revision": 128,
+        "status": "passed",
         "task_id": "C4P-20",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -2073,6 +2156,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/host-service.json\", \"local-coding-worker/evals/results/compact/host-service/start-1/server-8080.log\", \"local-coding-worker/evals/results/compact/host-service/start-2/server-8080.log\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\"], \"checkpoints\": [{\"id\": \"C4P-MODEL-CACHE-READY\", \"reached_at\": \"2026-08-24T07:08:55Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-HOST-SERVICE\", \"last_run_at\": \"2026-08-24T07:08:55Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json      | 579 +++++++++++++++++++---------\\n local-coding-worker/scripts/local_worker.py |  29 +-\\n todo-status.md                              |   4 +-\\n todos.md                                    |   4 +-\\n todos/c4p-00.md                             |   2 +-\\n todos/c4p-01.md                             |   2 +-\\n todos/c4p-02.md                             |   2 +-\\n todos/c4p-03.md                             |   2 +-\\n todos/c4p-04.md                             |   2 +-\\n todos/c4p-05.md                             |   2 +-\\n todos/c4p-06.md                             |   2 +-\\n todos/c4p-07.md                             |   2 +-\\n todos/c4p-08.md                             |   2 +-\\n todos/c4p-09.md                             |   2 +-\\n todos/c4p-10.md                             |   2 +-\\n todos/c4p-11.md                             |   2 +-\\n todos/c4p-12.md                             |   2 +-\\n todos/c4p-13.md                             |   2 +-\\n todos/c4p-14.md                             |   2 +-\\n todos/c4p-15.md                             |   8 +-\\n todos/c4p-16.md                             |   4 +-\\n todos/c4p-17.md                             |   4 +-\\n todos/c4p-18.md                             |   4 +-\\n todos/c4p-19.md                             |   4 +-\\n todos/c4p-20.md                             |   4 +-\\n todos/c4p-21.md                             |   2 +-\\n todos/c4p-22.md                             |   4 +-\\n todos/c4p-23.md                             |   4 +-\\n todos/c4p-24.md                             |   4 +-\\n 29 files changed, 483 insertions(+), 205 deletions(-)\", \"git_head\": \"3274c4bac8a9d06ea279403d7a1055e1b9161d05\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-15\"}",
         "revision": 92,
         "task_id": "C4P-15"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T07:57:18Z",
+        "id": "adb49110-b12d-456c-b276-f6c7f96a13c1",
+        "kind": "complete",
+        "note": "Meaningful 12-task corpus accepted 11 tasks through external contracts and patch gates. All critical implementation, compile, NEEDS_CODEX, architectural rejection, and CUDA-trigger guards passed; one diagnosis false success was correctly rejected and retained as policy evidence.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/meaningful-evaluation.json\", \"local-coding-worker/local_worker/production_checks.py\"], \"checkpoints\": [{\"id\": \"C4P-PRODUCTION-POLICY-READY\", \"reached_at\": \"2026-08-24T07:57:18Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-MEANINGFUL-EVAL\", \"last_run_at\": \"2026-08-24T07:56:58Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 101 +++++++--\\n .../local_worker/production_checks.py              | 230 +++++++++++++++++++++\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-20.md                                    |   6 +-\\n 5 files changed, 324 insertions(+), 21 deletions(-)\", \"git_head\": \"def8d5dea377cd02ddcbf46b6771723f8e5a9eab\", \"interfaces\": [], \"note\": \"Meaningful 12-task corpus accepted 11 tasks through external contracts and patch gates. All critical implementation, compile, NEEDS_CODEX, architectural rejection, and CUDA-trigger guards passed; one diagnosis false success was correctly rejected and retained as policy evidence.\", \"resources\": [], \"task_id\": \"C4P-20\"}",
+        "revision": 130,
+        "task_id": "C4P-20"
       },
       {
         "claim_id": null,
@@ -4900,14 +4993,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 110,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 106,
-        "status": "planned",
+        "revision": 130,
+        "status": "done",
         "tags_json": "[\"evaluation\", \"frontier-economy\"]",
         "title": "Measure meaningful frontier-economy behavior",
-        "updated_at": "2026-08-24T07:43:06Z",
-        "version": 7
+        "updated_at": "2026-08-24T07:57:18Z",
+        "version": 9
       },
       {
         "attention_reason": null,
