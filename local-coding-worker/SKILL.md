@@ -15,6 +15,19 @@ python <skill-dir>/scripts/local_worker.py delegate \
   --claim-token <parent-claim-token> --mode <readonly|writable> --wait --json
 ```
 
+Omit `--wait` to launch explicitly authorized independent work without blocking,
+then collect it by execution ID:
+
+```bash
+launch=$(python <skill-dir>/scripts/local_worker.py delegate \
+  --claim-token <parent-claim-token> --mode <readonly|writable> --json)
+python <skill-dir>/scripts/local_worker.py delegate \
+  --collect <execution-id-from-launch> --wait --json
+```
+
+Launching twice is demand-driven: todo must already authorize independent,
+non-conflicting child work. The facade does not queue, split, or schedule tasks.
+
 The controller creates the bounded child execution, selects isolated source
 state, starts or reuses the verified local service, validates model output, and
 returns `completed`, `accepted`, `needs_codex`, or `failed`. JSON contracts and

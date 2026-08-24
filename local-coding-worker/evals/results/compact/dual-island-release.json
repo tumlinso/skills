@@ -1,0 +1,21 @@
+{
+  "format": "CORE4-DUAL-ISLAND-RELEASE/1",
+  "guards": {
+    "dual_worker_capacity": 2,
+    "global_preemption": true,
+    "hot_reuse_without_reload": true,
+    "memory_guard_passed": true,
+    "selective_preemption": true,
+    "single_worker_fallback": true,
+    "third_worker_oversubscription_blocked": true,
+    "two_concurrent_delegations_proven": true,
+    "two_disjoint_islands_proven": true
+  },
+  "measurements": {
+    "mem_available_bytes": 62320615424,
+    "minimum_free_vram_mib": 4823,
+    "passed": true
+  },
+  "ok": true,
+  "source_commit": "72f86925829c7b61c9c9d452c3e4f3362ec2ab34"
+}

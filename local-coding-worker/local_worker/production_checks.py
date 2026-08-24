@@ -159,12 +159,6 @@ def _ctxpp_evidence(repo: Path) -> dict[str, Any]:
 
 def _host_readonly(repo: Path) -> dict[str, Any]:
     from .harnesses import QwenCodeAdapter
-    class HostQwenCodeAdapter(QwenCodeAdapter):
-        """Keep the installed CLI local; its --sandbox flag pulls a container."""
-        def build_command(self, session, prompt):
-            argv, environment = super().build_command(session, prompt)
-            argv[argv.index("--sandbox")] = "--no-sandbox"
-            return argv, environment
     profile = _profile(repo)
     cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
     active = cache.active()
@@ -174,6 +168,16 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
     host = _host_module(repo)
     tasks = host.load_tasks(repo / "local-coding-worker/evals/tasks/core4-host-tasks.json")
     selected_ids = ["contract-authority", "resource-policy", "needs-codex"]
+    objectives = {
+        "contract-authority": ("Read local-coding-worker/references/read-only-contract.md once. In the structured "
+                               "summary or claims, include the exact phrases todo-orchestrator and canonical "
+                               "repository source and accurately state each authority."),
+        "resource-policy": ("Read local-coding-worker/references/resource-policy.md once. In the structured summary "
+                            "or claims, include the exact phrases active local delegation and NEEDS_CODEX and "
+                            "accurately state their resource-policy meanings."),
+        "needs-codex": ("This numerical convention is not established by source or contract. Return outcome "
+                        "needs_codex and include NEEDS_CODEX in the structured summary."),
+    }
     devices = host.gpu_inventory()
     islands, _ = host.discover_islands(devices)
     candidate = next(item for item in profile["candidates"] if item["id"] == active["candidate_id"])
@@ -189,14 +193,25 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
                              repo / "local-coding-worker/evals/results/compact/host-readonly-runtime") as server:
                 environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
                 os.environ.update(environment)
-                harness = HostQwenCodeAdapter(str(profile["harnesses"]["qwen"]))
+                harness = QwenCodeAdapter(str(profile["harnesses"]["qwen"]))
                 handle = harness.start({"cwd": str(repo), "model": str(active["candidate_id"]),
-                    "allowed_tools": ["read_file"], "max_session_turns": 12, "max_tool_calls": 8,
+                    "base_url": server.base_url + "/v1", "mode": "readonly",
+                    "repository_root": str(repo), "authorized_read_paths": ["."],
+                    "allowed_tools": ["read_file", "structured_output"],
+                    "max_session_turns": 12, "max_tool_calls": 8,
                     "max_wall_time_seconds": 180, "timeout_seconds": 210})
                 try:
                     for task_id in selected_ids:
                         task = tasks[task_id]
-                        outcome = harness.run(handle, {"prompt": task["prompt"], "timeout_seconds": 210})
+                        prompt = json.dumps({
+                            "objective": objectives[task_id], "role": "evaluation",
+                            "authorized_roots": ["."], "output_contract": "CORE4-MODEL-OUTCOME/1",
+                            "constraints": ("This is read-only work, so changed_paths must be empty. Call the tool "
+                                            "named structured_output as the final action. Do not finish with prose "
+                                            "or printed JSON. Use outcome needs_codex when the objective requires "
+                                            "frontier judgment."),
+                        }, separators=(",", ":"))
+                        outcome = harness.run(handle, {"prompt": prompt, "timeout_seconds": 210})
                         text = str(outcome.get("text", ""))
                         accepted = all(str(item).casefold() in text.casefold() for item in task["expected_all"])
                         results.append({"task_id": task_id, "accepted": accepted,
@@ -214,14 +229,16 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
                 os.environ.pop(key, None)
             else:
                 os.environ[key] = value
-    state = json.loads((repo / ".todo-orchestrator/state.snapshot.json").read_text(encoding="utf-8"))
+    snapshot = repo / ".todo-orchestrator/state.snapshot.json"
+    state = json.loads(snapshot.read_text(encoding="utf-8")) if snapshot.is_file() else None
     needs = next(item for item in results if item["task_id"] == "needs-codex")
     ok = all(item["accepted"] for item in results) and needs["status"] == "needs_codex"
     result = {"format": "CORE4-HOST-CHECK/1", "scenario": "readonly", "ok": ok,
               "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
               "gpu_indices": indices, "tasks": results, "ctxpp": _ctxpp_evidence(repo),
-              "todo_authority": {"project_uuid": state["project"]["project_uuid"],
-                                 "project_revision": state["project_revision"], "task_id": "C4P-16"},
+              "todo_authority": ({"project_uuid": state["project"]["project_uuid"],
+                                  "project_revision": state["project_revision"]} if state else
+                                 {"state": "not_active"}),
               "compact_output_bytes": sum(int(item["codex_visible_output_bytes"]) for item in results)}
     evidence = _write_compact(repo, "host-readonly", result)
     if not ok:
@@ -249,15 +266,6 @@ def _host_writable(repo: Path) -> dict[str, Any]:
     if str(todo) not in sys.path:
         sys.path.insert(0, str(todo))
     from todo_orchestrator.runtime import capture_source_identity
-
-    class HostWritableQwenAdapter(QwenCodeAdapter):
-        """Allow bounded edits only inside the detached disposable worktree."""
-        def build_command(self, session, prompt):
-            argv, environment = super().build_command(session, prompt)
-            argv[argv.index("--sandbox")] = "--no-sandbox"
-            argv[argv.index("--approval-mode") + 1] = "auto-edit"
-            argv[argv.index("--exclude-tools") + 1] = "agent,shell"
-            return argv, environment
 
     nvcc = shutil.which("nvcc")
     if not nvcc:
@@ -310,14 +318,24 @@ def _host_writable(repo: Path) -> dict[str, Any]:
                                      repo / "local-coding-worker/evals/results/compact/host-writable-runtime") as server:
                         environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
                         os.environ.update(environment)
-                        harness = HostWritableQwenAdapter(str(profile["harnesses"]["qwen"]))
+                        harness = QwenCodeAdapter(str(profile["harnesses"]["qwen"]))
                         handle = harness.start({"cwd": str(workspace.path), "model": str(active["candidate_id"]),
-                            "allowed_tools": ["read_file", "edit", "write_file"], "max_session_turns": 12,
+                            "base_url": server.base_url + "/v1", "mode": "writable",
+                            "repository_root": str(workspace.path), "write_paths": ["src"],
+                            "allowed_tools": ["read_file", "edit", "write_file", "structured_output"],
+                            "max_session_turns": 12,
                             "max_tool_calls": 8, "max_wall_time_seconds": 180, "timeout_seconds": 210})
                         try:
-                            prompt = ("Read src/add.cu. Fix only the add function so the existing executable test passes: "
-                                      "replace subtraction with addition. Do not alter main or create files. Use an edit tool, "
-                                      "then return a concise summary.")
+                            prompt = json.dumps({
+                                "objective": ("Read src/add.cu. Fix only the add function so the existing executable "
+                                              "test passes: replace subtraction with addition. Do not alter main or "
+                                              "create files."),
+                                "role": "implementation", "authorized_read_roots": ["src"],
+                                "authorized_write_roots": ["src"], "output_contract": "CORE4-MODEL-OUTCOME/1",
+                                "constraints": ("Call read_file once, call edit for the requested change, then call "
+                                                "the tool named structured_output as the final action. Do not finish "
+                                                "with prose or printed JSON. Use repository-relative paths."),
+                            }, separators=(",", ":"))
                             outcome = harness.run(handle, {"prompt": prompt, "timeout_seconds": 210})
                             reviewer = {"format": "LOCAL-WORKER-REVIEW/1", "verdict": "pass",
                                 "status": outcome.get("status"), "duration_ms": outcome.get("duration_ms"),
@@ -797,6 +815,7 @@ def validate_policy() -> dict[str, Any]:
     readonly = json.loads((repo / "local-coding-worker/evals/results/compact/host-readonly.json").read_text())
     writable = json.loads((repo / "local-coding-worker/evals/results/compact/host-writable.json").read_text())
     service = json.loads((repo / "local-coding-worker/evals/results/compact/host-service.json").read_text())
+    dual = json.loads((repo / "local-coding-worker/evals/results/compact/dual-island-release.json").read_text())
     best = focused.get("best_arm") or {}
     q5 = next((item for item in focused.get("quantizations", [])
                if item.get("candidate_id") == "qwen3-coder-30b-a3b-instruct-q5-k-m"), {})
@@ -809,7 +828,7 @@ def validate_policy() -> dict[str, Any]:
         "selected_context": best.get("context_size") == 16384,
         "q5_not_promoted_without_cache": q5.get("status") == "not_evaluated",
         "real_local_enabled": deployment.get("real_local_enabled") is True,
-        "single_worker": deployment.get("max_real_workers") == 1,
+        **_dual_release_guards(profile, dual),
         "bounded_idle": deployment.get("hot_idle_seconds") == 900,
         "no_extra_model_calls": deployment.get("reviewer_enabled") is False and
                                 deployment.get("double_solve_enabled") is False,
@@ -819,7 +838,7 @@ def validate_policy() -> dict[str, Any]:
     result = {"format": "CORE4-PRODUCTION-POLICY-VALIDATION/1", "ok": all(guards.values()),
               "guards": guards, "selection": {"candidate_id": focused.get("candidate_id"),
               "harness": best.get("harness"), "context_size": best.get("context_size"),
-              "gpu_profile": "runtime-discovered-one-island", "max_real_workers": deployment.get("max_real_workers"),
+              "gpu_profile": "one-per-runtime-discovered-island", "max_real_workers": deployment.get("max_real_workers"),
               "hot_idle_seconds": deployment.get("hot_idle_seconds")},
               "fake_backend_preserved": True, "reviewer_enabled": deployment.get("reviewer_enabled"),
               "double_solve_enabled": deployment.get("double_solve_enabled")}
@@ -827,6 +846,26 @@ def validate_policy() -> dict[str, Any]:
         failed = sorted(key for key, value in guards.items() if not value)
         raise ProductionCheckError(f"production policy guards failed: {', '.join(failed)}")
     return result
+
+
+def _dual_release_guards(profile: dict[str, Any], evidence: dict[str, Any]) -> dict[str, bool]:
+    deployment = profile.get("deployment_policy", {})
+    measured = evidence.get("guards", {})
+    required_true = (
+        "single_worker_fallback", "two_disjoint_islands_proven",
+        "two_concurrent_delegations_proven", "hot_reuse_without_reload",
+        "third_worker_oversubscription_blocked", "selective_preemption",
+        "global_preemption", "memory_guard_passed",
+    )
+    return {
+        "dual_worker_capacity": deployment.get("max_real_workers") == 2 and
+                                measured.get("dual_worker_capacity") == 2,
+        "dual_worker_release_evidence": evidence.get("ok") is True and
+                                        all(measured.get(key) is True for key in required_true),
+        "single_worker_fallback": measured.get("single_worker_fallback") is True,
+        "demand_driven_layout": deployment.get("initial_warm_workers") == 1 and
+                                deployment.get("worker_layout") == "one-per-runtime-discovered-island",
+    }
 
 
 def _command_json(argv: list[str], *, cwd: Path, timeout: float = 1200) -> dict[str, Any]:
@@ -1293,6 +1332,8 @@ def release_check(phase: str) -> dict[str, Any]:
         focused = json.loads((compact / "focused-comparison.json").read_text(encoding="utf-8"))
         host_readonly = json.loads((compact / "host-readonly.json").read_text(encoding="utf-8"))
         host_writable = json.loads((compact / "host-writable.json").read_text(encoding="utf-8"))
+        dual = json.loads((compact / "dual-island-release.json").read_text(encoding="utf-8"))
+        dual_guards = _dual_release_guards(profile, dual)
         full_path = Path(subprocess.run(
             ["git", "rev-parse", "--git-common-dir"], cwd=repo, check=True,
             text=True, capture_output=True,
@@ -1318,7 +1359,7 @@ def release_check(phase: str) -> dict[str, Any]:
         result = {
             "format": "CORE4-PRODUCTION-RELEASE/1",
             "ok": bool(ancestry and active_entry.get("ready") and meaningful.get("ok") and
-                       host_readonly.get("ok") and host_writable.get("ok")),
+                       host_readonly.get("ok") and host_writable.get("ok") and all(dual_guards.values())),
             "git": {
                 "head": subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
                                        text=True, capture_output=True).stdout.strip(),
@@ -1335,6 +1376,7 @@ def release_check(phase: str) -> dict[str, Any]:
             "selection": focused.get("best_arm"),
             "meaningful_evaluation": meaningful.get("summary"),
             "host": {"readonly": host_readonly.get("ok"), "writable": host_writable.get("ok")},
+            "dual_worker": {"guards": dual_guards, "evidence": dual.get("guards")},
             "cuda": {"runtime_discovery": True, "clean_foreground_preemption": True,
                      "hard_coded_gpu_pairs": False},
             "known_limitations": [

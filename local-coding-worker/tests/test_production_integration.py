@@ -2,15 +2,32 @@ from __future__ import annotations
 
 import sys
 import os
+import importlib.util
+import json
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 if str(SKILL_ROOT) not in sys.path:
     sys.path.insert(0, str(SKILL_ROOT))
 
-from local_worker.production_checks import _integrated_guards, _write_compact  # noqa: E402
+from local_worker.production_checks import _dual_release_guards, _integrated_guards, _write_compact  # noqa: E402
+
+
+def _cli_module():
+    scripts = SKILL_ROOT / "scripts"
+    sys.path.insert(0, str(scripts))
+    try:
+        spec = importlib.util.spec_from_file_location("core4_local_worker_cli", scripts / "local_worker.py")
+        module = importlib.util.module_from_spec(spec)
+        assert spec and spec.loader
+        spec.loader.exec_module(module)
+        return module
+    finally:
+        if str(scripts) in sys.path:
+            sys.path.remove(str(scripts))
 
 
 class ProductionIntegrationGuardTests(unittest.TestCase):
@@ -65,6 +82,32 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
                     os.environ["CORE4_COMPACT_EVIDENCE_DIR"] = previous
             self.assertEqual(Path(result["evidence_path"]).parent, Path(temporary).resolve())
             self.assertTrue(Path(result["evidence_path"]).is_file())
+
+    def test_dual_release_guards_require_promoted_profile_and_real_evidence(self) -> None:
+        profile = {"deployment_policy": {"max_real_workers": 2, "initial_warm_workers": 1,
+                                          "worker_layout": "one-per-runtime-discovered-island"}}
+        evidence = {"ok": True, "guards": {"dual_worker_capacity": 2,
+            "single_worker_fallback": True, "two_disjoint_islands_proven": True,
+            "two_concurrent_delegations_proven": True, "hot_reuse_without_reload": True,
+            "third_worker_oversubscription_blocked": True, "selective_preemption": True,
+            "global_preemption": True, "memory_guard_passed": True}}
+        self.assertTrue(all(_dual_release_guards(profile, evidence).values()))
+        evidence["guards"]["selective_preemption"] = False
+        self.assertFalse(_dual_release_guards(profile, evidence)["dual_worker_release_evidence"])
+
+    def test_nonblocking_launch_hides_claim_token_from_process_argv(self) -> None:
+        module = _cli_module()
+        with tempfile.TemporaryDirectory() as temporary, \
+                mock.patch.object(module, "runtime_root", return_value=Path(temporary)), \
+                mock.patch.object(module.subprocess, "Popen") as popen:
+            popen.return_value.pid = 123
+            result = module._launch_delegate(Path.cwd(), "toc_secret", "readonly", None)
+            argv = popen.call_args.args[0]
+            self.assertNotIn("toc_secret", argv)
+            self.assertEqual(result["state"], "running")
+            request = json.loads(next((Path(temporary) / "delegations").glob("*.request.json")).read_text())
+            self.assertEqual(request["claim_token"], "toc_secret")
+            self.assertEqual(oct((Path(temporary) / "delegations").stat().st_mode & 0o777), "0o700")
 
 
 if __name__ == "__main__":
