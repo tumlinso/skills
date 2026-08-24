@@ -21,3 +21,24 @@ The implementation uses the official Python MCP SDK over local stdio. Server
 startup imports no GPU library, initializes no model, reserves no GPU, and
 scans no repository.
 
+## Install
+
+```bash
+python integrations/coding-workflow-mcp/scripts/install.py
+```
+
+The idempotent installer creates an isolated venv under
+`~/.local/share/coding-workflow-mcp/venv`, registers the local stdio server as
+`coding-workflow`, verifies `codex mcp list`, and initializes the server through
+the official MCP client SDK.
+
+## Add repository routing
+
+```bash
+python integrations/coding-workflow-mcp/scripts/migrate.py --repo <repo> --dry-run
+python integrations/coding-workflow-mcp/scripts/migrate.py --repo <repo> --apply
+```
+
+Use `--remove` to remove only the marked coding-workflow section. Migration
+preserves task plans, IDs, gates, architectural constraints, and all existing
+direct-CLI fallback instructions.

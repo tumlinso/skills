@@ -1,0 +1,23 @@
+name: coding-workflow MCP
+
+on:
+  push:
+    paths:
+      - integrations/coding-workflow-mcp/**
+      - .github/workflows/coding-workflow-mcp.yml
+  pull_request:
+    paths:
+      - integrations/coding-workflow-mcp/**
+      - .github/workflows/coding-workflow-mcp.yml
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install integrations/coding-workflow-mcp
+      - run: python -m unittest discover -s integrations/coding-workflow-mcp/tests -v
+
