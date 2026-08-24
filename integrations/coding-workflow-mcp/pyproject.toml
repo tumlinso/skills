@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coding-workflow-mcp"
+version = "0.1.0"
+description = "Thin local MCP facade for repository coding workflows"
+requires-python = ">=3.11"
+dependencies = ["mcp>=1,<2"]
+
+[project.scripts]
+coding-workflow-mcp = "coding_workflow_mcp.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["coding_workflow_mcp*"]
+

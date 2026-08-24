@@ -1,0 +1,208 @@
+"""Owner-only opaque capability aliases; never a work-state authority."""
+
+from __future__ import annotations
+
+import json
+import os
+from pathlib import Path
+import secrets
+import sqlite3
+import stat
+import time
+from typing import Any
+from contextlib import closing
+
+
+WORKFLOW_PREFIX = "wf_"
+DELEGATION_PREFIX = "dg_"
+DIAGNOSTIC_PREFIX = "diag_"
+DEFAULT_WORKFLOW_TTL = 24 * 60 * 60
+DEFAULT_DELEGATION_TTL = 6 * 60 * 60
+TERMINAL_DELEGATION_TTL = 15 * 60
+
+
+class InvalidHandle(ValueError):
+    """Raised when a capability is unknown, expired, or the wrong kind."""
+
+
+def default_state_dir() -> Path:
+    base = os.environ.get("XDG_STATE_HOME")
+    return (Path(base).expanduser() if base else Path.home() / ".local" / "state") / "coding-workflow-mcp"
+
+
+def _capability(prefix: str) -> str:
+    # token_urlsafe(32) contains 256 random bits, exceeding the 192-bit floor.
+    return prefix + secrets.token_urlsafe(32)
+
+
+class CapabilityStore:
+    """Concurrent SQLite alias store containing capabilities and bounded diagnostics."""
+
+    def __init__(self, state_dir: str | os.PathLike[str] | None = None) -> None:
+        self.state_dir = Path(state_dir) if state_dir is not None else default_state_dir()
+        self.state_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.state_dir, 0o700)
+        self.db_path = self.state_dir / "capabilities.sqlite3"
+        self._initialize()
+
+    def _connect(self) -> sqlite3.Connection:
+        connection = sqlite3.connect(self.db_path, timeout=10, isolation_level=None)
+        connection.row_factory = sqlite3.Row
+        connection.execute("PRAGMA busy_timeout=10000")
+        connection.execute("PRAGMA foreign_keys=ON")
+        return connection
+
+    def _secure_database_files(self) -> None:
+        for path in (self.db_path, Path(str(self.db_path) + "-wal"), Path(str(self.db_path) + "-shm")):
+            if path.exists():
+                os.chmod(path, 0o600)
+
+    def _initialize(self) -> None:
+        with closing(self._connect()) as connection:
+            connection.execute("PRAGMA journal_mode=WAL")
+            connection.executescript(
+                """
+                CREATE TABLE IF NOT EXISTS capabilities (
+                    handle TEXT PRIMARY KEY,
+                    kind TEXT NOT NULL CHECK(kind IN ('workflow', 'delegation')),
+                    repo TEXT NOT NULL,
+                    payload TEXT NOT NULL,
+                    created_at REAL NOT NULL,
+                    updated_at REAL NOT NULL,
+                    expires_at REAL NOT NULL,
+                    terminal INTEGER NOT NULL DEFAULT 0 CHECK(terminal IN (0, 1))
+                );
+                CREATE INDEX IF NOT EXISTS capabilities_expiry
+                    ON capabilities(expires_at);
+                CREATE TABLE IF NOT EXISTS diagnostics (
+                    diagnostic_id TEXT PRIMARY KEY,
+                    message TEXT NOT NULL,
+                    created_at REAL NOT NULL,
+                    expires_at REAL NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS diagnostics_expiry
+                    ON diagnostics(expires_at);
+                """
+            )
+        self._secure_database_files()
+        self.sweep()
+
+    @staticmethod
+    def _canonical_repo(payload: dict[str, Any]) -> str:
+        repo = payload.get("repo")
+        if not isinstance(repo, str) or not repo or not Path(repo).is_absolute():
+            raise ValueError("capability payload requires an absolute canonical repo")
+        return str(Path(repo).resolve())
+
+    def _create(self, kind: str, prefix: str, payload: dict[str, Any], ttl: float) -> str:
+        repo = self._canonical_repo(payload)
+        now = time.time()
+        for _ in range(3):
+            handle = _capability(prefix)
+            try:
+                with closing(self._connect()) as connection:
+                    connection.execute("BEGIN IMMEDIATE")
+                    connection.execute(
+                        "INSERT INTO capabilities VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
+                        (handle, kind, repo, json.dumps(payload, separators=(",", ":")), now, now, now + ttl),
+                    )
+                    connection.commit()
+                self._secure_database_files()
+                return handle
+            except sqlite3.IntegrityError:
+                continue
+        raise RuntimeError("unable to allocate capability")
+
+    def create_workflow(self, payload: dict[str, Any], ttl: float = DEFAULT_WORKFLOW_TTL) -> str:
+        return self._create("workflow", WORKFLOW_PREFIX, payload, ttl)
+
+    def create_delegation(self, payload: dict[str, Any], ttl: float = DEFAULT_DELEGATION_TTL) -> str:
+        return self._create("delegation", DELEGATION_PREFIX, payload, ttl)
+
+    def _get(self, handle: str, kind: str) -> dict[str, Any]:
+        expected_prefix = WORKFLOW_PREFIX if kind == "workflow" else DELEGATION_PREFIX
+        if not isinstance(handle, str) or not handle.startswith(expected_prefix):
+            raise InvalidHandle("invalid capability")
+        with closing(self._connect()) as connection:
+            row = connection.execute(
+                "SELECT payload, expires_at FROM capabilities WHERE handle=? AND kind=?",
+                (handle, kind),
+            ).fetchone()
+        if row is None:
+            raise InvalidHandle("unknown capability")
+        if float(row["expires_at"]) <= time.time():
+            self.delete(handle)
+            raise InvalidHandle("expired capability")
+        value = json.loads(str(row["payload"]))
+        if str(Path(value["repo"]).resolve()) != value["repo"]:
+            raise InvalidHandle("invalid repository identity")
+        return value
+
+    def get_workflow(self, handle: str) -> dict[str, Any]:
+        return self._get(handle, "workflow")
+
+    def get_delegation(self, handle: str) -> dict[str, Any]:
+        return self._get(handle, "delegation")
+
+    def update(self, handle: str, payload: dict[str, Any], *, terminal: bool = False) -> None:
+        repo = self._canonical_repo(payload)
+        now = time.time()
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute("SELECT kind FROM capabilities WHERE handle=?", (handle,)).fetchone()
+            if row is None:
+                raise InvalidHandle("unknown capability")
+            if terminal and row["kind"] == "delegation":
+                ttl = TERMINAL_DELEGATION_TTL
+            elif row["kind"] == "workflow":
+                ttl = DEFAULT_WORKFLOW_TTL
+            else:
+                ttl = DEFAULT_DELEGATION_TTL
+            expires = now + ttl
+            connection.execute(
+                "UPDATE capabilities SET repo=?, payload=?, updated_at=?, expires_at=?, terminal=? WHERE handle=?",
+                (repo, json.dumps(payload, separators=(",", ":")), now, expires, int(terminal), handle),
+            )
+            connection.commit()
+        self._secure_database_files()
+
+    def delete(self, handle: str) -> None:
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute("DELETE FROM capabilities WHERE handle=?", (handle,))
+            connection.commit()
+
+    def write_diagnostic(self, message: str, ttl: float = 24 * 60 * 60) -> str:
+        diagnostic_id = _capability(DIAGNOSTIC_PREFIX)
+        now = time.time()
+        # Diagnostics are bounded and must already be redacted by the caller.
+        bounded = message[-16_384:]
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            connection.execute(
+                "INSERT INTO diagnostics VALUES (?, ?, ?, ?)",
+                (diagnostic_id, bounded, now, now + ttl),
+            )
+            connection.commit()
+        self._secure_database_files()
+        return diagnostic_id
+
+    def sweep(self, limit: int = 100) -> dict[str, int]:
+        now = time.time()
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            capabilities = connection.execute(
+                "SELECT handle FROM capabilities WHERE expires_at <= ? ORDER BY expires_at LIMIT ?",
+                (now, max(1, limit)),
+            ).fetchall()
+            diagnostics = connection.execute(
+                "SELECT diagnostic_id FROM diagnostics WHERE expires_at <= ? ORDER BY expires_at LIMIT ?",
+                (now, max(1, limit)),
+            ).fetchall()
+            connection.executemany("DELETE FROM capabilities WHERE handle=?", capabilities)
+            connection.executemany("DELETE FROM diagnostics WHERE diagnostic_id=?", diagnostics)
+            connection.commit()
+        return {"capabilities": len(capabilities), "diagnostics": len(diagnostics)}
+
+    def permissions(self) -> tuple[int, int]:
+        return stat.S_IMODE(self.state_dir.stat().st_mode), stat.S_IMODE(self.db_path.stat().st_mode)
