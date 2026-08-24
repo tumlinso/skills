@@ -68,8 +68,14 @@ def compatibility_descriptor(*, campaign_id: str, benchmark: Mapping[str, object
         "correctness_class": str(benchmark.get("correctness_class", declared.get("correctness_class", "unspecified"))),
         "toolchain": benchmark.get("toolchain_identity", benchmark.get("toolchain_id", declared.get("toolchain", ""))),
     }
+    required = {
+        "workload": protocol["workload"], "inputs": protocol["inputs"],
+        "build": protocol["build"], "toolchain": protocol["toolchain"],
+    }
+    missing = sorted(key for key, value in required.items() if value in ({}, "", None, []))
     body = {"campaign_id": campaign_id, "protocol": protocol, "machine": dict(machine)}
-    return {**body, "key": _hash(body)}
+    return {**body, "complete": not missing, "missing_identity": missing,
+            "key": _hash(body) if not missing else None}
 
 
 def compatible(left: Mapping[str, object], right: Mapping[str, object]) -> bool:
@@ -78,6 +84,8 @@ def compatible(left: Mapping[str, object], right: Mapping[str, object]) -> bool:
     return (
         isinstance(left_compatibility, Mapping)
         and isinstance(right_compatibility, Mapping)
+        and left_compatibility.get("complete") is True
+        and right_compatibility.get("complete") is True
         and bool(left_compatibility.get("key"))
         and left_compatibility.get("key") == right_compatibility.get("key")
     )

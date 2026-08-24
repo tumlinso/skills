@@ -46,6 +46,8 @@ Evidence summaries point to authoritative raw artifacts. Generated context views
 are read-only; edit canonical source only. The controller uses
 cpp-context-compiler for small semantic source slices and falls back to
 `split_cuda_translation_unit.py` when semantic retrieval is unavailable.
+For accepted changes, prefer a performance-intent ctxpp task packet carrying
+changed paths plus task and campaign identity before the slice/TU fallback.
 
 Healthy background results remain silent. Correctness failures, material
 regressions, missed targets, serious variance/contamination, and relevant

@@ -18,15 +18,26 @@ def _run(argv: list[str]) -> str:
 
 
 def discover_gpu_topology(runner: Runner = _run) -> list[dict[str, object]]:
-    inventory = runner([
-        "nvidia-smi", "--query-gpu=index,uuid,pci.bus_id", "--format=csv,noheader,nounits",
-    ])
+    fields = ["index", "uuid", "pci.bus_id", "pcie.link.gen.current", "pcie.link.width.current",
+              "memory.free", "utilization.gpu"]
+    try:
+        inventory = runner(["nvidia-smi", "--query-gpu=" + ",".join(fields), "--format=csv,noheader,nounits"])
+    except (OSError, subprocess.SubprocessError):
+        fields = fields[:3]
+        inventory = runner(["nvidia-smi", "--query-gpu=" + ",".join(fields), "--format=csv,noheader,nounits"])
     topology = runner(["nvidia-smi", "topo", "-m"])
     devices: dict[int, dict[str, str]] = {}
     for row in csv.reader(io.StringIO(inventory)):
         if len(row) >= 3:
             index = int(row[0].strip())
-            devices[index] = {"uuid": row[1].strip(), "pci_bus_id": row[2].strip()}
+            values = [item.strip() for item in row]
+            devices[index] = {
+                "uuid": values[1], "pci_bus_id": values[2],
+                "pcie_generation": values[3] if len(values) > 3 and values[3] else "unknown",
+                "pcie_link_width": values[4] if len(values) > 4 and values[4] else "unknown",
+                "memory_free_mib": values[5] if len(values) > 5 and values[5] else "unknown",
+                "utilization_percent": values[6] if len(values) > 6 and values[6] else "unknown",
+            }
 
     links: dict[int, dict[int, str]] = {index: {} for index in devices}
     numa: dict[int, str] = {}
@@ -97,6 +108,10 @@ def discover_gpu_topology(runner: Runner = _run) -> list[dict[str, object]]:
                 "numa_node": numa_node,
                 "pcie_root": f"{domain}:numa:{numa_node}",
                 "nvlink_domain": f"runtime:{island}",
+                "pcie_generation_current": device["pcie_generation"],
+                "pcie_link_width_current": device["pcie_link_width"],
+                "memory_free_mib": device["memory_free_mib"],
+                "utilization_percent": device["utilization_percent"],
             },
             "enabled": True,
         })

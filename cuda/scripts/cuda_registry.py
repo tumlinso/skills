@@ -164,15 +164,17 @@ def normalize_campaign(value: object, position: int = 0) -> dict[str, Any]:
         {key: correctness[key] for key in ("argv", "timeout_seconds") if key in correctness},
         f"{name}.correctness",
     )
-    repetitions = _integer(correctness.get("repetitions", 3), f"{name}.correctness.repetitions", minimum=1)
-    maximum = _integer(correctness.get("maximum_repetitions", 64), f"{name}.correctness.maximum_repetitions", minimum=1)
+    correctness_class = _string(correctness.get("class", correctness.get("correctness_class", "unspecified")), f"{name}.correctness.class")
+    deterministic = correctness_class in {"deterministic", "exact"}
+    repetitions = _integer(correctness.get("repetitions", 1 if deterministic else 3), f"{name}.correctness.repetitions", minimum=1)
+    maximum = _integer(correctness.get("maximum_repetitions", repetitions if deterministic else 64), f"{name}.correctness.maximum_repetitions", minimum=1)
     if maximum < repetitions:
         raise RegistryError(f"{name}.correctness.maximum_repetitions must be >= repetitions")
     result["correctness"].update(
         repetitions=repetitions,
-        minimum_seconds=_number(correctness.get("minimum_seconds", 15), f"{name}.correctness.minimum_seconds"),
+        minimum_seconds=_number(correctness.get("minimum_seconds", 0 if deterministic else 15), f"{name}.correctness.minimum_seconds"),
         maximum_repetitions=maximum,
-        correctness_class=_string(correctness.get("class", correctness.get("correctness_class", "unspecified")), f"{name}.correctness.class"),
+        correctness_class=correctness_class,
         numerical_contract=_object(correctness.get("numerical_contract", {}), f"{name}.correctness.numerical_contract"),
     )
     compatibility = _object(campaign.get("compatibility", {}), f"{name}.compatibility")

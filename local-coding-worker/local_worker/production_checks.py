@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import os
 import shutil
@@ -42,7 +43,12 @@ def _host_module(repo: Path):
 
 
 def _write_compact(repo: Path, name: str, value: dict[str, Any]) -> dict[str, Any]:
-    destination = repo / "local-coding-worker/evals/results/compact" / f"{name}.json"
+    override = os.environ.get("CORE4_COMPACT_EVIDENCE_DIR")
+    destination = (
+        Path(override).expanduser().resolve() / f"{name}.json"
+        if override
+        else repo / "local-coding-worker/evals/results/compact" / f"{name}.json"
+    )
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return {**value, "evidence_path": str(destination)}
@@ -808,7 +814,7 @@ def validate_policy() -> dict[str, Any]:
         "no_extra_model_calls": deployment.get("reviewer_enabled") is False and
                                 deployment.get("double_solve_enabled") is False,
         "needs_codex_success": deployment.get("needs_codex_is_success") is True,
-        "initial_context": profile.get("experiment", {}).get("initial_context") == 16384,
+        "initial_context": profile.get("experiment", {}).get("initial_context") == 32768,
     }
     result = {"format": "CORE4-PRODUCTION-POLICY-VALIDATION/1", "ok": all(guards.values()),
               "guards": guards, "selection": {"candidate_id": focused.get("candidate_id"),
@@ -823,6 +829,399 @@ def validate_policy() -> dict[str, Any]:
     return result
 
 
+def _command_json(argv: list[str], *, cwd: Path, timeout: float = 1200) -> dict[str, Any]:
+    process = subprocess.run(argv, cwd=cwd, text=True, capture_output=True, timeout=timeout, check=False)
+    if process.returncode != 0:
+        detail = (process.stdout.strip() or process.stderr.strip())[-1000:]
+        raise ProductionCheckError(f"integrated command failed ({process.returncode}): {detail}")
+    try:
+        value = json.loads(process.stdout)
+    except json.JSONDecodeError as error:
+        raise ProductionCheckError("integrated command did not emit JSON") from error
+    if isinstance(value, dict) and value.get("ok") is True and isinstance(value.get("data"), dict):
+        return dict(value["data"])
+    if not isinstance(value, dict):
+        raise ProductionCheckError("integrated command JSON must be an object")
+    return value
+
+
+def _integrated_guards(result: dict[str, Any]) -> dict[str, bool]:
+    scenarios = {str(item.get("id")): item for item in result.get("scenarios", []) if isinstance(item, dict)}
+    service = result.get("service") if isinstance(result.get("service"), dict) else {}
+    preemption = result.get("preemption") if isinstance(result.get("preemption"), dict) else {}
+    cold = result.get("cold_storage") if isinstance(result.get("cold_storage"), dict) else {}
+    writable = [item for item in scenarios.values() if item.get("mode") == "writable"]
+    child_ids = [str(item.get("child_execution_id")) for item in scenarios.values()
+                 if item.get("child_execution_id")]
+    required = {"source-trace", "diagnosis", "needs-codex", "cpp-fix", "cuda-fix", "preemption-recovery"}
+    return {
+        "required_scenarios": required.issubset(scenarios),
+        "all_scenarios_accepted": all(bool(scenarios[name].get("accepted")) for name in required if name in scenarios)
+                                  and required.issubset(scenarios),
+        "zero_false_successes": int(result.get("false_successes", -1)) == 0,
+        "zero_scope_violations": int(result.get("scope_violations", -1)) == 0,
+        "service_reused": bool(service.get("second_reused")) and service.get("first_pid") == service.get("second_pid")
+                          and service.get("first_compatibility_key") == service.get("second_compatibility_key"),
+        "disposable_qwen": len(child_ids) == len(set(child_ids)) and len(child_ids) >= 5,
+        "local_binding": bool(service.get("local_endpoint_bound")) and bool(service.get("explicit_model_bound")),
+        "preemption_quiescent": bool(preemption.get("evicted")) and bool(preemption.get("foreground_activated"))
+                                and bool(preemption.get("later_warm_succeeded")),
+        "no_cold_payload_reads": cold.get("payload_atime_ns_before") == cold.get("payload_atime_ns_after")
+                                 and bool(cold.get("active_payload_in_ssd_cache")),
+        "writable_child_authority": len(writable) == 2 and all(
+            item.get("result_status") == "accepted" and item.get("child_state") == "accepted"
+            and item.get("parent_task_completed") is False for item in writable
+        ),
+        "cuda_auto_queued": scenarios.get("cuda-fix", {}).get("cuda_auto_queue_state") == "queued",
+        "parents_incomplete": all(item.get("parent_task_completed") is False for item in scenarios.values()
+                                  if item.get("mode") in {"readonly", "writable"}),
+        "compact_results": int(result.get("codex_visible_result_bytes", 1_000_001)) <= 64 * 1024,
+    }
+
+
+def _integrated_plan(root: Path, nvcc: str, cxx: str) -> dict[str, Any]:
+    cpp_gate = (
+        "import os,subprocess,tempfile;"
+        "fd,path=tempfile.mkstemp(prefix='core4-integrated-cpp-');os.close(fd);os.unlink(path);"
+        f"subprocess.run([{cxx!r},'-std=c++17','cpp_fix/math.cpp','-o',path],check=True);"
+        "subprocess.run([path],check=True);os.unlink(path)"
+    )
+    cuda_gate = (
+        "import os,subprocess,tempfile;"
+        "fd,path=tempfile.mkstemp(prefix='core4-integrated-');os.close(fd);os.unlink(path);"
+        f"subprocess.run([{nvcc!r},'-std=c++17','-arch=sm_70','cuda_fix/add.cu','-o',path],check=True);"
+        "subprocess.run([path],check=True);os.unlink(path)"
+    )
+    tasks = [
+        {
+            "id": "INT-READ", "kind": "validation_task", "title": "Trace one caller",
+            "objective": ("Inspect source/api.hpp and source/caller.cpp. Identify the caller of compute. "
+                          "Complete only with verified source references, and include caller.cpp and compute in the summary; "
+                          "otherwise return NEEDS_CODEX."),
+            "priority": 100, "parallel_policy": "serial",
+            "scope": {"read_paths": ["source"]},
+        },
+        {
+            "id": "INT-DIAG", "kind": "validation_task", "title": "Diagnose bounded failure",
+            "objective": ("Inspect diagnosis/value.py and determine the exception for diagnose(0). Use diagnose_anchor only as "
+                          "the packet entry point. A completed summary must include ZeroDivisionError and divisor zero with "
+                          "verified source evidence. Static source evidence is sufficient; do not require execution. If the "
+                          "source does not establish the result, return NEEDS_CODEX."),
+            "priority": 90, "parallel_policy": "serial",
+            "scope": {"read_paths": ["diagnosis"]},
+        },
+        {
+            "id": "INT-NEEDS", "kind": "validation_task", "title": "Escalate absent contract",
+            "objective": ("Use rounding_anchor as the packet entry point and inspect contract/README.md. The requested public rounding tie convention is absent and there is no "
+                          "authorized architecture decision. Return NEEDS_CODEX with that concrete blocker; do not invent a convention."),
+            "priority": 80, "parallel_policy": "serial",
+            "scope": {"read_paths": ["contract"]},
+        },
+        {
+            "id": "INT-CPP", "kind": "workstream", "title": "Fix bounded C++ implementation",
+            "objective": ("Read cpp_fix/math.cpp. Fix only add so add(2, 3) returns 5 by replacing subtraction with addition. "
+                          "Edit no other file and return the required structured outcome."),
+            "priority": 70, "parallel_policy": "serial",
+            "scope": {"exclusive_paths": ["cpp_fix"]},
+            "gates": [{"id": "INT-CPP-GATE", "type": "command", "argv": [sys.executable, "-c", cpp_gate],
+                       "required": True, "input_paths": ["cpp_fix/math.cpp"]}],
+        },
+        {
+            "id": "INT-CUDA", "kind": "workstream", "title": "Fix bounded CUDA implementation",
+            "objective": ("Use cuda_fix_anchor as the semantic packet entry point, then read cuda_fix/add.cu. Fix only add so "
+                          "the existing sm_70 executable test exits successfully by replacing subtraction with addition. "
+                          "Edit no other file and return the required structured outcome."),
+            "priority": 60, "parallel_policy": "serial",
+            "scope": {"exclusive_paths": ["cuda_fix"]},
+            "gates": [{"id": "INT-CUDA-GATE", "type": "command", "argv": [sys.executable, "-c", cuda_gate],
+                       "required": True, "input_paths": ["cuda_fix/add.cu"]}],
+        },
+    ]
+    return {"schema_version": 2, "project": {"name": "CORE4 Integrated Fixture"}, "tasks": tasks}
+
+
+def _integrated_evaluation(repo: Path) -> dict[str, Any]:
+    from .model_cache import ModelCache
+    from .supervisor import SupervisorClient
+
+    nvcc = shutil.which("nvcc")
+    if not nvcc:
+        raise ProductionCheckError("integrated CUDA scenario requires the existing CUDA 12.x nvcc")
+    version = subprocess.run([nvcc, "--version"], text=True, capture_output=True, check=False)
+    if version.returncode or "release 12." not in version.stdout:
+        raise ProductionCheckError("integrated CUDA scenario requires an explicit CUDA 12.x toolchain")
+
+    profile = _profile(repo)
+    storage = profile["storage"]
+    cache = ModelCache(storage["cache_root"], storage["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active Q4 model cache is missing")
+    verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    if active["candidate_id"] != "qwen3-coder-30b-a3b-instruct-q4-k-m":
+        raise ProductionCheckError("the active persistent cache is not the selected production Q4 candidate")
+    cached_manifest = json.loads((Path(str(verified["payload_path"])).parent / "asset-manifest.json").read_text())
+    source_manifest = cached_manifest.get("source_manifest", {})
+    files = source_manifest.get("files", []) if isinstance(source_manifest, dict) else []
+    if len(files) != 1:
+        raise ProductionCheckError("cached source metadata does not identify one canonical payload")
+    cold_payload = Path(storage["canonical_root"]) / str(active["candidate_id"]) / str(files[0]["path"])
+    cold_before = cold_payload.stat().st_atime_ns
+
+    common_text = subprocess.run(["git", "rev-parse", "--git-common-dir"], cwd=repo, text=True,
+                                 capture_output=True, check=True).stdout.strip()
+    common = Path(common_text)
+    if not common.is_absolute():
+        common = repo / common
+    raw_root = common.resolve() / "core4-integration-finish/raw"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    # The fixture must start outside this checkout: todo project discovery
+    # deliberately walks parents for an existing authority before consulting
+    # nested Git metadata.
+    fixture = Path(tempfile.mkdtemp(prefix="core4-integrated-"))
+    for relative, content in {
+        ".gitignore": ".ctxpp/\n.todo-orchestrator/runtime/\n",
+        "source/api.hpp": "#pragma once\ninline int compute(int value) { return value * 2; }\n",
+        "source/caller.cpp": "#include \"api.hpp\"\nint caller(int value) { return compute(value); }\n",
+        "diagnosis/value.py": "def diagnose(value):\n    return 10 // value\n",
+        "diagnosis/anchor.cpp": "int diagnose_anchor(int value) { return value; }\n",
+        "contract/contract.cpp": "int rounding_anchor(int value) { return value; }\n",
+        "contract/README.md": "No rounding tie convention has been selected.\n",
+        "cpp_fix/math.cpp": ("#include <cstdlib>\nint add(int a, int b) { return a - b; }\n"
+                             "int main() { return add(2, 3) == 5 ? EXIT_SUCCESS : EXIT_FAILURE; }\n"),
+        "cuda_fix/add.cu": ("#include <cstdlib>\nint add(int a, int b) { return a - b; }\n"
+                            "int main() { return add(2, 3) == 5 ? EXIT_SUCCESS : EXIT_FAILURE; }\n"),
+        "cuda_fix/anchor.cpp": "int cuda_fix_anchor(int value) { return value; }\n",
+        "operator-note.txt": "preserve this unrelated operator work\n",
+    }.items():
+        destination = fixture / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(content, encoding="utf-8")
+    compiler = shutil.which("g++") or shutil.which("c++")
+    if not compiler:
+        raise ProductionCheckError("integrated semantic fixture requires the existing C++ compiler")
+    compile_commands = [
+        {"directory": ".", "file": relative,
+         "arguments": [compiler, "-std=c++17", "-I", "source", "-c", relative]}
+        for relative in ("source/caller.cpp", "diagnosis/anchor.cpp", "contract/contract.cpp",
+                         "cpp_fix/math.cpp", "cuda_fix/anchor.cpp")
+    ]
+    compile_commands.append({"directory": ".", "file": "cuda_fix/add.cu",
+                             "arguments": [compiler, "-x", "c++", "-std=c++17", "-c", "cuda_fix/add.cu"]})
+    (fixture / "compile_commands.json").write_text(
+        json.dumps(compile_commands, indent=2) + "\n", encoding="utf-8"
+    )
+    subprocess.run(["git", "init", "-q"], cwd=fixture, check=True)
+    subprocess.run(["git", "config", "user.email", "core4@example.invalid"], cwd=fixture, check=True)
+    subprocess.run(["git", "config", "user.name", "CORE4 Integrated Eval"], cwd=fixture, check=True)
+    subprocess.run(["git", "add", "."], cwd=fixture, check=True)
+    subprocess.run(["git", "commit", "-qm", "integrated baseline"], cwd=fixture, check=True)
+    (fixture / "operator-note.txt").write_text("preserve this unrelated operator work\nuser overlay\n", encoding="utf-8")
+
+    todo = repo / "todo-orchestrator/scripts/todo.py"
+    worker = repo / "local-coding-worker/scripts/local_worker.py"
+    cuda = repo / "cuda/scripts/cuda_controller.py"
+    plan_path = fixture / ".git/integrated-plan.json"
+    plan_path.write_text(json.dumps(_integrated_plan(fixture, nvcc, compiler), indent=2) + "\n", encoding="utf-8")
+    _command_json([sys.executable, str(todo), "bootstrap", "--repo-root", str(fixture),
+                   "--name", "CORE4 Integrated Fixture", "--json"], cwd=fixture)
+    _command_json([sys.executable, str(todo), "plan", "validate", "--repo-root", str(fixture),
+                   "--file", str(plan_path), "--json"], cwd=fixture)
+    _command_json([sys.executable, str(todo), "plan", "apply", "--repo-root", str(fixture),
+                   "--file", str(plan_path), "--json"], cwd=fixture)
+    _command_json([str(repo / "cpp-context-compiler/scripts/ctxpp"), "--root", str(fixture),
+                   "--json", "scan"], cwd=fixture, timeout=300)
+
+    supervisor = SupervisorClient(repo)
+    supervisor.request("stop")
+    scenarios: list[dict[str, Any]] = []
+    claims: dict[str, str] = {}
+
+    def claim(task_id: str) -> str:
+        payload = _command_json([sys.executable, str(todo), "claim", task_id, "--repo-root", str(fixture), "--json"], cwd=fixture)
+        token = str(payload["claim"]["claim_token"])
+        claims[task_id] = token
+        return token
+
+    def delegate(task_id: str, scenario_id: str, mode: str, *, target: str | None = None) -> dict[str, Any]:
+        attempts: list[dict[str, Any]] = []
+        value: dict[str, Any] = {}
+        limit = 2
+        for attempt in range(1, limit + 1):
+            token = claim(task_id)
+            argv = [sys.executable, str(worker), "delegate", "--claim-token", token,
+                    "--mode", mode, "--wait", "--json"]
+            if target:
+                argv.extend(["--target", target])
+            try:
+                value = _command_json(argv, cwd=fixture, timeout=1200)
+                attempts.append({"attempt": attempt, "status": value.get("status"),
+                                 "child_state": value.get("child_state")})
+            except ProductionCheckError as error:
+                attempts.append({"attempt": attempt, "status": "command_failed",
+                                 "error": str(error)[-500:]})
+                if attempt == limit:
+                    raise
+            finally:
+                _command_json([sys.executable, str(todo), "release", "--claim-token", token,
+                               "--repo-root", str(fixture), "--json"], cwd=fixture)
+            invalid_readonly = (
+                mode == "readonly" and (
+                    value.get("status") == "failed" or
+                    (value.get("status") == "needs_codex" and
+                     str(value.get("summary", "")).startswith("invalid_model_outcome:"))
+                )
+            )
+            if ((mode == "writable" and value.get("status") == "accepted") or
+                    (mode == "readonly" and not invalid_readonly)):
+                break
+        scenarios.append({
+            "id": scenario_id, "mode": mode, "accepted": False,
+            "result_status": value.get("status"), "child_state": value.get("child_state"),
+            "child_execution_id": value.get("child_execution_id"),
+            "parent_task_completed": value.get("parent_task_completed"),
+            "summary": str(value.get("summary", ""))[:500],
+            "changed_paths": value.get("changed_paths", []),
+            "attempts": attempts,
+            "result_bytes": len(json.dumps(value, separators=(",", ":")).encode()),
+        })
+        return value
+
+    first = delegate("INT-READ", "source-trace", "readonly", target="compute")
+    first_status = supervisor.request("status")
+    first_endpoint = first_status.get("endpoint") or {}
+    scenarios[-1]["accepted"] = (first.get("status") == "completed" and first.get("child_state") == "succeeded"
+                                  and "caller.cpp" in str(first.get("summary")) and "compute" in str(first.get("summary")))
+
+    second = delegate("INT-DIAG", "diagnosis", "readonly", target="diagnose_anchor")
+    second_status = supervisor.request("status")
+    second_endpoint = second_status.get("endpoint") or {}
+    diagnosis_text = str(second.get("summary", ""))
+    scenarios[-1]["accepted"] = ((second.get("status") == "needs_codex" and second.get("child_state") == "needs_codex") or
+                                  (second.get("status") == "completed" and second.get("child_state") == "succeeded" and
+                                   "zerodivisionerror" in diagnosis_text.casefold() and
+                                   "divis" in diagnosis_text.casefold() and "zero" in diagnosis_text.casefold()))
+
+    todo_root = repo / "todo-orchestrator"
+    if str(todo_root) not in sys.path:
+        sys.path.insert(0, str(todo_root))
+    from todo_orchestrator.runtime import RuntimeFacade
+    endpoint_gpus = [str(item) for item in second_endpoint.get("gpu_uuids", [])]
+    resources = [f"accelerator:{item}" for item in endpoint_gpus]
+    runtime = RuntimeFacade(repo)
+    foreground = runtime.host.begin_foreground(
+        project_root=repo,
+        resource_request={"schema_version": 1, "kind": "accelerator", "ids": resources,
+                          "exclusive_resources": resources},
+        priority_class="clean_cuda_foreground",
+    )
+    deadline = time.monotonic() + 30
+    evicted = False
+    while time.monotonic() < deadline:
+        current = supervisor.request("status")
+        if current.get("running") is False:
+            evicted = True
+            break
+        time.sleep(0.2)
+    foreground_activated = runtime.host.activate_foreground(foreground) if evicted else False
+    runtime.host.release(str(foreground["owner_id"]))
+
+    third = delegate("INT-NEEDS", "needs-codex", "readonly", target="rounding_anchor")
+    later_status = supervisor.request("status")
+    later_endpoint = later_status.get("endpoint") or {}
+    scenarios[-1]["accepted"] = third.get("status") == "needs_codex" and third.get("child_state") == "needs_codex"
+
+    fourth = delegate("INT-CPP", "cpp-fix", "writable")
+    scenarios[-1]["accepted"] = (fourth.get("status") == "accepted" and fourth.get("child_state") == "accepted"
+                                  and fourth.get("changed_paths") == ["cpp_fix/math.cpp"])
+    fifth = delegate("INT-CUDA", "cuda-fix", "writable")
+    scenarios[-1]["accepted"] = (fifth.get("status") == "accepted" and fifth.get("child_state") == "accepted"
+                                  and fifth.get("changed_paths") == ["cuda_fix/add.cu"])
+
+    registry = {
+        "format": "CUDA-BENCHMARK-REGISTRY/1", "schema_version": 1, "project_root": str(fixture),
+        "campaigns": [{
+            "id": "integrated-sm70", "description": "bounded integrated CUDA campaign",
+            "targets": [], "paths": ["cuda_fix/**/*.cu"], "symbols": [], "task_ids": [], "task_prefixes": [],
+            "build": None,
+            "correctness": {"argv": [sys.executable, "-c", "assert True"], "class": "deterministic"},
+            "benchmark": {"argv": [sys.executable, "-c", "print('{\\\"latency_ms\\\":1}')"],
+                          "warmups": 0, "repetitions": 1},
+            "metric": {"format": "CUDA-METRIC/1", "schema_version": 1, "name": "latency_ms",
+                       "path": "latency_ms", "direction": "minimize", "unit": "ms",
+                       "practical_regression_percent": 2.0, "target": None},
+            "resources": {"gpu_count": 1, "architecture": "volta"},
+            "policy": {"initial_characterization": False},
+            "compatibility": {"workload": {"id": "integrated-sm70"}, "inputs": {"case": "bounded"},
+                              "build": {"architecture": "sm_70"}, "toolchain": {"cuda": "12.x"}},
+        }],
+    }
+    registry_path = fixture / ".git/cuda-registry.json"
+    registry_path.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+    discovery_input = fixture / ".git/cuda-discovery.json"
+    discovery_input.write_text(json.dumps({"schema_version": 1, "accepted_patches": [{
+        "accepted": fifth.get("accepted") is True, "changed_paths": fifth.get("changed_paths", []),
+    }], "task_ids": ["INT-CUDA"]}) + "\n", encoding="utf-8")
+    discovery = _command_json([sys.executable, str(cuda), "registry", "discover", "--registry", str(registry_path),
+                               "--input", str(discovery_input), "--auto-queue", "--json"], cwd=fixture)
+    scenarios[-1]["cuda_auto_queue_state"] = (discovery.get("auto_queue") or {}).get("state")
+
+    preemption = {
+        "id": "preemption-recovery", "mode": "recovery", "accepted": bool(
+            evicted and foreground_activated and later_status.get("running") and
+            (fixture / "operator-note.txt").read_text() == "preserve this unrelated operator work\nuser overlay\n"
+        ),
+        "evicted": evicted, "foreground_activated": foreground_activated,
+        "later_warm_succeeded": bool(later_status.get("running")),
+        "operator_work_preserved": (fixture / "operator-note.txt").read_text() == "preserve this unrelated operator work\nuser overlay\n",
+    }
+    scenarios.append(preemption)
+
+    supervisor.request("release") if (later_status.get("endpoint") or {}).get("server_pid") else None
+
+    cold_after = cold_payload.stat().st_atime_ns
+    false_successes = sum(
+        item.get("result_status") in {"completed", "accepted"} and not item.get("accepted")
+        for item in scenarios
+    )
+    scope_violations = sum(
+        any(path not in {"cpp_fix/math.cpp", "cuda_fix/add.cu"} for path in item.get("changed_paths", []))
+        for item in scenarios if isinstance(item, dict)
+    )
+    retained_fixture = raw_root / fixture.name
+    shutil.move(str(fixture), retained_fixture)
+    result: dict[str, Any] = {
+        "format": "CORE4-INTEGRATED-EVALUATION/1", "schema_version": 1,
+        "candidate_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
+        "context_size": int(profile["experiment"]["initial_context"]), "harness": "qwen-code",
+        "scenarios": scenarios, "false_successes": false_successes, "scope_violations": scope_violations,
+        "frontier_rework_events": "not_measured",
+        "service": {
+            "first_pid": first_endpoint.get("server_pid"), "second_pid": second_endpoint.get("server_pid"),
+            "first_compatibility_key": first_endpoint.get("compatibility_key"),
+            "second_compatibility_key": second_endpoint.get("compatibility_key"),
+            "second_reused": bool(first_endpoint.get("server_pid") and first_endpoint.get("server_pid") == second_endpoint.get("server_pid")),
+            "later_pid": later_endpoint.get("server_pid"), "local_endpoint_bound": str(later_endpoint.get("base_url", "")).startswith("http://127.0.0.1:"),
+            "explicit_model_bound": later_endpoint.get("model_id") == active["candidate_id"],
+        },
+        "preemption": preemption,
+        "cold_storage": {
+            "canonical_root": storage["canonical_root"], "payload_atime_ns_before": cold_before,
+            "payload_atime_ns_after": cold_after,
+            "active_payload_in_ssd_cache": Path(str(verified["payload_path"])).is_relative_to(Path(storage["cache_root"])),
+        },
+        "fixture_root": str(retained_fixture),
+    }
+    result["codex_visible_result_bytes"] = len(json.dumps(result, separators=(",", ":")).encode())
+    result["guards"] = _integrated_guards(result)
+    result["ok"] = all(result["guards"].values())
+    evidence = _write_compact(repo, "integrated-evaluation", result)
+    if not result["ok"]:
+        failed = sorted(key for key, passed in result["guards"].items() if not passed)
+        raise ProductionCheckError(f"integrated production guards failed: {', '.join(failed)}; evidence={evidence['evidence_path']}")
+    return evidence
+
+
 def release_check(phase: str) -> dict[str, Any]:
     repo = _repo()
     runtime_schemas = repo / "todo-orchestrator/schemas/runtime"
@@ -833,6 +1232,9 @@ def release_check(phase: str) -> dict[str, Any]:
         "resource-request-v1.schema.json",
         "source-identity-v1.schema.json",
     }
+
+    if phase == "integrated":
+        return _integrated_evaluation(repo)
 
     if phase == "cleanup":
         obsolete = [
@@ -866,12 +1268,11 @@ def release_check(phase: str) -> dict[str, Any]:
             "ci_cpu_only": cpu_only,
             "retained_top_level": [
                 ".github", ".gitignore", ".todo-orchestrator", "AGENTS.md",
-                "cpp-context-compiler", "cuda", "local-coding-worker", "scripts",
+                "cpp-context-compiler", "cuda", "local-coding-worker",
                 "todo-orchestrator", "todo-status.md", "todos", "todos.md",
             ],
             "final_archive_removals": [
                 ".todo-orchestrator", "todos", "todos.md", "todo-status.md",
-                "scripts/core4_extension_validate.py",
             ],
         }
         if not ok:

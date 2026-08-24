@@ -212,12 +212,15 @@ class ControllerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             (root / ".ctxpp.toml").write_text("[project]\n", encoding="utf-8")
-            request = {"context": {"target": "kernel", "intent": "performance", "budget": 900}}
-            completed = subprocess.CompletedProcess([], 0, '{"format":"CTXPP-SLICE/1","files":[]}', "")
+            request = {"context": {"target": "kernel", "intent": "performance", "budget": 900,
+                                   "task_id": "CUDA-1", "campaign_id": "latency",
+                                   "accepted_changed_paths": ["src/kernel.cu"]}}
+            completed = subprocess.CompletedProcess([], 0, '{"format":"CTXPP-CONTEXT-PACKET/2","canonical_targets":[]}', "")
             with mock.patch.object(controller, "text_run", return_value=completed) as invoked:
                 result = controller._ctxpp_context(request, root)
             self.assertEqual(result["provider"], "cpp-context-compiler")
-            self.assertIn("slice", invoked.call_args.args[0])
+            self.assertIn("packet", invoked.call_args.args[0])
+            self.assertIn("--task-spec", invoked.call_args.args[0])
             self.assertFalse((root / ".ctxpp").exists())
 
     def test_model_supplied_candidate_queues_build_correctness_and_benchmark(self) -> None:

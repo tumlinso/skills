@@ -1,4 +1,5 @@
 {
+  "evidence_status": "historical_pre_integration",
   "artifact_root": "/home/tumlinson/.agents/skills/.git/core4-production-extension/raw/meaningful-candidates/run-di0017wo",
   "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
   "context_size": 16384,

@@ -8,10 +8,22 @@ description: Delegate bounded, todo-authorized read-only or scoped writable codi
 Use this skill only from an active todo parent claim. The parent retains task,
 gate, acceptance, commit, and push authority.
 
+Delegate through the single public command and consume its compact result:
+
+```bash
+python <skill-dir>/scripts/local_worker.py delegate \
+  --claim-token <parent-claim-token> --mode <readonly|writable> --wait --json
+```
+
+The controller creates the bounded child execution, selects isolated source
+state, starts or reuses the verified local service, validates model output, and
+returns `completed`, `accepted`, `needs_codex`, or `failed`. JSON contracts and
+compatibility details live in the references below.
+
 ## Workflow
 
-1. Let the parent create a bounded child execution and restricted token.
-2. For read-only investigation, validate and run an `LCW-REQUEST/1` with
+1. Prefer the public `delegate` command above.
+2. For compatibility-only read-only investigation, validate and run an `LCW-REQUEST/1` with
    `scripts/local_worker.py eligible|run`.
 3. For the complete fake-backend flow, run `scripts/local_worker.py integrate`
    with a `CORE4-INTEGRATION-REQUEST/1`.

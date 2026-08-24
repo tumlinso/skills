@@ -31,6 +31,9 @@ run required gates, pulse long work, inspect changes after pauses, and stop on
 invalidated contracts. Never reset, clean, overwrite, or attribute shared
 changes without audit.
 
+Bounded local delegation uses `child create`, a restricted child token, and
+parent-side evidence acceptance; child output never completes the parent task.
+
 Finish through exactly one structured CLI path: `complete`, `handoff`,
 `block`, or `release`. Completion requires valid gates. Checkpoints,
 interfaces, barriers, recovery, plans, migration, resources, and cleanup must

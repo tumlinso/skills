@@ -68,6 +68,15 @@ def registry(*campaigns: dict[str, object], root: str = "/project") -> dict[str,
 
 
 class RegistryDiscoveryTests(unittest.TestCase):
+    def test_deterministic_correctness_defaults_to_one_cheap_run(self) -> None:
+        value = registry(campaign("deterministic-default", paths=["src/check.cu"]))
+        value["campaigns"][0]["correctness"] = {
+            "argv": ["./check"], "class": "deterministic",
+        }
+        normalized = normalize_registry(value)
+        correctness = normalized["campaigns"][0]["correctness"]
+        self.assertEqual((correctness["repetitions"], correctness["minimum_seconds"],
+                          correctness["maximum_repetitions"]), (1, 0.0, 1))
     def test_registry_validates_and_compiles_to_legacy_watch_contract(self) -> None:
         normalized = normalize_registry(registry(campaign(
             "attention", paths=["src/attention/**/*.cu"], symbols=["c:@F@attention#"], targets=["attention"],

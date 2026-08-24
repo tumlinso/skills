@@ -1,0 +1,170 @@
+{
+  "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+  "codex_visible_result_bytes": 3995,
+  "cold_storage": {
+    "active_payload_in_ssd_cache": true,
+    "canonical_root": "/mnt/block/core4-models",
+    "payload_atime_ns_after": 1787406033335180436,
+    "payload_atime_ns_before": 1787406033335180436
+  },
+  "context_size": 32768,
+  "false_successes": 0,
+  "fixture_root": "/home/tumlinson/.agents/skills/.git/core4-integration-finish/raw/core4-integrated-x195lrhe",
+  "format": "CORE4-INTEGRATED-EVALUATION/1",
+  "frontier_rework_events": "not_measured",
+  "guards": {
+    "all_scenarios_accepted": true,
+    "compact_results": true,
+    "cuda_auto_queued": true,
+    "disposable_qwen": true,
+    "local_binding": true,
+    "no_cold_payload_reads": true,
+    "parents_incomplete": true,
+    "preemption_quiescent": true,
+    "required_scenarios": true,
+    "service_reused": true,
+    "writable_child_authority": true,
+    "zero_false_successes": true,
+    "zero_scope_violations": true
+  },
+  "harness": "qwen-code",
+  "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+  "ok": true,
+  "preemption": {
+    "accepted": true,
+    "evicted": true,
+    "foreground_activated": true,
+    "id": "preemption-recovery",
+    "later_warm_succeeded": true,
+    "mode": "recovery",
+    "operator_work_preserved": true
+  },
+  "scenarios": [
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "child_state": "failed",
+          "status": "failed"
+        },
+        {
+          "attempt": 2,
+          "child_state": "succeeded",
+          "status": "completed"
+        }
+      ],
+      "changed_paths": [],
+      "child_execution_id": "e2a398db-e4a4-4cac-a8b7-f657c4568671",
+      "child_state": "succeeded",
+      "id": "source-trace",
+      "mode": "readonly",
+      "parent_task_completed": false,
+      "result_bytes": 671,
+      "result_status": "completed",
+      "summary": "The caller of compute function is identified as the caller function in source/caller.cpp. The compute function is defined in source/api.hpp as inline int compute(int value) { return value * 2; } and is called by int caller(int value) { return compute(value); } in source/caller.cpp."
+    },
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "child_state": "succeeded",
+          "status": "completed"
+        }
+      ],
+      "changed_paths": [],
+      "child_execution_id": "89fbfdf1-7505-4a6b-80db-95242af616d5",
+      "child_state": "succeeded",
+      "id": "diagnosis",
+      "mode": "readonly",
+      "parent_task_completed": false,
+      "result_bytes": 665,
+      "result_status": "completed",
+      "summary": "The diagnosis shows that calling diagnose_anchor(0) results in a ZeroDivisionError because the diagnose function performs integer division 10 // value, and when value is 0, division by zero raises this exception. The divisor is zero as established by the source code analysis."
+    },
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "child_state": "needs_codex",
+          "status": "needs_codex"
+        }
+      ],
+      "changed_paths": [],
+      "child_execution_id": "e8b0f471-ed37-4ac5-be8c-9e9c3afa73d1",
+      "child_state": "needs_codex",
+      "id": "needs-codex",
+      "mode": "readonly",
+      "parent_task_completed": false,
+      "result_bytes": 655,
+      "result_status": "needs_codex",
+      "summary": "The task requires using rounding_anchor as the packet entry point, but contract/README.md indicates no rounding tie convention has been selected and there's no authorized architecture decision. This is a concrete blocker that requires external input to resolve."
+    },
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "child_state": "accepted",
+          "status": "accepted"
+        }
+      ],
+      "changed_paths": [
+        "cpp_fix/math.cpp"
+      ],
+      "child_execution_id": "6babe72d-db7d-4ebe-a7ca-9575bb386298",
+      "child_state": "accepted",
+      "id": "cpp-fix",
+      "mode": "writable",
+      "parent_task_completed": false,
+      "result_bytes": 512,
+      "result_status": "accepted",
+      "summary": "Externally verified patch accepted against current canonical source."
+    },
+    {
+      "accepted": true,
+      "attempts": [
+        {
+          "attempt": 1,
+          "child_state": "accepted",
+          "status": "accepted"
+        }
+      ],
+      "changed_paths": [
+        "cuda_fix/add.cu"
+      ],
+      "child_execution_id": "7e39be78-3838-458f-a02e-16e796f98e27",
+      "child_state": "accepted",
+      "cuda_auto_queue_state": "queued",
+      "id": "cuda-fix",
+      "mode": "writable",
+      "parent_task_completed": false,
+      "result_bytes": 512,
+      "result_status": "accepted",
+      "summary": "Externally verified patch accepted against current canonical source."
+    },
+    {
+      "accepted": true,
+      "evicted": true,
+      "foreground_activated": true,
+      "id": "preemption-recovery",
+      "later_warm_succeeded": true,
+      "mode": "recovery",
+      "operator_work_preserved": true
+    }
+  ],
+  "schema_version": 1,
+  "scope_violations": 0,
+  "service": {
+    "explicit_model_bound": true,
+    "first_compatibility_key": "fac84d83648b73aa81f1192a011d69971fb31427613e00301ee5c0f3cb37af93",
+    "first_pid": 244229,
+    "later_pid": 245054,
+    "local_endpoint_bound": true,
+    "second_compatibility_key": "fac84d83648b73aa81f1192a011d69971fb31427613e00301ee5c0f3cb37af93",
+    "second_pid": 244229,
+    "second_reused": true
+  }
+}

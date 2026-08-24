@@ -19,6 +19,7 @@ import cuda_controller as controller  # noqa: E402
 from cuda_baselines import (  # noqa: E402
     adaptive_correctness_target,
     compatibility_descriptor,
+    compatible,
     machine_class,
     profiler_escalation,
     select_baseline,
@@ -50,7 +51,10 @@ def device(identifier: str, index: int = 0) -> dict[str, object]:
 def benchmark(**overrides: object) -> dict[str, object]:
     return {
         "argv": ["./bench"], "metric": "latency_ms", "direction": "minimize",
-        "warmups": 1, "repetitions": 5, "compatibility": {"shape": "4096x4096", "precision": "fp32"},
+        "warmups": 1, "repetitions": 5,
+        "workload_identity": {"kernel": "gemm"}, "input_identity": {"shape": "4096x4096"},
+        "build_identity": {"flags": ["-O3"]}, "toolchain_identity": {"nvcc": "12.9"},
+        "compatibility": {"shape": "4096x4096", "precision": "fp32"},
         **overrides,
     }
 
@@ -63,6 +67,15 @@ def proof() -> dict[str, object]:
 
 
 class PerformanceFactsTests(unittest.TestCase):
+    def test_incomplete_identity_is_explicitly_non_comparable(self) -> None:
+        incomplete = compatibility_descriptor(
+            campaign_id="gemm", benchmark={"metric": "latency", "direction": "minimize"},
+            machine=machine_class([device("GPU-a")]),
+        )
+        self.assertFalse(incomplete["complete"])
+        self.assertEqual(incomplete["key"], None)
+        self.assertEqual(incomplete["missing_identity"], ["build", "inputs", "toolchain", "workload"])
+        self.assertFalse(compatible(incomplete, incomplete))
     def test_compatibility_ignores_uuid_index_source_and_candidate_argv(self) -> None:
         first_machine = machine_class([device("GPU-a", 0)], {"GPU-a": {"nvlink_domain": "domain-0", "pcie_root": "0000:01"}})
         second_machine = machine_class([device("GPU-z", 7)], {"GPU-z": {"nvlink_domain": "domain-9", "pcie_root": "0000:ff"}})
@@ -222,7 +235,31 @@ class PerformanceFactsTests(unittest.TestCase):
             self.assertEqual(second["profiler_decision"]["profile"], "nsys")
             with closing(store.connect(readonly=True)) as connection:
                 kinds = [row[0] for row in connection.execute("SELECT kind FROM background_jobs ORDER BY created_at")]
-            self.assertEqual(kinds, ["nsys"])
+                self.assertEqual(kinds, ["nsys"])
+
+    def test_incomplete_measurement_runs_but_creates_no_reusable_state(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            store = BackgroundStore(root)
+            stdout = root / "run.stdout.txt"; stderr = root / "run.stderr.txt"
+            stdout.write_text('{"latency_ms":1.0}', encoding="utf-8"); stderr.write_text("", encoding="utf-8")
+            outcome = {"valid": True, "records": [{"stdout": str(stdout), "stderr": str(stderr),
+                "metric": 1.0, "returncode": 0, "warmup": False}],
+                "statistics": {"median": 1.0, "mad": 0.0, "values": [1.0], "included": [0], "excluded": []}}
+            incomplete = {"registry_campaign_id": "gemm", "benchmark": {
+                "argv": ["./bench"], "metric": "latency_ms", "direction": "minimize",
+                "warmups": 0, "repetitions": 1,
+            }}
+            result = controller._classify_benchmark(
+                store, "watch", incomplete, outcome, "source",
+                snapshot={"fingerprint": "source", "commit": "a"}, devices=[device("GPU-a")],
+                machine=machine_class([device("GPU-a")]), quiescence=proof(),
+            )
+            self.assertFalse(result["comparable"])
+            self.assertEqual(result["baseline"]["status"], "non_comparable")
+            self.assertNotIn("performance_fact", result)
+            self.assertIsNone(store.get_meta("baseline:watch"))
+            self.assertEqual(PerformanceFactStore(store, "watch").list(), [])
 
     def test_post_run_contamination_precedes_fact_baseline_and_profiler_persistence(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

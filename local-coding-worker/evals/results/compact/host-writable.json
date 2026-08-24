@@ -1,4 +1,5 @@
 {
+  "evidence_status": "historical_pre_integration",
   "acceptance": {
     "accepted": true,
     "changed_paths": [

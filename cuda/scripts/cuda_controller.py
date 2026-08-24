@@ -858,10 +858,13 @@ def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, o
         machine = machine_class(devices)
     compatibility = compatibility_descriptor(campaign_id=campaign_id, benchmark=benchmark, machine=machine)
     fact_store = PerformanceFactStore(store, watch_id)
-    selection = select_baseline(
+    selection = (select_baseline(
         fact_store.list(), {"compatibility": compatibility},
         accepted_fact_id=str(benchmark["accepted_baseline_fact_id"]) if benchmark.get("accepted_baseline_fact_id") else None,
-    )
+    ) if compatibility["complete"] else {
+        "status": "non_comparable", "reason": "incomplete_compatibility_identity",
+        "missing_identity": compatibility["missing_identity"],
+    })
     baseline_fact = selection.get("fact") if selection.get("status") == "compatible" else None
     baseline = None
     if isinstance(baseline_fact, dict):
@@ -872,7 +875,10 @@ def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, o
             "compatibility_key": compatibility["key"],
         }
     else:
-        baseline = {"status": "absent", "reason": selection.get("reason"), "compatibility_key": compatibility["key"]}
+        baseline = {"status": "non_comparable" if selection.get("status") == "non_comparable" else "absent",
+                    "reason": selection.get("reason"),
+                    "missing_identity": selection.get("missing_identity", []),
+                    "compatibility_key": compatibility["key"]}
     classification, severity, delta = "healthy", 0, None
     if isinstance(baseline_fact, dict):
         prior = float(baseline_fact["measurement"]["statistics"]["median"])
@@ -890,23 +896,25 @@ def _classify_benchmark(store: BackgroundStore, watch_id: str, spec: dict[str, o
     result = {**outcome, "status": "succeeded", "classification": classification, "severity": severity,
               "metric": benchmark["metric"], "direction": direction, "comparison_percent": delta,
               "baseline": baseline, "target": benchmark.get("target"),
+              "comparable": bool(compatibility["complete"]),
               "parser_version": PARSER_VERSION, "source_fingerprint": fingerprint}
     role = str(snapshot.get("_fact_role", "previous"))
     if role not in {"accepted", "previous", "candidate", "historical"}:
         role = "previous"
-    try:
-        fact = build_performance_fact(
-            campaign_id=campaign_id, role=role, source=snapshot, compatibility=compatibility,
-            metric=str(benchmark["metric"]), direction=direction, statistics=outcome["statistics"],
-            classification=classification, records=outcome["records"], quiescence=quiescence,
-            baseline=baseline if baseline.get("status") == "compatible" else None,
-        )
-        result["performance_fact"] = fact_store.append(fact)
-    except FactError as exc:
-        result["performance_fact_error"] = str(exc)
-    legacy_baseline = store.get_meta(baseline_key)
-    if not legacy_baseline:
-        store.set_meta(baseline_key, {"valid": True, "median": current, "source_fingerprint": fingerprint})
+    if compatibility["complete"]:
+        try:
+            fact = build_performance_fact(
+                campaign_id=campaign_id, role=role, source=snapshot, compatibility=compatibility,
+                metric=str(benchmark["metric"]), direction=direction, statistics=outcome["statistics"],
+                classification=classification, records=outcome["records"], quiescence=quiescence,
+                baseline=baseline if baseline.get("status") == "compatible" else None,
+            )
+            result["performance_fact"] = fact_store.append(fact)
+        except FactError as exc:
+            result["performance_fact_error"] = str(exc)
+        legacy_baseline = store.get_meta(baseline_key)
+        if not legacy_baseline:
+            store.set_meta(baseline_key, {"valid": True, "median": current, "source_fingerprint": fingerprint})
     return result
 
 
@@ -987,9 +995,13 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
     elif base_kind == "correctness":
         _, raw_command = _base_stage_commands(benchmark)
         command = [str(item).replace("{snapshot}", str(cwd)) for item in raw_command]
-        repetitions = max(1, int(benchmark.get("correctness_repetitions", 3)))
-        minimum_seconds = max(0.0, float(benchmark.get("correctness_minimum_seconds", 15)))
-        maximum_repetitions = max(repetitions, int(benchmark.get("correctness_maximum_repetitions", 64)))
+        correctness_class = str(benchmark.get("correctness_class", "unspecified"))
+        deterministic = correctness_class in {"deterministic", "exact"}
+        repetitions = max(1, int(benchmark.get("correctness_repetitions", 1 if deterministic else 3)))
+        minimum_seconds = max(0.0, float(benchmark.get("correctness_minimum_seconds", 0 if deterministic else 15)))
+        maximum_repetitions = max(repetitions, int(benchmark.get(
+            "correctness_maximum_repetitions", repetitions if deterministic else 64,
+        )))
         records = []
         correctness_started = time.monotonic()
         adaptive_target = repetitions
@@ -1010,7 +1022,7 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
                  (elapsed >= minimum_seconds or len(records) == maximum_repetitions))
         result = {"valid": valid, "status": "succeeded" if valid else "failed",
                   "classification": "healthy" if valid else "correctness-failure", "severity": 0 if valid else 100,
-                  "correctness_class": str(benchmark.get("correctness_class", "unspecified")),
+                  "correctness_class": correctness_class,
                   "numerical_contract": dict(benchmark.get("numerical_contract", {})),
                   "record": record, "records": records, "parser_version": PARSER_VERSION,
                   "correctness_target_repetitions": adaptive_target,
@@ -1036,10 +1048,11 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
                 result.update(_cheap_failure_classification(failed_record, snapshot))
             if isinstance(candidate, dict) and candidate:
                 result["candidate_id"] = candidate.get("id")
-            decision = profiler_escalation(
-                str(result["classification"]),
-                max_profiles=int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2)),
-            )
+            decision = ({"profile": None, "reason": "incomplete_compatibility_identity"}
+                        if result.get("comparable") is False else profiler_escalation(
+                            str(result["classification"]),
+                            max_profiles=int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2)),
+                        ))
             result["profiler_decision"] = decision
             if decision["profile"] == "nsys":
                 limit = int(spec.get("policy", {}).get("max_deep_profiles_per_revision", 2))
@@ -1095,17 +1108,36 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
 
 def _ctxpp_context(spec: dict[str, object], project: Path) -> dict[str, object] | None:
     request = spec.get("context")
-    if not isinstance(request, dict) or not request.get("target") or not (project / ".ctxpp.toml").exists():
+    if not isinstance(request, dict) or not (project / ".ctxpp.toml").exists():
         return None
-    target = str(request["target"])
+    target = str(request.get("target", ""))
     intent = str(request.get("intent", "performance"))
     budget = int(request.get("budget", 1200))
-    process = text_run([str(CTXPP), "--root", str(project), "--json", "slice", target, "--intent", intent, "--budget", str(budget)], timeout=60)
+    accepted = [str(item) for item in request.get("accepted_changed_paths", []) if isinstance(item, str)]
+    task_spec = {
+        "objective": str(request.get("objective") or f"Performance evidence for {request.get('campaign_id', target or 'CUDA campaign')}"),
+        "intent": intent, "task_id": request.get("task_id"), "campaign_id": request.get("campaign_id"),
+        "accepted_changed_paths": accepted, "read_paths": accepted,
+        "target_symbols": [target] if target else [],
+    }
+    process = text_run([
+        str(CTXPP), "--root", str(project), "--json", "packet", "--task-spec",
+        json.dumps(task_spec, separators=(",", ":")), "--consumer", "cuda", "--budget", str(budget),
+    ], timeout=60)
     if process.returncode == 0:
         try:
-            return {"provider": "cpp-context-compiler", "slice": json.loads(process.stdout)}
+            return {"provider": "cpp-context-compiler", "packet": json.loads(process.stdout)}
         except json.JSONDecodeError:
             pass
+    if target:
+        sliced = text_run([str(CTXPP), "--root", str(project), "--json", "slice", target,
+                           "--intent", intent, "--budget", str(budget)], timeout=60)
+        if sliced.returncode == 0:
+            try:
+                return {"provider": "cpp-context-compiler", "slice": json.loads(sliced.stdout),
+                        "fallback_reason": (process.stderr or "task packet failed")[-500:]}
+            except json.JSONDecodeError:
+                pass
     fallback = request.get("cuda_source")
     if fallback:
         split = text_run([sys.executable, str(SCRIPT_DIR / "split_cuda_translation_unit.py"), str(project / str(fallback)), "--list-kernels"], timeout=60)
@@ -1242,7 +1274,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
                   "provenance": provenance(project, snapshot, [str(item) for item in spec["argv"]], [item for item in devices if item["uuid"] in requested], spec),
                   "parser_version": PARSER_VERSION}
         if classified:
-            for field in ("classification", "severity", "comparison_percent", "baseline", "performance_fact", "performance_fact_error"):
+            for field in ("classification", "severity", "comparison_percent", "baseline", "comparable", "performance_fact", "performance_fact_error"):
                 if field in classified:
                     result[field] = classified[field]
         artifacts = []
