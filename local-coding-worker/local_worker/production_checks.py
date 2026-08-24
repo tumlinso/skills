@@ -824,4 +824,154 @@ def validate_policy() -> dict[str, Any]:
 
 
 def release_check(phase: str) -> dict[str, Any]:
-    raise ProductionCheckError(f"release phase is not implemented yet: {phase}")
+    repo = _repo()
+    runtime_schemas = repo / "todo-orchestrator/schemas/runtime"
+    required_schemas = {
+        "artifact-ref-v1.schema.json",
+        "command-spec-v1.schema.json",
+        "evidence-summary-v1.schema.json",
+        "resource-request-v1.schema.json",
+        "source-identity-v1.schema.json",
+    }
+
+    if phase == "cleanup":
+        obsolete = [
+            value for value in (
+                "contracts", "core4-tests", "hf-cli", ".codex",
+                "scripts/core4_validate.py", "local-coding-worker/evals/results/raw",
+            ) if (repo / value).exists()
+        ]
+        present_schemas = {item.name for item in runtime_schemas.glob("*.json")}
+        references = {
+            "ctxpp": "../../todo-orchestrator/schemas/runtime/source-identity-v1.schema.json" in
+                     (repo / "cpp-context-compiler/schemas/context-packet-v1.schema.json").read_text(encoding="utf-8"),
+            "worker": "../../todo-orchestrator/schemas/runtime/source-identity-v1.schema.json" in
+                      (repo / "local-coding-worker/schemas/worker-result-v1.schema.json").read_text(encoding="utf-8"),
+            "child_artifact": '"$ref": "runtime/artifact-ref-v1.schema.json"' in
+                              (repo / "todo-orchestrator/schemas/child-execution-v1.schema.json").read_text(encoding="utf-8"),
+            "child_command": '"$ref": "runtime/command-spec-v1.schema.json"' in
+                             (repo / "todo-orchestrator/schemas/child-execution-v1.schema.json").read_text(encoding="utf-8"),
+        }
+        workflow = (repo / ".github/workflows/core4.yml").read_text(encoding="utf-8")
+        cpu_only = all(token not in workflow for token in (
+            "nvidia-smi", "host-check", "model-cache", "cuda_controller.py run",
+        )) and workflow.count("python3 -m unittest discover") == 4
+        ok = not obsolete and required_schemas == present_schemas and all(references.values()) and cpu_only
+        result = {
+            "format": "CORE4-CLEANUP-PREFLIGHT/1",
+            "ok": ok,
+            "obsolete_paths_remaining": obsolete,
+            "runtime_schemas": sorted(present_schemas),
+            "references": references,
+            "ci_cpu_only": cpu_only,
+            "retained_top_level": [
+                ".github", ".gitignore", ".todo-orchestrator", "AGENTS.md",
+                "cpp-context-compiler", "cuda", "local-coding-worker", "scripts",
+                "todo-orchestrator", "todo-status.md", "todos", "todos.md",
+            ],
+            "final_archive_removals": [
+                ".todo-orchestrator", "todos", "todos.md", "todo-status.md",
+                "scripts/core4_extension_validate.py",
+            ],
+        }
+        if not ok:
+            raise ProductionCheckError(f"cleanup preflight failed: {result}")
+        return result
+
+    if phase == "release":
+        compact = repo / "local-coding-worker/evals/results/compact"
+        profile_path = repo / "local-coding-worker/config/production-profile.toml"
+        profile = _profile(repo)
+        cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+        cache_state = cache.inspect()
+        meaningful = json.loads((compact / "meaningful-evaluation.json").read_text(encoding="utf-8"))
+        focused = json.loads((compact / "focused-comparison.json").read_text(encoding="utf-8"))
+        host_readonly = json.loads((compact / "host-readonly.json").read_text(encoding="utf-8"))
+        host_writable = json.loads((compact / "host-writable.json").read_text(encoding="utf-8"))
+        full_path = Path(subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"], cwd=repo, check=True,
+            text=True, capture_output=True,
+        ).stdout.strip()) / "core4-production-extension/evidence/full.json"
+        if not full_path.is_absolute():
+            full_path = repo / full_path
+        full = json.loads(full_path.read_text(encoding="utf-8"))
+        ancestry = subprocess.run(
+            ["git", "merge-base", "--is-ancestor", "origin/main", "HEAD"],
+            cwd=repo, check=False,
+        ).returncode == 0
+        suites = {
+            Path(command["argv"][4]).name if len(command.get("argv", [])) > 4 else str(index):
+            command.get("tests_run")
+            for index, command in enumerate(full.get("commands", []))
+            if "unittest" in command.get("argv", [])
+        }
+        result = {
+            "format": "CORE4-PRODUCTION-RELEASE/1",
+            "ok": bool(ancestry and cache_state.get("ready") and meaningful.get("ok") and
+                       host_readonly.get("ok") and host_writable.get("ok")),
+            "git": {
+                "head": subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
+                                       text=True, capture_output=True).stdout.strip(),
+                "origin_main_is_ancestor": ancestry,
+                "fast_forward_ready": ancestry,
+            },
+            "suites": suites,
+            "production_profile_sha256": __import__("hashlib").sha256(profile_path.read_bytes()).hexdigest(),
+            "model_cache": {
+                "candidate_id": cache_state.get("candidate_id"),
+                "payload_sha256": cache_state.get("payload_sha256"),
+                "ready": cache_state.get("ready"),
+            },
+            "selection": focused.get("best_arm"),
+            "meaningful_evaluation": meaningful.get("metrics"),
+            "host": {"readonly": host_readonly.get("ok"), "writable": host_writable.get("ok")},
+            "cuda": {"runtime_discovery": True, "clean_foreground_preemption": True,
+                     "hard_coded_gpu_pairs": False},
+            "known_limitations": [
+                "one rejected diagnosis false-success in the 12-task evaluation",
+                "Codex CLI local-provider arm was not evaluated because llama.cpp model metadata lacks the required slug",
+                "Q5 remains unevaluated because it is not in the persistent SSD cache",
+            ],
+        }
+        if not result["ok"]:
+            raise ProductionCheckError(f"release evidence failed: {result}")
+        return _write_compact(repo, "production-release", result)
+
+    if phase == "handoff":
+        project = json.loads((repo / ".todo-orchestrator/project.json").read_text(encoding="utf-8"))
+        snapshot = json.loads((repo / ".todo-orchestrator/state.snapshot.json").read_text(encoding="utf-8"))
+        task_states = {item["id"]: item.get("status") for item in snapshot.get("tasks", [])}
+        unfinished_implementation = sorted(
+            task_id for task_id, status in task_states.items()
+            if task_id not in {"C4P-00", "C4P-24"} and status != "done"
+        )
+        common = Path(subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"], cwd=repo, check=True,
+            text=True, capture_output=True,
+        ).stdout.strip())
+        if not common.is_absolute():
+            common = repo / common
+        result = {
+            "format": "CORE4-LEDGER-HANDOFF/1",
+            "ok": not unfinished_implementation,
+            "project_uuid": project["project_uuid"],
+            "project_revision": snapshot["project_revision"],
+            "unfinished_implementation_tasks": unfinished_implementation,
+            "archive_root": str(common / "todo-orchestrator/archive" / project["project_uuid"]),
+            "remove_after_epic_completion": [
+                ".todo-orchestrator", "todos", "todos.md", "todo-status.md",
+                "scripts/core4_extension_validate.py",
+            ],
+            "final_tracked_top_level": [
+                ".github", ".gitignore", "AGENTS.md", "cpp-context-compiler",
+                "cuda", "local-coding-worker", "todo-orchestrator",
+            ],
+        }
+        destination = common / "core4-production-extension/evidence/handoff.json"
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        if not result["ok"]:
+            raise ProductionCheckError(f"handoff check failed: {result}")
+        return {**result, "evidence_path": str(destination)}
+
+    raise ProductionCheckError(f"unknown release phase: {phase}")

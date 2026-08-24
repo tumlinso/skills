@@ -3,13 +3,13 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `144`
+Project revision: `157`
 
 ## Workstreams
 - `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
 - `C4P-24` | status: planned | execution: ready | next: After this task and C4P-00 are completed, archive/remove the active ledger outside todo, run the final static tracked-layout check, commit, and fast-forward push core4-bootstrap. Do not merge main.
 - `C4P-23` | status: planned | execution: ready | next: Commit and push the coherent release candidate on core4-bootstrap, then prepare final ledger archival.
-- `C4P-22` | status: planned | execution: ready | next: Verify the eventual tracked layout contains only the four skills, AGENTS.md, .gitignore, and optional self-contained .github.
+- `C4P-22` | status: done | execution: closed | next: Verify the eventual tracked layout contains only the four skills, AGENTS.md, .gitignore, and optional self-contained .github.
 - `C4P-21` | status: done | execution: closed | next: Run this full gate once. Repair only actual regressions and rerun the affected suite before one final aggregate run.
 - `C4P-20` | status: done | execution: closed | next: Do not promote from keyword matching. Use objective gates and compact accepted-task comparisons; retain raw artifacts only in the Git common directory.
 - `C4P-19` | status: done | execution: closed | next: Update minimal SKILL.md routing and versioned policy without exposing server operation details to Codex.

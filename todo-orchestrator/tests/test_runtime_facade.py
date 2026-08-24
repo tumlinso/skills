@@ -39,7 +39,10 @@ class RuntimeContractTests(unittest.TestCase):
             "artifact-ref-v1.schema.json",
             "evidence-summary-v1.schema.json",
         ]
-        documents = {name: json.loads((WORKSPACE / "contracts" / name).read_text(encoding="utf-8")) for name in names}
+        documents = {
+            name: json.loads((ROOT / "schemas" / "runtime" / name).read_text(encoding="utf-8"))
+            for name in names
+        }
         self.assertTrue(all(item["$schema"].endswith("2020-12/schema") for item in documents.values()))
         self.assertTrue(all(item["additionalProperties"] is False for item in documents.values()))
 

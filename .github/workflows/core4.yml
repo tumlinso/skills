@@ -7,8 +7,6 @@ on:
       - "cpp-context-compiler/**"
       - "cuda/**"
       - "local-coding-worker/**"
-      - "contracts/**"
-      - "scripts/core4_validate.py"
       - "AGENTS.md"
       - ".gitignore"
       - ".github/workflows/core4.yml"
@@ -18,8 +16,6 @@ on:
       - "cpp-context-compiler/**"
       - "cuda/**"
       - "local-coding-worker/**"
-      - "contracts/**"
-      - "scripts/core4_validate.py"
       - "AGENTS.md"
       - ".gitignore"
       - ".github/workflows/core4.yml"
@@ -31,5 +27,11 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
-      - name: Validate CORE4 software paths
-        run: python3 scripts/core4_validate.py --software-ready
+      - name: Validate todo-orchestrator
+        run: python3 -m unittest discover -s todo-orchestrator/tests -v
+      - name: Validate cpp-context-compiler
+        run: python3 -m unittest discover -s cpp-context-compiler/tests -v
+      - name: Validate CUDA guidance and tooling
+        run: python3 -m unittest discover -s cuda/tests -v
+      - name: Validate local-coding-worker
+        run: python3 -m unittest discover -s local-coding-worker/tests -v

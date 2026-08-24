@@ -31,7 +31,7 @@
         "gate_id": {"type": "string", "minLength": 1},
         "status": {"enum": ["passed", "failed", "evaluated_not_promoted"]},
         "accepted": {"type": "boolean"},
-        "artifact": {"$ref": "../../contracts/artifact-ref-v1.schema.json"}
+        "artifact": {"$ref": "runtime/artifact-ref-v1.schema.json"}
       }
     },
     "acceptance": {
@@ -48,7 +48,7 @@
             "required": ["gate_id", "command"],
             "properties": {
               "gate_id": {"type": "string", "minLength": 1},
-              "command": {"$ref": "../../contracts/command-spec-v1.schema.json"}
+              "command": {"$ref": "runtime/command-spec-v1.schema.json"}
             }
           }
         }
