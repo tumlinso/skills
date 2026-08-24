@@ -110,7 +110,10 @@ class BackgroundRuntimeTests(unittest.TestCase):
                 "cwd": str(self.repo.root), "resources": {"ids": [f"accelerator:GPU-{suffix}"]}, "dedup_key": f"parallel-{suffix}",
             })
         self.assertTrue(wake_worker(self.repo.root))
-        self._wait(lambda: all(self.store.result(row) for row in self._parallel_job_ids()))
+        # Process startup can exceed the generic eight-second polling budget on
+        # a loaded validation host. The timestamp assertion below still proves
+        # concurrent execution rather than accepting serialized completion.
+        self._wait(lambda: all(self.store.result(row) for row in self._parallel_job_ids()), timeout=20.0)
         with self.store.connect(readonly=True) as connection:
             rows = connection.execute(
                 "SELECT a.started_at,a.finished_at FROM background_attempts a JOIN background_jobs j ON j.id=a.job_id "
