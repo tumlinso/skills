@@ -424,7 +424,132 @@ def host_check(scenario: str) -> dict[str, Any]:
     raise ProductionCheckError(f"host scenario is not implemented yet: {scenario}")
 
 
+def _focused_evaluation(repo: Path) -> dict[str, Any]:
+    from .harnesses import CodexCliAdapter, QwenCodeAdapter
+
+    class FocusedQwenAdapter(QwenCodeAdapter):
+        def build_command(self, session, prompt):
+            argv, environment = super().build_command(session, prompt)
+            argv[argv.index("--sandbox")] = "--no-sandbox"
+            return argv, environment
+
+    class FocusedCodexAdapter(CodexCliAdapter):
+        def build_command(self, session, prompt):
+            config = session["config"]
+            return ([session["binary"], "exec", "--json", "--ephemeral", "--sandbox", "read-only",
+                     "--cd", str(session["cwd"]), "--profile", "local", "--model", str(config["model"]),
+                     "--config", "features.multi_agent=false", "--ignore-rules", prompt], {})
+
+    profile = _profile(repo)
+    cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active model cache is missing")
+    verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    entries = {str(item["candidate_id"]): item for item in cache.list() if item.get("ready") is True}
+    tasks = _host_module(repo).load_tasks(repo / "local-coding-worker/evals/tasks/core4-host-tasks.json")
+    tasks["topology-policy"] = {
+        "prompt": ("Use read_file once to read local-coding-worker/references/resource-policy.md. Then answer in exactly "
+                   "two short lines. Line 1 must contain the exact string runtime-discovered bundle. Line 2 must "
+                   "contain the exact string no hard-coded GPU indices or topology assumptions. Do not add commentary."),
+        "expected_all": ["runtime-discovered bundle", "no hard-coded GPU indices or topology assumptions"],
+    }
+    task_ids = ["contract-authority", "resource-policy", "topology-policy", "needs-codex"]
+    host = _host_module(repo)
+    devices = host.gpu_inventory()
+    islands, _ = host.discover_islands(devices)
+    candidate = next(item for item in profile["candidates"] if item["id"] == active["candidate_id"])
+    indices = host.candidate_indices(candidate, islands, devices)
+    environment = {"OPENAI_API_KEY": "core4-local-no-auth", "OPENAI_MODEL": str(active["candidate_id"])}
+    prior = {key: os.environ.get(key) for key in environment | {"OPENAI_BASE_URL": ""}}
+    arms: list[dict[str, Any]] = []
+    try:
+        for context_size in (8192, 16384):
+            with host.ResourceLease(repo, devices, indices):
+                with host.Server(profile["server"], Path(str(verified["payload_path"])), str(active["candidate_id"]),
+                                 context_size, indices, int(profile["server"]["base_port"]),
+                                 repo / f"local-coding-worker/evals/results/compact/focused-runtime/{context_size}") as server:
+                    environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
+                    os.environ.update(environment)
+                    for harness_name, harness in (
+                        ("qwen-code", FocusedQwenAdapter(str(profile["harnesses"]["qwen"]))),
+                        ("codex-cli", FocusedCodexAdapter(str(profile["harnesses"]["codex"]))),
+                    ):
+                        inspection = harness.inspect()
+                        if not inspection["available"]:
+                            arms.append({"harness": harness_name, "context_size": context_size,
+                                         "status": "not_evaluated", "reason": "harness_unavailable",
+                                         "accepted_tasks": 0, "tasks_evaluated": 0})
+                            continue
+                        handle = harness.start({"cwd": str(repo), "model": str(active["candidate_id"]),
+                            "allowed_tools": ["read_file"], "max_session_turns": 12, "max_tool_calls": 8,
+                            "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                        task_results = []
+                        unavailable_reason = None
+                        try:
+                            for task_id in task_ids:
+                                task = tasks[task_id]
+                                started = time.perf_counter()
+                                try:
+                                    outcome = harness.run(handle, {"prompt": task["prompt"], "timeout_seconds": 210})
+                                    text = str(outcome.get("text", ""))
+                                    accepted = all(str(item).casefold() in text.casefold() for item in task["expected_all"])
+                                    core4 = outcome.get("usage", {}).get("core4", {}) or {}
+                                    task_results.append({"task_id": task_id, "accepted": accepted,
+                                        "input_bytes": len(task["prompt"].encode()), "output_bytes": len(text.encode()),
+                                        "tool_calls": int(core4.get("tool_calls", 0)),
+                                        "duration_ms": outcome.get("duration_ms")})
+                                except Exception as error:
+                                    if not task_results:
+                                        unavailable_reason = str(error)[:300]
+                                        break
+                                    task_results.append({"task_id": task_id, "accepted": False,
+                                        "input_bytes": len(task["prompt"].encode()), "output_bytes": 0,
+                                        "tool_calls": 0, "duration_ms": round((time.perf_counter() - started) * 1000, 3),
+                                        "error": type(error).__name__})
+                        finally:
+                            harness.evict(handle)
+                        if unavailable_reason is not None:
+                            arms.append({"harness": harness_name, "context_size": context_size,
+                                         "status": "not_evaluated", "reason": unavailable_reason,
+                                         "accepted_tasks": 0, "tasks_evaluated": 0})
+                        else:
+                            arms.append({"harness": harness_name, "context_size": context_size,
+                                "status": "completed", "accepted_tasks": sum(bool(item["accepted"]) for item in task_results),
+                                "tasks_evaluated": len(task_results), "input_bytes": sum(int(item["input_bytes"]) for item in task_results),
+                                "output_bytes": sum(int(item["output_bytes"]) for item in task_results),
+                                "tool_calls": sum(int(item["tool_calls"]) for item in task_results),
+                                "wall_ms": round(sum(float(item["duration_ms"] or 0) for item in task_results), 3),
+                                "tasks": task_results})
+    finally:
+        for key, value in prior.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+    completed = [item for item in arms if item["status"] == "completed"]
+    ranked = sorted(completed, key=lambda item: (-int(item["accepted_tasks"]), int(item["output_bytes"]),
+                                                  int(item["tool_calls"]), float(item["wall_ms"])))
+    q5_id = "qwen3-coder-30b-a3b-instruct-q5-k-m"
+    result = {"format": "CORE4-FOCUSED-EVALUATION/1", "ok": bool(completed),
+              "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
+              "gpu_indices": indices, "tasks_per_arm": len(task_ids), "arms": arms,
+              "quantizations": [{"candidate_id": active["candidate_id"], "status": "evaluated"},
+                                {"candidate_id": q5_id, "status": "not_evaluated",
+                                 "reason": "not_present_in_persistent_cache" if q5_id not in entries else "deferred"}],
+              "best_arm": ({key: ranked[0][key] for key in ("harness", "context_size", "accepted_tasks",
+                                                              "tasks_evaluated", "output_bytes", "tool_calls", "wall_ms")}
+                           if ranked else None)}
+    evidence = _write_compact(repo, "focused-comparison", result)
+    if not result["ok"]:
+        raise ProductionCheckError("no focused comparison arm completed")
+    return evidence
+
+
 def evaluate(phase: str) -> dict[str, Any]:
+    if phase == "focused":
+        return _focused_evaluation(_repo())
     raise ProductionCheckError(f"evaluation phase is not implemented yet: {phase}")
 
 

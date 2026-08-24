@@ -1,0 +1,139 @@
+{
+  "arms": [
+    {
+      "accepted_tasks": 0,
+      "context_size": 8192,
+      "harness": "qwen-code",
+      "input_bytes": 1271,
+      "output_bytes": 428,
+      "status": "completed",
+      "tasks": [
+        {
+          "accepted": false,
+          "duration_ms": 2474.813,
+          "input_bytes": 334,
+          "output_bytes": 107,
+          "task_id": "contract-authority",
+          "tool_calls": 0
+        },
+        {
+          "accepted": false,
+          "duration_ms": 2388.294,
+          "input_bytes": 351,
+          "output_bytes": 107,
+          "task_id": "resource-policy",
+          "tool_calls": 0
+        },
+        {
+          "accepted": false,
+          "duration_ms": 2453.299,
+          "input_bytes": 292,
+          "output_bytes": 107,
+          "task_id": "topology-policy",
+          "tool_calls": 0
+        },
+        {
+          "accepted": false,
+          "duration_ms": 2490.345,
+          "input_bytes": 294,
+          "output_bytes": 107,
+          "task_id": "needs-codex",
+          "tool_calls": 0
+        }
+      ],
+      "tasks_evaluated": 4,
+      "tool_calls": 0,
+      "wall_ms": 9806.751
+    },
+    {
+      "accepted_tasks": 0,
+      "context_size": 8192,
+      "harness": "codex-cli",
+      "reason": "codex-cli exited 1: Reading additional input from stdin...\n2026-08-24T07:48:27.939636Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `slug` at line 1 column 300; body: {\"models\":[{\"name\"",
+      "status": "not_evaluated",
+      "tasks_evaluated": 0
+    },
+    {
+      "accepted_tasks": 4,
+      "context_size": 16384,
+      "harness": "qwen-code",
+      "input_bytes": 1271,
+      "output_bytes": 475,
+      "status": "completed",
+      "tasks": [
+        {
+          "accepted": true,
+          "duration_ms": 20806.382,
+          "input_bytes": 334,
+          "output_bytes": 206,
+          "task_id": "contract-authority",
+          "tool_calls": 1
+        },
+        {
+          "accepted": true,
+          "duration_ms": 3948.812,
+          "input_bytes": 351,
+          "output_bytes": 183,
+          "task_id": "resource-policy",
+          "tool_calls": 1
+        },
+        {
+          "accepted": true,
+          "duration_ms": 3775.13,
+          "input_bytes": 292,
+          "output_bytes": 75,
+          "task_id": "topology-policy",
+          "tool_calls": 1
+        },
+        {
+          "accepted": true,
+          "duration_ms": 2707.823,
+          "input_bytes": 294,
+          "output_bytes": 11,
+          "task_id": "needs-codex",
+          "tool_calls": 0
+        }
+      ],
+      "tasks_evaluated": 4,
+      "tool_calls": 3,
+      "wall_ms": 31238.147
+    },
+    {
+      "accepted_tasks": 0,
+      "context_size": 16384,
+      "harness": "codex-cli",
+      "reason": "codex-cli exited 1: Reading additional input from stdin...\n2026-08-24T07:49:08.612968Z ERROR codex_models_manager::manager: failed to refresh available models: stream disconnected before completion: failed to decode models response: missing field `slug` at line 1 column 300; body: {\"models\":[{\"name\"",
+      "status": "not_evaluated",
+      "tasks_evaluated": 0
+    }
+  ],
+  "best_arm": {
+    "accepted_tasks": 4,
+    "context_size": 16384,
+    "harness": "qwen-code",
+    "output_bytes": 475,
+    "tasks_evaluated": 4,
+    "tool_calls": 3,
+    "wall_ms": 31238.147
+  },
+  "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+  "format": "CORE4-FOCUSED-EVALUATION/1",
+  "gpu_indices": [
+    2,
+    3
+  ],
+  "ok": true,
+  "payload_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+  "quantizations": [
+    {
+      "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+      "status": "evaluated"
+    },
+    {
+      "candidate_id": "qwen3-coder-30b-a3b-instruct-q5-k-m",
+      "reason": "not_present_in_persistent_cache",
+      "status": "not_evaluated"
+    }
+  ],
+  "tasks_per_arm": 4
+}

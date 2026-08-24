@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T07:45:45Z",
+  "generated_at": "2026-08-24T07:49:38Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 111,
+  "project_revision": 116,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1231,6 +1231,56 @@
         "revision": 111,
         "seq": 111,
         "timestamp": "2026-08-24T07:45:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-18",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 112,
+        "seq": 112,
+        "timestamp": "2026-08-24T07:46:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-18",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 113,
+        "seq": 113,
+        "timestamp": "2026-08-24T07:48:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-FOCUSED-COMPARISON",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-FOCUSED-COMPARISON\"}",
+        "revision": 114,
+        "seq": 114,
+        "timestamp": "2026-08-24T07:48:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-FOCUSED-COMPARISON",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5e29f126-974b-4222-950e-d5afd112ae86\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 115,
+        "seq": 115,
+        "timestamp": "2026-08-24T07:49:11Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-18",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 116,
+        "seq": 116,
+        "timestamp": "2026-08-24T07:49:38Z"
       }
     ],
     "evidence": [
@@ -1337,6 +1387,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/5aa622d7-3e31-44e4-bb52-ce035c90dabf",
         "revision": 99,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T07:49:11Z",
+        "gate_id": "C4P-GATE-FOCUSED-COMPARISON",
+        "id": "5e29f126-974b-4222-950e-d5afd112ae86",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"focused-comparison\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c316cb4eda50657daa4a1ed45bc42fb42792f288e98cb1dd95443aa165b07113\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"focused-comparison\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 3600}, \"diff_fingerprint\": \"e981b22a4a4c3d8221cbd507728902ee31dcdcbe1bd65560eca7ff4e0874c05e\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-18.md\"], \"files\": [], \"git_head\": \"e0c1a656120ed0e213709e7546282fbb0a255f1f\", \"interfaces\": [], \"recorded_git_head\": \"e0c1a656120ed0e213709e7546282fbb0a255f1f\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 114}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/5e29f126-974b-4222-950e-d5afd112ae86",
+        "revision": 115,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -1539,14 +1602,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"focused-comparison\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 3600, \"track_git_head\": true}",
         "id": "C4P-GATE-FOCUSED-COMPARISON",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "c316cb4eda50657daa4a1ed45bc42fb42792f288e98cb1dd95443aa165b07113",
+        "last_run_at": "2026-08-24T07:49:11Z",
         "required": 1,
-        "revision": 106,
-        "status": "pending",
+        "revision": 115,
+        "status": "passed",
         "task_id": "C4P-18",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1947,6 +2010,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/model_cache.py\", \"local-coding-worker/references/model-cache.md\", \"local-coding-worker/schemas/model-cache-v1.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_model_cache.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-MODEL-CACHE\", \"last_run_at\": \"2026-08-23T19:26:39Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 ++++++++++++++++++----\\n local-coding-worker/config/production-profile.toml |  1 +\\n local-coding-worker/scripts/local_worker.py        | 46 ++++++++++++++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-07.md                                    |  6 +-\\n 6 files changed, 107 insertions(+), 19 deletions(-)\", \"git_head\": \"62de1c31fedd09cb5ab06325b22a3d7bd49d2a1e\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-cache-v1\", \"state\": \"draft\", \"version\": \"1\"}], \"note\": \"Implemented persistent content-addressed SSD model cache with atomic verified installs, quick/full verification, activation, guarded removal, leases, CLI, schema, documentation, and focused tests.\", \"resources\": [], \"task_id\": \"C4P-07\"}",
         "revision": 42,
         "task_id": "C4P-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T07:49:38Z",
+        "id": "e0ae8d78-6b53-477a-9301-c1c468131cac",
+        "kind": "complete",
+        "note": "Focused comparison: Qwen Code at 16K accepted 4/4 tasks with 475 output bytes and 3 local tool calls; 8K accepted 0/4. Codex CLI was not_evaluated because llama.cpp model discovery lacked the Codex-required slug field. Q5 was not_evaluated because it was not present in persistent cache; no copy occurred.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/focused-comparison.json\", \"local-coding-worker/local_worker/production_checks.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-FOCUSED-COMPARISON\", \"last_run_at\": \"2026-08-24T07:49:11Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             |  75 +++++++++++--\\n .../local_worker/production_checks.py              | 125 +++++++++++++++++++++\\n todo-status.md                                     |   4 +-\\n todos.md                                           |   4 +-\\n todos/c4p-18.md                                    |   6 +-\\n 5 files changed, 196 insertions(+), 18 deletions(-)\", \"git_head\": \"e0c1a656120ed0e213709e7546282fbb0a255f1f\", \"interfaces\": [], \"note\": \"Focused comparison: Qwen Code at 16K accepted 4/4 tasks with 475 output bytes and 3 local tool calls; 8K accepted 0/4. Codex CLI was not_evaluated because llama.cpp model discovery lacked the Codex-required slug field. Q5 was not_evaluated because it was not present in persistent cache; no copy occurred.\", \"resources\": [], \"task_id\": \"C4P-18\"}",
+        "revision": 116,
+        "task_id": "C4P-18"
       },
       {
         "claim_id": null,
@@ -4690,14 +4763,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 90,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 106,
-        "status": "planned",
+        "revision": 116,
+        "status": "done",
         "tags_json": "[\"evaluation\", \"harness\", \"quantization\", \"context\"]",
         "title": "Run the smallest useful harness, quantization, and context comparison",
-        "updated_at": "2026-08-24T07:43:06Z",
-        "version": 7
+        "updated_at": "2026-08-24T07:49:38Z",
+        "version": 9
       },
       {
         "attention_reason": null,
