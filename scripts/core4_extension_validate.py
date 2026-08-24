@@ -102,6 +102,8 @@ SUITES: dict[str, list[list[str]]] = {
         [PYTHON, "-m", "unittest", "discover", "-s", "cpp-context-compiler/tests", "-v"],
         [PYTHON, "-m", "unittest", "discover", "-s", "cuda/tests", "-v"],
         [PYTHON, "-m", "unittest", "discover", "-s", "local-coding-worker/tests", "-v"],
+        [PYTHON, "local-coding-worker/scripts/local_worker.py", "model-cache", "inspect", "--json"],
+        [PYTHON, "local-coding-worker/scripts/local_worker.py", "host-check", "--scenario", "service", "--json"],
     ],
     "cleanup-preflight": [
         [PYTHON, "local-coding-worker/scripts/local_worker.py", "release-check", "--phase", "cleanup", "--json"],

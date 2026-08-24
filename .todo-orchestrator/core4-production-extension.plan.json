@@ -2090,7 +2090,9 @@
       ],
       "scope": {
         "exclusive_paths": [
-          "scripts/core4_extension_validate.py"
+          "scripts/core4_extension_validate.py",
+          "todo-orchestrator/tests/test_background_runtime.py",
+          ".todo-orchestrator/core4-production-extension.plan.json"
         ],
         "read_paths": [
           "todo-orchestrator",

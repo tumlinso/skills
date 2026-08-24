@@ -22,13 +22,25 @@ from todo_orchestrator.background.wake import wake_worker
 class BackgroundRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
         self.host_runtime = tempfile.TemporaryDirectory()
-        self.host_environment = mock.patch.dict(os.environ, {"TODO_BACKGROUND_HOST_RUNTIME_DIR": self.host_runtime.name})
+        self.host_environment = mock.patch.dict(os.environ, {
+            "TODO_BACKGROUND_HOST_RUNTIME_DIR": self.host_runtime.name,
+            "TODO_BACKGROUND_IDLE_SECONDS": "0.1",
+        })
         self.host_environment.start()
         self.repo = V2Repo()
         self.store = BackgroundStore(self.repo.root)
 
     def tearDown(self) -> None:
         self.store.set_watch_state("stopped")
+        deadline = time.monotonic() + 3.0
+        while time.monotonic() < deadline:
+            with self.store.connect(readonly=True) as connection:
+                running = connection.execute(
+                    "SELECT 1 FROM background_workers WHERE state='running' LIMIT 1"
+                ).fetchone()
+            if running is None:
+                break
+            time.sleep(0.05)
         self.repo.close()
         self.host_environment.stop()
         self.host_runtime.cleanup()
