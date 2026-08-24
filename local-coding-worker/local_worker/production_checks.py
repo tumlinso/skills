@@ -949,7 +949,10 @@ def release_check(phase: str) -> dict[str, Any]:
     if phase == "handoff":
         project = json.loads((repo / ".todo-orchestrator/project.json").read_text(encoding="utf-8"))
         snapshot = json.loads((repo / ".todo-orchestrator/state.snapshot.json").read_text(encoding="utf-8"))
-        task_states = {item["id"]: item.get("status") for item in snapshot.get("tasks", [])}
+        task_states = {
+            item["id"]: item.get("status")
+            for item in snapshot.get("tables", {}).get("tasks", [])
+        }
         unfinished_implementation = sorted(
             task_id for task_id, status in task_states.items()
             if task_id not in {"C4P-00", "C4P-24"} and status != "done"
@@ -965,11 +968,24 @@ def release_check(phase: str) -> dict[str, Any]:
             "ok": not unfinished_implementation,
             "project_uuid": project["project_uuid"],
             "project_revision": snapshot["project_revision"],
+            "task_counts": {
+                state: sum(1 for value in task_states.values() if value == state)
+                for state in sorted(set(task_states.values()))
+            },
             "unfinished_implementation_tasks": unfinished_implementation,
             "archive_root": str(common / "todo-orchestrator/archive" / project["project_uuid"]),
+            "already_archived_root": str(common / "core4-production-extension/archive/pre-release-cleanup"),
+            "already_archived_and_removed": [
+                ".codex", "contracts/core4-compatibility-v1.json", "core4-tests",
+                "hf-cli", "local-coding-worker/evals/results/raw",
+                "scripts/core4_validate.py",
+            ],
             "remove_after_epic_completion": [
                 ".todo-orchestrator", "todos", "todos.md", "todo-status.md",
                 "scripts/core4_extension_validate.py",
+            ],
+            "retained_release_evidence": [
+                "local-coding-worker/evals/results/compact/production-release.json",
             ],
             "final_tracked_top_level": [
                 ".github", ".gitignore", "AGENTS.md", "cpp-context-compiler",

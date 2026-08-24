@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T08:15:24Z",
+  "generated_at": "2026-08-24T08:16:45Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 162,
+  "project_revision": 168,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1741,6 +1741,66 @@
         "revision": 162,
         "seq": 162,
         "timestamp": "2026-08-24T08:15:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-24",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 163,
+        "seq": 163,
+        "timestamp": "2026-08-24T08:15:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HANDOFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-HANDOFF\"}",
+        "revision": 164,
+        "seq": 164,
+        "timestamp": "2026-08-24T08:16:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HANDOFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b5775f1a-72e9-4b45-9517-c1d7b436b690\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 165,
+        "seq": 165,
+        "timestamp": "2026-08-24T08:16:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HANDOFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-HANDOFF\"}",
+        "revision": 166,
+        "seq": 166,
+        "timestamp": "2026-08-24T08:16:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HANDOFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"cb8ef94d-56fe-4e14-921e-22990ae39302\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 167,
+        "seq": 167,
+        "timestamp": "2026-08-24T08:16:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-24",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 168,
+        "seq": 168,
+        "timestamp": "2026-08-24T08:16:45Z"
       }
     ],
     "evidence": [
@@ -1956,6 +2016,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-24T08:16:09Z",
+        "gate_id": "C4P-GATE-HANDOFF",
+        "id": "b5775f1a-72e9-4b45-9517-c1d7b436b690",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"handoff\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"7abdbfc88cc6eb3bd8d3f4bf09a4f0046eeb33a5c85eb6f194d244e64dd863f3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"handoff\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 300}, \"diff_fingerprint\": \"c503c36f8c37ec2971e2ebe0f9f10ef6f5d0859f8057cdf022652765e595cea5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"aac3b4f369908581f40ee005af58ddd96375b0dc\", \"interfaces\": [], \"recorded_git_head\": \"aac3b4f369908581f40ee005af58ddd96375b0dc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 164}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/b5775f1a-72e9-4b45-9517-c1d7b436b690",
+        "revision": 165,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T07:58:19Z",
         "gate_id": "C4P-GATE-FULL",
         "id": "c4382715-6c7c-4080-975e-53797bbc1fb4",
@@ -1989,6 +2062,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"full\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"a27f8c57193468c0a261a8df2e30e388f67fdb689ae12a7ee080ba5d1e461472\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"full\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 7200}, \"diff_fingerprint\": \"289a842b9f14bf3adf9e9d3ba8c018ae4f34782e52a8c5bc68f6cd75086c3a78\", \"dirty_paths\": [\".todo-orchestrator/core4-production-extension.plan.json\", \".todo-orchestrator/state.snapshot.json\", \"scripts/core4_extension_validate.py\", \"todo-orchestrator/tests/test_background_runtime.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"5bf2716f1e8c990434311579e3f0e32a609ef594\", \"interfaces\": [], \"recorded_git_head\": \"5bf2716f1e8c990434311579e3f0e32a609ef594\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 140}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/ca6c79fa-ab55-468b-979d-c5891ae742a5",
         "revision": 143,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-24T08:16:38Z",
+        "gate_id": "C4P-GATE-HANDOFF",
+        "id": "cb8ef94d-56fe-4e14-921e-22990ae39302",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"handoff\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"7abdbfc88cc6eb3bd8d3f4bf09a4f0046eeb33a5c85eb6f194d244e64dd863f3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"handoff\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 300}, \"diff_fingerprint\": \"c503c36f8c37ec2971e2ebe0f9f10ef6f5d0859f8057cdf022652765e595cea5\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"aac3b4f369908581f40ee005af58ddd96375b0dc\", \"interfaces\": [], \"recorded_git_head\": \"aac3b4f369908581f40ee005af58ddd96375b0dc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 166}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/cb8ef94d-56fe-4e14-921e-22990ae39302",
+        "revision": 167,
         "status": "passed"
       },
       {
@@ -2166,14 +2252,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"handoff\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 300, \"track_git_head\": true}",
         "id": "C4P-GATE-HANDOFF",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "7abdbfc88cc6eb3bd8d3f4bf09a4f0046eeb33a5c85eb6f194d244e64dd863f3",
+        "last_run_at": "2026-08-24T08:16:38Z",
         "required": 1,
-        "revision": 153,
-        "status": "pending",
+        "revision": 167,
+        "status": "passed",
         "task_id": "C4P-24",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -2558,6 +2644,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/host-service.json\", \"local-coding-worker/evals/results/compact/host-service/start-1/server-8080.log\", \"local-coding-worker/evals/results/compact/host-service/start-2/server-8080.log\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\"], \"checkpoints\": [{\"id\": \"C4P-MODEL-CACHE-READY\", \"reached_at\": \"2026-08-24T07:08:55Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-HOST-SERVICE\", \"last_run_at\": \"2026-08-24T07:08:55Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json      | 579 +++++++++++++++++++---------\\n local-coding-worker/scripts/local_worker.py |  29 +-\\n todo-status.md                              |   4 +-\\n todos.md                                    |   4 +-\\n todos/c4p-00.md                             |   2 +-\\n todos/c4p-01.md                             |   2 +-\\n todos/c4p-02.md                             |   2 +-\\n todos/c4p-03.md                             |   2 +-\\n todos/c4p-04.md                             |   2 +-\\n todos/c4p-05.md                             |   2 +-\\n todos/c4p-06.md                             |   2 +-\\n todos/c4p-07.md                             |   2 +-\\n todos/c4p-08.md                             |   2 +-\\n todos/c4p-09.md                             |   2 +-\\n todos/c4p-10.md                             |   2 +-\\n todos/c4p-11.md                             |   2 +-\\n todos/c4p-12.md                             |   2 +-\\n todos/c4p-13.md                             |   2 +-\\n todos/c4p-14.md                             |   2 +-\\n todos/c4p-15.md                             |   8 +-\\n todos/c4p-16.md                             |   4 +-\\n todos/c4p-17.md                             |   4 +-\\n todos/c4p-18.md                             |   4 +-\\n todos/c4p-19.md                             |   4 +-\\n todos/c4p-20.md                             |   4 +-\\n todos/c4p-21.md                             |   2 +-\\n todos/c4p-22.md                             |   4 +-\\n todos/c4p-23.md                             |   4 +-\\n todos/c4p-24.md                             |   4 +-\\n 29 files changed, 483 insertions(+), 205 deletions(-)\", \"git_head\": \"3274c4bac8a9d06ea279403d7a1055e1b9161d05\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-15\"}",
         "revision": 92,
         "task_id": "C4P-15"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T08:16:45Z",
+        "id": "a82661c8-4e7c-43e7-a79f-c3734fa00ee4",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/local_worker/production_checks.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-24.md\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-HANDOFF\", \"last_run_at\": \"2026-08-24T08:16:38Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 98 +++++++++++++++++++---\\n .../local_worker/production_checks.py              | 18 +++-\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-24.md                                    |  6 +-\\n 5 files changed, 111 insertions(+), 19 deletions(-)\", \"git_head\": \"aac3b4f369908581f40ee005af58ddd96375b0dc\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-24\"}",
+        "revision": 168,
+        "task_id": "C4P-24"
       },
       {
         "claim_id": null,
@@ -5533,14 +5629,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 150,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 153,
-        "status": "planned",
+        "revision": 168,
+        "status": "done",
         "tags_json": "[\"handoff\", \"archive\", \"layout\"]",
         "title": "Prepare final ledger archival and tracked-layout handoff",
-        "updated_at": "2026-08-24T08:11:56Z",
-        "version": 12
+        "updated_at": "2026-08-24T08:16:45Z",
+        "version": 14
       }
     ]
   }
