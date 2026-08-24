@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `168`
+Project revision: `170`
 
 ## Workstreams
-- `C4P-00` | status: planned | execution: inactive | next: Close only after C4P-24 is validated.
+- `C4P-00` | status: done | execution: closed | next: Close only after C4P-24 is validated.
 - `C4P-24` | status: done | execution: closed | next: After this task and C4P-00 are completed, archive/remove the active ledger outside todo, run the final static tracked-layout check, commit, and fast-forward push core4-bootstrap. Do not merge main.
 - `C4P-23` | status: done | execution: closed | next: Commit and push the coherent release candidate on core4-bootstrap, then prepare final ledger archival.
 - `C4P-22` | status: done | execution: closed | next: Verify the eventual tracked layout contains only the four skills, AGENTS.md, .gitignore, and optional self-contained .github.

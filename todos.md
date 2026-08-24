@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `168`
+Project revision: `170`
 
 ## Workstreams
-- `C4P-00` | kind: epic | status: planned | parent: - | objective: Convert the CORE4 architectural scaffold into a production local-coding-worker system with durable acceptance, persistent SSD model caching, trustworthy CUDA evidence, task-oriented context packets, real bounded local execution, meaningful evaluation, and final repository cleanup.
+- `C4P-00` | kind: epic | status: done | parent: - | objective: Convert the CORE4 architectural scaffold into a production local-coding-worker system with durable acceptance, persistent SSD model caching, trustworthy CUDA evidence, task-oriented context packets, real bounded local execution, meaningful evaluation, and final repository cleanup.
 - `C4P-24` | kind: validation | status: done | parent: - | objective: Export compact task state, record the new project UUID and revision, write an exact archive/removal manifest for .todo-orchestrator, todos, ledgers, temporary validator, raw runtime artifacts, and completed reports, and verify no implementation task remains. This task completes before the active ledger is removed.
 - `C4P-23` | kind: validation | status: done | parent: - | objective: Generate compact current-head release evidence containing commit ancestry, test counts, enabled production profile, model/cache hashes, real-host outcomes, CUDA contamination guarantees, context-packet economics, known limitations, and exact cleanup manifest. Confirm origin/main remains an ancestor and no merge or force push is required.
 - `C4P-22` | kind: integration | status: done | parent: - | objective: Move shared runtime schemas from root contracts into todo-orchestrator/schemas/runtime, update every reference and test, archive compatibility manifests, remove unrelated hf-cli and raw logs if still present, and make CI CPU-only or remove it. Prepare but do not yet delete the active extension ledger or validator.
