@@ -66,37 +66,94 @@ def _execution_path(execution_id: str, suffix: str) -> Path:
     return _delegation_root() / f"{normalized}.{suffix}"
 
 
-def _launch_delegate(repo: Path, claim_token: str, mode: str, target: str | None) -> dict[str, object]:
+def _cancel_admission(supervisor: object, admission_id: str) -> None:
+    try:
+        supervisor.request("cancel-admission", admission_id=admission_id)
+    except Exception:
+        pass
+
+
+def _launch_delegate(
+    repo: Path,
+    claim_token: str,
+    mode: str,
+    target: str | None,
+    *,
+    controller: IntegrationController | None = None,
+    supervisor: SupervisorClient | None = None,
+) -> dict[str, object]:
+    controller = controller or IntegrationController()
+    try:
+        request = controller.request_from_claim(repo, claim_token, mode=mode, target=target)
+    except IntegrationError as error:
+        if "no usable" not in str(error):
+            raise
+        return {"status": "not_eligible", "reason": str(error)[:500], "fallback": "continue_frontier"}
+    resolved_mode = str(request["mode"])
+    supervisor = supervisor or SupervisorClient(repo)
+    try:
+        admission = supervisor.request("admit")
+    except SupervisorError as error:
+        if "resource_unavailable" not in str(error):
+            raise
+        return {
+            "status": "local_unavailable",
+            "reason": "all_local_worker_slots_busy",
+            "fallback": "continue_frontier",
+            "retry_recommended": False,
+            "child_created": False,
+            "scope_locked": False,
+        }
+    admission_id = str(admission.get("admission_id", ""))
+    if not admission_id:
+        raise IntegrationError("supervisor admission did not return an admission id")
+    execution = dict(request.get("execution") or {})
+    execution["admission_id"] = admission_id
+    request["execution"] = execution
     execution_id = str(uuid.uuid4())
     request_path = _execution_path(execution_id, "request.json")
-    _atomic_json(request_path, {
-        "execution_id": execution_id, "repo_root": str(repo.resolve()),
-        "claim_token": claim_token, "mode": mode, "target": target,
-    })
-    log_path = _execution_path(execution_id, "log")
-    with log_path.open("ab") as log:
-        process = subprocess.Popen(
-            [sys.executable, str(Path(__file__).resolve()), "_delegate-worker", "--request", str(request_path)],
-            cwd=repo, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True,
-        )
-    _atomic_json(_execution_path(execution_id, "launch.json"), {"pid": process.pid})
-    return {"format": "CORE4-DELEGATE-LAUNCH/1", "execution_id": execution_id,
+    try:
+        _atomic_json(request_path, {"execution_id": execution_id, "request": request})
+        log_path = _execution_path(execution_id, "log")
+        with log_path.open("ab") as log:
+            process = subprocess.Popen(
+                [sys.executable, str(Path(__file__).resolve()), "_delegate-worker", "--request", str(request_path)],
+                cwd=repo, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True,
+            )
+        _atomic_json(_execution_path(execution_id, "launch.json"), {"pid": process.pid})
+    except Exception:
+        _cancel_admission(supervisor, admission_id)
+        request_path.unlink(missing_ok=True)
+        raise
+    return {"format": "CORE4-DELEGATE-LAUNCH/1", "status": "delegated",
+            "execution_id": execution_id, "mode": resolved_mode,
             "pid": process.pid, "state": "running"}
 
 
 def _run_detached_delegate(request_path: Path) -> int:
     try:
-        request = json.loads(request_path.read_text(encoding="utf-8"))
+        launch = json.loads(request_path.read_text(encoding="utf-8"))
         request_path.unlink(missing_ok=True)
-        execution_id = str(request["execution_id"])
-        result = IntegrationController().delegate(
-            Path(str(request["repo_root"])), str(request["claim_token"]),
-            mode=str(request["mode"]), target=request.get("target"),
-        )
+        execution_id = str(launch["execution_id"])
+        request = launch.get("request")
+        if isinstance(request, dict):
+            result = IntegrationController().run(request)
+        else:  # Compatibility with launch records created before admission tickets.
+            result = IntegrationController().delegate(
+                Path(str(launch["repo_root"])), str(launch["claim_token"]),
+                mode=str(launch["mode"]), target=launch.get("target"),
+            )
         state = "completed"
         payload: dict[str, object] = {"result": result}
     except Exception as error:  # The detached boundary must always leave a collectable result.
-        execution_id = str(locals().get("request", {}).get("execution_id", request_path.name.split(".", 1)[0]))
+        launch_value = locals().get("launch", {})
+        request_value = launch_value.get("request", {}) if isinstance(launch_value, dict) else {}
+        execution = request_value.get("execution", {}) if isinstance(request_value, dict) else {}
+        admission_id = execution.get("admission_id") if isinstance(execution, dict) else None
+        repo_root = request_value.get("repo_root") if isinstance(request_value, dict) else None
+        if admission_id and repo_root:
+            _cancel_admission(SupervisorClient(str(repo_root)), str(admission_id))
+        execution_id = str(launch_value.get("execution_id", request_path.name.split(".", 1)[0]))
         state = "failed"
         payload = {"error": str(error)}
     _atomic_json(_execution_path(execution_id, "result.json"), {
@@ -150,7 +207,7 @@ def main() -> int:
     integrate.add_argument("--request", required=True, help="CORE4-INTEGRATION-REQUEST/1 JSON path or -")
     delegate = subparsers.add_parser("delegate")
     delegate.add_argument("--claim-token")
-    delegate.add_argument("--mode", choices=["readonly", "writable"])
+    delegate.add_argument("--mode", choices=["auto", "readonly", "writable"])
     delegate.add_argument("--target")
     delegate.add_argument("--collect", metavar="EXECUTION_ID")
     delegate.add_argument("--wait", action="store_true")

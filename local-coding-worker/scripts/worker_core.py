@@ -87,7 +87,7 @@ def normalize_request(value: object) -> dict[str, Any]:
         execution = value.get("execution")
         if not isinstance(execution, dict):
             raise WorkerError("execution must be an object")
-        if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config"}:
+        if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config", "admission_id"}:
             raise WorkerError("execution contains unknown fields")
         if execution.get("backend") != value["backend"]:
             raise WorkerError("execution backend must match request backend")

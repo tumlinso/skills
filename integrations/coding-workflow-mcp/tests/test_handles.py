@@ -61,7 +61,7 @@ class CapabilityStoreTests(unittest.TestCase):
         def create(index: int) -> None:
             try:
                 instance = CapabilityStore(self.state_dir)
-                barrier.wait()
+                barrier.wait(timeout=5)
                 handles.append(instance.create_workflow({"repo": str(self.repo), "index": index}))
             except BaseException as error:  # pragma: no cover - asserted below
                 errors.append(error)
@@ -70,7 +70,8 @@ class CapabilityStoreTests(unittest.TestCase):
         for thread in threads:
             thread.start()
         for thread in threads:
-            thread.join()
+            thread.join(timeout=10)
+        self.assertFalse(any(thread.is_alive() for thread in threads))
         self.assertEqual(errors, [])
         self.assertEqual(len(set(handles)), 8)
         self.assertEqual(sorted(self.store.get_workflow(item)["index"] for item in handles), list(range(8)))

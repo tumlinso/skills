@@ -141,6 +141,9 @@ class ToolTests(unittest.TestCase):
         accepted = self.backend.collect_delegation(delegated["delegation_handle"])
         self.assertEqual(accepted["status"], "accepted")
         self.assertFalse(accepted["parent_task_completed"])
+        second = self.backend.delegate_task(workflow, "readonly", None)
+        self.backend.collect_status = "no_change"
+        self.assertEqual(self.backend.collect_delegation(second["delegation_handle"])["status"], "completed")
 
     def test_finish_executes_one_disposition_and_invalidates_handle(self) -> None:
         handle = self.claim()["workflow_handle"]
@@ -155,6 +158,14 @@ class ToolTests(unittest.TestCase):
         blocked = self.backend.finish_task(blocked_handle, "complete", "validated", None, None)
         self.assertEqual(blocked, {"status": "gate_required", "missing_gate_ids": ["G-1"]})
         self.assertEqual(self.store.get_workflow(blocked_handle)["task_id"], "T-1")
+
+    def test_release_preserves_todo_lifecycle_vocabulary(self) -> None:
+        handle = self.claim()["workflow_handle"]
+        result = self.backend.finish_task(handle, "release", "failed", None, "retry later")
+        self.assertEqual(result["status"], "finished")
+        release = next(call for call in self.backend.calls if call and call[0] == "release")
+        self.assertNotIn("--status", release)
+        self.assertIn("--reason", release)
 
     def test_invalid_handle_is_compact_structured_error(self) -> None:
         server = create_server(self.backend)
@@ -189,4 +200,3 @@ class ToolTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

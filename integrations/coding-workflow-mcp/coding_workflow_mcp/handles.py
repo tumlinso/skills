@@ -54,8 +54,12 @@ class CapabilityStore:
 
     def _secure_database_files(self) -> None:
         for path in (self.db_path, Path(str(self.db_path) + "-wal"), Path(str(self.db_path) + "-shm")):
-            if path.exists():
+            try:
                 os.chmod(path, 0o600)
+            except FileNotFoundError:
+                # SQLite may remove transient WAL/SHM files between discovery
+                # and chmod when several bridge processes initialize together.
+                pass
 
     def _initialize(self) -> None:
         with closing(self._connect()) as connection:

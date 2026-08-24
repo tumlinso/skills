@@ -330,12 +330,14 @@ class CodingWorkflowBackend:
         status = result.get("status") or status
         if status == "succeeded":
             status = "completed"
+        elif status == "no_change":
+            status = "completed"
         allowed = {"completed", "accepted", "needs_codex", "failed", "preempted", "stale", "local_unavailable"}
         if status not in allowed:
             status = "failed"
         terminal = {
             "status": status,
-            "summary": str(result.get("summary") or result.get("reason") or "")[:1000],
+            "summary": str(result.get("summary") or result.get("reason") or result.get("error") or "")[:1000],
             "changed_paths": list(result.get("changed_paths") or [])[:32],
             "verification": list(result.get("verification") or [])[:24],
             "risk": result.get("risk", "unknown"),
@@ -360,8 +362,6 @@ class CodingWorkflowBackend:
         arguments = [action, "--claim-token", record["claim_token"]]
         if action == "complete":
             arguments.extend(["--disposition", disposition])
-        elif action == "release":
-            arguments.extend(["--status", disposition])
         if note and action != "release":
             arguments.extend(["--note", note[:1000]])
         if reason and action in {"block", "handoff", "release"}:

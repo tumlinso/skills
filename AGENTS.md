@@ -1,5 +1,15 @@
 # Repo Guidance
 
+<!-- coding-workflow:start -->
+## Coding workflow interface
+
+- For substantial repository work, use the `coding-workflow` MCP server first.
+- Call `next_task`, then use `inspect_task` only when bounded source/evidence context is needed.
+- `delegate_task` is opportunistic. `local_unavailable` means continue directly in Codex; never wait for a GPU.
+- Use `collect_delegation` only for a returned delegation handle and finish every claimed task with `finish_task`.
+- Existing todo, ctxpp, CUDA, and local-worker CLIs remain valid fallback and debugging interfaces.
+<!-- coding-workflow:end -->
+
 ## Authoritative workflow
 
 - For substantial multi-step work, use `todo-orchestrator`.

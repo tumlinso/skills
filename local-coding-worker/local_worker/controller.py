@@ -68,7 +68,8 @@ class ProductionReadOnlyRuntime:
         harness_handle = None
         task_runtime = None
         try:
-            endpoint = supervisor.request("warm")
+            admission_id = execution.get("admission_id")
+            endpoint = supervisor.request("warm", **({"admission_id": admission_id} if admission_id else {}))
             task_runtime = tempfile.TemporaryDirectory(prefix="core4-qwen-task-")
             harness_config = {
                 **dict(execution.get("harness_config") or {}),
@@ -266,6 +267,12 @@ class IntegrationController:
         capsule = self._todo(root, "context", "--claim-token", claim_token)
         task = _object(capsule.get("task"), "todo task capsule")
         scope = _object(capsule.get("scope"), "todo scope capsule")
+        if mode == "auto":
+            # Auto is deliberately conservative: bounded local assistance defaults
+            # to read-only; edits require an explicit writable request.
+            mode = "readonly"
+        if mode not in {"readonly", "writable"}:
+            raise IntegrationError("delegation mode must be auto, readonly, or writable")
         scopes = list(scope.get("exclusive_paths", []))
         if mode == "readonly":
             scopes.extend(scope.get("read_paths", []))
@@ -339,7 +346,9 @@ class IntegrationController:
         supervisor = SupervisorClient(request["repo_root"])
         profile = tomllib.loads((Path(__file__).resolve().parents[1] /
                                  "config/production-profile.toml").read_text(encoding="utf-8"))
-        endpoint = supervisor.request("warm")
+        execution = dict(request.get("execution") or {})
+        admission_id = execution.get("admission_id")
+        endpoint = supervisor.request("warm", **({"admission_id": admission_id} if admission_id else {}))
         harness = QwenCodeAdapter()
         handle = None
         task_runtime = tempfile.TemporaryDirectory(prefix="core4-qwen-task-")
@@ -682,7 +691,20 @@ class IntegrationController:
 
     def run(self, value: object) -> dict[str, Any]:
         request = normalize_integration_request(value)
-        child = self._create_child(request)
+        try:
+            child = self._create_child(request)
+        except Exception:
+            execution = dict(request.get("execution") or {})
+            admission_id = execution.get("admission_id")
+            if admission_id:
+                try:
+                    from .supervisor import SupervisorClient
+                    SupervisorClient(request["repo_root"]).request(
+                        "cancel-admission", admission_id=admission_id,
+                    )
+                except Exception:
+                    pass
+            raise
         child_id = str(child["child_execution_id"])
         stop = threading.Event()
         heartbeat_errors: list[Exception] = []
@@ -776,7 +798,7 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
             raise IntegrationError("max_items must be between 1 and 32")
         if version == 2:
             execution = _object(request["execution"], "execution")
-            if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config"}:
+            if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config", "admission_id"}:
                 raise IntegrationError("execution contains unknown fields")
             if execution.get("backend") not in {"fake", "real"}:
                 raise IntegrationError("execution backend must be fake or real")
@@ -794,7 +816,7 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
                     raise IntegrationError(f"{name} must be a list of non-empty strings")
             if "execution" in request:
                 execution = _object(request["execution"], "execution")
-                if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config"}:
+                if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config", "admission_id"}:
                     raise IntegrationError("execution contains unknown fields")
     registry = request.get("cuda_registry")
     if registry is not None:

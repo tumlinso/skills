@@ -24,12 +24,24 @@ class FakeBackend:
         self.draining = False
         self.polls = 0
         self.leases = []
+        self.admissions = []
 
     def status(self):
         return {"format": "CORE4-MODEL-SUPERVISOR/1", "running": self.loaded,
                 "healthy": self.loaded, "clients": self.clients, "draining": self.draining}
 
-    def warm(self):
+    def admit(self):
+        admission = f"admission-{len(self.admissions) + 1}"
+        self.admissions.append(admission)
+        return {"status": "admitted", "admission_id": admission}
+
+    def cancel_admission(self, admission_id):
+        self.admissions.remove(admission_id)
+        return {"cancelled": True, "admission_id": admission_id}
+
+    def warm(self, admission_id=None):
+        if admission_id is not None:
+            self.admissions.remove(admission_id)
         reused = self.loaded
         self.loaded = True
         self.clients += 1
@@ -57,6 +69,7 @@ class FakeBackend:
         self.loaded = False
         self.clients = 0
         self.draining = False
+        self.admissions.clear()
         return {"evicted": True, "quiescent": True}
 
     def poll(self):
@@ -92,6 +105,23 @@ class SupervisorTests(unittest.TestCase):
             thread.join(timeout=2)
             self.assertFalse(thread.is_alive())
             self.assertFalse(server.socket_path.exists())
+
+    def test_owner_protocol_admission_is_explicit_and_cancellable(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "runtime"
+            backend = FakeBackend()
+            server = SupervisorServer(backend, root=root)
+            thread = threading.Thread(target=server.serve, daemon=True)
+            thread.start()
+            deadline = time.monotonic() + 2
+            while not server.socket_path.exists() and time.monotonic() < deadline:
+                time.sleep(.01)
+            client = SupervisorClient(Path(temporary), root=root)
+            admitted = client.request("admit")
+            self.assertEqual(backend.clients, 0)
+            self.assertEqual(client.request("cancel-admission", admission_id=admitted["admission_id"])["cancelled"], True)
+            client.request("stop")
+            thread.join(timeout=2)
 
     def test_status_does_not_spawn_absent_supervisor(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -247,6 +277,33 @@ class ServicePoolTests(unittest.TestCase):
         with self.assertRaisesRegex(SupervisorError, "resource_unavailable.*retryable"):
             backend.warm()
         self.assertEqual(service.starts, 2)
+        backend.close()
+
+    def test_admission_reserves_capacity_before_model_or_service_start(self):
+        backend, runtime, service = self.backend()
+        first = backend.admit()
+        second = backend.admit()
+        self.assertEqual((service.starts, backend.status()["active_admissions"]), (0, 2))
+        self.assertEqual(len(runtime.host.owners), 2)
+        with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
+            backend.admit()
+        with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
+            backend.warm()
+        endpoint = backend.warm(first["admission_id"])
+        self.assertEqual((service.starts, backend.status()["active_admissions"]), (1, 1))
+        backend.release(endpoint["service_lease_id"])
+        backend.cancel_admission(second["admission_id"])
+        self.assertEqual(backend.status()["active_admissions"], 0)
+        backend.close()
+
+    def test_expired_admission_is_swept_without_starting_a_service(self):
+        backend, _, service = self.backend()
+        backend.admission_ttl = 0
+        admission = backend.admit()
+        backend.poll()
+        self.assertEqual((backend.status()["active_admissions"], service.starts), (0, 0))
+        with self.assertRaisesRegex(SupervisorError, "unknown, expired"):
+            backend.warm(admission["admission_id"])
         backend.close()
 
     def test_leases_are_exact_and_double_release_is_rejected(self):

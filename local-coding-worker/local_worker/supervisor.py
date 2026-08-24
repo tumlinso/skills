@@ -77,7 +77,9 @@ def _http_json(url: str, timeout: float = 2.0) -> tuple[int, dict[str, Any]]:
 
 class Backend(Protocol):
     def status(self) -> dict[str, Any]: ...
-    def warm(self) -> dict[str, Any]: ...
+    def admit(self) -> dict[str, Any]: ...
+    def cancel_admission(self, admission_id: str) -> dict[str, Any]: ...
+    def warm(self, admission_id: str | None = None) -> dict[str, Any]: ...
     def release(self, service_lease_id: str | None = None) -> dict[str, Any]: ...
     def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]: ...
     def drain(self) -> dict[str, Any]: ...
@@ -98,6 +100,15 @@ class _ServiceSlot:
     service_lease_id: str | None = None
     state: str = "idle"
     idle_since: float | None = None
+
+
+@dataclass
+class _Admission:
+    admission_id: str
+    expires_at: float
+    slot_id: str | None
+    owner_id: str
+    gpu_uuids: tuple[str, ...]
 
 
 class ProductionBackend:
@@ -128,10 +139,12 @@ class ProductionBackend:
         self.max_slots = min(2, max(1, int(validation_override or configured)))
         self._slots: dict[str, _ServiceSlot] = {}
         self._leases: dict[str, str] = {}
+        self._admissions: dict[str, _Admission] = {}
         self._preempted_leases: set[str] = set()
         self._start_lock = threading.Lock()
         self.draining = False
         self.ttl = float(policy.get("hot_idle_seconds", 900))
+        self.admission_ttl = 60.0
 
     def _candidate(self, candidate_id: str) -> dict[str, Any]:
         candidate = next((item for item in self.profile.get("candidates", []) if item.get("id") == candidate_id), None)
@@ -182,9 +195,83 @@ class ProductionBackend:
             "format": "CORE4-MODEL-SUPERVISOR/1", "running": bool(summaries),
             "healthy": bool(summaries) and all(item["healthy"] for item in summaries),
             "draining": self.draining, "clients": active, "active_leases": active,
+            "active_admissions": len(self._admissions),
             "capacity": self.max_slots, "idle_ttl_seconds": self.ttl,
             "endpoint": endpoint, "slots": summaries,
         }
+
+    def admit(self) -> dict[str, Any]:
+        """Atomically reserve a real GPU island without starting a model."""
+        if self.draining:
+            raise SupervisorError("resource_unavailable: model service is draining; retryable=false")
+        if len(self._leases) + len(self._admissions) >= self.max_slots:
+            raise SupervisorError("resource_unavailable: all model service slots are admitted; retryable=false")
+        admission_id = str(uuid.uuid4())
+        bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
+        for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
+            if slot.slot_id in bound_slots or slot.service_lease_id is not None:
+                continue
+            if not self._healthy(slot):
+                self._evict_slot(slot.slot_id)
+                continue
+            if not self.runtime.host.set_priority(slot.owner_id, "active_local_delegation"):
+                self._evict_slot(slot.slot_id)
+                continue
+            admission = _Admission(
+                admission_id=admission_id, expires_at=time.monotonic() + self.admission_ttl,
+                slot_id=slot.slot_id, owner_id=slot.owner_id, gpu_uuids=slot.gpu_uuids,
+            )
+            self._admissions[admission_id] = admission
+            return {"status": "admitted", "admission_id": admission_id,
+                    "capacity": self.max_slots, "active_admissions": len(self._admissions)}
+
+        active = self.cache.active()
+        if not active:
+            raise SupervisorError("local model is not installed")
+        candidate = self._candidate(str(active["candidate_id"]))
+        gpu_count = 2 if candidate.get("profile") == "one-island" else 4
+        self.runtime.host.discover_gpus()
+        bundles = self.runtime.host.compound_gpu_bundles(gpu_count)
+        reservation = None
+        for candidate_bundle in bundles:
+            reservation = self.runtime.host.reserve_service(
+                project_root=self.repo_root, service_id=f"core4-local-admission-{admission_id}",
+                priority_class="active_local_delegation",
+                resource_request={"schema_version": 1, "kind": "accelerator",
+                                  "ids": candidate_bundle["resource_ids"],
+                                  "exclusive_resources": candidate_bundle["exclusive_resources"]},
+                pid=os.getpid(),
+            )
+            if reservation is not None:
+                break
+        if reservation is None:
+            raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=false")
+        owner_id = str(reservation["owner_id"])
+        gpu_uuids = tuple(str(item).removeprefix("accelerator:") for item in reservation["resource_ids"])
+        self._admissions[admission_id] = _Admission(
+            admission_id=admission_id, expires_at=time.monotonic() + self.admission_ttl,
+            slot_id=None, owner_id=owner_id, gpu_uuids=gpu_uuids,
+        )
+        return {
+            "status": "admitted", "admission_id": admission_id,
+            "capacity": self.max_slots, "active_admissions": len(self._admissions),
+        }
+
+    def _release_admission(self, admission: _Admission) -> None:
+        if admission.slot_id is None:
+            self.runtime.host.release(admission.owner_id)
+            return
+        slot = self._slots.get(admission.slot_id)
+        if slot is not None and slot.service_lease_id is None:
+            self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
+
+    def cancel_admission(self, admission_id: str) -> dict[str, Any]:
+        admission = self._admissions.pop(admission_id, None)
+        if admission is None:
+            raise SupervisorError("unknown or already consumed admission")
+        self._release_admission(admission)
+        return {"cancelled": True, "admission_id": admission_id,
+                "active_admissions": len(self._admissions)}
 
     def _lease(self, slot: _ServiceSlot, *, reused: bool) -> dict[str, Any]:
         if slot.service_lease_id is not None:
@@ -202,54 +289,74 @@ class ProductionBackend:
             "service_lease_id": lease_id, "reused": reused,
         }
 
-    def warm(self) -> dict[str, Any]:
+    def warm(self, admission_id: str | None = None) -> dict[str, Any]:
         if self.draining:
             raise SupervisorError("model service is draining for foreground preemption")
+        if admission_id is None:
+            if len(self._leases) + len(self._admissions) >= self.max_slots:
+                raise SupervisorError("resource_unavailable: all model service slots are admitted; retryable=true")
+        else:
+            admission = self._admissions.pop(admission_id, None)
+            if admission is None:
+                raise SupervisorError("unknown, expired, or already consumed admission")
+            if admission.slot_id is not None:
+                slot = self._slots.get(admission.slot_id)
+                if slot is None or slot.service_lease_id is not None or not self._healthy(slot):
+                    self._release_admission(admission)
+                    raise SupervisorError("resource_unavailable: admitted model slot is no longer usable; retryable=false")
+                return self._lease(slot, reused=True)
+            return self._start_slot(admission=admission)
+        bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-            if slot.service_lease_id is None and self._healthy(slot):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._healthy(slot):
                 return self._lease(slot, reused=True)
         for slot in list(self._slots.values()):
-            if slot.service_lease_id is None and not self._healthy(slot):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and not self._healthy(slot):
                 self._evict_slot(slot.slot_id)
         if len(self._slots) >= self.max_slots:
             raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
         with self._start_lock:
             # A prior request may have populated an idle slot while this caller waited.
+            bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
             for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-                if slot.service_lease_id is None and self._healthy(slot):
+                if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._healthy(slot):
                     return self._lease(slot, reused=True)
             if len(self._slots) >= self.max_slots:
                 raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
             return self._start_slot()
 
-    def _start_slot(self) -> dict[str, Any]:
+    def _start_slot(self, admission: _Admission | None = None) -> dict[str, Any]:
         active = self.cache.active()
         if not active:
             raise SupervisorError("persistent active model cache is missing")
         self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         candidate = self._candidate(str(active["candidate_id"]))
         gpu_count = 2 if candidate.get("profile") == "one-island" else 4
-        self.runtime.host.discover_gpus()
-        bundles = self.runtime.host.compound_gpu_bundles(gpu_count)
-        if not bundles:
-            raise SupervisorError("no runtime-discovered GPU bundle is available")
         slot_id = f"slot-{uuid.uuid4().hex[:12]}"
-        reservation = None
-        for candidate_bundle in bundles:
-            reservation = self.runtime.host.reserve_service(
-                project_root=self.repo_root, service_id=f"core4-local-model-{slot_id}",
-                priority_class="active_local_delegation",
-                resource_request={"schema_version": 1, "kind": "accelerator",
-                                  "ids": candidate_bundle["resource_ids"],
-                                  "exclusive_resources": candidate_bundle["exclusive_resources"]},
-                pid=os.getpid(),
-            )
-            if reservation is not None:
-                break
-        if reservation is None:
-            raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=true")
-        owner_id = str(reservation["owner_id"])
-        gpu_uuids = [str(item).removeprefix("accelerator:") for item in reservation["resource_ids"]]
+        if admission is None:
+            self.runtime.host.discover_gpus()
+            bundles = self.runtime.host.compound_gpu_bundles(gpu_count)
+            if not bundles:
+                raise SupervisorError("no runtime-discovered GPU bundle is available")
+            reservation = None
+            for candidate_bundle in bundles:
+                reservation = self.runtime.host.reserve_service(
+                    project_root=self.repo_root, service_id=f"core4-local-model-{slot_id}",
+                    priority_class="active_local_delegation",
+                    resource_request={"schema_version": 1, "kind": "accelerator",
+                                      "ids": candidate_bundle["resource_ids"],
+                                      "exclusive_resources": candidate_bundle["exclusive_resources"]},
+                    pid=os.getpid(),
+                )
+                if reservation is not None:
+                    break
+            if reservation is None:
+                raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=true")
+            owner_id = str(reservation["owner_id"])
+            gpu_uuids = [str(item).removeprefix("accelerator:") for item in reservation["resource_ids"]]
+        else:
+            owner_id = admission.owner_id
+            gpu_uuids = list(admission.gpu_uuids)
         server = self.profile["server"]
         port = self._free_port(int(server["base_port"]))
         binary = str(server["binary"])
@@ -367,12 +474,20 @@ class ProductionBackend:
         return True
 
     def evict(self) -> dict[str, Any]:
+        for admission in list(self._admissions.values()):
+            self._release_admission(admission)
+        self._admissions.clear()
         for slot_id in list(self._slots):
             self._evict_slot(slot_id)
         self.draining = False
         return {"evicted": True, "quiescent": True}
 
     def poll(self) -> None:
+        now = time.monotonic()
+        for admission_id, admission in list(self._admissions.items()):
+            if admission.expires_at <= now:
+                self._admissions.pop(admission_id, None)
+                self._release_admission(admission)
         for slot in list(self._slots.values()):
             self.runtime.host.heartbeat(slot.owner_id, pid=os.getpid())
             if self.runtime.host.preempt_requested(slot.owner_id):
@@ -402,8 +517,12 @@ class SupervisorServer:
         operation = request.get("operation")
         if operation == "status":
             return self.backend.status()
+        if operation == "admit":
+            return self.backend.admit()
+        if operation == "cancel-admission":
+            return self.backend.cancel_admission(str(request.get("admission_id", "")))
         if operation in {"warm", "acquire"}:
-            return self.backend.warm()
+            return self.backend.warm(request.get("admission_id"))
         if operation == "release":
             return self.backend.release(request.get("service_lease_id"))
         if operation == "preemption-status":
@@ -546,7 +665,7 @@ class SupervisorClient:
         raise SupervisorError("persistent model supervisor did not start")
 
     def request(self, operation: str, **parameters: Any) -> dict[str, Any]:
-        if operation in {"warm", "acquire"}:
+        if operation in {"admit", "warm", "acquire"}:
             self.ensure_running()
         elif not self.socket_path.exists():
             if operation == "status":

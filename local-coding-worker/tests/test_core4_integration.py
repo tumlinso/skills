@@ -9,6 +9,7 @@ import threading
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from unittest import mock
 
 SKILL = Path(__file__).resolve().parents[1]
 SKILLS = SKILL.parent
@@ -186,6 +187,13 @@ class Core4IntegrationTests(unittest.TestCase):
         )
         self.assertEqual(request["target"], "kernel")
 
+    def test_public_auto_delegation_is_conservatively_readonly(self) -> None:
+        request = self.controller().request_from_claim(
+            self.root, "toc_fixture", mode="auto", target="kernel",
+        )
+        self.assertEqual(request["mode"], "readonly")
+        self.assertEqual(request["target"], "kernel")
+
     def test_public_writable_delegate_verifies_applies_credits_and_accepts(self) -> None:
         def runner(worktree: Path, request: dict[str, object]) -> dict[str, object]:
             (worktree / "src/kernel.cu").write_text("// delegated candidate\n", encoding="utf-8")
@@ -244,6 +252,46 @@ class Core4IntegrationTests(unittest.TestCase):
         self.assertEqual((result["status"], result["tool_calls"]), ("completed", 2))
         self.assertEqual(events[0], "warm")
         self.assertEqual(events[-2:], ["harness-evict", "release"])
+
+    def test_production_runtime_consumes_pre_child_admission(self) -> None:
+        calls = []
+        profile = {"deployment_policy": {"real_local_enabled": True},
+                   "harnesses": {"qwen": "qwen", "codex": "codex"}}
+        class Supervisor:
+            def request(self, operation, **parameters):
+                calls.append((operation, parameters))
+                if operation == "warm":
+                    return {"base_url": "http://127.0.0.1:8080/v1", "model_id": "candidate",
+                            "model_sha256": "a" * 64, "gpu_uuids": ["GPU-a"], "reused": True,
+                            "slot_id": "slot-a", "service_lease_id": "lease-a", "server_pid": 42}
+                return {"released": True}
+        class Harness:
+            def start(self, context): return "harness"
+            def run(self, handle, request): return {"status": "succeeded", "usage": {}, "duration_ms": 1}
+            def evict(self, handle): return None
+        runtime = ProductionReadOnlyRuntime(profile=profile, supervisor=Supervisor(),
+                                            harness_factory=lambda name: Harness())
+        snapshot = type("Snapshot", (), {"root": self.root})()
+        request = {"repo_root": str(self.root), "objective": "bounded", "role": "review", "scopes": ["src"],
+                   "execution": {"backend": "real", "harness": "qwen", "admission_id": "admission-1"}}
+        self.assertEqual(runtime.execute(request, {}, snapshot)["status"], "completed")
+        self.assertEqual(calls[0], ("warm", {"admission_id": "admission-1"}))
+
+    def test_child_creation_failure_cancels_unconsumed_admission(self) -> None:
+        request = self.request("readonly")
+        request.update(format="CORE4-INTEGRATION-REQUEST/2", schema_version=2,
+                       execution={"backend": "real", "harness": "qwen", "admission_id": "admission-1"})
+        cancelled = []
+        class Supervisor:
+            def request(self, operation, **parameters):
+                cancelled.append((operation, parameters))
+                return {"cancelled": True}
+        controller = self.controller()
+        with mock.patch.object(controller, "_create_child", side_effect=RuntimeError("child failed")), \
+             mock.patch("local_worker.supervisor.SupervisorClient", return_value=Supervisor()):
+            with self.assertRaisesRegex(RuntimeError, "child failed"):
+                controller.run(request)
+        self.assertEqual(cancelled, [("cancel-admission", {"admission_id": "admission-1"})])
 
     def test_two_public_runtime_calls_use_isolated_services_and_qwen_runtime_dirs(self) -> None:
         lock = threading.Lock()
