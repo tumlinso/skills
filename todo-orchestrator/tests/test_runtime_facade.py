@@ -209,15 +209,16 @@ class RuntimeFacadeTests(unittest.TestCase):
     def test_topology_discovery_derives_islands_from_runtime_output(self) -> None:
         outputs = iter([
             "0, GPU-a, 00000000:07:00.0\n1, GPU-b, 00000000:08:00.0\n2, GPU-c, 00000000:80:00.0\n",
-            "GPU0 GPU1 GPU2 CPU_Affinity NUMA_Affinity\n"
-            "GPU0 X NV2 SYS 0-31 0\n"
-            "GPU1 NV2 X SYS 0-31 0\n"
-            "GPU2 SYS SYS X 32-63 1\n",
+            "\t\x1b[4mGPU0\tGPU1\tGPU2\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\x1b[0m\n"
+            "GPU0\tX\tNV2\tSYS\t0-31\t0\tN/A\n"
+            "GPU1\tNV2\tX\tSYS\t0-31\t0\tN/A\n"
+            "GPU2\tSYS\tSYS\tX\t32-63\t1\tN/A\n",
         ])
         resources = discover_gpu_topology(lambda argv: next(outputs))
         tags = {item["tags"]["uuid"]: item["tags"] for item in resources}
         self.assertEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-b"]["nvlink_domain"])
         self.assertNotEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-c"]["nvlink_domain"])
+        self.assertEqual((tags["GPU-a"]["numa_node"], tags["GPU-c"]["numa_node"]), ("0", "1"))
 
 
 if __name__ == "__main__":

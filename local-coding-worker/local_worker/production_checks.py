@@ -5,8 +5,10 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import tomllib
 import urllib.error
@@ -221,12 +223,204 @@ def _host_readonly(repo: Path) -> dict[str, Any]:
     return evidence
 
 
+def _verification_command(nvcc: str, *, execute: bool) -> dict[str, Any]:
+    code = (
+        "import os,subprocess,tempfile;"
+        "fd,path=tempfile.mkstemp(prefix='core4-host-writable-');os.close(fd);os.unlink(path);"
+        f"subprocess.run([{nvcc!r},'-std=c++17','-arch=sm_70','src/add.cu','-o',path],check=True);"
+        + ("subprocess.run([path],check=True);" if execute else "")
+        + "os.unlink(path)"
+    )
+    return {"schema_version": 1, "argv": [sys.executable, "-c", code], "cwd": ".", "timeout_seconds": 120}
+
+
+def _host_writable(repo: Path) -> dict[str, Any]:
+    from .acceptance import AcceptanceError, ScopeViolation, StaleSourceError, accept_patch_artifact, build_patch_artifact
+    from .harnesses import QwenCodeAdapter
+    from .verification import require_verification
+    from .workspace import materialize_writable_workspace
+    todo = repo / "todo-orchestrator"
+    if str(todo) not in sys.path:
+        sys.path.insert(0, str(todo))
+    from todo_orchestrator.runtime import capture_source_identity
+
+    class HostWritableQwenAdapter(QwenCodeAdapter):
+        """Allow bounded edits only inside the detached disposable worktree."""
+        def build_command(self, session, prompt):
+            argv, environment = super().build_command(session, prompt)
+            argv[argv.index("--sandbox")] = "--no-sandbox"
+            argv[argv.index("--approval-mode") + 1] = "auto-edit"
+            argv[argv.index("--exclude-tools") + 1] = "agent,shell"
+            return argv, environment
+
+    nvcc = shutil.which("nvcc")
+    if not nvcc:
+        raise ProductionCheckError("CUDA 12.x nvcc is unavailable")
+    version = subprocess.run([nvcc, "--version"], text=True, capture_output=True, check=False)
+    if version.returncode != 0 or "release 12." not in version.stdout:
+        raise ProductionCheckError("the available nvcc is not an explicit CUDA 12.x toolchain")
+
+    profile = _profile(repo)
+    cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active model cache is missing")
+    verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    host = _host_module(repo)
+    devices = host.gpu_inventory()
+    islands, _ = host.discover_islands(devices)
+    candidate = next(item for item in profile["candidates"] if item["id"] == active["candidate_id"])
+    indices = host.candidate_indices(candidate, islands, devices)
+    raw_root = repo / ".git/core4-production-extension/raw/host-writable-candidates"
+    raw_root.mkdir(parents=True, exist_ok=True)
+    artifact_root = Path(tempfile.mkdtemp(prefix="run-", dir=raw_root))
+    baseline = [_verification_command(nvcc, execute=False)]
+    full_test = [_verification_command(nvcc, execute=True)]
+    environment = {"OPENAI_API_KEY": "core4-local-no-auth", "OPENAI_MODEL": str(active["candidate_id"])}
+    prior = {key: os.environ.get(key) for key in environment | {"OPENAI_BASE_URL": ""}}
+    reviewer: dict[str, Any] = {}
+    with tempfile.TemporaryDirectory(prefix="core4-host-writable-repo-") as temporary:
+        primary = Path(temporary)
+        (primary / "src").mkdir()
+        source = primary / "src/add.cu"
+        source.write_text(
+            "#include <cstdlib>\n\nint add(int a, int b) { return a - b; }\n\n"
+            "int main() { return add(2, 3) == 5 ? EXIT_SUCCESS : EXIT_FAILURE; }\n",
+            encoding="utf-8",
+        )
+        subprocess.run(["git", "init", "-q"], cwd=primary, check=True)
+        subprocess.run(["git", "config", "user.email", "core4@example.invalid"], cwd=primary, check=True)
+        subprocess.run(["git", "config", "user.name", "CORE4 Host Check"], cwd=primary, check=True)
+        subprocess.run(["git", "add", "."], cwd=primary, check=True)
+        subprocess.run(["git", "commit", "-qm", "baseline"], cwd=primary, check=True)
+
+        identity = capture_source_identity(primary)
+        try:
+            with materialize_writable_workspace(primary, identity, ["src"], baseline) as workspace:
+                with host.ResourceLease(repo, devices, indices):
+                    with host.Server(profile["server"], Path(str(verified["payload_path"])),
+                                     str(active["candidate_id"]), int(profile["experiment"]["initial_context"]),
+                                     indices, int(profile["server"]["base_port"]),
+                                     repo / "local-coding-worker/evals/results/compact/host-writable-runtime") as server:
+                        environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
+                        os.environ.update(environment)
+                        harness = HostWritableQwenAdapter(str(profile["harnesses"]["qwen"]))
+                        handle = harness.start({"cwd": str(workspace.path), "model": str(active["candidate_id"]),
+                            "allowed_tools": ["read_file", "edit", "write_file"], "max_session_turns": 12,
+                            "max_tool_calls": 8, "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                        try:
+                            prompt = ("Read src/add.cu. Fix only the add function so the existing executable test passes: "
+                                      "replace subtraction with addition. Do not alter main or create files. Use an edit tool, "
+                                      "then return a concise summary.")
+                            outcome = harness.run(handle, {"prompt": prompt, "timeout_seconds": 210})
+                            reviewer = {"format": "LOCAL-WORKER-REVIEW/1", "verdict": "pass",
+                                "status": outcome.get("status"), "duration_ms": outcome.get("duration_ms"),
+                                "tool_calls": int((outcome.get("usage", {}).get("core4", {}) or {}).get("tool_calls", 0)),
+                                "tool_names": (outcome.get("usage", {}).get("core4", {}) or {}).get("tool_names", [])}
+                        finally:
+                            harness.evict(handle)
+                external = require_verification(workspace.path, full_test, phase="external")
+                accepted_artifact = build_patch_artifact(workspace, artifact_root / "accepted", external)
+        finally:
+            for key, value in prior.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
+        (artifact_root / "accepted/reviewer-evidence.json").write_text(
+            json.dumps(reviewer, indent=2, sort_keys=True) + "\n", encoding="utf-8",
+        )
+        acceptance = accept_patch_artifact(primary, accepted_artifact, full_test)
+        accepted_bytes = source.read_bytes()
+
+        stale_identity = capture_source_identity(primary)
+        with materialize_writable_workspace(primary, stale_identity, ["src"], baseline) as workspace:
+            candidate_source = workspace.path / "src/add.cu"
+            candidate_source.write_text(candidate_source.read_text().replace("a + b", "a + b + 0"), encoding="utf-8")
+            stale_external = require_verification(workspace.path, full_test, phase="external")
+            stale_artifact = build_patch_artifact(workspace, artifact_root / "stale", stale_external)
+        (primary / "operator-note.txt").write_text("unrelated concurrent work\n", encoding="utf-8")
+        stale_rejected = False
+        try:
+            accept_patch_artifact(primary, stale_artifact, full_test)
+        except StaleSourceError:
+            stale_rejected = True
+
+        rollback_identity = capture_source_identity(primary)
+        with materialize_writable_workspace(primary, rollback_identity, ["src"], baseline) as workspace:
+            candidate_source = workspace.path / "src/add.cu"
+            candidate_source.write_text(candidate_source.read_text().replace("a + b", "999"), encoding="utf-8")
+            rollback_external = require_verification(workspace.path, baseline, phase="external")
+            rollback_artifact = build_patch_artifact(workspace, artifact_root / "rollback", rollback_external)
+        rolled_back = False
+        try:
+            accept_patch_artifact(primary, rollback_artifact, full_test)
+        except AcceptanceError:
+            rolled_back = source.read_bytes() == accepted_bytes
+
+        scope_identity = capture_source_identity(primary)
+        scope_protected = False
+        with materialize_writable_workspace(primary, scope_identity, ["src"], baseline) as workspace:
+            outside = workspace.path / "docs/outside.txt"
+            outside.parent.mkdir(parents=True)
+            outside.write_text("denied\n", encoding="utf-8")
+            scope_external = require_verification(workspace.path, baseline, phase="external")
+            try:
+                build_patch_artifact(workspace, artifact_root / "scope", scope_external)
+            except ScopeViolation:
+                scope_protected = True
+
+        scripts = repo / "cuda/scripts"
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        from cuda_discovery import discover_campaigns
+        registry = {"format": "CUDA-BENCHMARK-REGISTRY/1", "schema_version": 1,
+            "project_root": str(primary), "campaigns": [{"id": "core4-host-sm70", "description": "host proof",
+            "targets": [], "paths": ["src/**/*.cu"], "symbols": [], "task_ids": [], "task_prefixes": [],
+            "build": None, "correctness": {"argv": [sys.executable, "-c", "assert True"], "repetitions": 1},
+            "benchmark": {"argv": [sys.executable, "-c", "print('{\\\"latency_ms\\\":1}')"],
+                          "warmups": 0, "repetitions": 1},
+            "metric": {"format": "CUDA-METRIC/1", "schema_version": 1, "name": "latency_ms",
+                       "path": "latency_ms", "direction": "minimize", "unit": "ms",
+                       "practical_regression_percent": 2.0, "target": None},
+            "resources": {"gpu_count": 1, "architecture": "volta"},
+            "policy": {"initial_characterization": False}}]}
+        discovery = discover_campaigns(registry, {"schema_version": 1,
+            "accepted_patches": [{"accepted": True, "changed_paths": acceptance["changed_paths"]}],
+            "task_ids": ["C4P-17"]})
+        canonical_preserved = source.read_bytes() == accepted_bytes and (primary / "operator-note.txt").is_file()
+
+    preemption = _service_preemption(repo, len(indices))
+    cuda_triggered = discovery["status"] == "unambiguous" and discovery["auto_queue_safe"] is True
+    ok = (acceptance["accepted"] is True and acceptance["changed_paths"] == ["src/add.cu"] and
+          acceptance["parent_task_completed"] is False and stale_rejected and rolled_back and
+          scope_protected and canonical_preserved and cuda_triggered and
+          all(bool(preemption[key]) for key in ("preempt_requested", "foreground_blocked_until_release",
+                                                "foreground_activated_after_release")))
+    result = {"format": "CORE4-HOST-CHECK/1", "scenario": "writable", "ok": ok,
+              "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
+              "gpu_indices": indices, "nvcc": version.stdout.strip().splitlines()[-1], "reviewer": reviewer,
+              "acceptance": {"accepted": acceptance["accepted"], "changed_paths": acceptance["changed_paths"],
+                             "parent_task_completed": acceptance["parent_task_completed"]},
+              "guards": {"stale_rejected": stale_rejected, "rollback": rolled_back,
+                         "scope_protected": scope_protected, "unrelated_work_preserved": canonical_preserved},
+              "cuda": {"status": discovery["status"], "campaign_ids": [item["campaign_id"] for item in discovery["matches"]],
+                       "accepted_patch_triggered": cuda_triggered}, "preemption": preemption,
+              "artifact_root": str(artifact_root)}
+    evidence = _write_compact(repo, "host-writable", result)
+    if not ok:
+        raise ProductionCheckError("real writable host scenario did not satisfy every guard")
+    return evidence
+
+
 def host_check(scenario: str) -> dict[str, Any]:
     repo = _repo()
     if scenario == "service":
         return _host_service(repo)
     if scenario == "readonly":
         return _host_readonly(repo)
+    if scenario == "writable":
+        return _host_writable(repo)
     raise ProductionCheckError(f"host scenario is not implemented yet: {scenario}")
 
 

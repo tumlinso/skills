@@ -1682,6 +1682,7 @@
       ],
       "scope": {
         "exclusive_paths": [
+          ".todo-orchestrator/core4-production-extension.plan.json",
           "local-coding-worker/evals/results/compact",
           "local-coding-worker/evals/tasks",
           "local-coding-worker/scripts/local_worker.py",
@@ -1765,6 +1766,7 @@
           "local-coding-worker/tests",
           "cuda/tests",
           "todo-orchestrator/tests",
+          "todo-orchestrator/todo_orchestrator/runtime/topology.py",
           "local-coding-worker/scripts/local_worker.py",
           "local-coding-worker/local_worker/production_checks.py"
         ],

@@ -1,0 +1,53 @@
+{
+  "acceptance": {
+    "accepted": true,
+    "changed_paths": [
+      "src/add.cu"
+    ],
+    "parent_task_completed": false
+  },
+  "artifact_root": "/home/tumlinson/.agents/skills/.git/core4-production-extension/raw/host-writable-candidates/run-mh0z3_yt",
+  "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+  "cuda": {
+    "accepted_patch_triggered": true,
+    "campaign_ids": [
+      "core4-host-sm70"
+    ],
+    "status": "unambiguous"
+  },
+  "format": "CORE4-HOST-CHECK/1",
+  "gpu_indices": [
+    2,
+    3
+  ],
+  "guards": {
+    "rollback": true,
+    "scope_protected": true,
+    "stale_rejected": true,
+    "unrelated_work_preserved": true
+  },
+  "nvcc": "Build cuda_12.9.r12.9/compiler.36037853_0",
+  "ok": true,
+  "payload_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+  "preemption": {
+    "foreground_activated_after_release": true,
+    "foreground_blocked_until_release": true,
+    "preempt_requested": true,
+    "resource_ids": [
+      "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      "accelerator:GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+    ]
+  },
+  "reviewer": {
+    "duration_ms": 23684.821,
+    "format": "LOCAL-WORKER-REVIEW/1",
+    "status": "succeeded",
+    "tool_calls": 2,
+    "tool_names": [
+      "edit",
+      "read_file"
+    ],
+    "verdict": "pass"
+  },
+  "scenario": "writable"
+}

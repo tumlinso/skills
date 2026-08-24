@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import csv
 import io
+import re
 import subprocess
 from collections.abc import Callable
 
 
 Runner = Callable[[list[str]], str]
+ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def _run(argv: list[str]) -> str:
@@ -29,24 +31,35 @@ def discover_gpu_topology(runner: Runner = _run) -> list[dict[str, object]]:
     links: dict[int, dict[int, str]] = {index: {} for index in devices}
     numa: dict[int, str] = {}
     header: list[str] = []
+    numa_column: int | None = None
     for raw in topology.splitlines():
-        fields = raw.split()
+        clean = ANSI_ESCAPE.sub("", raw)
+        if "\t" in clean:
+            fields = [item.strip() for item in clean.split("\t")]
+            if fields and not fields[0]:
+                fields.pop(0)
+        else:
+            fields = clean.split()
         if not fields:
             continue
         if len(fields) > 1 and fields[0].startswith("GPU") and fields[1].startswith("GPU"):
             header = fields
+            for name in ("NUMA Affinity", "NUMA_Affinity"):
+                if name in header:
+                    numa_column = header.index(name)
+                    break
             continue
         if fields[0].startswith("GPU") and fields[0][3:].isdigit():
             index = int(fields[0][3:])
             gpu_columns = [name for name in header if name.startswith("GPU") and name[3:].isdigit()]
-            for offset, name in enumerate(gpu_columns, start=1):
-                if offset < len(fields):
-                    links.setdefault(index, {})[int(name[3:])] = fields[offset]
-            if "NUMA Affinity" in raw:
-                # nvidia-smi keeps NUMA affinity as the penultimate numeric column.
-                numeric = [value for value in fields[len(gpu_columns) + 1:] if value.lstrip("-").isdigit()]
-                if numeric:
-                    numa[index] = numeric[-1]
+            for name in gpu_columns:
+                column = header.index(name) + 1
+                if column < len(fields):
+                    links.setdefault(index, {})[int(name[3:])] = fields[column]
+            if numa_column is not None and numa_column + 1 < len(fields):
+                value = fields[numa_column + 1]
+                if value.lstrip("-").isdigit():
+                    numa[index] = value
 
     parent = {index: index for index in devices}
 
