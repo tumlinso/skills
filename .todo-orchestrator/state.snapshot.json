@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T07:01:31Z",
+  "generated_at": "2026-08-24T07:08:56Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 78,
+  "project_revision": 92,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -30,7 +30,7 @@
         "id": "C4P-BASELINE-FROZEN",
         "metadata_json": "{}",
         "reached_at": "2026-08-23T19:06:48Z",
-        "revision": 25,
+        "revision": 87,
         "revoked_at": null,
         "state": "reached",
         "task_id": "C4P-02",
@@ -39,10 +39,10 @@
       {
         "id": "C4P-MODEL-CACHE-READY",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 21,
+        "reached_at": "2026-08-24T07:08:55Z",
+        "revision": 91,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "C4P-15",
         "title": "Persistent model cache and real server are operational"
       },
@@ -50,7 +50,7 @@
         "id": "C4P-PRODUCTION-POLICY-READY",
         "metadata_json": "{}",
         "reached_at": null,
-        "revision": 21,
+        "revision": 87,
         "revoked_at": null,
         "state": "pending",
         "task_id": "C4P-20",
@@ -60,7 +60,7 @@
         "id": "C4P-REAL-WORKER-READY",
         "metadata_json": "{}",
         "reached_at": null,
-        "revision": 21,
+        "revision": 87,
         "revoked_at": null,
         "state": "pending",
         "task_id": "C4P-17",
@@ -70,7 +70,7 @@
         "id": "C4P-RELEASE-READY",
         "metadata_json": "{}",
         "reached_at": null,
-        "revision": 21,
+        "revision": 87,
         "revoked_at": null,
         "state": "pending",
         "task_id": "C4P-23",
@@ -80,7 +80,7 @@
         "id": "C4P-SOFTWARE-READY",
         "metadata_json": "{}",
         "reached_at": "2026-08-23T19:54:47Z",
-        "revision": 71,
+        "revision": 87,
         "revoked_at": null,
         "state": "reached",
         "task_id": "C4P-13",
@@ -91,33 +91,33 @@
       {
         "allowed_json": "[\"undecided\", \"qwen3-coder-30b-a3b-q4-k-m\", \"qwen3-coder-30b-a3b-q5-k-m\", \"qwen3-coder-next-q4-k-m\"]",
         "id": "C4P-ACTIVE-MODEL",
-        "revision": 21,
+        "revision": 87,
         "title": "Active local coding model",
-        "updated_at": "2026-08-23T19:06:47Z",
+        "updated_at": "2026-08-24T07:05:15Z",
         "value_json": "\"undecided\""
       },
       {
         "allowed_json": "[\"runtime-discovered-one-island\", \"runtime-discovered-dual\", \"single-wide\"]",
         "id": "C4P-GPU-PROFILE",
-        "revision": 21,
+        "revision": 87,
         "title": "Production inference topology policy",
-        "updated_at": "2026-08-23T19:06:47Z",
+        "updated_at": "2026-08-24T07:05:15Z",
         "value_json": "\"runtime-discovered-one-island\""
       },
       {
         "allowed_json": "[\"absent\", \"ready\"]",
         "id": "C4P-MODEL-CACHE",
-        "revision": 21,
+        "revision": 87,
         "title": "Persistent active-model SSD cache is verified",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "value_json": "\"absent\""
+        "updated_at": "2026-08-24T07:05:15Z",
+        "value_json": "\"ready\""
       },
       {
         "allowed_json": "[\"undecided\", \"qwen-code\", \"codex-cli\", \"custom\"]",
         "id": "C4P-PRIMARY-HARNESS",
-        "revision": 21,
+        "revision": 87,
         "title": "Production local coding harness",
-        "updated_at": "2026-08-23T19:06:47Z",
+        "updated_at": "2026-08-24T07:05:15Z",
         "value_json": "\"undecided\""
       }
     ],
@@ -901,6 +901,146 @@
         "revision": 78,
         "seq": 78,
         "timestamp": "2026-08-24T07:01:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 79,
+        "seq": 79,
+        "timestamp": "2026-08-24T07:01:40Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-MODEL-CACHE",
+        "entity_type": "decision",
+        "event_type": "decision.set",
+        "payload_json": "{\"value\": \"ready\"}",
+        "revision": 80,
+        "seq": 80,
+        "timestamp": "2026-08-24T07:01:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 81,
+        "seq": 81,
+        "timestamp": "2026-08-24T07:01:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 82,
+        "seq": 82,
+        "timestamp": "2026-08-24T07:03:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "claim.released",
+        "payload_json": "{\"reason\": null, \"status\": \"in_progress\"}",
+        "revision": 83,
+        "seq": 83,
+        "timestamp": "2026-08-24T07:04:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "95e96992-bf74-4dd5-9984-a44885069a27",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/core4-production-extension.scope-correction.json\"}",
+        "revision": 84,
+        "seq": 84,
+        "timestamp": "2026-08-24T07:04:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"C4P-15\"}",
+        "revision": 85,
+        "seq": 85,
+        "timestamp": "2026-08-24T07:04:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "claim.released",
+        "payload_json": "{\"reason\": null, \"status\": \"in_progress\"}",
+        "revision": 86,
+        "seq": 86,
+        "timestamp": "2026-08-24T07:05:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "95e96992-bf74-4dd5-9984-a44885069a27",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/tmp/core4-production-extension.scope-correction.json\"}",
+        "revision": 87,
+        "seq": 87,
+        "timestamp": "2026-08-24T07:05:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"C4P-15\"}",
+        "revision": 88,
+        "seq": 88,
+        "timestamp": "2026-08-24T07:05:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HOST-SERVICE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-HOST-SERVICE\"}",
+        "revision": 89,
+        "seq": 89,
+        "timestamp": "2026-08-24T07:07:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-HOST-SERVICE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e30a601a-4e0e-4503-b011-542a05a7225e\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 90,
+        "seq": 90,
+        "timestamp": "2026-08-24T07:08:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-MODEL-CACHE-READY",
+        "entity_type": "checkpoint",
+        "event_type": "checkpoint.reach",
+        "payload_json": "{}",
+        "revision": 91,
+        "seq": 91,
+        "timestamp": "2026-08-24T07:08:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-15",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"validated\"}",
+        "revision": 92,
+        "seq": 92,
+        "timestamp": "2026-08-24T07:08:56Z"
       }
     ],
     "evidence": [
@@ -1064,6 +1204,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-24T07:08:55Z",
+        "gate_id": "C4P-GATE-HOST-SERVICE",
+        "id": "e30a601a-4e0e-4503-b011-542a05a7225e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"host-service\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"03d7d4af4de4ae87a2a8ac7bf44cf3e0b4c4b607b2fbb9d31045780846194c87\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"host-service\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1200}, \"diff_fingerprint\": \"bc514eac60da461ddb3ce08e473b7e79945cd28024f0009f816bea6f5252c650\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/evals/results/compact/host-service.json\", \"local-coding-worker/evals/results/compact/host-service/start-1/server-8080.log\", \"local-coding-worker/evals/results/compact/host-service/start-2/server-8080.log\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-00.md\", \"todos/c4p-01.md\", \"todos/c4p-02.md\", \"todos/c4p-03.md\", \"todos/c4p-04.md\", \"todos/c4p-05.md\", \"todos/c4p-06.md\", \"todos/c4p-07.md\", \"todos/c4p-08.md\", \"todos/c4p-09.md\", \"todos/c4p-10.md\", \"todos/c4p-11.md\", \"todos/c4p-12.md\", \"todos/c4p-13.md\", \"todos/c4p-14.md\", \"todos/c4p-15.md\", \"todos/c4p-16.md\", \"todos/c4p-17.md\", \"todos/c4p-18.md\", \"todos/c4p-19.md\", \"todos/c4p-20.md\", \"todos/c4p-21.md\", \"todos/c4p-22.md\", \"todos/c4p-23.md\", \"todos/c4p-24.md\"], \"files\": [], \"git_head\": \"3274c4bac8a9d06ea279403d7a1055e1b9161d05\", \"interfaces\": [], \"recorded_git_head\": \"3274c4bac8a9d06ea279403d7a1055e1b9161d05\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 89}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/e30a601a-4e0e-4503-b011-542a05a7225e",
+        "revision": 90,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-23T19:45:21Z",
         "gate_id": "C4P-GATE-WORKER-WRITABLE-SOFTWARE",
         "id": "eb15bede-7692-431f-aa22-59409c9e9820",
@@ -1082,7 +1235,7 @@
         "input_fingerprint": "ee12a2d3a62c86fa2f5a833bf56e8078618680f2ba82e355e497c2b50ba73fc3",
         "last_run_at": "2026-08-23T19:04:28Z",
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-02",
         "type": "command",
@@ -1095,7 +1248,7 @@
         "input_fingerprint": "443f8e2fef4c6d428bae9b37937ac46453c9151097475b4b5c40c0a418005cb7",
         "last_run_at": "2026-08-23T19:55:33Z",
         "required": 1,
-        "revision": 75,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-14",
         "type": "command",
@@ -1108,7 +1261,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-22",
         "type": "command",
@@ -1121,7 +1274,7 @@
         "input_fingerprint": "c70b6997981dfe0b0e1c7348f8036c0fb265645c073fbc09f62829193231015b",
         "last_run_at": "2026-08-23T19:22:50Z",
         "required": 1,
-        "revision": 37,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-06",
         "type": "command",
@@ -1134,7 +1287,7 @@
         "input_fingerprint": "f319bdb4c9b033e7aaa19fd707cff8e13bc960944191494fc488f0390651298f",
         "last_run_at": "2026-08-23T19:31:23Z",
         "required": 1,
-        "revision": 49,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-05",
         "type": "command",
@@ -1147,7 +1300,7 @@
         "input_fingerprint": "d47bfbb62f75c57de50482128f592c829a93b843177741a48cd92554eec200d0",
         "last_run_at": "2026-08-23T19:47:58Z",
         "required": 1,
-        "revision": 65,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-12",
         "type": "command",
@@ -1160,7 +1313,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-18",
         "type": "command",
@@ -1173,7 +1326,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-21",
         "type": "command",
@@ -1186,7 +1339,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-24",
         "type": "command",
@@ -1199,7 +1352,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-16",
         "type": "command",
@@ -1209,14 +1362,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"host-service\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 1200, \"track_git_head\": true}",
         "id": "C4P-GATE-HOST-SERVICE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "03d7d4af4de4ae87a2a8ac7bf44cf3e0b4c4b607b2fbb9d31045780846194c87",
+        "last_run_at": "2026-08-24T07:08:55Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 90,
+        "status": "passed",
         "task_id": "C4P-15",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -1225,7 +1378,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-17",
         "type": "command",
@@ -1238,7 +1391,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-20",
         "type": "command",
@@ -1251,7 +1404,7 @@
         "input_fingerprint": "08549ec30c1b6927a5e2a1b8303f3ead775acb58113bd6d2cccd55566496cd97",
         "last_run_at": "2026-08-23T19:26:39Z",
         "required": 1,
-        "revision": 41,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-07",
         "type": "command",
@@ -1264,7 +1417,7 @@
         "input_fingerprint": "671d2a91cc001a66a93322c7ab427751f375ab6146bcad894a39974f5c2eaf0b",
         "last_run_at": "2026-08-23T19:28:53Z",
         "required": 1,
-        "revision": 45,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-08",
         "type": "command",
@@ -1277,7 +1430,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-19",
         "type": "command",
@@ -1290,7 +1443,7 @@
         "input_fingerprint": "24115da6e4b8804112f608e2dcb5d433a84210f70127613fa2715caa5e832efd",
         "last_run_at": "2026-08-23T19:33:47Z",
         "required": 1,
-        "revision": 53,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-09",
         "type": "command",
@@ -1303,7 +1456,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 21,
+        "revision": 87,
         "status": "pending",
         "task_id": "C4P-23",
         "type": "command",
@@ -1316,7 +1469,7 @@
         "input_fingerprint": "19693013d7d7d756dfd620215fb2197333bc2606744f85a137dbbe117ae76f2f",
         "last_run_at": "2026-08-23T19:54:47Z",
         "required": 1,
-        "revision": 70,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-13",
         "type": "command",
@@ -1329,7 +1482,7 @@
         "input_fingerprint": "371b3f4d2fc5c28d97135bde0d233063bc88727af361edfbc6def3ddd5eb6349",
         "last_run_at": "2026-08-23T19:11:56Z",
         "required": 1,
-        "revision": 29,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-03",
         "type": "command",
@@ -1342,7 +1495,7 @@
         "input_fingerprint": "43d6934e2b383dba990c4ba3bfa09d93544bfaf86088a4c5ecce7d6e97d19f00",
         "last_run_at": "2026-08-23T19:14:52Z",
         "required": 1,
-        "revision": 33,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-04",
         "type": "command",
@@ -1355,7 +1508,7 @@
         "input_fingerprint": "41f0cbfb1f2f90220d68907c17372e2ec4b49ac55346db712e163efc381a8716",
         "last_run_at": "2026-08-23T19:39:35Z",
         "required": 1,
-        "revision": 57,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-10",
         "type": "command",
@@ -1368,7 +1521,7 @@
         "input_fingerprint": "2b3d9a8a9dad42b6942e641671094a03fa2888613e7e401136c04af3b458ca83",
         "last_run_at": "2026-08-23T19:45:21Z",
         "required": 1,
-        "revision": 61,
+        "revision": 87,
         "status": "passed",
         "task_id": "C4P-11",
         "type": "command",
@@ -1498,6 +1651,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-24T07:08:56Z",
+        "id": "97420fbc-2c6b-4cb0-924b-1e899a999c6f",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/evals/results/compact/host-service.json\", \"local-coding-worker/evals/results/compact/host-service/start-1/server-8080.log\", \"local-coding-worker/evals/results/compact/host-service/start-2/server-8080.log\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\"], \"checkpoints\": [{\"id\": \"C4P-MODEL-CACHE-READY\", \"reached_at\": \"2026-08-24T07:08:55Z\", \"state\": \"reached\"}], \"gates\": [{\"id\": \"C4P-GATE-HOST-SERVICE\", \"last_run_at\": \"2026-08-24T07:08:55Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json      | 579 +++++++++++++++++++---------\\n local-coding-worker/scripts/local_worker.py |  29 +-\\n todo-status.md                              |   4 +-\\n todos.md                                    |   4 +-\\n todos/c4p-00.md                             |   2 +-\\n todos/c4p-01.md                             |   2 +-\\n todos/c4p-02.md                             |   2 +-\\n todos/c4p-03.md                             |   2 +-\\n todos/c4p-04.md                             |   2 +-\\n todos/c4p-05.md                             |   2 +-\\n todos/c4p-06.md                             |   2 +-\\n todos/c4p-07.md                             |   2 +-\\n todos/c4p-08.md                             |   2 +-\\n todos/c4p-09.md                             |   2 +-\\n todos/c4p-10.md                             |   2 +-\\n todos/c4p-11.md                             |   2 +-\\n todos/c4p-12.md                             |   2 +-\\n todos/c4p-13.md                             |   2 +-\\n todos/c4p-14.md                             |   2 +-\\n todos/c4p-15.md                             |   8 +-\\n todos/c4p-16.md                             |   4 +-\\n todos/c4p-17.md                             |   4 +-\\n todos/c4p-18.md                             |   4 +-\\n todos/c4p-19.md                             |   4 +-\\n todos/c4p-20.md                             |   4 +-\\n todos/c4p-21.md                             |   2 +-\\n todos/c4p-22.md                             |   4 +-\\n todos/c4p-23.md                             |   4 +-\\n todos/c4p-24.md                             |   4 +-\\n 29 files changed, 483 insertions(+), 205 deletions(-)\", \"git_head\": \"3274c4bac8a9d06ea279403d7a1055e1b9161d05\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"C4P-15\"}",
+        "revision": 92,
+        "task_id": "C4P-15"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-23T19:06:02Z",
         "id": "c3ccb2f1-63bc-463b-b9d3-dfe95f60c2ae",
         "kind": "complete",
@@ -1566,7 +1729,7 @@
         "id": "core4-production-policy-v1",
         "owner_task_id": "C4P-19",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "1"
       },
@@ -1577,7 +1740,7 @@
         "id": "ctxpp-task-packet-v2",
         "owner_task_id": "C4P-06",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1588,7 +1751,7 @@
         "id": "cuda-evidence-v2",
         "owner_task_id": "C4P-05",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1599,7 +1762,7 @@
         "id": "local-worker-cache-v1",
         "owner_task_id": "C4P-07",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "1"
       },
@@ -1610,7 +1773,7 @@
         "id": "local-worker-execution-v2",
         "owner_task_id": "C4P-10",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1621,7 +1784,7 @@
         "id": "local-worker-harness-v2",
         "owner_task_id": "C4P-09",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1632,7 +1795,7 @@
         "id": "local-worker-service-v2",
         "owner_task_id": "C4P-08",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1643,7 +1806,7 @@
         "id": "todo-child-execution-v2",
         "owner_task_id": "C4P-03",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       },
@@ -1654,7 +1817,7 @@
         "id": "todo-runtime-service-v2",
         "owner_task_id": "C4P-04",
         "revised_at": null,
-        "revision": 21,
+        "revision": 87,
         "state": "draft",
         "version": "2"
       }
@@ -2287,6 +2450,16 @@
         "task_id": "C4P-15"
       },
       {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4P-15"
+      },
+      {
         "mode": "read",
         "path": "cuda",
         "task_id": "C4P-15"
@@ -2309,6 +2482,16 @@
       {
         "mode": "exclusive",
         "path": "local-coding-worker/evals/tasks",
+        "task_id": "C4P-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
         "task_id": "C4P-16"
       },
       {
@@ -2344,6 +2527,16 @@
       {
         "mode": "exclusive",
         "path": "local-coding-worker/evals/tasks",
+        "task_id": "C4P-17"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-17"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
         "task_id": "C4P-17"
       },
       {
@@ -2387,6 +2580,16 @@
         "task_id": "C4P-18"
       },
       {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-18"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4P-18"
+      },
+      {
         "mode": "read",
         "path": "local-coding-worker",
         "task_id": "C4P-18"
@@ -2423,6 +2626,16 @@
       },
       {
         "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-19"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4P-19"
+      },
+      {
+        "mode": "exclusive",
         "path": "todo-orchestrator/SKILL.md",
         "task_id": "C4P-19"
       },
@@ -2439,6 +2652,16 @@
       {
         "mode": "exclusive",
         "path": "local-coding-worker/evals/tasks",
+        "task_id": "C4P-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
         "task_id": "C4P-20"
       },
       {
@@ -2533,6 +2756,16 @@
       },
       {
         "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-22"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
+        "task_id": "C4P-22"
+      },
+      {
+        "mode": "exclusive",
         "path": "todo-orchestrator/schemas/runtime",
         "task_id": "C4P-22"
       },
@@ -2559,6 +2792,16 @@
       {
         "mode": "exclusive",
         "path": "local-coding-worker/evals/results/compact",
+        "task_id": "C4P-23"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-23"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
         "task_id": "C4P-23"
       },
       {
@@ -2599,6 +2842,16 @@
       {
         "mode": "exclusive",
         "path": ".todo-orchestrator",
+        "task_id": "C4P-24"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/production_checks.py",
+        "task_id": "C4P-24"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/scripts/local_worker.py",
         "task_id": "C4P-24"
       },
       {
@@ -2700,7 +2953,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 85,
+        "id": 169,
         "interface_id": null,
         "prerequisite_task_id": "C4P-24",
         "task_id": "C4P-00",
@@ -2711,7 +2964,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 86,
+        "id": 170,
         "interface_id": null,
         "prerequisite_task_id": "C4P-01",
         "task_id": "C4P-02",
@@ -2722,7 +2975,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 87,
+        "id": 171,
         "interface_id": null,
         "prerequisite_task_id": "C4P-02",
         "task_id": "C4P-03",
@@ -2733,7 +2986,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 88,
+        "id": 172,
         "interface_id": null,
         "prerequisite_task_id": "C4P-03",
         "task_id": "C4P-04",
@@ -2744,7 +2997,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 89,
+        "id": 173,
         "interface_id": null,
         "prerequisite_task_id": "C4P-02",
         "task_id": "C4P-05",
@@ -2755,7 +3008,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 90,
+        "id": 174,
         "interface_id": null,
         "prerequisite_task_id": "C4P-02",
         "task_id": "C4P-06",
@@ -2766,7 +3019,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 91,
+        "id": 175,
         "interface_id": null,
         "prerequisite_task_id": "C4P-02",
         "task_id": "C4P-07",
@@ -2777,7 +3030,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 92,
+        "id": 176,
         "interface_id": null,
         "prerequisite_task_id": "C4P-04",
         "task_id": "C4P-08",
@@ -2788,7 +3041,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 93,
+        "id": 177,
         "interface_id": null,
         "prerequisite_task_id": "C4P-07",
         "task_id": "C4P-08",
@@ -2799,7 +3052,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 94,
+        "id": 178,
         "interface_id": null,
         "prerequisite_task_id": "C4P-02",
         "task_id": "C4P-09",
@@ -2810,7 +3063,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 95,
+        "id": 179,
         "interface_id": null,
         "prerequisite_task_id": "C4P-03",
         "task_id": "C4P-10",
@@ -2821,7 +3074,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 96,
+        "id": 180,
         "interface_id": null,
         "prerequisite_task_id": "C4P-04",
         "task_id": "C4P-10",
@@ -2832,7 +3085,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 97,
+        "id": 181,
         "interface_id": null,
         "prerequisite_task_id": "C4P-06",
         "task_id": "C4P-10",
@@ -2843,7 +3096,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 98,
+        "id": 182,
         "interface_id": null,
         "prerequisite_task_id": "C4P-07",
         "task_id": "C4P-10",
@@ -2854,7 +3107,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 99,
+        "id": 183,
         "interface_id": null,
         "prerequisite_task_id": "C4P-08",
         "task_id": "C4P-10",
@@ -2865,7 +3118,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 100,
+        "id": 184,
         "interface_id": null,
         "prerequisite_task_id": "C4P-09",
         "task_id": "C4P-10",
@@ -2876,7 +3129,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 101,
+        "id": 185,
         "interface_id": null,
         "prerequisite_task_id": "C4P-10",
         "task_id": "C4P-11",
@@ -2887,7 +3140,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 102,
+        "id": 186,
         "interface_id": null,
         "prerequisite_task_id": "C4P-05",
         "task_id": "C4P-12",
@@ -2898,7 +3151,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 103,
+        "id": 187,
         "interface_id": null,
         "prerequisite_task_id": "C4P-06",
         "task_id": "C4P-12",
@@ -2909,7 +3162,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 104,
+        "id": 188,
         "interface_id": null,
         "prerequisite_task_id": "C4P-11",
         "task_id": "C4P-12",
@@ -2920,7 +3173,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 105,
+        "id": 189,
         "interface_id": null,
         "prerequisite_task_id": "C4P-03",
         "task_id": "C4P-13",
@@ -2931,7 +3184,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 106,
+        "id": 190,
         "interface_id": null,
         "prerequisite_task_id": "C4P-04",
         "task_id": "C4P-13",
@@ -2942,7 +3195,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 107,
+        "id": 191,
         "interface_id": null,
         "prerequisite_task_id": "C4P-05",
         "task_id": "C4P-13",
@@ -2953,7 +3206,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 108,
+        "id": 192,
         "interface_id": null,
         "prerequisite_task_id": "C4P-06",
         "task_id": "C4P-13",
@@ -2964,7 +3217,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 109,
+        "id": 193,
         "interface_id": null,
         "prerequisite_task_id": "C4P-07",
         "task_id": "C4P-13",
@@ -2975,7 +3228,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 110,
+        "id": 194,
         "interface_id": null,
         "prerequisite_task_id": "C4P-08",
         "task_id": "C4P-13",
@@ -2986,7 +3239,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 111,
+        "id": 195,
         "interface_id": null,
         "prerequisite_task_id": "C4P-09",
         "task_id": "C4P-13",
@@ -2997,7 +3250,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 112,
+        "id": 196,
         "interface_id": null,
         "prerequisite_task_id": "C4P-10",
         "task_id": "C4P-13",
@@ -3008,7 +3261,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 113,
+        "id": 197,
         "interface_id": null,
         "prerequisite_task_id": "C4P-11",
         "task_id": "C4P-13",
@@ -3019,7 +3272,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 114,
+        "id": 198,
         "interface_id": null,
         "prerequisite_task_id": "C4P-12",
         "task_id": "C4P-13",
@@ -3030,7 +3283,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 115,
+        "id": 199,
         "interface_id": null,
         "prerequisite_task_id": "C4P-13",
         "task_id": "C4P-14",
@@ -3041,7 +3294,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 116,
+        "id": 200,
         "interface_id": null,
         "prerequisite_task_id": "C4P-14",
         "task_id": "C4P-15",
@@ -3052,7 +3305,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"operator\": \"equals\", \"value\": \"ready\"}",
         "decision_id": "C4P-MODEL-CACHE",
-        "id": 117,
+        "id": 201,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "C4P-15",
@@ -3063,7 +3316,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 118,
+        "id": 202,
         "interface_id": null,
         "prerequisite_task_id": "C4P-15",
         "task_id": "C4P-16",
@@ -3074,7 +3327,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 119,
+        "id": 203,
         "interface_id": null,
         "prerequisite_task_id": "C4P-16",
         "task_id": "C4P-17",
@@ -3085,7 +3338,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 120,
+        "id": 204,
         "interface_id": null,
         "prerequisite_task_id": "C4P-17",
         "task_id": "C4P-18",
@@ -3096,7 +3349,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 121,
+        "id": 205,
         "interface_id": null,
         "prerequisite_task_id": "C4P-18",
         "task_id": "C4P-19",
@@ -3107,7 +3360,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 122,
+        "id": 206,
         "interface_id": null,
         "prerequisite_task_id": "C4P-19",
         "task_id": "C4P-20",
@@ -3118,7 +3371,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 123,
+        "id": 207,
         "interface_id": null,
         "prerequisite_task_id": "C4P-20",
         "task_id": "C4P-21",
@@ -3129,7 +3382,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 124,
+        "id": 208,
         "interface_id": null,
         "prerequisite_task_id": "C4P-21",
         "task_id": "C4P-22",
@@ -3140,7 +3393,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 125,
+        "id": 209,
         "interface_id": null,
         "prerequisite_task_id": "C4P-22",
         "task_id": "C4P-23",
@@ -3151,7 +3404,7 @@
         "checkpoint_id": null,
         "condition_json": "{\"dispositions\": [\"implemented\", \"validated\", \"evaluated_not_promoted\", \"no_change_required\"]}",
         "decision_id": null,
-        "id": 126,
+        "id": 210,
         "interface_id": null,
         "prerequisite_task_id": "C4P-23",
         "task_id": "C4P-24",
@@ -3774,12 +4027,12 @@
         "priority": 1000,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"core4\", \"production-extension\", \"epic\"]",
         "title": "CORE4 production extension",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -3796,12 +4049,12 @@
         "priority": 1,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 23,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"bootstrap\", \"ledger\"]",
         "title": "Archive prior CORE4 ledger and bootstrap this extension",
-        "updated_at": "2026-08-23T19:06:48Z",
-        "version": 9
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -3818,12 +4071,12 @@
         "priority": 2,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 26,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"baseline\", \"compatibility\"]",
         "title": "Freeze extension baseline and create focused validator",
-        "updated_at": "2026-08-23T19:06:49Z",
-        "version": 9
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -3840,12 +4093,12 @@
         "priority": 10,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 30,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"todo\", \"child\", \"trust\"]",
         "title": "Implement child lifecycle v2 and durable acceptance evidence",
-        "updated_at": "2026-08-23T19:12:09Z",
-        "version": 9
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -3862,12 +4115,12 @@
         "priority": 11,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 34,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"todo\", \"runtime\", \"resources\"]",
         "title": "Complete supported runtime service and topology facade",
-        "updated_at": "2026-08-23T19:14:58Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3884,12 +4137,12 @@
         "priority": 10,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 50,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"cuda\", \"evidence\", \"correctness\"]",
         "title": "Make CUDA evidence contamination-safe and compatibility-complete",
-        "updated_at": "2026-08-23T19:31:23Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3906,12 +4159,12 @@
         "priority": 10,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 38,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"ctxpp\", \"context\", \"source-identity\"]",
         "title": "Implement task-oriented ctxpp packets and canonical source identity",
-        "updated_at": "2026-08-23T19:22:57Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3928,12 +4181,12 @@
         "priority": 10,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 42,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"local-worker\", \"model-cache\", \"ssd\"]",
         "title": "Implement persistent verified SSD model cache",
-        "updated_at": "2026-08-23T19:26:39Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3950,12 +4203,12 @@
         "priority": 20,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 46,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"local-worker\", \"llama.cpp\", \"service\"]",
         "title": "Complete llama.cpp model-service profiles and lifecycle",
-        "updated_at": "2026-08-23T19:28:53Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3972,12 +4225,12 @@
         "priority": 10,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 54,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"local-worker\", \"qwen\", \"telemetry\", \"confinement\"]",
         "title": "Constrain Qwen Code and correct harness telemetry",
-        "updated_at": "2026-08-23T19:33:47Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -3994,12 +4247,12 @@
         "priority": 30,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 58,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"local-worker\", \"real-path\", \"readonly\"]",
         "title": "Wire the real read-only production execution path",
-        "updated_at": "2026-08-23T19:39:35Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -4016,12 +4269,12 @@
         "priority": 31,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 62,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"local-worker\", \"writable\", \"acceptance\"]",
         "title": "Wire real writable execution and guarded acceptance",
-        "updated_at": "2026-08-23T19:45:21Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -4038,12 +4291,12 @@
         "priority": 40,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 66,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"cuda\", \"local-worker\", \"handoff\"]",
         "title": "Complete accepted-patch CUDA handoff",
-        "updated_at": "2026-08-23T19:47:58Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -4060,12 +4313,12 @@
         "priority": 50,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 72,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"validation\", \"software-ready\"]",
         "title": "Validate all software-only production paths",
-        "updated_at": "2026-08-23T19:54:47Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -4082,12 +4335,12 @@
         "priority": 60,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 78,
+        "revision": 87,
         "status": "done",
         "tags_json": "[\"manual-gate\", \"assets\", \"host\"]",
         "title": "Inspect external assets and prepare the single cache request",
-        "updated_at": "2026-08-24T07:01:31Z",
-        "version": 7
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -4102,14 +4355,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 70,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 92,
+        "status": "done",
         "tags_json": "[\"host\", \"model\", \"service\"]",
         "title": "Verify persistent Q4 cache and bring up the real service",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:08:56Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -4126,12 +4379,12 @@
         "priority": 80,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"host\", \"readonly\", \"needs-codex\"]",
         "title": "Validate real read-only delegation and NEEDS_CODEX",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4148,12 +4401,12 @@
         "priority": 81,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"host\", \"writable\", \"preemption\", \"recovery\"]",
         "title": "Validate real writable, stale, recovery, and GPU-preemption paths",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4170,12 +4423,12 @@
         "priority": 90,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"evaluation\", \"harness\", \"quantization\", \"context\"]",
         "title": "Run the smallest useful harness, quantization, and context comparison",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4192,12 +4445,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"production\", \"policy\", \"skill-surface\"]",
         "title": "Enable one-worker production policy",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4214,12 +4467,12 @@
         "priority": 110,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"evaluation\", \"frontier-economy\"]",
         "title": "Measure meaningful frontier-economy behavior",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4236,12 +4489,12 @@
         "priority": 120,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"validation\", \"compatibility\", \"release\"]",
         "title": "Run final compatibility and integrated validation",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4258,12 +4511,12 @@
         "priority": 130,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"cleanup\", \"schemas\", \"ci\"]",
         "title": "Relocate shared contracts and prepare clean repository layout",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4280,12 +4533,12 @@
         "priority": 140,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"release\", \"evidence\", \"git\"]",
         "title": "Generate current-head release evidence and fast-forward readiness",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -4302,12 +4555,12 @@
         "priority": 150,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
+        "revision": 87,
         "status": "planned",
         "tags_json": "[\"handoff\", \"archive\", \"layout\"]",
         "title": "Prepare final ledger archival and tracked-layout handoff",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-24T07:05:15Z",
+        "version": 5
       }
     ]
   }

@@ -21,6 +21,8 @@ sys.path.insert(0, str(SKILL_ROOT))
 from local_worker.acceptance import AcceptanceError  # noqa: E402
 from local_worker.controller import IntegrationController, IntegrationError  # noqa: E402
 from local_worker.model_cache import ModelCache, ModelCacheError  # noqa: E402
+from local_worker.production_checks import (ProductionCheckError, evaluate, host_check,
+                                            release_check, validate_policy)  # noqa: E402
 from local_worker.verification import VerificationError  # noqa: E402
 from local_worker.workspace import WorkspaceError  # noqa: E402
 
@@ -60,8 +62,32 @@ def main() -> int:
         cache_commands.choices[name].add_argument("--payload-sha256")
     cache_commands.choices["verify"].add_argument("--quick", action="store_true")
     cache_commands.choices["verify"].add_argument("--full", action="store_true")
+    host = subparsers.add_parser("host-check")
+    host.add_argument("--scenario", required=True, choices=["service", "readonly", "writable"])
+    host.add_argument("--json", action="store_true")
+    evaluation = subparsers.add_parser("evaluate")
+    evaluation.add_argument("--phase", required=True, choices=["focused", "meaningful"])
+    evaluation.add_argument("--json", action="store_true")
+    policy = subparsers.add_parser("policy")
+    policy_subcommands = policy.add_subparsers(dest="policy_command", required=True)
+    policy_subcommands.add_parser("validate").add_argument("--json", action="store_true")
+    release = subparsers.add_parser("release-check")
+    release.add_argument("--phase", required=True, choices=["cleanup", "release", "handoff"])
+    release.add_argument("--json", action="store_true")
     args = parser.parse_args()
     try:
+        if args.command == "host-check":
+            print(json.dumps(host_check(args.scenario), ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
+        if args.command == "evaluate":
+            print(json.dumps(evaluate(args.phase), ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
+        if args.command == "policy":
+            print(json.dumps(validate_policy(), ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
+        if args.command == "release-check":
+            print(json.dumps(release_check(args.phase), ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            return 0
         if args.command == "model-cache":
             cache = _model_cache()
             if args.cache_command == "inspect":
@@ -115,7 +141,8 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
         return 0 if result.get("eligible", True) else 2
     except (OSError, json.JSONDecodeError, WorkerError, IntegrationError,
-            AcceptanceError, VerificationError, WorkspaceError, ModelCacheError) as error:
+            AcceptanceError, VerificationError, WorkspaceError, ModelCacheError,
+            ProductionCheckError) as error:
         print(json.dumps({"format": "LOCAL-CODING-WORKER-ERROR/1", "error": str(error)}, sort_keys=True,
                          separators=(",", ":")))
         return 2

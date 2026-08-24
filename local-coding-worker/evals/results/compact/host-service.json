@@ -1,0 +1,43 @@
+{
+  "candidate_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+  "context_size": 16384,
+  "format": "CORE4-HOST-CHECK/1",
+  "gpu_indices": [
+    1,
+    3
+  ],
+  "ok": true,
+  "payload_bytes": 18556689568,
+  "payload_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+  "preemption": {
+    "foreground_activated_after_release": true,
+    "foreground_blocked_until_release": true,
+    "preempt_requested": true,
+    "resource_ids": [
+      "accelerator:GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ]
+  },
+  "scenario": "service",
+  "starts": [
+    {
+      "attempt": 1,
+      "cleanly_stopped": true,
+      "idle_retained": true,
+      "load_seconds": 6.286,
+      "model_count": 1,
+      "models_status": 200,
+      "probe_ok": true
+    },
+    {
+      "attempt": 2,
+      "cleanly_stopped": true,
+      "idle_retained": true,
+      "load_seconds": 6.413,
+      "model_count": 1,
+      "models_status": 200,
+      "probe_ok": true
+    }
+  ],
+  "topology_sha256": "6672eba34ffc0fd113675dc9ffcc4a97903b75fe82c1e642aba75cce3335c0cd"
+}

@@ -1600,7 +1600,9 @@
       "scope": {
         "exclusive_paths": [
           "local-coding-worker/config/production-profile.toml",
-          "local-coding-worker/evals/results/compact"
+          "local-coding-worker/evals/results/compact",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "local-coding-worker",
@@ -1681,7 +1683,9 @@
       "scope": {
         "exclusive_paths": [
           "local-coding-worker/evals/results/compact",
-          "local-coding-worker/evals/tasks"
+          "local-coding-worker/evals/tasks",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
@@ -1760,7 +1764,9 @@
           "local-coding-worker/evals/tasks",
           "local-coding-worker/tests",
           "cuda/tests",
-          "todo-orchestrator/tests"
+          "todo-orchestrator/tests",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
@@ -1845,7 +1851,9 @@
       "scope": {
         "exclusive_paths": [
           "local-coding-worker/evals/results/compact",
-          "local-coding-worker/config/production-profile.toml"
+          "local-coding-worker/config/production-profile.toml",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "local-coding-worker/evals",
@@ -1924,7 +1932,9 @@
           "local-coding-worker/agents/openai.yaml",
           "todo-orchestrator/SKILL.md",
           "cpp-context-compiler/SKILL.md",
-          "cuda/SKILL.md"
+          "cuda/SKILL.md",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "local-coding-worker/evals/results/compact"
@@ -1996,7 +2006,9 @@
       "scope": {
         "exclusive_paths": [
           "local-coding-worker/evals/tasks",
-          "local-coding-worker/evals/results/compact"
+          "local-coding-worker/evals/results/compact",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
@@ -2159,7 +2171,9 @@
           ".github",
           "AGENTS.md",
           ".gitignore",
-          "todo-orchestrator/schemas/runtime"
+          "todo-orchestrator/schemas/runtime",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
@@ -2233,7 +2247,9 @@
       ],
       "scope": {
         "exclusive_paths": [
-          "local-coding-worker/evals/results/compact"
+          "local-coding-worker/evals/results/compact",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
@@ -2320,7 +2336,9 @@
           "todos",
           "todos.md",
           "todo-status.md",
-          "scripts/core4_extension_validate.py"
+          "scripts/core4_extension_validate.py",
+          "local-coding-worker/scripts/local_worker.py",
+          "local-coding-worker/local_worker/production_checks.py"
         ],
         "read_paths": [
           "todo-orchestrator",
