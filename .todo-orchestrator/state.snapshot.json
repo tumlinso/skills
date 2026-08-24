@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T07:08:56Z",
+  "generated_at": "2026-08-24T07:19:42Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 92,
+  "project_revision": 94,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1041,6 +1041,26 @@
         "revision": 92,
         "seq": 92,
         "timestamp": "2026-08-24T07:08:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-16",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 93,
+        "seq": 93,
+        "timestamp": "2026-08-24T07:10:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-16",
+        "entity_type": "handoff",
+        "event_type": "task.handed_off",
+        "payload_json": "{\"status\": \"blocked\"}",
+        "revision": 94,
+        "seq": 94,
+        "timestamp": "2026-08-24T07:19:42Z"
       }
     ],
     "evidence": [
@@ -1648,6 +1668,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/servers/llama_cpp.py\", \"local-coding-worker/local_worker/service.py\", \"local-coding-worker/references/resource-policy.md\", \"local-coding-worker/schemas/model-service-profile-v2.schema.json\", \"local-coding-worker/tests/test_llama_cpp_server.py\", \"local-coding-worker/tests/test_service.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-MODEL-SERVICE\", \"last_run_at\": \"2026-08-23T19:28:53Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 65 +++++++++++++---\\n .../local_worker/servers/llama_cpp.py              | 86 +++++++++++++++++++---\\n local-coding-worker/local_worker/service.py        | 27 +++++++\\n local-coding-worker/references/resource-policy.md  |  7 ++\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-08.md                                    |  6 +-\\n 7 files changed, 172 insertions(+), 27 deletions(-)\", \"git_head\": \"bf647732365326b78c966488d51067dd1a46d243\", \"interfaces\": [{\"content_hash\": null, \"id\": \"local-worker-service-v2\", \"state\": \"draft\", \"version\": \"2\"}], \"note\": \"Added versioned llama.cpp model-service profiles, detected launch flags, runtime GPU allocation, health-gated startup, retained logs, process-group cancellation, idle eviction, and quiescence with focused compatibility evidence.\", \"resources\": [], \"task_id\": \"C4P-08\"}",
         "revision": 46,
         "task_id": "C4P-08"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-24T07:19:42Z",
+        "id": "89ff5fd2-03ee-42fa-ba28-ef5f0dc8270e",
+        "kind": "handoff",
+        "note": "C4P-16 implementation is preserved in production_checks.py. The focused host-readonly validator ran the fixed three-task automated batch and clean teardown, but its aggregate acceptance guard failed after ctxpp index bootstrap and canonical PackingPlan packet correction. No further GPU run was started. After hardware change: first run nvidia-smi topo -m, rediscover GPU UUID/index/PCI/NUMA/island mapping dynamically, then resume C4P-16 and inspect compact aggregate acceptance without assuming prior numbering. Pre-change GPU indices/load timings and incomplete C4P-16 measurements are stale; software gates through C4P-14, cache checksum, and non-performance lifecycle behavior remain valid.",
+        "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/local_worker/production_checks.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4P-GATE-HOST-READONLY\", \"last_run_at\": null, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 22 +++--\\n .../local_worker/production_checks.py              | 97 ++++++++++++++++++++++\\n todo-status.md                                     |  4 +-\\n todos.md                                           |  4 +-\\n todos/c4p-16.md                                    |  6 +-\\n 5 files changed, 120 insertions(+), 13 deletions(-)\", \"git_head\": \"d6dae61a02083537cd654238e17487056c967766\", \"interfaces\": [], \"note\": \"C4P-16 implementation is preserved in production_checks.py. The focused host-readonly validator ran the fixed three-task automated batch and clean teardown, but its aggregate acceptance guard failed after ctxpp index bootstrap and canonical PackingPlan packet correction. No further GPU run was started. After hardware change: first run nvidia-smi topo -m, rediscover GPU UUID/index/PCI/NUMA/island mapping dynamically, then resume C4P-16 and inspect compact aggregate acceptance without assuming prior numbering. Pre-change GPU indices/load timings and incomplete C4P-16 measurements are stale; software gates through C4P-14, cache checksum, and non-performance lifecycle behavior remain valid.\", \"resources\": [], \"task_id\": \"C4P-16\"}",
+        "revision": 94,
+        "task_id": "C4P-16"
       },
       {
         "claim_id": null,
@@ -4365,7 +4395,7 @@
         "version": 11
       },
       {
-        "attention_reason": null,
+        "attention_reason": "Awaiting physical V100 topology reconfiguration; do not benchmark or select profiles on the temporary cross-NUMA topology.",
         "created_at": "2026-08-23T18:59:35Z",
         "id": "C4P-16",
         "kind": "validation",
@@ -4379,12 +4409,12 @@
         "priority": 80,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 87,
-        "status": "planned",
+        "revision": 93,
+        "status": "blocked",
         "tags_json": "[\"host\", \"readonly\", \"needs-codex\"]",
         "title": "Validate real read-only delegation and NEEDS_CODEX",
-        "updated_at": "2026-08-24T07:05:15Z",
-        "version": 5
+        "updated_at": "2026-08-24T07:19:42Z",
+        "version": 7
       },
       {
         "attention_reason": null,

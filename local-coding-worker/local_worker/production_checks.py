@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
+import subprocess
 import sys
 import time
 import tomllib
@@ -125,10 +127,105 @@ def _host_service(repo: Path) -> dict[str, Any]:
     return _write_compact(repo, "host-service", result)
 
 
+def _ctxpp_evidence(repo: Path) -> dict[str, Any]:
+    index = repo / ".ctxpp/index.jsonl"
+    if not index.is_file():
+        scan = subprocess.run(
+            [str(repo / "cpp-context-compiler/scripts/ctxpp"), "--root", str(repo), "--json", "scan"],
+            cwd=repo, text=True, capture_output=True, timeout=120, check=False,
+        )
+        if scan.returncode != 0:
+            raise ProductionCheckError(f"ctxpp scan failed: {scan.stderr.strip()[:300]}")
+    command = [str(repo / "cpp-context-compiler/scripts/ctxpp"), "--root", str(repo), "--json",
+               "packet", "PackingPlan", "--consumer", "local-worker", "--intent", "understand",
+               "--budget", "1024", "--max-items", "8"]
+    process = subprocess.run(command, cwd=repo, text=True, capture_output=True, timeout=120, check=False)
+    if process.returncode != 0:
+        raise ProductionCheckError(f"ctxpp packet failed: {process.stderr.strip()[:300]}")
+    packet = json.loads(process.stdout)
+    return {"format": packet.get("format"), "packet_hash": packet.get("packet_hash"),
+            "estimated_tokens": packet.get("estimated_tokens"),
+            "coverage_sufficient": bool((packet.get("coverage") or {}).get("sufficient")),
+            "source_fingerprint": (packet.get("source_identity") or {}).get("fingerprint")}
+
+
+def _host_readonly(repo: Path) -> dict[str, Any]:
+    from .harnesses import QwenCodeAdapter
+    class HostQwenCodeAdapter(QwenCodeAdapter):
+        """Keep the installed CLI local; its --sandbox flag pulls a container."""
+        def build_command(self, session, prompt):
+            argv, environment = super().build_command(session, prompt)
+            argv[argv.index("--sandbox")] = "--no-sandbox"
+            return argv, environment
+    profile = _profile(repo)
+    cache = ModelCache(profile["storage"]["cache_root"], profile["storage"]["canonical_root"])
+    active = cache.active()
+    if not active:
+        raise ProductionCheckError("persistent active model cache is missing")
+    verified = cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
+    host = _host_module(repo)
+    tasks = host.load_tasks(repo / "local-coding-worker/evals/tasks/core4-host-tasks.json")
+    selected_ids = ["contract-authority", "resource-policy", "needs-codex"]
+    devices = host.gpu_inventory()
+    islands, _ = host.discover_islands(devices)
+    candidate = next(item for item in profile["candidates"] if item["id"] == active["candidate_id"])
+    indices = host.candidate_indices(candidate, islands, devices)
+    results = []
+    environment = {"OPENAI_API_KEY": "core4-local-no-auth", "OPENAI_MODEL": str(active["candidate_id"])}
+    prior = {key: os.environ.get(key) for key in environment | {"OPENAI_BASE_URL": ""}}
+    try:
+        with host.ResourceLease(repo, devices, indices):
+            with host.Server(profile["server"], Path(str(verified["payload_path"])), str(active["candidate_id"]),
+                             int(profile["experiment"]["initial_context"]), indices,
+                             int(profile["server"]["base_port"]),
+                             repo / "local-coding-worker/evals/results/compact/host-readonly-runtime") as server:
+                environment["OPENAI_BASE_URL"] = server.base_url + "/v1"
+                os.environ.update(environment)
+                harness = HostQwenCodeAdapter(str(profile["harnesses"]["qwen"]))
+                handle = harness.start({"cwd": str(repo), "model": str(active["candidate_id"]),
+                    "allowed_tools": ["read_file"], "max_session_turns": 12, "max_tool_calls": 8,
+                    "max_wall_time_seconds": 180, "timeout_seconds": 210})
+                try:
+                    for task_id in selected_ids:
+                        task = tasks[task_id]
+                        outcome = harness.run(handle, {"prompt": task["prompt"], "timeout_seconds": 210})
+                        text = str(outcome.get("text", ""))
+                        accepted = all(str(item).casefold() in text.casefold() for item in task["expected_all"])
+                        results.append({"task_id": task_id, "accepted": accepted,
+                            "status": outcome.get("status"), "outcome": outcome.get("outcome", "answer"),
+                            "codex_visible_input_bytes": len(task["prompt"].encode()),
+                            "codex_visible_output_bytes": len(text.encode()),
+                            "local_tool_calls": int((outcome.get("usage", {}).get("core4", {}) or {}).get("tool_calls", 0)),
+                            "tool_names": (outcome.get("usage", {}).get("core4", {}) or {}).get("tool_names", []),
+                            "duration_ms": outcome.get("duration_ms")})
+                finally:
+                    harness.evict(handle)
+    finally:
+        for key, value in prior.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+    state = json.loads((repo / ".todo-orchestrator/state.snapshot.json").read_text(encoding="utf-8"))
+    needs = next(item for item in results if item["task_id"] == "needs-codex")
+    ok = all(item["accepted"] for item in results) and needs["status"] == "needs_codex"
+    result = {"format": "CORE4-HOST-CHECK/1", "scenario": "readonly", "ok": ok,
+              "candidate_id": active["candidate_id"], "payload_sha256": active["payload_sha256"],
+              "gpu_indices": indices, "tasks": results, "ctxpp": _ctxpp_evidence(repo),
+              "todo_authority": {"project_uuid": state["project"]["project_uuid"],
+                                 "project_revision": state["project_revision"], "task_id": "C4P-16"},
+              "compact_output_bytes": sum(int(item["codex_visible_output_bytes"]) for item in results)}
+    if not ok:
+        raise ProductionCheckError("real read-only task set did not satisfy acceptance and NEEDS_CODEX guards")
+    return _write_compact(repo, "host-readonly", result)
+
+
 def host_check(scenario: str) -> dict[str, Any]:
     repo = _repo()
     if scenario == "service":
         return _host_service(repo)
+    if scenario == "readonly":
+        return _host_readonly(repo)
     raise ProductionCheckError(f"host scenario is not implemented yet: {scenario}")
 
 
