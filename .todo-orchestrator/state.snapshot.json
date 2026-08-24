@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T19:54:47Z",
+  "generated_at": "2026-08-23T19:55:34Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "95e96992-bf74-4dd5-9984-a44885069a27",
     "schema_version": 2
   },
-  "project_revision": 72,
+  "project_revision": 76,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -841,6 +841,46 @@
         "revision": 72,
         "seq": 72,
         "timestamp": "2026-08-23T19:54:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-14",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 73,
+        "seq": 73,
+        "timestamp": "2026-08-23T19:55:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CACHE-INSPECT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"C4P-GATE-CACHE-INSPECT\"}",
+        "revision": 74,
+        "seq": 74,
+        "timestamp": "2026-08-23T19:55:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-GATE-CACHE-INSPECT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0a6a5389-01e7-48b9-92d0-8d945d597fdd\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 75,
+        "seq": 75,
+        "timestamp": "2026-08-23T19:55:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "C4P-14",
+        "entity_type": "claim",
+        "event_type": "claim.released",
+        "payload_json": "{\"reason\": null, \"status\": \"in_progress\"}",
+        "revision": 76,
+        "seq": 76,
+        "timestamp": "2026-08-23T19:55:34Z"
       }
     ],
     "evidence": [
@@ -868,6 +908,19 @@
         "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c70b6997981dfe0b0e1c7348f8036c0fb265645c073fbc09f62829193231015b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"ctxpp-packet\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 900}, \"diff_fingerprint\": \"54c9a7cebf52cea3f699862084c971787c834c14386de083f3169ed6df94efcb\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/references/context-packets.md\", \"cpp-context-compiler/schemas/context-packet-v2.schema.json\", \"cpp-context-compiler/scripts/ctxpp\", \"cpp-context-compiler/scripts/ctxpp_packet.py\", \"cpp-context-compiler/scripts/ctxpp_telemetry.py\", \"cpp-context-compiler/tests/test_context_packet.py\", \"todo-status.md\", \"todos.md\", \"todos/c4p-06.md\"], \"files\": [], \"git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\", \"interfaces\": [], \"recorded_git_head\": \"8c0eafcadb0ce949d3c0e253f1a6a7d481ee6307\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 36}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/0512cac9-c39b-4764-936d-b0de9de87dd9",
         "revision": 37,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-23T19:55:33Z",
+        "gate_id": "C4P-GATE-CACHE-INSPECT",
+        "id": "0a6a5389-01e7-48b9-92d0-8d945d597fdd",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cache-inspect\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"443f8e2fef4c6d428bae9b37937ac46453c9151097475b4b5c40c0a418005cb7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cache-inspect\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 300}, \"diff_fingerprint\": \"51ec500ee21fdb399c2cc03662b7ccca7bc58602033def0dd3f49634f0fc5840\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/c4p-14.md\"], \"files\": [], \"git_head\": \"59326bfcfb022252471d39b379cddb3ef7cc8e23\", \"interfaces\": [], \"recorded_git_head\": \"59326bfcfb022252471d39b379cddb3ef7cc8e23\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 74}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/95e96992-bf74-4dd5-9984-a44885069a27/evidence/0a6a5389-01e7-48b9-92d0-8d945d597fdd",
+        "revision": 75,
         "status": "passed"
       },
       {
@@ -1019,14 +1072,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"scripts/core4_extension_validate.py\", \"--section\", \"cache-inspect\"], \"cwd\": \".\", \"expected_exit_code\": 0, \"timeout\": 300, \"track_git_head\": true}",
         "id": "C4P-GATE-CACHE-INSPECT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "443f8e2fef4c6d428bae9b37937ac46453c9151097475b4b5c40c0a418005cb7",
+        "last_run_at": "2026-08-23T19:55:33Z",
         "required": 1,
-        "revision": 21,
-        "status": "pending",
+        "revision": 75,
+        "status": "passed",
         "task_id": "C4P-14",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -3999,12 +4052,12 @@
         "priority": 60,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\", \"failed\"]}",
-        "revision": 21,
-        "status": "planned",
+        "revision": 73,
+        "status": "in_progress",
         "tags_json": "[\"manual-gate\", \"assets\", \"host\"]",
         "title": "Inspect external assets and prepare the single cache request",
-        "updated_at": "2026-08-23T19:06:47Z",
-        "version": 3
+        "updated_at": "2026-08-23T19:55:34Z",
+        "version": 5
       },
       {
         "attention_reason": null,
