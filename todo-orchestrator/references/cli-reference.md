@@ -35,6 +35,10 @@ Failures use the same envelope with `ok: false`, a stable `code`, and `error.mes
 - Resources: `resource discover|list|acquire|release|explain`
 - Evidence: `gate list|run|explain`; `gate run --required` runs all required gates for the current claim
 - Safety: `guard`, `audit`, `reconcile`, `recover inspect|release|adopt`
+- Exceptional live recovery: `recover live-inspect`, interactive/manual
+  `recover live-approve`, then one-use `recover live-override`. The live path is
+  restricted to unchanged `coding-workflow` claims with no attached work; it
+  is not ordinary claim adoption.
 - Compatibility: `migrate markdown --dry-run|--apply`
 
 `resource discover` is an optional NVIDIA inventory provider. The scheduling tables and commands remain generic.

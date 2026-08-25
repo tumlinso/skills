@@ -197,9 +197,20 @@ class CapabilityStore:
     def delete_workflow_family(self, payload: dict[str, Any]) -> int:
         """Remove every alias for one terminal facade-owned todo claim."""
         repo = self._canonical_repo(payload)
-        identity = tuple(payload.get(key) for key in ("project_uuid", "task_id", "claim_token"))
-        if not all(isinstance(value, str) and value for value in identity):
+        project_uuid, task_id, claim_token = (
+            payload.get(key) for key in ("project_uuid", "task_id", "claim_token")
+        )
+        if not all(
+            isinstance(value, str) and value
+            for value in (project_uuid, task_id, claim_token)
+        ):
             raise ValueError("workflow family requires a complete claim identity")
+        lineage = {
+            value for value in payload.get("lineage_fingerprints", [])
+            if isinstance(value, str) and value
+        }
+        if isinstance(payload.get("claim_fingerprint"), str):
+            lineage.add(payload["claim_fingerprint"])
         with closing(self._connect()) as connection:
             connection.execute("BEGIN IMMEDIATE")
             rows = connection.execute(
@@ -212,10 +223,18 @@ class CapabilityStore:
                     candidate = json.loads(str(row["payload"]))
                 except (TypeError, json.JSONDecodeError):
                     continue
-                candidate_identity = tuple(
-                    candidate.get(key) for key in ("project_uuid", "task_id", "claim_token")
-                )
-                if candidate_identity == identity:
+                if (
+                    candidate.get("project_uuid") != project_uuid
+                    or candidate.get("task_id") != task_id
+                ):
+                    continue
+                candidate_lineage = {
+                    value for value in candidate.get("lineage_fingerprints", [])
+                    if isinstance(value, str) and value
+                }
+                if isinstance(candidate.get("claim_fingerprint"), str):
+                    candidate_lineage.add(candidate["claim_fingerprint"])
+                if candidate.get("claim_token") == claim_token or lineage.intersection(candidate_lineage):
                     handles.append((str(row["handle"]),))
             connection.executemany("DELETE FROM capabilities WHERE handle=?", handles)
             connection.commit()

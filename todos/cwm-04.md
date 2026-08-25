@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-04: Implement installation and compatibility-preserving migration
 
-Task revision: `91`; current project revision is in `todo-status.md`.
+Task revision: `100`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create the isolated installer, Codex stdio registration, protocol smoke test, idempotent AGENTS routing migration, removal path, and migration report without rewriting active plans.

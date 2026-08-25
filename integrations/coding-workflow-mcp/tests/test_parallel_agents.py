@@ -63,6 +63,7 @@ class ParallelFakeBackend(CodingWorkflowBackend):
         self.root = root.resolve()
         self.store = CapabilityStore(state)
         self.agent = agent
+        self.instance_id = f"fi_{agent}"
         self.admission = admission
         self.pulses = 0
         self.blocked_states = 0

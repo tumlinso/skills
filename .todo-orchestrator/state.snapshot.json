@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T10:56:12Z",
+  "generated_at": "2026-08-25T11:35:29Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 98,
+  "project_revision": 110,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1007,6 +1007,126 @@
         "revision": 98,
         "seq": 98,
         "timestamp": "2026-08-25T10:56:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 99,
+        "seq": 99,
+        "timestamp": "2026-08-25T11:11:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/coding-workflow-mcp/plan.json\"}",
+        "revision": 100,
+        "seq": 100,
+        "timestamp": "2026-08-25T11:11:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CWM-09\"}",
+        "revision": 101,
+        "seq": 101,
+        "timestamp": "2026-08-25T11:11:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-09-DIFF\"}",
+        "revision": 102,
+        "seq": 102,
+        "timestamp": "2026-08-25T11:35:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f0fed799-90ff-48e4-9439-db70114fc20d\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 103,
+        "seq": 103,
+        "timestamp": "2026-08-25T11:35:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-MCP",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-09-MCP\"}",
+        "revision": 104,
+        "seq": 104,
+        "timestamp": "2026-08-25T11:35:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-MCP",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"af895b83-a1f2-4141-9e59-edf416f2864f\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 105,
+        "seq": 105,
+        "timestamp": "2026-08-25T11:35:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-PROTOCOL",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-09-PROTOCOL\"}",
+        "revision": 106,
+        "seq": 106,
+        "timestamp": "2026-08-25T11:35:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-PROTOCOL",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a6996962-1341-4767-a34c-599d63ce873c\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 107,
+        "seq": 107,
+        "timestamp": "2026-08-25T11:35:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-TODO",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-09-TODO\"}",
+        "revision": 108,
+        "seq": 108,
+        "timestamp": "2026-08-25T11:35:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09-TODO",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"07990923-f7eb-4831-a553-6996a0acccba\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 109,
+        "seq": 109,
+        "timestamp": "2026-08-25T11:35:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-09",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 110,
+        "seq": 110,
+        "timestamp": "2026-08-25T11:35:29Z"
       }
     ],
     "evidence": [
@@ -1021,6 +1141,19 @@
         "metadata_json": "{\"accepted\": true, \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"inputs\": {\"command_contract\": {\"accepted\": true}, \"diff_fingerprint\": \"332d9db6f105968adf35341d004923459afce07aaaaf51c029b8863d5ee784dc\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/evals/results/compact/host-readonly-runtime/server-8080.log\", \"local-coding-worker/evals/results/compact/host-writable-runtime/server-8080.log\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"todo-status.md\", \"todos.md\", \"todos/c4q-01.md\", \"todos/c4q-02.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\"}, \"locks\": [], \"note\": \"Accepted after A/B/C structured-output diagnostics, real read-only and writable host checks, idle supervisor, and model-cache verification passed on llama.cpp build 10615 (f280b2698); evidence is under /tmp/core4-qwen-repair-evidence.\", \"resources\": [], \"started_revision\": 15}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0393c047-f368-40e6-b337-47c2bef637c7",
         "revision": 16,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-25T11:35:22Z",
+        "gate_id": "CWM-09-TODO",
+        "id": "07990923-f7eb-4831-a553-6996a0acccba",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b829fc5d0edb5d78a07b04c0450a7bb5d37f7c5b904954b4afaddece91e75e3f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 108}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/07990923-f7eb-4831-a553-6996a0acccba",
+        "revision": 109,
         "status": "passed"
       },
       {
@@ -1248,6 +1381,32 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-25T11:35:17Z",
+        "gate_id": "CWM-09-PROTOCOL",
+        "id": "a6996962-1341-4767-a34c-599d63ce873c",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"06108143dcbef55a2dfd3d14c108221ab30c48d9943f57223f10abc2dc8a5c51\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 106}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/a6996962-1341-4767-a34c-599d63ce873c",
+        "revision": 107,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-25T11:35:16Z",
+        "gate_id": "CWM-09-MCP",
+        "id": "af895b83-a1f2-4141-9e59-edf416f2864f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_recovery_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9f3f7f02b0d9f1019af8c5c0893ad17d0ed50cba1da910b919be1b453015cfc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_recovery_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 104}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/af895b83-a1f2-4141-9e59-edf416f2864f",
+        "revision": 105,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T21:03:12Z",
         "gate_id": "CWM-06-DIFF",
         "id": "b3799f1a-f727-408d-89e3-12c862cb0e9d",
@@ -1326,6 +1485,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-25T11:35:16Z",
+        "gate_id": "CWM-09-DIFF",
+        "id": "f0fed799-90ff-48e4-9439-db70114fc20d",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"aa60228bdb46bc07a37aca1b4791a53271976da0f6acc8dd65dbc3e89e3c2e2d\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 102}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f0fed799-90ff-48e4-9439-db70114fc20d",
+        "revision": 103,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T10:34:02Z",
         "gate_id": "CWM-07-MCP",
         "id": "fa3d603a-96fc-444d-9318-94bcb8517c09",
@@ -1396,7 +1568,7 @@
         "input_fingerprint": "8ca09bc7b02cd99484a6dd0491168c23bda5f4548ff244f871e13fdf05c93524",
         "last_run_at": "2026-08-24T19:56:24Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-00",
         "type": "command",
@@ -1409,7 +1581,7 @@
         "input_fingerprint": "6513b9156864f77adc4db656e4401dc8b0f68366d7f70f050f36990f5eb9b3c7",
         "last_run_at": "2026-08-24T19:59:18Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-01",
         "type": "command",
@@ -1422,7 +1594,7 @@
         "input_fingerprint": "49a3dc824809607e1644b0d4be69620653dd69da0c03cf344b5dc8f62e95b1d1",
         "last_run_at": "2026-08-24T20:03:37Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-02",
         "type": "command",
@@ -1435,7 +1607,7 @@
         "input_fingerprint": "ea6a6283bc277a4fafacbeb706498f529e6d991aad42b3f08cf21507a18010c6",
         "last_run_at": "2026-08-24T20:05:00Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-03",
         "type": "command",
@@ -1448,7 +1620,7 @@
         "input_fingerprint": "aa4b66a0fe9689f31ca5c8df250816f9218f3066c150827553da7c83e44d416f",
         "last_run_at": "2026-08-24T20:07:56Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-04",
         "type": "command",
@@ -1461,7 +1633,7 @@
         "input_fingerprint": "16366867cde80966fbae44957f88d34181dca17a300b101ece80ad0c04e6a8b1",
         "last_run_at": "2026-08-24T20:56:46Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-05",
         "type": "command",
@@ -1474,7 +1646,7 @@
         "input_fingerprint": "930accfbba8b70419ec31396db0835cfa8df6ca69b9b78a4e33cfba87ba9dcaa",
         "last_run_at": "2026-08-24T21:03:12Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-06",
         "type": "command",
@@ -1487,7 +1659,7 @@
         "input_fingerprint": "9499297d279180fe8260a61d5d96a55bcf15dbfd04c0bf948eaff3157cf86738",
         "last_run_at": "2026-08-24T21:03:22Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-06",
         "type": "command",
@@ -1500,7 +1672,7 @@
         "input_fingerprint": "b70516ba6a6040a5f39f44d99914771e1c5d1d2027bcb0d6547f687557245586",
         "last_run_at": "2026-08-25T10:34:01Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1513,7 +1685,7 @@
         "input_fingerprint": "50fe9cf90b0b46b0b71aae9c4fef2b0af1cd42d08ba4cd23e1444614dec13d8b",
         "last_run_at": "2026-08-25T10:34:02Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1526,7 +1698,7 @@
         "input_fingerprint": "230223b5dd77e5940c8534457502bec7ca1becc693623b39f6df09c9f3384d90",
         "last_run_at": "2026-08-25T10:34:06Z",
         "required": 1,
-        "revision": 91,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1539,7 +1711,7 @@
         "input_fingerprint": "0a5c0089a7c2741e6e43c5e718701f12f1e0266ea212bb6a26f749877a2dd61b",
         "last_run_at": "2026-08-25T10:56:05Z",
         "required": 1,
-        "revision": 93,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-08",
         "type": "command",
@@ -1552,7 +1724,7 @@
         "input_fingerprint": "e504a5d1f587b1fc1f52fff91861bd4da1595be838535769a4af723c31ea5606",
         "last_run_at": "2026-08-25T10:56:05Z",
         "required": 1,
-        "revision": 95,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-08",
         "type": "command",
@@ -1565,9 +1737,61 @@
         "input_fingerprint": "9a09560426eb88d9a2ec3a4d6c701594e67396f85a8ac2f237bedff7a8250182",
         "last_run_at": "2026-08-25T10:56:07Z",
         "required": 1,
-        "revision": 97,
+        "revision": 100,
         "status": "passed",
         "task_id": "CWM-08",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"todo-orchestrator\"]}",
+        "id": "CWM-09-DIFF",
+        "input_fingerprint": "aa60228bdb46bc07a37aca1b4791a53271976da0f6acc8dd65dbc3e89e3c2e2d",
+        "last_run_at": "2026-08-25T11:35:16Z",
+        "required": 1,
+        "revision": 103,
+        "status": "passed",
+        "task_id": "CWM-09",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_recovery_override.py\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"todo-orchestrator\"]}",
+        "id": "CWM-09-MCP",
+        "input_fingerprint": "9f3f7f02b0d9f1019af8c5c0893ad17d0ed50cba1da910b919be1b453015cfc3",
+        "last_run_at": "2026-08-25T11:35:16Z",
+        "required": 1,
+        "revision": 105,
+        "status": "passed",
+        "task_id": "CWM-09",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp\"]}",
+        "id": "CWM-09-PROTOCOL",
+        "input_fingerprint": "06108143dcbef55a2dfd3d14c108221ab30c48d9943f57223f10abc2dc8a5c51",
+        "last_run_at": "2026-08-25T11:35:17Z",
+        "required": 1,
+        "revision": 107,
+        "status": "passed",
+        "task_id": "CWM-09",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator\"]}",
+        "id": "CWM-09-TODO",
+        "input_fingerprint": "b829fc5d0edb5d78a07b04c0450a7bb5d37f7c5b904954b4afaddece91e75e3f",
+        "last_run_at": "2026-08-25T11:35:22Z",
+        "required": 1,
+        "revision": 109,
+        "status": "passed",
+        "task_id": "CWM-09",
         "type": "command",
         "valid": 1
       }
@@ -1582,6 +1806,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-03-GATE\", \"last_run_at\": \"2026-08-24T20:05:00Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 858 ++++++++++++++++++++++++++++++++-\\n todo-status.md                         |   9 +-\\n todos.md                               |   9 +-\\n 3 files changed, 869 insertions(+), 7 deletions(-)\", \"git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CWM-03\"}",
         "revision": 36,
         "task_id": "CWM-03"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-25T11:35:29Z",
+        "id": "23eb1a58-01b0-4297-9d7c-195a8ef302e6",
+        "kind": "complete",
+        "note": "Implemented manually approved one-use live-lease override through todo recovery APIs; strict provenance, binding, attached-work refusal, concurrency, audit, opaque-alias cleanup, and five-tool protocol tests pass. Full todo suite 97 tests and MCP suite 29 tests pass.",
+        "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-09-TODO\", \"last_run_at\": \"2026-08-25T11:35:22Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-09-MCP\", \"last_run_at\": \"2026-08-25T11:35:16Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-09-PROTOCOL\", \"last_run_at\": \"2026-08-25T11:35:17Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-09-DIFF\", \"last_run_at\": \"2026-08-25T11:35:16Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 393 ++++++++++++++++++---\\n integrations/coding-workflow-mcp/README.md         |  30 ++\\n .../coding_workflow_mcp/backend.py                 | 106 +++++-\\n .../coding_workflow_mcp/handles.py                 |  31 +-\\n .../coding_workflow_mcp/server.py                  |  14 +-\\n .../tests/test_parallel_agents.py                  |   1 +\\n .../coding-workflow-mcp/tests/test_tools.py        |   4 +\\n todo-orchestrator/SKILL.md                         |   5 +\\n todo-orchestrator/references/cli-reference.md      |   4 +\\n todo-orchestrator/tests/test_child_execution_v2.py |   2 +-\\n todo-orchestrator/todo_orchestrator/claims.py      | 289 ++++++++++++++-\\n .../todo_orchestrator/commands/coordination.py     |  52 ++-\\n .../todo_orchestrator/commands/work.py             |   7 +-\\n todo-orchestrator/todo_orchestrator/migrations.py  |  28 +-\\n todo-orchestrator/todo_orchestrator/projections.py |   1 +\\n todo-orchestrator/todo_orchestrator/service.py     | 122 ++++++-\\n todo-status.md                                     |   3 +-\\n todos.md                                           |   3 +-\\n todos/cwm-00.md                                    |   2 +-\\n todos/cwm-01.md                                    |   2 +-\\n todos/cwm-02.md                                    |   2 +-\\n todos/cwm-03.md                                    |   2 +-\\n todos/cwm-04.md                                    |   2 +-\\n todos/cwm-05.md                                    |   2 +-\\n todos/cwm-06.md                                    |   2 +-\\n todos/cwm-07.md                                    |   2 +-\\n todos/cwm-08.md                                    |   2 +-\\n 27 files changed, 1024 insertions(+), 89 deletions(-)\", \"git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\", \"interfaces\": [], \"note\": \"Implemented manually approved one-use live-lease override through todo recovery APIs; strict provenance, binding, attached-work refusal, concurrency, audit, opaque-alias cleanup, and five-tool protocol tests pass. Full todo suite 97 tests and MCP suite 29 tests pass.\", \"resources\": [], \"task_id\": \"CWM-09\"}",
+        "revision": 110,
+        "task_id": "CWM-09"
       },
       {
         "claim_id": null,
@@ -1764,6 +1998,7 @@
         "severity": "error"
       }
     ],
+    "live_recovery_audit": [],
     "migration_warnings": [],
     "named_locks": [
       {
@@ -2002,6 +2237,26 @@
         "mode": "read",
         "path": "todo-orchestrator",
         "task_id": "CWM-08"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "CWM-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "CWM-09"
+      },
+      {
+        "mode": "read",
+        "path": "cuda",
+        "task_id": "CWM-09"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "CWM-09"
       }
     ],
     "resource_classes": [],
@@ -2014,7 +2269,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 50,
+        "id": 59,
         "interface_id": null,
         "prerequisite_task_id": "CWM-00",
         "task_id": "CWM-01",
@@ -2025,7 +2280,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 51,
+        "id": 60,
         "interface_id": null,
         "prerequisite_task_id": "CWM-01",
         "task_id": "CWM-02",
@@ -2036,7 +2291,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 52,
+        "id": 61,
         "interface_id": null,
         "prerequisite_task_id": "CWM-02",
         "task_id": "CWM-03",
@@ -2047,7 +2302,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 53,
+        "id": 62,
         "interface_id": null,
         "prerequisite_task_id": "CWM-02",
         "task_id": "CWM-04",
@@ -2058,7 +2313,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 54,
+        "id": 63,
         "interface_id": null,
         "prerequisite_task_id": "CWM-03",
         "task_id": "CWM-05",
@@ -2069,7 +2324,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 55,
+        "id": 64,
         "interface_id": null,
         "prerequisite_task_id": "CWM-04",
         "task_id": "CWM-05",
@@ -2080,7 +2335,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 56,
+        "id": 65,
         "interface_id": null,
         "prerequisite_task_id": "CWM-05",
         "task_id": "CWM-06",
@@ -2091,7 +2346,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 57,
+        "id": 66,
         "interface_id": null,
         "prerequisite_task_id": "CWM-06",
         "task_id": "CWM-07",
@@ -2102,10 +2357,21 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 58,
+        "id": 67,
         "interface_id": null,
         "prerequisite_task_id": "CWM-07",
         "task_id": "CWM-08",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 68,
+        "interface_id": null,
+        "prerequisite_task_id": "CWM-08",
+        "task_id": "CWM-09",
         "type": "task"
       }
     ],
@@ -2257,6 +2523,22 @@
       {
         "invariant_id": "CWM-USER",
         "task_id": "CWM-08"
+      },
+      {
+        "invariant_id": "CWM-AUTHORITY",
+        "task_id": "CWM-09"
+      },
+      {
+        "invariant_id": "CWM-COMPAT",
+        "task_id": "CWM-09"
+      },
+      {
+        "invariant_id": "CWM-CONTEXT",
+        "task_id": "CWM-09"
+      },
+      {
+        "invariant_id": "CWM-USER",
+        "task_id": "CWM-09"
       }
     ],
     "task_locks": [
@@ -2299,6 +2581,11 @@
         "lock_name": "cwm-integration",
         "phase": "claim",
         "task_id": "CWM-08"
+      },
+      {
+        "lock_name": "cwm-integration",
+        "phase": "claim",
+        "task_id": "CWM-09"
       }
     ],
     "tasks": [
@@ -2361,12 +2648,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Isolate the MCP implementation and freeze its surface",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2383,12 +2670,12 @@
         "priority": 95,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement the stdio package, backend, and opaque handles",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2405,12 +2692,12 @@
         "priority": 94,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement exactly five compact workflow tools",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2427,12 +2714,12 @@
         "priority": 90,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Prove opportunistic delegation and parallel Codex safety",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2449,12 +2736,12 @@
         "priority": 85,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement installation and compatibility-preserving migration",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2471,12 +2758,12 @@
         "priority": 75,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Rebase onto the repaired skills and validate the live public contracts",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 11
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2493,12 +2780,12 @@
         "priority": 60,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Measure interface economy and release the facade",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 9
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2515,12 +2802,12 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
-        "revision": 91,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Fix bounded delegation target and scope translation",
-        "updated_at": "2026-08-25T10:56:04Z",
-        "version": 7
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 8
       },
       {
         "attention_reason": null,
@@ -2537,12 +2824,34 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
-        "revision": 98,
+        "revision": 100,
         "status": "done",
         "tags_json": "[]",
         "title": "Recover workflow capabilities across facade restarts",
-        "updated_at": "2026-08-25T10:56:12Z",
-        "version": 8
+        "updated_at": "2026-08-25T11:11:55Z",
+        "version": 9
+      },
+      {
+        "attention_reason": null,
+        "created_at": "2026-08-25T11:11:55Z",
+        "id": "CWM-09",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": null,
+        "priority": 100,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
+        "revision": 110,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Add manually authorized live-lease recovery override",
+        "updated_at": "2026-08-25T11:35:29Z",
+        "version": 3
       }
     ]
   }

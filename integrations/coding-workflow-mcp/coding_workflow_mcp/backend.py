@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import secrets
 import subprocess
 import sys
 from typing import Any, Sequence
@@ -51,6 +52,7 @@ class CodingWorkflowBackend:
         self.store = store or CapabilityStore()
         self.skills_root = (skills_root or resolve_skills_root()).resolve()
         self.entry_points = {name: self.skills_root / path for name, path in EXPECTED_ENTRY_POINTS.items()}
+        self.instance_id = "fi_" + secrets.token_urlsafe(24)
 
     def _diagnostic(self, stderr: str) -> str:
         clean = str(redact(bounded_text(stderr, 16_384)))
@@ -63,9 +65,12 @@ class CodingWorkflowBackend:
         cwd: Path,
         timeout: float = 30,
         allow_failure: bool = False,
+        extra_env: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         if isinstance(argv, (str, bytes)):
             raise TypeError("subprocess argv must be a sequence, not a shell string")
+        environment = os.environ.copy()
+        environment.update(extra_env or {})
         result = subprocess.run(
             [str(item) for item in argv],
             cwd=cwd,
@@ -75,7 +80,7 @@ class CodingWorkflowBackend:
             timeout=timeout,
             check=False,
             shell=False,
-            env=os.environ.copy(),
+            env=environment,
         )
         try:
             value = json.loads(result.stdout)
@@ -106,11 +111,18 @@ class CodingWorkflowBackend:
             raise BackendError("repo_root_is_not_a_git_repository", self._diagnostic(result.stderr))
         return Path(result.stdout.strip()).resolve()
 
-    def todo(self, repo: Path, *arguments: str, allow_failure: bool = False) -> dict[str, Any]:
+    def todo(
+        self,
+        repo: Path,
+        *arguments: str,
+        allow_failure: bool = False,
+        extra_env: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
         return self._run_json(
             [sys.executable, str(self.entry_points["todo"]), *arguments, "--repo-root", str(repo), "--json"],
             cwd=repo,
             allow_failure=allow_failure,
+            extra_env=extra_env,
         )
 
     def ctxpp(self, repo: Path, *arguments: str) -> dict[str, Any]:
@@ -178,17 +190,46 @@ class CodingWorkflowBackend:
         }
         return bounded_json(result, 4_000)
 
-    def next_task(self, repo_root: str, task_id: str | None = None) -> dict[str, Any]:
+    def next_task(
+        self,
+        repo_root: str,
+        task_id: str | None = None,
+        recovery_approval: str | None = None,
+    ) -> dict[str, Any]:
         repo = self.canonical_repo(repo_root)
         bootstrap = self._data(self.todo(repo, "bootstrap", allow_failure=True))
         project_uuid = bootstrap.get("project_uuid")
+        if recovery_approval is not None and (
+            not isinstance(recovery_approval, str)
+            or not recovery_approval.startswith("toa_")
+            or not task_id
+        ):
+            return {"status": "override_requires_permission", "reason": "valid_manual_approval_required"}
         if task_id:
             recovered = self._recover_workflow(repo, task_id, project_uuid)
             if recovered is not None:
                 return recovered
+            inspected = self.todo(repo, "recover", "live-inspect", task_id, allow_failure=True)
+            inspected_data = self._data(inspected)
+            if inspected.get("ok") is not False and inspected_data.get("owner_system") == "coding-workflow":
+                if not recovery_approval:
+                    return bounded_json({
+                        "status": "override_requires_permission",
+                        "reason": "facade_capability_missing_for_live_claim",
+                        "claim_fingerprint": inspected_data.get("claim_fingerprint"),
+                        "revision": inspected_data.get("project_revision"),
+                        "blockers": list(inspected_data.get("blockers") or [])[:12],
+                        "safe_operation": "human_create_exact_live_claim_approval_out_of_band",
+                    }, 1_200)
+                return self._consume_live_override(
+                    repo, task_id, recovery_approval, str(project_uuid or "")
+                )
         arguments = ["continue"]
         if task_id:
             arguments.extend(["--task-id", task_id])
+        arguments.extend([
+            "--owner-system", "coding-workflow", "--owner-instance", self.instance_id,
+        ])
         continued = self.todo(repo, *arguments, allow_failure=True)
         data = self._data(continued)
         claim = data.get("claim") if isinstance(data.get("claim"), dict) else {}
@@ -209,9 +250,68 @@ class CodingWorkflowBackend:
             "claim_token": claim_token,
             "task_id": str(task["id"]),
             "revision": data.get("project_revision"),
+            "claim_fingerprint": claim.get("claim_fingerprint"),
+            "lineage_fingerprints": [claim.get("claim_fingerprint")]
+            if claim.get("claim_fingerprint") else [],
         }
         handle = self.store.create_workflow(record)
         return self._compact_task_capsule(data, handle)
+
+    def _consume_live_override(
+        self,
+        repo: Path,
+        task_id: str,
+        approval: str,
+        project_uuid: str,
+    ) -> dict[str, Any]:
+        envelope = self.todo(
+            repo,
+            "recover",
+            "live-override",
+            task_id,
+            "--new-owner-instance",
+            self.instance_id,
+            allow_failure=True,
+            extra_env={"CODING_WORKFLOW_RECOVERY_APPROVAL": approval},
+        )
+        if envelope.get("ok") is False:
+            code = str(envelope.get("code") or "override_failed")
+            allowed = {
+                "override_requires_permission", "approval_consumed", "stale_approval",
+                "approval_mismatch", "live_override_blocked",
+            }
+            status = code if code in allowed else "attention_required"
+            details = envelope.get("error", {}).get("details", {}) if isinstance(envelope.get("error"), dict) else {}
+            blockers = details.get("blockers", []) if isinstance(details, dict) else []
+            return bounded_json({
+                "status": status,
+                "reason": code,
+                "blockers": list(blockers)[:12] if isinstance(blockers, list) else [],
+            }, 1_200)
+        data = self._data(envelope)
+        claim = data.get("claim") if isinstance(data.get("claim"), dict) else {}
+        session = data.get("session") if isinstance(data.get("session"), dict) else {}
+        task = data.get("task") if isinstance(data.get("task"), dict) else {}
+        values = (claim.get("claim_token"), session.get("session_token"), task.get("id"))
+        if not all(isinstance(value, str) and value for value in values):
+            return {"status": "attention_required", "reason": "invalid_live_override_envelope"}
+        lineage = [
+            value for value in (
+                claim.get("retired_claim_fingerprint"), claim.get("claim_fingerprint")
+            ) if isinstance(value, str) and value
+        ]
+        record = {
+            "repo": str(repo), "project_uuid": project_uuid,
+            "session_token": session["session_token"], "claim_token": claim["claim_token"],
+            "task_id": str(task["id"]), "revision": data.get("project_revision"),
+            "claim_fingerprint": claim.get("claim_fingerprint"),
+            "lineage_fingerprints": lineage,
+            "manual_override": True,
+        }
+        handle = self.store.create_workflow(record)
+        result = self._compact_task_capsule(data, handle)
+        result["manually_recovered"] = True
+        return bounded_json(result, 4_000)
 
     def _recover_workflow(
         self,

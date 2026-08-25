@@ -38,6 +38,7 @@ DURABLE_TABLES = [
     "checkpoint_gates",
     "evidence",
     "handoffs",
+    "live_recovery_audit",
     "migration_warnings",
     "events",
 ]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import socket
 import sqlite3
 import uuid
@@ -12,7 +13,18 @@ from typing import Any
 from .audit import audit_state, reconcile_state
 from .barriers import barrier_report
 from .checkpoints import checkpoint_status, reach_checkpoint, revoke_checkpoint
-from .claims import claim_best, inspect_recovery, pulse_claim, recover_adopt, recover_release, release_claim, sweep_expired
+from .claims import (
+    approve_live_override,
+    claim_best,
+    inspect_live_override,
+    inspect_recovery,
+    override_live_claim,
+    pulse_claim,
+    recover_adopt,
+    recover_release,
+    release_claim,
+    sweep_expired,
+)
 from .config import create_project_identity, project_paths, read_project, utc_now
 from .context import build_context, expand_context
 from .db import Database
@@ -116,7 +128,26 @@ class Service:
             pass
         return result, revision, projection
 
-    def continue_work(self, *, session_token: str | None = None, task_id: str | None = None) -> dict[str, object]:
+    def continue_work(
+        self,
+        *,
+        session_token: str | None = None,
+        task_id: str | None = None,
+        owner_system: str | None = None,
+        owner_instance_id: str | None = None,
+    ) -> dict[str, object]:
+        if (owner_system is None) != (owner_instance_id is None):
+            raise TodoError(
+                "claim_owner_incomplete",
+                "Claim owner system and instance must be supplied together",
+                ExitCode.BLOCKED,
+            )
+        if owner_system is not None and (
+            owner_system != "coding-workflow"
+            or not isinstance(owner_instance_id, str)
+            or not owner_instance_id.startswith("fi_")
+        ):
+            raise TodoError("claim_owner_invalid", "Claim owner metadata is invalid", ExitCode.BLOCKED)
         credentials: dict[str, str] = {}
 
         def operation(conn, revision):
@@ -126,7 +157,10 @@ class Service:
                 session = {"agent_id": row["id"], "label": row["label"], "hostname": row["hostname"]}
                 credentials["session_token"] = session_token
             else:
-                session, raw = create_session(conn, self.paths.repo_root, {"command": "continue"})
+                session, raw = create_session(conn, self.paths.repo_root, {
+                    "command": "continue", "owner_system": owner_system,
+                    "owner_instance_id": owner_instance_id,
+                })
                 credentials["session_token"] = raw
             try:
                 claim, raw_claim = claim_best(
@@ -137,6 +171,8 @@ class Service:
                     self.claim_lease_seconds,
                     requested_task_id=task_id,
                     reconcile_expired=False,
+                    owner_system=owner_system,
+                    owner_instance_id=owner_instance_id,
                 )
             except TodoError as exc:
                 if exc.code != "no_actionable_work":
@@ -442,6 +478,86 @@ class Service:
             return claim
         result, revision, projection = self.mutate(actor=None, entity_type="recovery", entity_id=task_id, event_type=f"recovery.{action}", payload={}, operation=operation)
         return {**result, **credentials, "project_revision": revision, "projection": projection}
+
+    def live_recovery_inspect(self, task_id: str) -> dict[str, object]:
+        revision = self.db.revision()
+        with self.db.read() as conn:
+            return inspect_live_override(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+            )
+
+    def live_recovery_approve(self, task_id: str, reason: str, ttl_seconds: int) -> dict[str, object]:
+        credential: dict[str, str] = {}
+
+        def operation(conn, revision):
+            report, token = approve_live_override(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+                reason,
+                ttl_seconds,
+            )
+            credential["approval_token"] = token
+            return report
+
+        result, revision, projection = self.mutate(
+            actor=None,
+            entity_type="recovery_approval",
+            entity_id=task_id,
+            event_type="recovery.live_approved",
+            payload={"task_id": task_id, "reason": reason[:1000], "requester_uid": os.getuid()},
+            operation=operation,
+        )
+        return {**result, **credential, "project_revision": revision, "projection": projection}
+
+    def live_recovery_override(
+        self,
+        task_id: str,
+        approval_token: str,
+        new_instance_id: str,
+    ) -> dict[str, object]:
+        def operation(conn, revision):
+            claim, issued = override_live_claim(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+                approval_token,
+                new_instance_id,
+                self.claim_lease_seconds,
+            )
+            return build_context(
+                conn,
+                project_revision=revision,
+                session=issued["session"],
+                session_token=issued["session_token"],
+                claim=claim,
+                claim_token=issued["claim_token"],
+                budget=self.context_budget,
+            )
+
+        result, revision, projection = self.mutate(
+            actor=lambda value: value.get("session", {}).get("agent_id"),
+            entity_type="recovery",
+            entity_id=task_id,
+            event_type="recovery.live_overridden",
+            payload={
+                "task_id": task_id,
+                "new_instance_id": new_instance_id,
+                "disposition": "live_claim_replaced",
+            },
+            operation=operation,
+        )
+        result["project_revision"] = revision
+        result["projection"] = projection
+        return result
 
     def migrate_markdown(self, apply: bool) -> dict[str, object]:
         report = inspect_markdown(self.paths.repo_root)

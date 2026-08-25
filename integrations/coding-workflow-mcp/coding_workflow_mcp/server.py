@@ -21,7 +21,9 @@ SERVER_INSTRUCTIONS = (
     "handles authorize only their bounded workflow operation; never request or expose raw "
     "tokens, worker internals, GPU identities, model endpoints, packets, logs, or transcripts. "
     "If a facade restart loses a workflow handle, call next_task with the same repository and "
-    "explicit task ID to recover a fresh opaque handle for the active facade-owned claim."
+    "explicit task ID to recover a fresh opaque handle for the active facade-owned claim. "
+    "Live-lease override is emergency-only: it requires a short-lived one-use approval created "
+    "manually out of band for that exact claim; this server cannot create or self-approve it."
 )
 
 
@@ -56,12 +58,16 @@ def create_server(backend: CodingWorkflowBackend | None = None) -> FastMCP:
             return result
 
     @server.tool(
-        description="Claim or explicitly recover one safe todo task and return its compact capsule.",
+        description="Claim, resume, or manually-approved emergency-recover one todo task capsule.",
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,
     )
-    def next_task(repo_root: str, task_id: str | None = None) -> dict[str, object]:
-        return invoke("next_task", repo_root, task_id)
+    def next_task(
+        repo_root: str,
+        task_id: str | None = None,
+        recovery_approval: str | None = None,
+    ) -> dict[str, object]:
+        return invoke("next_task", repo_root, task_id, recovery_approval)
 
     @server.tool(
         description="Refresh bounded task, source, or action-worthy evidence context.",

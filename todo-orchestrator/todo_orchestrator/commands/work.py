@@ -10,7 +10,12 @@ def register(subparsers, helpers) -> None:
     helpers.common(continue_parser)
     continue_parser.add_argument("--session-token")
     continue_parser.add_argument("--task-id")
-    continue_parser.set_defaults(handler=lambda args: Service(args.repo_root).continue_work(session_token=args.session_token, task_id=args.task_id))
+    continue_parser.add_argument("--owner-system", choices=["coding-workflow"])
+    continue_parser.add_argument("--owner-instance")
+    continue_parser.set_defaults(handler=lambda args: Service(args.repo_root).continue_work(
+        session_token=args.session_token, task_id=args.task_id,
+        owner_system=args.owner_system, owner_instance_id=args.owner_instance,
+    ))
 
     claim = subparsers.add_parser("claim")
     helpers.common(claim)

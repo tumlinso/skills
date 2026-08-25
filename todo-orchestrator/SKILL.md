@@ -44,6 +44,11 @@ diff a v2 JSON plan, then apply it transactionally. For legacy Markdown,
 bootstrap and run `migrate markdown --dry-run` before `--apply`. Expired dirty
 claims remain quarantined until explicit recovery.
 
+Live claim replacement is not ordinary recovery. The `recover live-*` path is
+reserved for an unchanged, verifiably `coding-workflow`-owned lease and requires
+a short-lived one-use approval created manually in an interactive owner terminal.
+Never approve it from model context or use it to take over another client's claim.
+
 Hard invariants: do not edit another active claim's paths, cross unopened
 barriers, bypass locks or leases, mark work done without gates, auto-clean
 state, or treat Markdown/branch separation as coordination authority.

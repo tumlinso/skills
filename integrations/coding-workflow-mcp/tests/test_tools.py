@@ -18,6 +18,7 @@ class FakeBackend(CodingWorkflowBackend):
     def __init__(self, root: Path, store: CapabilityStore) -> None:
         self.root = root.resolve()
         self.store = store
+        self.instance_id = "fi_fake"
         self.worker_status = "delegated"
         self.collect_status = "running"
         self.finish_ok = True
@@ -158,6 +159,9 @@ class ToolTests(unittest.TestCase):
         self.assertNotIn(b"tos_session_secret", encoded)
         stored = self.store.get_workflow(result["workflow_handle"])
         self.assertEqual(stored["claim_token"], "toc_claim_secret")
+        continued = next(call for call in self.backend.calls if call and call[0] == "continue")
+        self.assertEqual(continued[continued.index("--owner-system") + 1], "coding-workflow")
+        self.assertTrue(continued[continued.index("--owner-instance") + 1].startswith("fi_"))
 
     def test_explicit_task_recovers_claim_after_facade_restart(self) -> None:
         authority = {"active": False, "revision": 10, "continue_calls": 0, "complete_calls": 0}

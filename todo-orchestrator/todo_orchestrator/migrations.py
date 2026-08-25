@@ -236,4 +236,30 @@ ALTER TABLE child_executions ADD COLUMN access_mode TEXT NOT NULL DEFAULT 'write
 ALTER TABLE child_executions ADD COLUMN authorized_scopes_json TEXT NOT NULL DEFAULT '[]';
 """
 
-MIGRATIONS = {1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4, 5: MIGRATION_5, 6: MIGRATION_6}
+MIGRATION_7 = r"""
+ALTER TABLE claims ADD COLUMN owner_system TEXT;
+ALTER TABLE claims ADD COLUMN owner_instance_id TEXT;
+CREATE TABLE IF NOT EXISTS live_recovery_approvals(
+  id TEXT PRIMARY KEY, token_hash TEXT NOT NULL UNIQUE,
+  repo_root TEXT NOT NULL, project_uuid TEXT NOT NULL, task_id TEXT NOT NULL,
+  claim_fingerprint TEXT NOT NULL, project_revision INTEGER NOT NULL,
+  requester_uid INTEGER NOT NULL, approver_identity TEXT NOT NULL, reason TEXT NOT NULL,
+  prior_instance_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'pending', consumed_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_live_recovery_approval_state
+  ON live_recovery_approvals(state,expires_at);
+CREATE TABLE IF NOT EXISTS live_recovery_audit(
+  id TEXT PRIMARY KEY, task_id TEXT NOT NULL,
+  prior_claim_fingerprint TEXT NOT NULL, new_claim_fingerprint TEXT NOT NULL,
+  approver_identity TEXT NOT NULL, requester_uid INTEGER NOT NULL, reason TEXT NOT NULL,
+  approved_at TEXT NOT NULL, consumed_at TEXT NOT NULL,
+  prior_instance_id TEXT NOT NULL, new_instance_id TEXT NOT NULL,
+  disposition TEXT NOT NULL, project_revision INTEGER NOT NULL
+);
+"""
+
+MIGRATIONS = {
+  1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
+  5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7,
+}

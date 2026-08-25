@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `98`
+Project revision: `110`
 
 ## Workstreams
 - `C4Q-02` | status: done | execution: closed | next: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
@@ -11,6 +11,7 @@ Project revision: `98`
 - `CWM-00` | status: done | execution: closed | next: Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.
 - `CWM-07` | status: done | execution: closed | next: Treat MCP target text as a delegation objective, derive or omit a separately proven ctxpp target, and select 1-16 relevant child scopes within the parent authorization for writable and read-only CE-style requests without weakening admission or acceptance safety.
 - `CWM-08` | status: done | execution: closed | next: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
+- `CWM-09` | status: done | execution: closed | next: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-01` | status: done | execution: closed | next: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | status: done | execution: closed | next: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | status: done | execution: closed | next: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.

@@ -148,7 +148,7 @@ class ChildExecutionV2Tests(unittest.TestCase):
                     "candidate_gates_json", "acceptance_gates_json", "result_refs_json",
                     "access_mode", "authorized_scopes_json",
                 } <= columns)
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 6)
+                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 7)
 
 
 if __name__ == "__main__":

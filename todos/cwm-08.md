@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-08: Recover workflow capabilities across facade restarts
 
-Task revision: `98`; current project revision is in `todo-status.md`.
+Task revision: `100`; current project revision is in `todo-status.md`.
 
 ## Objective
 Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.

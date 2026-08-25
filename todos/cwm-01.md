@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-01: Implement the stdio package, backend, and opaque handles
 
-Task revision: `91`; current project revision is in `todo-status.md`.
+Task revision: `100`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
+import sys
 import time
 
 from ..models import ExitCode, TodoError
@@ -155,13 +157,59 @@ def register(subparsers, helpers) -> None:
         helpers.common(parser)
         parser.set_defaults(handler=lambda args, method=name: getattr(Service(args.repo_root), method)())
 
-    recover = _group(subparsers, helpers, "recover", ["inspect", "release", "adopt"])
-    for action, parser in recover.items():
+    recover = _group(
+        subparsers,
+        helpers,
+        "recover",
+        ["inspect", "release", "adopt", "live-inspect", "live-approve", "live-override"],
+    )
+    for action in ("inspect", "release", "adopt"):
+        parser = recover[action]
         helpers.common(parser)
         parser.add_argument("task_id")
         parser.add_argument("--session-token")
         parser.add_argument("--acknowledge-dirty", action="store_true")
         parser.set_defaults(handler=lambda args, value=action: Service(args.repo_root).recover(value, args.task_id, session_token=args.session_token, acknowledge_dirty=args.acknowledge_dirty))
+    live_inspect = recover["live-inspect"]
+    helpers.common(live_inspect)
+    live_inspect.add_argument("task_id")
+    live_inspect.set_defaults(
+        handler=lambda args: Service(args.repo_root).live_recovery_inspect(args.task_id)
+    )
+    live_approve = recover["live-approve"]
+    helpers.common(live_approve)
+    live_approve.add_argument("task_id")
+    live_approve.add_argument("--reason", required=True)
+    live_approve.add_argument("--ttl-seconds", type=int, default=300)
+    def approve_live_claim(args):
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            raise TodoError(
+                "manual_approval_terminal_required",
+                "Live-claim approval requires an interactive owner terminal",
+                ExitCode.BLOCKED,
+            )
+        service = Service(args.repo_root)
+        report = service.live_recovery_inspect(args.task_id)
+        print(
+            f"Emergency recovery for {args.task_id} at revision {report['project_revision']}\n"
+            f"Claim fingerprint: {report['claim_fingerprint']}\n"
+            f"Reason: {args.reason}\n"
+            f"Type the exact task ID to authorize once: ",
+            end="",
+            file=sys.stderr,
+            flush=True,
+        )
+        if input().strip() != args.task_id:
+            raise TodoError("manual_approval_canceled", "Manual approval was canceled", ExitCode.BLOCKED)
+        return service.live_recovery_approve(args.task_id, args.reason, args.ttl_seconds)
+    live_approve.set_defaults(handler=approve_live_claim)
+    live_override = recover["live-override"]
+    helpers.common(live_override)
+    live_override.add_argument("task_id")
+    live_override.add_argument("--new-owner-instance", required=True)
+    live_override.set_defaults(handler=lambda args: Service(args.repo_root).live_recovery_override(
+        args.task_id, os.environ.get("CODING_WORKFLOW_RECOVERY_APPROVAL", ""), args.new_owner_instance,
+    ))
 
     execute = subparsers.add_parser("exec")
     helpers.common(execute)
