@@ -27,7 +27,18 @@ def outcome(**changes):
 class QwenBindingTests(unittest.TestCase):
     def _session(self, root: Path, **config):
         binary = root / "qwen"
-        binary.write_text("#!/bin/sh\n", encoding="utf-8"); binary.chmod(0o755)
+        binary.write_text(
+            "#!/bin/sh\n"
+            "for argument in \"$@\"; do\n"
+            "  if [ \"$argument\" = \"--core4-unsupported-flag-probe\" ]; then\n"
+            "    echo 'Unknown arguments: core4-unsupported-flag-probe' >&2\n"
+            "    exit 1\n"
+            "  fi\n"
+            "done\n"
+            "exit 0\n",
+            encoding="utf-8",
+        )
+        binary.chmod(0o755)
         adapter = QwenCodeAdapter(str(binary))
         context = {
             "cwd": str(root), "runtime_dir": str(root / "runtime"),

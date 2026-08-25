@@ -59,7 +59,17 @@ class AdapterTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.binary = self.root / "adapter-bin"
-        self.binary.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        self.binary.write_text(
+            "#!/bin/sh\n"
+            "for argument in \"$@\"; do\n"
+            "  if [ \"$argument\" = \"--core4-unsupported-flag-probe\" ]; then\n"
+            "    echo 'Unknown arguments: core4-unsupported-flag-probe' >&2\n"
+            "    exit 1\n"
+            "  fi\n"
+            "done\n"
+            "exit 0\n",
+            encoding="utf-8",
+        )
         os.chmod(self.binary, 0o755)
 
     def tearDown(self) -> None:
@@ -86,10 +96,15 @@ class AdapterTests(unittest.TestCase):
         result = adapter.run(handle, {"prompt": "Review the packet"})
         argv = factory.processes[0].argv
         self.assertEqual(result["model_outcome"]["summary"], "reviewed")
-        self.assertIn("--bare", argv)
+        self.assertNotIn("--bare", argv)
         self.assertNotIn("--safe-mode", argv)
         self.assertEqual(argv[argv.index("--openai-base-url") + 1], "http://127.0.0.1:8080/v1")
-        self.assertIn("agent,shell,run_shell_command,write,edit,write_file", argv)
+        self.assertEqual(
+            argv[argv.index("--core-tools") + 1],
+            "read_file,list_directory,glob,grep_search",
+        )
+        excluded = set(argv[argv.index("--exclude-tools") + 1].split(","))
+        self.assertTrue({"agent", "run_shell_command", "edit", "write_file"}.issubset(excluded))
         self.assertEqual(adapter.usage(handle)["runs"], 1)
         self.assertFalse(adapter.cancel(handle)["canceled"])
         self.assertTrue(adapter.drain(handle)["draining"])
