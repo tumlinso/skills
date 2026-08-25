@@ -190,6 +190,14 @@ def register(subparsers, helpers) -> None:
             )
         service = Service(args.repo_root)
         report = service.live_recovery_inspect(args.task_id)
+        if not report.get("eligible"):
+            blockers = set(report.get("blockers") or [])
+            message = (
+                "Live claim is not owned by coding-workflow and cannot be manually overridden"
+                if "claim_owner_not_verifiable_facade" in blockers
+                else "Live claim is not eligible for manual coding-workflow recovery"
+            )
+            raise TodoError("live_override_blocked", message, ExitCode.BLOCKED, report)
         print(
             f"Emergency recovery for {args.task_id} at revision {report['project_revision']}\n"
             f"Claim fingerprint: {report['claim_fingerprint']}\n"

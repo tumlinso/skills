@@ -302,7 +302,13 @@ def approve_live_override(
 ) -> tuple[dict[str, object], str]:
     report = inspect_live_override(conn, repo_root, project_uuid, task_id, revision)
     if not report["eligible"]:
-        raise TodoError("live_override_blocked", "Attached work blocks manual recovery", ExitCode.BLOCKED, report)
+        blockers = set(report.get("blockers") or [])
+        message = (
+            "Live claim is not owned by coding-workflow and cannot be manually overridden"
+            if "claim_owner_not_verifiable_facade" in blockers
+            else "Live claim is not eligible for manual coding-workflow recovery"
+        )
+        raise TodoError("live_override_blocked", message, ExitCode.BLOCKED, report)
     bounded_reason = reason.strip()[:1000]
     if not bounded_reason:
         raise TodoError("recovery_reason_required", "Manual recovery requires an explicit reason", ExitCode.BLOCKED)

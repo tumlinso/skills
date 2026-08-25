@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import io
 import threading
 import unittest
 from unittest import mock
@@ -9,7 +10,13 @@ from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.config import utc_now
 from todo_orchestrator.background.store import BackgroundStore
+from todo_orchestrator.cli import build_parser
 from todo_orchestrator.models import TodoError
+
+
+class TtyStringIO(io.StringIO):
+    def isatty(self) -> bool:
+        return True
 
 
 class LiveClaimOverrideTests(unittest.TestCase):
@@ -60,6 +67,30 @@ class LiveClaimOverrideTests(unittest.TestCase):
         with self.assertRaises(TodoError) as refused:
             other.service.live_recovery_approve("A", "not facade owned", 300)
         self.assertEqual(refused.exception.code, "live_override_blocked")
+        self.assertIn("not owned by coding-workflow", refused.exception.message)
+
+    def test_ineligible_manual_approval_fails_before_confirmation_prompt(self) -> None:
+        args = build_parser().parse_args([
+            "recover", "live-approve", "A", "--reason", "lost handle",
+            "--repo-root", str(self.repo.root),
+        ])
+        report = {
+            "task_id": "A", "project_revision": 7, "claim_fingerprint": "a" * 64,
+            "eligible": False, "blockers": ["claim_owner_not_verifiable_facade"],
+        }
+        with (
+            mock.patch("todo_orchestrator.commands.coordination.Service") as service_type,
+            mock.patch("sys.stdin", TtyStringIO()),
+            mock.patch("sys.stdout", TtyStringIO()),
+            mock.patch("builtins.input") as confirmation,
+        ):
+            service_type.return_value.live_recovery_inspect.return_value = report
+            with self.assertRaises(TodoError) as refused:
+                args.handler(args)
+        self.assertEqual(refused.exception.code, "live_override_blocked")
+        self.assertIn("not owned by coding-workflow", refused.exception.message)
+        confirmation.assert_not_called()
+        service_type.return_value.live_recovery_approve.assert_not_called()
 
     def test_success_is_single_use_preserves_semantics_and_finishes(self) -> None:
         original = self.claim()
