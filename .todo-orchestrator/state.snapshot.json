@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T12:02:33Z",
+  "generated_at": "2026-08-25T12:13:06Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 125,
+  "project_revision": 126,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1277,6 +1277,16 @@
         "revision": 125,
         "seq": 125,
         "timestamp": "2026-08-25T12:02:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 126,
+        "seq": 126,
+        "timestamp": "2026-08-25T12:13:06Z"
       }
     ],
     "evidence": [
