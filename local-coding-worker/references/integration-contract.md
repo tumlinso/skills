@@ -38,3 +38,9 @@ not evict the shared server. V1 remains the deterministic fake fixture.
 For ordinary read-only or writable delegation, prefer the public `delegate` command.
 Expert `integrate --request` and `run --request` surfaces remain available for
 deterministic fixtures and explicit integrations.
+
+The public nonblocking `delegate` path freezes its bounded semantic packet
+before supervisor admission. This ordering is part of the admission contract:
+packet preparation, then GPU admission, then detached launch, then todo child
+creation. A detached real request therefore consumes a prepared packet rather
+than discovering an absent index after it has acquired work authority.

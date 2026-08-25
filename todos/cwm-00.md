@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-00: Isolate the MCP implementation and freeze its surface
 
-Task revision: `100`; current project revision is in `todo-status.md`.
+Task revision: `113`; current project revision is in `todo-status.md`.
 
 ## Objective
 Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.

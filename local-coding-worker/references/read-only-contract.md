@@ -34,3 +34,11 @@ literal ctxpp target. A ctxpp path is included only when an existing file can be
 proven inside the parent scope, including a relevant selected source-file scope;
 otherwise public nonblocking delegation returns `not_eligible` before GPU
 admission or child creation.
+
+Public nonblocking delegation also performs ctxpp packet preflight before GPU
+admission. For a configured repository whose semantic index is absent, one
+Git-common lock serializes idempotent initialization and a bounded scan of the
+proven source target. The resulting hash-verified, semantic, scope-contained
+packet is carried into the detached child and revalidated there. If preparation
+or validation fails, the result is `not_eligible` with no admission, child,
+scope lease, or model process.

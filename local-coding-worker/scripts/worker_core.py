@@ -21,7 +21,7 @@ REQUEST_KEYS = {
     "child_token", "objective", "scopes", "target", "intent",
     "budget_tokens", "max_items",
 }
-REQUEST_V2_KEYS = REQUEST_KEYS | {"execution"}
+REQUEST_V2_KEYS = REQUEST_KEYS | {"execution", "context_packet"}
 
 
 class WorkerError(RuntimeError):
@@ -44,7 +44,8 @@ def normalize_request(value: object) -> dict[str, Any]:
     version = value.get("schema_version")
     keys = REQUEST_V2_KEYS if version == 2 else REQUEST_KEYS
     extra = sorted(set(value) - keys)
-    missing = sorted(keys - set(value))
+    required = keys - ({"context_packet"} if version == 2 else set())
+    missing = sorted(required - set(value))
     if extra or missing:
         raise WorkerError(f"request fields invalid: missing={missing} extra={extra}")
     if version not in {1, 2} or value.get("format") != f"LCW-REQUEST/{version}":
@@ -96,6 +97,8 @@ def normalize_request(value: object) -> dict[str, Any]:
         count = execution.get("gpu_count", 1)
         if isinstance(count, bool) or not isinstance(count, int) or not 1 <= count <= 16:
             raise WorkerError("execution gpu_count must be between 1 and 16")
+        if "context_packet" in value and not isinstance(value["context_packet"], dict):
+            raise WorkerError("context_packet must be an object")
     return result
 
 
@@ -132,6 +135,40 @@ def _run_json(command: list[str], cwd: Path) -> dict[str, Any]:
 
 def _inside(path: str, scope: str) -> bool:
     return path == scope or path.startswith(scope + "/")
+
+
+def _validate_prepared_packet(root: Path, request: dict[str, Any], packet: dict[str, Any]) -> None:
+    if packet.get("format") != "CTXPP-CONTEXT-PACKET/2" or packet.get("readonly") is not True:
+        raise WorkerError("prepared ctxpp packet format is invalid")
+    claimed_hash = str(packet.get("packet_hash", ""))
+    unhashed = dict(packet)
+    unhashed.pop("packet_hash", None)
+    actual_hash = hashlib.sha256(
+        json.dumps(unhashed, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if claimed_hash != actual_hash:
+        raise WorkerError("prepared ctxpp packet hash is invalid")
+    trust = packet.get("trust") if isinstance(packet.get("trust"), dict) else {}
+    if (
+        trust.get("freshness") != "hash-verified"
+        or trust.get("relationships") != "semantic"
+        or trust.get("missing_required")
+        or request["role"] not in list(trust.get("sufficient_for") or [])
+        or packet.get("budget_exceeded") is not False
+    ):
+        raise WorkerError("prepared ctxpp packet is not usable for the delegated role")
+    targets = packet.get("canonical_targets")
+    if not isinstance(targets, list) or not targets:
+        raise WorkerError("prepared ctxpp packet has no canonical target")
+    for target in targets:
+        location = target.get("location") if isinstance(target, dict) and isinstance(target.get("location"), dict) else {}
+        relative = str(location.get("path", ""))
+        if not relative or not any(_inside(relative, scope) for scope in request["scopes"]):
+            raise WorkerError("prepared ctxpp target exceeds delegated scopes")
+        source = root / relative
+        expected = str(location.get("content_sha256", ""))
+        if not source.is_file() or source.is_symlink() or hashlib.sha256(source.read_bytes()).hexdigest() != expected:
+            raise WorkerError("prepared ctxpp target changed before worker execution")
 
 
 def _evidence_root(root: Path, child_token: str) -> Path:
@@ -267,7 +304,10 @@ def run_controller(request_value: object, *, production_runtime: object | None =
     heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
     heartbeat_thread.start()
     try:
-      if request["schema_version"] == 2:
+      if request["schema_version"] == 2 and isinstance(request.get("context_packet"), dict):
+        packet = request["context_packet"]
+        _validate_prepared_packet(root, request, packet)
+      elif request["schema_version"] == 2:
         task_spec = {"objective": request["objective"], "role": request["role"],
             "read_paths": request["scopes"], "write_paths": [], "forbidden_paths": [],
             "target_symbols": [request["target"]] if request["target"] else [], "failing_tests": [], "interface_ids": [],

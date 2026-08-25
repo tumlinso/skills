@@ -63,6 +63,15 @@ The narrow objective is composed with, rather than substituted for, the parent
 todo objective. Child delegations receive only a relevant subset of 1–16
 parent-authorized scopes.
 
+Before `delegate_task` can return `delegated`, local-worker now constructs and
+validates the exact bounded ctxpp packet that the child will consume. A
+configured repository with no semantic index is initialized under a Git-common
+lock and only the proven source target is scanned. Concurrent first requests
+share that initialization. Packet failure returns `not_eligible` before GPU
+admission, child creation, scope leasing, or model startup; Codex is never asked
+to run ctxpp manually. The prepared packet remains hash- and scope-checked when
+the detached child consumes it.
+
 The implementation uses the official Python MCP SDK over local stdio. Server
 startup imports no GPU library, initializes no model, reserves no GPU, and
 scans no repository.

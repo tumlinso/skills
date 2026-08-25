@@ -3,13 +3,14 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from coding_workflow_mcp.backend import CodingWorkflowBackend
+from coding_workflow_mcp.backend import BackendError, CodingWorkflowBackend
 from coding_workflow_mcp.handles import CapabilityStore, InvalidHandle
 from coding_workflow_mcp.server import SERVER_INSTRUCTIONS, create_server
 
@@ -211,6 +212,39 @@ class ToolTests(unittest.TestCase):
         self.assertNotIn(b"toc_hidden_value", encoded)
         evidence = self.backend.inspect_task(handle, "evidence", None, "test", 2400)
         self.assertEqual(evidence["evidence"][0]["summary"], "passed")
+
+    def test_source_inspection_recovers_missing_index_for_proven_path(self) -> None:
+        subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
+        (self.root / "src").mkdir()
+        (self.root / "src/widget.cc").write_text("int widget() { return 1; }\n", encoding="utf-8")
+        (self.root / ".ctxpp.toml").write_text("version = 1\n", encoding="utf-8")
+
+        class RecoveringBackend(FakeBackend):
+            def __init__(inner_self, root, store):
+                super().__init__(root, store)
+                inner_self.indexed = False
+
+            def ctxpp(inner_self, repo, *arguments, timeout=30):
+                inner_self.calls.append(("ctxpp", *arguments))
+                command = arguments[0]
+                if command == "init":
+                    return {"format": "CTXPP-INIT/1", "ok": True}
+                if command == "scan":
+                    inner_self.indexed = True
+                    return {"format": "CTXPP-SCAN/1", "backend": "semantic"}
+                if not inner_self.indexed:
+                    raise BackendError("invalid_public_cli_envelope")
+                return {"target": {"name": "widget"},
+                        "edit_locations": [{"path": "src/widget.cc", "line": 1}],
+                        "trust": {"relationships": "semantic"}, "content": "bounded"}
+
+        backend = RecoveringBackend(self.root, self.store)
+        handle = backend.next_task(str(self.root))["workflow_handle"]
+        result = backend.inspect_task(handle, "source", "src/widget.cc", "understand", 2400)
+        self.assertEqual(result["status"], "available")
+        operations = [call[1] for call in backend.calls if call and call[0] == "ctxpp"]
+        self.assertEqual(operations.count("init"), 1)
+        self.assertEqual(operations.count("scan"), 1)
 
     def test_opportunistic_delegation_and_nonblocking_collection(self) -> None:
         workflow = self.claim()["workflow_handle"]

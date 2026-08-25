@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T11:35:29Z",
+  "generated_at": "2026-08-25T12:02:33Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 110,
+  "project_revision": 125,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1127,6 +1127,156 @@
         "revision": 110,
         "seq": 110,
         "timestamp": "2026-08-25T11:35:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/coding-workflow-mcp/plan.json\"}",
+        "revision": 111,
+        "seq": 111,
+        "timestamp": "2026-08-25T11:37:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CWM-10\"}",
+        "revision": 112,
+        "seq": 112,
+        "timestamp": "2026-08-25T11:37:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/.git/coding-workflow-mcp/plan.json\"}",
+        "revision": 113,
+        "seq": 113,
+        "timestamp": "2026-08-25T12:01:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 114,
+        "seq": 114,
+        "timestamp": "2026-08-25T12:01:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-10-DIFF\"}",
+        "revision": 115,
+        "seq": 115,
+        "timestamp": "2026-08-25T12:01:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7b1a4196-cb26-4c42-82b9-7a060e294807\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 116,
+        "seq": 116,
+        "timestamp": "2026-08-25T12:01:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-LIVE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-10-LIVE\"}",
+        "revision": 117,
+        "seq": 117,
+        "timestamp": "2026-08-25T12:01:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-LIVE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e378fee1-f4fa-4b3a-9294-529cd5812ec0\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 118,
+        "seq": 118,
+        "timestamp": "2026-08-25T12:01:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-MCP",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-10-MCP\"}",
+        "revision": 119,
+        "seq": 119,
+        "timestamp": "2026-08-25T12:01:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-MCP",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"2bdcb946-25c4-47f2-beff-d529f5cf5007\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 120,
+        "seq": 120,
+        "timestamp": "2026-08-25T12:02:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-PREFLIGHT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-10-PREFLIGHT\"}",
+        "revision": 121,
+        "seq": 121,
+        "timestamp": "2026-08-25T12:02:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-PREFLIGHT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"57cb20a5-7d4e-4dc3-8220-1b9547538c9b\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 122,
+        "seq": 122,
+        "timestamp": "2026-08-25T12:02:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-PROTOCOL",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"CWM-10-PROTOCOL\"}",
+        "revision": 123,
+        "seq": 123,
+        "timestamp": "2026-08-25T12:02:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10-PROTOCOL",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"53a6ee1a-5ceb-465f-a5bf-2dc144809745\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 124,
+        "seq": 124,
+        "timestamp": "2026-08-25T12:02:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CWM-10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"disposition\": \"implemented\"}",
+        "revision": 125,
+        "seq": 125,
+        "timestamp": "2026-08-25T12:02:33Z"
       }
     ],
     "evidence": [
@@ -1212,6 +1362,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-25T12:02:09Z",
+        "gate_id": "CWM-10-MCP",
+        "id": "2bdcb946-25c4-47f2-beff-d529f5cf5007",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e26be153a7433c20f1eae937a4efaba936dff67eaefc116e6bf7f8d5ae1f2eae\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 119}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/2bdcb946-25c4-47f2-beff-d529f5cf5007",
+        "revision": 120,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T10:34:06Z",
         "gate_id": "CWM-07-WORKER",
         "id": "312b960b-fcc3-4835-a7eb-a3e1be192aab",
@@ -1245,6 +1408,32 @@
         "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e504a5d1f587b1fc1f52fff91861bd4da1595be838535769a4af723c31ea5606\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"]}, \"diff_fingerprint\": \"0845647e365dd44ad25ad1cfd8beaee53b4321566eff61a19f76e51cc42ae1ea\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"2ac23b1947e253abe89605155f8850b63be25bb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 94}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/44662c28-816d-40a6-a87c-0eea51ec4661",
         "revision": 95,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-25T12:02:16Z",
+        "gate_id": "CWM-10-PROTOCOL",
+        "id": "53a6ee1a-5ceb-465f-a5bf-2dc144809745",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"06108143dcbef55a2dfd3d14c108221ab30c48d9943f57223f10abc2dc8a5c51\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 123}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/53a6ee1a-5ceb-465f-a5bf-2dc144809745",
+        "revision": 124,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-25T12:02:15Z",
+        "gate_id": "CWM-10-PREFLIGHT",
+        "id": "57cb20a5-7d4e-4dc3-8220-1b9547538c9b",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_delegation_preflight.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9525f7b37067bf2a125e65450b81394f05b23c583d0a3b1ab0904bcf0c4a6026\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_delegation_preflight.py\", \"-v\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 121}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/57cb20a5-7d4e-4dc3-8220-1b9547538c9b",
+        "revision": 122,
         "status": "passed"
       },
       {
@@ -1310,6 +1499,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b70516ba6a6040a5f39f44d99914771e1c5d1d2027bcb0d6547f687557245586\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"df1781a1148bef767a8d362cfa33b74b4bc809ad0ab83519ce57258d3b89de66\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"local-coding-worker/tests/test_read_only_mvp.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"03a48dbbd53658942764a68da28d45996c8e7cbb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 70}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7a2642b1-c330-4b6a-b95f-3c79bbc7c599",
         "revision": 71,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-25T12:01:56Z",
+        "gate_id": "CWM-10-DIFF",
+        "id": "7b1a4196-cb26-4c42-82b9-7a060e294807",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4817d063b9e6b8f89561110e409f5b0639fba2bc0ee7cd881c82466d903dee34\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 115}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7b1a4196-cb26-4c42-82b9-7a060e294807",
+        "revision": 116,
         "status": "passed"
       },
       {
@@ -1472,6 +1674,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-25T12:01:56Z",
+        "gate_id": "CWM-10-LIVE",
+        "id": "e378fee1-f4fa-4b3a-9294-529cd5812ec0",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-c\", \"import json,pathlib; d=json.loads(pathlib.Path('.git/coding-workflow-mcp/cwm-10-two-worker-smoke.json').read_text()); assert d['ok'] and d['delegated']==2 and d['model']['model_executions']==2 and d['model']['unique_slots']==2 and d['model']['unique_servers']==2 and d['model']['backend_calls']==[1,1]\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4bc2c59ee15a3eaae93c5c058e908028eb683e7c70fb74c004571bf9addc0bc7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-c\", \"import json,pathlib; d=json.loads(pathlib.Path('.git/coding-workflow-mcp/cwm-10-two-worker-smoke.json').read_text()); assert d['ok'] and d['delegated']==2 and d['model']['model_executions']==2 and d['model']['unique_slots']==2 and d['model']['unique_servers']==2 and d['model']['backend_calls']==[1,1]\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 117}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e378fee1-f4fa-4b3a-9294-529cd5812ec0",
+        "revision": 118,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T20:07:56Z",
         "gate_id": "CWM-04-GATE",
         "id": "e6ead857-3ec1-41f4-bac9-f2efeaa1ddc9",
@@ -1568,7 +1783,7 @@
         "input_fingerprint": "8ca09bc7b02cd99484a6dd0491168c23bda5f4548ff244f871e13fdf05c93524",
         "last_run_at": "2026-08-24T19:56:24Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-00",
         "type": "command",
@@ -1581,7 +1796,7 @@
         "input_fingerprint": "6513b9156864f77adc4db656e4401dc8b0f68366d7f70f050f36990f5eb9b3c7",
         "last_run_at": "2026-08-24T19:59:18Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-01",
         "type": "command",
@@ -1594,7 +1809,7 @@
         "input_fingerprint": "49a3dc824809607e1644b0d4be69620653dd69da0c03cf344b5dc8f62e95b1d1",
         "last_run_at": "2026-08-24T20:03:37Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-02",
         "type": "command",
@@ -1607,7 +1822,7 @@
         "input_fingerprint": "ea6a6283bc277a4fafacbeb706498f529e6d991aad42b3f08cf21507a18010c6",
         "last_run_at": "2026-08-24T20:05:00Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-03",
         "type": "command",
@@ -1620,7 +1835,7 @@
         "input_fingerprint": "aa4b66a0fe9689f31ca5c8df250816f9218f3066c150827553da7c83e44d416f",
         "last_run_at": "2026-08-24T20:07:56Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-04",
         "type": "command",
@@ -1633,7 +1848,7 @@
         "input_fingerprint": "16366867cde80966fbae44957f88d34181dca17a300b101ece80ad0c04e6a8b1",
         "last_run_at": "2026-08-24T20:56:46Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-05",
         "type": "command",
@@ -1646,7 +1861,7 @@
         "input_fingerprint": "930accfbba8b70419ec31396db0835cfa8df6ca69b9b78a4e33cfba87ba9dcaa",
         "last_run_at": "2026-08-24T21:03:12Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-06",
         "type": "command",
@@ -1659,7 +1874,7 @@
         "input_fingerprint": "9499297d279180fe8260a61d5d96a55bcf15dbfd04c0bf948eaff3157cf86738",
         "last_run_at": "2026-08-24T21:03:22Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-06",
         "type": "command",
@@ -1672,7 +1887,7 @@
         "input_fingerprint": "b70516ba6a6040a5f39f44d99914771e1c5d1d2027bcb0d6547f687557245586",
         "last_run_at": "2026-08-25T10:34:01Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1685,7 +1900,7 @@
         "input_fingerprint": "50fe9cf90b0b46b0b71aae9c4fef2b0af1cd42d08ba4cd23e1444614dec13d8b",
         "last_run_at": "2026-08-25T10:34:02Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1698,7 +1913,7 @@
         "input_fingerprint": "230223b5dd77e5940c8534457502bec7ca1becc693623b39f6df09c9f3384d90",
         "last_run_at": "2026-08-25T10:34:06Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-07",
         "type": "command",
@@ -1711,7 +1926,7 @@
         "input_fingerprint": "0a5c0089a7c2741e6e43c5e718701f12f1e0266ea212bb6a26f749877a2dd61b",
         "last_run_at": "2026-08-25T10:56:05Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-08",
         "type": "command",
@@ -1724,7 +1939,7 @@
         "input_fingerprint": "e504a5d1f587b1fc1f52fff91861bd4da1595be838535769a4af723c31ea5606",
         "last_run_at": "2026-08-25T10:56:05Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-08",
         "type": "command",
@@ -1737,7 +1952,7 @@
         "input_fingerprint": "9a09560426eb88d9a2ec3a4d6c701594e67396f85a8ac2f237bedff7a8250182",
         "last_run_at": "2026-08-25T10:56:07Z",
         "required": 1,
-        "revision": 100,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-08",
         "type": "command",
@@ -1750,7 +1965,7 @@
         "input_fingerprint": "aa60228bdb46bc07a37aca1b4791a53271976da0f6acc8dd65dbc3e89e3c2e2d",
         "last_run_at": "2026-08-25T11:35:16Z",
         "required": 1,
-        "revision": 103,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-09",
         "type": "command",
@@ -1763,7 +1978,7 @@
         "input_fingerprint": "9f3f7f02b0d9f1019af8c5c0893ad17d0ed50cba1da910b919be1b453015cfc3",
         "last_run_at": "2026-08-25T11:35:16Z",
         "required": 1,
-        "revision": 105,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-09",
         "type": "command",
@@ -1776,7 +1991,7 @@
         "input_fingerprint": "06108143dcbef55a2dfd3d14c108221ab30c48d9943f57223f10abc2dc8a5c51",
         "last_run_at": "2026-08-25T11:35:17Z",
         "required": 1,
-        "revision": 107,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-09",
         "type": "command",
@@ -1789,9 +2004,74 @@
         "input_fingerprint": "b829fc5d0edb5d78a07b04c0450a7bb5d37f7c5b904954b4afaddece91e75e3f",
         "last_run_at": "2026-08-25T11:35:22Z",
         "required": 1,
-        "revision": 109,
+        "revision": 113,
         "status": "passed",
         "task_id": "CWM-09",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"local-coding-worker\", \"cpp-context-compiler\"]}",
+        "id": "CWM-10-DIFF",
+        "input_fingerprint": "4817d063b9e6b8f89561110e409f5b0639fba2bc0ee7cd881c82466d903dee34",
+        "last_run_at": "2026-08-25T12:01:56Z",
+        "required": 1,
+        "revision": 116,
+        "status": "passed",
+        "task_id": "CWM-10",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-c\", \"import json,pathlib; d=json.loads(pathlib.Path('.git/coding-workflow-mcp/cwm-10-two-worker-smoke.json').read_text()); assert d['ok'] and d['delegated']==2 and d['model']['model_executions']==2 and d['model']['unique_slots']==2 and d['model']['unique_servers']==2 and d['model']['backend_calls']==[1,1]\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"local-coding-worker\", \"cpp-context-compiler\"]}",
+        "id": "CWM-10-LIVE",
+        "input_fingerprint": "4bc2c59ee15a3eaae93c5c058e908028eb683e7c70fb74c004571bf9addc0bc7",
+        "last_run_at": "2026-08-25T12:01:56Z",
+        "required": 1,
+        "revision": 118,
+        "status": "passed",
+        "task_id": "CWM-10",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"local-coding-worker\", \"cpp-context-compiler\"]}",
+        "id": "CWM-10-MCP",
+        "input_fingerprint": "e26be153a7433c20f1eae937a4efaba936dff67eaefc116e6bf7f8d5ae1f2eae",
+        "last_run_at": "2026-08-25T12:02:09Z",
+        "required": 1,
+        "revision": 120,
+        "status": "passed",
+        "task_id": "CWM-10",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_delegation_preflight.py\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp\", \"local-coding-worker\", \"cpp-context-compiler\"]}",
+        "id": "CWM-10-PREFLIGHT",
+        "input_fingerprint": "9525f7b37067bf2a125e65450b81394f05b23c583d0a3b1ab0904bcf0c4a6026",
+        "last_run_at": "2026-08-25T12:02:15Z",
+        "required": 1,
+        "revision": 122,
+        "status": "passed",
+        "task_id": "CWM-10",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp\"]}",
+        "id": "CWM-10-PROTOCOL",
+        "input_fingerprint": "06108143dcbef55a2dfd3d14c108221ab30c48d9943f57223f10abc2dc8a5c51",
+        "last_run_at": "2026-08-25T12:02:16Z",
+        "required": 1,
+        "revision": 124,
+        "status": "passed",
+        "task_id": "CWM-10",
         "type": "command",
         "valid": 1
       }
@@ -1886,6 +2166,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/pyproject.toml\", \"integrations/coding-workflow-mcp/requirements.lock\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-00-GATE\", \"last_run_at\": \"2026-08-24T19:56:24Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 669 ++++++++++++++++++++++++++++++++-\\n todo-status.md                         |   9 +-\\n todos.md                               |   9 +-\\n 3 files changed, 680 insertions(+), 7 deletions(-)\", \"git_head\": \"23da59c005a6251d21fe3dcb9eaa113cd22108d0\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CWM-00\"}",
         "revision": 24,
         "task_id": "CWM-00"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-25T12:02:33Z",
+        "id": "8fb4fd5c-e941-464c-9191-50c71a8475aa",
+        "kind": "complete",
+        "note": "Repaired delegation source preflight before admission; serialized bounded ctxpp initialization, carried and revalidated prepared packets, preserved strict scopes and five tools. Disposable installed-MCP smoke proved two concurrent real read-only model executions on distinct slots/servers. MCP 35/35, ctxpp 59/59, focused worker 28/28; broad worker suite has 3 pre-existing qwen-code --core-tools environment errors outside this change.",
+        "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-10-PREFLIGHT\", \"last_run_at\": \"2026-08-25T12:02:15Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-MCP\", \"last_run_at\": \"2026-08-25T12:02:09Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-PROTOCOL\", \"last_run_at\": \"2026-08-25T12:02:16Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-DIFF\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-LIVE\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 471 ++++++++++++++++++---\\n cpp-context-compiler/scripts/ctxpp                 |  45 +-\\n integrations/coding-workflow-mcp/README.md         |   9 +\\n .../coding_workflow_mcp/backend.py                 |  72 +++-\\n .../coding-workflow-mcp/tests/test_tools.py        |  36 +-\\n local-coding-worker/local_worker/controller.py     | 225 ++++++++--\\n .../references/integration-contract.md             |   6 +\\n .../references/read-only-contract.md               |   8 +\\n .../schemas/delegation-spec-v2.schema.json         |   3 +-\\n local-coding-worker/scripts/local_worker.py        |  11 +-\\n local-coding-worker/scripts/worker_core.py         |  46 +-\\n .../tests/test_core4_integration.py                |   1 +\\n .../tests/test_production_integration.py           |   6 +\\n todo-status.md                                     |   3 +-\\n todos.md                                           |   3 +-\\n todos/cwm-00.md                                    |   2 +-\\n todos/cwm-01.md                                    |   2 +-\\n todos/cwm-02.md                                    |   2 +-\\n todos/cwm-03.md                                    |   2 +-\\n todos/cwm-04.md                                    |   2 +-\\n todos/cwm-05.md                                    |   2 +-\\n todos/cwm-06.md                                    |   2 +-\\n todos/cwm-07.md                                    |   2 +-\\n todos/cwm-08.md                                    |   2 +-\\n todos/cwm-09.md                                    |   2 +-\\n 25 files changed, 850 insertions(+), 115 deletions(-)\", \"git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\", \"interfaces\": [], \"note\": \"Repaired delegation source preflight before admission; serialized bounded ctxpp initialization, carried and revalidated prepared packets, preserved strict scopes and five tools. Disposable installed-MCP smoke proved two concurrent real read-only model executions on distinct slots/servers. MCP 35/35, ctxpp 59/59, focused worker 28/28; broad worker suite has 3 pre-existing qwen-code --core-tools environment errors outside this change.\", \"resources\": [], \"task_id\": \"CWM-10\"}",
+        "revision": 125,
+        "task_id": "CWM-10"
       },
       {
         "claim_id": null,
@@ -2257,6 +2547,31 @@
         "mode": "read",
         "path": "local-coding-worker",
         "task_id": "CWM-09"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler",
+        "task_id": "CWM-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "CWM-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "CWM-10"
+      },
+      {
+        "mode": "read",
+        "path": "cuda",
+        "task_id": "CWM-10"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "CWM-10"
       }
     ],
     "resource_classes": [],
@@ -2269,7 +2584,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 59,
+        "id": 80,
         "interface_id": null,
         "prerequisite_task_id": "CWM-00",
         "task_id": "CWM-01",
@@ -2280,7 +2595,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 60,
+        "id": 81,
         "interface_id": null,
         "prerequisite_task_id": "CWM-01",
         "task_id": "CWM-02",
@@ -2291,7 +2606,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 61,
+        "id": 82,
         "interface_id": null,
         "prerequisite_task_id": "CWM-02",
         "task_id": "CWM-03",
@@ -2302,7 +2617,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 62,
+        "id": 83,
         "interface_id": null,
         "prerequisite_task_id": "CWM-02",
         "task_id": "CWM-04",
@@ -2313,7 +2628,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 63,
+        "id": 84,
         "interface_id": null,
         "prerequisite_task_id": "CWM-03",
         "task_id": "CWM-05",
@@ -2324,7 +2639,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 64,
+        "id": 85,
         "interface_id": null,
         "prerequisite_task_id": "CWM-04",
         "task_id": "CWM-05",
@@ -2335,7 +2650,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 65,
+        "id": 86,
         "interface_id": null,
         "prerequisite_task_id": "CWM-05",
         "task_id": "CWM-06",
@@ -2346,7 +2661,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 66,
+        "id": 87,
         "interface_id": null,
         "prerequisite_task_id": "CWM-06",
         "task_id": "CWM-07",
@@ -2357,7 +2672,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 67,
+        "id": 88,
         "interface_id": null,
         "prerequisite_task_id": "CWM-07",
         "task_id": "CWM-08",
@@ -2368,10 +2683,21 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 68,
+        "id": 89,
         "interface_id": null,
         "prerequisite_task_id": "CWM-08",
         "task_id": "CWM-09",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 90,
+        "interface_id": null,
+        "prerequisite_task_id": "CWM-09",
+        "task_id": "CWM-10",
         "type": "task"
       }
     ],
@@ -2539,6 +2865,26 @@
       {
         "invariant_id": "CWM-USER",
         "task_id": "CWM-09"
+      },
+      {
+        "invariant_id": "CWM-AUTHORITY",
+        "task_id": "CWM-10"
+      },
+      {
+        "invariant_id": "CWM-COMPAT",
+        "task_id": "CWM-10"
+      },
+      {
+        "invariant_id": "CWM-CONTEXT",
+        "task_id": "CWM-10"
+      },
+      {
+        "invariant_id": "CWM-PARALLEL",
+        "task_id": "CWM-10"
+      },
+      {
+        "invariant_id": "CWM-USER",
+        "task_id": "CWM-10"
       }
     ],
     "task_locks": [
@@ -2586,6 +2932,11 @@
         "lock_name": "cwm-integration",
         "phase": "claim",
         "task_id": "CWM-09"
+      },
+      {
+        "lock_name": "cwm-integration",
+        "phase": "claim",
+        "task_id": "CWM-10"
       }
     ],
     "tasks": [
@@ -2648,12 +2999,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Isolate the MCP implementation and freeze its surface",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2670,12 +3021,12 @@
         "priority": 95,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement the stdio package, backend, and opaque handles",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2692,12 +3043,12 @@
         "priority": 94,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement exactly five compact workflow tools",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2714,12 +3065,12 @@
         "priority": 90,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Prove opportunistic delegation and parallel Codex safety",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2736,12 +3087,12 @@
         "priority": 85,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement installation and compatibility-preserving migration",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2758,12 +3109,12 @@
         "priority": 75,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Rebase onto the repaired skills and validate the live public contracts",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 12
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 14
       },
       {
         "attention_reason": null,
@@ -2780,12 +3131,12 @@
         "priority": 60,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Measure interface economy and release the facade",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 10
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -2802,12 +3153,12 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Fix bounded delegation target and scope translation",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 8
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -2824,12 +3175,12 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
-        "revision": 100,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Recover workflow capabilities across facade restarts",
-        "updated_at": "2026-08-25T11:11:55Z",
-        "version": 9
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -2846,12 +3197,34 @@
         "priority": 100,
         "result": "implemented",
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
-        "revision": 110,
+        "revision": 113,
         "status": "done",
         "tags_json": "[]",
         "title": "Add manually authorized live-lease recovery override",
-        "updated_at": "2026-08-25T11:35:29Z",
-        "version": 3
+        "updated_at": "2026-08-25T12:01:44Z",
+        "version": 5
+      },
+      {
+        "attention_reason": null,
+        "created_at": "2026-08-25T11:37:41Z",
+        "id": "CWM-10",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": null,
+        "priority": 100,
+        "result": "implemented",
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"failed\"]}",
+        "revision": 125,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Preflight bounded source context before local delegation",
+        "updated_at": "2026-08-25T12:02:33Z",
+        "version": 4
       }
     ]
   }

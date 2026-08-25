@@ -403,6 +403,7 @@ class Core4IntegrationTests(unittest.TestCase):
             "repo_root": str(self.root),
             "scopes": ["src/kernel.cu"], "read_dependencies": ["docs/note.txt"],
             "gates": [], "execution": {"backend": "real", "harness": "qwen", "admission_id": "admission-1"},
+            "context_packet": {"format": "prepared-fixture"},
         }
         validated = {
             "outcome": "completed", "summary": "bounded candidate", "claims": [],

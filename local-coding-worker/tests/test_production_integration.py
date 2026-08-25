@@ -111,6 +111,10 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
                     "budget_tokens": 1024, "max_items": 4,
                     "execution": {"backend": "real", "harness": "qwen", "gpu_count": 2},
                 }
+            def prepare_delegation(self, request):
+                request = dict(request)
+                request["context_packet"] = {"format": "prepared-fixture"}
+                return request
         class Supervisor:
             def request(self, operation, **parameters):
                 self.assertEqual(operation, "admit")
@@ -141,6 +145,8 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
         class Controller:
             def request_from_claim(self, repo, claim_token, *, mode, target, objective=None):
                 return {"mode": "writable", "target": "kernel", "execution": {"backend": "real"}}
+            def prepare_delegation(self, request):
+                return dict(request, context_packet={"format": "prepared-fixture"})
         class Supervisor:
             def request(self, operation, **parameters):
                 raise module.SupervisorError("resource_unavailable: all slots leased")

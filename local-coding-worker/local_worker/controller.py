@@ -24,6 +24,10 @@ class IntegrationError(RuntimeError):
     pass
 
 
+class DelegationNotEligible(IntegrationError):
+    """A bounded delegation cannot be made runnable before admission."""
+
+
 _MAX_CHILD_SCOPES = 16
 _MAX_READONLY_SCOPES = 8
 _SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".cxx", ".cu", ".cuh", ".h", ".hh", ".hpp", ".hxx"}
@@ -142,6 +146,81 @@ def _proven_source_scope(root: Path, scopes: list[str], focus: str) -> str | Non
     focus_lower = focus.lower()
     focus_words = {word for word in re.findall(r"[a-z0-9]+", focus_lower) if len(word) >= 3}
     return min(candidates, key=lambda path: (-_scope_score(path, focus_lower, focus_words), path))
+
+
+def _packet_targets(packet: dict[str, Any]) -> list[dict[str, Any]]:
+    if packet.get("format") == "CTXPP-CONTEXT-PACKET/1":
+        target = packet.get("target")
+        return [target] if isinstance(target, dict) else []
+    targets = packet.get("canonical_targets")
+    return [item for item in targets if isinstance(item, dict)] if isinstance(targets, list) else []
+
+
+def _validate_context_packet(root: Path, request: dict[str, Any], packet: dict[str, Any]) -> None:
+    if packet.get("format") not in {"CTXPP-CONTEXT-PACKET/1", "CTXPP-CONTEXT-PACKET/2"}:
+        raise DelegationNotEligible("ctxpp_preflight_invalid_packet_format")
+    if packet.get("readonly") is not True or not re.fullmatch(r"[0-9a-f]{64}", str(packet.get("packet_hash", ""))):
+        raise DelegationNotEligible("ctxpp_preflight_invalid_packet_identity")
+    unhashed = dict(packet)
+    claimed_hash = str(unhashed.pop("packet_hash"))
+    actual_hash = hashlib.sha256(
+        json.dumps(unhashed, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    if claimed_hash != actual_hash:
+        raise DelegationNotEligible("ctxpp_preflight_invalid_packet_hash")
+    trust = packet.get("trust") if isinstance(packet.get("trust"), dict) else {}
+    if packet.get("format") == "CTXPP-CONTEXT-PACKET/1":
+        coverage = packet.get("coverage") if isinstance(packet.get("coverage"), dict) else {}
+        usable = (
+            trust.get("target_range") == "hash-verified"
+            and trust.get("relationships") == "semantic"
+            and trust.get("index_incomplete") is False
+            and coverage.get("sufficient") is True
+        )
+    else:
+        expected = "review" if request["mode"] == "readonly" else "edit"
+        usable = (
+            trust.get("freshness") == "hash-verified"
+            and trust.get("relationships") == "semantic"
+            and not trust.get("missing_required")
+            and expected in list(trust.get("sufficient_for") or [])
+            and packet.get("budget_exceeded") is False
+        )
+    if not usable:
+        raise DelegationNotEligible("ctxpp_preflight_packet_not_usable")
+    authorized = sorted(set([*request["scopes"], *request.get("read_dependencies", [])]))
+    targets = _packet_targets(packet)
+    if not targets:
+        raise DelegationNotEligible("ctxpp_preflight_has_no_canonical_target")
+    for target in targets:
+        location = target.get("location") if isinstance(target.get("location"), dict) else {}
+        relative = str(location.get("path", ""))
+        if not relative or not any(_inside_scope(relative, scope) for scope in authorized):
+            raise DelegationNotEligible("ctxpp_preflight_target_outside_child_scope")
+        source = root / relative
+        expected_hash = str(location.get("content_sha256", ""))
+        if not source.is_file() or source.is_symlink() or hashlib.sha256(source.read_bytes()).hexdigest() != expected_hash:
+            raise DelegationNotEligible("ctxpp_preflight_target_is_stale")
+
+
+class _ContextPreparationLock:
+    def __init__(self, root: Path) -> None:
+        common = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"], cwd=root, text=True,
+            capture_output=True, check=True,
+        ).stdout.strip()
+        common_path = Path(common) if Path(common).is_absolute() else root / common
+        lock_root = common_path.resolve() / "local-coding-worker/locks"
+        lock_root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        self.stream = (lock_root / "ctxpp-preflight.lock").open("a+b")
+
+    def __enter__(self):
+        fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX)
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        fcntl.flock(self.stream.fileno(), fcntl.LOCK_UN)
+        self.stream.close()
 
 
 def _bounded_delegation_objective(task_objective: str, objective_focus: str | None) -> str:
@@ -478,46 +557,120 @@ class IntegrationController:
             )
         return request
 
+    @staticmethod
+    def _context_task_spec(request: dict[str, Any]) -> dict[str, Any]:
+        root = Path(request["repo_root"])
+        target = str(request.get("target", ""))
+        target_path = root / target if target else None
+        target_symbols = [] if target_path is not None and target_path.is_file() else ([target] if target else [])
+        read_paths = sorted(set([
+            *request["scopes"], *request.get("read_dependencies", []),
+        ]))
+        return {
+            "objective": request["objective"],
+            "role": "review" if request["mode"] == "readonly" else "edit",
+            "strict_authorized_paths": True,
+            "read_paths": read_paths,
+            "write_paths": request["scopes"] if request["mode"] == "writable" else [],
+            "forbidden_paths": [],
+            "target_symbols": target_symbols,
+            "failing_tests": [],
+            "interface_ids": [],
+            "acceptance_gates": request["gates"],
+        }
+
+    def _context_packet(self, request: dict[str, Any]) -> dict[str, Any]:
+        root = Path(request["repo_root"])
+        task_spec_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", prefix="local-worker-preflight-",
+                suffix=".json", delete=False,
+            ) as task_spec_file:
+                json.dump(self._context_task_spec(request), task_spec_file, separators=(",", ":"))
+                task_spec_path = Path(task_spec_file.name)
+            return self._run_json([
+                str(self.ctxpp_cli), "--root", str(root), "--json", "packet",
+                "--task-spec", str(task_spec_path), "--consumer", "local-worker",
+                "--budget", str(request.get("budget_tokens", 4096)),
+                "--max-items", str(request.get("max_items", 12)),
+            ], cwd=root)
+        finally:
+            if task_spec_path is not None:
+                task_spec_path.unlink(missing_ok=True)
+
+    @staticmethod
+    def _bounded_context_scan_path(request: dict[str, Any]) -> str | None:
+        root = Path(request["repo_root"])
+        authorized = sorted(set([*request["scopes"], *request.get("read_dependencies", [])]))
+        target = str(request.get("target", ""))
+        target_path = root / target if target else None
+        if (
+            target_path is not None and target_path.is_file() and not target_path.is_symlink()
+            and target_path.suffix.lower() in _SOURCE_SUFFIXES
+            and any(_inside_scope(target, scope) for scope in authorized)
+        ):
+            return target
+        return _proven_source_scope(root, authorized, str(request.get("objective", "")))
+
+    def prepare_delegation(self, value: object) -> dict[str, Any]:
+        """Establish one exact bounded packet before GPU admission or child creation."""
+        request = normalize_integration_request(value)
+        root = Path(request["repo_root"])
+        existing = request.get("context_packet")
+        if isinstance(existing, dict):
+            _validate_context_packet(root, request, existing)
+            return request
+        scan_path = self._bounded_context_scan_path(request)
+        if scan_path is None:
+            raise DelegationNotEligible("ctxpp_preflight_has_no_proven_source_path")
+        with _ContextPreparationLock(root):
+            try:
+                packet = self._context_packet(request)
+                _validate_context_packet(root, request, packet)
+            except (IntegrationError, DelegationNotEligible):
+                if not (root / ".ctxpp.toml").is_file():
+                    raise DelegationNotEligible("ctxpp_preflight_repository_not_configured") from None
+                try:
+                    self._run_json([
+                        str(self.ctxpp_cli), "--root", str(root), "--json", "init",
+                        "--no-build-core", "--no-scan",
+                    ], cwd=root)
+                    self._run_json([
+                        str(self.ctxpp_cli), "--root", str(root), "--json", "scan", scan_path,
+                    ], cwd=root)
+                    packet = self._context_packet(request)
+                    _validate_context_packet(root, request, packet)
+                except (IntegrationError, DelegationNotEligible) as error:
+                    reason = str(error)
+                    if reason.startswith("ctxpp_preflight_"):
+                        raise DelegationNotEligible(reason) from None
+                    raise DelegationNotEligible("ctxpp_preflight_initialization_failed") from None
+        request["context_packet"] = packet
+        return request
+
     def delegate(
         self, repo_root: str | Path, claim_token: str, *, mode: str, target: str | None = None,
         objective: str | None = None,
     ) -> dict[str, Any]:
-        return self.run(self.request_from_claim(
+        request = self.request_from_claim(
             repo_root, claim_token, mode=mode, target=target, objective=objective,
-        ))
+        )
+        injected_runner = (
+            request["mode"] == "readonly" and self.terminal_runner is not None
+        ) or (
+            request["mode"] == "writable" and self.writable_runner is not None
+        )
+        return self.run(request if injected_runner else self.prepare_delegation(request))
 
     def _writable_model(self, workspace: Path, request: dict[str, Any]) -> dict[str, Any]:
         import tomllib
         from .harnesses import QwenCodeAdapter
         from .result_validation import validate_model_outcome
         from .supervisor import SupervisorClient
-        task_spec = {
-            "objective": request["objective"], "role": "edit",
-            "read_paths": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
-            "write_paths": request["scopes"], "forbidden_paths": [], "target_symbols": [],
-            "failing_tests": [], "interface_ids": [], "acceptance_gates": request["gates"],
-        }
-        if request.get("target"):
-            task_spec["target_symbols"] = [str(request["target"])]
-        if not (workspace / ".ctxpp/index.jsonl").is_file():
-            self._run_json([
-                str(self.ctxpp_cli), "--root", str(workspace), "--json", "scan",
-            ], cwd=workspace)
-        task_spec_path: Path | None = None
-        try:
-            with tempfile.NamedTemporaryFile(
-                mode="w", encoding="utf-8", prefix="local-worker-task-", suffix=".json", delete=False,
-            ) as task_spec_file:
-                json.dump(task_spec, task_spec_file, separators=(",", ":"))
-                task_spec_path = Path(task_spec_file.name)
-            packet = self._run_json([
-                str(self.ctxpp_cli), "--root", str(workspace), "--json", "packet",
-                "--task-spec", str(task_spec_path), "--consumer", "local-worker",
-                "--budget", "1536", "--max-items", "4",
-            ], cwd=workspace)
-        finally:
-            if task_spec_path is not None:
-                task_spec_path.unlink(missing_ok=True)
+        packet = request.get("context_packet")
+        if not isinstance(packet, dict):
+            raise IntegrationError("real writable delegation requires a prepared context packet")
         supervisor = SupervisorClient(request["repo_root"])
         profile = tomllib.loads((Path(__file__).resolve().parents[1] /
                                  "config/production-profile.toml").read_text(encoding="utf-8"))
@@ -719,6 +872,8 @@ class IntegrationController:
         }
         if execution:
             worker["execution"] = execution
+        if isinstance(request.get("context_packet"), dict):
+            worker["context_packet"] = request["context_packet"]
         terminal = self._terminal(worker)
         status = str(terminal.get("status", "needs_codex"))
         if status not in {"completed", "no_change", "needs_codex", "failed", "preempted"}:
@@ -927,10 +1082,10 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
         "format", "schema_version", "mode", "repo_root", "parent_claim_token", "task_id",
         "objective", "scopes", "gates", "cuda_registry",
     }
-    readonly = {"role", "target", "intent", "budget_tokens", "max_items"} | ({"execution"} if version == 2 else set())
+    readonly = {"role", "target", "intent", "budget_tokens", "max_items"} | ({"execution", "context_packet"} if version == 2 else set())
     writable = {"fake_changes", "baseline_commands", "verification_commands", "acceptance_commands"}
     if version == 2:
-        writable |= {"read_dependencies", "approved_overlays", "execution", "target"}
+        writable |= {"read_dependencies", "approved_overlays", "execution", "target", "context_packet"}
     if version not in {1, 2} or request.get("format") != f"CORE4-INTEGRATION-REQUEST/{version}":
         raise IntegrationError("integration request must use matching CORE4-INTEGRATION-REQUEST/1 or /2")
     mode = request.get("mode")
@@ -940,7 +1095,9 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
     unknown = sorted(set(request) - allowed)
     optional = {"cuda_registry"}
     if mode == "writable" and version == 2:
-        optional |= {"fake_changes", "read_dependencies", "approved_overlays", "execution", "target"}
+        optional |= {"fake_changes", "read_dependencies", "approved_overlays", "execution", "target", "context_packet"}
+    if mode == "readonly" and version == 2:
+        optional |= {"context_packet"}
     missing = sorted((allowed - optional) - set(request))
     if unknown or missing:
         raise IntegrationError(f"integration request fields invalid: missing={missing} extra={unknown}")
@@ -979,6 +1136,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
                 raise IntegrationError("execution contains unknown fields")
             if execution.get("backend") not in {"fake", "real"}:
                 raise IntegrationError("execution backend must be fake or real")
+            if "context_packet" in request:
+                _object(request["context_packet"], "context_packet")
     else:
         _object(request.get("fake_changes", {}), "fake_changes")
         for name in ("baseline_commands", "verification_commands", "acceptance_commands"):
@@ -995,6 +1154,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
                 execution = _object(request["execution"], "execution")
                 if set(execution) - {"backend", "harness", "gpu_count", "service_profile", "harness_config", "admission_id"}:
                     raise IntegrationError("execution contains unknown fields")
+            if "context_packet" in request:
+                _object(request["context_packet"], "context_packet")
     registry = request.get("cuda_registry")
     if registry is not None:
         registry_path = Path(str(registry))

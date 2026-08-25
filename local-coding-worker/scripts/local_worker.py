@@ -22,7 +22,7 @@ if str(SKILL_ROOT) in sys.path:
 sys.path.insert(0, str(SKILL_ROOT))
 
 from local_worker.acceptance import AcceptanceError  # noqa: E402
-from local_worker.controller import IntegrationController, IntegrationError  # noqa: E402
+from local_worker.controller import DelegationNotEligible, IntegrationController, IntegrationError  # noqa: E402
 from local_worker.model_cache import ModelCache, ModelCacheError  # noqa: E402
 from local_worker.supervisor import SupervisorClient, SupervisorError, runtime_root  # noqa: E402
 from local_worker.production_checks import (ProductionCheckError, evaluate, host_check,
@@ -96,6 +96,15 @@ def _launch_delegate(
         return {
             "status": "not_eligible", "reason": "no_proven_ctxpp_source_target",
             "fallback": "continue_frontier",
+        }
+    try:
+        request = controller.prepare_delegation(request)
+    except DelegationNotEligible as error:
+        return {
+            "status": "not_eligible", "reason": str(error)[:500],
+            "fallback": "continue_frontier", "child_created": False,
+            "scope_locked": False, "admission_created": False,
+            "model_started": False,
         }
     resolved_mode = str(request["mode"])
     supervisor = supervisor or SupervisorClient(repo)

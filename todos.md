@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `110`
+Project revision: `125`
 
 ## Workstreams
 - `C4Q-02` | kind: integration_task | status: done | parent: - | objective: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
@@ -12,6 +12,7 @@ Project revision: `110`
 - `CWM-07` | kind: integration_task | status: done | parent: - | objective: Treat MCP target text as a delegation objective, derive or omit a separately proven ctxpp target, and select 1-16 relevant child scopes within the parent authorization for writable and read-only CE-style requests without weakening admission or acceptance safety.
 - `CWM-08` | kind: integration_task | status: done | parent: - | objective: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
 - `CWM-09` | kind: integration_task | status: done | parent: - | objective: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
+- `CWM-10` | kind: integration_task | status: done | parent: - | objective: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
 - `CWM-01` | kind: workstream | status: done | parent: - | objective: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | kind: workstream | status: done | parent: - | objective: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | kind: integration_task | status: done | parent: - | objective: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.

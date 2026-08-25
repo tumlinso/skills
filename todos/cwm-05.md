@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-05: Rebase onto the repaired skills and validate the live public contracts
 
-Task revision: `100`; current project revision is in `todo-status.md`.
+Task revision: `113`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate the user's latest local-worker repair, validate todo/ctxpp/local-worker/CUDA adapters, run one real read-only MCP delegation, one bounded writable delegation, and preserve immediate local-unavailable fallback.

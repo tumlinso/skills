@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import fcntl
 import secrets
 import subprocess
 import sys
@@ -125,12 +126,69 @@ class CodingWorkflowBackend:
             extra_env=extra_env,
         )
 
-    def ctxpp(self, repo: Path, *arguments: str) -> dict[str, Any]:
+    def ctxpp(self, repo: Path, *arguments: str, timeout: float = 30) -> dict[str, Any]:
         return self._run_json(
             [sys.executable, str(self.entry_points["ctxpp"]), "--root", str(repo), "--json", *arguments],
             cwd=repo,
+            timeout=timeout,
             allow_failure=True,
         )
+
+    @staticmethod
+    def _ctxpp_lock(repo: Path):
+        common_raw = subprocess.run(
+            ["git", "rev-parse", "--git-common-dir"], cwd=repo, text=True,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, shell=False,
+        ).stdout.strip()
+        common = Path(common_raw) if Path(common_raw).is_absolute() else repo / common_raw
+        lock_root = common.resolve() / "local-coding-worker/locks"
+        lock_root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        return (lock_root / "ctxpp-preflight.lock").open("a+b")
+
+    def _recover_inspection_packet(
+        self, repo: Path, record: dict[str, Any], target: str | None,
+        intent: str, budget_tokens: int,
+    ) -> dict[str, Any] | None:
+        if not target:
+            return None
+        candidate = Path(target)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            return None
+        source = repo / candidate
+        if not source.is_file() or source.is_symlink() or source.suffix.lower() not in {
+            ".c", ".cc", ".cpp", ".cxx", ".cu", ".cuh", ".h", ".hh", ".hpp", ".hxx",
+        }:
+            return None
+        context = self._data(self.todo(
+            repo, "context", "--claim-token", str(record["claim_token"]), allow_failure=True,
+        ))
+        scope = context.get("scope") if isinstance(context.get("scope"), dict) else {}
+        authorized = [
+            str(item).rstrip("/") for key in ("exclusive_paths", "read_paths")
+            for item in scope.get(key, []) if isinstance(item, str) and item
+        ]
+        relative = candidate.as_posix()
+        if not any(relative == root or relative.startswith(root + "/") for root in authorized):
+            return None
+        if not (repo / ".ctxpp.toml").is_file():
+            return None
+        stream = self._ctxpp_lock(repo)
+        try:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_EX)
+            arguments = ["packet", "--consumer", "coding-workflow", "--intent", intent,
+                         "--budget", str(budget_tokens), "--max-items", "12", target]
+            try:
+                return self._data(self.ctxpp(repo, *arguments))
+            except BackendError:
+                pass
+            self.ctxpp(repo, "init", "--no-build-core", "--no-scan", timeout=60)
+            self.ctxpp(repo, "scan", relative, timeout=300)
+            return self._data(self.ctxpp(repo, *arguments))
+        except (BackendError, OSError, subprocess.SubprocessError):
+            return None
+        finally:
+            fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            stream.close()
 
     def worker(self, repo: Path, *arguments: str, timeout: float = 30) -> dict[str, Any]:
         return self._run_json(
@@ -425,7 +483,9 @@ class CodingWorkflowBackend:
             try:
                 packet = self._data(self.ctxpp(repo, *arguments))
             except BackendError:
-                return {"status": "unavailable", "fallback": "use_normal_repository_tools"}
+                packet = self._recover_inspection_packet(repo, record, target, intent, budget_tokens)
+                if packet is None:
+                    return {"status": "unavailable", "fallback": "use_normal_repository_tools"}
             if packet.get("ok") is False or packet.get("error"):
                 return {"status": "unavailable", "fallback": "use_normal_repository_tools"}
             compact = {
@@ -468,11 +528,15 @@ class CodingWorkflowBackend:
                 "scope_locked": False,
             }, 700)
         if status == "not_eligible":
-            return bounded_json({
+            result = {
                 "status": "not_eligible",
                 "reason": response.get("reason", "task_is_not_bounded_for_local_execution"),
                 "fallback": "continue_frontier",
-            }, 700)
+            }
+            for key in ("child_created", "scope_locked", "admission_created", "model_started"):
+                if response.get(key) is False:
+                    result[key] = False
+            return bounded_json(result, 700)
         execution_id = response.get("execution_id")
         delegated_mode = response.get("mode") or (mode if mode != "auto" else response.get("admitted_mode"))
         if status != "delegated" or not isinstance(execution_id, str) or delegated_mode not in {"readonly", "writable"}:

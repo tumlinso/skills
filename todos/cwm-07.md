@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # CWM-07: Fix bounded delegation target and scope translation
 
-Task revision: `100`; current project revision is in `todo-status.md`.
+Task revision: `113`; current project revision is in `todo-status.md`.
 
 ## Objective
 Treat MCP target text as a delegation objective, derive or omit a separately proven ctxpp target, and select 1-16 relevant child scopes within the parent authorization for writable and read-only CE-style requests without weakening admission or acceptance safety.
