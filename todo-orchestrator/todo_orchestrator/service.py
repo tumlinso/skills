@@ -40,7 +40,7 @@ from .legacy import apply_markdown_import, inspect_markdown
 from .models import ExitCode, TodoError
 from .ownership import acquire_named_locks, guard_paths, release_lock, scopes_for
 from .plan import apply_plan, load_plan, plan_diff, scaffold, validate_plan
-from .projections import refresh_projections, restore_snapshot, write_snapshot
+from .projections import build_snapshot, refresh_projections, restore_snapshot, write_snapshot
 from .readiness import explain_task, ready_tasks
 from .reporting import git_diffstat, no_work_frontier, project_status
 from .resources import acquire_resource, discover_nvidia, list_resources, release_resource, upsert_inventory
@@ -55,9 +55,17 @@ class Service:
             self.paths = project_paths(repo_root)
             self.project = read_project(self.paths.repo_root)
         configuration = self.project.get("configuration", {})
-        self.db = Database(self.paths.db_file, busy_timeout_ms=int(configuration.get("busy_timeout_ms", 5000)))
+        self.read_only = os.environ.get("TODO_ORCHESTRATOR_READ_ONLY") == "1"
+        self.db = Database(
+            self.paths.db_file,
+            busy_timeout_ms=int(configuration.get("busy_timeout_ms", 5000)),
+            read_only=self.read_only,
+        )
         database_existed = self.paths.db_file.exists()
-        self.db.initialize(self.project)
+        if self.read_only and not database_existed:
+            raise TodoError("todo_state_unavailable", "Todo state is unavailable", ExitCode.CONSISTENCY_ERROR)
+        if not self.read_only:
+            self.db.initialize(self.project)
         if not database_existed and self.paths.snapshot_file.exists():
             restore_snapshot(self.db, self.paths, self.project)
 
@@ -573,6 +581,10 @@ class Service:
         return {"database": integrity, "audit": audit, "state_db": str(self.paths.db_file), "snapshot": str(self.paths.snapshot_file), "clean": integrity["integrity"] == "ok" and not integrity["foreign_key_errors"] and audit["clean"]}
 
     def export(self) -> dict[str, object]:
+        if self.read_only:
+            with self.db.read() as conn:
+                snapshot = build_snapshot(conn, self.project)
+            return {"state": snapshot, "project_revision": int(snapshot["project_revision"])}
         revision = write_snapshot(self.db, self.paths, self.project)
         return {"snapshot": str(self.paths.snapshot_file), "project_revision": revision}
 

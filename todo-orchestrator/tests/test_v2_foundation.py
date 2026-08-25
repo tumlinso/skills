@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from v2_helpers import V2Repo, base_plan, safe_task
@@ -31,6 +32,22 @@ class V2FoundationTests(unittest.TestCase):
         self.repo.service.export()
         second = (self.repo.root / ".todo-orchestrator" / "state.snapshot.json").read_bytes()
         self.assertEqual(first, second)
+
+    def test_read_only_service_status_and_export_do_not_write_snapshot(self) -> None:
+        self.repo.apply(base_plan([safe_task("A", "src/a")]))
+        snapshot_path = self.repo.root / ".todo-orchestrator" / "state.snapshot.json"
+        before = snapshot_path.read_bytes()
+        before_mtime = snapshot_path.stat().st_mtime_ns
+        from todo_orchestrator.service import Service
+
+        with patch.dict("os.environ", {"TODO_ORCHESTRATOR_READ_ONLY": "1"}):
+            service = Service(self.repo.root)
+            status = service.status()
+            exported = service.export()
+        self.assertEqual(status["project_revision"], exported["project_revision"])
+        self.assertEqual(exported["state"]["project"]["project_uuid"], self.repo.service.project["project_uuid"])
+        self.assertEqual(snapshot_path.read_bytes(), before)
+        self.assertEqual(snapshot_path.stat().st_mtime_ns, before_mtime)
 
     def test_event_revisions_are_unique_and_monotonic(self) -> None:
         self.repo.apply(base_plan([safe_task("A", "src/a")]))

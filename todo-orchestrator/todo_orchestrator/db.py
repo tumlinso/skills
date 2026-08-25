@@ -18,19 +18,31 @@ T = TypeVar("T")
 
 
 class Database:
-    def __init__(self, path: Path, *, busy_timeout_ms: int = 5000, retries: int = 7):
+    def __init__(self, path: Path, *, busy_timeout_ms: int = 5000, retries: int = 7, read_only: bool = False):
         self.path = path
         self.busy_timeout_ms = busy_timeout_ms
         self.retries = retries
+        self.read_only = read_only
 
     def connect(self) -> sqlite3.Connection:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(self.path, timeout=self.busy_timeout_ms / 1000.0, isolation_level=None)
+        if self.read_only:
+            conn = sqlite3.connect(
+                f"file:{self.path}?mode=ro",
+                uri=True,
+                timeout=self.busy_timeout_ms / 1000.0,
+                isolation_level=None,
+            )
+        else:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            conn = sqlite3.connect(self.path, timeout=self.busy_timeout_ms / 1000.0, isolation_level=None)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute(f"PRAGMA busy_timeout={self.busy_timeout_ms}")
-        conn.execute("PRAGMA journal_mode=WAL")
-        conn.execute("PRAGMA synchronous=FULL")
+        if self.read_only:
+            conn.execute("PRAGMA query_only=ON")
+        else:
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA synchronous=FULL")
         return conn
 
     def initialize(self, project: dict[str, object]) -> None:
