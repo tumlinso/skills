@@ -131,9 +131,16 @@ class ToolTests(unittest.TestCase):
         unsafe = self.backend.delegate_task(workflow, "writable", None)
         self.assertEqual(unsafe["status"], "attention_required")
         self.backend.worker_status = "delegated"
-        delegated = self.backend.delegate_task(workflow, "auto", "Widget")
+        ce_objective = (
+            "CE-ARCH-71 bounded implementation seam only: inspect prepared operation registration."
+        )
+        delegated = self.backend.delegate_task(workflow, "auto", ce_objective)
         self.assertEqual(delegated["status"], "delegated")
         self.assertEqual(delegated["mode"], "readonly")
+        worker_call = next(call for call in reversed(self.backend.calls) if call and call[:2] == ("worker", "delegate"))
+        self.assertIn("--objective", worker_call)
+        self.assertEqual(worker_call[worker_call.index("--objective") + 1], ce_objective)
+        self.assertNotIn("--target", worker_call)
         running = self.backend.collect_delegation(delegated["delegation_handle"])
         self.assertEqual(running, {"status": "running", "instruction": "continue_frontier_or_collect_later",
                                    "poll_recommended": False})

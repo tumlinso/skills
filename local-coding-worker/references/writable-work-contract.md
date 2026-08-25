@@ -32,3 +32,8 @@ gate runs against current canonical source with the child token; the parent
 then credits that exact evidence with `gate run --accept-child` and performs
 ordinary `child accept`. Any gate or credit failure reverses only the candidate
 patch and rejects the child.
+
+Delegation scope translation selects at most 16 relevant existing write paths
+inside the parent exclusive scope. `--objective` narrows the work request but
+does not become a ctxpp symbol; a separate target is emitted only for a proven
+authorized file path or an explicitly supplied bounded symbol.

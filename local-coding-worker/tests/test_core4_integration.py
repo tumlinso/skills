@@ -177,9 +177,102 @@ class Core4IntegrationTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "completed")
         self.assertEqual(seen["objective"], "Review the bounded source.")
-        self.assertEqual(seen["scopes"], ["docs", "src"])
-        self.assertEqual(seen["target"], "")
+        self.assertEqual(seen["scopes"], ["src"])
+        self.assertEqual(seen["target"], "src/kernel.cu")
         self.assertEqual((seen["format"], seen["backend"]), ("LCW-REQUEST/2", "real"))
+
+    def test_ce_style_writable_objective_selects_bounded_write_scope_and_separate_target(self) -> None:
+        for index in range(20):
+            (self.root / f"src/seam_{index}.cu").write_text("// seam\n", encoding="utf-8")
+        capsule = {
+            "task": {
+                "id": "CE-ARCH-71", "title": "Register operation candidates",
+                "objective": "Implement the bounded operation seam.",
+                "next_action": "Edit src/seam_17.cu and preserve launch bindings.",
+            },
+            "scope": {
+                "exclusive_paths": [f"src/seam_{index}.cu" for index in range(20)],
+                "read_paths": ["docs/note.txt"], "forbidden_paths": [],
+            },
+            "gates": [],
+        }
+        controller = self.controller()
+        controller._todo = mock.Mock(return_value=capsule)
+        objective = (
+            "CE-ARCH-71 bounded implementation seam only: register the prepared operation "
+            "without widening the architecture or changing unrelated candidates."
+        )
+        request = controller.request_from_claim(
+            self.root, "toc_fixture", mode="writable", objective=objective,
+        )
+        self.assertIn("Implement the bounded operation seam.", request["objective"])
+        self.assertIn(f"Delegation focus: {objective}", request["objective"])
+        self.assertEqual(request["scopes"], ["src/seam_17.cu"])
+        self.assertEqual(request["target"], "src/seam_17.cu")
+        self.assertLessEqual(len(request["scopes"]), 16)
+
+    def test_ce_style_writable_natural_language_is_not_a_ctxpp_target_and_caps_scopes(self) -> None:
+        write_paths = []
+        for index in range(20):
+            path = self.root / f"src/seam_{index}.cu"
+            path.write_text("// seam\n", encoding="utf-8")
+            write_paths.append(f"src/seam_{index}.cu")
+        capsule = {
+            "task": {
+                "id": "CE-ARCH-71", "title": "Register operation candidates",
+                "objective": "Implement the bounded candidate registration seam.", "next_action": "",
+            },
+            "scope": {"exclusive_paths": write_paths, "read_paths": [], "forbidden_paths": []},
+            "gates": [],
+        }
+        controller = self.controller()
+        controller._todo = mock.Mock(return_value=capsule)
+        objective = (
+            "CE-ARCH-71 bounded implementation seam only: preserve the prepared launch contract "
+            "and avoid architecture changes."
+        )
+        request = controller.request_from_claim(
+            self.root, "toc_fixture", mode="writable", objective=objective,
+        )
+        self.assertIn(request["target"], request["scopes"])
+        self.assertNotEqual(request["target"], objective)
+        self.assertEqual(len(request["scopes"]), 16)
+        self.assertTrue(all(path in write_paths for path in request["scopes"]))
+
+    def test_ce_style_readonly_objective_selects_relevant_subset_and_omits_unproven_target(self) -> None:
+        read_paths = []
+        for index in range(20):
+            path = self.root / f"docs/topic_{index}.txt"
+            path.write_text("bounded\n", encoding="utf-8")
+            read_paths.append(f"docs/topic_{index}.txt")
+        operation = self.root / "docs/operation_contract.txt"
+        operation.write_text("operation\n", encoding="utf-8")
+        read_paths.append("docs/operation_contract.txt")
+        capsule = {
+            "task": {
+                "id": "CE-ARCH-71", "title": "Review operation registration",
+                "objective": "Review the prepared operation contract.", "next_action": "",
+            },
+            "scope": {
+                "exclusive_paths": ["src/kernel.cu"], "read_paths": read_paths,
+                "forbidden_paths": [],
+            },
+            "gates": [],
+        }
+        controller = self.controller()
+        controller._todo = mock.Mock(return_value=capsule)
+        objective = (
+            "CE-ARCH-71 bounded read-only review: inspect operation launch registration and "
+            "report whether the seam is internally consistent."
+        )
+        request = controller.request_from_claim(
+            self.root, "toc_fixture", mode="readonly", objective=objective,
+        )
+        self.assertIn("Review the prepared operation contract.", request["objective"])
+        self.assertIn(f"Delegation focus: {objective}", request["objective"])
+        self.assertEqual(request["scopes"], ["docs/operation_contract.txt"])
+        self.assertEqual(request["target"], "")
+        self.assertLessEqual(len(request["scopes"]), 16)
 
     def test_public_writable_delegate_forwards_explicit_ctxpp_target(self) -> None:
         request = self.controller().request_from_claim(
@@ -266,16 +359,63 @@ class Core4IntegrationTests(unittest.TestCase):
                             "slot_id": "slot-a", "service_lease_id": "lease-a", "server_pid": 42}
                 return {"released": True}
         class Harness:
-            def start(self, context): return "harness"
-            def run(self, handle, request): return {"status": "succeeded", "usage": {}, "duration_ms": 1}
-            def evict(self, handle): return None
+            def start(self, context): calls.append(("model-start", {})); return "harness"
+            def run(self, handle, request):
+                calls.append(("model-run", {}))
+                return {"status": "succeeded", "usage": {}, "duration_ms": 1}
+            def evict(self, handle): calls.append(("model-evict", {}))
         runtime = ProductionReadOnlyRuntime(profile=profile, supervisor=Supervisor(),
                                             harness_factory=lambda name: Harness())
         snapshot = type("Snapshot", (), {"root": self.root})()
-        request = {"repo_root": str(self.root), "objective": "bounded", "role": "review", "scopes": ["src"],
+        request = {"repo_root": str(self.root),
+                   "objective": "CE-ARCH-71 bounded read-only operation registration review.",
+                   "role": "review", "scopes": ["docs/note.txt"],
                    "execution": {"backend": "real", "harness": "qwen", "admission_id": "admission-1"}}
         self.assertEqual(runtime.execute(request, {}, snapshot)["status"], "completed")
         self.assertEqual(calls[0], ("warm", {"admission_id": "admission-1"}))
+        self.assertEqual(calls[1:3], [("model-start", {}), ("model-run", {})])
+
+    def test_ce_style_writable_request_reaches_admitted_model_launch(self) -> None:
+        events = []
+        (self.root / ".ctxpp").mkdir()
+        (self.root / ".ctxpp/index.jsonl").write_text("{}\n", encoding="utf-8")
+        class Supervisor:
+            def request(self, operation, **parameters):
+                events.append((operation, parameters))
+                if operation == "warm":
+                    return {
+                        "base_url": "http://127.0.0.1:8080/v1", "model_id": "candidate",
+                        "slot_id": "slot-a", "service_lease_id": "lease-a", "server_pid": 42,
+                        "gpu_uuids": ["GPU-a"], "reused": True,
+                    }
+                return {"released": True}
+        class Harness:
+            def start(self, context): events.append(("model-start", {})); return "harness"
+            def run(self, handle, request):
+                events.append(("model-run", {}))
+                return {"model_outcome": {"placeholder": True}, "usage": {}}
+            def evict(self, handle): events.append(("model-evict", {}))
+        request = {
+            "objective": (
+                "CE-ARCH-71 bounded implementation seam only: register the prepared operation. "
+                + ("constraint " * 40)
+            ),
+            "repo_root": str(self.root),
+            "scopes": ["src/kernel.cu"], "read_dependencies": ["docs/note.txt"],
+            "gates": [], "execution": {"backend": "real", "harness": "qwen", "admission_id": "admission-1"},
+        }
+        validated = {
+            "outcome": "completed", "summary": "bounded candidate", "claims": [],
+            "changed_paths": [], "risk": "low", "blocker": None,
+        }
+        controller = self.controller()
+        with mock.patch("local_worker.supervisor.SupervisorClient", return_value=Supervisor()), \
+             mock.patch("local_worker.harnesses.QwenCodeAdapter", return_value=Harness()), \
+             mock.patch("local_worker.result_validation.validate_model_outcome", return_value=validated):
+            result = controller._writable_model(self.root, request)
+        self.assertEqual(result["status"], "completed")
+        self.assertEqual(events[0], ("warm", {"admission_id": "admission-1"}))
+        self.assertEqual(events[1:3], [("model-start", {}), ("model-run", {})])
 
     def test_child_creation_failure_cancels_unconsumed_admission(self) -> None:
         request = self.request("readonly")

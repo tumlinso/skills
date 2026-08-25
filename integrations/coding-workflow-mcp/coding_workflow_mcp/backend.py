@@ -281,7 +281,7 @@ class CodingWorkflowBackend:
         record, repo, _ = self._active_workflow(workflow_handle)
         arguments = ["delegate", "--claim-token", record["claim_token"], "--mode", mode]
         if target:
-            arguments.extend(["--target", target])
+            arguments.extend(["--objective", target])
         response = self._data(self.worker(repo, *arguments))
         status = response.get("status")
         if status == "local_unavailable":

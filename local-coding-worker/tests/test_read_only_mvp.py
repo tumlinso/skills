@@ -25,6 +25,7 @@ class ReadOnlyMvpTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.root = Path(cls.temp.name) / "repo"
         shutil.copytree(FIXTURE, cls.root, ignore=shutil.ignore_patterns("build", ".ctxpp", "__pycache__"))
+        subprocess.run(["git", "init", "-q"], cwd=cls.root, check=True)
         os.chmod(cls.root / "tests/tokenizer.py", 0o755)
         subprocess.run(["cmake", "-S", ".", "-B", "build", "-DCMAKE_BUILD_TYPE=Release"], cwd=cls.root,
                        check=True, text=True, capture_output=True)
@@ -137,6 +138,16 @@ class ReadOnlyMvpTests(unittest.TestCase):
         self.assertEqual(result["changed_paths"], [])
         calls = [json.loads(line) for line in self.todo_log.read_text(encoding="utf-8").splitlines()]
         self.assertIn("succeeded", calls[1])
+
+    def test_v2_long_objective_uses_task_spec_file_without_path_length_failure(self) -> None:
+        request = self.request(
+            format="LCW-REQUEST/2", schema_version=2,
+            objective="Review the bounded CE operation seam. " + ("constraint " * 40),
+            execution={"backend": "fake", "harness": "qwen", "gpu_count": 1},
+        )
+        process = self.invoke("run", request, fake_ctxpp=True)
+        self.assertEqual(process.returncode, 0, process.stderr + process.stdout)
+        self.assertEqual(json.loads(process.stdout)["status"], "no_change")
 
 
 if __name__ == "__main__":

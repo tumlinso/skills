@@ -17,6 +17,14 @@ todo secrets, worker tokens, GPU identifiers, endpoints, packets, logs, and
 transcripts remain behind the facade. Existing skill CLIs remain supported as
 fallback and debugging interfaces.
 
+`delegate_task.target` is a bounded delegation objective. It is not forwarded
+as a literal ctxpp target: local-worker independently derives an authorized
+source path from the capsule or selected scopes when one is proven and
+otherwise omits the ctxpp target and returns `not_eligible` before admission.
+The narrow objective is composed with, rather than substituted for, the parent
+todo objective. Child delegations receive only a relevant subset of 1–16
+parent-authorized scopes.
+
 The implementation uses the official Python MCP SDK over local stdio. Server
 startup imports no GPU library, initializes no model, reserves no GPU, and
 scans no repository.

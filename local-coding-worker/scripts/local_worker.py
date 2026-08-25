@@ -78,17 +78,25 @@ def _launch_delegate(
     claim_token: str,
     mode: str,
     target: str | None,
+    objective: str | None = None,
     *,
     controller: IntegrationController | None = None,
     supervisor: SupervisorClient | None = None,
 ) -> dict[str, object]:
     controller = controller or IntegrationController()
     try:
-        request = controller.request_from_claim(repo, claim_token, mode=mode, target=target)
+        request = controller.request_from_claim(
+            repo, claim_token, mode=mode, target=target, objective=objective,
+        )
     except IntegrationError as error:
         if "no usable" not in str(error):
             raise
         return {"status": "not_eligible", "reason": str(error)[:500], "fallback": "continue_frontier"}
+    if not request.get("target"):
+        return {
+            "status": "not_eligible", "reason": "no_proven_ctxpp_source_target",
+            "fallback": "continue_frontier",
+        }
     resolved_mode = str(request["mode"])
     supervisor = supervisor or SupervisorClient(repo)
     try:
@@ -141,7 +149,7 @@ def _run_detached_delegate(request_path: Path) -> int:
         else:  # Compatibility with launch records created before admission tickets.
             result = IntegrationController().delegate(
                 Path(str(launch["repo_root"])), str(launch["claim_token"]),
-                mode=str(launch["mode"]), target=launch.get("target"),
+                mode=str(launch["mode"]), target=launch.get("target"), objective=launch.get("objective"),
             )
         state = "completed"
         payload: dict[str, object] = {"result": result}
@@ -209,6 +217,7 @@ def main() -> int:
     delegate.add_argument("--claim-token")
     delegate.add_argument("--mode", choices=["auto", "readonly", "writable"])
     delegate.add_argument("--target")
+    delegate.add_argument("--objective")
     delegate.add_argument("--collect", metavar="EXECUTION_ID")
     delegate.add_argument("--wait", action="store_true")
     delegate.add_argument("--timeout", type=float, default=900.0)
@@ -313,7 +322,7 @@ def main() -> int:
             return 0 if result["ok"] else 2
         if args.command == "delegate":
             if args.collect:
-                if args.claim_token or args.mode or args.target:
+                if args.claim_token or args.mode or args.target or args.objective:
                     raise IntegrationError("--collect cannot be combined with launch arguments")
                 result = _collect_delegate(args.collect, wait=args.wait, timeout=args.timeout)
                 print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
@@ -321,10 +330,14 @@ def main() -> int:
             if not args.claim_token or not args.mode:
                 raise IntegrationError("delegate launch requires --claim-token and --mode")
             if args.wait:
-                result = IntegrationController().delegate(Path.cwd(), args.claim_token, mode=args.mode,
-                                                          target=args.target)
+                result = IntegrationController().delegate(
+                    Path.cwd(), args.claim_token, mode=args.mode,
+                    target=args.target, objective=args.objective,
+                )
             else:
-                result = _launch_delegate(Path.cwd(), args.claim_token, args.mode, args.target)
+                result = _launch_delegate(
+                    Path.cwd(), args.claim_token, args.mode, args.target, objective=args.objective,
+                )
             print(json.dumps(result, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
             return 0
         request = _request(args.request)

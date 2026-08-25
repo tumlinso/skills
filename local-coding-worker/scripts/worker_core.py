@@ -268,18 +268,29 @@ def run_controller(request_value: object, *, production_runtime: object | None =
     heartbeat_thread.start()
     try:
       if request["schema_version"] == 2:
-        task_spec = json.dumps({"objective": request["objective"], "role": request["role"],
+        task_spec = {"objective": request["objective"], "role": request["role"],
             "read_paths": request["scopes"], "write_paths": [], "forbidden_paths": [],
             "target_symbols": [request["target"]] if request["target"] else [], "failing_tests": [], "interface_ids": [],
-            "acceptance_gates": []}, separators=(",", ":"))
-        packet_argv = [str(ctxpp_cli), "--root", str(root), "--json", "packet", "--task-spec", task_spec,
-                       "--consumer", "local-worker", "--budget", str(request["budget_tokens"]),
-                       "--max-items", str(request["max_items"])]
+            "acceptance_gates": []}
+        task_spec_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", prefix="local-worker-task-", suffix=".json", delete=False,
+            ) as task_spec_file:
+                json.dump(task_spec, task_spec_file, separators=(",", ":"))
+                task_spec_path = Path(task_spec_file.name)
+            packet_argv = [str(ctxpp_cli), "--root", str(root), "--json", "packet",
+                           "--task-spec", str(task_spec_path), "--consumer", "local-worker",
+                           "--budget", str(request["budget_tokens"]), "--max-items", str(request["max_items"])]
+            packet = _run_json(packet_argv, root)
+        finally:
+            if task_spec_path is not None:
+                task_spec_path.unlink(missing_ok=True)
       else:
         packet_argv = [str(ctxpp_cli), "--root", str(root), "--json", "packet", request["target"],
                        "--intent", request["intent"], "--budget", str(request["budget_tokens"]),
                        "--max-items", str(request["max_items"])]
-      packet = _run_json(packet_argv, root)
+        packet = _run_json(packet_argv, root)
       if packet.get("format") not in {"CTXPP-CONTEXT-PACKET/1", "CTXPP-CONTEXT-PACKET/2"} or packet.get("readonly") is not True:
         raise WorkerError("ctxpp did not return a read-only context packet")
       with ReadOnlySnapshot(root, request["scopes"]) as snapshot:

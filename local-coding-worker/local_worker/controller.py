@@ -6,6 +6,7 @@ import fcntl
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -16,11 +17,141 @@ import uuid
 
 from .acceptance import AcceptanceError, StaleSourceError, accept_patch_artifact, build_patch_artifact
 from .verification import require_verification
-from .workspace import materialize_writable_workspace, normalize_scopes
+from .workspace import WorkspaceError, materialize_writable_workspace, normalize_scopes
 
 
 class IntegrationError(RuntimeError):
     pass
+
+
+_MAX_CHILD_SCOPES = 16
+_MAX_READONLY_SCOPES = 8
+_SOURCE_SUFFIXES = {".c", ".cc", ".cpp", ".cxx", ".cu", ".cuh", ".h", ".hh", ".hpp", ".hxx"}
+_GENERIC_PATH_WORDS = {
+    "build", "code", "common", "core", "cpp", "cuda", "docs", "include",
+    "lib", "source", "src", "test", "tests",
+}
+
+
+def _inside_scope(path: str, scope: str) -> bool:
+    return path == scope or path.startswith(scope + "/")
+
+
+def _existing_parent_scopes(root: Path, values: object) -> list[str]:
+    if not isinstance(values, list):
+        return []
+    result: list[str] = []
+    for value in values:
+        if not isinstance(value, str):
+            continue
+        try:
+            normalized = normalize_scopes([value])[0]
+        except (TypeError, WorkspaceError):
+            continue
+        candidate = root / normalized
+        if candidate.exists() and not candidate.is_symlink() and normalized not in result:
+            result.append(normalized)
+    return result
+
+
+def _explicit_authorized_paths(root: Path, text: str, authorized: list[str], *, files_only: bool) -> list[str]:
+    matches = re.findall(r"[A-Za-z0-9_.+~-]+(?:/[A-Za-z0-9_.+~-]+)+", text.replace("\\", "/"))
+    result: list[str] = []
+    for match in matches:
+        try:
+            normalized = normalize_scopes([match.rstrip(".,:;)")])[0]
+        except (TypeError, WorkspaceError):
+            continue
+        candidate = root / normalized
+        if not candidate.exists() or (files_only and not candidate.is_file()):
+            continue
+        if any(_inside_scope(normalized, parent) for parent in authorized) and normalized not in result:
+            result.append(normalized)
+    return result
+
+
+def _scope_score(path: str, focus_lower: str, focus_words: set[str]) -> int:
+    lowered = path.lower()
+    score = 1000 if lowered in focus_lower else 0
+    parts = [word for word in re.findall(r"[a-z0-9]+", lowered) if len(word) >= 3]
+    meaningful = {word for word in parts if word not in _GENERIC_PATH_WORDS}
+    score += 25 * len(meaningful & focus_words)
+    basename = Path(path).name.lower()
+    stem = Path(path).stem.lower()
+    if basename and basename in focus_lower:
+        score += 100
+    if len(stem) >= 3 and stem in focus_words:
+        score += 50
+    return score
+
+
+def _select_child_scopes(
+    root: Path, authorized: list[str], focus: str, *, limit: int, fallback_count: int,
+) -> list[str]:
+    if not authorized:
+        return []
+    explicit = _explicit_authorized_paths(root, focus, authorized, files_only=False)
+    focus_lower = focus.lower()
+    focus_words = {word for word in re.findall(r"[a-z0-9]+", focus_lower) if len(word) >= 3}
+    ranked = sorted(
+        [*explicit, *(path for path in authorized if path not in explicit)],
+        key=lambda path: (-_scope_score(path, focus_lower, focus_words), len(PurePosixPath(path).parts), path),
+    )
+    relevant = [path for path in ranked if _scope_score(path, focus_lower, focus_words) > 0]
+    candidates = explicit or relevant or authorized[:fallback_count]
+    selected: list[str] = []
+    for path in candidates:
+        if any(_inside_scope(existing, path) or _inside_scope(path, existing) for existing in selected):
+            continue
+        selected.append(path)
+        if len(selected) == limit:
+            break
+    return selected
+
+
+def _proven_ctxpp_path(root: Path, focus: str, authorized: list[str]) -> str | None:
+    paths = _explicit_authorized_paths(root, focus, authorized, files_only=True)
+    return paths[0] if paths else None
+
+
+def _proven_source_scope(root: Path, scopes: list[str], focus: str) -> str | None:
+    candidates: list[str] = []
+    visited = 0
+    for scope in scopes:
+        candidate = root / scope
+        if candidate.is_file() and candidate.suffix.lower() in _SOURCE_SUFFIXES:
+            candidates.append(scope)
+            continue
+        if not candidate.is_dir():
+            continue
+        for directory, names, files in os.walk(candidate):
+            names[:] = sorted(name for name in names if not (Path(directory) / name).is_symlink())
+            for name in sorted(files):
+                visited += 1
+                path = Path(directory) / name
+                if not path.is_symlink() and path.suffix.lower() in _SOURCE_SUFFIXES:
+                    candidates.append(path.relative_to(root).as_posix())
+                if visited >= 256:
+                    break
+            if visited >= 256:
+                break
+        if visited >= 256:
+            break
+    if not candidates:
+        return None
+    focus_lower = focus.lower()
+    focus_words = {word for word in re.findall(r"[a-z0-9]+", focus_lower) if len(word) >= 3}
+    return min(candidates, key=lambda path: (-_scope_score(path, focus_lower, focus_words), path))
+
+
+def _bounded_delegation_objective(task_objective: str, objective_focus: str | None) -> str:
+    parent = task_objective.strip()
+    if objective_focus is None:
+        return parent[:500]
+    prefix = "\nDelegation focus: "
+    bounded_parent = parent[:280]
+    remaining = 500 - len(bounded_parent) - len(prefix)
+    return f"{bounded_parent}{prefix}{objective_focus[:remaining]}"
 
 
 def _qwen_budget_config(profile: dict[str, Any], *, writable: bool) -> dict[str, int]:
@@ -262,6 +393,7 @@ class IntegrationController:
 
     def request_from_claim(
         self, repo_root: str | Path, claim_token: str, *, mode: str, target: str | None = None,
+        objective: str | None = None,
     ) -> dict[str, Any]:
         root = Path(repo_root).resolve()
         capsule = self._todo(root, "context", "--claim-token", claim_token)
@@ -273,27 +405,55 @@ class IntegrationController:
             mode = "readonly"
         if mode not in {"readonly", "writable"}:
             raise IntegrationError("delegation mode must be auto, readonly, or writable")
-        scopes = list(scope.get("exclusive_paths", []))
-        if mode == "readonly":
-            scopes.extend(scope.get("read_paths", []))
-        scopes = sorted({str(item) for item in scopes if (root / str(item)).exists()})
+        if objective is not None and (not isinstance(objective, str) or not objective.strip()):
+            raise IntegrationError("delegation objective must be a non-empty string")
+        task_objective = str(task["objective"])
+        objective_focus = objective.strip()[:1000] if objective is not None else None
+        delegated_objective = _bounded_delegation_objective(task_objective, objective_focus)
+        focus = " ".join(str(task.get(key, "")) for key in ("title", "objective", "next_action"))
+        if objective_focus:
+            focus = f"{objective_focus} {focus}"
+        write_authorized = _existing_parent_scopes(root, scope.get("exclusive_paths", []))
+        read_authorized = _existing_parent_scopes(root, scope.get("read_paths", []))
+        if mode == "writable":
+            scopes = _select_child_scopes(
+                root, write_authorized, focus, limit=_MAX_CHILD_SCOPES, fallback_count=_MAX_CHILD_SCOPES,
+            )
+        else:
+            scopes = _select_child_scopes(
+                root, [*write_authorized, *read_authorized], focus,
+                limit=_MAX_READONLY_SCOPES, fallback_count=1,
+            )
         if not scopes:
             raise IntegrationError(f"todo task has no usable {mode} scope")
+        if not 1 <= len(scopes) <= _MAX_CHILD_SCOPES:
+            raise IntegrationError("delegation must derive 1-16 child scopes")
+        authorized = [*write_authorized, *read_authorized]
+        ctxpp_target = None
+        if target:
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_:~<>]*", target):
+                ctxpp_target = target
+            else:
+                ctxpp_target = _proven_ctxpp_path(root, target, authorized)
+        if ctxpp_target is None:
+            ctxpp_target = _proven_ctxpp_path(root, focus, authorized)
+        if ctxpp_target is None:
+            ctxpp_target = _proven_source_scope(root, scopes, focus)
         gates = [str(item["id"]) for item in capsule.get("gates", [])
                  if isinstance(item, dict) and item.get("required") and item.get("id")]
         request: dict[str, Any] = {
             "format": "CORE4-INTEGRATION-REQUEST/2", "schema_version": 2,
             "mode": mode, "repo_root": str(root), "parent_claim_token": claim_token,
-            "task_id": str(task["id"]), "objective": str(task["objective"]),
+            "task_id": str(task["id"]), "objective": delegated_objective,
             "scopes": scopes, "gates": gates, "execution": {
                 "backend": "real", "harness": "qwen", "gpu_count": 2,
             },
         }
         if mode == "readonly":
-            request.update(role="review", target=target or "", intent="understand", budget_tokens=4096, max_items=12)
+            request.update(role="review", target=ctxpp_target or "", intent="understand", budget_tokens=4096, max_items=12)
         else:
-            if target:
-                request["target"] = target
+            if ctxpp_target:
+                request["target"] = ctxpp_target
             gate_commands = []
             for gate_id in gates:
                 explained = self._todo(root, "gate", "explain", gate_id)
@@ -310,39 +470,54 @@ class IntegrationController:
                           "cwd": ".", "env": {}, "timeout_seconds": 60}
             request.update(
                 baseline_commands=[diff_check], verification_commands=[*gate_commands, diff_check],
-                acceptance_commands=[diff_check], read_dependencies=list(scope.get("read_paths", [])),
+                acceptance_commands=[diff_check],
+                read_dependencies=_select_child_scopes(
+                    root, read_authorized, focus, limit=_MAX_CHILD_SCOPES, fallback_count=1,
+                ),
                 approved_overlays=[],
             )
         return request
 
     def delegate(
         self, repo_root: str | Path, claim_token: str, *, mode: str, target: str | None = None,
+        objective: str | None = None,
     ) -> dict[str, Any]:
-        return self.run(self.request_from_claim(repo_root, claim_token, mode=mode, target=target))
+        return self.run(self.request_from_claim(
+            repo_root, claim_token, mode=mode, target=target, objective=objective,
+        ))
 
     def _writable_model(self, workspace: Path, request: dict[str, Any]) -> dict[str, Any]:
         import tomllib
         from .harnesses import QwenCodeAdapter
         from .result_validation import validate_model_outcome
         from .supervisor import SupervisorClient
-        task_spec = json.dumps({
+        task_spec = {
             "objective": request["objective"], "role": "edit",
             "read_paths": sorted(set([*request["scopes"], *request.get("read_dependencies", [])])),
             "write_paths": request["scopes"], "forbidden_paths": [], "target_symbols": [],
             "failing_tests": [], "interface_ids": [], "acceptance_gates": request["gates"],
-        }, separators=(",", ":"))
+        }
         if request.get("target"):
-            task_spec = json.dumps({
-                **json.loads(task_spec), "target_symbols": [str(request["target"])],
-            }, separators=(",", ":"))
+            task_spec["target_symbols"] = [str(request["target"])]
         if not (workspace / ".ctxpp/index.jsonl").is_file():
             self._run_json([
                 str(self.ctxpp_cli), "--root", str(workspace), "--json", "scan",
             ], cwd=workspace)
-        packet = self._run_json([
-            str(self.ctxpp_cli), "--root", str(workspace), "--json", "packet", "--task-spec", task_spec,
-            "--consumer", "local-worker", "--budget", "1536", "--max-items", "4",
-        ], cwd=workspace)
+        task_spec_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", prefix="local-worker-task-", suffix=".json", delete=False,
+            ) as task_spec_file:
+                json.dump(task_spec, task_spec_file, separators=(",", ":"))
+                task_spec_path = Path(task_spec_file.name)
+            packet = self._run_json([
+                str(self.ctxpp_cli), "--root", str(workspace), "--json", "packet",
+                "--task-spec", str(task_spec_path), "--consumer", "local-worker",
+                "--budget", "1536", "--max-items", "4",
+            ], cwd=workspace)
+        finally:
+            if task_spec_path is not None:
+                task_spec_path.unlink(missing_ok=True)
         supervisor = SupervisorClient(request["repo_root"])
         profile = tomllib.loads((Path(__file__).resolve().parents[1] /
                                  "config/production-profile.toml").read_text(encoding="utf-8"))
@@ -778,6 +953,8 @@ def normalize_integration_request(value: object) -> dict[str, Any]:
     if not request["parent_claim_token"].startswith("toc_"):
         raise IntegrationError("parent_claim_token must be a todo parent claim token")
     scopes = normalize_scopes(request["scopes"])
+    if len(scopes) > _MAX_CHILD_SCOPES:
+        raise IntegrationError("scopes must contain 1-16 paths")
     gates = request["gates"]
     if not isinstance(gates, list) or any(not isinstance(item, str) or not item for item in gates):
         raise IntegrationError("gates must be a list of non-empty strings")

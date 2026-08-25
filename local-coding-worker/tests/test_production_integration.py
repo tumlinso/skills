@@ -97,14 +97,17 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
 
     def test_nonblocking_launch_hides_claim_token_from_process_argv(self) -> None:
         module = _cli_module()
+        ce_objective = (
+            "CE-ARCH-71 bounded implementation seam only: register the prepared operation."
+        )
         class Controller:
-            def request_from_claim(self, repo, claim_token, *, mode, target):
+            def request_from_claim(self, repo, claim_token, *, mode, target, objective=None):
                 return {
                     "format": "CORE4-INTEGRATION-REQUEST/2", "schema_version": 2,
                     "mode": "readonly" if mode == "auto" else mode,
                     "repo_root": str(repo.resolve()), "parent_claim_token": claim_token,
-                    "task_id": "TASK", "objective": "bounded", "scopes": ["local-coding-worker"],
-                    "gates": [], "role": "review", "target": target or "", "intent": "understand",
+                    "task_id": "TASK", "objective": objective or "bounded", "scopes": ["local-coding-worker"],
+                    "gates": [], "role": "review", "target": target or "kernel", "intent": "understand",
                     "budget_tokens": 1024, "max_items": 4,
                     "execution": {"backend": "real", "harness": "qwen", "gpu_count": 2},
                 }
@@ -120,6 +123,7 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
             supervisor.assertEqual = self.assertEqual
             result = module._launch_delegate(
                 Path.cwd(), "toc_secret", "auto", None,
+                objective=ce_objective,
                 controller=Controller(), supervisor=supervisor,
             )
             argv = popen.call_args.args[0]
@@ -128,14 +132,15 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
             self.assertEqual(result["state"], "running")
             request = json.loads(next((Path(temporary) / "delegations").glob("*.request.json")).read_text())
             self.assertEqual(request["request"]["parent_claim_token"], "toc_secret")
+            self.assertEqual(request["request"]["objective"], ce_objective)
             self.assertEqual(request["request"]["execution"]["admission_id"], "admission-1")
             self.assertEqual(oct((Path(temporary) / "delegations").stat().st_mode & 0o777), "0o700")
 
     def test_unavailable_admission_creates_no_child_scope_or_launch(self) -> None:
         module = _cli_module()
         class Controller:
-            def request_from_claim(self, repo, claim_token, *, mode, target):
-                return {"mode": "writable", "execution": {"backend": "real"}}
+            def request_from_claim(self, repo, claim_token, *, mode, target, objective=None):
+                return {"mode": "writable", "target": "kernel", "execution": {"backend": "real"}}
         class Supervisor:
             def request(self, operation, **parameters):
                 raise module.SupervisorError("resource_unavailable: all slots leased")
@@ -150,6 +155,31 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
                 "status": "local_unavailable", "reason": "all_local_worker_slots_busy",
                 "fallback": "continue_frontier", "retry_recommended": False,
                 "child_created": False, "scope_locked": False,
+            })
+            self.assertFalse((Path(temporary) / "delegations").exists())
+
+    def test_unproven_ctxpp_target_is_not_eligible_before_admission_or_launch(self) -> None:
+        module = _cli_module()
+        class Controller:
+            def request_from_claim(self, repo, claim_token, *, mode, target, objective=None):
+                return {
+                    "mode": "readonly", "objective": objective, "scopes": ["docs"],
+                    "target": "", "execution": {"backend": "real"},
+                }
+        class Supervisor:
+            def request(self, operation, **parameters):
+                raise AssertionError("unproven source must not request admission")
+        with tempfile.TemporaryDirectory() as temporary, \
+                mock.patch.object(module, "runtime_root", return_value=Path(temporary)), \
+                mock.patch.object(module.subprocess, "Popen", side_effect=AssertionError("must not launch")):
+            result = module._launch_delegate(
+                Path.cwd(), "toc_secret", "readonly", None,
+                objective="CE-ARCH-71 documentation-only review", controller=Controller(),
+                supervisor=Supervisor(),
+            )
+            self.assertEqual(result, {
+                "status": "not_eligible", "reason": "no_proven_ctxpp_source_target",
+                "fallback": "continue_frontier",
             })
             self.assertFalse((Path(temporary) / "delegations").exists())
 

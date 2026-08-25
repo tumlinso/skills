@@ -23,8 +23,14 @@ never contains credentials.
 
 The normal production entry point is `local_worker.py delegate --claim-token
 "$CLAIM_TOKEN" --mode readonly --wait --json`. It derives the objective,
-scopes, and required gates from `todo context`, creates a read-access child,
+1–16 relevant scopes, and required gates from `todo context`, creates a read-access child,
 and keeps that child alive while routing and validating the result. Bounded
 packet, model-outcome, worker-result, and telemetry evidence is stored under
 the Git common directory. The parent token, whole ledger, global Qwen state,
 and previous transcripts are never placed in the model prompt.
+
+The additive `--objective` argument narrows a delegation without asserting a
+literal ctxpp target. A ctxpp path is included only when an existing file can be
+proven inside the parent scope, including a relevant selected source-file scope;
+otherwise public nonblocking delegation returns `not_eligible` before GPU
+admission or child creation.
