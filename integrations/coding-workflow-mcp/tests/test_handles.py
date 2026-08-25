@@ -84,6 +84,28 @@ class CapabilityStoreTests(unittest.TestCase):
             connection.execute("UPDATE capabilities SET expires_at=? WHERE handle=?", (time.time() - 1, alias))
         self.assertEqual(self.store.sweep(limit=1)["capabilities"], 1)
 
+    def test_workflow_lookup_reissue_and_family_deletion(self) -> None:
+        record = {
+            "repo": str(self.repo),
+            "project_uuid": "project-1",
+            "task_id": "T-1",
+            "claim_token": "toc_secret",
+        }
+        original = self.store.create_workflow(record)
+        self.assertEqual(
+            self.store.find_workflows(self.repo, "T-1", "project-1"),
+            [(original, record)],
+        )
+        replacement = self.store.reissue_workflow(original, {**record, "revision": 12})
+        self.assertNotEqual(replacement, original)
+        self.assertEqual(self.store.get_workflow(original)["claim_token"], "toc_secret")
+        self.assertEqual(self.store.get_workflow(replacement)["revision"], 12)
+        self.assertEqual(self.store.delete_workflow_family(record), 2)
+        for handle in (original, replacement):
+            with self.assertRaises(InvalidHandle):
+                self.store.get_workflow(handle)
+        self.assertEqual(self.store.find_workflows(self.repo, "T-2", "project-1"), [])
+
     def test_bounded_diagnostics_are_owner_only(self) -> None:
         diagnostic = self.store.write_diagnostic("x" * 20_000)
         self.assertTrue(diagnostic.startswith("diag_"))

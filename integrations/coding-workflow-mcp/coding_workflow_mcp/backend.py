@@ -181,6 +181,11 @@ class CodingWorkflowBackend:
     def next_task(self, repo_root: str, task_id: str | None = None) -> dict[str, Any]:
         repo = self.canonical_repo(repo_root)
         bootstrap = self._data(self.todo(repo, "bootstrap", allow_failure=True))
+        project_uuid = bootstrap.get("project_uuid")
+        if task_id:
+            recovered = self._recover_workflow(repo, task_id, project_uuid)
+            if recovered is not None:
+                return recovered
         arguments = ["continue"]
         if task_id:
             arguments.extend(["--task-id", task_id])
@@ -207,6 +212,69 @@ class CodingWorkflowBackend:
         }
         handle = self.store.create_workflow(record)
         return self._compact_task_capsule(data, handle)
+
+    def _recover_workflow(
+        self,
+        repo: Path,
+        task_id: str,
+        project_uuid: Any,
+    ) -> dict[str, Any] | None:
+        """Reissue a facade-owned active claim without asking todo to claim again."""
+        expected_project = project_uuid if isinstance(project_uuid, str) and project_uuid else None
+        # A terminal disposition can remove the candidate between validation
+        # and reissue, so refresh the bounded candidate set once.
+        for _ in range(2):
+            candidates = self.store.find_workflows(repo, task_id, expected_project)
+            if not candidates:
+                return None
+            for old_handle, record in candidates:
+                pulse = self.todo(
+                    repo,
+                    "pulse",
+                    "--claim-token",
+                    str(record.get("claim_token", "")),
+                    allow_failure=True,
+                )
+                pulse_data = self._data(pulse)
+                if pulse.get("ok") is False:
+                    code = str(pulse.get("code") or pulse_data.get("code") or "")
+                    if code in {"invalid_claim", "stale_claim", "not_found", "claim_not_active"}:
+                        self.store.delete(old_handle)
+                        continue
+                    return bounded_json({
+                        "status": "attention_required",
+                        "reason": "stored_claim_validation_unavailable",
+                        "safe_operation": "retry_next_task",
+                    }, 4_000)
+                context_envelope = self.todo(
+                    repo,
+                    "context",
+                    "--claim-token",
+                    str(record.get("claim_token", "")),
+                    allow_failure=True,
+                )
+                context = self._data(context_envelope)
+                context_task = context.get("task") if isinstance(context.get("task"), dict) else {}
+                if context_envelope.get("ok") is False or context_task.get("id") != task_id:
+                    return bounded_json({
+                        "status": "attention_required",
+                        "reason": "stored_claim_context_unavailable",
+                        "safe_operation": "retry_next_task",
+                    }, 4_000)
+                if pulse_data.get("project_revision") is not None:
+                    record["revision"] = pulse_data["project_revision"]
+                try:
+                    replacement = self.store.reissue_workflow(old_handle, record)
+                except InvalidHandle:
+                    continue
+                result = self._compact_task_capsule(context, replacement)
+                result["resumed"] = True
+                return bounded_json(result, 4_000)
+        return bounded_json({
+            "status": "attention_required",
+            "reason": "workflow_recovery_raced",
+            "safe_operation": "retry_next_task",
+        }, 4_000)
 
     def _active_workflow(self, workflow_handle: str) -> tuple[dict[str, Any], Path, dict[str, Any]]:
         record = self.store.get_workflow(workflow_handle)
@@ -373,7 +441,7 @@ class CodingWorkflowBackend:
             if missing or "gate" in str(envelope.get("code", "")):
                 return {"status": "gate_required", "missing_gate_ids": list(missing)[:24]}
             return {"status": "attention_required", "reason": str(envelope.get("code", "todo_disposition_failed"))[:300]}
-        self.store.delete(workflow_handle)
+        self.store.delete_workflow_family(record)
         return bounded_json({
             "status": "finished", "action": action, "disposition": disposition,
             "task_id": record["task_id"], "revision": data.get("project_revision"),

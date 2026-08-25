@@ -19,7 +19,9 @@ SERVER_INSTRUCTIONS = (
     "with finish_task. Use inspect_task for bounded source or evidence context. Use the "
     "underlying skill CLIs only when this server is unavailable or being debugged. Opaque "
     "handles authorize only their bounded workflow operation; never request or expose raw "
-    "tokens, worker internals, GPU identities, model endpoints, packets, logs, or transcripts."
+    "tokens, worker internals, GPU identities, model endpoints, packets, logs, or transcripts. "
+    "If a facade restart loses a workflow handle, call next_task with the same repository and "
+    "explicit task ID to recover a fresh opaque handle for the active facade-owned claim."
 )
 
 
@@ -54,7 +56,7 @@ def create_server(backend: CodingWorkflowBackend | None = None) -> FastMCP:
             return result
 
     @server.tool(
-        description="Claim one safe todo task and return a compact scoped capsule.",
+        description="Claim or explicitly recover one safe todo task and return its compact capsule.",
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,
     )

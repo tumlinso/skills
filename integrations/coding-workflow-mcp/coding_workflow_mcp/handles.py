@@ -120,6 +120,107 @@ class CapabilityStore:
     def create_workflow(self, payload: dict[str, Any], ttl: float = DEFAULT_WORKFLOW_TTL) -> str:
         return self._create("workflow", WORKFLOW_PREFIX, payload, ttl)
 
+    def find_workflows(
+        self,
+        repo: str | os.PathLike[str],
+        task_id: str,
+        project_uuid: str | None,
+        *,
+        limit: int = 32,
+    ) -> list[tuple[str, dict[str, Any]]]:
+        """Return bounded facade-owned candidates for explicit claim recovery."""
+        canonical_repo = str(Path(repo).resolve())
+        now = time.time()
+        with closing(self._connect()) as connection:
+            rows = connection.execute(
+                """
+                SELECT handle, payload
+                FROM capabilities
+                WHERE kind='workflow' AND repo=? AND expires_at>?
+                ORDER BY updated_at DESC
+                LIMIT ?
+                """,
+                (canonical_repo, now, max(1, min(limit, 100))),
+            ).fetchall()
+        matches: list[tuple[str, dict[str, Any]]] = []
+        for row in rows:
+            try:
+                payload = json.loads(str(row["payload"]))
+            except (TypeError, json.JSONDecodeError):
+                continue
+            if payload.get("task_id") != task_id:
+                continue
+            if project_uuid and payload.get("project_uuid") != project_uuid:
+                continue
+            matches.append((str(row["handle"]), payload))
+        return matches
+
+    def reissue_workflow(
+        self,
+        handle: str,
+        payload: dict[str, Any],
+        ttl: float = DEFAULT_WORKFLOW_TTL,
+    ) -> str:
+        """Atomically add a fresh alias after its stored claim is revalidated."""
+        repo = self._canonical_repo(payload)
+        now = time.time()
+        replacement = _capability(WORKFLOW_PREFIX)
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute(
+                "SELECT kind, expires_at, payload FROM capabilities WHERE handle=?",
+                (handle,),
+            ).fetchone()
+            if row is None or row["kind"] != "workflow" or float(row["expires_at"]) <= now:
+                connection.rollback()
+                raise InvalidHandle("workflow capability is no longer recoverable")
+            source = json.loads(str(row["payload"]))
+            identity_keys = ("repo", "project_uuid", "task_id", "claim_token")
+            if any(source.get(key) != payload.get(key) for key in identity_keys):
+                connection.rollback()
+                raise InvalidHandle("workflow capability identity changed")
+            connection.execute(
+                "INSERT INTO capabilities VALUES (?, 'workflow', ?, ?, ?, ?, ?, 0)",
+                (
+                    replacement,
+                    repo,
+                    json.dumps(payload, separators=(",", ":")),
+                    now,
+                    now,
+                    now + ttl,
+                ),
+            )
+            connection.commit()
+        self._secure_database_files()
+        return replacement
+
+    def delete_workflow_family(self, payload: dict[str, Any]) -> int:
+        """Remove every alias for one terminal facade-owned todo claim."""
+        repo = self._canonical_repo(payload)
+        identity = tuple(payload.get(key) for key in ("project_uuid", "task_id", "claim_token"))
+        if not all(isinstance(value, str) and value for value in identity):
+            raise ValueError("workflow family requires a complete claim identity")
+        with closing(self._connect()) as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            rows = connection.execute(
+                "SELECT handle, payload FROM capabilities WHERE kind='workflow' AND repo=?",
+                (repo,),
+            ).fetchall()
+            handles: list[tuple[str]] = []
+            for row in rows:
+                try:
+                    candidate = json.loads(str(row["payload"]))
+                except (TypeError, json.JSONDecodeError):
+                    continue
+                candidate_identity = tuple(
+                    candidate.get(key) for key in ("project_uuid", "task_id", "claim_token")
+                )
+                if candidate_identity == identity:
+                    handles.append((str(row["handle"]),))
+            connection.executemany("DELETE FROM capabilities WHERE handle=?", handles)
+            connection.commit()
+        return len(handles)
+
     def create_delegation(self, payload: dict[str, Any], ttl: float = DEFAULT_DELEGATION_TTL) -> str:
         return self._create("delegation", DELEGATION_PREFIX, payload, ttl)
 

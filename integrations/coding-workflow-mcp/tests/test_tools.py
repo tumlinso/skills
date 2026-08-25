@@ -81,6 +81,60 @@ class FakeBackend(CodingWorkflowBackend):
         return {"status": "delegated", "execution_id": "execution-1", "mode": "readonly"}
 
 
+class RestartAuthorityBackend(FakeBackend):
+    def __init__(self, root: Path, store: CapabilityStore, authority: dict) -> None:
+        super().__init__(root, store)
+        self.authority = authority
+
+    def todo(self, repo: Path, *arguments: str, allow_failure: bool = False):
+        self.calls.append(tuple(arguments))
+        command = arguments[0]
+        if command == "bootstrap":
+            return {"ok": True, "data": {
+                "project_uuid": "project-restart", "project_revision": self.authority["revision"]
+            }}
+        if command == "continue":
+            self.authority["continue_calls"] += 1
+            if self.authority["active"]:
+                return {"ok": False, "code": "no_actionable_work",
+                        "data": {"message": "No safe task is currently claimable"}}
+            self.authority["active"] = True
+            self.authority["revision"] = 11
+            return {"ok": True, "data": {
+                "project_revision": 11,
+                "claim": {"claim_token": "toc_restart_secret"},
+                "session": {"session_token": "tos_restart_secret"},
+                "task": {"id": "CE-ARCH-71", "title": "Resume", "objective": "Bounded recovery",
+                         "next_action": "finish through facade"},
+                "scope": {"exclusive_paths": ["src"], "read_paths": ["include"],
+                          "forbidden_paths": []},
+                "interlocks": [{"rule": "Preserve active claim authority."}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "passed"}],
+            }}
+        token = arguments[arguments.index("--claim-token") + 1] if "--claim-token" in arguments else None
+        if token != "toc_restart_secret" or not self.authority["active"]:
+            return {"ok": False, "code": "invalid_claim"}
+        if command == "pulse":
+            self.authority["revision"] += 1
+            return {"ok": True, "data": {"project_revision": self.authority["revision"]}}
+        if command == "context":
+            return {"ok": True, "data": {
+                "project_revision": self.authority["revision"],
+                "task": {"id": "CE-ARCH-71", "title": "Resume", "objective": "Bounded recovery",
+                         "next_action": "finish through facade"},
+                "scope": {"exclusive_paths": ["src"], "read_paths": ["include"],
+                          "forbidden_paths": []},
+                "interlocks": [{"rule": "Preserve active claim authority."}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "passed"}],
+            }}
+        if command == "complete":
+            self.authority["complete_calls"] += 1
+            self.authority["active"] = False
+            self.authority["revision"] += 1
+            return {"ok": True, "data": {"project_revision": self.authority["revision"]}}
+        raise AssertionError(arguments)
+
+
 class ToolTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -104,6 +158,43 @@ class ToolTests(unittest.TestCase):
         self.assertNotIn(b"tos_session_secret", encoded)
         stored = self.store.get_workflow(result["workflow_handle"])
         self.assertEqual(stored["claim_token"], "toc_claim_secret")
+
+    def test_explicit_task_recovers_claim_after_facade_restart(self) -> None:
+        authority = {"active": False, "revision": 10, "continue_calls": 0, "complete_calls": 0}
+        first = RestartAuthorityBackend(self.root, self.store, authority)
+        claimed = first.next_task(str(self.root), "CE-ARCH-71")
+        original = claimed["workflow_handle"]
+
+        restarted_store = CapabilityStore(self.root / "state")
+        restarted = RestartAuthorityBackend(self.root, restarted_store, authority)
+        resumed = restarted.next_task(str(self.root), "CE-ARCH-71")
+        encoded = json.dumps(resumed, ensure_ascii=False).encode()
+
+        self.assertEqual(resumed["status"], "claimed")
+        self.assertTrue(resumed["resumed"])
+        self.assertNotEqual(resumed["workflow_handle"], original)
+        self.assertEqual(resumed["task"]["id"], "CE-ARCH-71")
+        self.assertEqual(resumed["revision"], 12)
+        self.assertEqual(authority["continue_calls"], 1)
+        self.assertNotIn(b"toc_restart_secret", encoded)
+        self.assertNotIn(b"tos_restart_secret", encoded)
+        self.assertEqual(
+            restarted_store.get_workflow(original)["claim_token"],
+            restarted_store.get_workflow(resumed["workflow_handle"])["claim_token"],
+        )
+
+        finished = restarted.finish_task(
+            resumed["workflow_handle"], "complete", "implemented", "recovered", None
+        )
+        self.assertEqual(finished["status"], "finished")
+        self.assertEqual(finished["revision"], 14)
+        self.assertEqual(authority["continue_calls"], 1)
+        self.assertEqual(authority["complete_calls"], 1)
+        self.assertFalse(authority["active"])
+        with self.assertRaises(InvalidHandle):
+            restarted_store.get_workflow(resumed["workflow_handle"])
+        with self.assertRaises(InvalidHandle):
+            restarted_store.get_workflow(original)
 
     def test_inspection_routes_and_redacts_bounded_source(self) -> None:
         handle = self.claim()["workflow_handle"]

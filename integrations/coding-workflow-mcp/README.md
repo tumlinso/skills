@@ -17,6 +17,14 @@ todo secrets, worker tokens, GPU identifiers, endpoints, packets, logs, and
 transcripts remain behind the facade. Existing skill CLIs remain supported as
 fallback and debugging interfaces.
 
+Workflow capabilities are durable across stdio server restarts and package
+reinstalls. If Codex loses a workflow handle while the facade-owned todo claim
+is still active, call `next_task` with the same repository and explicit task ID.
+The facade validates the stored claim through todo, reissues a fresh opaque
+handle, and returns the current compact task capsule without a second claim.
+Terminal `finish_task` removes all aliases for that claim. The facade never
+returns or reconstructs the underlying todo secrets in model context.
+
 `delegate_task.target` is a bounded delegation objective. It is not forwarded
 as a literal ctxpp target: local-worker independently derives an authorized
 source path from the capsule or selected scopes when one is proven and
