@@ -198,7 +198,22 @@ def semantic_state(
             "complete": bool(members) and all(item["terminal"] for item in members) and not any(item["effective_state"] in {"failed", "canceled"} for item in members),
         })
 
+    def program_key(item: dict[str, object]) -> str:
+        return str(item["program_root_id"] if item["program_basis"] == "parent_hierarchy" else (item["heuristic_program_id"] or item["program_root_id"]))
+
     selected_ids = set(tasks)
+    if current_only:
+        current_ids = {item_id for item_id, item in tasks.items() if not item["terminal"]}
+        current_programs = {program_key(tasks[item_id]) for item_id in current_ids}
+        if not current_programs:
+            completed = [item for item in tasks.values() if item["effective_state"] == "done" and item["current_program_eligible"]]
+            if completed:
+                latest = max(completed, key=lambda item: (str(item.get("updated_at", "")), int(item.get("revision", 0)), str(item["id"])))
+                current_programs.add(program_key(latest))
+        selected_ids = {
+            item_id for item_id, item in tasks.items()
+            if program_key(item) in current_programs and item["current_program_eligible"]
+        }
     if task_id:
         selected_ids &= {task_id}
     if prefix:
@@ -208,8 +223,6 @@ def semantic_state(
             item for item in selected_ids
             if tasks[item]["program_root_id"] == program or tasks[item]["heuristic_program_id"] == program
         }
-    if current_only:
-        selected_ids = {item for item in selected_ids if not tasks[item]["terminal"]}
     selected_checkpoints = {
         item_id: item for item_id, item in checkpoint_records.items()
         if item["task_id"] in selected_ids or item_id in current_checkpoint_refs
@@ -227,5 +240,10 @@ def semantic_state(
         "gates": [selected_gates[item] for item in sorted(selected_gates)],
         "programs": programs,
         "contradictions": contradictions,
+        "historical_counts": {
+            "tasks": sum(1 for item in tasks.values() if item["current_relevance"] in {"historical", "superseded"}),
+            "checkpoints": sum(1 for item in checkpoint_records.values() if item["effective_state"] == "historical_stale"),
+            "gates": sum(1 for item in gate_records.values() if str(item["effective_state"]).startswith("historical_")),
+        },
         "filters": {"task": task_id, "prefix": prefix, "program": program, "current_only": current_only},
     }

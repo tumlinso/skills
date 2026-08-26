@@ -84,6 +84,21 @@ class SemanticStateTests(unittest.TestCase):
         self.assertEqual(program["basis"], "parent_hierarchy")
         self.assertTrue(program["complete"])
 
+    def test_current_only_retains_current_work_and_global_historical_counts(self) -> None:
+        data = self._state("--current-only")
+        self.assertIn("CURRENT", {item["id"] for item in data["tasks"]})
+        self.assertNotIn("CP-MATH-17", {item["id"] for item in data["tasks"]})
+        self.assertGreaterEqual(data["historical_counts"]["tasks"], 1)
+        self.assertGreaterEqual(data["historical_counts"]["gates"], 1)
+
+    def test_current_only_retains_most_recent_completed_program_when_no_work_remains(self) -> None:
+        with self.repo.service.db.connect() as conn:
+            conn.execute("UPDATE tasks SET status='cancelled' WHERE id='CURRENT'")
+            conn.execute("UPDATE tasks SET updated_at='2026-08-26T23:59:59Z',revision=99 WHERE id='CE-ARCH-92'")
+            conn.commit()
+        data = self._state("--current-only")
+        self.assertEqual({item["id"] for item in data["tasks"]}, {"CE-ARCH-00", "CE-ARCH-92"})
+
     def test_semantic_state_is_read_only_for_database_git_and_projections(self) -> None:
         snapshot = self.repo.root / ".todo-orchestrator" / "state.snapshot.json"
         projection = self.repo.root / "todos.md"
