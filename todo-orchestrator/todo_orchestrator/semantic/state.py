@@ -231,6 +231,8 @@ def semantic_state(
         item_id: item for item_id, item in gate_records.items()
         if item.get("task_id") in selected_ids or item_id in current_gate_refs or item.get("checkpoint_id") in selected_checkpoints
     }
+    selected_program_keys = {program_key(tasks[item_id]) for item_id in selected_ids}
+    selected_programs = [item for item in programs if str(item["id"]) in selected_program_keys]
     revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
     return {
         "revision": revision,
@@ -238,7 +240,7 @@ def semantic_state(
         "tasks": [tasks[item] for item in sorted(selected_ids)],
         "checkpoints": [selected_checkpoints[item] for item in sorted(selected_checkpoints)],
         "gates": [selected_gates[item] for item in sorted(selected_gates)],
-        "programs": programs,
+        "programs": selected_programs,
         "contradictions": contradictions,
         "historical_counts": {
             "tasks": sum(1 for item in tasks.values() if item["current_relevance"] in {"historical", "superseded"}),
