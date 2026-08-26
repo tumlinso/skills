@@ -592,6 +592,121 @@ class CodingWorkflowBackend:
         self.store.update(delegation_handle, record, terminal=True)
         return bounded_json(terminal, 4_000)
 
+    @staticmethod
+    def _sanitize_gate(item: Any) -> dict[str, Any] | None:
+        if not isinstance(item, dict):
+            return None
+        gate_id = item.get("gate_id") or item.get("id")
+        if not isinstance(gate_id, str) or not gate_id:
+            return None
+        return {
+            "id": gate_id,
+            "status": str(item.get("status") or "unknown")[:80],
+            "valid": bool(item.get("valid")),
+        }
+
+    @staticmethod
+    def _error_details(envelope: dict[str, Any]) -> Any:
+        error = envelope.get("error")
+        return error.get("details") if isinstance(error, dict) else None
+
+    def _update_workflow_revision(
+        self,
+        workflow_handle: str,
+        record: dict[str, Any],
+        values: Sequence[Any],
+    ) -> Any:
+        revisions = [value for value in values if isinstance(value, int)]
+        if revisions:
+            record["revision"] = max(revisions)
+            self.store.update(workflow_handle, record)
+        return record.get("revision")
+
+    def _required_gate_state(
+        self,
+        workflow_handle: str,
+        record: dict[str, Any],
+        repo: Path,
+    ) -> tuple[list[dict[str, Any]], Any] | None:
+        envelope = self.todo(
+            repo, "context", "--claim-token", str(record["claim_token"]), allow_failure=True
+        )
+        if envelope.get("ok") is False:
+            return None
+        data = self._data(envelope)
+        gates = [
+            gate for item in list(data.get("gates") or [])
+            if isinstance(item, dict) and item.get("required") and (gate := self._sanitize_gate(item))
+        ]
+        revision = self._update_workflow_revision(
+            workflow_handle, record, [data.get("project_revision")]
+        )
+        return gates, revision
+
+    def _run_required_gates(
+        self,
+        workflow_handle: str,
+        record: dict[str, Any],
+        repo: Path,
+    ) -> dict[str, Any]:
+        envelope = self.todo(
+            repo,
+            "gate", "run", "--required", "--claim-token", str(record["claim_token"]),
+            allow_failure=True,
+        )
+        data = self._data(envelope)
+        details = self._error_details(envelope)
+        raw_results: Any = data.get("results")
+        if not isinstance(raw_results, list) and isinstance(details, dict):
+            raw_results = details.get("results")
+        results = [
+            gate for item in list(raw_results or [])
+            if (gate := self._sanitize_gate(item)) is not None
+        ]
+        revision = self._update_workflow_revision(
+            workflow_handle,
+            record,
+            [
+                data.get("project_revision"),
+                *(item.get("project_revision") for item in list(raw_results or []) if isinstance(item, dict)),
+            ],
+        )
+        if envelope.get("ok") is not False:
+            return bounded_json({
+                "status": "passed", "gates": results, "revision": revision,
+            }, 4_000)
+        if str(envelope.get("code")) == "gate_failed":
+            if not results:
+                state = self._required_gate_state(workflow_handle, record, repo)
+                if state is None:
+                    return {
+                        "status": "internal_consistency_error",
+                        "reason": "authoritative_gate_state_unavailable_after_gate_failure",
+                    }
+                results, revision = state
+            failed_ids = [item["id"] for item in results if not item["valid"]]
+            if failed_ids:
+                return bounded_json({
+                    "status": "gate_failed",
+                    "failed_gate_ids": failed_ids[:24],
+                    "gates": results[:24],
+                    "revision": revision,
+                }, 4_000)
+            return {
+                "status": "internal_consistency_error",
+                "reason": "gate_failure_without_authoritative_failed_gate",
+            }
+        return {
+            "status": "attention_required",
+            "reason": str(envelope.get("code") or "gate_execution_failed")[:300],
+        }
+
+    def run_gates(self, workflow_handle: str, required: bool = True) -> dict[str, Any]:
+        if required is not True:
+            return {"status": "invalid_request", "reason": "only_required_gate_execution_is_supported"}
+        record, repo, _ = self._active_workflow(workflow_handle)
+        return self._run_required_gates(workflow_handle, record, repo)
+
     def finish_task(
         self,
         workflow_handle: str,
@@ -603,6 +718,21 @@ class CodingWorkflowBackend:
         record, repo, _ = self._active_workflow(workflow_handle)
         if action == "block" and not reason:
             return {"status": "invalid_request", "reason": "reason_is_required_for_block"}
+        gate_results: list[dict[str, Any]] = []
+        if action == "complete":
+            state = self._required_gate_state(workflow_handle, record, repo)
+            if state is None:
+                return {"status": "attention_required", "reason": "authoritative_gate_state_unavailable"}
+            required_gates, _ = state
+            unsatisfied = [
+                item for item in required_gates
+                if not item["valid"] or item["status"] not in {"passed", "evaluated_not_promoted"}
+            ]
+            if unsatisfied:
+                gate_run = self._run_required_gates(workflow_handle, record, repo)
+                if gate_run.get("status") != "passed":
+                    return gate_run
+                gate_results = list(gate_run.get("gates") or [])
         arguments = [action, "--claim-token", record["claim_token"]]
         if action == "complete":
             arguments.extend(["--disposition", disposition])
@@ -613,12 +743,35 @@ class CodingWorkflowBackend:
         envelope = self.todo(repo, *arguments, allow_failure=True)
         data = self._data(envelope)
         if envelope.get("ok") is False:
-            missing = data.get("missing_gate_ids") or data.get("missing_gates") or []
-            if missing or "gate" in str(envelope.get("code", "")):
-                return {"status": "gate_required", "missing_gate_ids": list(missing)[:24]}
+            if "gate" in str(envelope.get("code", "")):
+                state = self._required_gate_state(workflow_handle, record, repo)
+                if state is None:
+                    return {
+                        "status": "internal_consistency_error",
+                        "reason": "authoritative_gate_state_unavailable_after_completion_failure",
+                    }
+                required_gates, revision = state
+                missing = [
+                    item for item in required_gates
+                    if not item["valid"] or item["status"] not in {"passed", "evaluated_not_promoted"}
+                ]
+                if missing:
+                    return bounded_json({
+                        "status": "gate_required",
+                        "missing_gate_ids": [item["id"] for item in missing][:24],
+                        "gates": missing[:24],
+                        "revision": revision,
+                    }, 4_000)
+                return {
+                    "status": "internal_consistency_error",
+                    "reason": "completion_gate_error_contradicts_authoritative_gate_state",
+                }
             return {"status": "attention_required", "reason": str(envelope.get("code", "todo_disposition_failed"))[:300]}
         self.store.delete_workflow_family(record)
-        return bounded_json({
+        result = {
             "status": "finished", "action": action, "disposition": disposition,
             "task_id": record["task_id"], "revision": data.get("project_revision"),
-        }, 2_000)
+        }
+        if gate_results:
+            result["gates"] = gate_results[:24]
+        return bounded_json(result, 4_000)

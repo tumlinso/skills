@@ -12,7 +12,7 @@ from mcp.client.stdio import stdio_client
 
 
 EXPECTED_TOOLS = {
-    "next_task", "inspect_task", "delegate_task", "collect_delegation", "finish_task",
+    "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates", "finish_task",
 }
 
 
@@ -48,4 +48,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

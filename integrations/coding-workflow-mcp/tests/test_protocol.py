@@ -12,7 +12,7 @@ from mcp.client.stdio import stdio_client
 
 
 class ProtocolTests(unittest.TestCase):
-    def test_initialize_list_and_invoke_all_five_tools(self) -> None:
+    def test_initialize_list_and_invoke_all_six_tools(self) -> None:
         fake_server = Path(__file__).with_name("fake_server.py")
 
         async def scenario() -> None:
@@ -24,7 +24,8 @@ class ProtocolTests(unittest.TestCase):
                     self.assertIn("Call next_task once", (initialized.instructions or "")[:512])
                     listed = await session.list_tools()
                     self.assertEqual({tool.name for tool in listed.tools}, {
-                        "next_task", "inspect_task", "delegate_task", "collect_delegation", "finish_task",
+                        "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates",
+                        "finish_task",
                     })
                     claimed = await session.call_tool("next_task", {"repo_root": "."})
                     self.assertFalse(claimed.isError)
@@ -41,6 +42,10 @@ class ProtocolTests(unittest.TestCase):
                         "delegation_handle": delegated.structuredContent["delegation_handle"],
                     })
                     self.assertEqual(collected.structuredContent["status"], "running")
+                    gates = await session.call_tool("run_gates", {
+                        "workflow_handle": workflow,
+                    })
+                    self.assertEqual(gates.structuredContent["status"], "passed")
                     finished = await session.call_tool("finish_task", {
                         "workflow_handle": workflow, "action": "complete", "disposition": "implemented",
                     })
@@ -51,4 +56,3 @@ class ProtocolTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

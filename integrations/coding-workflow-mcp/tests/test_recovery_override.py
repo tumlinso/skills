@@ -69,6 +69,10 @@ class OverrideBackend(CodingWorkflowBackend):
             }}
         if command == "pulse":
             return {"ok": True, "data": {"project_revision": self.revision}}
+        if command == "context":
+            return {"ok": True, "data": {
+                "project_revision": self.revision, "gates": [],
+            }}
         if command == "complete":
             self.finish_calls += 1
             self.revision += 1

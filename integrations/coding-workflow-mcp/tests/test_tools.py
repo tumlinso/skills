@@ -23,6 +23,7 @@ class FakeBackend(CodingWorkflowBackend):
         self.worker_status = "delegated"
         self.collect_status = "running"
         self.finish_ok = True
+        self.gate_status = "pending"
         self.calls: list[tuple[str, ...]] = []
 
     def canonical_repo(self, repo_root: str) -> Path:
@@ -41,7 +42,8 @@ class FakeBackend(CodingWorkflowBackend):
                 "task": {"id": "T-1", "title": "Implement", "objective": "Bounded objective", "next_action": "edit"},
                 "scope": {"exclusive_paths": ["src"], "read_paths": ["include"], "forbidden_paths": ["vendor"]},
                 "interlocks": [{"rule": "Preserve the public interface."}],
-                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "pending"}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1,
+                           "status": self.gate_status, "valid": self.gate_status == "passed"}],
             }}
         if command == "pulse":
             return {"ok": True, "data": {"project_revision": 12}}
@@ -52,12 +54,19 @@ class FakeBackend(CodingWorkflowBackend):
                 "project_revision": 12,
                 "task": {"id": "T-1", "title": "Implement", "objective": "Bounded objective", "next_action": "test"},
                 "scope": {"exclusive_paths": ["src"], "read_paths": ["include"], "forbidden_paths": []},
-                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "passed"}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1,
+                           "status": self.gate_status, "valid": self.gate_status == "passed"}],
             }}
+        if arguments[:3] == ("gate", "run", "--required"):
+            self.gate_status = "passed"
+            return {"ok": True, "data": {"results": [
+                {"gate_id": "G-1", "status": "passed", "valid": True, "project_revision": 13}
+            ]}}
         if command in {"complete", "handoff", "block", "release"}:
             if self.finish_ok:
-                return {"ok": True, "data": {"project_revision": 13}}
-            return {"ok": False, "code": "gate_required", "data": {"missing_gate_ids": ["G-1"]}}
+                return {"ok": True, "data": {"project_revision": 14}}
+            return {"ok": False, "code": "required_gates_unsatisfied",
+                    "error": {"details": []}}
         raise AssertionError(arguments)
 
     def ctxpp(self, repo: Path, *arguments: str):
@@ -111,7 +120,8 @@ class RestartAuthorityBackend(FakeBackend):
                 "scope": {"exclusive_paths": ["src"], "read_paths": ["include"],
                           "forbidden_paths": []},
                 "interlocks": [{"rule": "Preserve active claim authority."}],
-                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "passed"}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1,
+                           "status": "passed", "valid": True}],
             }}
         token = arguments[arguments.index("--claim-token") + 1] if "--claim-token" in arguments else None
         if token != "toc_restart_secret" or not self.authority["active"]:
@@ -127,7 +137,8 @@ class RestartAuthorityBackend(FakeBackend):
                 "scope": {"exclusive_paths": ["src"], "read_paths": ["include"],
                           "forbidden_paths": []},
                 "interlocks": [{"rule": "Preserve active claim authority."}],
-                "gates": [{"id": "G-1", "type": "command", "required": 1, "status": "passed"}],
+                "gates": [{"id": "G-1", "type": "command", "required": 1,
+                           "status": "passed", "valid": True}],
             }}
         if command == "complete":
             self.authority["complete_calls"] += 1
@@ -285,6 +296,7 @@ class ToolTests(unittest.TestCase):
         handle = self.claim()["workflow_handle"]
         result = self.backend.finish_task(handle, "complete", "implemented", "bounded", None)
         self.assertEqual(result["status"], "finished")
+        self.assertEqual(result["gates"], [{"id": "G-1", "status": "passed", "valid": True}])
         with self.assertRaises(InvalidHandle):
             self.store.get_workflow(handle)
         dispositions = [call for call in self.backend.calls if call and call[0] in {"complete", "handoff", "block", "release"}]
@@ -292,7 +304,10 @@ class ToolTests(unittest.TestCase):
         blocked_handle = self.claim()["workflow_handle"]
         self.backend.finish_ok = False
         blocked = self.backend.finish_task(blocked_handle, "complete", "validated", None, None)
-        self.assertEqual(blocked, {"status": "gate_required", "missing_gate_ids": ["G-1"]})
+        self.assertEqual(blocked, {
+            "status": "internal_consistency_error",
+            "reason": "completion_gate_error_contradicts_authoritative_gate_state",
+        })
         self.assertEqual(self.store.get_workflow(blocked_handle)["task_id"], "T-1")
 
     def test_release_preserves_todo_lifecycle_vocabulary(self) -> None:
@@ -310,15 +325,15 @@ class ToolTests(unittest.TestCase):
         ))
         self.assertEqual(result["status"], "invalid_handle")
 
-    def test_exact_five_tools_annotations_and_schema_budget(self) -> None:
+    def test_exact_six_tools_annotations_and_schema_budget(self) -> None:
         server = create_server(self.backend)
         tools = asyncio.run(server.list_tools())
         self.assertEqual({tool.name for tool in tools}, {
-            "next_task", "inspect_task", "delegate_task", "collect_delegation", "finish_task"
+            "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates", "finish_task"
         })
         by_name = {tool.name: tool for tool in tools}
         expected_readonly = {"next_task": False, "inspect_task": True, "delegate_task": False,
-                             "collect_delegation": True, "finish_task": False}
+                             "collect_delegation": True, "run_gates": False, "finish_task": False}
         for name, readonly in expected_readonly.items():
             annotations = by_name[name].annotations
             self.assertEqual(annotations.readOnlyHint, readonly)

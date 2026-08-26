@@ -19,7 +19,9 @@ SERVER_INSTRUCTIONS = (
     "delegate_task is opportunistic: on local_unavailable or not_eligible, continue in Codex; "
     "never wait or poll. Collect only returned delegation handles and finish every claim with "
     "finish_task. Use inspect_task for bounded context. Opaque handles authorize only their "
-    "operation; never request or expose raw tokens, worker/GPU/model internals, packets, logs, "
+    "operation. Use run_gates for explicit gate execution; finish_task automatically runs "
+    "required gates before completion. Never request or expose raw tokens, worker/GPU/model "
+    "internals, packets, logs, "
     "or transcripts. After facade restart, next_task with the same repo and task can recover a "
     "facade-owned claim. Live override needs manual out-of-band owner approval. Lost non-facade "
     "live claims require the owner's interactive todo recover force-release CLI, then ordinary "
@@ -102,6 +104,17 @@ def create_server(backend: CodingWorkflowBackend | None = None) -> FastMCP:
     )
     def collect_delegation(delegation_handle: str) -> dict[str, object]:
         return invoke("collect_delegation", delegation_handle)
+
+    @server.tool(
+        description="Run authoritative required gates for the task represented by an opaque workflow handle.",
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
+        structured_output=True,
+    )
+    def run_gates(
+        workflow_handle: str,
+        required: bool = True,
+    ) -> dict[str, object]:
+        return invoke("run_gates", workflow_handle, required)
 
     @server.tool(
         description="Apply one authoritative todo completion, handoff, block, or release.",

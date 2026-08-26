@@ -8,13 +8,18 @@ For substantial repository work it is the mandatory first front door: call
 skills only as bounded helpers. Direct lower-level CLIs are fallback/debugging
 interfaces for unavailable, broken, explicitly out-of-scope, or self-debug work.
 
-The v1 MCP surface is exactly five tools:
+The MCP surface is six tools:
 
 - `next_task`: bootstrap or resume todo and atomically claim safe work.
 - `inspect_task`: refresh bounded task, source, or evidence context.
 - `delegate_task`: opportunistically request nonblocking local assistance.
 - `collect_delegation`: nonblockingly collect one returned delegation handle.
+- `run_gates`: run required gates for an existing opaque workflow capability.
 - `finish_task`: apply exactly one authoritative todo disposition.
+
+`finish_task(action="complete")` automatically runs unsatisfied required gates
+before asking todo-orchestrator to complete the task. Other lifecycle actions do
+not run gates.
 
 Only opaque workflow and delegation capabilities cross the MCP boundary. Raw
 todo secrets, worker tokens, GPU identifiers, endpoints, packets, logs, and
