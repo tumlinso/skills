@@ -39,6 +39,11 @@ Failures use the same envelope with `ok: false`, a stable `code`, and `error.mes
   `recover live-approve`, then one-use `recover live-override`. The live path is
   restricted to unchanged `coding-workflow` claims with no attached work; it
   is not ordinary claim adoption.
+- Terminal finalization: `recover terminal-checkpoints TASK [--checkpoint ID]`
+  publishes pending task-owned checkpoints from recorded successful completion
+  provenance. It requires no claim token, never reopens the task, and is
+  idempotent. It rejects failed/superseded owners, revoked checkpoints,
+  ownership mismatches, and prerequisites that were not valid at completion.
 - Owner emergency release: `recover force-release-inspect`, interactive/manual
   `recover force-release-approve`, then one-use `recover force-release`. This
   path accepts an arbitrary still-live owner-controlled claim when no child,

@@ -165,6 +165,7 @@ def register(subparsers, helpers) -> None:
             "inspect", "release", "adopt",
             "live-inspect", "live-approve", "live-override",
             "force-release-inspect", "force-release-approve", "force-release",
+            "terminal-checkpoints",
         ],
     )
     for action in ("inspect", "release", "adopt"):
@@ -296,6 +297,14 @@ def register(subparsers, helpers) -> None:
     force_release.add_argument("task_id")
     force_release.set_defaults(handler=lambda args: Service(args.repo_root).force_release(
         args.task_id, os.environ.get("TODO_FORCE_RELEASE_APPROVAL", ""),
+    ))
+
+    terminal_checkpoints = recover["terminal-checkpoints"]
+    helpers.common(terminal_checkpoints)
+    terminal_checkpoints.add_argument("task_id")
+    terminal_checkpoints.add_argument("--checkpoint")
+    terminal_checkpoints.set_defaults(handler=lambda args: Service(args.repo_root).terminal_checkpoint_finalize(
+        args.task_id, args.checkpoint,
     ))
 
     execute = subparsers.add_parser("exec")

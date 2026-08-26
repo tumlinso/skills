@@ -193,7 +193,11 @@ class RealGateExecutionIntegrationTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
-    def _claim(self, gates: list[dict[str, object]]) -> str:
+    def _claim(
+        self,
+        gates: list[dict[str, object]],
+        checkpoints: list[dict[str, object]] | None = None,
+    ) -> str:
         plan = {
             "schema_version": 2,
             "project": {"name": "Facade Gate Integration"},
@@ -206,6 +210,7 @@ class RealGateExecutionIntegrationTests(unittest.TestCase):
                 "parallel_policy": "serial",
                 "scope": {"exclusive_paths": ["src/value.py"]},
                 "gates": gates,
+                "checkpoints": checkpoints or [],
             }],
         }
         plan_path = self.root / ".git" / "plan.json"
@@ -226,6 +231,21 @@ class RealGateExecutionIntegrationTests(unittest.TestCase):
         encoded = json.dumps(result, sort_keys=True)
         for forbidden in FORBIDDEN_RESPONSE_TEXT:
             self.assertNotIn(forbidden, encoded)
+
+    def test_real_completion_atomically_publishes_owned_checkpoint(self) -> None:
+        handle = self._claim([{
+            "id": "PASS", "type": "command",
+            "argv": [sys.executable, "-c", "raise SystemExit(0)"],
+            "checkpoint_id": "READY", "required": True,
+        }], checkpoints=[{"id": "READY", "title": "Ready"}])
+        result = self.backend.finish_task(handle, "complete", "implemented", None, None)
+        self.assertEqual(result["status"], "finished")
+        self.assertEqual(result["reached_checkpoints"], ["READY"])
+        checkpoint = self.backend.todo(self.root, "checkpoint", "status", "READY")
+        self.assertEqual(checkpoint["data"]["state"], "reached")
+        recovery = self.backend.recover_terminal_checkpoints(str(self.root), "GATE-TASK", "READY")
+        self.assertEqual(recovery["status"], "already_finalized")
+        self.assertTrue(recovery["idempotent_noop"])
 
     def test_real_todo_required_gate_failure_preserves_claim(self) -> None:
         handle = self._claim([{

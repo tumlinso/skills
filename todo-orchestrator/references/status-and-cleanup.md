@@ -17,4 +17,10 @@ current material scope fingerprint. The transaction marks the claim `force_relea
 releases safe claim-owned locks and resources, returns the task to `planned`,
 and records an owner audit entry.
 
+A successful terminal owner with a legacy pending checkpoint uses `recover
+terminal-checkpoints`. This path has no live-claim or raw-token requirement: it
+validates the task's recorded completion revision and frozen historical gates,
+reaches only owned, non-revoked checkpoints whose completion-time prerequisites
+were satisfied, and is a revision-preserving no-op once finalized.
+
 Cleanup is explicit-only. `todo cleanup` reports safety and never deletes v2 durable state. Legacy `cleanup_todos.py` retains its existing explicit cleanup behavior only in repositories not bootstrapped to v2.

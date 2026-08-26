@@ -62,6 +62,14 @@ class FakeBackend(CodingWorkflowBackend):
             return {"ok": True, "data": {"results": [
                 {"gate_id": "G-1", "status": "passed", "valid": True, "project_revision": 13}
             ]}}
+        if arguments[:2] == ("recover", "terminal-checkpoints"):
+            return {"ok": True, "data": {
+                "status": "finalized", "task_id": arguments[2],
+                "checkpoint_id": None, "reached": [{"checkpoint_id": "C-1"}],
+                "already_reached": [], "rejected": [],
+                "completion_revision": 13, "project_revision": 14,
+                "idempotent_noop": False,
+            }}
         if command in {"complete", "handoff", "block", "release"}:
             if self.finish_ok:
                 return {"ok": True, "data": {"project_revision": 14}}
@@ -325,20 +333,22 @@ class ToolTests(unittest.TestCase):
         ))
         self.assertEqual(result["status"], "invalid_handle")
 
-    def test_exact_six_tools_annotations_and_schema_budget(self) -> None:
+    def test_exact_seven_tools_annotations_and_schema_budget(self) -> None:
         server = create_server(self.backend)
         tools = asyncio.run(server.list_tools())
         self.assertEqual({tool.name for tool in tools}, {
-            "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates", "finish_task"
+            "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates",
+            "recover_terminal_checkpoints", "finish_task"
         })
         by_name = {tool.name: tool for tool in tools}
         expected_readonly = {"next_task": False, "inspect_task": True, "delegate_task": False,
-                             "collect_delegation": True, "run_gates": False, "finish_task": False}
+                             "collect_delegation": True, "run_gates": False,
+                             "recover_terminal_checkpoints": False, "finish_task": False}
         for name, readonly in expected_readonly.items():
             annotations = by_name[name].annotations
             self.assertEqual(annotations.readOnlyHint, readonly)
             self.assertFalse(annotations.destructiveHint)
-            self.assertEqual(annotations.idempotentHint, readonly)
+            self.assertEqual(annotations.idempotentHint, readonly or name == "recover_terminal_checkpoints")
         serialized = json.dumps([tool.model_dump(mode="json") for tool in tools], separators=(",", ":"))
         self.assertLess(len(serialized.encode()), 14_000)
         self.assertLess(len(SERVER_INSTRUCTIONS), 1_200)

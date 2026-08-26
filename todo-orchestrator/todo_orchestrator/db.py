@@ -89,7 +89,7 @@ class Database:
         entity_type: str,
         entity_id: str | None | Callable[[T], str | None],
         event_type: str,
-        payload: dict[str, Any] | None,
+        payload: dict[str, Any] | Callable[[T], dict[str, Any]] | None,
         operation: Callable[[sqlite3.Connection, int], T],
     ) -> tuple[T, int]:
         last_error: Exception | None = None
@@ -102,10 +102,11 @@ class Database:
                 result = operation(conn, revision)
                 resolved_actor = actor_session_id(result) if callable(actor_session_id) else actor_session_id
                 resolved_entity = entity_id(result) if callable(entity_id) else entity_id
+                resolved_payload = payload(result) if callable(payload) else payload
                 conn.execute("UPDATE meta SET value=? WHERE key='project_revision'", (str(revision),))
                 conn.execute(
                     "INSERT INTO events(revision,timestamp,actor_session_id,entity_type,entity_id,event_type,payload_json) VALUES(?,?,?,?,?,?,?)",
-                    (revision, utc_now(), resolved_actor, entity_type, resolved_entity, event_type, json.dumps(payload or {}, sort_keys=True)),
+                    (revision, utc_now(), resolved_actor, entity_type, resolved_entity, event_type, json.dumps(resolved_payload or {}, sort_keys=True)),
                 )
                 conn.commit()
                 return result, revision

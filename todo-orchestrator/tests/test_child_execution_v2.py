@@ -156,7 +156,7 @@ class ChildExecutionV2Tests(unittest.TestCase):
                 }
                 self.assertTrue({"approval_kind", "context_json"} <= approval_columns)
                 self.assertIn("context_json", audit_columns)
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 8)
+                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 9)
 
 
 if __name__ == "__main__":

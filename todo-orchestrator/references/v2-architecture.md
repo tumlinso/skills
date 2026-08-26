@@ -13,6 +13,15 @@ If the database is absent, bootstrap restores durable entities from the snapshot
 
 Every semantic mutation uses a bounded-retry `BEGIN IMMEDIATE` transaction, validates current state, updates entities, increments the monotonic project revision, appends one event, and commits atomically. Foreign keys and a busy timeout are enabled. Partial unique indexes enforce one active claim per task and one active capacity-one named lock.
 
+Successful task completion freezes required-gate provenance, terminalizes the
+task, reaches every currently eligible task-owned checkpoint, records the
+handoff, and only then releases the claim in that same transaction. Required
+gate freshness remains live for active work; successful terminal tasks retain
+the validation identity recorded at completion even after repository HEAD
+moves. Legacy terminal/pending states are repaired by the idempotent terminal
+checkpoint finalizer, whose authority is the recorded successful completion,
+not a fabricated claim.
+
 Snapshot and Markdown projection happen after commit from consistent reads. A filesystem lock serializes complete projection refreshes; files use temporary write, fsync, and atomic replacement. Projection failure cannot roll back semantic state and is visible to `todo doctor`.
 
 ## Readiness and Pickup

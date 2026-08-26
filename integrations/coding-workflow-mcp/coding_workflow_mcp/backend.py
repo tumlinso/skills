@@ -308,6 +308,10 @@ class CodingWorkflowBackend:
         claim_token = claim.get("claim_token")
         session_token = session.get("session_token")
         if not all(isinstance(value, str) and value for value in (claim_token, session_token, task.get("id"))):
+            if task_id:
+                finalized = self.recover_terminal_checkpoints(str(repo), task_id, None)
+                if finalized.get("status") in {"finalized", "already_finalized", "nothing_eligible"}:
+                    return finalized
             status = str(data.get("status") or data.get("code") or continued.get("code") or "idle")
             if status not in {"idle", "blocked", "attention_required"}:
                 status = "blocked" if "block" in status else "idle"
@@ -707,6 +711,44 @@ class CodingWorkflowBackend:
         record, repo, _ = self._active_workflow(workflow_handle)
         return self._run_required_gates(workflow_handle, record, repo)
 
+    def recover_terminal_checkpoints(
+        self, repo_root: str, task_id: str, checkpoint_id: str | None = None,
+    ) -> dict[str, Any]:
+        repo = self.canonical_repo(repo_root)
+        arguments = ["recover", "terminal-checkpoints", task_id]
+        if checkpoint_id:
+            arguments.extend(["--checkpoint", checkpoint_id])
+        envelope = self.todo(repo, *arguments, allow_failure=True)
+        data = self._data(envelope)
+        if envelope.get("ok") is False:
+            code = str(envelope.get("code") or "terminal_checkpoint_finalization_failed")
+            details = self._error_details(envelope)
+            result: dict[str, Any] = {"status": "rejected", "reason": code}
+            if isinstance(details, dict):
+                if isinstance(details.get("checkpoints"), list):
+                    result["checkpoints"] = details["checkpoints"][:24]
+                if details.get("status") is not None:
+                    result["owner_status"] = details.get("status")
+                if details.get("result") is not None:
+                    result["owner_result"] = details.get("result")
+            return bounded_json(result, 4_000)
+        reached = [
+            str(item.get("checkpoint_id")) for item in list(data.get("reached") or [])
+            if isinstance(item, dict) and item.get("checkpoint_id")
+        ]
+        return bounded_json({
+            "status": str(data.get("status") or "finalized"),
+            "task_id": str(data.get("task_id") or task_id),
+            "checkpoint_id": data.get("checkpoint_id"),
+            "reached_checkpoints": reached,
+            "already_reached": list(data.get("already_reached") or [])[:24],
+            "rejected_checkpoints": list(data.get("rejected") or [])[:24],
+            "completion_revision": data.get("completion_revision"),
+            "completion_git_head": data.get("completion_git_head"),
+            "revision": data.get("project_revision"),
+            "idempotent_noop": bool(data.get("idempotent_noop")),
+        }, 4_000)
+
     def finish_task(
         self,
         workflow_handle: str,
@@ -774,4 +816,7 @@ class CodingWorkflowBackend:
         }
         if gate_results:
             result["gates"] = gate_results[:24]
+        reached_checkpoints = list(data.get("reached_checkpoints") or [])
+        if reached_checkpoints:
+            result["reached_checkpoints"] = [str(item) for item in reached_checkpoints[:24]]
         return bounded_json(result, 4_000)

@@ -12,7 +12,7 @@ from mcp.client.stdio import stdio_client
 
 
 class ProtocolTests(unittest.TestCase):
-    def test_initialize_list_and_invoke_all_six_tools(self) -> None:
+    def test_initialize_list_and_invoke_all_seven_tools(self) -> None:
         fake_server = Path(__file__).with_name("fake_server.py")
 
         async def scenario() -> None:
@@ -25,7 +25,7 @@ class ProtocolTests(unittest.TestCase):
                     listed = await session.list_tools()
                     self.assertEqual({tool.name for tool in listed.tools}, {
                         "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates",
-                        "finish_task",
+                        "recover_terminal_checkpoints", "finish_task",
                     })
                     claimed = await session.call_tool("next_task", {"repo_root": "."})
                     self.assertFalse(claimed.isError)
@@ -46,6 +46,10 @@ class ProtocolTests(unittest.TestCase):
                         "workflow_handle": workflow,
                     })
                     self.assertEqual(gates.structuredContent["status"], "passed")
+                    recovered = await session.call_tool("recover_terminal_checkpoints", {
+                        "repo_root": ".", "task_id": "T-1", "checkpoint_id": "C-1",
+                    })
+                    self.assertEqual(recovered.structuredContent["status"], "finalized")
                     finished = await session.call_tool("finish_task", {
                         "workflow_handle": workflow, "action": "complete", "disposition": "implemented",
                     })

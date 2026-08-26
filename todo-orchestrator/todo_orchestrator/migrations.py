@@ -265,7 +265,26 @@ ALTER TABLE live_recovery_approvals ADD COLUMN context_json TEXT NOT NULL DEFAUL
 ALTER TABLE live_recovery_audit ADD COLUMN context_json TEXT NOT NULL DEFAULT '{}';
 """
 
+MIGRATION_9 = r"""
+ALTER TABLE tasks ADD COLUMN completion_revision INTEGER;
+ALTER TABLE tasks ADD COLUMN completion_git_head TEXT;
+ALTER TABLE tasks ADD COLUMN completion_commit TEXT;
+CREATE TABLE IF NOT EXISTS task_completion_gates(
+  task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+  gate_id TEXT NOT NULL REFERENCES gates(id) ON DELETE CASCADE,
+  status TEXT NOT NULL, valid INTEGER NOT NULL,
+  input_fingerprint TEXT, evidence_id TEXT REFERENCES evidence(id),
+  evidence_revision INTEGER, validation_git_head TEXT,
+  completion_revision INTEGER NOT NULL, completion_git_head TEXT,
+  provenance_json TEXT NOT NULL DEFAULT '{}',
+  PRIMARY KEY(task_id,gate_id)
+);
+CREATE INDEX IF NOT EXISTS idx_task_completion_gates_revision
+  ON task_completion_gates(task_id,completion_revision);
+"""
+
 MIGRATIONS = {
   1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
   5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7, 8: MIGRATION_8,
+  9: MIGRATION_9,
 }

@@ -49,6 +49,11 @@ Finish through exactly one structured CLI path: `complete`, `handoff`,
 `block`, or `release`. Completion requires valid gates. Checkpoints,
 interfaces, barriers, recovery, plans, migration, resources, and cleanup must
 use their existing CLI commands; never edit SQLite or projections directly.
+Successful `complete` atomically publishes eligible task-owned checkpoints
+before releasing its claim. For a legacy successful terminal owner whose
+checkpoint is still pending, use the supported idempotent `recover
+terminal-checkpoints TASK [--checkpoint ID]` path; it derives authority from
+recorded completion provenance and requires no claim token or task reopening.
 
 For a new empty project, read `references/planning-workflow.md`, validate and
 diff a v2 JSON plan, then apply it transactionally. For legacy Markdown,

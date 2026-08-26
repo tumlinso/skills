@@ -13,6 +13,13 @@ from typing import Any
 from .audit import audit_state, reconcile_state
 from .barriers import barrier_report
 from .checkpoints import checkpoint_status, reach_checkpoint, revoke_checkpoint
+from .completion import (
+    SUCCESSFUL_DISPOSITIONS,
+    recover_terminal_checkpoints,
+    reach_eligible_owned_checkpoints,
+    snapshot_completion_gates,
+    terminal_finalization_report,
+)
 from .claims import (
     approve_force_release,
     approve_live_override,
@@ -106,7 +113,7 @@ class Service:
     def context_budget(self) -> int:
         return int(self.project.get("configuration", {}).get("context_budget_bytes", 12000))
 
-    def mutate(self, *, actor, entity_type: str, entity_id, event_type: str, payload: dict[str, object], operation, full_projection: bool = False):
+    def mutate(self, *, actor, entity_type: str, entity_id, event_type: str, payload, operation, full_projection: bool = False):
         result, revision = self.db.mutate(
             actor_session_id=actor,
             entity_type=entity_type,
@@ -292,22 +299,82 @@ class Service:
             if unsatisfied:
                 raise TodoError("required_gates_unsatisfied", "Required gates are missing, failed, or invalidated", ExitCode.GATE_FAILURE, unsatisfied)
             now = utc_now()
+            completion_head = git_head(self.paths.repo_root)
+            conn.execute(
+                "UPDATE tasks SET status='done',result=?,attention_reason=NULL,updated_at=?,revision=?,"
+                "completion_revision=?,completion_git_head=?,completion_commit=? WHERE id=?",
+                (disposition, now, revision, revision, completion_head, completion_head, task["id"]),
+            )
+            completion_gates = snapshot_completion_gates(
+                conn, task, revision, completion_head,
+            )
+            checkpoint_finalization = (
+                reach_eligible_owned_checkpoints(
+                    conn, self.paths.repo_root, str(task["id"]), revision,
+                )
+                if disposition in SUCCESSFUL_DISPOSITIONS
+                else {"reached": [], "skipped": []}
+            )
             handoff_id = str(uuid.uuid4())
             payload = self._handoff_payload(conn, claim, note)
+            payload.update({
+                "completion_revision": revision,
+                "completion_commit": completion_head,
+                "completion_gates": [
+                    {
+                        "id": gate["gate_id"], "status": gate["status"],
+                        "valid": bool(gate["valid"]),
+                        "input_fingerprint": gate["input_fingerprint"],
+                        "evidence_id": gate["evidence_id"],
+                        "evidence_revision": gate["evidence_revision"],
+                        "validation_git_head": gate["validation_git_head"],
+                    }
+                    for gate in completion_gates
+                ],
+                "finalized_checkpoints": [
+                    item["checkpoint_id"] for item in checkpoint_finalization["reached"]
+                ],
+            })
             conn.execute("INSERT INTO handoffs(id,task_id,claim_id,kind,note,payload_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?)", (handoff_id, task["id"], claim["id"], "complete", note, json.dumps(payload, sort_keys=True), now, revision))
             release_claim(conn, claim_token, next_status="done")
-            conn.execute("UPDATE tasks SET result=?,attention_reason=NULL,revision=? WHERE id=?", (disposition, revision, task["id"]))
             barriers = reevaluate_barriers(conn, revision)
-            return {"task_id": task["id"], "session_id": claim["session_id"], "status": "done", "disposition": disposition, "handoff_id": handoff_id, "handoff": payload, "barrier_changes": barriers}
+            checkpoint_barriers = [
+                change for item in checkpoint_finalization["reached"]
+                for change in item.get("barrier_changes", [])
+            ]
+            return {
+                "task_id": task["id"], "session_id": claim["session_id"],
+                "status": "done", "disposition": disposition,
+                "handoff_id": handoff_id, "handoff": payload,
+                "reached_checkpoints": [
+                    item["checkpoint_id"] for item in checkpoint_finalization["reached"]
+                ],
+                "skipped_checkpoints": checkpoint_finalization["skipped"],
+                "barrier_changes": checkpoint_barriers + barriers,
+            }
 
-        result, revision, projection = self.mutate(actor=lambda value: value.get("session_id"), entity_type="task", entity_id=lambda value: value.get("task_id"), event_type="task.completed", payload={"disposition": disposition}, operation=operation)
+        result, revision, projection = self.mutate(
+            actor=lambda value: value.get("session_id"),
+            entity_type="task",
+            entity_id=lambda value: value.get("task_id"),
+            event_type="task.completed",
+            payload=lambda value: {
+                "disposition": disposition,
+                "completion_revision": value.get("handoff", {}).get("completion_revision"),
+                "reached_checkpoints": value.get("reached_checkpoints", []),
+            },
+            operation=operation,
+        )
         return {**result, "project_revision": revision, "projection": projection}
 
     def _handoff_payload(self, conn: sqlite3.Connection, claim: sqlite3.Row, note: str) -> dict[str, object]:
         scopes = scopes_for(conn, claim["task_id"], "exclusive")
         dirty = [path for path in dirty_paths(self.paths.repo_root) if any(path_contains(root, path) for root in scopes)]
         checkpoints = [dict(row) for row in conn.execute("SELECT id,state,reached_at FROM checkpoints WHERE task_id=?", (claim["task_id"],))]
-        gates = [dict(row) for row in conn.execute("SELECT id,status,valid,last_run_at FROM gates WHERE task_id=?", (claim["task_id"],))]
+        gates = [dict(row) for row in conn.execute(
+            "SELECT id,status,valid,input_fingerprint,last_run_at,revision FROM gates WHERE task_id=?",
+            (claim["task_id"],),
+        )]
         interfaces = [dict(row) for row in conn.execute("SELECT id,state,version,content_hash FROM interfaces WHERE owner_task_id=?", (claim["task_id"],))]
         resources = [dict(row) for row in conn.execute("SELECT instance_id,state,acquired_at,released_at FROM resource_leases WHERE claim_id=?", (claim["id"],))]
         return {"task_id": claim["task_id"], "git_head": git_head(self.paths.repo_root), "git_diffstat": git_diffstat(self.paths.repo_root), "changed_owned_paths": dirty, "checkpoints": checkpoints, "gates": gates, "interfaces": interfaces, "resources": resources, "note": note}
@@ -356,6 +423,47 @@ class Service:
             return result
         result, revision, projection = self.mutate(actor=lambda value: value.get("session_id"), entity_type="checkpoint", entity_id=checkpoint_id, event_type=f"checkpoint.{action}", payload={}, operation=operation)
         return {**result, "project_revision": revision, "projection": projection}
+
+    def terminal_checkpoint_finalize(
+        self, task_id: str, checkpoint_id: str | None = None,
+    ) -> dict[str, object]:
+        with self.db.read() as conn:
+            report = terminal_finalization_report(conn, task_id, checkpoint_id)
+        if not report["eligible"]:
+            if report["rejected"]:
+                raise TodoError(
+                    "terminal_checkpoint_prerequisites_unsatisfied",
+                    "Checkpoint prerequisites were not satisfied at owner completion",
+                    ExitCode.GATE_FAILURE,
+                    {"checkpoints": report["rejected"], "completion_revision": report["completion_revision"]},
+                )
+            return {
+                **report,
+                "status": "already_finalized" if report["already_reached"] else "nothing_eligible",
+                "reached": [],
+                "project_revision": self.db.revision(),
+                "idempotent_noop": True,
+            }
+        result, revision, projection = self.mutate(
+            actor=None,
+            entity_type="task",
+            entity_id=task_id,
+            event_type="task.terminal_checkpoints_finalized",
+            payload=lambda value: {
+                "task_id": task_id,
+                "checkpoint_id": checkpoint_id,
+                "completion_revision": value.get("completion_revision"),
+                "reached_checkpoints": [item["checkpoint_id"] for item in value.get("reached", [])],
+                "authority": "recorded_successful_terminal_completion",
+            },
+            operation=lambda conn, revision: recover_terminal_checkpoints(
+                conn, self.paths.repo_root, task_id, checkpoint_id, revision,
+            ),
+        )
+        return {
+            **result, "status": "finalized", "idempotent_noop": False,
+            "project_revision": revision, "projection": projection,
+        }
 
     def barrier(self, barrier_id: str) -> dict[str, object]:
         with self.db.read() as conn:

@@ -111,7 +111,7 @@ class V2GraphCoordinationTests(unittest.TestCase):
         self.repo.service.decision("set", "strategy", "enabled")
         self.assertTrue(self.repo.service.explain("CONDITIONAL")["ready"])
 
-    def test_invalidated_gate_recloses_barrier_and_stops_active_dependent(self) -> None:
+    def test_terminal_gate_history_keeps_barrier_open_after_source_moves(self) -> None:
         (self.repo.root / "inputs").mkdir()
         source = self.repo.root / "inputs" / "contract.txt"
         source.write_text("one\n", encoding="utf-8")
@@ -125,9 +125,9 @@ class V2GraphCoordinationTests(unittest.TestCase):
         claim_join = self.repo.service.continue_work(task_id="JOIN")
         source.write_text("two\n", encoding="utf-8")
         reconciled = self.repo.service.reconcile()
-        self.assertEqual(reconciled["invalidated_gates"], ["A-GATE"])
-        self.assertEqual(self.repo.service.barrier("GATE-BARRIER")["state"], "closed")
-        self.assertEqual(self.repo.service.explain("JOIN")["execution"], "attention_required")
+        self.assertEqual(reconciled["invalidated_gates"], [])
+        self.assertEqual(self.repo.service.barrier("GATE-BARRIER")["state"], "open")
+        self.assertEqual(self.repo.service.explain("JOIN")["execution"], "claimed")
         self.assertEqual(claim_join["claim"]["task_id"], "JOIN")
 
 

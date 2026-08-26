@@ -117,6 +117,20 @@ def create_server(backend: CodingWorkflowBackend | None = None) -> FastMCP:
         return invoke("run_gates", workflow_handle, required)
 
     @server.tool(
+        description=(
+            "Idempotently finalize eligible checkpoints owned by a recorded successful terminal task."
+        ),
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=True),
+        structured_output=True,
+    )
+    def recover_terminal_checkpoints(
+        repo_root: str,
+        task_id: str,
+        checkpoint_id: str | None = None,
+    ) -> dict[str, object]:
+        return invoke("recover_terminal_checkpoints", repo_root, task_id, checkpoint_id)
+
+    @server.tool(
         description="Apply one authoritative todo completion, handoff, block, or release.",
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,

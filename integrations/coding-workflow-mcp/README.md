@@ -8,18 +8,28 @@ For substantial repository work it is the mandatory first front door: call
 skills only as bounded helpers. Direct lower-level CLIs are fallback/debugging
 interfaces for unavailable, broken, explicitly out-of-scope, or self-debug work.
 
-The MCP surface is six tools:
+The MCP surface is seven tools:
 
 - `next_task`: bootstrap or resume todo and atomically claim safe work.
 - `inspect_task`: refresh bounded task, source, or evidence context.
 - `delegate_task`: opportunistically request nonblocking local assistance.
 - `collect_delegation`: nonblockingly collect one returned delegation handle.
 - `run_gates`: run required gates for an existing opaque workflow capability.
+- `recover_terminal_checkpoints`: idempotently finish checkpoint publication
+  from recorded successful terminal-task provenance, without a claim token.
 - `finish_task`: apply exactly one authoritative todo disposition.
 
 `finish_task(action="complete")` automatically runs unsatisfied required gates
 before asking todo-orchestrator to complete the task. Other lifecycle actions do
 not run gates.
+
+Successful completion, eligible task-owned checkpoint publication, handoff
+recording, and claim release are one todo transaction. If a legacy ledger or an
+interrupted older client contains a successful terminal owner with a pending
+checkpoint, call `recover_terminal_checkpoints` with the repository, task ID,
+and optionally the exact checkpoint ID. Repeating the call is a no-op. An
+explicit `next_task` request for that terminal task also attempts this safe
+finalization after ordinary claim pickup reports no claimable work.
 
 Only opaque workflow and delegation capabilities cross the MCP boundary. Raw
 todo secrets, worker tokens, GPU identifiers, endpoints, packets, logs, and

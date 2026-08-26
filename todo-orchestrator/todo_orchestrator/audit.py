@@ -7,8 +7,10 @@ import sqlite3
 from pathlib import Path
 
 from .evidence import gate_input_fingerprint
+from .completion import historical_completion_gates, is_successful_terminal
 from .git_state import dirty_paths, git_head, path_contains, scope_manifest
 from .interfaces import interface_hash
+from .models import TodoError
 
 
 def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) -> dict[str, object]:
@@ -33,13 +35,44 @@ def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) 
                 discrepancies.append({"code": "interface_hash_mismatch", "interface_id": interface["id"], "recorded": interface["content_hash"], "current": digest})
         except Exception as exc:
             discrepancies.append({"code": "interface_inspection_failed", "interface_id": interface["id"], "error": str(exc)})
-    for gate in conn.execute("SELECT * FROM gates WHERE valid=1"):
+    for gate in conn.execute(
+        "SELECT g.*,t.status AS task_status,t.result AS task_result FROM gates g "
+        "LEFT JOIN tasks t ON t.id=g.task_id WHERE g.valid=1"
+    ):
+        if gate["task_id"] and is_successful_terminal(
+            {"status": gate["task_status"], "result": gate["task_result"]}
+        ):
+            continue
         config = json.loads(gate["config_json"])
         current, _ = gate_input_fingerprint(conn, repo_root, config)
         if current != gate["input_fingerprint"]:
             discrepancies.append({"code": "gate_inputs_changed", "gate_id": gate["id"], "recorded": gate["input_fingerprint"], "current": current})
-    for task in conn.execute("SELECT id,status FROM tasks WHERE status='done' AND kind<>'epic'"):
-        invalid_required = [dict(row) for row in conn.execute("SELECT id,status,valid FROM gates WHERE task_id=? AND required=1 AND (valid=0 OR status NOT IN ('passed','evaluated_not_promoted'))", (task["id"],))]
+    for task in conn.execute("SELECT * FROM tasks WHERE status='done' AND kind<>'epic'"):
+        if is_successful_terminal(task):
+            task_gates = conn.execute(
+                "SELECT id,status,valid FROM gates WHERE task_id=? AND required=1 ORDER BY id",
+                (task["id"],),
+            ).fetchall()
+            if not task_gates:
+                invalid_required = []
+            else:
+                try:
+                    historical = historical_completion_gates(conn, task)
+                    invalid_required = [
+                        {"id": row.get("gate_id") or row.get("id"), "status": row["status"], "valid": row["valid"]}
+                        for row in historical
+                        if not row["valid"] or row["status"] not in {"passed", "evaluated_not_promoted"}
+                    ]
+                except TodoError:
+                    # Pre-v9 terminal tasks may not have a completion event or
+                    # handoff snapshot. Preserve the legacy audit result here;
+                    # tokenless recovery itself remains fail-closed.
+                    invalid_required = [
+                        dict(row) for row in task_gates
+                        if not row["valid"] or row["status"] not in {"passed", "evaluated_not_promoted"}
+                    ]
+        else:
+            invalid_required = [dict(row) for row in conn.execute("SELECT id,status,valid FROM gates WHERE task_id=? AND required=1 AND (valid=0 OR status NOT IN ('passed','evaluated_not_promoted'))", (task["id"],))]
         if invalid_required:
             discrepancies.append({"code": "completed_required_gate_invalid", "task_id": task["id"], "gates": invalid_required})
         for artifact in conn.execute("SELECT * FROM task_artifacts WHERE task_id=?", (task["id"],)):
