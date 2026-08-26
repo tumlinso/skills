@@ -327,10 +327,25 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
                 (consumed["id"], task_id, consumed.get("required_state", "frozen"), consumed.get("required_version")),
             )
         for checkpoint in task.get("checkpoints", []):
+            existing_checkpoint = conn.execute(
+                "SELECT state,reached_at,revoked_at FROM checkpoints WHERE id=?", (checkpoint["id"],)
+            ).fetchone()
+            checkpoint_state = checkpoint.get(
+                "state", existing_checkpoint["state"] if existing_checkpoint else "pending"
+            )
+            reached_at = existing_checkpoint["reached_at"] if existing_checkpoint else None
+            revoked_at = existing_checkpoint["revoked_at"] if existing_checkpoint else None
+            if not existing_checkpoint or checkpoint_state != existing_checkpoint["state"]:
+                if checkpoint_state == "reached":
+                    reached_at, revoked_at = now, None
+                elif checkpoint_state == "revoked":
+                    revoked_at = now
+                elif checkpoint_state == "pending":
+                    reached_at, revoked_at = None, None
             conn.execute(
-                "INSERT INTO checkpoints(id,task_id,title,state,metadata_json,revision) VALUES(?,?,?,?,?,?) "
-                "ON CONFLICT(id) DO UPDATE SET task_id=excluded.task_id,title=excluded.title,metadata_json=excluded.metadata_json,revision=excluded.revision",
-                (checkpoint["id"], task_id, checkpoint.get("title", checkpoint["id"]), checkpoint.get("state", "pending"), json.dumps(checkpoint.get("metadata", {}), sort_keys=True), revision),
+                "INSERT INTO checkpoints(id,task_id,title,state,metadata_json,reached_at,revoked_at,revision) VALUES(?,?,?,?,?,?,?,?) "
+                "ON CONFLICT(id) DO UPDATE SET task_id=excluded.task_id,title=excluded.title,state=excluded.state,metadata_json=excluded.metadata_json,reached_at=excluded.reached_at,revoked_at=excluded.revoked_at,revision=excluded.revision",
+                (checkpoint["id"], task_id, checkpoint.get("title", checkpoint["id"]), checkpoint_state, json.dumps(checkpoint.get("metadata", {}), sort_keys=True), reached_at, revoked_at, revision),
             )
             conn.execute("DELETE FROM checkpoint_interfaces WHERE checkpoint_id=?", (checkpoint["id"],))
             for published in checkpoint.get("publishes_interfaces", []):

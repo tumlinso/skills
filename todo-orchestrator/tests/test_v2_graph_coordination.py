@@ -45,6 +45,19 @@ class V2GraphCoordinationTests(unittest.TestCase):
         self.assertIn("CONSUMER", report["affected_active_tasks"])
         self.assertEqual(self.repo.service.explain("CONSUMER")["execution"], "attention_required")
 
+    def test_plan_can_declaratively_retire_existing_checkpoint(self) -> None:
+        plan = self._checkpoint_plan()
+        self.repo.apply(plan)
+        plan["tasks"][0]["checkpoints"][0]["state"] = "revoked"
+        self.repo.apply(plan)
+        with self.repo.service.db.read() as conn:
+            checkpoint = conn.execute(
+                "SELECT state,reached_at,revoked_at FROM checkpoints WHERE id='API-FROZEN'"
+            ).fetchone()
+        self.assertEqual(checkpoint["state"], "revoked")
+        self.assertIsNone(checkpoint["reached_at"])
+        self.assertIsNotNone(checkpoint["revoked_at"])
+
     def test_interface_revision_invalidates_active_consumer(self) -> None:
         (self.repo.root / "include").mkdir()
         contract = self.repo.root / "include" / "api.txt"
