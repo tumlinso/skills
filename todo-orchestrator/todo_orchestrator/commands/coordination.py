@@ -226,14 +226,18 @@ def register(subparsers, helpers) -> None:
     force_inspect = recover["force-release-inspect"]
     helpers.common(force_inspect)
     force_inspect.add_argument("task_id")
+    force_inspect.add_argument("--acknowledge-dirty", action="store_true")
     force_inspect.set_defaults(
-        handler=lambda args: Service(args.repo_root).force_release_inspect(args.task_id)
+        handler=lambda args: Service(args.repo_root).force_release_inspect(
+            args.task_id, args.acknowledge_dirty,
+        )
     )
     force_approve = recover["force-release-approve"]
     helpers.common(force_approve)
     force_approve.add_argument("task_id")
     force_approve.add_argument("--reason", required=True)
     force_approve.add_argument("--ttl-seconds", type=int, default=300)
+    force_approve.add_argument("--acknowledge-dirty", action="store_true")
     def approve_force_release(args):
         if not sys.stdin.isatty() or not sys.stdout.isatty():
             raise TodoError(
@@ -242,11 +246,17 @@ def register(subparsers, helpers) -> None:
                 ExitCode.BLOCKED,
             )
         service = Service(args.repo_root)
-        report = service.force_release_inspect(args.task_id)
+        report = service.force_release_inspect(args.task_id, args.acknowledge_dirty)
         if not report.get("eligible"):
+            dirty_only = set(report.get("blockers") or []) == {"owned_scope_changed"}
+            message = (
+                "Owned scope changed; rerun with --acknowledge-dirty only after confirming all files must be preserved"
+                if dirty_only
+                else "Live claim is not eligible for owner force release"
+            )
             raise TodoError(
                 "force_release_blocked",
-                "Live claim is not eligible for owner force release",
+                message,
                 ExitCode.BLOCKED,
                 report,
             )
@@ -260,9 +270,16 @@ def register(subparsers, helpers) -> None:
             f"Owner system: {report.get('owner_system') or '<none>'}\n"
             f"Owner instance: {report.get('owner_instance_id') or '<none>'}\n"
             f"Lease expiry: {report['lease_expires_at']}\n"
+            f"Owned scope changed: {'yes' if report['scope_changed'] else 'no'}\n"
+            f"Dirty scope acknowledged: {'yes' if report['acknowledge_dirty'] else 'no'}\n"
+            f"Baseline scope fingerprint: {report['baseline_scope_fingerprint']}\n"
+            f"Current scope fingerprint: {report['current_scope_fingerprint']}\n"
+            f"Current material scope fingerprint: {report['current_material_scope_fingerprint']}\n"
+            f"Current dirty paths: {', '.join(report['current_dirty_paths']) or '<none>'}\n"
             f"Reason: {args.reason}\n"
             "Consequences: retire this live claim, invalidate its claim token, release its "
-            "locks and safe resource leases, and return the task to planned.\n"
+            "locks and safe resource leases, preserve every repository file exactly as-is, "
+            "and return the task to planned.\n"
             f"Type the exact task ID ({args.task_id}) to authorize once: ",
             end="",
             file=sys.stderr,
@@ -270,7 +287,9 @@ def register(subparsers, helpers) -> None:
         )
         if input().strip() != args.task_id:
             raise TodoError("manual_approval_canceled", "Manual approval was canceled", ExitCode.BLOCKED)
-        return service.force_release_approve(args.task_id, args.reason, args.ttl_seconds)
+        return service.force_release_approve(
+            args.task_id, args.reason, args.ttl_seconds, args.acknowledge_dirty,
+        )
     force_approve.set_defaults(handler=approve_force_release)
     force_release = recover["force-release"]
     helpers.common(force_release)

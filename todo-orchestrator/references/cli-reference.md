@@ -41,9 +41,9 @@ Failures use the same envelope with `ok: false`, a stable `code`, and `error.mes
   is not ordinary claim adoption.
 - Owner emergency release: `recover force-release-inspect`, interactive/manual
   `recover force-release-approve`, then one-use `recover force-release`. This
-  path accepts an arbitrary still-live owner-controlled claim, but only when
-  its owned scope is unchanged and no child, gate, background/CUDA campaign, or
-  demonstrably running attached process can continue mutating it.
+  path accepts an arbitrary still-live owner-controlled claim when no child,
+  gate, background/CUDA campaign, or demonstrably running attached process can
+  continue mutating it. Changed scope requires explicit owner acknowledgement.
 - Compatibility: `migrate markdown --dry-run|--apply`
 
 `resource discover` is an optional NVIDIA inventory provider. The scheduling tables and commands remain generic.
@@ -59,15 +59,17 @@ Failures use the same envelope with `ok: false`, a stable `code`, and `error.mes
      verifiably `coding-workflow`-owned claim that needs a replacement facade
      claim;
    - use the owner force-release flow for any owner-controlled live claim that
-     has clean scope and no unsafe attached execution.
+     has no unsafe attached execution. If scope changed, the owner must inspect
+     and explicitly acknowledge that preserved state.
 
 The force-release contract is:
 
 ```bash
 python <skill-dir>/scripts/todo.py recover force-release-inspect TASK \
-  --repo-root <repo> --json
+  [--acknowledge-dirty] --repo-root <repo> --json
 python <skill-dir>/scripts/todo.py recover force-release-approve TASK \
-  --reason "<owner reason>" --ttl-seconds 300 --repo-root <repo> --json
+  --reason "<owner reason>" --ttl-seconds 300 [--acknowledge-dirty] \
+  --repo-root <repo> --json
 TODO_FORCE_RELEASE_APPROVAL='<token printed only after interactive confirmation>' \
 python <skill-dir>/scripts/todo.py recover force-release TASK \
   --repo-root <repo> --json
@@ -78,3 +80,12 @@ is no `--yes` bypass. The approval defaults to 300 seconds (bounded to 30-900),
 is one-use, and is bound to the canonical repository, project UUID, task, UID,
 project revision, and current claim fingerprint. The consuming command reads
 the secret only from `TODO_FORCE_RELEASE_APPROVAL`, never argv.
+
+`owned_scope_changed` is an acknowledgement gate, not a permanent lockout.
+First inspect without the flag. After verifying that current files must remain
+exactly as they are, rerun inspect and interactive approval with
+`--acknowledge-dirty`. Approval records the baseline/current scope fingerprints
+and dirty paths. Consumption refuses as stale if the current material scope
+fingerprint changes again. Generated todo projections are excluded from that
+staleness fingerprint because approval refreshes them itself. Release never
+restores, deletes, stages, or commits repository files.

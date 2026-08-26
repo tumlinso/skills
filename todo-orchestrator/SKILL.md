@@ -63,8 +63,11 @@ Never approve it from model context or use it to take over another client's clai
 If a still-live claim token is lost and the claim is not eligible for facade
 replacement, an owner may use `recover force-release-inspect`, manually run
 interactive `recover force-release-approve`, and then consume the one-use token
-with `recover force-release`. This owner-only path requires a clean scope and no
-unsafe attached execution. A model must never mint or self-authorize approval.
+with `recover force-release`. This owner-only path requires no unsafe attached
+execution. A changed scope requires the human owner to add
+`--acknowledge-dirty` when inspecting and approving; the current material scope
+fingerprint is then bound into the one-use approval and every file is preserved.
+A model must never mint or self-authorize approval.
 
 Hard invariants: do not edit another active claim's paths, cross unopened
 barriers, bypass locks or leases, mark work done without gates, auto-clean

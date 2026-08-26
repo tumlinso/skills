@@ -259,7 +259,13 @@ CREATE TABLE IF NOT EXISTS live_recovery_audit(
 );
 """
 
+MIGRATION_8 = r"""
+ALTER TABLE live_recovery_approvals ADD COLUMN approval_kind TEXT NOT NULL DEFAULT 'live_claim_override';
+ALTER TABLE live_recovery_approvals ADD COLUMN context_json TEXT NOT NULL DEFAULT '{}';
+ALTER TABLE live_recovery_audit ADD COLUMN context_json TEXT NOT NULL DEFAULT '{}';
+"""
+
 MIGRATIONS = {
   1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
-  5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7,
+  5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7, 8: MIGRATION_8,
 }

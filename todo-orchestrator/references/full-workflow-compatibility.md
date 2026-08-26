@@ -130,14 +130,19 @@ task/UID/revision/fingerprint-bound, and passed to consumption only through
 payloads, or model context.
 
 Force release is deliberately narrower than arbitrary takeover. It refuses
-changed owned scope, active or acceptance-pending child work, active gate
-execution, queued/running/preempted background or CUDA work, and a locally live
-attached command process. Safe claim-owned lock and ordinary resource leases are
+active or acceptance-pending child work, active gate execution,
+queued/running/preempted background or CUDA work, and a locally live attached
+command process. Changed owned scope is separately gated: the owner must pass
+`--acknowledge-dirty` to inspect and approval, which binds the current material
+scope fingerprint and dirty-path summary into the permission and audit. Generated
+todo projections are excluded because approval refreshes them itself; a later
+material file change makes approval stale. Safe claim-owned lock and ordinary resource leases are
 released in the same authority transaction; the old claim becomes explicitly
 `force_released`, its token stops authenticating, the task returns to `planned`,
-the revision advances, projections refresh, and the reason plus prior claim
-fingerprint are recorded in audit history. Coding-workflow cannot mint this
-approval; after owner release it simply calls ordinary `next_task` again.
+the revision advances, projections refresh, all repository files remain intact,
+and the reason plus prior claim and scope fingerprints are recorded in audit
+history. Coding-workflow cannot mint this approval; after owner release it
+simply calls ordinary `next_task` again.
 
 ## Planning a New Project
 

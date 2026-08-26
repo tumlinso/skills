@@ -148,7 +148,15 @@ class ChildExecutionV2Tests(unittest.TestCase):
                     "candidate_gates_json", "acceptance_gates_json", "result_refs_json",
                     "access_mode", "authorized_scopes_json",
                 } <= columns)
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 7)
+                approval_columns = {
+                    row[1] for row in migrated.execute("PRAGMA table_info(live_recovery_approvals)")
+                }
+                audit_columns = {
+                    row[1] for row in migrated.execute("PRAGMA table_info(live_recovery_audit)")
+                }
+                self.assertTrue({"approval_kind", "context_json"} <= approval_columns)
+                self.assertIn("context_json", audit_columns)
+                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 8)
 
 
 if __name__ == "__main__":

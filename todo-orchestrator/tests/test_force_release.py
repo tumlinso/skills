@@ -49,8 +49,15 @@ class ForceReleaseTests(unittest.TestCase):
     def claim(self) -> dict[str, object]:
         return self.repo.service.continue_work(task_id="A")
 
-    def approve(self, reason: str = "lost raw claim token") -> dict[str, object]:
-        return self.repo.service.force_release_approve("A", reason, 300)
+    def approve(
+        self,
+        reason: str = "lost raw claim token",
+        *,
+        acknowledge_dirty: bool = False,
+    ) -> dict[str, object]:
+        return self.repo.service.force_release_approve(
+            "A", reason, 300, acknowledge_dirty,
+        )
 
     def test_success_releases_bookkeeping_and_task_is_claimable_again(self) -> None:
         original = self.claim()
@@ -250,6 +257,82 @@ class ForceReleaseTests(unittest.TestCase):
         with self.assertRaises(TodoError) as stale:
             self.repo.service.force_release("A", approval["approval_token"])
         self.assertEqual(stale.exception.code, "stale_approval")
+
+    def test_dirty_scope_requires_explicit_acknowledgement_and_is_preserved(self) -> None:
+        original = self.claim()
+        path = self.repo.root / "src" / "a"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("owner work must survive\n", encoding="utf-8")
+
+        blocked = self.repo.service.force_release_inspect("A")
+        self.assertFalse(blocked["eligible"])
+        self.assertEqual(blocked["blockers"], ["owned_scope_changed"])
+        with self.assertRaises(TodoError) as missing_ack:
+            self.approve("preserve owner work")
+        self.assertEqual(missing_ack.exception.code, "force_release_blocked")
+
+        acknowledged = self.repo.service.force_release_inspect("A", True)
+        self.assertTrue(acknowledged["eligible"])
+        self.assertTrue(acknowledged["scope_changed"])
+        args = build_parser().parse_args([
+            "recover", "force-release-approve", "A",
+            "--reason", "preserve owner work", "--acknowledge-dirty",
+            "--repo-root", str(self.repo.root),
+        ])
+        stderr = TtyStringIO()
+        with (
+            mock.patch("sys.stdin", TtyStringIO()),
+            mock.patch("sys.stdout", TtyStringIO()),
+            mock.patch("sys.stderr", stderr),
+            mock.patch("builtins.input", return_value="A"),
+        ):
+            approval = args.handler(args)
+        self.assertIn("Dirty scope acknowledged: yes", stderr.getvalue())
+        self.assertIn("preserve every repository file exactly as-is", stderr.getvalue())
+        self.assertTrue(approval["approval_context"]["acknowledge_dirty"])
+        released = self.repo.service.force_release("A", approval["approval_token"])
+        self.assertTrue(released["acknowledged_dirty_scope"])
+        self.assertEqual(path.read_text(encoding="utf-8"), "owner work must survive\n")
+        with self.repo.service.db.read() as conn:
+            audit = dict(conn.execute("SELECT * FROM live_recovery_audit").fetchone())
+            context = json.loads(audit["context_json"])
+            self.assertTrue(context["acknowledge_dirty"])
+            self.assertEqual(
+                context["current_scope_fingerprint"],
+                acknowledged["current_scope_fingerprint"],
+            )
+        with self.assertRaises(TodoError):
+            self.repo.service.pulse(original["claim"]["claim_token"])
+
+    def test_dirty_scope_change_after_approval_makes_capability_stale(self) -> None:
+        self.claim()
+        path = self.repo.root / "src" / "a"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("first\n", encoding="utf-8")
+        approval = self.approve("first manifest", acknowledge_dirty=True)
+        path.write_text("second\n", encoding="utf-8")
+        with self.assertRaises(TodoError) as stale:
+            self.repo.service.force_release("A", approval["approval_token"])
+        self.assertEqual(stale.exception.code, "stale_approval")
+
+    def test_approval_projection_refresh_does_not_self_invalidate(self) -> None:
+        repo = V2Repo()
+        self.addCleanup(repo.close)
+        task = safe_task("A", "src/a")
+        task["scope"]["exclusive_paths"] = [
+            ".todo-orchestrator", "src/a", "todo-status.md", "todos.md",
+        ]
+        repo.apply(base_plan([task]))
+        repo.service.continue_work(task_id="A")
+        path = repo.root / "src" / "a"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("preserve\n", encoding="utf-8")
+        approval = repo.service.force_release_approve(
+            "A", "managed projections will refresh", 300, True,
+        )
+        released = repo.service.force_release("A", approval["approval_token"])
+        self.assertTrue(released["acknowledged_dirty_scope"])
+        self.assertEqual(path.read_text(encoding="utf-8"), "preserve\n")
 
     def test_dirty_scope_and_attached_execution_blockers(self) -> None:
         cases = (

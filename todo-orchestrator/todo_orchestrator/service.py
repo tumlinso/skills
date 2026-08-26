@@ -570,7 +570,7 @@ class Service:
         result["projection"] = projection
         return result
 
-    def force_release_inspect(self, task_id: str) -> dict[str, object]:
+    def force_release_inspect(self, task_id: str, acknowledge_dirty: bool = False) -> dict[str, object]:
         revision = self.db.revision()
         with self.db.read() as conn:
             return inspect_force_release(
@@ -579,9 +579,16 @@ class Service:
                 str(self.project["project_uuid"]),
                 task_id,
                 revision,
+                acknowledge_dirty=acknowledge_dirty,
             )
 
-    def force_release_approve(self, task_id: str, reason: str, ttl_seconds: int) -> dict[str, object]:
+    def force_release_approve(
+        self,
+        task_id: str,
+        reason: str,
+        ttl_seconds: int,
+        acknowledge_dirty: bool = False,
+    ) -> dict[str, object]:
         credential: dict[str, str] = {}
 
         def operation(conn, revision):
@@ -593,6 +600,7 @@ class Service:
                 revision,
                 reason,
                 ttl_seconds,
+                acknowledge_dirty,
             )
             credential["approval_token"] = token
             return report
@@ -602,7 +610,12 @@ class Service:
             entity_type="recovery_approval",
             entity_id=task_id,
             event_type="recovery.force_release_approved",
-            payload={"task_id": task_id, "reason": reason[:1000], "requester_uid": os.getuid()},
+            payload={
+                "task_id": task_id,
+                "reason": reason[:1000],
+                "requester_uid": os.getuid(),
+                "acknowledge_dirty": bool(acknowledge_dirty),
+            },
             operation=operation,
         )
         return {**result, **credential, "project_revision": revision, "projection": projection}

@@ -257,16 +257,10 @@ def _live_override_blockers(conn: sqlite3.Connection, repo_root: Path, claim: sq
 def _force_release_blockers(conn: sqlite3.Connection, repo_root: Path, claim: sqlite3.Row) -> list[str]:
     """Return activity that cannot be safely retired with claim bookkeeping."""
     claim_id = str(claim["id"])
-    task_id = str(claim["task_id"])
     blockers = set(_live_override_blockers(conn, repo_root, claim))
     blockers.discard("claim_owner_not_verifiable_facade")
     blockers.discard("active_resource_lease")
     blockers.discard("active_auxiliary_lock")
-
-    baseline = json.loads(claim["baseline_manifest_json"] or "{}")
-    current = scope_manifest(repo_root, scopes_for(conn, task_id, "exclusive"))
-    if baseline.get("fingerprint") != current.get("fingerprint"):
-        blockers.add("owned_scope_changed")
 
     for table in ("resource_leases", "lock_leases"):
         for lease in conn.execute(
@@ -282,6 +276,29 @@ def _force_release_blockers(conn: sqlite3.Connection, repo_root: Path, claim: sq
             if locally_running:
                 blockers.add("active_external_resource_process")
     return sorted(blockers)
+
+
+def _material_scope_manifest(manifest: dict[str, object]) -> dict[str, object]:
+    """Exclude projections that owner-recovery transactions refresh themselves."""
+    def generated(path: str) -> bool:
+        return path in {
+            ".todo-orchestrator/state.snapshot.json", "todo-status.md", "todos.md",
+        } or path.startswith("todos/")
+
+    payload = {
+        "roots": list(manifest.get("roots") or []),
+        "dirty_paths": [
+            path for path in manifest.get("dirty_paths") or [] if not generated(str(path))
+        ],
+        "files": {
+            path: digest for path, digest in dict(manifest.get("files") or {}).items()
+            if not generated(str(path))
+        },
+    }
+    payload["fingerprint"] = hashlib.sha256(
+        json.dumps(payload, sort_keys=True).encode()
+    ).hexdigest()
+    return payload
 
 
 def inspect_live_override(
@@ -327,6 +344,7 @@ def inspect_force_release(
     project_uuid: str,
     task_id: str,
     project_revision: int,
+    acknowledge_dirty: bool = False,
 ) -> dict[str, object]:
     claims = conn.execute(
         "SELECT * FROM claims WHERE task_id=? AND state='active' ORDER BY created_at",
@@ -341,6 +359,13 @@ def inspect_force_release(
         )
     claim = claims[0]
     blockers = _force_release_blockers(conn, repo_root, claim)
+    baseline = json.loads(claim["baseline_manifest_json"] or "{}")
+    current = scope_manifest(repo_root, scopes_for(conn, task_id, "exclusive"))
+    baseline_material = _material_scope_manifest(baseline)
+    current_material = _material_scope_manifest(current)
+    scope_changed = baseline.get("fingerprint") != current.get("fingerprint")
+    if scope_changed and not acknowledge_dirty:
+        blockers.append("owned_scope_changed")
     if claim["expires_at"] <= utc_now():
         blockers.append("claim_lease_not_live")
     return {
@@ -353,6 +378,14 @@ def inspect_force_release(
         "owner_system": claim["owner_system"],
         "owner_instance_id": claim["owner_instance_id"],
         "lease_expires_at": claim["expires_at"],
+        "scope_changed": scope_changed,
+        "acknowledge_dirty": bool(acknowledge_dirty),
+        "baseline_scope_fingerprint": baseline.get("fingerprint"),
+        "current_scope_fingerprint": current.get("fingerprint"),
+        "baseline_material_scope_fingerprint": baseline_material.get("fingerprint"),
+        "current_material_scope_fingerprint": current_material.get("fingerprint"),
+        "baseline_dirty_paths": list(baseline.get("dirty_paths") or []),
+        "current_dirty_paths": list(current.get("dirty_paths") or []),
         "eligible": not blockers,
         "blockers": sorted(set(blockers)),
     }
@@ -378,6 +411,8 @@ def _create_live_recovery_approval(
     report: dict[str, object],
     *,
     token_prefix: str,
+    approval_kind: str,
+    context: dict[str, object] | None = None,
 ) -> tuple[dict[str, object], str]:
     bounded_reason = reason.strip()[:1000]
     if not bounded_reason:
@@ -388,14 +423,15 @@ def _create_live_recovery_approval(
     uid, approver = _approval_identity()
     now = utc_now()
     expires = _iso_after(ttl)
+    approval_context = context or {}
     conn.execute(
-        "INSERT INTO live_recovery_approvals(id,token_hash,repo_root,project_uuid,task_id,claim_fingerprint,project_revision,requester_uid,approver_identity,reason,prior_instance_id,created_at,expires_at,state) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'pending')",
+        "INSERT INTO live_recovery_approvals(id,token_hash,repo_root,project_uuid,task_id,claim_fingerprint,project_revision,requester_uid,approver_identity,reason,prior_instance_id,created_at,expires_at,state,approval_kind,context_json) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'pending',?,?)",
         (
             approval_id, token_hash(approval_token), str(repo_root.resolve()), project_uuid,
             task_id, report["claim_fingerprint"], revision, uid, approver,
             bounded_reason, report.get("prior_instance_id") or report.get("owner_instance_id") or "",
-            now, expires,
+            now, expires, approval_kind, json.dumps(approval_context, sort_keys=True),
         ),
     )
     return {
@@ -403,6 +439,7 @@ def _create_live_recovery_approval(
         "claim_fingerprint": report["claim_fingerprint"],
         "project_revision": revision, "requester_uid": uid,
         "approver_identity": approver, "reason": bounded_reason,
+        "approval_kind": approval_kind, "approval_context": approval_context,
         "created_at": now, "expires_at": expires,
     }, approval_token
 
@@ -427,7 +464,7 @@ def approve_live_override(
         raise TodoError("live_override_blocked", message, ExitCode.BLOCKED, report)
     return _create_live_recovery_approval(
         conn, repo_root, project_uuid, task_id, revision, reason, ttl_seconds,
-        report, token_prefix="toa_",
+        report, token_prefix="toa_", approval_kind="live_claim_override",
     )
 
 
@@ -439,8 +476,12 @@ def approve_force_release(
     revision: int,
     reason: str,
     ttl_seconds: int,
+    acknowledge_dirty: bool = False,
 ) -> tuple[dict[str, object], str]:
-    report = inspect_force_release(conn, repo_root, project_uuid, task_id, revision)
+    report = inspect_force_release(
+        conn, repo_root, project_uuid, task_id, revision,
+        acknowledge_dirty=acknowledge_dirty,
+    )
     if not report["eligible"]:
         raise TodoError(
             "force_release_blocked",
@@ -450,7 +491,17 @@ def approve_force_release(
         )
     return _create_live_recovery_approval(
         conn, repo_root, project_uuid, task_id, revision, reason, ttl_seconds,
-        report, token_prefix="tof_",
+        report, token_prefix="tof_", approval_kind="live_claim_force_release",
+        context={
+            "acknowledge_dirty": bool(acknowledge_dirty),
+            "scope_changed": bool(report["scope_changed"]),
+            "baseline_scope_fingerprint": report["baseline_scope_fingerprint"],
+            "current_scope_fingerprint": report["current_scope_fingerprint"],
+            "baseline_material_scope_fingerprint": report["baseline_material_scope_fingerprint"],
+            "current_material_scope_fingerprint": report["current_material_scope_fingerprint"],
+            "baseline_dirty_paths": report["baseline_dirty_paths"],
+            "current_dirty_paths": report["current_dirty_paths"],
+        },
     )
 
 
@@ -472,6 +523,8 @@ def override_live_claim(
     ).fetchone()
     if not approval:
         raise TodoError("override_requires_permission", "A valid manual approval is required", ExitCode.BLOCKED)
+    if approval["approval_kind"] != "live_claim_override":
+        raise TodoError("approval_mismatch", "Manual recovery approval has the wrong purpose", ExitCode.BLOCKED)
     if approval["state"] != "pending":
         raise TodoError("approval_consumed", "Manual recovery approval was already consumed", ExitCode.CONTENTION)
     if approval["expires_at"] <= utc_now():
@@ -578,6 +631,8 @@ def force_release_live_claim(
     ).fetchone()
     if not approval:
         raise TodoError("force_release_requires_permission", "A valid owner force-release approval is required", ExitCode.BLOCKED)
+    if approval["approval_kind"] != "live_claim_force_release":
+        raise TodoError("approval_mismatch", "Owner approval has the wrong purpose", ExitCode.BLOCKED)
     if approval["state"] != "pending":
         raise TodoError("approval_consumed", "Owner force-release approval was already consumed", ExitCode.CONTENTION)
     if approval["expires_at"] <= utc_now():
@@ -590,11 +645,18 @@ def force_release_live_claim(
         raise TodoError("approval_mismatch", "Owner force-release approval does not match this request", ExitCode.BLOCKED)
     if int(approval["project_revision"]) != revision - 1:
         raise TodoError("stale_approval", "Project revision changed after owner approval", ExitCode.BLOCKED)
-    report = inspect_force_release(conn, repo_root, project_uuid, task_id, revision - 1)
+    context = json.loads(approval["context_json"] or "{}")
+    acknowledge_dirty = bool(context.get("acknowledge_dirty"))
+    report = inspect_force_release(
+        conn, repo_root, project_uuid, task_id, revision - 1,
+        acknowledge_dirty=acknowledge_dirty,
+    )
     if not report["eligible"]:
-        raise TodoError("force_release_blocked", "Attached or dirty work blocks owner force release", ExitCode.BLOCKED, report)
+        raise TodoError("force_release_blocked", "Attached work or unacknowledged dirty scope blocks owner force release", ExitCode.BLOCKED, report)
     if report["claim_fingerprint"] != approval["claim_fingerprint"]:
         raise TodoError("stale_approval", "Active claim changed after owner approval", ExitCode.BLOCKED)
+    if report["current_material_scope_fingerprint"] != context.get("current_material_scope_fingerprint"):
+        raise TodoError("stale_approval", "Owned scope changed after owner approval", ExitCode.BLOCKED)
 
     claim = conn.execute(
         "SELECT * FROM claims WHERE task_id=? AND state='active'",
@@ -619,13 +681,13 @@ def force_release_live_claim(
         (now, approval["id"]),
     )
     conn.execute(
-        "INSERT INTO live_recovery_audit(id,task_id,prior_claim_fingerprint,new_claim_fingerprint,approver_identity,requester_uid,reason,approved_at,consumed_at,prior_instance_id,new_instance_id,disposition,project_revision) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO live_recovery_audit(id,task_id,prior_claim_fingerprint,new_claim_fingerprint,approver_identity,requester_uid,reason,approved_at,consumed_at,prior_instance_id,new_instance_id,disposition,project_revision,context_json) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (
             str(uuid.uuid4()), task_id, approval["claim_fingerprint"], "",
             approval["approver_identity"], approval["requester_uid"], approval["reason"],
             approval["created_at"], now, approval["prior_instance_id"], "",
-            "owner_force_released", revision,
+            "owner_force_released", revision, json.dumps(context, sort_keys=True),
         ),
     )
     return {
@@ -635,5 +697,7 @@ def force_release_live_claim(
         "status": "planned",
         "claim_state": "force_released",
         "retired_claim_fingerprint": approval["claim_fingerprint"],
+        "acknowledged_dirty_scope": acknowledge_dirty and bool(report["scope_changed"]),
+        "scope_context": context,
         "reason": approval["reason"],
     }

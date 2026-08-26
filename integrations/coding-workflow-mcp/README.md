@@ -64,8 +64,10 @@ For a still-live claim that is not facade-owned and whose raw token was lost,
 facade does not accept or mint that permission. A human owner must use todo's
 interactive `recover force-release-inspect`, `force-release-approve`, and
 `force-release` CLI flow out of band; afterward, retry ordinary `next_task`.
-This route refuses dirty scopes and unsafe attached execution and does not turn
-`next_task` into a general force-release endpoint.
+This route refuses unsafe attached execution. Dirty scope requires explicit
+human `--acknowledge-dirty` during owner inspection and approval; all files are
+preserved and the material scope fingerprint is bound into the permission. The
+facade still does not turn `next_task` into a general force-release endpoint.
 
 `delegate_task.target` is a bounded delegation objective. It is not forwarded
 as a literal ctxpp target: local-worker independently derives an authorized
