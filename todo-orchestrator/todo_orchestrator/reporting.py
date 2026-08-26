@@ -11,6 +11,18 @@ from typing import Any
 from .readiness import explain_task, ready_tasks
 
 
+def current_barriers(conn: sqlite3.Connection, *, unopened_only: bool = False) -> list[dict[str, object]]:
+    query = (
+        "SELECT DISTINCT b.id,b.state,b.explanation FROM barriers b "
+        "JOIN task_dependencies d ON d.barrier_id=b.id "
+        "JOIN tasks t ON t.id=d.task_id "
+        "WHERE t.status NOT IN ('done','superseded','cancelled','stale') "
+    )
+    if unopened_only:
+        query += "AND b.state<>'open' "
+    return [dict(row) for row in conn.execute(query + "ORDER BY b.id")]
+
+
 def child_results_for_task(conn: sqlite3.Connection, task_id: str) -> list[dict[str, object]]:
     """Return compact terminal child results without granting them task authority."""
     rows = conn.execute(
@@ -113,7 +125,7 @@ def project_status(conn: sqlite3.Connection) -> dict[str, object]:
         "SELECT c.id AS claim_id,c.task_id,c.expires_at,s.label FROM claims c JOIN sessions s ON s.id=c.session_id WHERE c.state='active' ORDER BY c.task_id"
     )]
     orphaned = [dict(row) for row in conn.execute("SELECT id AS claim_id,task_id,orphan_reason FROM claims WHERE state='orphaned' ORDER BY task_id")]
-    barriers = [dict(row) for row in conn.execute("SELECT id,state,explanation FROM barriers ORDER BY id")]
+    barriers = current_barriers(conn)
     return {"project_revision": revision, "task_counts": counts, "ready": ready_tasks(conn), "active_claims": active, "orphaned_claims": orphaned, "barriers": barriers}
 
 
@@ -127,7 +139,7 @@ def no_work_frontier(conn: sqlite3.Connection) -> dict[str, object]:
     unavailable = [dict(row) for row in conn.execute(
         "SELECT ri.id,ri.class_id,ri.capacity,COUNT(rl.id) AS active FROM resource_instances ri LEFT JOIN resource_leases rl ON rl.instance_id=ri.id AND rl.state='active' GROUP BY ri.id HAVING active>=ri.capacity"
     )]
-    barriers = [dict(row) for row in conn.execute("SELECT id,explanation FROM barriers WHERE state<>'open' ORDER BY id")]
+    barriers = current_barriers(conn, unopened_only=True)
     orphaned = [dict(row) for row in conn.execute("SELECT task_id,orphan_reason FROM claims WHERE state='orphaned' ORDER BY task_id")]
     return {"active_work": active, "blocker_frontier": explanations, "unopened_barriers": barriers, "orphaned_claims": orphaned, "unavailable_resources": unavailable, "most_likely_next_transition": explanations[0] if explanations else None}
 

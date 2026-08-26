@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from v2_helpers import V2Repo, base_plan, safe_task
+from todo_orchestrator.reporting import no_work_frontier
 
 
 class V2GraphCoordinationTests(unittest.TestCase):
@@ -83,6 +84,25 @@ class V2GraphCoordinationTests(unittest.TestCase):
         self.repo.service.complete(b["claim"]["claim_token"], "evaluated_not_promoted")
         self.assertEqual(self.repo.service.barrier("FANIN")["state"], "open")
         self.assertTrue(self.repo.service.explain("JOIN")["ready"])
+
+    def test_unreferenced_historical_barrier_is_not_a_current_blocker(self) -> None:
+        historical = safe_task("HISTORY", "src/history", status="superseded", result="superseded")
+        current = safe_task(
+            "CURRENT", "src/current",
+            depends_on=[{"type": "barrier", "barrier_id": "CURRENT-BARRIER"}],
+        )
+        self.repo.apply(base_plan(
+            [historical, current],
+            barriers=[
+                {"id": "HISTORICAL-BARRIER", "mode": "all", "requirements": [{"type": "task", "id": "HISTORY", "state": "done"}]},
+                {"id": "CURRENT-BARRIER", "mode": "all", "requirements": [{"type": "task", "id": "CURRENT", "state": "done"}]},
+            ],
+        ))
+        with self.repo.service.db.read() as conn:
+            frontier = no_work_frontier(conn)
+            raw_ids = {row[0] for row in conn.execute("SELECT id FROM barriers")}
+        self.assertEqual([item["id"] for item in frontier["unopened_barriers"]], ["CURRENT-BARRIER"])
+        self.assertEqual(raw_ids, {"CURRENT-BARRIER", "HISTORICAL-BARRIER"})
 
     def test_safe_conditional_activation(self) -> None:
         conditional = safe_task("CONDITIONAL", "src/conditional", depends_on=[{"type": "decision", "decision_id": "strategy", "operator": "equals", "value": "enabled"}])
