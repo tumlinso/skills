@@ -105,6 +105,40 @@ python <skill-dir>/scripts/todo.py recover release <task-id> --repo-root <repo> 
 
 Inspect before adopting or explicitly acknowledging dirty release. Never discard orphaned files.
 
+## Live Token-Loss Recovery
+
+Choose recovery by claim state and credential availability:
+
+- Current token available: finish through ordinary `complete`, `handoff`,
+  `block`, or `release`.
+- Expired/orphaned claim: use `recover inspect`, then `recover release` or
+  `recover adopt`; do not use a live emergency path.
+- Still-live claim with a lost token:
+  - an unchanged, verifiably `coding-workflow`-owned claim may use
+    `recover live-inspect`, manual `recover live-approve`, and one-use
+    `recover live-override` to create a replacement facade-owned claim;
+  - an arbitrary owner-controlled claim may use `recover force-release-inspect`,
+    manual `recover force-release-approve`, and `recover force-release` to
+    retire the claim and return the task to `planned`.
+
+Force-release approval is an owner capability, not an agent option. Its creation
+requires interactive TTY stdin and stdout, displays repository/project identity,
+revision, fingerprint, owner metadata, lease expiry, reason, and consequences,
+then requires the exact task ID. It is short-lived, one-use, repository/project/
+task/UID/revision/fingerprint-bound, and passed to consumption only through
+`TODO_FORCE_RELEASE_APPROVAL`. Never put the token in argv, logs, ledgers, audit
+payloads, or model context.
+
+Force release is deliberately narrower than arbitrary takeover. It refuses
+changed owned scope, active or acceptance-pending child work, active gate
+execution, queued/running/preempted background or CUDA work, and a locally live
+attached command process. Safe claim-owned lock and ordinary resource leases are
+released in the same authority transaction; the old claim becomes explicitly
+`force_released`, its token stops authenticating, the task returns to `planned`,
+the revision advances, projections refresh, and the reason plus prior claim
+fingerprint are recorded in audit history. Coding-workflow cannot mint this
+approval; after owner release it simply calls ordinary `next_task` again.
+
 ## Planning a New Project
 
 For substantial new work, read `references/planning-workflow.md` and create a v2 JSON plan. Use a scaffold when useful:

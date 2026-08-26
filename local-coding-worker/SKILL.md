@@ -5,6 +5,15 @@ description: Delegate bounded, todo-authorized read-only or scoped writable codi
 
 # Local Coding Worker
 
+## Repository workflow
+
+For substantial repository work, ALWAYS use `coding-workflow` first when it is
+available. Claim or resume the authoritative task through `coding-workflow`
+before using this skill for bounded delegation. Do not directly claim todo work
+or begin repository mutations first. Use lower-level skill CLIs directly only
+when `coding-workflow` is unavailable, explicitly out of scope, or itself being
+debugged.
+
 Use this skill only from an active todo parent claim. The parent retains task,
 gate, acceptance, commit, and push authority.
 

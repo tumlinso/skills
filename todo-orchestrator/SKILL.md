@@ -5,12 +5,23 @@ description: Transactional orchestration for substantial multi-step projects. Us
 
 # Todo Orchestrator
 
+## Repository workflow
+
+For substantial repository work, ALWAYS use `coding-workflow` first when it is
+available. Claim or resume the authoritative task through `coding-workflow`
+before using this skill for bounded orchestration, inspection, testing, or
+recovery. Do not directly claim todo work or begin repository mutations first.
+Use this lower-level CLI directly only when `coding-workflow` is unavailable,
+explicitly out of scope, or itself being debugged.
+
 SQLite is the v2 operational authority.
 `.todo-orchestrator/state.snapshot.json` is durable recovery state; Markdown is
 a generated projection and legacy migration input. Do not use this skill for a
 clearly narrow one-step request.
 
-## Continue
+## Direct fallback: Continue
+
+Use this section only under the direct-CLI exceptions above.
 
 Read repository `AGENTS.md`, resolve this skill's `scripts/todo.py`, then run:
 
@@ -48,6 +59,12 @@ Live claim replacement is not ordinary recovery. The `recover live-*` path is
 reserved for an unchanged, verifiably `coding-workflow`-owned lease and requires
 a short-lived one-use approval created manually in an interactive owner terminal.
 Never approve it from model context or use it to take over another client's claim.
+
+If a still-live claim token is lost and the claim is not eligible for facade
+replacement, an owner may use `recover force-release-inspect`, manually run
+interactive `recover force-release-approve`, and then consume the one-use token
+with `recover force-release`. This owner-only path requires a clean scope and no
+unsafe attached execution. A model must never mint or self-authorize approval.
 
 Hard invariants: do not edit another active claim's paths, cross unopened
 barriers, bypass locks or leases, mark work done without gates, auto-clean

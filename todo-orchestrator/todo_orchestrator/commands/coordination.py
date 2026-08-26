@@ -161,7 +161,11 @@ def register(subparsers, helpers) -> None:
         subparsers,
         helpers,
         "recover",
-        ["inspect", "release", "adopt", "live-inspect", "live-approve", "live-override"],
+        [
+            "inspect", "release", "adopt",
+            "live-inspect", "live-approve", "live-override",
+            "force-release-inspect", "force-release-approve", "force-release",
+        ],
     )
     for action in ("inspect", "release", "adopt"):
         parser = recover[action]
@@ -217,6 +221,62 @@ def register(subparsers, helpers) -> None:
     live_override.add_argument("--new-owner-instance", required=True)
     live_override.set_defaults(handler=lambda args: Service(args.repo_root).live_recovery_override(
         args.task_id, os.environ.get("CODING_WORKFLOW_RECOVERY_APPROVAL", ""), args.new_owner_instance,
+    ))
+
+    force_inspect = recover["force-release-inspect"]
+    helpers.common(force_inspect)
+    force_inspect.add_argument("task_id")
+    force_inspect.set_defaults(
+        handler=lambda args: Service(args.repo_root).force_release_inspect(args.task_id)
+    )
+    force_approve = recover["force-release-approve"]
+    helpers.common(force_approve)
+    force_approve.add_argument("task_id")
+    force_approve.add_argument("--reason", required=True)
+    force_approve.add_argument("--ttl-seconds", type=int, default=300)
+    def approve_force_release(args):
+        if not sys.stdin.isatty() or not sys.stdout.isatty():
+            raise TodoError(
+                "manual_approval_terminal_required",
+                "Owner force-release approval requires an interactive owner terminal",
+                ExitCode.BLOCKED,
+            )
+        service = Service(args.repo_root)
+        report = service.force_release_inspect(args.task_id)
+        if not report.get("eligible"):
+            raise TodoError(
+                "force_release_blocked",
+                "Live claim is not eligible for owner force release",
+                ExitCode.BLOCKED,
+                report,
+            )
+        print(
+            "OWNER EMERGENCY FORCE RELEASE\n"
+            f"Task ID: {report['task_id']}\n"
+            f"Repository: {report['repo_root']}\n"
+            f"Project UUID: {report['project_uuid']}\n"
+            f"Project revision: {report['project_revision']}\n"
+            f"Claim fingerprint: {report['claim_fingerprint']}\n"
+            f"Owner system: {report.get('owner_system') or '<none>'}\n"
+            f"Owner instance: {report.get('owner_instance_id') or '<none>'}\n"
+            f"Lease expiry: {report['lease_expires_at']}\n"
+            f"Reason: {args.reason}\n"
+            "Consequences: retire this live claim, invalidate its claim token, release its "
+            "locks and safe resource leases, and return the task to planned.\n"
+            f"Type the exact task ID ({args.task_id}) to authorize once: ",
+            end="",
+            file=sys.stderr,
+            flush=True,
+        )
+        if input().strip() != args.task_id:
+            raise TodoError("manual_approval_canceled", "Manual approval was canceled", ExitCode.BLOCKED)
+        return service.force_release_approve(args.task_id, args.reason, args.ttl_seconds)
+    force_approve.set_defaults(handler=approve_force_release)
+    force_release = recover["force-release"]
+    helpers.common(force_release)
+    force_release.add_argument("task_id")
+    force_release.set_defaults(handler=lambda args: Service(args.repo_root).force_release(
+        args.task_id, os.environ.get("TODO_FORCE_RELEASE_APPROVAL", ""),
     ))
 
     execute = subparsers.add_parser("exec")

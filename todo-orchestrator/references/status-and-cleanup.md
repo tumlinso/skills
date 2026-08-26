@@ -6,4 +6,13 @@ Execution state is computed: `ready`, `claimed`, `closed`, `inactive`, dependenc
 
 Claims default to a two-hour renewable lease. Expired clean scopes can return to ready; dirty scopes are quarantined. Legacy freshness review remains separate: planned/in-progress/stale use 3 days and blocked uses 7 days.
 
+Recovery paths are distinct. A holder with the current token uses the ordinary
+claim lifecycle. Expired/orphaned claims use `recover release|adopt`. A still-live
+unchanged `coding-workflow` claim may use the manually approved live override.
+Any owner-controlled still-live claim whose token was lost may instead use the
+interactive owner force-release flow, provided its scope is clean and it has no
+unsafe attached child, gate, background/CUDA, or running external work. That
+transaction marks the claim `force_released`, releases safe claim-owned locks
+and resources, returns the task to `planned`, and records an owner audit entry.
+
 Cleanup is explicit-only. `todo cleanup` reports safety and never deletes v2 durable state. Legacy `cleanup_todos.py` retains its existing explicit cleanup behavior only in repositories not bootstrapped to v2.

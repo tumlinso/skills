@@ -3,6 +3,10 @@
 `coding-workflow` is a local stdio MCP compatibility facade over the existing
 todo-orchestrator, cpp-context-compiler, local-coding-worker, and CUDA public
 interfaces. It owns no repository, task, source-index, worker, or GPU state.
+For substantial repository work it is the mandatory first front door: call
+`next_task` before direct todo claims or implementation, then use specialized
+skills only as bounded helpers. Direct lower-level CLIs are fallback/debugging
+interfaces for unavailable, broken, explicitly out-of-scope, or self-debug work.
 
 The v1 MCP surface is exactly five tools:
 
@@ -54,6 +58,14 @@ resource/auxiliary lease, or background/CUDA campaign remains attached. A
 successful override preserves task semantics and evidence, records a sanitized
 audit, replaces only the claim incarnation, and returns a fresh opaque workflow
 handle. Raw todo and approval tokens are never returned in the task capsule.
+
+For a still-live claim that is not facade-owned and whose raw token was lost,
+`next_task` reports `non_facade_live_claim_requires_owner_force_release`. The
+facade does not accept or mint that permission. A human owner must use todo's
+interactive `recover force-release-inspect`, `force-release-approve`, and
+`force-release` CLI flow out of band; afterward, retry ordinary `next_task`.
+This route refuses dirty scopes and unsafe attached execution and does not turn
+`next_task` into a general force-release endpoint.
 
 `delegate_task.target` is a bounded delegation objective. It is not forwarded
 as a literal ctxpp target: local-worker independently derives an authorized

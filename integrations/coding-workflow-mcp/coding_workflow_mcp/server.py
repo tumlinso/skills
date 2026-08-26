@@ -12,18 +12,18 @@ from .handles import InvalidHandle
 
 
 SERVER_INSTRUCTIONS = (
-    "Use coding-workflow as the normal front door for substantial repository work. "
-    "Call next_task once, then work only within its scope. delegate_task is opportunistic: "
-    "if it returns local_unavailable or not_eligible, continue in Codex immediately; never "
-    "wait or poll. Use collect_delegation only for a returned handle. End every claimed task "
-    "with finish_task. Use inspect_task for bounded source or evidence context. Use the "
-    "underlying skill CLIs only when this server is unavailable or being debugged. Opaque "
-    "handles authorize only their bounded workflow operation; never request or expose raw "
-    "tokens, worker internals, GPU identities, model endpoints, packets, logs, or transcripts. "
-    "If a facade restart loses a workflow handle, call next_task with the same repository and "
-    "explicit task ID to recover a fresh opaque handle for the active facade-owned claim. "
-    "Live-lease override is emergency-only: it requires a short-lived one-use approval created "
-    "manually out of band for that exact claim; this server cannot create or self-approve it."
+    "For substantial repository work, coding-workflow is the mandatory first front door. "
+    "Do not pre-claim with todo-orchestrator or start implementation before next_task. "
+    "After a claim, specialized skills are bounded helpers. Use lower-level CLIs only if this "
+    "facade is unavailable, broken, or under debugging. Call next_task once and stay in scope. "
+    "delegate_task is opportunistic: on local_unavailable or not_eligible, continue in Codex; "
+    "never wait or poll. Collect only returned delegation handles and finish every claim with "
+    "finish_task. Use inspect_task for bounded context. Opaque handles authorize only their "
+    "operation; never request or expose raw tokens, worker/GPU/model internals, packets, logs, "
+    "or transcripts. After facade restart, next_task with the same repo and task can recover a "
+    "facade-owned claim. Live override needs manual out-of-band owner approval. Lost non-facade "
+    "live claims require the owner's interactive todo recover force-release CLI, then ordinary "
+    "next_task. This server cannot mint or self-approve either permission."
 )
 
 

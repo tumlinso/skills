@@ -254,6 +254,36 @@ def _live_override_blockers(conn: sqlite3.Connection, repo_root: Path, claim: sq
     return sorted(blockers)
 
 
+def _force_release_blockers(conn: sqlite3.Connection, repo_root: Path, claim: sqlite3.Row) -> list[str]:
+    """Return activity that cannot be safely retired with claim bookkeeping."""
+    claim_id = str(claim["id"])
+    task_id = str(claim["task_id"])
+    blockers = set(_live_override_blockers(conn, repo_root, claim))
+    blockers.discard("claim_owner_not_verifiable_facade")
+    blockers.discard("active_resource_lease")
+    blockers.discard("active_auxiliary_lock")
+
+    baseline = json.loads(claim["baseline_manifest_json"] or "{}")
+    current = scope_manifest(repo_root, scopes_for(conn, task_id, "exclusive"))
+    if baseline.get("fingerprint") != current.get("fingerprint"):
+        blockers.add("owned_scope_changed")
+
+    for table in ("resource_leases", "lock_leases"):
+        for lease in conn.execute(
+            f"SELECT * FROM {table} WHERE claim_id=? AND state='active'",
+            (claim_id,),
+        ):
+            command = json.loads(lease["command_json"] or "[]")
+            locally_running = (
+                bool(command)
+                and lease["hostname"] == socket.gethostname()
+                and local_process_alive(lease["pid"], lease["process_start"])
+            )
+            if locally_running:
+                blockers.add("active_external_resource_process")
+    return sorted(blockers)
+
+
 def inspect_live_override(
     conn: sqlite3.Connection,
     repo_root: Path,
@@ -291,6 +321,92 @@ def inspect_live_override(
     }
 
 
+def inspect_force_release(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    project_uuid: str,
+    task_id: str,
+    project_revision: int,
+) -> dict[str, object]:
+    claims = conn.execute(
+        "SELECT * FROM claims WHERE task_id=? AND state='active' ORDER BY created_at",
+        (task_id,),
+    ).fetchall()
+    if len(claims) != 1:
+        raise TodoError(
+            "live_claim_cardinality_invalid",
+            "Owner force release requires exactly one active claim",
+            ExitCode.BLOCKED,
+            {"active_claim_count": len(claims)},
+        )
+    claim = claims[0]
+    blockers = _force_release_blockers(conn, repo_root, claim)
+    if claim["expires_at"] <= utc_now():
+        blockers.append("claim_lease_not_live")
+    return {
+        "repo_root": str(repo_root.resolve()),
+        "project_uuid": project_uuid,
+        "project_revision": project_revision,
+        "task_id": task_id,
+        "claim_id": claim["id"],
+        "claim_fingerprint": claim_fingerprint(claim),
+        "owner_system": claim["owner_system"],
+        "owner_instance_id": claim["owner_instance_id"],
+        "lease_expires_at": claim["expires_at"],
+        "eligible": not blockers,
+        "blockers": sorted(set(blockers)),
+    }
+
+
+def _approval_identity() -> tuple[int, str]:
+    uid = os.getuid()
+    try:
+        username = pwd.getpwuid(uid).pw_name
+    except KeyError:
+        username = "unknown"
+    return uid, f"uid:{uid}:{username}"
+
+
+def _create_live_recovery_approval(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    project_uuid: str,
+    task_id: str,
+    revision: int,
+    reason: str,
+    ttl_seconds: int,
+    report: dict[str, object],
+    *,
+    token_prefix: str,
+) -> tuple[dict[str, object], str]:
+    bounded_reason = reason.strip()[:1000]
+    if not bounded_reason:
+        raise TodoError("recovery_reason_required", "Manual recovery requires an explicit reason", ExitCode.BLOCKED)
+    ttl = max(30, min(int(ttl_seconds), 900))
+    approval_id = str(uuid.uuid4())
+    approval_token = token_prefix + secrets.token_urlsafe(36)
+    uid, approver = _approval_identity()
+    now = utc_now()
+    expires = _iso_after(ttl)
+    conn.execute(
+        "INSERT INTO live_recovery_approvals(id,token_hash,repo_root,project_uuid,task_id,claim_fingerprint,project_revision,requester_uid,approver_identity,reason,prior_instance_id,created_at,expires_at,state) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'pending')",
+        (
+            approval_id, token_hash(approval_token), str(repo_root.resolve()), project_uuid,
+            task_id, report["claim_fingerprint"], revision, uid, approver,
+            bounded_reason, report.get("prior_instance_id") or report.get("owner_instance_id") or "",
+            now, expires,
+        ),
+    )
+    return {
+        "status": "approved", "task_id": task_id,
+        "claim_fingerprint": report["claim_fingerprint"],
+        "project_revision": revision, "requester_uid": uid,
+        "approver_identity": approver, "reason": bounded_reason,
+        "created_at": now, "expires_at": expires,
+    }, approval_token
+
+
 def approve_live_override(
     conn: sqlite3.Connection,
     repo_root: Path,
@@ -309,36 +425,33 @@ def approve_live_override(
             else "Live claim is not eligible for manual coding-workflow recovery"
         )
         raise TodoError("live_override_blocked", message, ExitCode.BLOCKED, report)
-    bounded_reason = reason.strip()[:1000]
-    if not bounded_reason:
-        raise TodoError("recovery_reason_required", "Manual recovery requires an explicit reason", ExitCode.BLOCKED)
-    ttl = max(30, min(int(ttl_seconds), 900))
-    approval_id = str(uuid.uuid4())
-    approval_token = "toa_" + secrets.token_urlsafe(36)
-    uid = os.getuid()
-    try:
-        username = pwd.getpwuid(uid).pw_name
-    except KeyError:
-        username = "unknown"
-    approver = f"uid:{uid}:{username}"
-    now = utc_now()
-    expires = _iso_after(ttl)
-    conn.execute(
-        "INSERT INTO live_recovery_approvals(id,token_hash,repo_root,project_uuid,task_id,claim_fingerprint,project_revision,requester_uid,approver_identity,reason,prior_instance_id,created_at,expires_at,state) "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,'pending')",
-        (
-            approval_id, token_hash(approval_token), str(repo_root.resolve()), project_uuid,
-            task_id, report["claim_fingerprint"], revision, uid, approver,
-            bounded_reason, report["prior_instance_id"], now, expires,
-        ),
+    return _create_live_recovery_approval(
+        conn, repo_root, project_uuid, task_id, revision, reason, ttl_seconds,
+        report, token_prefix="toa_",
     )
-    return {
-        "status": "approved", "task_id": task_id,
-        "claim_fingerprint": report["claim_fingerprint"],
-        "project_revision": revision, "requester_uid": uid,
-        "approver_identity": approver, "reason": bounded_reason,
-        "created_at": now, "expires_at": expires,
-    }, approval_token
+
+
+def approve_force_release(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    project_uuid: str,
+    task_id: str,
+    revision: int,
+    reason: str,
+    ttl_seconds: int,
+) -> tuple[dict[str, object], str]:
+    report = inspect_force_release(conn, repo_root, project_uuid, task_id, revision)
+    if not report["eligible"]:
+        raise TodoError(
+            "force_release_blocked",
+            "Live claim is not eligible for owner force release",
+            ExitCode.BLOCKED,
+            report,
+        )
+    return _create_live_recovery_approval(
+        conn, repo_root, project_uuid, task_id, revision, reason, ttl_seconds,
+        report, token_prefix="tof_",
+    )
 
 
 def override_live_claim(
@@ -351,6 +464,8 @@ def override_live_claim(
     new_instance_id: str,
     lease_seconds: int,
 ) -> tuple[dict[str, object], dict[str, str]]:
+    if not approval_token.startswith("toa_"):
+        raise TodoError("override_requires_permission", "A valid manual approval is required", ExitCode.BLOCKED)
     approval = conn.execute(
         "SELECT * FROM live_recovery_approvals WHERE token_hash=?",
         (token_hash(approval_token),),
@@ -445,3 +560,80 @@ def override_live_claim(
         "owner_system": "coding-workflow", "owner_instance_id": new_instance_id,
     }
     return claim, {"claim_token": claim_token, "session_token": session_token, "session": session}
+
+
+def force_release_live_claim(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    project_uuid: str,
+    task_id: str,
+    revision: int,
+    approval_token: str,
+) -> dict[str, object]:
+    if not approval_token.startswith("tof_"):
+        raise TodoError("force_release_requires_permission", "A valid owner force-release approval is required", ExitCode.BLOCKED)
+    approval = conn.execute(
+        "SELECT * FROM live_recovery_approvals WHERE token_hash=?",
+        (token_hash(approval_token),),
+    ).fetchone()
+    if not approval:
+        raise TodoError("force_release_requires_permission", "A valid owner force-release approval is required", ExitCode.BLOCKED)
+    if approval["state"] != "pending":
+        raise TodoError("approval_consumed", "Owner force-release approval was already consumed", ExitCode.CONTENTION)
+    if approval["expires_at"] <= utc_now():
+        raise TodoError("stale_approval", "Owner force-release approval expired", ExitCode.BLOCKED)
+    expected = {
+        "repo_root": str(repo_root.resolve()), "project_uuid": project_uuid,
+        "task_id": task_id, "requester_uid": os.getuid(),
+    }
+    if any(approval[key] != value for key, value in expected.items()):
+        raise TodoError("approval_mismatch", "Owner force-release approval does not match this request", ExitCode.BLOCKED)
+    if int(approval["project_revision"]) != revision - 1:
+        raise TodoError("stale_approval", "Project revision changed after owner approval", ExitCode.BLOCKED)
+    report = inspect_force_release(conn, repo_root, project_uuid, task_id, revision - 1)
+    if not report["eligible"]:
+        raise TodoError("force_release_blocked", "Attached or dirty work blocks owner force release", ExitCode.BLOCKED, report)
+    if report["claim_fingerprint"] != approval["claim_fingerprint"]:
+        raise TodoError("stale_approval", "Active claim changed after owner approval", ExitCode.BLOCKED)
+
+    claim = conn.execute(
+        "SELECT * FROM claims WHERE task_id=? AND state='active'",
+        (task_id,),
+    ).fetchone()
+    now = utc_now()
+    release_claim_locks(conn, claim["id"])
+    conn.execute(
+        "UPDATE resource_leases SET state='released',released_at=? WHERE claim_id=? AND state='active'",
+        (now, claim["id"]),
+    )
+    conn.execute(
+        "UPDATE claims SET state='force_released',released_at=? WHERE id=? AND state='active'",
+        (now, claim["id"]),
+    )
+    conn.execute(
+        "UPDATE tasks SET status='planned',attention_reason=NULL,updated_at=?,version=version+1,revision=? WHERE id=?",
+        (now, revision, task_id),
+    )
+    conn.execute(
+        "UPDATE live_recovery_approvals SET state='consumed',consumed_at=? WHERE id=? AND state='pending'",
+        (now, approval["id"]),
+    )
+    conn.execute(
+        "INSERT INTO live_recovery_audit(id,task_id,prior_claim_fingerprint,new_claim_fingerprint,approver_identity,requester_uid,reason,approved_at,consumed_at,prior_instance_id,new_instance_id,disposition,project_revision) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (
+            str(uuid.uuid4()), task_id, approval["claim_fingerprint"], "",
+            approval["approver_identity"], approval["requester_uid"], approval["reason"],
+            approval["created_at"], now, approval["prior_instance_id"], "",
+            "owner_force_released", revision,
+        ),
+    )
+    return {
+        "task_id": task_id,
+        "claim_id": claim["id"],
+        "session_id": claim["session_id"],
+        "status": "planned",
+        "claim_state": "force_released",
+        "retired_claim_fingerprint": approval["claim_fingerprint"],
+        "reason": approval["reason"],
+    }

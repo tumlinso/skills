@@ -78,6 +78,21 @@ class OverrideBackend(CodingWorkflowBackend):
         raise AssertionError(arguments)
 
 
+class NonFacadeOverrideBackend(OverrideBackend):
+    def todo(
+        self, repo: Path, *arguments: str, allow_failure: bool = False,
+        extra_env: dict[str, str] | None = None,
+    ):
+        if arguments[:2] == ("recover", "live-inspect"):
+            return {"ok": True, "data": {
+                "project_uuid": "project-override", "project_revision": self.revision,
+                "task_id": "CE-ARCH-71", "claim_fingerprint": "c" * 64,
+                "owner_system": None, "prior_instance_id": None,
+                "eligible": False, "blockers": ["claim_owner_not_verifiable_facade"],
+            }}
+        return super().todo(repo, *arguments, allow_failure=allow_failure, extra_env=extra_env)
+
+
 class RecoveryOverrideTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -102,6 +117,23 @@ class RecoveryOverrideTests(unittest.TestCase):
         self.assertEqual(forged["status"], "override_requires_permission")
         self.assertEqual(self.backend.override_calls, 1)
         self.assertTrue(self.backend.active)
+
+        force_release_token = self.backend.next_task(
+            str(self.root), "CE-ARCH-71", "tof_owner_only"
+        )
+        self.assertEqual(force_release_token["status"], "override_requires_permission")
+        self.assertEqual(self.backend.override_calls, 1)
+
+    def test_non_facade_live_claim_requires_owner_cli_then_normal_retry(self) -> None:
+        backend = NonFacadeOverrideBackend(self.root, self.store)
+        result = backend.next_task(str(self.root), "CE-ARCH-71")
+        self.assertEqual(result["status"], "attention_required")
+        self.assertEqual(result["reason"], "non_facade_live_claim_requires_owner_force_release")
+        self.assertEqual(
+            result["safe_operation"],
+            "owner_use_force_release_cli_out_of_band_then_retry_next_task",
+        )
+        self.assertEqual(backend.override_calls, 0)
 
     def test_admin_approval_refuses_noninteractive_creation(self) -> None:
         script = Path(__file__).resolve().parents[1] / "scripts" / "recovery_admin.py"

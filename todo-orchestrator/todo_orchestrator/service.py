@@ -14,8 +14,11 @@ from .audit import audit_state, reconcile_state
 from .barriers import barrier_report
 from .checkpoints import checkpoint_status, reach_checkpoint, revoke_checkpoint
 from .claims import (
+    approve_force_release,
     approve_live_override,
     claim_best,
+    force_release_live_claim,
+    inspect_force_release,
     inspect_live_override,
     inspect_recovery,
     override_live_claim,
@@ -566,6 +569,61 @@ class Service:
         result["project_revision"] = revision
         result["projection"] = projection
         return result
+
+    def force_release_inspect(self, task_id: str) -> dict[str, object]:
+        revision = self.db.revision()
+        with self.db.read() as conn:
+            return inspect_force_release(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+            )
+
+    def force_release_approve(self, task_id: str, reason: str, ttl_seconds: int) -> dict[str, object]:
+        credential: dict[str, str] = {}
+
+        def operation(conn, revision):
+            report, token = approve_force_release(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+                reason,
+                ttl_seconds,
+            )
+            credential["approval_token"] = token
+            return report
+
+        result, revision, projection = self.mutate(
+            actor=None,
+            entity_type="recovery_approval",
+            entity_id=task_id,
+            event_type="recovery.force_release_approved",
+            payload={"task_id": task_id, "reason": reason[:1000], "requester_uid": os.getuid()},
+            operation=operation,
+        )
+        return {**result, **credential, "project_revision": revision, "projection": projection}
+
+    def force_release(self, task_id: str, approval_token: str) -> dict[str, object]:
+        result, revision, projection = self.mutate(
+            actor=None,
+            entity_type="recovery",
+            entity_id=task_id,
+            event_type="claim.force_released",
+            payload={"task_id": task_id, "disposition": "owner_force_released"},
+            operation=lambda conn, revision: force_release_live_claim(
+                conn,
+                self.paths.repo_root,
+                str(self.project["project_uuid"]),
+                task_id,
+                revision,
+                approval_token,
+            ),
+        )
+        return {**result, "project_revision": revision, "projection": projection}
 
     def migrate_markdown(self, apply: bool) -> dict[str, object]:
         report = inspect_markdown(self.paths.repo_root)

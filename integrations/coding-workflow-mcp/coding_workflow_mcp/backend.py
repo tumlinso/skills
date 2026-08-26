@@ -282,6 +282,18 @@ class CodingWorkflowBackend:
                 return self._consume_live_override(
                     repo, task_id, recovery_approval, str(project_uuid or "")
                 )
+            if (
+                inspected.get("ok") is not False
+                and "claim_lease_not_live" not in set(inspected_data.get("blockers") or [])
+            ):
+                return bounded_json({
+                    "status": "attention_required",
+                    "reason": "non_facade_live_claim_requires_owner_force_release",
+                    "claim_fingerprint": inspected_data.get("claim_fingerprint"),
+                    "revision": inspected_data.get("project_revision"),
+                    "blockers": list(inspected_data.get("blockers") or [])[:12],
+                    "safe_operation": "owner_use_force_release_cli_out_of_band_then_retry_next_task",
+                }, 1_200)
         arguments = ["continue"]
         if task_id:
             arguments.extend(["--task-id", task_id])
