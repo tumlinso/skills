@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `136`
+Project revision: `139`
 
 ## Workstreams
-- `WFU-00` | status: in_progress | execution: claimed | next: Write and verify the preflight and rollback record from already-collected evidence.
+- `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: planned | execution: ready | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
 - `WFU-02` | status: planned | execution: ready | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
 - `WFU-10` | status: planned | execution: ready | next: Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.

@@ -3,10 +3,10 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `136`
+Project revision: `139`
 
 ## Workstreams
-- `WFU-00` | kind: task | status: in_progress | parent: - | objective: Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.
+- `WFU-00` | kind: task | status: done | parent: - | objective: Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.
 - `WFU-01` | kind: task | status: planned | parent: - | objective: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
 - `WFU-02` | kind: task | status: planned | parent: - | objective: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
 - `WFU-10` | kind: workstream | status: planned | parent: - | objective: Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T10:47:08Z",
+  "generated_at": "2026-08-27T10:48:30Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 136,
+  "project_revision": 139,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1526,6 +1526,36 @@
         "revision": 136,
         "seq": 136,
         "timestamp": "2026-08-27T10:47:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-00-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-00-DIFF\"}",
+        "revision": 137,
+        "seq": 137,
+        "timestamp": "2026-08-27T10:48:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-00-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f3da80bb-4977-4396-998e-3a86b12e7d37\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 138,
+        "seq": 138,
+        "timestamp": "2026-08-27T10:48:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-00",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 139, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 139,
+        "seq": 139,
+        "timestamp": "2026-08-27T10:48:30Z"
       }
     ],
     "evidence": [
@@ -1962,6 +1992,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-27T10:48:23Z",
+        "gate_id": "WFU-00-DIFF",
+        "id": "f3da80bb-4977-4396-998e-3a86b12e7d37",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"workflow-unification-v3.plan.json\", \"sha256\": \"3a92a29cba3cfd3cf9a2c4bc45a52b10c3074366d503e7cb1a6cb27f9be5c180\"}, {\"path\": \"workflow-unification/evidence/preflight.json\", \"sha256\": \"f9c5a11ca857379b09e1c9269f23191ca5c715e90a461d930a40e2cdb250118b\"}, {\"path\": \"workflow-unification/rollback.md\", \"sha256\": \"f2dfc67f5efdd9ae7d1d576b83f6cb0b896ce772a0b9785148ae42bd7ac7e2f4\"}], \"interfaces\": [], \"recorded_git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 137}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f3da80bb-4977-4396-998e-3a86b12e7d37",
+        "revision": 138,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T10:34:02Z",
         "gate_id": "CWM-07-MCP",
         "id": "fa3d603a-96fc-444d-9318-94bcb8517c09",
@@ -2328,14 +2371,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"workflow-unification/evidence/preflight.json\", \"workflow-unification/rollback.md\", \"workflow-unification-v3.plan.json\"]}",
         "id": "WFU-00-DIFF",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
+        "last_run_at": "2026-08-27T10:48:23Z",
         "required": 1,
-        "revision": 133,
-        "status": "pending",
+        "revision": 138,
+        "status": "passed",
         "task_id": "WFU-00",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -2374,6 +2417,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-03-GATE\", \"last_run_at\": \"2026-08-24T20:05:00Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 858 ++++++++++++++++++++++++++++++++-\\n todo-status.md                         |   9 +-\\n todos.md                               |   9 +-\\n 3 files changed, 869 insertions(+), 7 deletions(-)\", \"git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CWM-03\"}",
         "revision": 36,
         "task_id": "CWM-03"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T10:48:30Z",
+        "id": "0c6aaa1b-ee9f-4f22-a93d-e6661bf85bc2",
+        "kind": "complete",
+        "note": "Quiescence, baselines, stable paths, snapshot identity, registration, isolated worktree, validated WFU plan, and rollback record frozen at dbca6e6.",
+        "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"checkpoints\": [], \"completion_commit\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"completion_gates\": [{\"evidence_id\": \"f3da80bb-4977-4396-998e-3a86b12e7d37\", \"evidence_revision\": 138, \"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\"}], \"completion_revision\": 139, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"last_run_at\": \"2026-08-27T10:48:23Z\", \"revision\": 138, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 47 +++++++++++++++++++++++++++++-----\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n 3 files changed, 42 insertions(+), 9 deletions(-)\", \"git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"interfaces\": [], \"note\": \"Quiescence, baselines, stable paths, snapshot identity, registration, isolated worktree, validated WFU plan, and rollback record frozen at dbca6e6.\", \"resources\": [], \"task_id\": \"WFU-00\"}",
+        "revision": 139,
+        "task_id": "WFU-00"
       },
       {
         "claim_id": null,
@@ -3570,7 +3623,21 @@
     "resource_instances": [],
     "resource_requests": [],
     "task_artifacts": [],
-    "task_completion_gates": [],
+    "task_completion_gates": [
+      {
+        "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
+        "completion_revision": 139,
+        "evidence_id": "f3da80bb-4977-4396-998e-3a86b12e7d37",
+        "evidence_revision": 138,
+        "gate_id": "WFU-00-DIFF",
+        "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
+        "provenance_json": "{\"claim_id\": \"a492c87b-5dbf-4956-b491-0d0e3955d85d\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"workflow-unification-v3.plan.json\", \"sha256\": \"3a92a29cba3cfd3cf9a2c4bc45a52b10c3074366d503e7cb1a6cb27f9be5c180\"}, {\"path\": \"workflow-unification/evidence/preflight.json\", \"sha256\": \"f9c5a11ca857379b09e1c9269f23191ca5c715e90a461d930a40e2cdb250118b\"}, {\"path\": \"workflow-unification/rollback.md\", \"sha256\": \"f2dfc67f5efdd9ae7d1d576b83f6cb0b896ce772a0b9785148ae42bd7ac7e2f4\"}], \"interfaces\": [], \"recorded_git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 137}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f3da80bb-4977-4396-998e-3a86b12e7d37\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-00",
+        "valid": 1,
+        "validation_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4"
+      }
+    ],
     "task_dependencies": [
       {
         "barrier_id": null,
@@ -4680,9 +4747,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
+        "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
+        "completion_revision": 139,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-00",
         "kind": "task",
@@ -4694,14 +4761,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 200,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 136,
-        "status": "in_progress",
+        "revision": 139,
+        "status": "done",
         "tags_json": "[]",
         "title": "Freeze preflight and isolated bootstrap evidence",
-        "updated_at": "2026-08-27T10:47:08Z",
-        "version": 4
+        "updated_at": "2026-08-27T10:48:30Z",
+        "version": 5
       },
       {
         "attention_reason": null,
