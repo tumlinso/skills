@@ -128,9 +128,17 @@
       "consumes_interfaces": [{"id": "WFU-SEMANTIC-READ", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-PC-READONLY", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-WORK"]
     },
     {
+      "id": "WFU-23", "kind": "task", "title": "Correct completed-program semantic-state selection",
+      "objective": "Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.",
+      "priority": 118, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-20"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/semantic", "todo-orchestrator/tests/test_semantic_state.py"], "read_paths": ["todo-orchestrator/todo_orchestrator", "todo-orchestrator/tests"]},
+      "gates": [{"id": "WFU-23-SEMANTIC", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "todo-orchestrator/tests", "-p", "test_semantic_state.py", "-v"], "input_paths": ["todo-orchestrator/todo_orchestrator/semantic", "todo-orchestrator/tests/test_semantic_state.py"], "required": true}],
+      "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-COMPAT", "WFU-PC-READONLY"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
-      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}],
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}],
       "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
     },

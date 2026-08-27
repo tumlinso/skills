@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-14: Unified owner recovery engine and administrator command
 
-Task revision: `146`; current project revision is in `todo-status.md`.
+Task revision: `163`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement one interactive owner-only recovery engine covering first-class dispatches and distinct subordinate child degradation, with live-process refusal, dirty artifact preservation, idempotent terminal reconciliation, audit, and no approval-token round trip.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

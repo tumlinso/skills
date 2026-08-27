@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-10: Runs, serial lanes, roles, dispatch, and scheduling
 
-Task revision: `146`; current project revision is in `todo-status.md`.
+Task revision: `163`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

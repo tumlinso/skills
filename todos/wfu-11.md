@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-11: Typed messages, cursors, rendezvous, and arrivals
 
-Task revision: `146`; current project revision is in `todo-status.md`.
+Task revision: `163`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement bounded typed first-class-lane messages, receipts and cursors, blocking questions and answers, durable decisions, rendezvous modes, idempotent arrivals, and atomic join readiness with parent-mediated child findings.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
