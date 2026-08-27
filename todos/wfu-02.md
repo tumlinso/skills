@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-02: Implement forward-only kernel foundations and fixtures
 
-Task revision: `220`; current project revision is in `todo-status.md`.
+Task revision: `223`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
