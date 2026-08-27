@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-30: Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation
 
-Task revision: `194`; current project revision is in `todo-status.md`.
+Task revision: `201`; current project revision is in `todo-status.md`.
 
 ## Objective
 Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
@@ -30,4 +30,5 @@ _None._
 - `task`: `WFU-21`
 - `task`: `WFU-22`
 - `task`: `WFU-23`
+- `task`: `WFU-24`
 <!-- todo-orchestrator:v2-managed:end -->

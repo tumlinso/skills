@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-20: Integrate workflow modules into todo services and compatibility surfaces
 
-Task revision: `194`; current project revision is in `todo-status.md`.
+Task revision: `201`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.

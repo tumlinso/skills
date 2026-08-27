@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-21: Rewrite routing, installer, migration, and operations documentation
 
-Task revision: `194`; current project revision is in `todo-status.md`.
+Task revision: `201`; current project revision is in `todo-status.md`.
 
 ## Objective
 Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
