@@ -1,0 +1,93 @@
+{
+  "assertions": {
+    "all_and_quorum_rendezvous": true,
+    "child_packet_limit_bytes": 4096,
+    "context_capsule_limit_bytes": 8192,
+    "first_class_and_child_recovery": "covered_by_disposable_workflow_recovery_suite",
+    "interface_context_invalidation": "covered_by_disposable_workflow_context_suite",
+    "local_child_does_not_complete_parent": true,
+    "local_child_not_lane_or_rendezvous_participant": true,
+    "local_child_parent_mediated": true,
+    "lost_handle_resume": true,
+    "parallel_tree_of_serial_lanes": true,
+    "semantic_state_revision_ordering_tests": 7,
+    "two_serial_implementation_tasks_per_lane": true,
+    "typed_decision_question_answer": true,
+    "workspace_integration_and_conflict": "covered_by_disposable_workflow_workspace_suite"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_workflow_dogfood.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests_run": 1,
+      "summary": [
+        "OK"
+      ]
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_workflow_*.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests_run": 106,
+      "summary": [
+        "OK"
+      ]
+    },
+    {
+      "argv": [
+        "/home/tumlinson/Software/miniconda3/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests_run": 233,
+      "summary": [
+        "OK"
+      ]
+    },
+    {
+      "argv": [
+        "uv",
+        "run",
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests_run": 70,
+      "summary": [
+        "OK"
+      ]
+    }
+  ],
+  "scenario": "WFU-30 disposable parallel protocol run",
+  "schema_version": 1,
+  "status": "passed"
+}

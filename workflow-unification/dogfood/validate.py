@@ -6,16 +6,20 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 
 def run(argv: list[str], cwd: Path) -> dict[str, object]:
     completed = subprocess.run(argv, cwd=cwd, text=True, capture_output=True, check=False)
+    output = completed.stdout + completed.stderr
+    count = re.search(r"Ran (\d+) tests?", output)
     return {
         "argv": argv,
         "returncode": completed.returncode,
-        "summary": (completed.stdout + completed.stderr).strip().splitlines()[-1:],
+        "tests_run": int(count.group(1)) if count else None,
+        "summary": output.strip().splitlines()[-1:],
     }
 
 
@@ -30,7 +34,7 @@ def main() -> int:
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_workflow_dogfood.py", "-v"], root / "todo-orchestrator"),
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-p", "test_workflow_*.py", "-v"], root / "todo-orchestrator"),
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], root / "todo-orchestrator"),
-        run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], args.project_control_root.resolve()) if args.project_control_root else {"returncode": 0, "summary": ["not requested"]},
+        run(["uv", "run", "python", "-m", "unittest", "discover", "-s", "tests", "-v"], args.project_control_root.resolve()) if args.project_control_root else {"returncode": 0, "summary": ["not requested"]},
     ]
     evidence = {
         "schema_version": 1,
