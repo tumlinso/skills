@@ -42,6 +42,7 @@ from .db import Database
 from .events import changes_since
 from .evidence import gate_is_satisfied, required_gates
 from .gates import explain_gate, list_gates, run_gate
+from .front_door import require_mutation_route
 from .git_state import dirty_paths, git_head, path_contains
 from .graph import reevaluate_barriers
 from .interfaces import freeze as freeze_interface
@@ -59,13 +60,21 @@ from .sessions import authenticate_claim, authenticate_session, create_session
 
 
 class Service:
-    def __init__(self, repo_root: str | Path = ".", *, bootstrap: bool = False, name: str | None = None):
+    def __init__(
+        self,
+        repo_root: str | Path = ".",
+        *,
+        bootstrap: bool = False,
+        name: str | None = None,
+        mutation_mode: str = "automated",
+    ):
         if bootstrap:
             self.paths, self.project = create_project_identity(repo_root, name)
         else:
             self.paths = project_paths(repo_root)
             self.project = read_project(self.paths.repo_root)
         configuration = self.project.get("configuration", {})
+        self.mutation_mode = mutation_mode
         self.read_only = os.environ.get("TODO_ORCHESTRATOR_READ_ONLY") == "1"
         self.db = Database(
             self.paths.db_file,
@@ -114,7 +123,24 @@ class Service:
     def context_budget(self) -> int:
         return int(self.project.get("configuration", {}).get("context_budget_bytes", 12000))
 
-    def mutate(self, *, actor, entity_type: str, entity_id, event_type: str, payload, operation, full_projection: bool = False):
+    def mutate(
+        self,
+        *,
+        actor,
+        entity_type: str,
+        entity_id,
+        event_type: str,
+        payload,
+        operation,
+        full_projection: bool = False,
+        canonical_workflow: bool = False,
+    ):
+        require_mutation_route(
+            self.project,
+            operation=event_type,
+            mutation_mode=self.mutation_mode,
+            canonical_workflow=canonical_workflow or event_type.startswith("workflow."),
+        )
         result, revision = self.db.mutate(
             actor_session_id=actor,
             entity_type=entity_type,
@@ -376,6 +402,7 @@ class Service:
                 note,
                 terminal_hook,
             ),
+            canonical_workflow=True,
         )
         return {**result, "project_revision": revision, "projection": projection}
 
@@ -500,6 +527,11 @@ class Service:
         return {**result, "project_revision": revision, "projection": projection}
 
     def gate_run(self, gate_id: str, claim_token: str | None) -> dict[str, object]:
+        require_mutation_route(
+            self.project,
+            operation="gate.run",
+            mutation_mode=self.mutation_mode,
+        )
         result, revision = run_gate(self.db, self.paths, self.project, gate_id, claim_token)
         result["project_revision"] = revision
         result["projection"] = self.refresh({str(result["task_id"])})
