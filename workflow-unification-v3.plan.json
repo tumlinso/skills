@@ -172,9 +172,18 @@
       "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PC-READONLY", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
     },
     {
+      "id": "WFU-27", "kind": "validation_task", "title": "Authorize isolated-merge overlap in claim readiness",
+      "objective": "Teach the shared claim/readiness authority to permit overlapping first-class task scopes only when both lanes have explicit isolated_merge contracts, active managed workspaces from the same base, one shared integration task, and an exclusive designated integrator destination; retain same-worktree exclusion everywhere else.",
+      "priority": 113, "parallel_policy": "parallel_safe", "depends_on": [{"type": "task", "task_id": "WFU-24"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/ownership.py", "todo-orchestrator/tests/test_workflow_isolated_claims.py"], "read_paths": ["todo-orchestrator/todo_orchestrator/readiness.py", "todo-orchestrator/todo_orchestrator/workflow/workspaces.py", "todo-orchestrator/tests/v2_helpers.py"]},
+      "gates": [{"id": "WFU-27-CLAIMS", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "todo-orchestrator/tests", "-p", "test_workflow_isolated_claims.py", "-v"], "input_paths": ["todo-orchestrator/todo_orchestrator/ownership.py", "todo-orchestrator/tests/test_workflow_isolated_claims.py"], "required": true}],
+      "completion_contract": "Two first-class isolated lanes can claim overlapping paths concurrently only under the complete same-base managed integration contract, while ordinary overlapping claims remain blocked.",
+      "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-WORK", "WFU-INTEGRATION-OWNERSHIP", "WFU-CHILD-BOUNDARY"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
-      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}],
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}, {"type": "task", "task_id": "WFU-27"}],
       "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
     },

@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-22: Extend project-control additive read model
 
-Task revision: `214`; current project revision is in `todo-status.md`.
+Task revision: `220`; current project revision is in `todo-status.md`.
 
 ## Objective
 In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

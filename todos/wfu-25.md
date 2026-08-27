@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-25: Remove obsolete protocol discovery and child-independence guidance
 
-Task revision: `214`; current project revision is in `todo-status.md`.
+Task revision: `220`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update the installed two-worker smoke to the exact six-tool protocol and coordinate_task gate action, remove residual wording that describes subordinate local-worker children as independent project work, and add focused regression coverage.
