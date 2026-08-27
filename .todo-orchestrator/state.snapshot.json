@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T12:08:19Z",
+  "generated_at": "2026-08-27T12:12:42Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 177,
+  "project_revision": 182,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1936,6 +1936,56 @@
         "revision": 177,
         "seq": 177,
         "timestamp": "2026-08-27T12:08:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-16-CORE\"}",
+        "revision": 178,
+        "seq": 178,
+        "timestamp": "2026-08-27T12:08:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"081a32aa-bc6c-461d-9061-71a75827469a\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 179,
+        "seq": 179,
+        "timestamp": "2026-08-27T12:09:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-16-CORE\"}",
+        "revision": 180,
+        "seq": 180,
+        "timestamp": "2026-08-27T12:11:52Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"13079fb8-085a-437f-a67d-24085c6af0ba\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 181,
+        "seq": 181,
+        "timestamp": "2026-08-27T12:12:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 182, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 182,
+        "seq": 182,
+        "timestamp": "2026-08-27T12:12:42Z"
       }
     ],
     "evidence": [
@@ -1963,6 +2013,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b829fc5d0edb5d78a07b04c0450a7bb5d37f7c5b904954b4afaddece91e75e3f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 108}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/07990923-f7eb-4831-a553-6996a0acccba",
         "revision": 109,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T12:09:16Z",
+        "gate_id": "WFU-16-CORE",
+        "id": "081a32aa-bc6c-461d-9061-71a75827469a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ea0a28c05afe78f7fb0053ebcc01c41830119494f967ebdf5e78f82139a18e5f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"3e9c7d0997f7ea1cecc38e4173146dba91b3e570a4d7598f4d9d97669d642a46\", \"dirty_paths\": [\"todos/wfu-00.md\", \"todos/wfu-01.md\", \"todos/wfu-02.md\", \"todos/wfu-10.md\", \"todos/wfu-11.md\", \"todos/wfu-12.md\", \"todos/wfu-13.md\", \"todos/wfu-14.md\", \"todos/wfu-15.md\", \"todos/wfu-16.md\", \"todos/wfu-20.md\", \"todos/wfu-21.md\", \"todos/wfu-22.md\", \"todos/wfu-23.md\", \"todos/wfu-30.md\", \"todos/wfu-31.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"sha256\": \"4715e6749b02c706cf54e126c2632b549208158fc20009dac3fbe6c11ced8d16\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"sha256\": \"24f92798aad899eb180872cdc137e193d27ecb5946bd36e81e5bd990551094dc\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"sha256\": \"c6967103caaccc240fae6cc55e90adcce4b85fcefafb46a7579a1aa6625a7b1d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_workspaces.py\", \"sha256\": \"f1643c32100cc52ba836482b2bd83ab18f2b2efa992acc84655f4ddb473ea204\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/gates.py\", \"sha256\": \"2635106dafc8ab6aad7de808a90b267106c27d966d32353f61f4005a0faff5b7\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c7461f3bab10003dc9309aa18b916d06d854fe56\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 178}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/081a32aa-bc6c-461d-9061-71a75827469a",
+        "revision": 179,
         "status": "passed"
       },
       {
@@ -2002,6 +2065,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"29ced001e878b4a8e4dc32b177967064ae1c52d7dddd46612f954148ca2b0e1e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"sha256\": \"4715e6749b02c706cf54e126c2632b549208158fc20009dac3fbe6c11ced8d16\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"sha256\": \"04ad76ad176a24cb1d74c6519c4e8270e9be911365c12b99c39566639bcb1a8d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"sha256\": \"c6967103caaccc240fae6cc55e90adcce4b85fcefafb46a7579a1aa6625a7b1d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_workspaces.py\", \"sha256\": \"6703251043f81aa2d082b5434197285a8ed308626b42f1ec9128bbd015658606\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"f22031b53fd6c5ac7e31bea264ff2871484eaa63\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 172}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0e2d8ecc-7522-4dba-af45-f9fd77f1ed87",
         "revision": 173,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T12:12:36Z",
+        "gate_id": "WFU-16-CORE",
+        "id": "13079fb8-085a-437f-a67d-24085c6af0ba",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"2202d38c6659400c9b3181281d3cd979351a1a87c0f09f19b773efa2244bb390\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-00.md\", \"todos/wfu-01.md\", \"todos/wfu-02.md\", \"todos/wfu-10.md\", \"todos/wfu-11.md\", \"todos/wfu-12.md\", \"todos/wfu-13.md\", \"todos/wfu-14.md\", \"todos/wfu-15.md\", \"todos/wfu-16.md\", \"todos/wfu-20.md\", \"todos/wfu-21.md\", \"todos/wfu-22.md\", \"todos/wfu-23.md\", \"todos/wfu-30.md\", \"todos/wfu-31.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"sha256\": \"4715e6749b02c706cf54e126c2632b549208158fc20009dac3fbe6c11ced8d16\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"sha256\": \"79a9faf22ab6bae07ae7eb19f41326759e6f2746f149d496ac7b4a9aca5205a6\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"sha256\": \"c6967103caaccc240fae6cc55e90adcce4b85fcefafb46a7579a1aa6625a7b1d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_workspaces.py\", \"sha256\": \"4150214c20de92a9557cce7f6b4bf73b413b8157add32e3c8a945da7c74d3272\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/gates.py\", \"sha256\": \"2635106dafc8ab6aad7de808a90b267106c27d966d32353f61f4005a0faff5b7\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 180}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/13079fb8-085a-437f-a67d-24085c6af0ba",
+        "revision": 181,
         "status": "passed"
       },
       {
@@ -2842,10 +2918,10 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/gates.py\", \"todo-orchestrator/todo_orchestrator/workflow\", \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"todo-orchestrator/tests/test_workflow_workspaces.py\"]}",
         "id": "WFU-16-CORE",
-        "input_fingerprint": "3711d6b7b12c738716af4124f839a49e50db72c9d7a6b8d8c108ed4c6b59bfa2",
-        "last_run_at": "2026-08-27T12:01:49Z",
+        "input_fingerprint": "a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358",
+        "last_run_at": "2026-08-27T12:12:36Z",
         "required": 1,
-        "revision": 177,
+        "revision": 181,
         "status": "passed",
         "task_id": "WFU-16",
         "type": "command",
@@ -3055,6 +3131,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".github/workflows/coding-workflow-mcp.yml\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/migration.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/protocol.py\", \"integrations/coding-workflow-mcp/scripts/install.py\", \"integrations/coding-workflow-mcp/scripts/migrate.py\", \"integrations/coding-workflow-mcp/tests/fake_server.py\", \"integrations/coding-workflow-mcp/tests/test_migration.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_protocol.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-04-GATE\", \"last_run_at\": \"2026-08-24T20:07:56Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json     | 921 ++++++++++++++++++++++++++++-\\n integrations/coding-workflow-mcp/README.md |  21 +\\n todo-status.md                             |   9 +-\\n todos.md                                   |   9 +-\\n 4 files changed, 953 insertions(+), 7 deletions(-)\", \"git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CWM-04\"}",
         "revision": 40,
         "task_id": "CWM-04"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T12:12:42Z",
+        "id": "a63085ee-11ec-42f4-8ff1-e360423e9b1c",
+        "kind": "complete",
+        "note": "Core authority contracts hardened; workflow gate 13079fb8-085a-437f-a67d-24085c6af0ba passed; commits f22031b, 2ccebb8, c7461f3, 93a7d7f.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"completion_gates\": [{\"evidence_id\": \"13079fb8-085a-437f-a67d-24085c6af0ba\", \"evidence_revision\": 181, \"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\"}], \"completion_revision\": 182, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"last_run_at\": \"2026-08-27T12:12:36Z\", \"revision\": 181, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 76 +++++++++++++++++++++++++++++++---\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n todos/wfu-00.md                        |  2 +-\\n todos/wfu-01.md                        |  2 +-\\n todos/wfu-02.md                        |  2 +-\\n todos/wfu-10.md                        |  2 +-\\n todos/wfu-11.md                        |  2 +-\\n todos/wfu-12.md                        |  2 +-\\n todos/wfu-13.md                        |  2 +-\\n todos/wfu-14.md                        |  2 +-\\n todos/wfu-15.md                        |  2 +-\\n todos/wfu-16.md                        |  3 +-\\n todos/wfu-20.md                        |  2 +-\\n todos/wfu-21.md                        |  2 +-\\n todos/wfu-22.md                        |  2 +-\\n todos/wfu-23.md                        |  2 +-\\n todos/wfu-30.md                        |  2 +-\\n todos/wfu-31.md                        |  2 +-\\n 19 files changed, 90 insertions(+), 23 deletions(-)\", \"git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"interfaces\": [], \"note\": \"Core authority contracts hardened; workflow gate 13079fb8-085a-437f-a67d-24085c6af0ba passed; commits f22031b, 2ccebb8, c7461f3, 93a7d7f.\", \"resources\": [], \"task_id\": \"WFU-16\"}",
+        "revision": 182,
+        "task_id": "WFU-16"
       },
       {
         "claim_id": null,
@@ -4305,6 +4391,19 @@
         "task_id": "WFU-02",
         "valid": 1,
         "validation_git_head": "e54fe6dd40b5f568452061e12f158ac5cb9ca746"
+      },
+      {
+        "completion_git_head": "93a7d7fc3c0003496762bf459aceb9050df1ad9b",
+        "completion_revision": 182,
+        "evidence_id": "13079fb8-085a-437f-a67d-24085c6af0ba",
+        "evidence_revision": 181,
+        "gate_id": "WFU-16-CORE",
+        "input_fingerprint": "a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358",
+        "provenance_json": "{\"claim_id\": \"f510386a-c114-42bc-98f9-1dfe22d522fe\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"2202d38c6659400c9b3181281d3cd979351a1a87c0f09f19b773efa2244bb390\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-00.md\", \"todos/wfu-01.md\", \"todos/wfu-02.md\", \"todos/wfu-10.md\", \"todos/wfu-11.md\", \"todos/wfu-12.md\", \"todos/wfu-13.md\", \"todos/wfu-14.md\", \"todos/wfu-15.md\", \"todos/wfu-16.md\", \"todos/wfu-20.md\", \"todos/wfu-21.md\", \"todos/wfu-22.md\", \"todos/wfu-23.md\", \"todos/wfu-30.md\", \"todos/wfu-31.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"sha256\": \"4715e6749b02c706cf54e126c2632b549208158fc20009dac3fbe6c11ced8d16\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"sha256\": \"79a9faf22ab6bae07ae7eb19f41326759e6f2746f149d496ac7b4a9aca5205a6\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"sha256\": \"c6967103caaccc240fae6cc55e90adcce4b85fcefafb46a7579a1aa6625a7b1d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_workspaces.py\", \"sha256\": \"4150214c20de92a9557cce7f6b4bf73b413b8157add32e3c8a945da7c74d3272\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/gates.py\", \"sha256\": \"2635106dafc8ab6aad7de808a90b267106c27d966d32353f61f4005a0faff5b7\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 180}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/13079fb8-085a-437f-a67d-24085c6af0ba\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-16",
+        "valid": 1,
+        "validation_git_head": "93a7d7fc3c0003496762bf459aceb9050df1ad9b"
       }
     ],
     "task_dependencies": [
@@ -5707,9 +5806,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "93a7d7fc3c0003496762bf459aceb9050df1ad9b",
+        "completion_git_head": "93a7d7fc3c0003496762bf459aceb9050df1ad9b",
+        "completion_revision": 182,
         "created_at": "2026-08-27T11:20:30Z",
         "id": "WFU-16",
         "kind": "validation_task",
@@ -5721,14 +5820,14 @@
         "parallel_policy": "integration_exclusive",
         "parent_id": null,
         "priority": 145,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 177,
-        "status": "in_progress",
+        "revision": 182,
+        "status": "done",
         "tags_json": "[]",
         "title": "Harden cross-core authority and concurrency contracts",
-        "updated_at": "2026-08-27T12:08:19Z",
-        "version": 5
+        "updated_at": "2026-08-27T12:12:42Z",
+        "version": 6
       },
       {
         "attention_reason": null,
