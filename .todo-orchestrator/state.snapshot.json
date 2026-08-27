@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:10:23Z",
+  "generated_at": "2026-08-27T13:11:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 208,
+  "project_revision": 212,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2246,6 +2246,46 @@
         "revision": 208,
         "seq": 208,
         "timestamp": "2026-08-27T13:10:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-25",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-25\"}",
+        "revision": 209,
+        "seq": 209,
+        "timestamp": "2026-08-27T13:10:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-25-ROUTING",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-25-ROUTING\"}",
+        "revision": 210,
+        "seq": 210,
+        "timestamp": "2026-08-27T13:11:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-25-ROUTING",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"47fcf012-3855-4b55-8261-d6e612d96629\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 211,
+        "seq": 211,
+        "timestamp": "2026-08-27T13:11:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-25",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 212, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 212,
+        "seq": 212,
+        "timestamp": "2026-08-27T13:11:58Z"
       }
     ],
     "evidence": [
@@ -2442,6 +2482,19 @@
         "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e504a5d1f587b1fc1f52fff91861bd4da1595be838535769a4af723c31ea5606\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"]}, \"diff_fingerprint\": \"0845647e365dd44ad25ad1cfd8beaee53b4321566eff61a19f76e51cc42ae1ea\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"2ac23b1947e253abe89605155f8850b63be25bb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 94}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/44662c28-816d-40a6-a87c-0eea51ec4661",
         "revision": 95,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T13:11:36Z",
+        "gate_id": "WFU-25-ROUTING",
+        "id": "47fcf012-3855-4b55-8261-d6e612d96629",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"]}, \"diff_fingerprint\": \"fb9f7014aa539eaa4477b6da523525158070e63fb2ef676f11a74d8b6f8ce714\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-25.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"sha256\": \"ed19b3109b13d064958f537d8c09a835df0719293c32cc13ee0c38a7f8d55784\"}, {\"path\": \"integrations/coding-workflow-mcp/tests/test_protocol.py\", \"sha256\": \"9974371af7fb5e819a03040f645bee7a4cfcf6ea215855b04b05abaaaa349c3a\"}, {\"path\": \"local-coding-worker/SKILL.md\", \"sha256\": \"99381d93fcf11d89efb7c8ba4565e978b399b3cf234744f8098dad699db2c887\"}], \"interfaces\": [], \"recorded_git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 210}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/47fcf012-3855-4b55-8261-d6e612d96629",
+        "revision": 211,
         "status": "passed"
       },
       {
@@ -3243,14 +3296,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"input_paths\": [\"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_protocol.py\", \"local-coding-worker/SKILL.md\"]}",
         "id": "WFU-25-ROUTING",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89",
+        "last_run_at": "2026-08-27T13:11:36Z",
         "required": 1,
-        "revision": 208,
-        "status": "pending",
+        "revision": 211,
+        "status": "passed",
         "task_id": "WFU-25",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -3543,6 +3596,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-08-HANDLES\", \"last_run_at\": \"2026-08-25T10:56:05Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-08-TOOLS\", \"last_run_at\": \"2026-08-25T10:56:07Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-08-DIFF\", \"last_run_at\": \"2026-08-25T10:56:05Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 2194 +++++++++++++++++++-\\n integrations/coding-workflow-mcp/README.md         |    8 +\\n .../coding_workflow_mcp/backend.py                 |   70 +-\\n .../coding_workflow_mcp/handles.py                 |  101 +\\n .../coding_workflow_mcp/server.py                  |    6 +-\\n .../coding-workflow-mcp/tests/test_handles.py      |   22 +\\n .../coding-workflow-mcp/tests/test_tools.py        |   91 +\\n todo-status.md                                     |   11 +-\\n todos.md                                           |   11 +-\\n 9 files changed, 2408 insertions(+), 106 deletions(-)\", \"git_head\": \"2ac23b1947e253abe89605155f8850b63be25bb7\", \"interfaces\": [], \"note\": \"Final concurrency-safe recovery: explicit task lookup validates the stored facade claim, reissues fresh opaque aliases without invalidating concurrent bridges, and terminal finish removes the full alias family. Focused gates and 26-test suite pass; installed protocol exposes exactly five tools.\", \"resources\": [], \"task_id\": \"CWM-08\"}",
         "revision": 98,
         "task_id": "CWM-08"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:11:58Z",
+        "id": "f8c5ed31-49d6-4f81-bd5f-7fcabeabc437",
+        "kind": "complete",
+        "note": "Exact six-tool installed smoke and subordinate-child guidance validated.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\", \"completion_gates\": [{\"evidence_id\": \"47fcf012-3855-4b55-8261-d6e612d96629\", \"evidence_revision\": 211, \"id\": \"WFU-25-ROUTING\", \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\"}], \"completion_revision\": 212, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-25-ROUTING\", \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"last_run_at\": \"2026-08-27T13:11:36Z\", \"revision\": 211, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 65 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/wfu-25.md                        |  6 ++--\\n 4 files changed, 61 insertions(+), 18 deletions(-)\", \"git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\", \"interfaces\": [], \"note\": \"Exact six-tool installed smoke and subordinate-child guidance validated.\", \"resources\": [], \"task_id\": \"WFU-25\"}",
+        "revision": 212,
+        "task_id": "WFU-25"
       }
     ],
     "interface_consumers": [
@@ -4897,6 +4960,19 @@
         "task_id": "WFU-24",
         "valid": 1,
         "validation_git_head": "c41ff026c4b691a75c9018f8efca7cfa38081994"
+      },
+      {
+        "completion_git_head": "bf3dd7c5689533726363d3245dc66f2c196bf11e",
+        "completion_revision": 212,
+        "evidence_id": "47fcf012-3855-4b55-8261-d6e612d96629",
+        "evidence_revision": 211,
+        "gate_id": "WFU-25-ROUTING",
+        "input_fingerprint": "b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89",
+        "provenance_json": "{\"claim_id\": \"577145df-7761-438f-aa28-7fc2f6dba57a\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_protocol.py\", \"-v\"]}, \"diff_fingerprint\": \"fb9f7014aa539eaa4477b6da523525158070e63fb2ef676f11a74d8b6f8ce714\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-25.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"sha256\": \"ed19b3109b13d064958f537d8c09a835df0719293c32cc13ee0c38a7f8d55784\"}, {\"path\": \"integrations/coding-workflow-mcp/tests/test_protocol.py\", \"sha256\": \"9974371af7fb5e819a03040f645bee7a4cfcf6ea215855b04b05abaaaa349c3a\"}, {\"path\": \"local-coding-worker/SKILL.md\", \"sha256\": \"99381d93fcf11d89efb7c8ba4565e978b399b3cf234744f8098dad699db2c887\"}], \"interfaces\": [], \"recorded_git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 210}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/47fcf012-3855-4b55-8261-d6e612d96629\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-25",
+        "valid": 1,
+        "validation_git_head": "bf3dd7c5689533726363d3245dc66f2c196bf11e"
       }
     ],
     "task_dependencies": [
@@ -6528,9 +6604,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "bf3dd7c5689533726363d3245dc66f2c196bf11e",
+        "completion_git_head": "bf3dd7c5689533726363d3245dc66f2c196bf11e",
+        "completion_revision": 212,
         "created_at": "2026-08-27T13:10:07Z",
         "id": "WFU-25",
         "kind": "validation_task",
@@ -6542,14 +6618,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 115,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 208,
-        "status": "planned",
+        "revision": 212,
+        "status": "done",
         "tags_json": "[]",
         "title": "Remove obsolete protocol discovery and child-independence guidance",
-        "updated_at": "2026-08-27T13:10:23Z",
-        "version": 2
+        "updated_at": "2026-08-27T13:11:58Z",
+        "version": 4
       },
       {
         "attention_reason": null,
