@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `231`
+Project revision: `235`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
@@ -24,7 +24,7 @@ Project revision: `231`
 - `WFU-25` | status: done | execution: closed | next: Update the installed two-worker smoke to the exact six-tool protocol and coordinate_task gate action, remove residual wording that describes subordinate local-worker children as independent project work, and add focused regression coverage.
 - `WFU-26` | status: done | execution: closed | next: Expose normalized immutable patch artifacts, synthesize recovery-needed state across authoritative claims, sessions, dispatches, children, gates, locks, resources, workspaces, and integration failures, and emit safe parallel groups only after dependency, interface, lock, resource, and scope checks.
 - `WFU-27` | status: done | execution: closed | next: Teach the shared claim/readiness authority to permit overlapping first-class task scopes only when both lanes have explicit isolated_merge contracts, active managed workspaces from the same base, one shared integration task, and an exclusive designated integrator destination; retain same-worktree exclusion everywhere else.
-- `WFU-28` | status: planned | execution: ready | next: Make first-class handoff, block, release, and owner recovery reconcile the current serial lane task and lane state transactionally so clean work can resume through next_task, while dirty recovery remains preserved and attention-required.
+- `WFU-28` | status: done | execution: closed | next: Make first-class handoff, block, release, and owner recovery reconcile the current serial lane task and lane state transactionally so clean work can resume through next_task, while dirty recovery remains preserved and attention-required.
 - `C4Q-02` | status: done | execution: closed | next: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
 - `C4Q-01` | status: blocked | execution: blocked_dependency | next: Use strict --core-tools registration, derive a bounded structured-output-aware turn cap, share the terminal instruction across read-only and writable execution, preserve compact exit-53 diagnostics, and validate the cached Q4 model through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks.
 - `CWM-00` | status: done | execution: closed | next: Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.

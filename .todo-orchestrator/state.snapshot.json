@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:35:48Z",
+  "generated_at": "2026-08-27T13:38:20Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 231,
+  "project_revision": 235,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2476,6 +2476,46 @@
         "revision": 231,
         "seq": 231,
         "timestamp": "2026-08-27T13:35:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-28",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-28\"}",
+        "revision": 232,
+        "seq": 232,
+        "timestamp": "2026-08-27T13:35:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-28-RESUME",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-28-RESUME\"}",
+        "revision": 233,
+        "seq": 233,
+        "timestamp": "2026-08-27T13:38:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-28-RESUME",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7c0b8b31-4138-4fdb-8fb3-841e24d7a52f\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 234,
+        "seq": 234,
+        "timestamp": "2026-08-27T13:38:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-28",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 235, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 235,
+        "seq": 235,
+        "timestamp": "2026-08-27T13:38:20Z"
       }
     ],
     "evidence": [
@@ -2841,6 +2881,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"b70516ba6a6040a5f39f44d99914771e1c5d1d2027bcb0d6547f687557245586\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"8948597e47e39704b21259e90183402d995696ed354224dad79f96fc02b25a8d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"03a48dbbd53658942764a68da28d45996c8e7cbb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 64}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7b498093-3441-4d11-a49b-064fbb8a503c",
         "revision": 65,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T13:38:20Z",
+        "gate_id": "WFU-28-RESUME",
+        "id": "7c0b8b31-4138-4fdb-8fb3-841e24d7a52f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_lane_resume.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_lane_resume.py\", \"-v\"]}, \"diff_fingerprint\": \"dede3b525fbf6938b667f32c21126759b216d91e76a0b452da992d77907128b1\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-28.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_lane_resume.py\", \"sha256\": \"970c3786cc961175b4aebf4bd78a64f715c6809e5f438f28efcf0f4c0fb71aec\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/recovery.py\", \"sha256\": \"00fa1b3979267394124cb078048552ccf124234c2748666ae7472ff53103db2c\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"7a37813525db2496e019cc332fbfe127562187b30339f171ab1b8c152ce1c5b1\"}], \"interfaces\": [], \"recorded_git_head\": \"f3f3e583043598a62056e6654f31c0c4277f0682\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 233}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7c0b8b31-4138-4fdb-8fb3-841e24d7a52f",
+        "revision": 234,
         "status": "passed"
       },
       {
@@ -3551,14 +3604,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_lane_resume.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"todo-orchestrator/todo_orchestrator/workflow/recovery.py\", \"todo-orchestrator/tests/test_workflow_lane_resume.py\"]}",
         "id": "WFU-28-RESUME",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f",
+        "last_run_at": "2026-08-27T13:38:20Z",
         "required": 1,
-        "revision": 231,
-        "status": "pending",
+        "revision": 234,
+        "status": "passed",
         "task_id": "WFU-28",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -3831,6 +3884,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4Q2-UNIT\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"C4Q2-REAL-HOST\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"local-coding-worker/config/production-profile.toml |   9 +-\\n local-coding-worker/local_worker/controller.py     |  18 ++-\\n local-coding-worker/local_worker/harnesses/base.py |  12 ++\\n .../local_worker/harnesses/qwen_code.py            | 170 +++++++++++++++++++--\\n .../local_worker/production_checks.py              | 143 ++++++++++++++++-\\n local-coding-worker/scripts/local_worker.py        |   3 +-\\n local-coding-worker/tests/test_harnesses.py        |  86 ++++++++++-\\n 7 files changed, 414 insertions(+), 27 deletions(-)\", \"git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\", \"interfaces\": [], \"note\": \"Repaired strict Qwen tool registration, structured-output-aware budgets and bounded terminal retry; A/B/C, real read-only, real writable, focused tests, cache, and supervisor cleanup passed on llama.cpp f280b2698.\", \"resources\": [], \"task_id\": \"C4Q-02\"}",
         "revision": 18,
         "task_id": "C4Q-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:38:20Z",
+        "id": "ca908c6c-a0ea-47cb-a33f-0ba977af24c7",
+        "kind": "complete",
+        "note": "First-class release and owner recovery leave resumable or explicit-attention lane state; focused 4/4 and workflow 105/105 passed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"f3f3e583043598a62056e6654f31c0c4277f0682\", \"completion_gates\": [{\"evidence_id\": \"7c0b8b31-4138-4fdb-8fb3-841e24d7a52f\", \"evidence_revision\": 234, \"id\": \"WFU-28-RESUME\", \"input_fingerprint\": \"49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"f3f3e583043598a62056e6654f31c0c4277f0682\"}], \"completion_revision\": 235, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-28-RESUME\", \"input_fingerprint\": \"49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f\", \"last_run_at\": \"2026-08-27T13:38:20Z\", \"revision\": 234, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 65 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/wfu-28.md                        |  8 +++--\\n 4 files changed, 63 insertions(+), 18 deletions(-)\", \"git_head\": \"f3f3e583043598a62056e6654f31c0c4277f0682\", \"interfaces\": [], \"note\": \"First-class release and owner recovery leave resumable or explicit-attention lane state; focused 4/4 and workflow 105/105 passed.\", \"resources\": [], \"task_id\": \"WFU-28\"}",
+        "revision": 235,
+        "task_id": "WFU-28"
       },
       {
         "claim_id": null,
@@ -5374,6 +5437,19 @@
         "task_id": "WFU-27",
         "valid": 1,
         "validation_git_head": "514257bd8f1c909a59033a59bed0e6fdb158e765"
+      },
+      {
+        "completion_git_head": "f3f3e583043598a62056e6654f31c0c4277f0682",
+        "completion_revision": 235,
+        "evidence_id": "7c0b8b31-4138-4fdb-8fb3-841e24d7a52f",
+        "evidence_revision": 234,
+        "gate_id": "WFU-28-RESUME",
+        "input_fingerprint": "49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f",
+        "provenance_json": "{\"claim_id\": \"41eb1562-fb27-4d61-94d6-4c88d08ca9e7\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_lane_resume.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"49715aa416bfb4001f033c09c88806c5f96eb1cc55a7c8b46fd15131e329577f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_lane_resume.py\", \"-v\"]}, \"diff_fingerprint\": \"dede3b525fbf6938b667f32c21126759b216d91e76a0b452da992d77907128b1\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-28.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_lane_resume.py\", \"sha256\": \"970c3786cc961175b4aebf4bd78a64f715c6809e5f438f28efcf0f4c0fb71aec\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/recovery.py\", \"sha256\": \"00fa1b3979267394124cb078048552ccf124234c2748666ae7472ff53103db2c\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"7a37813525db2496e019cc332fbfe127562187b30339f171ab1b8c152ce1c5b1\"}], \"interfaces\": [], \"recorded_git_head\": \"f3f3e583043598a62056e6654f31c0c4277f0682\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 233}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7c0b8b31-4138-4fdb-8fb3-841e24d7a52f\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-28",
+        "valid": 1,
+        "validation_git_head": "f3f3e583043598a62056e6654f31c0c4277f0682"
       }
     ],
     "task_dependencies": [
@@ -7205,9 +7281,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "f3f3e583043598a62056e6654f31c0c4277f0682",
+        "completion_git_head": "f3f3e583043598a62056e6654f31c0c4277f0682",
+        "completion_revision": 235,
         "created_at": "2026-08-27T13:35:48Z",
         "id": "WFU-28",
         "kind": "validation_task",
@@ -7219,14 +7295,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 112,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 231,
-        "status": "planned",
+        "revision": 235,
+        "status": "done",
         "tags_json": "[]",
         "title": "Restore resumable serial-lane state after release and recovery",
-        "updated_at": "2026-08-27T13:35:48Z",
-        "version": 1
+        "updated_at": "2026-08-27T13:38:20Z",
+        "version": 3
       },
       {
         "attention_reason": "Add required first-class lane resume lifecycle correction before dogfood",

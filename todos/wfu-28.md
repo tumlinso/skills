@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-28: Restore resumable serial-lane state after release and recovery
 
-Task revision: `231`; current project revision is in `todo-status.md`.
+Task revision: `235`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make first-class handoff, block, release, and owner recovery reconcile the current serial lane task and lane state transactionally so clean work can resume through next_task, while dirty recovery remains preserved and attention-required.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
