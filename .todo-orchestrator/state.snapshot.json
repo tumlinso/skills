@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T10:59:26Z",
+  "generated_at": "2026-08-27T11:00:21Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 146,
+  "project_revision": 149,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -147,10 +147,10 @@
       {
         "id": "WFU-KERNEL-CONTRACT-V1",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 146,
+        "reached_at": "2026-08-27T11:00:21Z",
+        "revision": 149,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "WFU-02",
         "title": "Workflow kernel database and service contract frozen"
       },
@@ -1626,6 +1626,36 @@
         "revision": 146,
         "seq": 146,
         "timestamp": "2026-08-27T10:59:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-02-TEST",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-02-TEST\"}",
+        "revision": 147,
+        "seq": 147,
+        "timestamp": "2026-08-27T10:59:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-02-TEST",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 148,
+        "seq": 148,
+        "timestamp": "2026-08-27T10:59:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-02",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 149, \"disposition\": \"implemented\", \"reached_checkpoints\": [\"WFU-KERNEL-CONTRACT-V1\"]}",
+        "revision": 149,
+        "seq": 149,
+        "timestamp": "2026-08-27T11:00:21Z"
       }
     ],
     "evidence": [
@@ -2062,6 +2092,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-27T10:59:57Z",
+        "gate_id": "WFU-02-TEST",
+        "id": "e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_foundation.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_foundation.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_v2.py\", \"sha256\": \"20eef50bd3330a27b534a59b1e9a462e6416cfe483d713458776012f5ffc5a8b\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_foundation.py\", \"sha256\": \"870843f50da896eb61cd08c4f0f3cf94e8051a105e7620a1dada0d7bc67e1d0b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/db.py\", \"sha256\": \"672c888e268df0929d3c9bae0b7bf9c48d7a5284abe5e1f81d3ddfcab6da6c4b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/migrations.py\", \"sha256\": \"a0120e57467c1c5f99f1ed4de588006613aed49c3c97cc504294c659f75ac839\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/foundation.py\", \"sha256\": \"fc7ec21c4c4b92b4bee0e168cc9f8875f518099c4c7e429357063952d5e82301\"}], \"interfaces\": [], \"recorded_git_head\": \"e54fe6dd40b5f568452061e12f158ac5cb9ca746\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 147}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4",
+        "revision": 148,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T11:35:16Z",
         "gate_id": "CWM-09-DIFF",
         "id": "f0fed799-90ff-48e4-9439-db70114fc20d",
@@ -2480,14 +2523,14 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_foundation.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/db.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/workflow/foundation.py\", \"todo-orchestrator/tests/test_workflow_foundation.py\", \"todo-orchestrator/tests/test_child_execution_v2.py\"]}",
         "id": "WFU-02-TEST",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0",
+        "last_run_at": "2026-08-27T10:59:57Z",
         "required": 1,
-        "revision": 146,
-        "status": "pending",
+        "revision": 148,
+        "status": "passed",
         "task_id": "WFU-02",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -2510,6 +2553,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"checkpoints\": [], \"completion_commit\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"completion_gates\": [{\"evidence_id\": \"f3da80bb-4977-4396-998e-3a86b12e7d37\", \"evidence_revision\": 138, \"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\"}], \"completion_revision\": 139, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"last_run_at\": \"2026-08-27T10:48:23Z\", \"revision\": 138, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 47 +++++++++++++++++++++++++++++-----\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n 3 files changed, 42 insertions(+), 9 deletions(-)\", \"git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"interfaces\": [], \"note\": \"Quiescence, baselines, stable paths, snapshot identity, registration, isolated worktree, validated WFU plan, and rollback record frozen at dbca6e6.\", \"resources\": [], \"task_id\": \"WFU-00\"}",
         "revision": 139,
         "task_id": "WFU-00"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T11:00:21Z",
+        "id": "19d24e91-08c7-443c-971f-f16606bc7d2e",
+        "kind": "complete",
+        "note": "WFU-02 completed at e54fe6dd40b5f568452061e12f158ac5cb9ca746. Migration 10, kernel contract v1, concurrent migration serialization, rollback, legacy task/claim/child preservation, and hash-only capability lineage passed. Local-worker children remain subordinate runtime records, never lanes.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"WFU-KERNEL-CONTRACT-V1\", \"reached_at\": \"2026-08-27T11:00:21Z\", \"state\": \"reached\"}], \"completion_commit\": \"e54fe6dd40b5f568452061e12f158ac5cb9ca746\", \"completion_gates\": [{\"evidence_id\": \"e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4\", \"evidence_revision\": 148, \"id\": \"WFU-02-TEST\", \"input_fingerprint\": \"6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"e54fe6dd40b5f568452061e12f158ac5cb9ca746\"}], \"completion_revision\": 149, \"finalized_checkpoints\": [\"WFU-KERNEL-CONTRACT-V1\"], \"gates\": [{\"id\": \"WFU-02-TEST\", \"input_fingerprint\": \"6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0\", \"last_run_at\": \"2026-08-27T10:59:57Z\", \"revision\": 148, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 47 +++++++++++++++++++++++++++++-----\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n 3 files changed, 42 insertions(+), 9 deletions(-)\", \"git_head\": \"e54fe6dd40b5f568452061e12f158ac5cb9ca746\", \"interfaces\": [{\"content_hash\": \"1c9eae28541e40b85aa43a21f4246f317353fddffa5fe518956808c90360f76b\", \"id\": \"WFU-KERNEL-CONTRACT\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"WFU-02 completed at e54fe6dd40b5f568452061e12f158ac5cb9ca746. Migration 10, kernel contract v1, concurrent migration serialization, rollback, legacy task/claim/child preservation, and hash-only capability lineage passed. Local-worker children remain subordinate runtime records, never lanes.\", \"resources\": [], \"task_id\": \"WFU-02\"}",
+        "revision": 149,
+        "task_id": "WFU-02"
       },
       {
         "claim_id": null,
@@ -2708,14 +2761,14 @@
     ],
     "interfaces": [
       {
-        "content_hash": null,
+        "content_hash": "1c9eae28541e40b85aa43a21f4246f317353fddffa5fe518956808c90360f76b",
         "contract_paths_json": "[\"workflow-unification/contracts/kernel-contract-v1.md\"]",
-        "frozen_at": null,
+        "frozen_at": "2026-08-27T11:00:21Z",
         "id": "WFU-KERNEL-CONTRACT",
         "owner_task_id": "WFU-02",
         "revised_at": null,
-        "revision": 146,
-        "state": "draft",
+        "revision": 149,
+        "state": "frozen",
         "version": "1"
       },
       {
@@ -3752,6 +3805,19 @@
         "task_id": "WFU-01",
         "valid": 1,
         "validation_git_head": "a381ce3e8a007e3033bc1927bf282f3ce009fde9"
+      },
+      {
+        "completion_git_head": "e54fe6dd40b5f568452061e12f158ac5cb9ca746",
+        "completion_revision": 149,
+        "evidence_id": "e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4",
+        "evidence_revision": 148,
+        "gate_id": "WFU-02-TEST",
+        "input_fingerprint": "6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0",
+        "provenance_json": "{\"claim_id\": \"2497381e-7efb-4b14-9919-fdc7a9139fa8\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_foundation.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_foundation.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"todo-orchestrator/tests/test_child_execution_v2.py\", \"sha256\": \"20eef50bd3330a27b534a59b1e9a462e6416cfe483d713458776012f5ffc5a8b\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_foundation.py\", \"sha256\": \"870843f50da896eb61cd08c4f0f3cf94e8051a105e7620a1dada0d7bc67e1d0b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/db.py\", \"sha256\": \"672c888e268df0929d3c9bae0b7bf9c48d7a5284abe5e1f81d3ddfcab6da6c4b\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/migrations.py\", \"sha256\": \"a0120e57467c1c5f99f1ed4de588006613aed49c3c97cc504294c659f75ac839\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/foundation.py\", \"sha256\": \"fc7ec21c4c4b92b4bee0e168cc9f8875f518099c4c7e429357063952d5e82301\"}], \"interfaces\": [], \"recorded_git_head\": \"e54fe6dd40b5f568452061e12f158ac5cb9ca746\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 147}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e8d72133-f1ad-4f2a-abc9-e4fa02a8d2a4\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-02",
+        "valid": 1,
+        "validation_git_head": "e54fe6dd40b5f568452061e12f158ac5cb9ca746"
       }
     ],
     "task_dependencies": [
@@ -4913,9 +4979,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "e54fe6dd40b5f568452061e12f158ac5cb9ca746",
+        "completion_git_head": "e54fe6dd40b5f568452061e12f158ac5cb9ca746",
+        "completion_revision": 149,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-02",
         "kind": "task",
@@ -4927,14 +4993,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 180,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 146,
-        "status": "in_progress",
+        "revision": 149,
+        "status": "done",
         "tags_json": "[]",
         "title": "Implement forward-only kernel foundations and fixtures",
-        "updated_at": "2026-08-27T10:59:26Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:00:21Z",
+        "version": 5
       },
       {
         "attention_reason": null,

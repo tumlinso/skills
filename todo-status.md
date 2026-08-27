@@ -3,12 +3,12 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `146`
+Project revision: `149`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: done | execution: closed | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
-- `WFU-02` | status: in_progress | execution: claimed | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
+- `WFU-02` | status: done | execution: closed | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
 - `WFU-10` | status: planned | execution: ready | next: Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.
 - `WFU-11` | status: planned | execution: ready | next: Implement bounded typed first-class-lane messages, receipts and cursors, blocking questions and answers, durable decisions, rendezvous modes, idempotent arrivals, and atomic join readiness with parent-mediated child findings.
 - `WFU-12` | status: planned | execution: ready | next: Implement hashed versioned run, lane, task, decision, delta, and source-reference fragments with targeted invalidation, strict response budgets, and deliberately narrower local-child packets.
