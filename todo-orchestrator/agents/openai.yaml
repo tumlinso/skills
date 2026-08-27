@@ -1,6 +1,6 @@
 interface:
-  display_name: "Todo Orchestrator"
-  short_description: "Transactional claims, gates, recovery, and evidence"
-  default_prompt: "Use $todo-orchestrator and continue. Bootstrap the project, atomically claim safe ready work, follow the compact task capsule, and finish through the structured CLI."
+  display_name: "Todo Orchestrator Kernel"
+  short_description: "Internal workflow state and owner maintenance"
+  default_prompt: "Use $todo-orchestrator for explicit workflow maintenance or debugging; use coding-workflow for ordinary repository work."
 policy:
   allow_implicit_invocation: true
