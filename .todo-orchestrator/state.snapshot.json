@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:12:51Z",
+  "generated_at": "2026-08-27T13:19:56Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 214,
+  "project_revision": 218,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2306,6 +2306,46 @@
         "revision": 214,
         "seq": 214,
         "timestamp": "2026-08-27T13:12:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-26",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-26\"}",
+        "revision": 215,
+        "seq": 215,
+        "timestamp": "2026-08-27T13:13:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-26-SEMANTIC",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-26-SEMANTIC\"}",
+        "revision": 216,
+        "seq": 216,
+        "timestamp": "2026-08-27T13:19:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-26-SEMANTIC",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6678f697-6efc-43bb-b3a6-9d1e124692a5\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 217,
+        "seq": 217,
+        "timestamp": "2026-08-27T13:19:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-26",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 218, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 218,
+        "seq": 218,
+        "timestamp": "2026-08-27T13:19:56Z"
       }
     ],
     "evidence": [
@@ -2580,6 +2620,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_parallel_agents.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ea6a6283bc277a4fafacbeb706498f529e6d991aad42b3f08cf21507a18010c6\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_parallel_agents.py\", \"-v\"]}, \"diff_fingerprint\": \"96249e3edacd49b7c8f69311fbd18a1316170b7b1e60e97b892a0e0aa5bd5d34\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 34}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5e7d50c8-5a88-4219-99ef-7332eea2c5e5",
         "revision": 35,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T13:19:55Z",
+        "gate_id": "WFU-26-SEMANTIC",
+        "id": "6678f697-6efc-43bb-b3a6-9d1e124692a5",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_semantic_read.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_semantic_read.py\", \"-v\"]}, \"diff_fingerprint\": \"b9f8d2f4714dd469a591843c629add7d18d036c25dff85d0b74903221071fb2d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-26.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_semantic_read.py\", \"sha256\": \"80e5eaf1c50e3a48c3a4c09dd14ed0cac11046fa23d976fa7531a7494a8f5606\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/semantic/workflow.py\", \"sha256\": \"e6927ad9baf06c3949a32e4c3b4b20484efd8eee4945bef0a62fc99dd9714c39\"}], \"interfaces\": [], \"recorded_git_head\": \"092f03c5758d292dca0c3c0d657c5500c2b2599d\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 216}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6678f697-6efc-43bb-b3a6-9d1e124692a5",
+        "revision": 217,
         "status": "passed"
       },
       {
@@ -3329,14 +3382,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_semantic_read.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/semantic/workflow.py\", \"todo-orchestrator/tests/test_workflow_semantic_read.py\"]}",
         "id": "WFU-26-SEMANTIC",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58",
+        "last_run_at": "2026-08-27T13:19:55Z",
         "required": 1,
-        "revision": 214,
-        "status": "pending",
+        "revision": 217,
+        "status": "passed",
         "task_id": "WFU-26",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -3359,6 +3412,16 @@
         "payload_json": "{\"changed_owned_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\"], \"checkpoints\": [], \"completion_commit\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"completion_gates\": [{\"evidence_id\": \"f3da80bb-4977-4396-998e-3a86b12e7d37\", \"evidence_revision\": 138, \"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\"}], \"completion_revision\": 139, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-00-DIFF\", \"input_fingerprint\": \"1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82\", \"last_run_at\": \"2026-08-27T10:48:23Z\", \"revision\": 138, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 47 +++++++++++++++++++++++++++++-----\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n 3 files changed, 42 insertions(+), 9 deletions(-)\", \"git_head\": \"dbca6e65a84830b77f5cd01d74b7df18b536c0d4\", \"interfaces\": [], \"note\": \"Quiescence, baselines, stable paths, snapshot identity, registration, isolated worktree, validated WFU plan, and rollback record frozen at dbca6e6.\", \"resources\": [], \"task_id\": \"WFU-00\"}",
         "revision": 139,
         "task_id": "WFU-00"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:19:56Z",
+        "id": "13174899-319d-410b-a489-9d1ab8c577b5",
+        "kind": "complete",
+        "note": "Frozen semantic workflow read contract completed; focused 4/4 and full todo 226/226 passed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"092f03c5758d292dca0c3c0d657c5500c2b2599d\", \"completion_gates\": [{\"evidence_id\": \"6678f697-6efc-43bb-b3a6-9d1e124692a5\", \"evidence_revision\": 217, \"id\": \"WFU-26-SEMANTIC\", \"input_fingerprint\": \"13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"092f03c5758d292dca0c3c0d657c5500c2b2599d\"}], \"completion_revision\": 218, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-26-SEMANTIC\", \"input_fingerprint\": \"13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58\", \"last_run_at\": \"2026-08-27T13:19:55Z\", \"revision\": 217, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 65 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/wfu-26.md                        |  8 +++--\\n 4 files changed, 63 insertions(+), 18 deletions(-)\", \"git_head\": \"092f03c5758d292dca0c3c0d657c5500c2b2599d\", \"interfaces\": [], \"note\": \"Frozen semantic workflow read contract completed; focused 4/4 and full todo 226/226 passed.\", \"resources\": [], \"task_id\": \"WFU-26\"}",
+        "revision": 218,
+        "task_id": "WFU-26"
       },
       {
         "claim_id": null,
@@ -5036,6 +5099,19 @@
         "task_id": "WFU-25",
         "valid": 1,
         "validation_git_head": "bf3dd7c5689533726363d3245dc66f2c196bf11e"
+      },
+      {
+        "completion_git_head": "092f03c5758d292dca0c3c0d657c5500c2b2599d",
+        "completion_revision": 218,
+        "evidence_id": "6678f697-6efc-43bb-b3a6-9d1e124692a5",
+        "evidence_revision": 217,
+        "gate_id": "WFU-26-SEMANTIC",
+        "input_fingerprint": "13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58",
+        "provenance_json": "{\"claim_id\": \"6379361b-9fb9-4fb9-9cee-d06b919c3d48\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_semantic_read.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"13a98e23f02698acd51ba6924683c26665a1e38efc9d00cc6bbfb5d9fd4e2a58\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_semantic_read.py\", \"-v\"]}, \"diff_fingerprint\": \"b9f8d2f4714dd469a591843c629add7d18d036c25dff85d0b74903221071fb2d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-26.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_semantic_read.py\", \"sha256\": \"80e5eaf1c50e3a48c3a4c09dd14ed0cac11046fa23d976fa7531a7494a8f5606\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/semantic/workflow.py\", \"sha256\": \"e6927ad9baf06c3949a32e4c3b4b20484efd8eee4945bef0a62fc99dd9714c39\"}], \"interfaces\": [], \"recorded_git_head\": \"092f03c5758d292dca0c3c0d657c5500c2b2599d\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 216}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6678f697-6efc-43bb-b3a6-9d1e124692a5\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-26",
+        "valid": 1,
+        "validation_git_head": "092f03c5758d292dca0c3c0d657c5500c2b2599d"
       }
     ],
     "task_dependencies": [
@@ -6741,9 +6817,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "092f03c5758d292dca0c3c0d657c5500c2b2599d",
+        "completion_git_head": "092f03c5758d292dca0c3c0d657c5500c2b2599d",
+        "completion_revision": 218,
         "created_at": "2026-08-27T13:12:51Z",
         "id": "WFU-26",
         "kind": "validation_task",
@@ -6755,14 +6831,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 114,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 214,
-        "status": "planned",
+        "revision": 218,
+        "status": "done",
         "tags_json": "[]",
         "title": "Complete the frozen workflow semantic read contract",
-        "updated_at": "2026-08-27T13:12:51Z",
-        "version": 1
+        "updated_at": "2026-08-27T13:19:56Z",
+        "version": 3
       },
       {
         "attention_reason": null,

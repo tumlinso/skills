@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-26: Complete the frozen workflow semantic read contract
 
-Task revision: `214`; current project revision is in `todo-status.md`.
+Task revision: `218`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose normalized immutable patch artifacts, synthesize recovery-needed state across authoritative claims, sessions, dispatches, children, gates, locks, resources, workspaces, and integration failures, and emit safe parallel groups only after dependency, interface, lock, resource, and scope checks.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
