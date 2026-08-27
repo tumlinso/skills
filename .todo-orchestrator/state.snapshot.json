@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:06:17Z",
+  "generated_at": "2026-08-27T13:06:34Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 204,
+  "project_revision": 205,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2206,6 +2206,16 @@
         "revision": 204,
         "seq": 204,
         "timestamp": "2026-08-27T13:06:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-24",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 205, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 205,
+        "seq": 205,
+        "timestamp": "2026-08-27T13:06:34Z"
       }
     ],
     "evidence": [
@@ -3400,6 +3410,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-10-PREFLIGHT\", \"last_run_at\": \"2026-08-25T12:02:15Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-MCP\", \"last_run_at\": \"2026-08-25T12:02:09Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-PROTOCOL\", \"last_run_at\": \"2026-08-25T12:02:16Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-DIFF\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-LIVE\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 471 ++++++++++++++++++---\\n cpp-context-compiler/scripts/ctxpp                 |  45 +-\\n integrations/coding-workflow-mcp/README.md         |   9 +\\n .../coding_workflow_mcp/backend.py                 |  72 +++-\\n .../coding-workflow-mcp/tests/test_tools.py        |  36 +-\\n local-coding-worker/local_worker/controller.py     | 225 ++++++++--\\n .../references/integration-contract.md             |   6 +\\n .../references/read-only-contract.md               |   8 +\\n .../schemas/delegation-spec-v2.schema.json         |   3 +-\\n local-coding-worker/scripts/local_worker.py        |  11 +-\\n local-coding-worker/scripts/worker_core.py         |  46 +-\\n .../tests/test_core4_integration.py                |   1 +\\n .../tests/test_production_integration.py           |   6 +\\n todo-status.md                                     |   3 +-\\n todos.md                                           |   3 +-\\n todos/cwm-00.md                                    |   2 +-\\n todos/cwm-01.md                                    |   2 +-\\n todos/cwm-02.md                                    |   2 +-\\n todos/cwm-03.md                                    |   2 +-\\n todos/cwm-04.md                                    |   2 +-\\n todos/cwm-05.md                                    |   2 +-\\n todos/cwm-06.md                                    |   2 +-\\n todos/cwm-07.md                                    |   2 +-\\n todos/cwm-08.md                                    |   2 +-\\n todos/cwm-09.md                                    |   2 +-\\n 25 files changed, 850 insertions(+), 115 deletions(-)\", \"git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\", \"interfaces\": [], \"note\": \"Repaired delegation source preflight before admission; serialized bounded ctxpp initialization, carried and revalidated prepared packets, preserved strict scopes and five tools. Disposable installed-MCP smoke proved two concurrent real read-only model executions on distinct slots/servers. MCP 35/35, ctxpp 59/59, focused worker 28/28; broad worker suite has 3 pre-existing qwen-code --core-tools environment errors outside this change.\", \"resources\": [], \"task_id\": \"CWM-10\"}",
         "revision": 125,
         "task_id": "CWM-10"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:06:34Z",
+        "id": "93595cfb-fac2-491a-b39b-ab8fc310fde1",
+        "kind": "complete",
+        "note": "Plan reapply preserves frozen interfaces; v2/v3 context fragments are owner-scoped and bounded; arrival provenance and immutable integration requests are validated. Gate WFU-24-WORKFLOW passed with evidence 532aa451-b5a0-4398-8ddf-0aaf58efcd75.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"e80c516c5005a3d335a674a1787c4e1ddb510b36\", \"completion_gates\": [{\"evidence_id\": \"532aa451-b5a0-4398-8ddf-0aaf58efcd75\", \"evidence_revision\": 204, \"id\": \"WFU-24-WORKFLOW\", \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"c41ff026c4b691a75c9018f8efca7cfa38081994\"}], \"completion_revision\": 205, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-24-WORKFLOW\", \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"last_run_at\": \"2026-08-27T13:06:17Z\", \"revision\": 204, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"e80c516c5005a3d335a674a1787c4e1ddb510b36\", \"interfaces\": [], \"note\": \"Plan reapply preserves frozen interfaces; v2/v3 context fragments are owner-scoped and bounded; arrival provenance and immutable integration requests are validated. Gate WFU-24-WORKFLOW passed with evidence 532aa451-b5a0-4398-8ddf-0aaf58efcd75.\", \"resources\": [], \"task_id\": \"WFU-24\"}",
+        "revision": 205,
+        "task_id": "WFU-24"
       },
       {
         "claim_id": null,
@@ -4796,6 +4816,19 @@
         "task_id": "WFU-23",
         "valid": 1,
         "validation_git_head": "ea3b8663b09178b9f10dbe48eae05866905ea170"
+      },
+      {
+        "completion_git_head": "e80c516c5005a3d335a674a1787c4e1ddb510b36",
+        "completion_revision": 205,
+        "evidence_id": "532aa451-b5a0-4398-8ddf-0aaf58efcd75",
+        "evidence_revision": 204,
+        "gate_id": "WFU-24-WORKFLOW",
+        "input_fingerprint": "7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0",
+        "provenance_json": "{\"claim_id\": \"dccb2e16-e115-4208-8ff3-e30e5721d279\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"05fe1aec09d512639ee5065a387493e67b8a1ce24cbb4b54ff2232a98e8bb9f0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/tests/test_workflow_integration.py\", \"todo-orchestrator/tests/test_workflow_plan_snapshot.py\", \"todo-orchestrator/todo_orchestrator/plan.py\", \"todo-orchestrator/todo_orchestrator/workflow/protocol.py\", \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"todo-status.md\", \"todos.md\", \"todos/wfu-24.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_integration.py\", \"sha256\": \"92629d09155fdb55b58ddb46421133f6669dda386e7a3e81b64f23a4f679c4e6\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_plan_snapshot.py\", \"sha256\": \"1d49d3d3c1e28a4f022f814130559a28be2115f40323e1e7dfa382ac32864734\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/plan.py\", \"sha256\": \"53128dca191a8408b4800da71607baeb7a2cb5b6c6a1c84b8bb0b23e1b459ff1\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/protocol.py\", \"sha256\": \"9b70fcb64dc5761ec4479890d92ba7ddc3de5a65c1a4c7084e9bb717f8656257\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"c6b5ee801876c513533f7502cfb257105a9a8e740fa1e74eebaadd220d078f74\"}], \"interfaces\": [], \"recorded_git_head\": \"c41ff026c4b691a75c9018f8efca7cfa38081994\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 203}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/532aa451-b5a0-4398-8ddf-0aaf58efcd75\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-24",
+        "valid": 1,
+        "validation_git_head": "c41ff026c4b691a75c9018f8efca7cfa38081994"
       }
     ],
     "task_dependencies": [
@@ -6368,9 +6401,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "e80c516c5005a3d335a674a1787c4e1ddb510b36",
+        "completion_git_head": "e80c516c5005a3d335a674a1787c4e1ddb510b36",
+        "completion_revision": 205,
         "created_at": "2026-08-27T13:02:51Z",
         "id": "WFU-24",
         "kind": "validation_task",
@@ -6382,14 +6415,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 116,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 202,
-        "status": "in_progress",
+        "revision": 205,
+        "status": "done",
         "tags_json": "[]",
         "title": "Harden plan idempotence and canonical protocol integration seams",
-        "updated_at": "2026-08-27T13:02:58Z",
-        "version": 2
+        "updated_at": "2026-08-27T13:06:34Z",
+        "version": 3
       },
       {
         "attention_reason": null,
