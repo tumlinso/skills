@@ -1,4 +1,4 @@
-"""Official SDK protocol initialization/list-tools smoke."""
+"""Official-SDK initialization and exact-six-tool discovery smoke."""
 
 from __future__ import annotations
 
@@ -12,7 +12,8 @@ from mcp.client.stdio import stdio_client
 
 
 EXPECTED_TOOLS = {
-    "next_task", "inspect_task", "delegate_task", "collect_delegation", "run_gates", "finish_task",
+    "next_task", "inspect_task", "coordinate_task", "delegate_task",
+    "collect_delegation", "finish_task",
 }
 
 
@@ -29,7 +30,7 @@ async def smoke(command: str, skills_root: str) -> dict[str, object]:
     names = {tool.name for tool in tools.tools}
     instructions = initialized.instructions or ""
     return {
-        "ok": names == EXPECTED_TOOLS and "Call next_task once" in instructions[:512],
+        "ok": names == EXPECTED_TOOLS and "only ordinary workflow protocol" in instructions,
         "server": initialized.serverInfo.name,
         "tools": sorted(names),
         "instructions_bytes": len(instructions.encode("utf-8")),
