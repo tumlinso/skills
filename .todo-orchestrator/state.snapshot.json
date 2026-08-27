@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:27:45Z",
+  "generated_at": "2026-08-27T13:33:25Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 227,
+  "project_revision": 228,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -115,12 +115,12 @@
         "title": "All core workflow modules ready for integration"
       },
       {
-        "explanation": "2/4 requirements satisfied; target=4",
+        "explanation": "3/4 requirements satisfied; target=4",
         "id": "WFU-RELEASE-RENDEZVOUS",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 223,
+        "revision": 228,
         "state": "closed",
         "title": "Integrated implementation, routing, observation, and validation ready for cutover"
       }
@@ -2436,6 +2436,16 @@
         "revision": 227,
         "seq": 227,
         "timestamp": "2026-08-27T13:27:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-22",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 228, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 228,
+        "seq": 228,
+        "timestamp": "2026-08-27T13:33:25Z"
       }
     ],
     "evidence": [
@@ -3718,6 +3728,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"WFU-SEMANTIC-READ-V1\", \"reached_at\": \"2026-08-27T12:36:00Z\", \"state\": \"reached\"}], \"completion_commit\": \"d3701063f943c97cbea9208a2e32b642501cfa95\", \"completion_gates\": [], \"completion_revision\": 187, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 28 +++++++++++++++++++---------\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n 3 files changed, 21 insertions(+), 11 deletions(-)\", \"git_head\": \"d3701063f943c97cbea9208a2e32b642501cfa95\", \"interfaces\": [{\"content_hash\": \"ecd897dee6cbb9b5cdc594a34adb26efe32d712ae9e0b20bd8cf5cc201297627\", \"id\": \"WFU-SEMANTIC-READ\", \"state\": \"frozen\", \"version\": \"1\"}], \"note\": \"Integrated canonical in-process WorkflowKernel, plan v3/v2 normalization, snapshot v3, semantic read v1, and shared claim/gate/child completion seams; 211/212 full todo tests with only recorded WFU-23 semantic regression pending.\", \"resources\": [], \"task_id\": \"WFU-20\"}",
         "revision": 187,
         "task_id": "WFU-20"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:33:25Z",
+        "id": "8f04ee33-dc6f-47f0-adbb-0aeb6021a8c2",
+        "kind": "complete",
+        "note": "Project-control branch workflow-unification-v3-read-model commit 974d584 consumes normalized semantic workflow reads while preserving exact eight read-only tools and input schemas; first-class dispatches, claim-only observations, and subordinate local children remain separate. Full suite 70/70; manual new-kernel compatibility run observed compat-v2/compat-v2-main; evidence at workflow-unification/evidence/project-control/wfu-22.json commit 2353770.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"23537705974e7d47036a34a720f72537bfff39bb\", \"completion_gates\": [], \"completion_revision\": 228, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \"\", \"git_head\": \"23537705974e7d47036a34a720f72537bfff39bb\", \"interfaces\": [], \"note\": \"Project-control branch workflow-unification-v3-read-model commit 974d584 consumes normalized semantic workflow reads while preserving exact eight read-only tools and input schemas; first-class dispatches, claim-only observations, and subordinate local children remain separate. Full suite 70/70; manual new-kernel compatibility run observed compat-v2/compat-v2-main; evidence at workflow-unification/evidence/project-control/wfu-22.json commit 2353770.\", \"resources\": [], \"task_id\": \"WFU-22\"}",
+        "revision": 228,
+        "task_id": "WFU-22"
       },
       {
         "claim_id": null,
@@ -6923,10 +6943,10 @@
         "version": 21
       },
       {
-        "attention_reason": "Paused for kernel semantic-read v1 contract completion: pending patch artifacts absent; recovery-needed coverage incomplete; safe-parallel groups not yet dependency/lock/resource/interface-safe. Project-control will consume normalized todo semantics only and will not infer raw workflow tables.",
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "attention_reason": null,
+        "completion_commit": "23537705974e7d47036a34a720f72537bfff39bb",
+        "completion_git_head": "23537705974e7d47036a34a720f72537bfff39bb",
+        "completion_revision": 228,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-22",
         "kind": "workstream",
@@ -6938,14 +6958,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 119,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 223,
-        "status": "in_progress",
+        "revision": 228,
+        "status": "done",
         "tags_json": "[]",
         "title": "Extend project-control additive read model",
-        "updated_at": "2026-08-27T13:26:23Z",
-        "version": 20
+        "updated_at": "2026-08-27T13:33:25Z",
+        "version": 21
       },
       {
         "attention_reason": null,

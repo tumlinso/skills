@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `227`
+Project revision: `228`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
@@ -18,7 +18,7 @@ Project revision: `227`
 - `WFU-16` | status: done | execution: closed | next: After all core lanes arrive, correct cross-module defects found by read-only integration review: authoritative integration-gate provenance, completion-bound rendezvous and canonical barrier composition, workspace reservation/provenance/immutability/final artifact rules, required workspace dispatch validation, child packet source-scope containment, composite fragment ownership, lossless message cursors and resolution deltas, and idempotent synchronization.
 - `WFU-20` | status: done | execution: closed | next: Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.
 - `WFU-21` | status: done | execution: closed | next: Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.
-- `WFU-22` | status: in_progress | execution: claimed | next: In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.
+- `WFU-22` | status: done | execution: closed | next: In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.
 - `WFU-23` | status: done | execution: closed | next: Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.
 - `WFU-24` | status: done | execution: closed | next: Preserve frozen interfaces across plan reapply, complete bounded v2 context and arrival contracts, wire immutable integration requests, and prove canonical kernel behavior before project-control and dogfood validation.
 - `WFU-25` | status: done | execution: closed | next: Update the installed two-worker smoke to the exact six-tool protocol and coordinate_task gate action, remove residual wording that describes subordinate local-worker children as independent project work, and add focused regression coverage.
