@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T11:15:10Z",
+  "generated_at": "2026-08-27T11:20:30Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 163,
+  "project_revision": 167,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -26,7 +26,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-10",
-        "id": 31,
+        "id": 41,
         "required_state": "done",
         "type": "task"
       },
@@ -34,7 +34,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-11",
-        "id": 32,
+        "id": 42,
         "required_state": "done",
         "type": "task"
       },
@@ -42,7 +42,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-12",
-        "id": 33,
+        "id": 43,
         "required_state": "done",
         "type": "task"
       },
@@ -50,7 +50,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-13",
-        "id": 34,
+        "id": 44,
         "required_state": "done",
         "type": "task"
       },
@@ -58,7 +58,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-14",
-        "id": 35,
+        "id": 45,
         "required_state": "done",
         "type": "task"
       },
@@ -66,7 +66,7 @@
         "barrier_id": "WFU-CORE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-15",
-        "id": 36,
+        "id": 46,
         "required_state": "done",
         "type": "task"
       },
@@ -74,7 +74,7 @@
         "barrier_id": "WFU-RELEASE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-20",
-        "id": 37,
+        "id": 47,
         "required_state": "done",
         "type": "task"
       },
@@ -82,7 +82,7 @@
         "barrier_id": "WFU-RELEASE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-21",
-        "id": 38,
+        "id": 48,
         "required_state": "done",
         "type": "task"
       },
@@ -90,7 +90,7 @@
         "barrier_id": "WFU-RELEASE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-22",
-        "id": 39,
+        "id": 49,
         "required_state": "done",
         "type": "task"
       },
@@ -98,19 +98,19 @@
         "barrier_id": "WFU-RELEASE-RENDEZVOUS",
         "dispositions_json": "[]",
         "entity_id": "WFU-30",
-        "id": 40,
+        "id": 50,
         "required_state": "done",
         "type": "validation_task"
       }
     ],
     "barriers": [
       {
-        "explanation": "3/6 requirements satisfied; target=6",
+        "explanation": "4/6 requirements satisfied; target=6",
         "id": "WFU-CORE-RENDEZVOUS",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 163,
+        "revision": 167,
         "state": "closed",
         "title": "All core workflow modules ready for integration"
       },
@@ -120,7 +120,7 @@
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 163,
+        "revision": 167,
         "state": "closed",
         "title": "Integrated implementation, routing, observation, and validation ready for cutover"
       }
@@ -148,7 +148,7 @@
         "id": "WFU-KERNEL-CONTRACT-V1",
         "metadata_json": "{}",
         "reached_at": "2026-08-27T11:00:21Z",
-        "revision": 163,
+        "revision": 167,
         "revoked_at": null,
         "state": "reached",
         "task_id": "WFU-02",
@@ -158,7 +158,7 @@
         "id": "WFU-SEMANTIC-READ-V1",
         "metadata_json": "{}",
         "reached_at": null,
-        "revision": 163,
+        "revision": 167,
         "revoked_at": null,
         "state": "pending",
         "task_id": "WFU-20",
@@ -1796,6 +1796,46 @@
         "revision": 163,
         "seq": 163,
         "timestamp": "2026-08-27T11:15:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-13",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 164,
+        "seq": 164,
+        "timestamp": "2026-08-27T11:15:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-13",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 165, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 165,
+        "seq": 165,
+        "timestamp": "2026-08-27T11:15:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-14",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 166,
+        "seq": 166,
+        "timestamp": "2026-08-27T11:18:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/codex-worktrees/skills-workflow-unification-v3/workflow-unification-v3.plan.json\"}",
+        "revision": 167,
+        "seq": 167,
+        "timestamp": "2026-08-27T11:20:30Z"
       }
     ],
     "evidence": [
@@ -2640,7 +2680,7 @@
         "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
         "last_run_at": "2026-08-27T10:48:23Z",
         "required": 1,
-        "revision": 163,
+        "revision": 167,
         "status": "passed",
         "task_id": "WFU-00",
         "type": "command",
@@ -2653,7 +2693,7 @@
         "input_fingerprint": "592f38bd46fd91c823195bc905b8765c847f38aef0e16874c72830f5728d74b9",
         "last_run_at": "2026-08-27T10:50:50Z",
         "required": 1,
-        "revision": 163,
+        "revision": 167,
         "status": "passed",
         "task_id": "WFU-01",
         "type": "file_exists",
@@ -2666,11 +2706,24 @@
         "input_fingerprint": "6aad099f0d1353c1489da3379db526fcb5d2dbd2805dc3c16965a5d35a0ed2d0",
         "last_run_at": "2026-08-27T10:59:57Z",
         "required": 1,
-        "revision": 163,
+        "revision": 167,
         "status": "passed",
         "task_id": "WFU-02",
         "type": "command",
         "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/workflow\", \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"todo-orchestrator/tests/test_workflow_workspaces.py\"]}",
+        "id": "WFU-16-CORE",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 167,
+        "status": "pending",
+        "task_id": "WFU-16",
+        "type": "command",
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -2679,7 +2732,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 163,
+        "revision": 167,
         "status": "pending",
         "task_id": "WFU-23",
         "type": "command",
@@ -2819,6 +2872,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-27T11:15:45Z",
+        "id": "8167b4b6-bad0-484f-869c-7c0c1ae68aea",
+        "kind": "complete",
+        "note": "Commit 37e9503 implements managed first-class lane workspaces, exact-base immutable artifacts, exclusive integrator queues, preserved conflicts, post-merge gate state, and explicit non-destructive cleanup eligibility. Tests: workflow workspaces 8/8; foundation contract 8/8; diff and py_compile clean. Local-worker children are explicitly rejected from first-class workspace ownership.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"37e950385dae74289f3cdce37d0ea64bfb0aa45c\", \"completion_gates\": [], \"completion_revision\": 165, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 468 ++++++++++++++++++++++++++-------\\n todo-status.md                         |  15 +-\\n todos.md                               |  15 +-\\n todos/wfu-10.md                        |   6 +-\\n todos/wfu-11.md                        |   6 +-\\n todos/wfu-12.md                        |   8 +-\\n todos/wfu-13.md                        |   6 +-\\n 7 files changed, 399 insertions(+), 125 deletions(-)\", \"git_head\": \"37e950385dae74289f3cdce37d0ea64bfb0aa45c\", \"interfaces\": [], \"note\": \"Commit 37e9503 implements managed first-class lane workspaces, exact-base immutable artifacts, exclusive integrator queues, preserved conflicts, post-merge gate state, and explicit non-destructive cleanup eligibility. Tests: workflow workspaces 8/8; foundation contract 8/8; diff and py_compile clean. Local-worker children are explicitly rejected from first-class workspace ownership.\", \"resources\": [], \"task_id\": \"WFU-13\"}",
+        "revision": 165,
+        "task_id": "WFU-13"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-24T19:56:25Z",
         "id": "883ae0e2-8ac3-4c3d-b238-6f0de8a761ea",
         "kind": "complete",
@@ -2950,7 +3013,7 @@
         "id": "WFU-KERNEL-CONTRACT",
         "owner_task_id": "WFU-02",
         "revised_at": null,
-        "revision": 163,
+        "revision": 167,
         "state": "draft",
         "version": "1"
       },
@@ -2961,7 +3024,7 @@
         "id": "WFU-SEMANTIC-READ",
         "owner_task_id": "WFU-20",
         "revised_at": null,
-        "revision": 163,
+        "revision": 167,
         "state": "draft",
         "version": "1"
       }
@@ -3774,6 +3837,66 @@
       },
       {
         "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_workflow_context_fragments.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_workflow_messages_rendezvous.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_workflow_runs_lanes.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_workflow_workspaces.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/context_fragments.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/lanes.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/messages.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/rendezvous.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/workspaces.py",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/tests",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/todo_orchestrator",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "read",
+        "path": "workflow-unification/contracts",
+        "task_id": "WFU-16"
+      },
+      {
+        "mode": "exclusive",
         "path": "todo-orchestrator/schemas",
         "task_id": "WFU-20"
       },
@@ -4150,7 +4273,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 136,
+        "id": 153,
         "interface_id": null,
         "prerequisite_task_id": "WFU-00",
         "task_id": "WFU-01",
@@ -4161,7 +4284,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 137,
+        "id": 154,
         "interface_id": null,
         "prerequisite_task_id": "WFU-01",
         "task_id": "WFU-02",
@@ -4172,7 +4295,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 138,
+        "id": 155,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-10",
@@ -4183,7 +4306,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 139,
+        "id": 156,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-11",
@@ -4194,7 +4317,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 140,
+        "id": 157,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-12",
@@ -4205,7 +4328,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 141,
+        "id": 158,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-13",
@@ -4216,7 +4339,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 142,
+        "id": 159,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-14",
@@ -4227,7 +4350,7 @@
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 143,
+        "id": 160,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-15",
@@ -4238,10 +4361,10 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 144,
+        "id": 161,
         "interface_id": null,
         "prerequisite_task_id": null,
-        "task_id": "WFU-20",
+        "task_id": "WFU-16",
         "type": "barrier"
       },
       {
@@ -4249,7 +4372,18 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 145,
+        "id": 162,
+        "interface_id": null,
+        "prerequisite_task_id": "WFU-16",
+        "task_id": "WFU-20",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 163,
         "interface_id": null,
         "prerequisite_task_id": "WFU-20",
         "task_id": "WFU-21",
@@ -4260,7 +4394,7 @@
         "checkpoint_id": "WFU-SEMANTIC-READ-V1",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 146,
+        "id": 164,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-22",
@@ -4271,7 +4405,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 147,
+        "id": 165,
         "interface_id": null,
         "prerequisite_task_id": "WFU-20",
         "task_id": "WFU-23",
@@ -4282,7 +4416,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 148,
+        "id": 166,
         "interface_id": null,
         "prerequisite_task_id": "WFU-20",
         "task_id": "WFU-30",
@@ -4293,7 +4427,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 149,
+        "id": 167,
         "interface_id": null,
         "prerequisite_task_id": "WFU-21",
         "task_id": "WFU-30",
@@ -4304,7 +4438,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 150,
+        "id": 168,
         "interface_id": null,
         "prerequisite_task_id": "WFU-22",
         "task_id": "WFU-30",
@@ -4315,7 +4449,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 151,
+        "id": 169,
         "interface_id": null,
         "prerequisite_task_id": "WFU-23",
         "task_id": "WFU-30",
@@ -4326,7 +4460,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 152,
+        "id": 170,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "WFU-31",
@@ -4652,6 +4786,22 @@
       },
       {
         "invariant_id": "WFU-CHILD-BOUNDARY",
+        "task_id": "WFU-16"
+      },
+      {
+        "invariant_id": "WFU-INTEGRATION-OWNERSHIP",
+        "task_id": "WFU-16"
+      },
+      {
+        "invariant_id": "WFU-PRESERVE-WORK",
+        "task_id": "WFU-16"
+      },
+      {
+        "invariant_id": "WFU-SQLITE-AUTHORITY",
+        "task_id": "WFU-16"
+      },
+      {
+        "invariant_id": "WFU-CHILD-BOUNDARY",
         "task_id": "WFU-20"
       },
       {
@@ -4816,6 +4966,11 @@
         "lock_name": "wfu-kernel-foundation",
         "phase": "claim",
         "task_id": "WFU-02"
+      },
+      {
+        "lock_name": "wfu-shared-integration",
+        "phase": "claim",
+        "task_id": "WFU-16"
       },
       {
         "lock_name": "wfu-shared-integration",
@@ -5182,12 +5337,12 @@
         "priority": 200,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Freeze preflight and isolated bootstrap evidence",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 8
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -5207,12 +5362,12 @@
         "priority": 190,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Freeze target architecture and implementation seams",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 6
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -5232,12 +5387,12 @@
         "priority": 180,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Implement forward-only kernel foundations and fixtures",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 6
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -5257,12 +5412,12 @@
         "priority": 160,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Runs, serial lanes, roles, dispatch, and scheduling",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 6
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -5282,12 +5437,12 @@
         "priority": 159,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Typed messages, cursors, rendezvous, and arrivals",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 8
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -5307,18 +5462,18 @@
         "priority": 158,
         "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "done",
         "tags_json": "[]",
         "title": "Versioned context fragments and bounded composition",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 8
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 9
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "37e950385dae74289f3cdce37d0ea64bfb0aa45c",
+        "completion_git_head": "37e950385dae74289f3cdce37d0ea64bfb0aa45c",
+        "completion_revision": 165,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-13",
         "kind": "workstream",
@@ -5330,14 +5485,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 157,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 163,
-        "status": "in_progress",
+        "revision": 167,
+        "status": "done",
         "tags_json": "[]",
         "title": "Managed isolated workspaces and integration queues",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 5
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -5357,12 +5512,12 @@
         "priority": 156,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Unified owner recovery engine and administrator command",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 5
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -5382,12 +5537,37 @@
         "priority": 155,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Canonical workflow service, protocol v2, capabilities, and MCP",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 5
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 6
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-27T11:20:30Z",
+        "id": "WFU-16",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "After all core lanes arrive, correct cross-module defects found by read-only integration review: authoritative integration-gate provenance, completion-bound rendezvous and canonical barrier composition, workspace reservation/provenance/immutability/final artifact rules, required workspace dispatch validation, child packet source-scope containment, composite fragment ownership, lossless message cursors and resolution deltas, and idempotent synchronization.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": null,
+        "priority": 145,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 167,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Harden cross-core authority and concurrency contracts",
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 1
       },
       {
         "attention_reason": null,
@@ -5407,12 +5587,12 @@
         "priority": 130,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Integrate workflow modules into todo services and compatibility surfaces",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -5432,12 +5612,12 @@
         "priority": 120,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Rewrite routing, installer, migration, and operations documentation",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -5457,12 +5637,12 @@
         "priority": 119,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Extend project-control additive read model",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -5482,12 +5662,12 @@
         "priority": 118,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Correct completed-program semantic-state selection",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 1
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -5507,12 +5687,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -5532,12 +5712,12 @@
         "priority": 80,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"failed\"]}",
-        "revision": 163,
+        "revision": 167,
         "status": "planned",
         "tags_json": "[]",
         "title": "Atomic cutover, installed smoke, rollback proof, and release",
-        "updated_at": "2026-08-27T11:15:10Z",
-        "version": 4
+        "updated_at": "2026-08-27T11:20:30Z",
+        "version": 5
       }
     ]
   }
