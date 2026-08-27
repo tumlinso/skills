@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T12:13:06Z",
+  "generated_at": "2026-08-26T20:04:40Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 126,
+  "project_revision": 132,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [],
@@ -1287,6 +1287,66 @@
         "revision": 126,
         "seq": 126,
         "timestamp": "2026-08-25T12:13:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 127,
+        "seq": 127,
+        "timestamp": "2026-08-26T08:05:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 128,
+        "seq": 128,
+        "timestamp": "2026-08-26T12:00:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 129,
+        "seq": 129,
+        "timestamp": "2026-08-26T18:14:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 130,
+        "seq": 130,
+        "timestamp": "2026-08-26T18:45:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "CE-LIVE-11",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"CE-LIVE-11\"}",
+        "revision": 131,
+        "seq": 131,
+        "timestamp": "2026-08-26T19:10:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": null,
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": null}",
+        "revision": 132,
+        "seq": 132,
+        "timestamp": "2026-08-26T20:04:40Z"
       }
     ],
     "evidence": [
