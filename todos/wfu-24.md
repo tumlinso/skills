@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-24: Harden plan idempotence and canonical protocol integration seams
 
-Task revision: `223`; current project revision is in `todo-status.md`.
+Task revision: `231`; current project revision is in `todo-status.md`.
 
 ## Objective
 Preserve frozen interfaces across plan reapply, complete bounded v2 context and arrival contracts, wire immutable integration requests, and prove canonical kernel behavior before project-control and dogfood validation.

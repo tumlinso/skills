@@ -181,9 +181,18 @@
       "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-WORK", "WFU-INTEGRATION-OWNERSHIP", "WFU-CHILD-BOUNDARY"]
     },
     {
+      "id": "WFU-28", "kind": "validation_task", "title": "Restore resumable serial-lane state after release and recovery",
+      "objective": "Make first-class handoff, block, release, and owner recovery reconcile the current serial lane task and lane state transactionally so clean work can resume through next_task, while dirty recovery remains preserved and attention-required.",
+      "priority": 112, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-27"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/service.py", "todo-orchestrator/todo_orchestrator/workflow/recovery.py", "todo-orchestrator/tests/test_workflow_lane_resume.py"], "read_paths": ["todo-orchestrator/todo_orchestrator/workflow/lanes.py", "todo-orchestrator/tests/test_workflow_recovery.py", "todo-orchestrator/tests/test_workflow_integration.py"]},
+      "gates": [{"id": "WFU-28-RESUME", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "todo-orchestrator/tests", "-p", "test_workflow_lane_resume.py", "-v"], "input_paths": ["todo-orchestrator/todo_orchestrator/workflow/service.py", "todo-orchestrator/todo_orchestrator/workflow/recovery.py", "todo-orchestrator/tests/test_workflow_lane_resume.py"], "required": true}],
+      "completion_contract": "Every nonterminal first-class disposition leaves exactly one resumable queue head or explicit attention state, and clean owner recovery can reissue a capability through next_task without lane surgery.",
+      "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-WORK", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
-      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}, {"type": "task", "task_id": "WFU-27"}],
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}, {"type": "task", "task_id": "WFU-27"}, {"type": "task", "task_id": "WFU-28"}],
       "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
     },
