@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `190`
+Project revision: `191`
 
 ## Workstreams
 - `WFU-00` | kind: task | status: done | parent: - | objective: Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.
@@ -19,7 +19,7 @@ Project revision: `190`
 - `WFU-20` | kind: integration_task | status: done | parent: - | objective: Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.
 - `WFU-21` | kind: workstream | status: planned | parent: - | objective: Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.
 - `WFU-22` | kind: workstream | status: planned | parent: - | objective: In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.
-- `WFU-23` | kind: task | status: in_progress | parent: - | objective: Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.
+- `WFU-23` | kind: task | status: done | parent: - | objective: Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.
 - `C4Q-02` | kind: integration_task | status: done | parent: - | objective: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
 - `C4Q-01` | kind: integration_task | status: blocked | parent: - | objective: Use strict --core-tools registration, derive a bounded structured-output-aware turn cap, share the terminal instruction across read-only and writable execution, preserve compact exit-53 diagnostics, and validate the cached Q4 model through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks.
 - `CWM-00` | kind: workstream | status: done | parent: - | objective: Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.

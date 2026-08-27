@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-23: Correct completed-program semantic-state selection
 
-Task revision: `188`; current project revision is in `todo-status.md`.
+Task revision: `191`; current project revision is in `todo-status.md`.
 
 ## Objective
 Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
