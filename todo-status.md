@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `235`
+Project revision: `238`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
@@ -32,7 +32,7 @@ Project revision: `235`
 - `CWM-08` | status: done | execution: closed | next: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
 - `CWM-09` | status: done | execution: closed | next: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | status: done | execution: closed | next: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
-- `WFU-30` | status: in_progress | execution: idle | next: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
+- `WFU-30` | status: done | execution: closed | next: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
 - `CWM-01` | status: done | execution: closed | next: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | status: done | execution: closed | next: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | status: done | execution: closed | next: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.

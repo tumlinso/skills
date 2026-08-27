@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:38:20Z",
+  "generated_at": "2026-08-27T13:59:37Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 235,
+  "project_revision": 238,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -115,13 +115,13 @@
         "title": "All core workflow modules ready for integration"
       },
       {
-        "explanation": "3/4 requirements satisfied; target=4",
+        "explanation": "4/4 requirements satisfied; target=4",
         "id": "WFU-RELEASE-RENDEZVOUS",
         "mode": "all",
-        "opened_at": null,
+        "opened_at": "2026-08-27 13:59:37",
         "quorum": null,
-        "revision": 231,
-        "state": "closed",
+        "revision": 238,
+        "state": "open",
         "title": "Integrated implementation, routing, observation, and validation ready for cutover"
       }
     ],
@@ -2516,6 +2516,36 @@
         "revision": 235,
         "seq": 235,
         "timestamp": "2026-08-27T13:38:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-30",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-30\"}",
+        "revision": 236,
+        "seq": 236,
+        "timestamp": "2026-08-27T13:38:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-30",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 237,
+        "seq": 237,
+        "timestamp": "2026-08-27T13:43:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-30",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 238, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 238,
+        "seq": 238,
+        "timestamp": "2026-08-27T13:59:37Z"
       }
     ],
     "evidence": [
@@ -3884,6 +3914,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"C4Q2-UNIT\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"C4Q2-REAL-HOST\", \"last_run_at\": \"2026-08-24T19:29:30Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"local-coding-worker/config/production-profile.toml |   9 +-\\n local-coding-worker/local_worker/controller.py     |  18 ++-\\n local-coding-worker/local_worker/harnesses/base.py |  12 ++\\n .../local_worker/harnesses/qwen_code.py            | 170 +++++++++++++++++++--\\n .../local_worker/production_checks.py              | 143 ++++++++++++++++-\\n local-coding-worker/scripts/local_worker.py        |   3 +-\\n local-coding-worker/tests/test_harnesses.py        |  86 ++++++++++-\\n 7 files changed, 414 insertions(+), 27 deletions(-)\", \"git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\", \"interfaces\": [], \"note\": \"Repaired strict Qwen tool registration, structured-output-aware budgets and bounded terminal retry; A/B/C, real read-only, real writable, focused tests, cache, and supervisor cleanup passed on llama.cpp f280b2698.\", \"resources\": [], \"task_id\": \"C4Q-02\"}",
         "revision": 18,
         "task_id": "C4Q-02"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:59:37Z",
+        "id": "b9f142e7-ff00-46e7-9922-6b2ecb4685b8",
+        "kind": "complete",
+        "note": "WFU-30 evidence: workflow-unification/evidence/validation/wfu-30.json; dogfood 1/1, workflow 106/106, todo 233/233, project-control 70/70, semantic-state focused 7/7.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"7e174283b5df589ac91f3f3ac50bf0f7ce044475\", \"completion_gates\": [], \"completion_revision\": 238, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 30 +++++++++++++++++++++++++-----\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/wfu-30.md                        |  4 ++--\\n 4 files changed, 30 insertions(+), 10 deletions(-)\", \"git_head\": \"7e174283b5df589ac91f3f3ac50bf0f7ce044475\", \"interfaces\": [], \"note\": \"WFU-30 evidence: workflow-unification/evidence/validation/wfu-30.json; dogfood 1/1, workflow 106/106, todo 233/233, project-control 70/70, semantic-state focused 7/7.\", \"resources\": [], \"task_id\": \"WFU-30\"}",
+        "revision": 238,
+        "task_id": "WFU-30"
       },
       {
         "claim_id": null,
@@ -7305,10 +7345,10 @@
         "version": 3
       },
       {
-        "attention_reason": "Add required first-class lane resume lifecycle correction before dogfood",
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "attention_reason": null,
+        "completion_commit": "7e174283b5df589ac91f3f3ac50bf0f7ce044475",
+        "completion_git_head": "7e174283b5df589ac91f3f3ac50bf0f7ce044475",
+        "completion_revision": 238,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-30",
         "kind": "validation_task",
@@ -7320,14 +7360,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 100,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 231,
-        "status": "in_progress",
+        "revision": 238,
+        "status": "done",
         "tags_json": "[]",
         "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
-        "updated_at": "2026-08-27T13:35:48Z",
-        "version": 20
+        "updated_at": "2026-08-27T13:59:37Z",
+        "version": 22
       },
       {
         "attention_reason": null,
