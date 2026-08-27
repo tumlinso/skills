@@ -99,6 +99,15 @@ class SemanticStateTests(unittest.TestCase):
         data = self._state("--current-only")
         self.assertEqual({item["id"] for item in data["tasks"]}, {"CE-ARCH-00", "CE-ARCH-92"})
 
+    def test_current_only_uses_semantic_revision_before_wall_clock_timestamp(self) -> None:
+        with self.repo.service.db.connect() as conn:
+            conn.execute("UPDATE tasks SET status='cancelled' WHERE id='CURRENT'")
+            conn.execute("UPDATE tasks SET updated_at='2000-01-01T00:00:00Z',revision=101 WHERE id='CE-ARCH-92'")
+            conn.execute("UPDATE tasks SET updated_at='2999-01-01T00:00:00Z',revision=2 WHERE id='OLD-DONE'")
+            conn.commit()
+        data = self._state("--current-only")
+        self.assertEqual({item["id"] for item in data["tasks"]}, {"CE-ARCH-00", "CE-ARCH-92"})
+
     def test_semantic_state_is_read_only_for_database_git_and_projections(self) -> None:
         snapshot = self.repo.root / ".todo-orchestrator" / "state.snapshot.json"
         projection = self.repo.root / "todos.md"

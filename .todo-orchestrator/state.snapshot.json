@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T12:36:14Z",
+  "generated_at": "2026-08-27T12:38:12Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 187,
+  "project_revision": 190,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2036,6 +2036,36 @@
         "revision": 187,
         "seq": 187,
         "timestamp": "2026-08-27T12:36:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-23",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-23\"}",
+        "revision": 188,
+        "seq": 188,
+        "timestamp": "2026-08-27T12:36:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-23-SEMANTIC",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-23-SEMANTIC\"}",
+        "revision": 189,
+        "seq": 189,
+        "timestamp": "2026-08-27T12:38:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-23-SEMANTIC",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d5c426b6-f964-4e08-832a-e6f196098c81\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 190,
+        "seq": 190,
+        "timestamp": "2026-08-27T12:38:12Z"
       }
     ],
     "evidence": [
@@ -2453,6 +2483,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-c\", \"import json; print(json.dumps({'ok': True}))\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"8ca09bc7b02cd99484a6dd0491168c23bda5f4548ff244f871e13fdf05c93524\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-c\", \"import json; print(json.dumps({'ok': True}))\"]}, \"diff_fingerprint\": \"6b697360e50e22a7ff5165bb274bf9e87ea6fffca9ec6e6a1d5d82123fc235b0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/pyproject.toml\", \"integrations/coding-workflow-mcp/requirements.lock\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"23da59c005a6251d21fe3dcb9eaa113cd22108d0\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 21}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/bbb7d994-5119-42e9-b389-41f1d7ec7778",
         "revision": 22,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T12:38:12Z",
+        "gate_id": "WFU-23-SEMANTIC",
+        "id": "d5c426b6-f964-4e08-832a-e6f196098c81",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_semantic_state.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"6377e01b8b1cadf03fba9509405954a8f06d82ef2b851af37dee507f128a7baf\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_semantic_state.py\", \"-v\"]}, \"diff_fingerprint\": \"767da51189830e76bdaf37311aa3d78b06777617a95b0c821d165e25ac7d0859\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/tests/test_semantic_state.py\", \"todo-orchestrator/todo_orchestrator/semantic/state.py\", \"todo-status.md\", \"todos.md\", \"todos/wfu-23.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_semantic_state.py\", \"sha256\": \"72617c2aec089c0ac661f529ec2cd2f5498066801506e5c0c0263e4e9c023bb2\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/semantic\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"ea3b8663b09178b9f10dbe48eae05866905ea170\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 189}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/d5c426b6-f964-4e08-832a-e6f196098c81",
+        "revision": 190,
         "status": "passed"
       },
       {
@@ -2981,14 +3024,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_semantic_state.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/semantic\", \"todo-orchestrator/tests/test_semantic_state.py\"]}",
         "id": "WFU-23-SEMANTIC",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "6377e01b8b1cadf03fba9509405954a8f06d82ef2b851af37dee507f128a7baf",
+        "last_run_at": "2026-08-27T12:38:12Z",
         "required": 1,
-        "revision": 185,
-        "status": "pending",
+        "revision": 190,
+        "status": "passed",
         "task_id": "WFU-23",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -6017,12 +6060,12 @@
         "priority": 118,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 185,
-        "status": "planned",
+        "revision": 188,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Correct completed-program semantic-state selection",
-        "updated_at": "2026-08-27T12:16:32Z",
-        "version": 7
+        "updated_at": "2026-08-27T12:36:57Z",
+        "version": 8
       },
       {
         "attention_reason": null,

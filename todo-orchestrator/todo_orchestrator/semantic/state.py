@@ -208,7 +208,17 @@ def semantic_state(
         if not current_programs:
             completed = [item for item in tasks.values() if item["effective_state"] == "done" and item["current_program_eligible"]]
             if completed:
-                latest = max(completed, key=lambda item: (str(item.get("updated_at", "")), int(item.get("revision", 0)), str(item["id"])))
+                # Revision is the append-only semantic chronology. Wall-clock
+                # timestamps can move backwards, be imported, or be repaired,
+                # so they are only a deterministic tie-breaker.
+                latest = max(
+                    completed,
+                    key=lambda item: (
+                        int(item.get("completion_revision") or item.get("revision", 0)),
+                        str(item.get("updated_at", "")),
+                        str(item["id"]),
+                    ),
+                )
                 current_programs.add(program_key(latest))
         selected_ids = {
             item_id for item_id, item in tasks.items()
