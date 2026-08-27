@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-31: Atomic cutover, installed smoke, rollback proof, and release
 
-Task revision: `242`; current project revision is in `todo-status.md`.
+Task revision: `248`; current project revision is in `todo-status.md`.
 
 ## Objective
 After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `idle`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `project_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
