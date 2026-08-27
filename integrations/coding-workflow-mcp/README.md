@@ -1,128 +1,46 @@
-# coding-workflow
+# coding-workflow compatibility package
 
-`coding-workflow` is a local stdio MCP compatibility facade over the existing
-todo-orchestrator, cpp-context-compiler, local-coding-worker, and CUDA public
-interfaces. It owns no repository, task, source-index, worker, or GPU state.
-For substantial repository work it is the mandatory first front door: call
-`next_task` before direct todo claims or implementation, then use specialized
-skills only as bounded helpers. Direct lower-level CLIs are fallback/debugging
-interfaces for unavailable, broken, explicitly out-of-scope, or self-debug work.
+`coding-workflow` is the only ordinary model-facing workflow protocol.
+Todo-orchestrator is its in-process transactional kernel. This directory owns
+only installation, the legacy Python entry-point shim, repository migration,
+owner-command wiring, and compatibility tests. It contains no second backend,
+capability database, claim logic, scheduler, or recovery semantics.
 
-The MCP surface is seven tools:
+The discovered MCP surface is exactly `next_task`, `inspect_task`,
+`coordinate_task`, `delegate_task`, `collect_delegation`, and `finish_task`.
+Explicit gates use `coordinate_task(action="run_gates")`; required gates also
+run during completion. Recovery is out of band and uses no model-held approval.
 
-- `next_task`: bootstrap or resume todo and atomically claim safe work.
-- `inspect_task`: refresh bounded task, source, or evidence context.
-- `delegate_task`: opportunistically request nonblocking local assistance.
-- `collect_delegation`: nonblockingly collect one returned delegation handle.
-- `run_gates`: run required gates for an existing opaque workflow capability.
-- `recover_terminal_checkpoints`: idempotently finish checkpoint publication
-  from recorded successful terminal-task provenance, without a claim token.
-- `finish_task`: apply exactly one authoritative todo disposition.
-
-`finish_task(action="complete")` automatically runs unsatisfied required gates
-before asking todo-orchestrator to complete the task. Other lifecycle actions do
-not run gates.
-
-Successful completion, eligible task-owned checkpoint publication, handoff
-recording, and claim release are one todo transaction. If a legacy ledger or an
-interrupted older client contains a successful terminal owner with a pending
-checkpoint, call `recover_terminal_checkpoints` with the repository, task ID,
-and optionally the exact checkpoint ID. Repeating the call is a no-op. An
-explicit `next_task` request for that terminal task also attempts this safe
-finalization after ordinary claim pickup reports no claimable work.
-
-Only opaque workflow and delegation capabilities cross the MCP boundary. Raw
-todo secrets, worker tokens, GPU identifiers, endpoints, packets, logs, and
-transcripts remain behind the facade. Existing skill CLIs remain supported as
-fallback and debugging interfaces.
-
-Workflow capabilities are durable across stdio server restarts and package
-reinstalls. If Codex loses a workflow handle while the facade-owned todo claim
-is still active, call `next_task` with the same repository and explicit task ID.
-The facade validates the stored claim through todo, reissues a fresh opaque
-handle, and returns the current compact task capsule without a second claim.
-Terminal `finish_task` removes all aliases for that claim. The facade never
-returns or reconstructs the underlying todo secrets in model context.
-
-## Emergency live-lease recovery
-
-**The live-lease override cannot be accessed without explicit manual permission
-for that exact live claim. It is an emergency recovery mechanism, not normal
-`next_task` behavior.** A boolean, ordinary MCP argument, repository path, or
-task ID is never authorization.
-
-When `next_task` reports `override_requires_permission`, a human owner may use
-an interactive terminal to create one short-lived, one-use approval:
-
-```bash
-python integrations/coding-workflow-mcp/scripts/recovery_admin.py approve \
-  --repo <repo> --task-id <task-id> --reason "lost opaque workflow handle"
-```
-
-The CLI displays the exact non-secret claim fingerprint and revision and
-requires the human to type the task ID. The returned `toa_...` capability may
-then be supplied once as `next_task.recovery_approval`. Approval is bound to the
-canonical repository, todo project, task, claim incarnation, project revision,
-requesting UID, reason, and expiration. It is created and consumed inside
-todo-orchestrator's transaction authority; coding-workflow cannot create or
-self-approve it.
-
-Recovery is refused if ownership is not verifiably `coding-workflow`, the claim
-or project changed, or any child execution, guarded acceptance, gate execution,
-resource/auxiliary lease, or background/CUDA campaign remains attached. A
-successful override preserves task semantics and evidence, records a sanitized
-audit, replaces only the claim incarnation, and returns a fresh opaque workflow
-handle. Raw todo and approval tokens are never returned in the task capsule.
-
-For a still-live claim that is not facade-owned and whose raw token was lost,
-`next_task` reports `non_facade_live_claim_requires_owner_force_release`. The
-facade does not accept or mint that permission. A human owner must use todo's
-interactive `recover force-release-inspect`, `force-release-approve`, and
-`force-release` CLI flow out of band; afterward, retry ordinary `next_task`.
-This route refuses unsafe attached execution. Dirty scope requires explicit
-human `--acknowledge-dirty` during owner inspection and approval; all files are
-preserved and the material scope fingerprint is bound into the permission. The
-facade still does not turn `next_task` into a general force-release endpoint.
-
-`delegate_task.target` is a bounded delegation objective. It is not forwarded
-as a literal ctxpp target: local-worker independently derives an authorized
-source path from the capsule or selected scopes when one is proven and
-otherwise omits the ctxpp target and returns `not_eligible` before admission.
-The narrow objective is composed with, rather than substituted for, the parent
-todo objective. Child delegations receive only a relevant subset of 1–16
-parent-authorized scopes.
-
-Before `delegate_task` can return `delegated`, local-worker now constructs and
-validates the exact bounded ctxpp packet that the child will consume. A
-configured repository with no semantic index is initialized under a Git-common
-lock and only the proven source target is scanned. Concurrent first requests
-share that initialization. Packet failure returns `not_eligible` before GPU
-admission, child creation, scope leasing, or model startup; Codex is never asked
-to run ctxpp manually. The prepared packet remains hash- and scope-checked when
-the detached child consumes it.
-
-The implementation uses the official Python MCP SDK over local stdio. Server
-startup imports no GPU library, initializes no model, reserves no GPU, and
-scans no repository.
-
-## Install
+## Install and rollback
 
 ```bash
 python integrations/coding-workflow-mcp/scripts/install.py
 ```
 
-The idempotent installer creates an isolated venv under
-`~/.local/share/coding-workflow-mcp/venv`, registers the local stdio server as
-`coding-workflow`, verifies `codex mcp list`, and initializes the server through
-the official MCP client SDK.
+The installer builds an isolated venv, preserves the prior registration in an
+owner-only rollback file, registers the canonical entry point, verifies
+`codex mcp list --json`, and initializes through the official MCP client. A
+failed smoke restores the prior registration.
 
-## Add repository routing
+## Migrate one repository
 
 ```bash
 python integrations/coding-workflow-mcp/scripts/migrate.py --repo <repo> --dry-run
 python integrations/coding-workflow-mcp/scripts/migrate.py --repo <repo> --apply
 ```
 
-Use `--remove` to remove only the marked coding-workflow section. Migration
-preserves task plans, IDs, gates, architectural constraints, and all existing
-direct-CLI fallback instructions.
+Migration replaces only the marked AGENTS section and adds
+`configuration.workflow_front_door = "coding-workflow"` to an existing project
+identity. It is idempotent and preserves user guidance, plans, IDs, gates, and
+architectural constraints. `--remove` reverses only those additive changes.
+No repository is migrated automatically.
+
+## Owner recovery
+
+```bash
+coding-workflow-admin recover --repo <repo> [--task <id>] --reason "<reason>"
+coding-workflow-admin recover --repo <repo> --reason "inspect" --inspect-only
+```
+
+Mutation requires a TTY and exact confirmation. The canonical recovery engine
+refuses live work, preserves dirty artifacts, and records sanitized audit state.

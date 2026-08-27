@@ -24,6 +24,12 @@ Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.
 """
         (self.root / "AGENTS.md").write_text(self.original, encoding="utf-8")
         (self.root / "plan.json").write_text('{"task_id":"CE-ARCH-71"}\n', encoding="utf-8")
+        (self.root / ".todo-orchestrator").mkdir()
+        (self.root / ".todo-orchestrator" / "project.json").write_text(json.dumps({
+            "schema_version": 2,
+            "project_uuid": "project-1",
+            "configuration": {"claim_lease_seconds": 7200},
+        }) + "\n", encoding="utf-8")
 
     def tearDown(self) -> None:
         self.temporary.cleanup()
@@ -33,7 +39,8 @@ Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.
         self.assertEqual(result["status"], "dry_run")
         self.assertEqual((self.root / "AGENTS.md").read_text(), self.original)
         self.assertIn("task plans", result["classification"]["preserve"])
-        self.assertGreaterEqual(len(result["classification"]["fallback"]), 4)
+        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
+        self.assertNotIn("workflow_front_door", project["configuration"])
 
     def test_apply_is_idempotent_and_preserves_active_plans(self) -> None:
         before_plan = (self.root / "plan.json").read_bytes()
@@ -48,6 +55,9 @@ Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.
         self.assertEqual((self.root / "plan.json").read_bytes(), before_plan)
         self.assertIn("Use todo task IDs and gates as authority.\n", first_content)
         self.assertIn("Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.\n", first_content)
+        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
+        self.assertEqual(project["configuration"]["workflow_front_door"], "coding-workflow")
+        self.assertIn("Local workers are bounded children", first_content)
 
     def test_remove_deletes_only_marked_section(self) -> None:
         migrate(self.root, apply=True)
@@ -57,6 +67,8 @@ Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.
         self.assertNotIn(START_MARKER, content)
         self.assertNotIn(END_MARKER, content)
         self.assertEqual(content, self.original)
+        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
+        self.assertNotIn("workflow_front_door", project["configuration"])
 
     def test_script_emits_json_and_supports_dry_run(self) -> None:
         script = Path(__file__).resolve().parents[1] / "scripts" / "migrate.py"

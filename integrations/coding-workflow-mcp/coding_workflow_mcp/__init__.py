@@ -1,4 +1,3 @@
-"""Local stdio MCP facade for the coding workflow skills."""
+"""Compatibility entry point for canonical todo-orchestrator coding-workflow."""
 
-__version__ = "0.1.0"
-
+__version__ = "0.2.0"

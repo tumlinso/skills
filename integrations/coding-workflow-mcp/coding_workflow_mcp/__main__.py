@@ -1,12 +1,11 @@
-"""Run coding-workflow over local stdio."""
+"""Run the canonical coding-workflow MCP over local stdio."""
 
-from .server import create_server
+from ._canonical import canonical_server
 
 
 def main() -> None:
-    create_server().run(transport="stdio")
+    canonical_server().run(transport="stdio")
 
 
 if __name__ == "__main__":
     main()
-
