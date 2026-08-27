@@ -18,7 +18,7 @@ from todo_orchestrator.child_execution import (  # noqa: E402
     report_child_result,
 )
 from todo_orchestrator.db import Database  # noqa: E402
-from todo_orchestrator.migrations import MIGRATIONS  # noqa: E402
+from todo_orchestrator.migrations import DATABASE_MIGRATION_VERSION, MIGRATIONS  # noqa: E402
 from todo_orchestrator.models import TodoError  # noqa: E402
 from todo_orchestrator.ownership import guard_paths  # noqa: E402
 from v2_helpers import V2Repo, base_plan, safe_task  # noqa: E402
@@ -156,7 +156,10 @@ class ChildExecutionV2Tests(unittest.TestCase):
                 }
                 self.assertTrue({"approval_kind", "context_json"} <= approval_columns)
                 self.assertIn("context_json", audit_columns)
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 9)
+                self.assertEqual(
+                    migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0],
+                    DATABASE_MIGRATION_VERSION,
+                )
 
 
 if __name__ == "__main__":

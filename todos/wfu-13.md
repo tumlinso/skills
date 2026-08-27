@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-13: Managed isolated workspaces and integration queues
 
-Task revision: `133`; current project revision is in `todo-status.md`.
+Task revision: `146`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement explicit workspace ownership modes, first-class lane worktree records, immutable patch and commit artifacts, integration queues, base enforcement, conflict preservation, and cleanup eligibility while retaining subordinate child scope leases.

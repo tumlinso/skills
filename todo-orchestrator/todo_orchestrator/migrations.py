@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-SCHEMA_VERSION = 2
+PROJECT_SCHEMA_VERSION = 2
+SCHEMA_VERSION = PROJECT_SCHEMA_VERSION  # Preserved public/on-disk compatibility alias.
 
 MIGRATION_1 = r"""
 CREATE TABLE IF NOT EXISTS schema_migrations(
@@ -283,8 +284,282 @@ CREATE INDEX IF NOT EXISTS idx_task_completion_gates_revision
   ON task_completion_gates(task_id,completion_revision);
 """
 
+MIGRATION_10 = r"""
+CREATE TABLE IF NOT EXISTS workflow_runs(
+  id TEXT PRIMARY KEY,
+  root_task_id TEXT REFERENCES tasks(id),
+  status TEXT NOT NULL DEFAULT 'active',
+  active_charter_version INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  completed_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_runs_status
+  ON workflow_runs(status,updated_at,id);
+CREATE TABLE IF NOT EXISTS workflow_run_charters(
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  version INTEGER NOT NULL,
+  content_json TEXT NOT NULL,
+  content_hash TEXT NOT NULL,
+  creation_revision INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  superseded_at TEXT,
+  superseded_revision INTEGER,
+  PRIMARY KEY(run_id,version),
+  UNIQUE(run_id,content_hash)
+);
+CREATE TABLE IF NOT EXISTS workflow_lanes(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  parent_lane_id TEXT REFERENCES workflow_lanes(id),
+  role TEXT NOT NULL CHECK(role IN ('coordinator','implementer','validator','integrator','specialist')),
+  state TEXT NOT NULL DEFAULT 'ready',
+  context_cursor INTEGER NOT NULL DEFAULT 0,
+  workspace_mode TEXT NOT NULL DEFAULT 'exclusive'
+    CHECK(workspace_mode IN ('exclusive','read_shared','isolated_merge','contract_split')),
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  revision INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(run_id,id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_root_lane_per_run
+  ON workflow_lanes(run_id) WHERE parent_lane_id IS NULL;
+CREATE INDEX IF NOT EXISTS idx_workflow_lanes_parent
+  ON workflow_lanes(run_id,parent_lane_id,id);
+CREATE TABLE IF NOT EXISTS workflow_lane_tasks(
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  position INTEGER NOT NULL CHECK(position >= 0),
+  task_id TEXT NOT NULL REFERENCES tasks(id),
+  state TEXT NOT NULL DEFAULT 'queued',
+  enqueued_at TEXT NOT NULL,
+  activated_at TEXT,
+  completed_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY(lane_id,position),
+  UNIQUE(lane_id,task_id)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_task_per_lane
+  ON workflow_lane_tasks(lane_id) WHERE state='active';
+CREATE TABLE IF NOT EXISTS workflow_workspaces(
+  id TEXT PRIMARY KEY,
+  repository_identity TEXT NOT NULL,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  mode TEXT NOT NULL CHECK(mode IN ('exclusive','read_shared','isolated_merge','contract_split')),
+  base_commit TEXT NOT NULL,
+  worktree_path TEXT,
+  branch TEXT,
+  state TEXT NOT NULL,
+  integration_task_id TEXT REFERENCES tasks(id),
+  artifact_kind TEXT,
+  artifact_ref TEXT,
+  diff_hash TEXT,
+  merge_result_json TEXT NOT NULL DEFAULT '{}',
+  cleanup_eligible INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(run_id,lane_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_dispatches(
+  id TEXT PRIMARY KEY,
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  session_id TEXT NOT NULL REFERENCES sessions(id),
+  claim_id TEXT NOT NULL REFERENCES claims(id),
+  workspace_id TEXT REFERENCES workflow_workspaces(id),
+  state TEXT NOT NULL DEFAULT 'active',
+  context_version INTEGER NOT NULL,
+  heartbeat_at TEXT NOT NULL,
+  hostname TEXT,
+  pid INTEGER,
+  process_start TEXT,
+  created_at TEXT NOT NULL,
+  released_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_dispatch_per_lane
+  ON workflow_dispatches(lane_id) WHERE state='active';
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_dispatch_per_session
+  ON workflow_dispatches(session_id) WHERE state='active';
+CREATE TABLE IF NOT EXISTS workflow_capabilities(
+  id TEXT PRIMARY KEY,
+  token_hash TEXT NOT NULL UNIQUE,
+  capability_class TEXT NOT NULL CHECK(capability_class IN ('first_class','child')),
+  project_uuid TEXT NOT NULL,
+  repository_identity TEXT NOT NULL,
+  session_id TEXT REFERENCES sessions(id),
+  claim_id TEXT REFERENCES claims(id),
+  run_id TEXT REFERENCES workflow_runs(id),
+  lane_id TEXT REFERENCES workflow_lanes(id),
+  role TEXT,
+  task_id TEXT REFERENCES tasks(id),
+  parent_capability_id TEXT REFERENCES workflow_capabilities(id),
+  child_execution_id TEXT REFERENCES child_executions(id),
+  allowed_operations_json TEXT NOT NULL DEFAULT '[]',
+  incarnation INTEGER NOT NULL DEFAULT 1,
+  state TEXT NOT NULL DEFAULT 'active',
+  created_at TEXT NOT NULL,
+  last_used_at TEXT,
+  expires_at TEXT NOT NULL,
+  revoked_at TEXT,
+  CHECK(
+    (capability_class='first_class' AND session_id IS NOT NULL AND claim_id IS NOT NULL
+      AND run_id IS NOT NULL AND lane_id IS NOT NULL AND role IS NOT NULL
+      AND task_id IS NOT NULL AND parent_capability_id IS NULL AND child_execution_id IS NULL)
+    OR
+    (capability_class='child' AND parent_capability_id IS NOT NULL
+      AND child_execution_id IS NOT NULL AND run_id IS NULL AND lane_id IS NULL AND role IS NULL)
+  )
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_capability_lineage
+  ON workflow_capabilities(project_uuid,repository_identity,session_id,claim_id,run_id,lane_id,task_id,state);
+CREATE TABLE IF NOT EXISTS workflow_messages(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  author_lane_id TEXT NOT NULL REFERENCES workflow_lanes(id),
+  task_id TEXT REFERENCES tasks(id),
+  kind TEXT NOT NULL CHECK(kind IN ('status','question','answer','decision','interface_change','conflict','artifact','handoff','rendezvous_arrival')),
+  payload_json TEXT NOT NULL,
+  references_json TEXT NOT NULL DEFAULT '[]',
+  blocking INTEGER NOT NULL DEFAULT 0,
+  state TEXT NOT NULL DEFAULT 'open',
+  linked_message_id TEXT REFERENCES workflow_messages(id),
+  revision INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  resolved_at TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_messages_run_revision
+  ON workflow_messages(run_id,revision,id);
+CREATE TABLE IF NOT EXISTS workflow_message_recipients(
+  message_id TEXT NOT NULL REFERENCES workflow_messages(id) ON DELETE CASCADE,
+  recipient_type TEXT NOT NULL CHECK(recipient_type IN ('lane','role','task','run')),
+  recipient_id TEXT NOT NULL,
+  PRIMARY KEY(message_id,recipient_type,recipient_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_message_receipts(
+  message_id TEXT NOT NULL REFERENCES workflow_messages(id) ON DELETE CASCADE,
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  received_revision INTEGER NOT NULL,
+  received_at TEXT NOT NULL,
+  PRIMARY KEY(message_id,lane_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_rendezvous(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  barrier_id TEXT REFERENCES barriers(id),
+  mode TEXT NOT NULL CHECK(mode IN ('all','quorum','producers')),
+  quorum INTEGER,
+  join_task_id TEXT NOT NULL REFERENCES tasks(id),
+  state TEXT NOT NULL DEFAULT 'closed',
+  required_roles_json TEXT NOT NULL DEFAULT '[]',
+  created_at TEXT NOT NULL,
+  opened_at TEXT,
+  revision INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS workflow_rendezvous_participants(
+  rendezvous_id TEXT NOT NULL REFERENCES workflow_rendezvous(id) ON DELETE CASCADE,
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  producer INTEGER NOT NULL DEFAULT 0,
+  required INTEGER NOT NULL DEFAULT 1,
+  PRIMARY KEY(rendezvous_id,lane_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_rendezvous_arrivals(
+  rendezvous_id TEXT NOT NULL REFERENCES workflow_rendezvous(id) ON DELETE CASCADE,
+  lane_id TEXT NOT NULL REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  task_id TEXT NOT NULL REFERENCES tasks(id),
+  summary TEXT NOT NULL,
+  base_source_identity TEXT,
+  final_source_identity TEXT,
+  artifact_json TEXT NOT NULL DEFAULT '{}',
+  interfaces_json TEXT NOT NULL DEFAULT '{}',
+  evidence_json TEXT NOT NULL DEFAULT '[]',
+  warnings_json TEXT NOT NULL DEFAULT '[]',
+  context_version INTEGER NOT NULL,
+  state TEXT NOT NULL DEFAULT 'valid',
+  arrived_at TEXT NOT NULL,
+  revision INTEGER NOT NULL,
+  PRIMARY KEY(rendezvous_id,lane_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_context_fragments(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  lane_id TEXT REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  task_id TEXT REFERENCES tasks(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL CHECK(kind IN ('run_charter','lane_brief','task_brief','decision_ledger','delta_inbox','source_packet_ref')),
+  owner_scope_json TEXT NOT NULL,
+  version INTEGER NOT NULL,
+  content_json TEXT NOT NULL,
+  content_hash TEXT NOT NULL,
+  creation_revision INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  invalidated_at TEXT,
+  invalidation_revision INTEGER,
+  superseded_by TEXT REFERENCES workflow_context_fragments(id),
+  UNIQUE(run_id,lane_id,task_id,kind,version),
+  UNIQUE(run_id,lane_id,task_id,kind,content_hash)
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_fragments_owner
+  ON workflow_context_fragments(run_id,lane_id,task_id,kind,version);
+CREATE TABLE IF NOT EXISTS workflow_patch_artifacts(
+  id TEXT PRIMARY KEY,
+  workspace_id TEXT NOT NULL REFERENCES workflow_workspaces(id) ON DELETE CASCADE,
+  task_id TEXT NOT NULL REFERENCES tasks(id),
+  kind TEXT NOT NULL CHECK(kind IN ('commit','patch')),
+  artifact_ref TEXT NOT NULL,
+  content_hash TEXT NOT NULL,
+  base_commit TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  state TEXT NOT NULL DEFAULT 'pending'
+);
+CREATE TABLE IF NOT EXISTS workflow_integration_queue(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  integration_task_id TEXT NOT NULL REFERENCES tasks(id),
+  integrator_lane_id TEXT NOT NULL REFERENCES workflow_lanes(id),
+  patch_artifact_id TEXT NOT NULL REFERENCES workflow_patch_artifacts(id),
+  position INTEGER NOT NULL,
+  state TEXT NOT NULL DEFAULT 'queued',
+  conflict_json TEXT NOT NULL DEFAULT '{}',
+  merge_result_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  UNIQUE(run_id,integration_task_id,position),
+  UNIQUE(run_id,patch_artifact_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_child_result_candidates(
+  id TEXT PRIMARY KEY,
+  child_execution_id TEXT NOT NULL REFERENCES child_executions(id) ON DELETE CASCADE,
+  parent_claim_id TEXT NOT NULL REFERENCES claims(id),
+  kind TEXT NOT NULL CHECK(kind IN ('candidate_patch','test_result','performance_measurement','source_finding','review_finding','diagnostic_finding')),
+  payload_json TEXT NOT NULL,
+  artifact_refs_json TEXT NOT NULL DEFAULT '[]',
+  state TEXT NOT NULL DEFAULT 'collected',
+  created_at TEXT NOT NULL,
+  decided_at TEXT,
+  decision_revision INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_workflow_child_candidates_parent
+  ON workflow_child_result_candidates(parent_claim_id,state,created_at);
+CREATE TABLE IF NOT EXISTS workflow_recovery_audit(
+  id TEXT PRIMARY KEY,
+  project_uuid TEXT NOT NULL,
+  run_id TEXT REFERENCES workflow_runs(id),
+  lane_id TEXT REFERENCES workflow_lanes(id),
+  task_id TEXT REFERENCES tasks(id),
+  reason TEXT NOT NULL,
+  proposed_plan_json TEXT NOT NULL,
+  result_json TEXT NOT NULL,
+  actor_identity TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  completed_at TEXT,
+  revision INTEGER NOT NULL
+);
+"""
+
 MIGRATIONS = {
   1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
   5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7, 8: MIGRATION_8,
-  9: MIGRATION_9,
+  9: MIGRATION_9, 10: MIGRATION_10,
 }
+
+DATABASE_MIGRATION_VERSION = max(MIGRATIONS)

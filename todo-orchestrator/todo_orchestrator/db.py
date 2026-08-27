@@ -46,28 +46,42 @@ class Database:
         return conn
 
     def initialize(self, project: dict[str, object]) -> None:
-        conn = self.connect()
-        try:
-            conn.execute("BEGIN IMMEDIATE")
-            conn.execute("CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)")
-            current = conn.execute("SELECT COALESCE(MAX(version),0) FROM schema_migrations").fetchone()[0]
-            for version in sorted(MIGRATIONS):
-                if version <= current:
-                    continue
-                for statement in MIGRATIONS[version].split(";"):
-                    if statement.strip():
-                        conn.execute(statement)
-                conn.execute("INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)", (version, utc_now()))
-            conn.execute("INSERT OR IGNORE INTO meta(key,value) VALUES('project_revision','0')")
-            conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('schema_version',?)", (str(SCHEMA_VERSION),))
-            conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('project_uuid',?)", (str(project["project_uuid"]),))
-            conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('project_name',?)", (str(project["project_name"]),))
-            conn.commit()
-        except Exception:
-            conn.rollback()
-            raise
-        finally:
-            conn.close()
+        last_error: Exception | None = None
+        for attempt in range(self.retries):
+            conn: sqlite3.Connection | None = None
+            try:
+                conn = self.connect()
+                conn.execute("BEGIN IMMEDIATE")
+                conn.execute("CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)")
+                current = conn.execute("SELECT COALESCE(MAX(version),0) FROM schema_migrations").fetchone()[0]
+                for version in sorted(MIGRATIONS):
+                    if version <= current:
+                        continue
+                    for statement in MIGRATIONS[version].split(";"):
+                        if statement.strip():
+                            conn.execute(statement)
+                    conn.execute("INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)", (version, utc_now()))
+                conn.execute("INSERT OR IGNORE INTO meta(key,value) VALUES('project_revision','0')")
+                conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('schema_version',?)", (str(SCHEMA_VERSION),))
+                conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('project_uuid',?)", (str(project["project_uuid"]),))
+                conn.execute("INSERT OR REPLACE INTO meta(key,value) VALUES('project_name',?)", (str(project["project_name"]),))
+                conn.commit()
+                return
+            except sqlite3.OperationalError as exc:
+                if conn is not None:
+                    conn.rollback()
+                last_error = exc
+                if "locked" not in str(exc).lower() or attempt + 1 >= self.retries:
+                    raise
+                time.sleep(min(0.4, 0.01 * (2**attempt)) + random.uniform(0.001, 0.02))
+            except Exception:
+                if conn is not None:
+                    conn.rollback()
+                raise
+            finally:
+                if conn is not None:
+                    conn.close()
+        raise TodoError("database_contention", str(last_error or "database is busy"))
 
     @contextmanager
     def read(self) -> Iterator[sqlite3.Connection]:
