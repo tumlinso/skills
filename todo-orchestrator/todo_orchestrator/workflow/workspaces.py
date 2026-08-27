@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 import uuid
@@ -33,13 +34,40 @@ def _sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _write_immutable(path: Path, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        if path.read_bytes() != content:
+            raise TodoError("artifact_hash_collision", "Managed artifact hash collision")
+        return
+    temporary = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        with temporary.open("xb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, 0o444)
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 class WorkspaceService:
     """Transactional workspace state plus conservative Git operations."""
 
-    def __init__(self, db: WorkflowDatabase, *, managed_root: Path, runner: Runner | None = None):
+    def __init__(
+        self,
+        db: WorkflowDatabase,
+        *,
+        managed_root: Path,
+        runner: Runner | None = None,
+        repository_identity_resolver: Callable[[Path], str] | None = None,
+    ):
         self.db = db
         self.managed_root = managed_root.resolve()
         self.runner = runner or subprocess.run
+        self.repository_identity_resolver = repository_identity_resolver
 
     def _git(self, repo: Path, args: Sequence[str], *, text: bool = False) -> subprocess.CompletedProcess[Any]:
         return self.runner(
@@ -105,6 +133,10 @@ class WorkspaceService:
         repository_root = repository_root.resolve()
         if not repository_identity:
             raise TodoError("repository_identity_required", "Repository identity is required")
+        if self.repository_identity_resolver is not None:
+            authoritative_identity = self.repository_identity_resolver(repository_root)
+            if repository_identity != authoritative_identity:
+                raise TodoError("repository_identity_mismatch", "Workspace repository identity is not authoritative")
         canonical_base = self._commit(repository_root, base_commit)
         target: Path | None = None
         if mode != "read_shared":
@@ -123,7 +155,7 @@ class WorkspaceService:
         workspace_id = str(uuid.uuid4())
         now = utc_now()
 
-        def record(conn: Any, revision: int) -> dict[str, object]:
+        def reserve(conn: Any, revision: int) -> dict[str, object]:
             lane = self._lane(conn, run_id, lane_id)
             if lane["workspace_mode"] != mode:
                 raise TodoError("lane_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
@@ -146,35 +178,51 @@ class WorkspaceService:
                    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
                 (
                     workspace_id, repository_identity, run_id, lane_id, mode, canonical_base,
-                    str(target) if target else None, branch, "active", integration_task_id, now, now,
+                    str(target) if target else None, branch, "provisioning", integration_task_id, now, now,
                 ),
             )
             return {"workspace_id": workspace_id, "run_id": run_id, "lane_id": lane_id, "mode": mode, "base_commit": canonical_base}
 
-        # Validate all semantic conditions before touching Git. A second check in
-        # the mutation below closes races between parallel lane registrations.
-        with self.db.read() as conn:
-            lane = self._lane(conn, run_id, lane_id)
-            if lane["workspace_mode"] != mode:
-                raise TodoError("lane_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
-            if conn.execute("SELECT 1 FROM workflow_workspaces WHERE run_id=? AND lane_id=?", (run_id, lane_id)).fetchone():
-                raise TodoError("workspace_already_exists", "Lane already has a managed workspace")
-            if mode == "isolated_merge" and conn.execute(
-                """SELECT 1 FROM workflow_workspaces WHERE run_id=? AND integration_task_id=?
-                   AND mode='isolated_merge' AND base_commit<>?""",
-                (run_id, integration_task_id, canonical_base),
-            ).fetchone():
-                raise TodoError("workspace_base_mismatch", "All isolated participants must use the exact same base")
+        def activate(conn: Any, rev: int) -> dict[str, object]:
+            changed = conn.execute(
+                "UPDATE workflow_workspaces SET state='active',updated_at=? WHERE id=? AND state='provisioning'",
+                (utc_now(), workspace_id),
+            )
+            if changed.rowcount != 1:
+                raise TodoError("workspace_provisioning_state_changed", "Workspace reservation changed during materialization")
+            return {"workspace_id": workspace_id, "run_id": run_id, "lane_id": lane_id, "mode": mode, "base_commit": canonical_base}
 
-        if target is not None:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            args = ["worktree", "add"]
-            if branch:
-                args.extend(["-b", branch])
-            else:
-                args.append("--detach")
-            args.extend([str(target), canonical_base])
-            self._git_ok(repository_root, args, code="workspace_materialization_failed")
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_workspace",
+            entity_id=workspace_id,
+            event_type="workflow_workspace_reserved",
+            payload={"run_id": run_id, "lane_id": lane_id, "mode": mode, "base_commit": canonical_base},
+            operation=reserve,
+        )
+        try:
+            if target is not None:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                args = ["worktree", "add"]
+                if branch:
+                    args.extend(["-b", branch])
+                else:
+                    args.append("--detach")
+                args.extend([str(target), canonical_base])
+                self._git_ok(repository_root, args, code="workspace_materialization_failed")
+        except Exception:
+            self.db.mutate(
+                actor_session_id=actor_session_id,
+                entity_type="workflow_workspace",
+                entity_id=workspace_id,
+                event_type="workflow_workspace_provisioning_failed",
+                payload={"preserved": True},
+                operation=lambda conn, rev: conn.execute(
+                    "UPDATE workflow_workspaces SET state='provisioning_failed',updated_at=? WHERE id=?",
+                    (utc_now(), workspace_id),
+                ),
+            )
+            raise
 
         result, revision = self.db.mutate(
             actor_session_id=actor_session_id,
@@ -182,7 +230,7 @@ class WorkspaceService:
             entity_id=workspace_id,
             event_type="workflow_workspace_created",
             payload={"run_id": run_id, "lane_id": lane_id, "mode": mode, "base_commit": canonical_base},
-            operation=record,
+            operation=activate,
         )
         result["revision"] = revision
         result["worktree_path"] = str(target) if target else None
@@ -205,10 +253,17 @@ class WorkspaceService:
                 raise TodoError("workspace_missing", "Workspace does not exist")
             if workspace["mode"] != "isolated_merge":
                 raise TodoError("workspace_artifact_forbidden", "Only isolated_merge lanes publish integration artifacts")
+            if not conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
+                (workspace["lane_id"], task_id),
+            ).fetchone():
+                raise TodoError("workspace_artifact_task_mismatch", "Artifact task is not assigned to the producer lane")
             root = Path(workspace["worktree_path"])
             base = workspace["base_commit"]
         if kind == "commit":
             resolved = self._commit(root, artifact_ref)
+            if resolved != self._commit(root, "HEAD"):
+                raise TodoError("artifact_workspace_head_mismatch", "Commit artifact must be the registered workspace HEAD")
             ancestry = self._git(root, ["merge-base", "--is-ancestor", base, resolved])
             if ancestry.returncode != 0:
                 raise TodoError("artifact_base_mismatch", "Commit artifact is not based on the recorded workspace base")
@@ -221,15 +276,25 @@ class WorkspaceService:
             content = patch.read_bytes()
             if not content:
                 raise TodoError("patch_artifact_empty", "Patch artifact must not be empty")
-            artifact_ref = str(patch)
+            digest = _sha256(content)
+            artifact_dir = self.managed_root / "artifacts"
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            immutable = artifact_dir / f"{digest}.patch"
+            _write_immutable(immutable, content)
+            artifact_ref = str(immutable)
         digest = _sha256(content)
         artifact_id = str(uuid.uuid4())
         now = utc_now()
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
-            current = conn.execute("SELECT state,base_commit FROM workflow_workspaces WHERE id=?", (workspace_id,)).fetchone()
+            current = conn.execute("SELECT state,base_commit,lane_id FROM workflow_workspaces WHERE id=?", (workspace_id,)).fetchone()
             if current is None or current["state"] not in {"active", "artifact_ready"}:
                 raise TodoError("workspace_artifact_state", "Workspace is not eligible to publish an artifact")
+            if not conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
+                (current["lane_id"], task_id),
+            ).fetchone():
+                raise TodoError("workspace_artifact_task_mismatch", "Artifact task ownership changed")
             conn.execute(
                 """INSERT INTO workflow_patch_artifacts(
                      id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state)
@@ -289,6 +354,11 @@ class WorkspaceService:
                 raise TodoError("integration_repository_mismatch", "Producer and destination repositories differ")
             if destination["base_commit"] != artifact["base_commit"]:
                 raise TodoError("integration_stale_base", "Producer and destination must have the exact same recorded base")
+            if destination["integration_task_id"] != integration_task_id or not conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
+                (integrator_lane_id, integration_task_id),
+            ).fetchone():
+                raise TodoError("integration_task_owner_mismatch", "Integration task is not declared for the integrator workspace and lane")
             position = conn.execute(
                 "SELECT COALESCE(MAX(position),-1)+1 FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=?",
                 (artifact["run_id"], integration_task_id),
@@ -316,7 +386,7 @@ class WorkspaceService:
         return result
 
     def apply_next(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
-        with self.db.read() as conn:
+        def reserve(conn: Any, revision: int) -> dict[str, object]:
             row = conn.execute(
                 """SELECT q.*,a.kind,a.artifact_ref,a.content_hash,a.base_commit,a.workspace_id,
                           d.worktree_path AS destination_path,d.state AS destination_state
@@ -335,25 +405,64 @@ class WorkspaceService:
             ).fetchone()
             if earlier is not None:
                 raise TodoError("integration_queue_order", "An earlier integration entry must finish first")
-            destination = Path(row["destination_path"])
-        if not destination.exists():
-            raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
-        status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
-        if status:
-            raise TodoError("integration_workspace_dirty", "Destination has dirty changes; all files are preserved")
-        if row["kind"] == "commit":
-            current = self._commit(destination, row["artifact_ref"])
-            diff = self._git_ok(destination, ["diff", "--binary", row["base_commit"], current], code="artifact_diff_failed")
-            if _sha256(diff) != row["content_hash"]:
-                raise TodoError("artifact_content_changed", "Commit artifact no longer matches its immutable hash")
-            command = ["cherry-pick", "--no-commit", current]
-        else:
-            patch = Path(row["artifact_ref"])
-            content = patch.read_bytes() if patch.is_file() else b""
-            if _sha256(content) != row["content_hash"]:
-                raise TodoError("artifact_content_changed", "Patch artifact no longer matches its immutable hash")
-            command = ["apply", "--index", "--3way", str(patch)]
-        applied = self._git(destination, command)
+            conn.execute(
+                "UPDATE workflow_integration_queue SET state='applying',updated_at=? WHERE id=? AND state='queued'",
+                (utc_now(), queue_id),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='applying',updated_at=? WHERE run_id=? AND lane_id=?",
+                (utc_now(), row["run_id"], row["integrator_lane_id"]),
+            )
+            return dict(row)
+
+        row, _ = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_integration_reserved",
+            payload={"state": "applying"},
+            operation=reserve,
+        )
+        destination = Path(row["destination_path"])
+        try:
+            if not destination.exists():
+                raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
+            status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
+            if status:
+                raise TodoError("integration_workspace_dirty", "Destination has dirty changes; all files are preserved")
+            if row["kind"] == "commit":
+                current = self._commit(destination, row["artifact_ref"])
+                diff = self._git_ok(destination, ["diff", "--binary", row["base_commit"], current], code="artifact_diff_failed")
+                if _sha256(diff) != row["content_hash"]:
+                    raise TodoError("artifact_content_changed", "Commit artifact no longer matches its immutable hash")
+                command = ["cherry-pick", "--no-commit", current]
+            else:
+                patch = Path(row["artifact_ref"])
+                content = patch.read_bytes() if patch.is_file() else b""
+                if _sha256(content) != row["content_hash"]:
+                    raise TodoError("artifact_content_changed", "Patch artifact no longer matches its immutable hash")
+                command = ["apply", "--index", "--3way", str(patch)]
+            applied = self._git(destination, command)
+        except Exception as exc:
+            code = exc.code if isinstance(exc, TodoError) else "integration_apply_exception"
+            def fail_operation(conn: Any, revision: int) -> None:
+                conn.execute(
+                    "UPDATE workflow_integration_queue SET state='apply_failed',conflict_json=?,updated_at=? WHERE id=? AND state='applying'",
+                    (_json({"code": code, "preserved": True}), utc_now(), queue_id),
+                )
+                conn.execute(
+                    "UPDATE workflow_workspaces SET state='apply_failed',updated_at=? WHERE run_id=? AND lane_id=? AND state='applying'",
+                    (utc_now(), row["run_id"], row["integrator_lane_id"]),
+                )
+            self.db.mutate(
+                actor_session_id=actor_session_id,
+                entity_type="workflow_integration_queue",
+                entity_id=queue_id,
+                event_type="workflow_integration_apply_failed",
+                payload={"code": code, "preserved": True},
+                operation=fail_operation,
+            )
+            raise
         conflicts: list[str] = []
         if applied.returncode != 0:
             unresolved = self._git(destination, ["diff", "--name-only", "--diff-filter=U"])
@@ -369,7 +478,7 @@ class WorkspaceService:
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
             current = conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
-            if current is None or current["state"] != "queued":
+            if current is None or current["state"] != "applying":
                 raise TodoError("integration_state_changed", "Integration queue entry changed while Git was applying")
             conn.execute(
                 "UPDATE workflow_integration_queue SET state=?,conflict_json=?,merge_result_json=?,updated_at=? WHERE id=?",
@@ -401,19 +510,93 @@ class WorkspaceService:
     ) -> dict[str, object]:
         if not gate_results:
             raise TodoError("post_merge_gates_required", "At least one post-merge gate result is required")
-        passed = all(item.get("status") == "passed" for item in gate_results)
+        authoritative: list[dict[str, object]] = []
+        with self.db.read() as conn:
+            queue = conn.execute(
+                "SELECT q.integration_task_id,q.updated_at,d.worktree_path,d.base_commit FROM workflow_integration_queue q "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+            if queue is None:
+                raise TodoError("integration_queue_missing", "Integration queue entry does not exist")
+            required_gate_ids = {
+                row[0] for row in conn.execute(
+                    "SELECT id FROM gates WHERE task_id=? AND required=1", (queue["integration_task_id"],)
+                )
+            }
+            supplied_gate_ids = {str(item.get("gate_id", "")) for item in gate_results}
+            if not required_gate_ids or supplied_gate_ids != required_gate_ids:
+                raise TodoError("integration_gate_coverage_incomplete", "All and only required integration-task gates must be supplied")
+            for supplied in gate_results:
+                gate_id = str(supplied.get("gate_id", ""))
+                evidence_id = str(supplied.get("evidence_id", ""))
+                row = conn.execute(
+                    "SELECT g.id,g.task_id,g.status,g.valid,g.input_fingerprint,e.id AS evidence_id,e.status AS evidence_status,e.revision,e.created_at,e.metadata_json "
+                    "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
+                    (gate_id, evidence_id),
+                ).fetchone()
+                if not row or row["task_id"] != queue["integration_task_id"] or row["created_at"] < queue["updated_at"]:
+                    raise TodoError("integration_gate_provenance_invalid", "Post-merge gate evidence is not authoritative for the integration task")
+                metadata = json.loads(row["metadata_json"] or "{}")
+                if metadata.get("input_fingerprint") != row["input_fingerprint"]:
+                    raise TodoError("integration_gate_provenance_stale", "Gate evidence does not match the current gate input fingerprint")
+                authoritative.append({
+                    "gate_id": gate_id,
+                    "evidence_id": evidence_id,
+                    "status": row["status"],
+                    "valid": bool(row["valid"]),
+                    "evidence_status": row["evidence_status"],
+                    "evidence_revision": int(row["revision"]),
+                    "input_fingerprint": row["input_fingerprint"],
+                })
+        passed = all(item["status"] == "passed" and item["valid"] and item["evidence_status"] == "passed" for item in authoritative)
         now = utc_now()
         target_state = "integrated" if passed else "gate_failed"
+        integrated_artifact: dict[str, object] | None = None
+        if passed:
+            destination = Path(queue["worktree_path"])
+            content = self._git_ok(destination, ["diff", "--binary", queue["base_commit"]], code="integration_final_diff_failed")
+            digest = _sha256(content)
+            artifact_dir = self.managed_root / "artifacts"
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            artifact_path = artifact_dir / f"integration-{digest}.patch"
+            _write_immutable(artifact_path, content)
+            integrated_artifact = {"kind": "patch", "ref": str(artifact_path), "content_hash": digest}
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
             row = conn.execute(
-                """SELECT q.*,a.workspace_id FROM workflow_integration_queue q
-                   JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id WHERE q.id=?""",
+                """SELECT q.*,a.workspace_id,d.id AS destination_workspace_id FROM workflow_integration_queue q
+                   JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id
+                   JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id
+                   WHERE q.id=?""",
                 (queue_id,),
             ).fetchone()
             if row is None or row["state"] != "awaiting_gates":
                 raise TodoError("integration_not_awaiting_gates", "Integration is not awaiting post-merge gates")
-            merge_result = {"state": target_state, "gates": list(gate_results)}
+            required_gate_ids = {
+                item[0] for item in conn.execute(
+                    "SELECT id FROM gates WHERE task_id=? AND required=1", (row["integration_task_id"],)
+                )
+            }
+            if required_gate_ids != {str(item["gate_id"]) for item in authoritative}:
+                raise TodoError("integration_gate_coverage_changed", "Required integration gates changed during finalization")
+            for gate in authoritative:
+                current = conn.execute(
+                    "SELECT g.status,g.valid,g.input_fingerprint,e.status,e.metadata_json,e.created_at,e.revision "
+                    "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
+                    (gate["gate_id"], gate["evidence_id"]),
+                ).fetchone()
+                metadata = json.loads(current["metadata_json"] or "{}") if current else {}
+                if (
+                    not current
+                    or current["status"] != gate["status"]
+                    or bool(current["valid"]) != gate["valid"]
+                    or current["status"] != current[3]
+                    or int(current["revision"]) != gate["evidence_revision"]
+                    or metadata.get("input_fingerprint") != current["input_fingerprint"]
+                ):
+                    raise TodoError("integration_gate_provenance_stale", "Integration gate provenance changed before finalization")
+            merge_result = {"state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact}
             conn.execute(
                 "UPDATE workflow_integration_queue SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
                 (target_state, _json(merge_result), now, queue_id),
@@ -427,7 +610,18 @@ class WorkspaceService:
                 "UPDATE workflow_workspaces SET state=?,merge_result_json=?,updated_at=? WHERE run_id=? AND lane_id=?",
                 (target_state, _json(merge_result), now, row["run_id"], row["integrator_lane_id"]),
             )
-            return {"queue_id": queue_id, "state": target_state, "gates": list(gate_results)}
+            if integrated_artifact:
+                final_artifact_id = str(uuid.uuid4())
+                conn.execute(
+                    "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
+                    "VALUES(?,?,?,?,?,?,?,?, 'integrated')",
+                    (final_artifact_id, row["destination_workspace_id"], row["integration_task_id"], integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], queue["base_commit"], now),
+                )
+                conn.execute(
+                    "UPDATE workflow_workspaces SET artifact_kind=?,artifact_ref=?,diff_hash=? WHERE run_id=? AND lane_id=?",
+                    (integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], row["run_id"], row["integrator_lane_id"]),
+                )
+            return {"queue_id": queue_id, "state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact}
 
         result, revision = self.db.mutate(
             actor_session_id=actor_session_id,
@@ -485,6 +679,12 @@ class WorkspaceService:
             current = conn.execute("SELECT state,cleanup_eligible FROM workflow_workspaces WHERE id=?", (workspace_id,)).fetchone()
             if current is None or current["state"] not in {"integrated", "rejected"}:
                 raise TodoError("workspace_cleanup_state_changed", "Workspace state changed during cleanup assessment")
+            if conn.execute(
+                "SELECT 1 FROM workflow_dispatches WHERE workspace_id=? AND state='active'", (workspace_id,)
+            ).fetchone():
+                raise TodoError("workspace_cleanup_owner_active", "Active workspace owner must stop before cleanup eligibility")
+            if path is not None and self._git_ok(path, ["status", "--porcelain=v1", "-z"], code="workspace_status_failed"):
+                raise TodoError("workspace_dirty_preserved", "Workspace became dirty during cleanup assessment")
             conn.execute("UPDATE workflow_workspaces SET cleanup_eligible=1,updated_at=? WHERE id=?", (now, workspace_id))
             return {"workspace_id": workspace_id, "cleanup_eligible": True, "deleted": False}
 

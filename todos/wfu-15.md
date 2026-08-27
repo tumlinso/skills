@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-15: Canonical workflow service, protocol v2, capabilities, and MCP
 
-Task revision: `167`; current project revision is in `todo-status.md`.
+Task revision: `171`; current project revision is in `todo-status.md`.
 
 ## Objective
 Implement the canonical in-process WorkflowKernel boundary, protocol v2 envelopes, hash-stored lineage-bound first-class capabilities, exact six-tool MCP server, fixed adapters, and compatibility shim without todo subprocess operations.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

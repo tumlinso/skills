@@ -10,6 +10,7 @@ from typing import Any
 
 from ..config import utc_now
 from ..models import TodoError
+from ..graph import reevaluate_barriers
 from .foundation import COORDINATE_TASK_BUDGET_BYTES, WorkflowDatabase, canonical_json, require_bounded_payload
 from .messages import _insert_message, _lane, _require_first_class
 
@@ -124,36 +125,21 @@ def _apply_condition(
         "UPDATE workflow_rendezvous SET state=?,opened_at=CASE WHEN ?='satisfied' THEN COALESCE(opened_at,?) ELSE NULL END,revision=? WHERE id=?",
         (new_state, new_state, utc_now(), revision, rendezvous_id),
     )
-    barrier_id = row["barrier_id"]
-    if barrier_id:
-        explanation = (
-            f"rendezvous {rendezvous_id}: {condition['achieved']}/{condition['target']} arrivals"
-            + (f"; roles={','.join(condition['arrived_roles'])}" if condition["required_roles"] else "")
-        )
-        barrier_state = "open" if condition["satisfied"] else "closed"
-        barrier = conn.execute("SELECT state FROM barriers WHERE id=?", (barrier_id,)).fetchone()
-        if not barrier:
-            raise TodoError("rendezvous_barrier_not_found", f"Unknown bound barrier {barrier_id}")
-        conn.execute(
-            "UPDATE barriers SET state=?,explanation=?,opened_at=CASE WHEN ?='open' THEN COALESCE(opened_at,?) ELSE NULL END,revision=? WHERE id=?",
-            (barrier_state, explanation, barrier_state, utc_now(), revision, barrier_id),
-        )
-        if barrier["state"] == "open" and barrier_state == "closed":
-            join_claim = conn.execute(
-                "SELECT 1 FROM claims WHERE task_id=? AND state='active'", (row["join_task_id"],)
-            ).fetchone()
-            if join_claim:
-                conn.execute(
-                    "UPDATE tasks SET status='attention_required',attention_reason=?,updated_at=?,revision=? WHERE id=?",
-                    (f"rendezvous {rendezvous_id} invalidated after join claim", utc_now(), revision, row["join_task_id"]),
-                )
+    barrier_changes = reevaluate_barriers(conn, revision)
     if condition["satisfied"]:
         conn.execute(
             "UPDATE tasks SET attention_reason=NULL,updated_at=?,revision=? "
             "WHERE id=? AND status NOT IN ('done','cancelled','superseded')",
             (utc_now(), revision, row["join_task_id"]),
         )
-    return {**condition, "state": new_state, "join_task_id": row["join_task_id"], "join_ready": condition["satisfied"]}
+    barrier = conn.execute("SELECT state FROM barriers WHERE id=?", (row["barrier_id"],)).fetchone()
+    return {
+        **condition,
+        "state": new_state,
+        "join_task_id": row["join_task_id"],
+        "join_ready": bool(condition["satisfied"] and barrier and barrier["state"] == "open"),
+        "barrier_changes": barrier_changes,
+    }
 
 
 class RendezvousService:
@@ -185,6 +171,8 @@ class RendezvousService:
             raise TodoError("rendezvous_participants_required", "Rendezvous requires first-class lane participants")
         roles = sorted(set(str(role) for role in required_roles))
         identifier = rendezvous_id or str(uuid.uuid4())
+        if not barrier_id:
+            raise TodoError("rendezvous_barrier_required", "Rendezvous must extend a declarative barrier prerequisite")
 
         def operation(conn: sqlite3.Connection, revision: int) -> dict[str, Any]:
             author = _lane(conn, run_id, author_lane_id)
@@ -236,6 +224,12 @@ class RendezvousService:
                 "INSERT INTO workflow_rendezvous_participants(rendezvous_id,lane_id,producer,required) VALUES(?,?,?,?)",
                 [(identifier, *item) for item in normalized],
             )
+            conn.execute(
+                "INSERT OR IGNORE INTO barrier_requirements(barrier_id,type,entity_id,required_state,dispositions_json) "
+                "VALUES(?,'rendezvous',?,'satisfied','[]')",
+                (barrier_id, identifier),
+            )
+            reevaluate_barriers(conn, revision)
             return _rendezvous_dict(conn, conn.execute("SELECT * FROM workflow_rendezvous WHERE id=?", (identifier,)).fetchone())
 
         result, revision = self.db.mutate(
@@ -285,6 +279,16 @@ class RendezvousService:
             "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?", (lane_id, task_id)
         ).fetchone():
             raise TodoError("rendezvous_task_scope_mismatch", "Arrival task is not assigned to its lane")
+        task = conn.execute("SELECT status FROM tasks WHERE id=?", (task_id,)).fetchone()
+        if not task or task["status"] != "done":
+            raise TodoError("rendezvous_parent_task_incomplete", "Only an authoritatively completed parent task may arrive")
+        unresolved_child = conn.execute(
+            "SELECT 1 FROM workflow_child_result_candidates WHERE parent_claim_id IN "
+            "(SELECT id FROM claims WHERE task_id=?) AND state='collected' LIMIT 1",
+            (task_id,),
+        ).fetchone()
+        if unresolved_child:
+            raise TodoError("rendezvous_child_result_unresolved", "Collected child results require parent acceptance or rejection before arrival")
         if (
             not summary.strip()
             or context_version < 1

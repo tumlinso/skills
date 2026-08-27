@@ -7,7 +7,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.models import TodoError
 from todo_orchestrator.readiness import ready_tasks
-from todo_orchestrator.workflow.messages import MessageService
+from todo_orchestrator.workflow.messages import MessageService, _insert_message
 from todo_orchestrator.workflow.rendezvous import RendezvousService
 
 
@@ -27,9 +27,9 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
                 decisions=[{"id": "FORMAT", "title": "Format", "allowed": ["json", "cbor"]}],
                 interfaces=[{"id": "API", "owner_task_id": "A", "state": "frozen", "version": "1"}],
                 barriers=[
-                    {"id": "BR-ALL", "title": "All", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "impossible"}]},
-                    {"id": "BR-Q", "title": "Quorum", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "impossible"}]},
-                    {"id": "BR-P", "title": "Producers", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "impossible"}]},
+                    {"id": "BR-ALL", "title": "All", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "done"}]},
+                    {"id": "BR-Q", "title": "Quorum", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "done"}]},
+                    {"id": "BR-P", "title": "Producers", "mode": "all", "requirements": [{"type": "task", "id": "A", "state": "done"}]},
                 ],
             )
         )
@@ -122,6 +122,9 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         )
 
     def arrive(self, identifier: str, lane: str, task: str, **extra):
+        self.mutate(lambda conn, revision: conn.execute(
+            "UPDATE tasks SET status='done',result='implemented',revision=? WHERE id=?", (revision, task)
+        ))
         values = {
             "capability_class": "first_class",
             "run_id": "RUN",
@@ -147,9 +150,11 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         first = self.messages.sync(capability_class="first_class", run_id="RUN", lane_id="L1")
         self.assertEqual([item["id"] for item in first["messages"]], ["M1", "M3"])
         self.assertEqual(first["cursor"], role["message"]["revision"])
+        before_empty = self.repo.service.db.revision()
         second = self.messages.sync(capability_class="first_class", run_id="RUN", lane_id="L1")
         self.assertEqual(second["messages"], [])
         self.assertEqual(second["cursor"], first["cursor"])
+        self.assertEqual(self.repo.service.db.revision(), before_empty)
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_message_receipts WHERE lane_id='L1'").fetchone()[0], 2)
             self.assertEqual(conn.execute("SELECT context_cursor FROM workflow_lanes WHERE id='L1'").fetchone()[0], direct["message"]["revision"] + 2)
@@ -179,6 +184,26 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         self.assertEqual(row["state"], "resolved")
         self.assertIsNotNone(row["resolved_at"])
         self.assertEqual(json.loads(event[0])["resolved_question_id"], "QUESTION")
+
+    def test_same_revision_messages_are_not_lost_when_budget_splits_delivery(self) -> None:
+        def operation(conn, revision):
+            for identifier in ("SAME-A", "SAME-B"):
+                _insert_message(
+                    conn, revision, run_id="RUN", author_lane_id="ROOT", task_id=None,
+                    kind="status", payload={"summary": identifier + ("x" * 2400)},
+                    recipients=[{"type": "lane", "id": "L1"}], references=[],
+                    blocking=False, linked_message_id=None, message_id=identifier,
+                )
+        self.mutate(operation)
+        first = self.messages.sync(
+            capability_class="first_class", run_id="RUN", lane_id="L1", budget_bytes=4096
+        )
+        second = self.messages.sync(
+            capability_class="first_class", run_id="RUN", lane_id="L1", budget_bytes=4096
+        )
+        self.assertEqual([item["id"] for item in first["messages"]], ["SAME-A"])
+        self.assertEqual([item["id"] for item in second["messages"]], ["SAME-B"])
+        self.assertEqual(first["cursor"], second["cursor"])
 
     def test_decision_publication_and_interface_change_use_durable_authorities(self) -> None:
         decision = self.publish(
@@ -288,6 +313,18 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
             columns = {row[1] for row in conn.execute("PRAGMA table_info(workflow_rendezvous_arrivals)")}
             self.assertNotIn("child_execution_id", columns)
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_rendezvous_arrivals WHERE rendezvous_id='RV-BOUNDARY'").fetchone()[0], 0)
+
+    def test_incomplete_parent_task_cannot_arrive(self) -> None:
+        self.create_rendezvous("RV-INCOMPLETE", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])
+        with self.assertRaises(TodoError) as caught:
+            self.rendezvous.arrive(
+                capability_class="first_class", run_id="RUN", lane_id="L1",
+                rendezvous_id="RV-INCOMPLETE", task_id="A", summary="too soon",
+                base_source_identity="base", final_source_identity="final",
+                artifact={"kind": "commit", "ref": "commit"}, interfaces={},
+                evidence=[{"gate": "pending"}], warnings=[], context_version=1,
+            )
+        self.assertEqual(caught.exception.code, "rendezvous_parent_task_incomplete")
 
     def test_arrival_invalidation_revokes_satisfaction_without_file_mutation(self) -> None:
         self.create_rendezvous("RV-INVALID", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])

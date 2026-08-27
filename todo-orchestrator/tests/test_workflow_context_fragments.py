@@ -45,6 +45,11 @@ class WorkflowContextFragmentTests(unittest.TestCase):
                 "VALUES(?,?,?,?,?,?,?)",
                 ("lane-2", "run-1", "lane-1", "validator", now, now, revision),
             )
+            conn.executemany(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES(?,?,?,'queued',?,?)",
+                [("lane-1", 0, "TASK-1", now, revision), ("lane-2", 0, "TASK-2", now, revision)],
+            )
 
         self.db.mutate(
             actor_session_id=None,
@@ -168,7 +173,7 @@ class WorkflowContextFragmentTests(unittest.TestCase):
     def test_source_context_is_reference_only_and_secrets_are_rejected(self) -> None:
         fragment = self.publish(
             "source_packet_ref",
-            {"references": [{"packet_id": "ctx-1", "content_hash": "abc", "target": "Widget"}]},
+            {"references": [{"packet_id": "ctx-1", "content_hash": "abc", "target": "Widget", "paths": ["src/widget.py"]}]},
             lane_id="lane-1",
             task_id="TASK-1",
         )
@@ -198,7 +203,7 @@ class WorkflowContextFragmentTests(unittest.TestCase):
             parent_constraints=["read only", "return candidate evidence"],
             parent_authorized_paths=["src"],
             child_authorized_paths=["src/parser.py"],
-            source_packet_refs=[{"packet_id": "ctx-child", "content_hash": "123", "target": "parse"}],
+            source_packet_refs=[{"packet_id": "ctx-child", "content_hash": "123", "target": "parse", "paths": ["src/parser.py"]}],
             required_output_schema={"kind": "test_result", "fields": ["status", "summary"]},
             candidate_gates=["unit parser"],
             acceptance_gates=["parent suite"],
@@ -222,7 +227,7 @@ class WorkflowContextFragmentTests(unittest.TestCase):
         common = dict(
             delegated_objective="Inspect",
             parent_constraints=[],
-            source_packet_refs=[{"packet_id": "ctx", "content_hash": "123"}],
+            source_packet_refs=[{"packet_id": "ctx", "content_hash": "123", "paths": ["src/a.py"]}],
             required_output_schema={"kind": "source_finding"},
             candidate_gates=[],
             acceptance_gates=[],
@@ -246,6 +251,25 @@ class WorkflowContextFragmentTests(unittest.TestCase):
                 child_authorized_paths=["src/a.py"],
                 interface_facts=[{"name": "api", "stdout": "raw output"}],
             )
+
+    def test_child_source_paths_are_within_minimal_child_scope(self) -> None:
+        with self.assertRaises(TodoError) as broad:
+            compose_child_packet(
+                delegated_objective="Inspect parser",
+                parent_constraints=["read only"],
+                parent_authorized_paths=["src"],
+                child_authorized_paths=["src/parser"],
+                source_packet_refs=[{"packet_id": "ctx", "content_hash": "abc", "paths": ["src/other"]}],
+                required_output_schema={"type": "object"},
+                candidate_gates=[],
+                acceptance_gates=[],
+            )
+        self.assertEqual(broad.exception.code, "child_scope_expansion")
+
+    def test_fragment_owner_must_match_run_lane_and_task(self) -> None:
+        with self.assertRaises(TodoError) as mismatch:
+            self.publish("task_brief", {"objective": "wrong"}, lane_id="lane-2", task_id="TASK-1")
+        self.assertEqual(mismatch.exception.code, "fragment_task_owner_mismatch")
 
 
 if __name__ == "__main__":

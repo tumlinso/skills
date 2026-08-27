@@ -335,7 +335,15 @@ class MessageService:
                 raise TodoError("workflow_question_resolved", f"Question {question_id} is already resolved")
             if not _lane_is_recipient(conn, question_id, lane):
                 raise TodoError("workflow_question_not_addressed", "Answering lane is not a recipient of the question")
-            recipients = [{"type": "lane", "id": question["author_lane_id"]}]
+            recipients = [
+                {"type": row["recipient_type"], "id": row["recipient_id"]}
+                for row in conn.execute(
+                    "SELECT recipient_type,recipient_id FROM workflow_message_recipients WHERE message_id=?",
+                    (question_id,),
+                )
+            ]
+            recipients.append({"type": "lane", "id": question["author_lane_id"]})
+            recipients = _normalize_recipients(conn, run_id, recipients)
             answer = _insert_message(
                 conn,
                 revision,
@@ -352,8 +360,8 @@ class MessageService:
             )
             now = utc_now()
             conn.execute(
-                "UPDATE workflow_messages SET state='resolved',resolved_at=? WHERE id=?",
-                (now, question_id),
+                "UPDATE workflow_messages SET state='resolved',resolved_at=?,revision=? WHERE id=?",
+                (now, revision, question_id),
             )
             return {"message": answer, "resolved_question_id": question_id, "resolved_at": now}
 
@@ -385,12 +393,11 @@ class MessageService:
         if budget_bytes < MESSAGE_PAYLOAD_BUDGET_BYTES:
             raise TodoError("workflow_sync_budget_too_small", "Sync budget cannot hold one bounded message")
 
-        def operation(conn: sqlite3.Connection, revision: int) -> dict[str, Any]:
-            lane = _lane(conn, run_id, lane_id)
-            rows = conn.execute(
+        def unread_rows(conn: sqlite3.Connection, lane: sqlite3.Row) -> list[sqlite3.Row]:
+            return conn.execute(
                 "SELECT DISTINCT m.* FROM workflow_messages m "
                 "JOIN workflow_message_recipients r ON r.message_id=m.id "
-                "WHERE m.run_id=? AND m.revision>? AND ("
+                "WHERE m.run_id=? AND ("
                 "(r.recipient_type='run' AND r.recipient_id=?) OR "
                 "(r.recipient_type='lane' AND r.recipient_id=?) OR "
                 "(r.recipient_type='role' AND r.recipient_id=?) OR "
@@ -398,8 +405,25 @@ class MessageService:
                 " (SELECT task_id FROM workflow_lane_tasks WHERE lane_id=?))) "
                 "AND NOT EXISTS (SELECT 1 FROM workflow_message_receipts x WHERE x.message_id=m.id AND x.lane_id=?) "
                 "ORDER BY m.revision,m.id",
-                (run_id, int(lane["context_cursor"]), run_id, lane_id, lane["role"], lane_id, lane_id),
+                (run_id, run_id, lane_id, lane["role"], lane_id, lane_id),
             ).fetchall()
+
+        with self.db.read() as conn:
+            lane = _lane(conn, run_id, lane_id)
+            if not unread_rows(conn, lane):
+                return {
+                    "run_id": run_id,
+                    "lane_id": lane_id,
+                    "messages": [],
+                    "cursor": int(lane["context_cursor"]),
+                    "remaining": 0,
+                    "blocking": [],
+                    "project_revision": int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0]),
+                }
+
+        def operation(conn: sqlite3.Connection, revision: int) -> dict[str, Any]:
+            lane = _lane(conn, run_id, lane_id)
+            rows = unread_rows(conn, lane)
             messages: list[dict[str, Any]] = []
             for row in rows:
                 candidate = _message_dict(conn, row)

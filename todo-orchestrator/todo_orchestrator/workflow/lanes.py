@@ -258,10 +258,16 @@ def dispatch_claim_in_transaction(
     active_lane = conn.execute("SELECT * FROM workflow_dispatches WHERE lane_id=? AND state='active'", (lane_id,)).fetchone()
     if active_lane:
         raise TodoError("workflow_lane_already_dispatched", f"Lane {lane_id} already has an active dispatch")
+    if lane["workspace_mode"] in {"isolated_merge", "contract_split"} and not workspace_id:
+        raise TodoError("workflow_workspace_required", "Lane contract requires an assigned managed workspace")
     if workspace_id:
         workspace = conn.execute("SELECT * FROM workflow_workspaces WHERE id=?", (workspace_id,)).fetchone()
         if not workspace or workspace["run_id"] != run_id or workspace["lane_id"] != lane_id:
             raise TodoError("workflow_workspace_mismatch", "Workspace is not assigned to the selected run and lane")
+        if workspace["mode"] != lane["workspace_mode"]:
+            raise TodoError("workflow_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
+        if workspace["state"] not in {"active", "artifact_ready"}:
+            raise TodoError("workflow_workspace_inactive", "Workspace is not in a dispatchable state")
     now = utc_now()
     dispatch_id = dispatch_id or str(uuid.uuid4())
     try:

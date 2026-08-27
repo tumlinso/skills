@@ -139,6 +139,18 @@ class WorkflowRunsLanesTests(unittest.TestCase):
                     (session_a, claim_a, row["heartbeat_at"], row["created_at"]),
                 )
 
+    def test_managed_lane_cannot_dispatch_without_required_workspace(self) -> None:
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="lane", entity_id="A", event_type="test.workspace_required", payload={},
+            operation=lambda conn, revision: conn.execute(
+                "UPDATE workflow_lanes SET workspace_mode='isolated_merge',revision=? WHERE id='A'", (revision,)
+            ),
+        )
+        session_id, claim_id = self._claim("T-A1")
+        with self.assertRaises(TodoError) as caught:
+            self.lanes.dispatch(run_id="RUN", session_id=session_id, claim_id=claim_id, context_version=1)
+        self.assertEqual(caught.exception.code, "workflow_workspace_required")
+
     def test_stale_dispatch_is_attention_not_silent_reassignment(self) -> None:
         session_id, claim_id = self._claim("T-A1")
         dispatched = self.lanes.dispatch(run_id="RUN", session_id=session_id, claim_id=claim_id, context_version=1)

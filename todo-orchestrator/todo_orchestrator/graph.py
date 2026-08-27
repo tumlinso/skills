@@ -126,6 +126,9 @@ def barrier_requirement_satisfied(conn: sqlite3.Connection, row: sqlite3.Row) ->
     elif kind == "gate":
         entity = conn.execute("SELECT status,valid FROM gates WHERE id=?", (row["entity_id"],)).fetchone()
         ok = bool(entity and entity[0] == required and entity[1])
+    elif kind == "rendezvous":
+        entity = conn.execute("SELECT state FROM workflow_rendezvous WHERE id=?", (row["entity_id"],)).fetchone()
+        ok = bool(entity and entity[0] == required)
     else:
         ok = False
     return ok, f"{kind} {row['entity_id']} must be {required}"

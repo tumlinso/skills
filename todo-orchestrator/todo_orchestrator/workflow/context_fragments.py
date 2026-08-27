@@ -122,9 +122,51 @@ def _validate_source_references(references: Sequence[Mapping[str, Any]]) -> list
             )
         if not reference.get("packet_id") or not reference.get("content_hash"):
             raise TodoError("invalid_source_packet_reference", "packet_id and content_hash are required")
+        paths = reference.get("paths", [])
+        if isinstance(paths, (str, bytes, Mapping)) or not isinstance(paths, Sequence):
+            raise TodoError("invalid_source_packet_reference", "Source packet paths must be a repository-relative list")
+        if not paths:
+            raise TodoError("source_packet_scope_required", "Source packet references require explicit bounded paths")
+        _minimal_scopes([str(path) for path in paths])
         normalized.append(dict(reference))
     _reject_secrets(normalized, path="source_packet_refs")
     return normalized
+
+
+def _minimal_scopes(paths: Sequence[str]) -> list[str]:
+    normalized: list[PurePosixPath] = []
+    for raw in paths:
+        path = PurePosixPath(raw)
+        if path.is_absolute() or ".." in path.parts or not path.parts:
+            raise TodoError("invalid_child_scope", f"Invalid repository-relative scope: {raw}")
+        if any(path == existing or existing in path.parents for existing in normalized):
+            continue
+        normalized = [existing for existing in normalized if path not in existing.parents]
+        normalized.append(path)
+    return sorted(str(path) for path in normalized)
+
+
+def _validate_owner_binding(conn: Any, owner: "FragmentOwner") -> None:
+    if not conn.execute("SELECT 1 FROM workflow_runs WHERE id=?", (owner.run_id,)).fetchone():
+        raise TodoError("fragment_run_not_found", "Fragment run is not authoritative")
+    if owner.lane_id and not conn.execute(
+        "SELECT 1 FROM workflow_lanes WHERE id=? AND run_id=?", (owner.lane_id, owner.run_id)
+    ).fetchone():
+        raise TodoError("fragment_lane_run_mismatch", "Fragment lane does not belong to its run")
+    if owner.task_id:
+        if owner.lane_id:
+            found = conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
+                (owner.lane_id, owner.task_id),
+            ).fetchone()
+        else:
+            found = conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
+                "WHERE l.run_id=? AND lt.task_id=?",
+                (owner.run_id, owner.task_id),
+            ).fetchone()
+        if not found:
+            raise TodoError("fragment_task_owner_mismatch", "Fragment task is not assigned within its owner scope")
 
 
 @dataclass(frozen=True)
@@ -234,6 +276,7 @@ class ContextFragmentStore:
         invalidations = tuple(dict.fromkeys(invalidate_fragment_ids))
 
         def operation(conn: Any, revision: int) -> ContextFragment:
+            _validate_owner_binding(conn, owner)
             clause, args = _owner_sql(owner)
             existing = conn.execute(
                 f"SELECT * FROM workflow_context_fragments WHERE {clause} AND kind=? AND content_hash=?",
@@ -507,16 +550,22 @@ def compose_child_packet(
     if not child_paths:
         raise TodoError("invalid_child_packet", "At least one authorized child path is required")
     require_child_scope_subset(parent_paths, child_paths)
-    normalize = lambda paths: {str(PurePosixPath(path)) for path in paths}
-    if normalize(parent_paths) == normalize(child_paths):
+    parent_minimal = _minimal_scopes(parent_paths)
+    child_minimal = _minimal_scopes(child_paths)
+    if parent_minimal == child_minimal:
         raise TodoError("child_scope_not_strict", "Child paths must be narrower than parent-authorized paths")
+    references = _validate_source_references(source_packet_refs)
+    for reference in references:
+        source_paths = reference.get("paths", [])
+        if source_paths:
+            require_child_scope_subset(child_minimal, list(source_paths))
     packet = {
         "protocol_version": PROTOCOL_VERSION,
         "packet_class": "subordinate_local_child",
         "delegated_objective": delegated_objective,
         "parent_constraints": list(parent_constraints),
-        "authorized_paths": child_paths,
-        "source_packet_refs": _validate_source_references(source_packet_refs),
+        "authorized_paths": child_minimal,
+        "source_packet_refs": references,
         "required_output_schema": dict(required_output_schema),
         "candidate_gates": list(candidate_gates),
         "acceptance_gates": list(acceptance_gates),

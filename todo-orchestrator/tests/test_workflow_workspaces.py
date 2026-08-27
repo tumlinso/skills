@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from todo_orchestrator.db import Database
+from todo_orchestrator.config import utc_now
 from todo_orchestrator.models import TodoError
 from todo_orchestrator.workflow.workspaces import WorkspaceService
 
@@ -63,6 +64,21 @@ class WorkflowWorkspaceTests(unittest.TestCase):
                        VALUES(?,?,?,?,?,?,?,?,?)""",
                     (lane_id, "RUN", parent, role, "ready", mode, now, now, revision),
                 )
+            conn.executemany(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES(?,?,?,'queued',?,?)",
+                [
+                    ("PRODUCER", 0, "IMPL", now, revision),
+                    ("PRODUCER2", 0, "IMPL2", now, revision),
+                    ("INTEGRATOR", 0, "INTEGRATE", now, revision),
+                    ("NOT_INTEGRATOR", 0, "INTEGRATE", now, revision),
+                ],
+            )
+            conn.execute(
+                "INSERT INTO gates(id,task_id,type,config_json,required,status,valid,revision) "
+                "VALUES('POST','INTEGRATE','manual','{}',1,'pending',0,?)",
+                (revision,),
+            )
 
         self.db.mutate(
             actor_session_id=None,
@@ -116,6 +132,19 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             call()
         self.assertEqual(caught.exception.code, expected)
 
+    def gate_evidence(self, status: str) -> str:
+        evidence_id = f"POST-{status}-{self.db.revision()}"
+        valid = int(status == "passed")
+        def operation(conn, revision):
+            conn.execute("UPDATE gates SET status=?,valid=?,revision=? WHERE id='POST'", (status, valid, revision))
+            conn.execute(
+                "INSERT INTO evidence(id,gate_id,kind,status,metadata_json,created_at,revision) "
+                "VALUES(?,'POST','gate',?,'{}',?,?)",
+                (evidence_id, status, utc_now(), revision),
+            )
+        self.db.mutate(actor_session_id=None, entity_type="gate", entity_id="POST", event_type="test_gate", payload={}, operation=operation)
+        return evidence_id
+
     def test_modes_materialize_only_managed_first_class_workspaces(self) -> None:
         destination = self.create_destination()
         self.assertTrue(Path(str(destination["worktree_path"])).is_dir())
@@ -163,6 +192,20 @@ class WorkflowWorkspaceTests(unittest.TestCase):
                 integration_task_id="INTEGRATE",
             ),
         )
+        enforcing = WorkspaceService(
+            self.db,
+            managed_root=self.managed,
+            repository_identity_resolver=lambda root: "authoritative-repo",
+        )
+        self.assert_code(
+            "repository_identity_mismatch",
+            lambda: enforcing.create_workspace(
+                repository_root=self.repo, repository_identity="caller-asserted", run_id="RUN",
+                lane_id="PRODUCER", mode="isolated_merge", base_commit=self.base,
+                worktree_path=self.managed / "identity-mismatch", branch="identity-mismatch",
+                integration_task_id="INTEGRATE",
+            ),
+        )
         self.assert_code(
             "lane_workspace_mode_mismatch",
             lambda: self.service.create_workspace(
@@ -202,7 +245,7 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(applied["state"], "awaiting_gates")
         self.assertEqual((Path(str(destination["worktree_path"])) / "shared.txt").read_text(), "alpha changed\nbeta\ngamma\n")
         finished = self.service.record_post_merge_gates(
-            queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "status": "passed"}]
+            queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}]
         )
         self.assertEqual(finished["state"], "integrated")
         eligible = self.service.mark_cleanup_eligible(workspace_id=str(producer["workspace_id"]))
@@ -253,7 +296,7 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertTrue(destination_path.exists())
         self.assertIn("UU shared.txt", git(destination_path, "status", "--porcelain=v1"))
 
-    def test_patch_hash_is_revalidated_and_changed_artifact_is_refused(self) -> None:
+    def test_patch_is_copied_to_immutable_managed_artifact(self) -> None:
         self.create_destination()
         producer = self.create_producer()
         producer_path = Path(str(producer["worktree_path"]))
@@ -269,7 +312,7 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
         )
         patch.write_text("changed after publication\n", encoding="utf-8")
-        self.assert_code("artifact_content_changed", lambda: self.service.apply_next(queue_id=str(queued["queue_id"])))
+        self.assertEqual(self.service.apply_next(queue_id=str(queued["queue_id"]))["state"], "awaiting_gates")
 
     def test_failed_post_merge_gate_preserves_destination_and_blocks_cleanup(self) -> None:
         destination = self.create_destination()
@@ -283,13 +326,76 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         )
         self.service.apply_next(queue_id=str(queued["queue_id"]))
         result = self.service.record_post_merge_gates(
-            queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "status": "failed"}]
+            queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("failed")}]
         )
         self.assertEqual(result["state"], "gate_failed")
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
         self.assert_code(
             "workspace_cleanup_not_terminal",
             lambda: self.service.mark_cleanup_eligible(workspace_id=str(producer["workspace_id"])),
+        )
+
+    def test_caller_asserted_gate_status_cannot_authorize_integration(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta asserted\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assert_code(
+            "integration_gate_provenance_invalid",
+            lambda: self.service.record_post_merge_gates(
+                queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "status": "passed"}]
+            ),
+        )
+
+    def test_all_required_gates_are_mandatory_and_apply_failure_is_recorded(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta coverage\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        destination_path = Path(str(destination["worktree_path"]))
+        (destination_path / "dirty.txt").write_text("preserve\n", encoding="utf-8")
+        self.assert_code("integration_workspace_dirty", lambda: self.service.apply_next(queue_id=str(queued["queue_id"])))
+        with self.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queued["queue_id"],)).fetchone()[0], "apply_failed")
+            self.assertEqual(conn.execute("SELECT state FROM workflow_workspaces WHERE id=?", (destination["workspace_id"],)).fetchone()[0], "apply_failed")
+
+        # A fresh fixture flow proves omitting any required gate cannot authorize integration.
+        self.tearDown()
+        self.setUp()
+        self.db.mutate(
+            actor_session_id=None, entity_type="gate", entity_id="POST2", event_type="test_gate_added", payload={},
+            operation=lambda conn, revision: conn.execute(
+                "INSERT INTO gates(id,task_id,type,config_json,required,status,valid,revision) "
+                "VALUES('POST2','INTEGRATE','manual','{}',1,'pending',0,?)", (revision,)
+            ),
+        )
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta gates\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        self.service.apply_next(queue_id=str(queued["queue_id"]))
+        evidence = self.gate_evidence("passed")
+        self.assert_code(
+            "integration_gate_coverage_incomplete",
+            lambda: self.service.record_post_merge_gates(
+                queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": evidence}]
+            ),
         )
 
 
