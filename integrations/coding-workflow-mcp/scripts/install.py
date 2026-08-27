@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import time
 import venv
 
 
@@ -52,22 +53,31 @@ def install() -> dict[str, object]:
     data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")).expanduser()
     install_root = data_home / "coding-workflow-mcp"
     venv_root = install_root / "venv"
+    locator_file = install_root / "skills-root.json"
     install_root.mkdir(parents=True, exist_ok=True, mode=0o700)
-    if not (venv_root / "bin" / "python").exists():
-        venv.EnvBuilder(with_pip=True).create(venv_root)
-    python = venv_root / "bin" / "python"
-    run([str(python), "-m", "pip", "install", "--upgrade", "-r", str(package_root / "requirements.lock")])
-    run([str(python), "-m", "pip", "install", "--upgrade", str(package_root)])
-
-    codex = shutil.which("codex")
-    if not codex:
-        raise RuntimeError("codex CLI is not available")
-    prior = _read_registration(codex)
+    rollback_venv = None
+    if venv_root.is_dir():
+        rollback_venv = install_root / f"venv.rollback-{time.time_ns()}"
+        shutil.copytree(venv_root, rollback_venv, symlinks=True)
+    prior_locator = locator_file.read_bytes() if locator_file.is_file() else None
+    locator_file.write_text(json.dumps({"skills_root": str(skills_root)}, sort_keys=True) + "\n", encoding="utf-8")
+    os.chmod(locator_file, 0o600)
+    codex = None
+    prior = None
     rollback_file = install_root / "registration.rollback.json"
-    if prior is not None:
-        rollback_file.write_text(json.dumps(prior, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-        os.chmod(rollback_file, 0o600)
     try:
+        if not (venv_root / "bin" / "python").exists():
+            venv.EnvBuilder(with_pip=True).create(venv_root)
+        python = venv_root / "bin" / "python"
+        run([str(python), "-m", "pip", "install", "--upgrade", "-r", str(package_root / "requirements.lock")])
+        run([str(python), "-m", "pip", "install", "--upgrade", str(package_root)])
+        codex = shutil.which("codex")
+        if not codex:
+            raise RuntimeError("codex CLI is not available")
+        prior = _read_registration(codex)
+        if prior is not None:
+            rollback_file.write_text(json.dumps(prior, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            os.chmod(rollback_file, 0o600)
         if prior is not None:
             run([codex, "mcp", "remove", SERVER_NAME])
         run([
@@ -85,14 +95,25 @@ def install() -> dict[str, object]:
         if not smoke.get("ok"):
             raise RuntimeError("installed MCP initialization smoke failed")
     except Exception:
-        run([codex, "mcp", "remove", SERVER_NAME], check=False)
-        if prior is not None:
-            run(_registration_args(codex, prior))
+        if codex is not None:
+            run([codex, "mcp", "remove", SERVER_NAME], check=False)
+            if prior is not None:
+                run(_registration_args(codex, prior))
+        if rollback_venv is not None and rollback_venv.is_dir():
+            failed_venv = install_root / f"venv.failed-{time.time_ns()}"
+            if venv_root.exists():
+                venv_root.rename(failed_venv)
+            rollback_venv.rename(venv_root)
+        if prior_locator is None:
+            locator_file.unlink(missing_ok=True)
+        else:
+            locator_file.write_bytes(prior_locator)
         raise
     return {
         "status": "installed", "server": SERVER_NAME, "venv": str(venv_root),
         "skills_root": str(skills_root), "protocol": smoke,
         "rollback_registration": str(rollback_file) if prior is not None else None,
+        "rollback_venv": str(rollback_venv) if rollback_venv is not None else None,
     }
 
 

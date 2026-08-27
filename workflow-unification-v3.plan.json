@@ -190,6 +190,15 @@
       "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-WORK", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
     },
     {
+      "id": "WFU-29", "kind": "validation_task", "title": "Harden installed canonical locator and package rollback",
+      "objective": "Fix the installed owner command to locate the canonical todo package without MCP-only environment variables, and preserve the complete prior installed package as a recoverable rollback artifact during cutover.",
+      "priority": 110, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-30"}],
+      "scope": {"exclusive_paths": ["integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py", "integrations/coding-workflow-mcp/scripts/install.py", "integrations/coding-workflow-mcp/tests/test_installer.py"], "read_paths": ["integrations/coding-workflow-mcp", "todo-orchestrator/todo_orchestrator/workflow/admin.py"]},
+      "gates": [{"id": "WFU-29-INSTALLER", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "integrations/coding-workflow-mcp/tests", "-p", "test_installer.py", "-v"], "input_paths": ["integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py", "integrations/coding-workflow-mcp/scripts/install.py", "integrations/coding-workflow-mcp/tests/test_installer.py"], "required": true}],
+      "completion_contract": "Installed MCP and owner-admin entry points resolve the same canonical source, and a failed install can restore the complete previous venv plus registration without source reconstruction.",
+      "invariants": ["WFU-PRESERVE-WORK", "WFU-OPAQUE-SECRETS", "WFU-LAZY-SPECIALISTS"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
       "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}, {"type": "task", "task_id": "WFU-27"}, {"type": "task", "task_id": "WFU-28"}],
@@ -199,7 +208,7 @@
     {
       "id": "WFU-31", "kind": "integration_task", "title": "Atomic cutover, installed smoke, rollback proof, and release",
       "objective": "After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.",
-      "priority": 80, "parallel_policy": "project_exclusive", "depends_on": [{"type": "barrier", "barrier_id": "WFU-RELEASE-RENDEZVOUS"}],
+      "priority": 80, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-29"}, {"type": "barrier", "barrier_id": "WFU-RELEASE-RENDEZVOUS"}],
       "scope": {"exclusive_paths": ["workflow-unification/evidence/release", "workflow-unification/rollback.md"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-release-cutover"], "invariants": ["WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS", "WFU-LAZY-SPECIALISTS"],
       "result_policy": {"allowed_dispositions": ["validated", "failed"]}

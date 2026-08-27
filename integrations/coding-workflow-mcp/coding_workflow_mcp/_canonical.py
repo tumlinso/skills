@@ -4,12 +4,24 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+import json
 import sys
+
+
+def _locator_file() -> Path:
+    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")).expanduser()
+    return data_home / "coding-workflow-mcp" / "skills-root.json"
 
 
 def skills_root() -> Path:
     configured = os.environ.get("CODING_WORKFLOW_SKILLS_ROOT")
-    root = Path(configured).expanduser().resolve() if configured else Path(__file__).resolve().parents[3]
+    if configured:
+        root = Path(configured).expanduser().resolve()
+    elif _locator_file().is_file():
+        locator = json.loads(_locator_file().read_text(encoding="utf-8"))
+        root = Path(str(locator["skills_root"])).expanduser().resolve()
+    else:
+        root = Path(__file__).resolve().parents[3]
     package = root / "todo-orchestrator" / "todo_orchestrator"
     if not package.is_dir():
         raise RuntimeError("canonical todo-orchestrator package is unavailable")

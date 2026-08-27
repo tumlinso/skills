@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `238`
+Project revision: `245`
 
 ## Workstreams
 - `WFU-00` | kind: task | status: done | parent: - | objective: Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.
@@ -26,6 +26,7 @@ Project revision: `238`
 - `WFU-27` | kind: validation_task | status: done | parent: - | objective: Teach the shared claim/readiness authority to permit overlapping first-class task scopes only when both lanes have explicit isolated_merge contracts, active managed workspaces from the same base, one shared integration task, and an exclusive designated integrator destination; retain same-worktree exclusion everywhere else.
 - `WFU-28` | kind: validation_task | status: done | parent: - | objective: Make first-class handoff, block, release, and owner recovery reconcile the current serial lane task and lane state transactionally so clean work can resume through next_task, while dirty recovery remains preserved and attention-required.
 - `C4Q-02` | kind: integration_task | status: done | parent: - | objective: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
+- `WFU-29` | kind: validation_task | status: in_progress | parent: - | objective: Fix the installed owner command to locate the canonical todo package without MCP-only environment variables, and preserve the complete prior installed package as a recoverable rollback artifact during cutover.
 - `C4Q-01` | kind: integration_task | status: blocked | parent: - | objective: Use strict --core-tools registration, derive a bounded structured-output-aware turn cap, share the terminal instruction across read-only and writable execution, preserve compact exit-53 diagnostics, and validate the cached Q4 model through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks.
 - `CWM-00` | kind: workstream | status: done | parent: - | objective: Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.
 - `CWM-07` | kind: integration_task | status: done | parent: - | objective: Treat MCP target text as a delegation objective, derive or omit a separately proven ctxpp target, and select 1-16 relevant child scopes within the parent authorization for writable and read-only CE-style requests without weakening admission or acceptance safety.
@@ -37,7 +38,7 @@ Project revision: `238`
 - `CWM-02` | kind: workstream | status: done | parent: - | objective: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | kind: integration_task | status: done | parent: - | objective: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.
 - `CWM-04` | kind: workstream | status: done | parent: - | objective: Create the isolated installer, Codex stdio registration, protocol smoke test, idempotent AGENTS routing migration, removal path, and migration report without rewriting active plans.
-- `WFU-31` | kind: integration_task | status: planned | parent: - | objective: After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
+- `WFU-31` | kind: integration_task | status: in_progress | parent: - | objective: After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
 - `CWM-05` | kind: integration_task | status: done | parent: - | objective: Integrate the user's latest local-worker repair, validate todo/ctxpp/local-worker/CUDA adapters, run one real read-only MCP delegation, one bounded writable delegation, and preserve immediate local-unavailable fallback.
 - `CWM-06` | kind: validation_task | status: done | parent: - | objective: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 <!-- todo-orchestrator:v2-managed:end -->

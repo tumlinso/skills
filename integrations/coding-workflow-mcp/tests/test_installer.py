@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
 from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "install.py"
@@ -10,6 +14,7 @@ SPEC = importlib.util.spec_from_file_location("coding_workflow_install", SCRIPT)
 assert SPEC and SPEC.loader
 installer = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(installer)
+CANONICAL = Path(__file__).resolve().parents[1] / "coding_workflow_mcp" / "_canonical.py"
 
 
 class InstallerTests(unittest.TestCase):
@@ -34,7 +39,28 @@ class InstallerTests(unittest.TestCase):
         self.assertIn('"list", "--json"', source)
         self.assertIn("_registration_args(codex, prior)", source)
         self.assertIn("coding_workflow_mcp.protocol", source)
+        self.assertIn("skills-root.json", source)
+        self.assertIn("shutil.copytree(venv_root, rollback_venv", source)
+        self.assertIn("rollback_venv.rename(venv_root)", source)
         self.assertNotIn("shell=True", source)
+
+    def test_installed_admin_can_resolve_canonical_source_from_xdg_locator(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            skills = root / "skills"
+            (skills / "todo-orchestrator" / "todo_orchestrator").mkdir(parents=True)
+            locator = root / "coding-workflow-mcp" / "skills-root.json"
+            locator.parent.mkdir()
+            locator.write_text(json.dumps({"skills_root": str(skills)}) + "\n", encoding="utf-8")
+            spec = importlib.util.spec_from_file_location("canonical_locator_test", CANONICAL)
+            assert spec and spec.loader
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            environment = dict(os.environ)
+            environment.pop("CODING_WORKFLOW_SKILLS_ROOT", None)
+            environment["XDG_DATA_HOME"] = str(root)
+            with patch.dict(os.environ, environment, clear=True):
+                self.assertEqual(module.skills_root(), skills.resolve())
 
 
 if __name__ == "__main__":
