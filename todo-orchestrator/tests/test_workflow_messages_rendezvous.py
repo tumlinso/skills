@@ -190,16 +190,16 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
             for identifier in ("SAME-A", "SAME-B"):
                 _insert_message(
                     conn, revision, run_id="RUN", author_lane_id="ROOT", task_id=None,
-                    kind="status", payload={"summary": identifier + ("x" * 2400)},
+                    kind="status", payload={"summary": identifier + ("x" * 3900)},
                     recipients=[{"type": "lane", "id": "L1"}], references=[],
                     blocking=False, linked_message_id=None, message_id=identifier,
                 )
         self.mutate(operation)
         first = self.messages.sync(
-            capability_class="first_class", run_id="RUN", lane_id="L1", budget_bytes=4096
+            capability_class="first_class", run_id="RUN", lane_id="L1"
         )
         second = self.messages.sync(
-            capability_class="first_class", run_id="RUN", lane_id="L1", budget_bytes=4096
+            capability_class="first_class", run_id="RUN", lane_id="L1"
         )
         self.assertEqual([item["id"] for item in first["messages"]], ["SAME-A"])
         self.assertEqual([item["id"] for item in second["messages"]], ["SAME-B"])
@@ -234,6 +234,15 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         with self.assertRaises(TodoError) as bulk:
             self.publish(payload={"stdout": "even a short raw stream is an artifact reference"})
         self.assertEqual(bulk.exception.code, "workflow_message_bulk_content_forbidden")
+        with self.assertRaises(TodoError) as reference_bulk:
+            self.publish(references=[{"type": "artifact", "stderr": "raw"}])
+        self.assertEqual(reference_bulk.exception.code, "workflow_message_bulk_content_forbidden")
+        with self.assertRaises(TodoError) as reference_secret:
+            self.publish(references=[{"type": "artifact", "worker_token": "secret"}])
+        self.assertEqual(reference_secret.exception.code, "workflow_message_secret_forbidden")
+        near_limit = self.publish(payload={"summary": "x" * 3900}, message_id="NEAR-LIMIT")
+        delivered = self.messages.sync(capability_class="first_class", run_id="RUN", lane_id="L2")
+        self.assertIn(near_limit["message"]["id"], {item["id"] for item in delivered["messages"]})
         parent = self.publish(
             author_lane_id="L1",
             task_id="A",
@@ -350,6 +359,39 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT state FROM barriers WHERE id='BR-ALL'").fetchone()[0], "open")
             self.assertEqual(conn.execute("SELECT state FROM workflow_rendezvous_arrivals WHERE rendezvous_id='RV-INVALID'").fetchone()[0], "valid")
+
+    def test_terminal_join_invalidation_requires_owner_recovery(self) -> None:
+        self.create_rendezvous("RV-TERMINAL", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])
+        self.arrive("RV-TERMINAL", "L1", "A")
+        self.mutate(lambda conn, revision: conn.execute(
+            "UPDATE tasks SET status='done',result='integrated',revision=? WHERE id='JALL'", (revision,)
+        ))
+        with self.assertRaises(TodoError) as caught:
+            self.rendezvous.invalidate_arrival(
+                capability_class="first_class", run_id="RUN", author_lane_id="VAL",
+                rendezvous_id="RV-TERMINAL", lane_id="L1", reason="late revocation",
+            )
+        self.assertEqual(caught.exception.code, "rendezvous_terminal_invalidation_requires_recovery")
+
+    def test_satisfied_rendezvous_does_not_clear_attention_for_closed_composite_barrier(self) -> None:
+        self.create_rendezvous("RV-COMPOSITE", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])
+        def add_requirement(conn, revision):
+            conn.execute(
+                "INSERT INTO barrier_requirements(barrier_id,type,entity_id,required_state,dispositions_json) "
+                "VALUES('BR-ALL','task','C','done','[]')"
+            )
+            conn.execute(
+                "UPDATE tasks SET status='attention_required',attention_reason='other requirement pending',revision=? WHERE id='JALL'",
+                (revision,),
+            )
+        self.mutate(add_requirement)
+        arrival = self.arrive("RV-COMPOSITE", "L1", "A")
+        self.assertTrue(arrival["condition"]["satisfied"])
+        self.assertFalse(arrival["condition"]["join_ready"])
+        with self.repo.service.db.read() as conn:
+            task = conn.execute("SELECT status,attention_reason FROM tasks WHERE id='JALL'").fetchone()
+        self.assertEqual(task["status"], "attention_required")
+        self.assertEqual(task["attention_reason"], "other requirement pending")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T11:33:08Z",
+  "generated_at": "2026-08-27T11:53:53Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 171,
+  "project_revision": 173,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -1876,6 +1876,26 @@
         "revision": 171,
         "seq": 171,
         "timestamp": "2026-08-27T11:33:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-16-CORE\"}",
+        "revision": 172,
+        "seq": 172,
+        "timestamp": "2026-08-27T11:53:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-16-CORE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"0e2d8ecc-7522-4dba-af45-f9fd77f1ed87\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 173,
+        "seq": 173,
+        "timestamp": "2026-08-27T11:53:53Z"
       }
     ],
     "evidence": [
@@ -1929,6 +1949,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"fcd8c1cd4f27c3a7be019b3fc3ff6b43887b285755ff4ad7023def3a7e0d1c75\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"local-coding-worker/tests/test_harnesses.py\", \"local-coding-worker/tests/test_production_integration.py\", \"-v\"], \"timeout\": 300}, \"diff_fingerprint\": \"a56900533e6a7afc90f90c1e8f9d8c72dbbc0e4f196e2a55469a2d06d8e05ff0\", \"dirty_paths\": [\".todo-orchestrator/project.json\", \".todo-orchestrator/state.snapshot.json\", \"local-coding-worker/config/production-profile.toml\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/harnesses/base.py\", \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"local-coding-worker/local_worker/production_checks.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_harnesses.py\", \"todo-status.md\", \"todos.md\", \"todos/c4q-01.md\"], \"files\": [{\"path\": \"local-coding-worker/config/production-profile.toml\", \"sha256\": \"0b3c4e7c68b4bb9494ad09fe20a4dbfcf233670f85d85e7885b5ef20abf4eeb6\"}, {\"path\": \"local-coding-worker/local_worker/controller.py\", \"sha256\": \"5cc80f52ffaf7bbcc26e71b0436a426730f9b621f7411501f405da1ecb7d364e\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/base.py\", \"sha256\": \"033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc\"}, {\"path\": \"local-coding-worker/local_worker/harnesses/qwen_code.py\", \"sha256\": \"48944172eccb9519c3583e2fc100270733657c3970dba9f610d0d306dbfb77f8\"}, {\"path\": \"local-coding-worker/local_worker/production_checks.py\", \"sha256\": \"98bfa341f235678359378890b23957e5df40671fe8176231bcb9482a69644c25\"}, {\"path\": \"local-coding-worker/scripts/local_worker.py\", \"sha256\": \"a649f05e2f7f62d243fc95a5c9e3485c0a60fd850fd836a0341e5e04855b7255\"}, {\"path\": \"local-coding-worker/tests/test_harnesses.py\", \"sha256\": \"c5a2888107dd812938791b6e514d45181feaef8e21681239154dcb9c811ee518\"}, {\"path\": \"local-coding-worker/tests/test_production_integration.py\", \"sha256\": \"242ca21af7e765a39ddf5d9048b4946daad53812bab8083f031bd3bce01609c4\"}], \"interfaces\": [], \"recorded_git_head\": \"e714218b5c925c2270d3661746a49ac98ba6720e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 4}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0d9f81ab-1365-442a-aec3-1d6899babc99",
         "revision": 5,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T11:53:53Z",
+        "gate_id": "WFU-16-CORE",
+        "id": "0e2d8ecc-7522-4dba-af45-f9fd77f1ed87",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"29ced001e878b4a8e4dc32b177967064ae1c52d7dddd46612f954148ca2b0e1e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"sha256\": \"4715e6749b02c706cf54e126c2632b549208158fc20009dac3fbe6c11ced8d16\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"sha256\": \"04ad76ad176a24cb1d74c6519c4e8270e9be911365c12b99c39566639bcb1a8d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"sha256\": \"c6967103caaccc240fae6cc55e90adcce4b85fcefafb46a7579a1aa6625a7b1d\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_workspaces.py\", \"sha256\": \"6703251043f81aa2d082b5434197285a8ed308626b42f1ec9128bbd015658606\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"f22031b53fd6c5ac7e31bea264ff2871484eaa63\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 172}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0e2d8ecc-7522-4dba-af45-f9fd77f1ed87",
+        "revision": 173,
         "status": "passed"
       },
       {
@@ -2756,14 +2789,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/workflow\", \"todo-orchestrator/tests/test_workflow_runs_lanes.py\", \"todo-orchestrator/tests/test_workflow_messages_rendezvous.py\", \"todo-orchestrator/tests/test_workflow_context_fragments.py\", \"todo-orchestrator/tests/test_workflow_workspaces.py\"]}",
         "id": "WFU-16-CORE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "29ced001e878b4a8e4dc32b177967064ae1c52d7dddd46612f954148ca2b0e1e",
+        "last_run_at": "2026-08-27T11:53:53Z",
         "required": 1,
-        "revision": 171,
-        "status": "pending",
+        "revision": 173,
+        "status": "passed",
         "task_id": "WFU-16",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,

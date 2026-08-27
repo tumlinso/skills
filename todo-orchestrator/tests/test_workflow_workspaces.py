@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -89,7 +90,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             operation=seed,
         )
         self.managed = self.root / "managed"
-        self.service = WorkspaceService(self.db, managed_root=self.managed)
+        self.service = WorkspaceService(
+            self.db,
+            managed_root=self.managed,
+            repository_identity_resolver=lambda root: "repo-identity",
+        )
 
     def tearDown(self) -> None:
         self.temp.cleanup()
@@ -135,12 +140,29 @@ class WorkflowWorkspaceTests(unittest.TestCase):
     def gate_evidence(self, status: str) -> str:
         evidence_id = f"POST-{status}-{self.db.revision()}"
         valid = int(status == "passed")
+        with self.db.read() as conn:
+            queue = conn.execute(
+                "SELECT q.merge_result_json,d.worktree_path FROM workflow_integration_queue q "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.state='awaiting_gates'"
+            ).fetchone()
+        applied = json.loads(queue["merge_result_json"])
+        fingerprint = f"fingerprint-{evidence_id}"
+        metadata = json.dumps({
+            "input_fingerprint": fingerprint,
+            "started_revision": self.db.revision(),
+            "workspace_path": str(Path(queue["worktree_path"]).resolve()),
+            "source_identity": applied["source_identity"],
+        }, sort_keys=True)
         def operation(conn, revision):
-            conn.execute("UPDATE gates SET status=?,valid=?,revision=? WHERE id='POST'", (status, valid, revision))
+            conn.execute(
+                "UPDATE gates SET status=?,valid=?,input_fingerprint=?,revision=? WHERE id='POST'",
+                (status, valid, fingerprint, revision),
+            )
             conn.execute(
                 "INSERT INTO evidence(id,gate_id,kind,status,metadata_json,created_at,revision) "
-                "VALUES(?,'POST','gate',?,'{}',?,?)",
-                (evidence_id, status, utc_now(), revision),
+                "VALUES(?,'POST','gate',?,?,?,?)",
+                (evidence_id, status, metadata, utc_now(), revision),
             )
         self.db.mutate(actor_session_id=None, entity_type="gate", entity_id="POST", event_type="test_gate", payload={}, operation=operation)
         return evidence_id
@@ -178,6 +200,16 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertFalse((self.managed / "child").exists())
 
     def test_unmanaged_paths_and_mode_mismatch_are_rejected_before_git(self) -> None:
+        insecure = WorkspaceService(self.db, managed_root=self.managed)
+        self.assert_code(
+            "repository_identity_resolver_required",
+            lambda: insecure.create_workspace(
+                repository_root=self.repo, repository_identity="caller-asserted", run_id="RUN",
+                lane_id="PRODUCER", mode="isolated_merge", base_commit=self.base,
+                worktree_path=self.managed / "unverified", branch="unverified",
+                integration_task_id="INTEGRATE",
+            ),
+        )
         self.assert_code(
             "workspace_path_unmanaged",
             lambda: self.service.create_workspace(
@@ -346,10 +378,62 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
         )
         self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.db.mutate(
+            actor_session_id=None, entity_type="evidence", entity_id="STALE", event_type="test_timestamp_adjusted", payload={},
+            operation=lambda conn, revision: conn.execute(
+                "UPDATE evidence SET created_at='9999-12-31T23:59:59Z' WHERE id='STALE'"
+            ),
+        )
         self.assert_code(
             "integration_gate_provenance_invalid",
             lambda: self.service.record_post_merge_gates(
                 queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "status": "passed"}]
+            ),
+        )
+
+    def test_gate_started_before_apply_and_changed_destination_are_rejected(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta provenance\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        destination_path = Path(str(destination["worktree_path"])).resolve()
+        started_revision = self.db.revision()
+        stale_metadata = json.dumps({
+            "input_fingerprint": "stale-fingerprint",
+            "started_revision": started_revision,
+            "workspace_path": str(destination_path),
+            "source_identity": self.service._source_identity(destination_path, self.base),
+        }, sort_keys=True)
+        self.db.mutate(
+            actor_session_id=None, entity_type="gate", entity_id="POST", event_type="stale_gate", payload={},
+            operation=lambda conn, revision: (
+                conn.execute("UPDATE gates SET status='passed',valid=1,input_fingerprint='stale-fingerprint',revision=? WHERE id='POST'", (revision,)),
+                conn.execute(
+                    "INSERT INTO evidence(id,gate_id,kind,status,metadata_json,created_at,revision) "
+                    "VALUES('STALE','POST','gate','passed',?,?,?)",
+                    (stale_metadata, utc_now(), revision),
+                ),
+            ),
+        )
+        self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assert_code(
+            "integration_gate_workspace_mismatch",
+            lambda: self.service.record_post_merge_gates(
+                queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": "STALE"}]
+            ),
+        )
+
+        evidence = self.gate_evidence("passed")
+        (destination_path / "shared.txt").write_text("changed after gates\n", encoding="utf-8")
+        self.assert_code(
+            "integration_source_changed",
+            lambda: self.service.record_post_merge_gates(
+                queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": evidence}]
             ),
         )
 

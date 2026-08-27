@@ -126,13 +126,13 @@ def _apply_condition(
         (new_state, new_state, utc_now(), revision, rendezvous_id),
     )
     barrier_changes = reevaluate_barriers(conn, revision)
-    if condition["satisfied"]:
+    barrier = conn.execute("SELECT state FROM barriers WHERE id=?", (row["barrier_id"],)).fetchone()
+    if condition["satisfied"] and barrier and barrier["state"] == "open":
         conn.execute(
             "UPDATE tasks SET attention_reason=NULL,updated_at=?,revision=? "
             "WHERE id=? AND status NOT IN ('done','cancelled','superseded')",
             (utc_now(), revision, row["join_task_id"]),
         )
-    barrier = conn.execute("SELECT state FROM barriers WHERE id=?", (row["barrier_id"],)).fetchone()
     return {
         **condition,
         "state": new_state,
@@ -502,6 +502,16 @@ class RendezvousService:
                 raise TodoError("rendezvous_arrival_not_found", "Arrival does not exist")
             if row["state"] == "invalid":
                 return {"already_invalid": True, "condition": _condition(conn, rendezvous_id)}
+            rendezvous = conn.execute(
+                "SELECT join_task_id FROM workflow_rendezvous WHERE id=? AND run_id=?",
+                (rendezvous_id, run_id),
+            ).fetchone()
+            join_task = conn.execute("SELECT status FROM tasks WHERE id=?", (rendezvous["join_task_id"],)).fetchone() if rendezvous else None
+            if join_task and join_task["status"] in {"done", "cancelled", "superseded"}:
+                raise TodoError(
+                    "rendezvous_terminal_invalidation_requires_recovery",
+                    "A terminal join cannot be invalidated through ordinary lane coordination",
+                )
             conn.execute(
                 "UPDATE workflow_rendezvous_arrivals SET state='invalid',revision=? WHERE rendezvous_id=? AND lane_id=?",
                 (revision, rendezvous_id, lane_id),

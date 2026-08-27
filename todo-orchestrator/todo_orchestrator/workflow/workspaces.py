@@ -97,6 +97,16 @@ class WorkspaceService:
         raw = self._git_ok(repository_root, ["rev-parse", "--verify", f"{ref}^{{commit}}"], code="workspace_base_missing")
         return raw.decode("utf-8", errors="replace").strip()
 
+    def _source_identity(self, repository_root: Path, base_commit: str) -> str:
+        """Hash the complete tracked destination state relative to its frozen base."""
+        return _sha256(
+            self._git_ok(
+                repository_root,
+                ["diff", "--binary", base_commit],
+                code="integration_source_identity_failed",
+            )
+        )
+
     def _lane(self, conn: Any, run_id: str, lane_id: str) -> Any:
         row = conn.execute(
             "SELECT id,run_id,role,workspace_mode,state FROM workflow_lanes WHERE id=? AND run_id=?",
@@ -133,6 +143,8 @@ class WorkspaceService:
         repository_root = repository_root.resolve()
         if not repository_identity:
             raise TodoError("repository_identity_required", "Repository identity is required")
+        if mode != "read_shared" and self.repository_identity_resolver is None:
+            raise TodoError("repository_identity_resolver_required", "Writable workspaces require an authoritative repository identity resolver")
         if self.repository_identity_resolver is not None:
             authoritative_identity = self.repository_identity_resolver(repository_root)
             if repository_identity != authoritative_identity:
@@ -469,7 +481,7 @@ class WorkspaceService:
             conflicts = sorted(filter(None, unresolved.stdout.decode("utf-8", errors="replace").splitlines()))
         now = utc_now()
         state = "awaiting_gates" if applied.returncode == 0 else "conflict"
-        merge_result = {"returncode": applied.returncode, "state": state}
+        source_identity = self._source_identity(destination, row["base_commit"]) if applied.returncode == 0 else None
         conflict = {
             "paths": conflicts,
             "integration_task_id": row["integration_task_id"],
@@ -480,6 +492,13 @@ class WorkspaceService:
             current = conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
             if current is None or current["state"] != "applying":
                 raise TodoError("integration_state_changed", "Integration queue entry changed while Git was applying")
+            merge_result = {
+                "returncode": applied.returncode,
+                "state": state,
+                "apply_revision": revision,
+                "source_identity": source_identity,
+                "destination_worktree": str(destination.resolve()),
+            }
             conn.execute(
                 "UPDATE workflow_integration_queue SET state=?,conflict_json=?,merge_result_json=?,updated_at=? WHERE id=?",
                 (state, _json(conflict), _json(merge_result), now, queue_id),
@@ -513,12 +532,22 @@ class WorkspaceService:
         authoritative: list[dict[str, object]] = []
         with self.db.read() as conn:
             queue = conn.execute(
-                "SELECT q.integration_task_id,q.updated_at,d.worktree_path,d.base_commit FROM workflow_integration_queue q "
+                "SELECT q.integration_task_id,q.updated_at,q.state,q.merge_result_json,d.worktree_path,d.base_commit FROM workflow_integration_queue q "
                 "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id WHERE q.id=?",
                 (queue_id,),
             ).fetchone()
             if queue is None:
                 raise TodoError("integration_queue_missing", "Integration queue entry does not exist")
+            if queue["state"] != "awaiting_gates":
+                raise TodoError("integration_not_awaiting_gates", "Integration is not awaiting post-merge gates")
+            applied = json.loads(queue["merge_result_json"] or "{}")
+            apply_revision = int(applied.get("apply_revision", 0))
+            source_identity = str(applied.get("source_identity", ""))
+            destination_path = str(Path(queue["worktree_path"]).resolve())
+            if not apply_revision or not source_identity or applied.get("destination_worktree") != destination_path:
+                raise TodoError("integration_apply_provenance_missing", "Integration apply provenance is incomplete")
+            if self._source_identity(Path(destination_path), queue["base_commit"]) != source_identity:
+                raise TodoError("integration_source_changed", "Destination source changed after integration apply")
             required_gate_ids = {
                 row[0] for row in conn.execute(
                     "SELECT id FROM gates WHERE task_id=? AND required=1", (queue["integration_task_id"],)
@@ -535,11 +564,20 @@ class WorkspaceService:
                     "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
                     (gate_id, evidence_id),
                 ).fetchone()
-                if not row or row["task_id"] != queue["integration_task_id"] or row["created_at"] < queue["updated_at"]:
+                if not row or row["task_id"] != queue["integration_task_id"]:
                     raise TodoError("integration_gate_provenance_invalid", "Post-merge gate evidence is not authoritative for the integration task")
                 metadata = json.loads(row["metadata_json"] or "{}")
                 if metadata.get("input_fingerprint") != row["input_fingerprint"]:
                     raise TodoError("integration_gate_provenance_stale", "Gate evidence does not match the current gate input fingerprint")
+                if (
+                    int(metadata.get("started_revision", -1)) < apply_revision
+                    or metadata.get("workspace_path") != destination_path
+                    or metadata.get("source_identity") != source_identity
+                ):
+                    raise TodoError(
+                        "integration_gate_workspace_mismatch",
+                        "Post-merge gate did not start against the applied destination source",
+                    )
                 authoritative.append({
                     "gate_id": gate_id,
                     "evidence_id": evidence_id,
@@ -548,31 +586,24 @@ class WorkspaceService:
                     "evidence_status": row["evidence_status"],
                     "evidence_revision": int(row["revision"]),
                     "input_fingerprint": row["input_fingerprint"],
+                    "started_revision": int(metadata["started_revision"]),
                 })
         passed = all(item["status"] == "passed" and item["valid"] and item["evidence_status"] == "passed" for item in authoritative)
         now = utc_now()
         target_state = "integrated" if passed else "gate_failed"
-        integrated_artifact: dict[str, object] | None = None
-        if passed:
-            destination = Path(queue["worktree_path"])
-            content = self._git_ok(destination, ["diff", "--binary", queue["base_commit"]], code="integration_final_diff_failed")
-            digest = _sha256(content)
-            artifact_dir = self.managed_root / "artifacts"
-            artifact_dir.mkdir(parents=True, exist_ok=True)
-            artifact_path = artifact_dir / f"integration-{digest}.patch"
-            _write_immutable(artifact_path, content)
-            integrated_artifact = {"kind": "patch", "ref": str(artifact_path), "content_hash": digest}
+        reserved = False
 
-        def operation(conn: Any, revision: int) -> dict[str, object]:
+        def reserve_finalization(conn: Any, revision: int) -> dict[str, object]:
             row = conn.execute(
-                """SELECT q.*,a.workspace_id,d.id AS destination_workspace_id FROM workflow_integration_queue q
-                   JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id
-                   JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id
-                   WHERE q.id=?""",
+                "SELECT q.state,q.run_id,q.integrator_lane_id,q.integration_task_id,q.merge_result_json "
+                "FROM workflow_integration_queue q WHERE q.id=?",
                 (queue_id,),
             ).fetchone()
             if row is None or row["state"] != "awaiting_gates":
                 raise TodoError("integration_not_awaiting_gates", "Integration is not awaiting post-merge gates")
+            current_apply = json.loads(row["merge_result_json"] or "{}")
+            if int(current_apply.get("apply_revision", 0)) != apply_revision or current_apply.get("source_identity") != source_identity:
+                raise TodoError("integration_apply_provenance_changed", "Integration apply provenance changed before finalization")
             required_gate_ids = {
                 item[0] for item in conn.execute(
                     "SELECT id FROM gates WHERE task_id=? AND required=1", (row["integration_task_id"],)
@@ -580,57 +611,121 @@ class WorkspaceService:
             }
             if required_gate_ids != {str(item["gate_id"]) for item in authoritative}:
                 raise TodoError("integration_gate_coverage_changed", "Required integration gates changed during finalization")
-            for gate in authoritative:
-                current = conn.execute(
-                    "SELECT g.status,g.valid,g.input_fingerprint,e.status,e.metadata_json,e.created_at,e.revision "
-                    "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
-                    (gate["gate_id"], gate["evidence_id"]),
-                ).fetchone()
-                metadata = json.loads(current["metadata_json"] or "{}") if current else {}
-                if (
-                    not current
-                    or current["status"] != gate["status"]
-                    or bool(current["valid"]) != gate["valid"]
-                    or current["status"] != current[3]
-                    or int(current["revision"]) != gate["evidence_revision"]
-                    or metadata.get("input_fingerprint") != current["input_fingerprint"]
-                ):
-                    raise TodoError("integration_gate_provenance_stale", "Integration gate provenance changed before finalization")
-            merge_result = {"state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact}
             conn.execute(
-                "UPDATE workflow_integration_queue SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
-                (target_state, _json(merge_result), now, queue_id),
-            )
-            conn.execute("UPDATE workflow_patch_artifacts SET state=? WHERE id=?", (target_state, row["patch_artifact_id"]))
-            conn.execute(
-                "UPDATE workflow_workspaces SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
-                (target_state, _json(merge_result), now, row["workspace_id"]),
+                "UPDATE workflow_integration_queue SET state='finalizing',updated_at=? WHERE id=? AND state='awaiting_gates'",
+                (utc_now(), queue_id),
             )
             conn.execute(
-                "UPDATE workflow_workspaces SET state=?,merge_result_json=?,updated_at=? WHERE run_id=? AND lane_id=?",
-                (target_state, _json(merge_result), now, row["run_id"], row["integrator_lane_id"]),
+                "UPDATE workflow_workspaces SET state='finalizing',updated_at=? WHERE run_id=? AND lane_id=?",
+                (utc_now(), row["run_id"], row["integrator_lane_id"]),
             )
-            if integrated_artifact:
-                final_artifact_id = str(uuid.uuid4())
-                conn.execute(
-                    "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
-                    "VALUES(?,?,?,?,?,?,?,?, 'integrated')",
-                    (final_artifact_id, row["destination_workspace_id"], row["integration_task_id"], integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], queue["base_commit"], now),
-                )
-                conn.execute(
-                    "UPDATE workflow_workspaces SET artifact_kind=?,artifact_ref=?,diff_hash=? WHERE run_id=? AND lane_id=?",
-                    (integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], row["run_id"], row["integrator_lane_id"]),
-                )
-            return {"queue_id": queue_id, "state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact}
+            return {"queue_id": queue_id, "state": "finalizing"}
 
-        result, revision = self.db.mutate(
+        self.db.mutate(
             actor_session_id=actor_session_id,
             entity_type="workflow_integration_queue",
             entity_id=queue_id,
-            event_type="workflow_post_merge_gates_recorded",
-            payload={"state": target_state, "gate_count": len(gate_results)},
-            operation=operation,
+            event_type="workflow_integration_finalization_reserved",
+            payload={"source_identity": source_identity, "gate_count": len(authoritative)},
+            operation=reserve_finalization,
         )
+        reserved = True
+        integrated_artifact: dict[str, object] | None = None
+        destination = Path(queue["worktree_path"])
+        try:
+            if self._source_identity(destination, queue["base_commit"]) != source_identity:
+                raise TodoError("integration_source_changed", "Destination source changed during finalization")
+            if passed:
+                content = self._git_ok(destination, ["diff", "--binary", queue["base_commit"]], code="integration_final_diff_failed")
+                digest = _sha256(content)
+                if digest != source_identity:
+                    raise TodoError("integration_source_changed", "Final artifact does not match the gated destination source")
+                artifact_dir = self.managed_root / "artifacts"
+                artifact_dir.mkdir(parents=True, exist_ok=True)
+                artifact_path = artifact_dir / f"integration-{digest}.patch"
+                _write_immutable(artifact_path, content)
+                integrated_artifact = {"kind": "patch", "ref": str(artifact_path), "content_hash": digest}
+
+            def operation(conn: Any, revision: int) -> dict[str, object]:
+                row = conn.execute(
+                    """SELECT q.*,a.workspace_id,d.id AS destination_workspace_id FROM workflow_integration_queue q
+                       JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id
+                       JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id
+                       WHERE q.id=?""",
+                    (queue_id,),
+                ).fetchone()
+                if row is None or row["state"] != "finalizing":
+                    raise TodoError("integration_not_finalizing", "Integration finalization reservation was lost")
+                for gate in authoritative:
+                    current = conn.execute(
+                        "SELECT g.status,g.valid,g.input_fingerprint,e.status,e.metadata_json,e.revision "
+                        "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
+                        (gate["gate_id"], gate["evidence_id"]),
+                    ).fetchone()
+                    metadata = json.loads(current["metadata_json"] or "{}") if current else {}
+                    if (
+                        not current
+                        or current["status"] != gate["status"]
+                        or bool(current["valid"]) != gate["valid"]
+                        or current["status"] != current[3]
+                        or int(current["revision"]) != gate["evidence_revision"]
+                        or metadata.get("input_fingerprint") != current["input_fingerprint"]
+                        or int(metadata.get("started_revision", -1)) < apply_revision
+                        or metadata.get("workspace_path") != destination_path
+                        or metadata.get("source_identity") != source_identity
+                    ):
+                        raise TodoError("integration_gate_provenance_stale", "Integration gate provenance changed before finalization")
+                if self._source_identity(destination, queue["base_commit"]) != source_identity:
+                    raise TodoError("integration_source_changed", "Destination source changed before authoritative finalization")
+                merge_result = {"state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact, "source_identity": source_identity}
+                conn.execute(
+                    "UPDATE workflow_integration_queue SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
+                    (target_state, _json(merge_result), now, queue_id),
+                )
+                conn.execute("UPDATE workflow_patch_artifacts SET state=? WHERE id=?", (target_state, row["patch_artifact_id"]))
+                conn.execute(
+                    "UPDATE workflow_workspaces SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
+                    (target_state, _json(merge_result), now, row["workspace_id"]),
+                )
+                conn.execute(
+                    "UPDATE workflow_workspaces SET state=?,merge_result_json=?,updated_at=? WHERE run_id=? AND lane_id=?",
+                    (target_state, _json(merge_result), now, row["run_id"], row["integrator_lane_id"]),
+                )
+                if integrated_artifact:
+                    final_artifact_id = str(uuid.uuid4())
+                    conn.execute(
+                        "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
+                        "VALUES(?,?,?,?,?,?,?,?, 'integrated')",
+                        (final_artifact_id, row["destination_workspace_id"], row["integration_task_id"], integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], queue["base_commit"], now),
+                    )
+                    conn.execute(
+                        "UPDATE workflow_workspaces SET artifact_kind=?,artifact_ref=?,diff_hash=? WHERE run_id=? AND lane_id=?",
+                        (integrated_artifact["kind"], integrated_artifact["ref"], integrated_artifact["content_hash"], row["run_id"], row["integrator_lane_id"]),
+                    )
+                return {"queue_id": queue_id, "state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact}
+
+            result, revision = self.db.mutate(
+                actor_session_id=actor_session_id,
+                entity_type="workflow_integration_queue",
+                entity_id=queue_id,
+                event_type="workflow_post_merge_gates_recorded",
+                payload={"state": target_state, "gate_count": len(gate_results), "source_identity": source_identity},
+                operation=operation,
+            )
+        except Exception:
+            if reserved:
+                self.db.mutate(
+                    actor_session_id=actor_session_id,
+                    entity_type="workflow_integration_queue",
+                    entity_id=queue_id,
+                    event_type="workflow_integration_finalization_failed",
+                    payload={"preserved": True},
+                    operation=lambda conn, revision: (
+                        conn.execute("UPDATE workflow_integration_queue SET state='finalization_failed',updated_at=? WHERE id=? AND state='finalizing'", (utc_now(), queue_id)),
+                        conn.execute("UPDATE workflow_workspaces SET state='finalization_failed',updated_at=? WHERE run_id=(SELECT run_id FROM workflow_integration_queue WHERE id=?) AND lane_id=(SELECT integrator_lane_id FROM workflow_integration_queue WHERE id=?) AND state='finalizing'", (utc_now(), queue_id, queue_id)),
+                    ),
+                )
+            raise
         result["revision"] = revision
         return result
 

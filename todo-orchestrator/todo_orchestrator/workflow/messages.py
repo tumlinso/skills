@@ -30,6 +30,10 @@ from .foundation import (
 RECIPIENT_TYPES = frozenset({"lane", "role", "task", "run"})
 InterfaceChangeHook = Callable[[sqlite3.Connection, dict[str, Any], int], dict[str, Any]]
 _BULK_CONTENT_KEYS = frozenset({"log", "logs", "transcript", "stdout", "stderr", "raw_log", "raw_logs"})
+_SECRET_CONTENT_KEYS = frozenset(
+    {"token", "claim_token", "session_token", "worker_token", "capability_token", "password", "secret", "api_key", "gpu_identifier", "model_endpoint"}
+)
+MESSAGE_ENVELOPE_BUDGET_BYTES = COORDINATE_TASK_BUDGET_BYTES - 512
 
 
 def _require_first_class(capability_class: str) -> None:
@@ -48,12 +52,20 @@ def _json_object(value: object, *, name: str) -> dict[str, Any]:
 
 def _reject_bulk_content(value: object) -> None:
     if isinstance(value, dict):
-        forbidden = sorted(str(key) for key in value if str(key).lower() in _BULK_CONTENT_KEYS)
+        lowered = {str(key).lower() for key in value}
+        forbidden = sorted(key for key in lowered if key in _BULK_CONTENT_KEYS)
         if forbidden:
             raise TodoError(
                 "workflow_message_bulk_content_forbidden",
                 "Run messages must reference bounded artifacts instead of embedding logs or transcripts",
                 details={"fields": forbidden},
+            )
+        secret = sorted(key for key in lowered if key in _SECRET_CONTENT_KEYS or key.endswith("_token"))
+        if secret:
+            raise TodoError(
+                "workflow_message_secret_forbidden",
+                "Run messages must not persist raw secrets or execution identifiers",
+                details={"fields": secret},
             )
         for item in value.values():
             _reject_bulk_content(item)
@@ -228,6 +240,7 @@ class MessageService:
         payload = _json_object(payload, name="payload")
         reference_list = [_json_object(item, name="reference") for item in references]
         _reject_bulk_content(payload)
+        _reject_bulk_content(reference_list)
         require_bounded_payload(
             {"kind": kind, "payload": payload, "references": reference_list},
             limit=MESSAGE_PAYLOAD_BUDGET_BYTES,
@@ -267,6 +280,11 @@ class MessageService:
                 blocking=blocking,
                 linked_message_id=None,
                 message_id=message_id,
+            )
+            require_bounded_payload(
+                message,
+                limit=MESSAGE_ENVELOPE_BUDGET_BYTES,
+                code="workflow_message_envelope_too_large",
             )
             return {"message": message, "durable_change": durable}
 
@@ -320,6 +338,7 @@ class MessageService:
         payload = _json_object(payload, name="payload")
         reference_list = [_json_object(item, name="reference") for item in references]
         _reject_bulk_content(payload)
+        _reject_bulk_content(reference_list)
         require_bounded_payload(
             {"kind": "answer", "payload": payload, "references": reference_list},
             limit=MESSAGE_PAYLOAD_BUDGET_BYTES,
@@ -358,6 +377,11 @@ class MessageService:
                 linked_message_id=question_id,
                 message_id=message_id,
             )
+            require_bounded_payload(
+                answer,
+                limit=MESSAGE_ENVELOPE_BUDGET_BYTES,
+                code="workflow_message_envelope_too_large",
+            )
             now = utc_now()
             conn.execute(
                 "UPDATE workflow_messages SET state='resolved',resolved_at=?,revision=? WHERE id=?",
@@ -390,8 +414,8 @@ class MessageService:
         budget_bytes: int = COORDINATE_TASK_BUDGET_BYTES,
     ) -> dict[str, Any]:
         _require_first_class(capability_class)
-        if budget_bytes < MESSAGE_PAYLOAD_BUDGET_BYTES:
-            raise TodoError("workflow_sync_budget_too_small", "Sync budget cannot hold one bounded message")
+        if budget_bytes < COORDINATE_TASK_BUDGET_BYTES:
+            raise TodoError("workflow_sync_budget_too_small", "Sync budget cannot hold one bounded message envelope")
 
         def unread_rows(conn: sqlite3.Connection, lane: sqlite3.Row) -> list[sqlite3.Row]:
             return conn.execute(
@@ -429,6 +453,8 @@ class MessageService:
                 candidate = _message_dict(conn, row)
                 envelope = {"messages": [*messages, candidate], "cursor": int(row["revision"])}
                 if len(canonical_json(envelope).encode("utf-8")) > budget_bytes:
+                    if not messages:
+                        raise TodoError("workflow_message_envelope_undeliverable", "Stored message exceeds the negotiated sync budget")
                     break
                 messages.append(candidate)
             cursor = int(lane["context_cursor"])
