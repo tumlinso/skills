@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "task_id": "WFU-22",
+  "result": "passed",
+  "project_control": {
+    "base_commit": "9d1d4dd2e265f29cb292943b78bc6475d34be6f4",
+    "branch": "workflow-unification-v3-read-model",
+    "commit": "974d5841f62aca4a2abdbd85602030c700923424",
+    "worktree": "/home/tumlinson/.local/state/codex-worktrees/project-control-workflow-unification-v3",
+    "git_status": "clean"
+  },
+  "todo_semantic_contract": {
+    "contract": "workflow-unification/contracts/semantic-read-v1.md",
+    "kernel_conformance_commit": "092f03c",
+    "authority": "todo semantic workflow --json",
+    "raw_workflow_table_inference": false
+  },
+  "mcp_surface": {
+    "tool_count": 8,
+    "tools": [
+      "project_overview",
+      "project_delta",
+      "project_frontier",
+      "inspect",
+      "evidence",
+      "plan_preview",
+      "agent_status",
+      "performance_status"
+    ],
+    "input_schema_version": 1,
+    "input_schema_sha256": {
+      "agent_status": "15065af772af4bb13c5a717e55eb122dcc116635a45c9413ce6da21710caa0b2",
+      "evidence": "2e26d42ebdd8bb4be9dfc170aa18dbdcaef34a9fd5ade8c286c2c8773be1c7f4",
+      "inspect": "b4cc372064f72054ba2bed95bc0ebcbcc285d3aea786d8ebda2c7477c9a56afd",
+      "performance_status": "c50251ba7af1c1ff5659c218e93f489d8826dc68c330ddaa1b68f9c5219547b7",
+      "plan_preview": "3b34bfc5c59670fe82df3fac81f746c9b0401093403bad6459895ca31e94dda9",
+      "project_delta": "7bc19453e1f23884df01629936b88a9585794a02311d72e0e1f624d8ca90c708",
+      "project_frontier": "ad4c2888841c1395c612fe56427a8a6f6b36454aafe0eea1301ea5d2cea56061",
+      "project_overview": "42e86341f8b3869562c721e1cbd7f3e9f025a87f14182feb860b5e2763590b83"
+    },
+    "read_only_annotations_preserved": true,
+    "input_schemas_changed": false
+  },
+  "separation_evidence": {
+    "first_class_agents_source": "authoritative semantic dispatch/session/claim/lane/context tuple",
+    "claims_without_dispatch_are_agents": false,
+    "local_children_field": "subordinate_local_children",
+    "local_children_are_lanes": false,
+    "local_children_are_rendezvous_participants": false,
+    "legacy_children_are_peer_agents": false
+  },
+  "compatibility": {
+    "old_todo_without_semantic_workflow": "explicit todo_workflow_semantic_unavailable partial result",
+    "legacy_task_reads_preserved": true,
+    "plan_schema_v2_preserved": true,
+    "plan_schema_v3_advertised_additively": true
+  },
+  "tests": {
+    "command": "PYTHONPATH=src /home/tumlinson/project-control/.venv/bin/python -m unittest discover -s tests",
+    "passed": 70,
+    "failed": 0,
+    "errors": 0,
+    "duration_seconds": 25.611,
+    "focused_workflow_tests": 5,
+    "manual_new_kernel_fixture": {
+      "workflow_available": true,
+      "active_run_id": "compat-v2",
+      "lane_ids": ["compat-v2-main"],
+      "first_class_agents": [],
+      "subordinate_children": []
+    }
+  },
+  "security": {
+    "mutation_guard_passed": true,
+    "raw_tokens_exposed": false,
+    "raw_logs_exposed": false,
+    "fixed_shell_free_todo_argv": true,
+    "bounded_outputs_passed": true
+  }
+}
