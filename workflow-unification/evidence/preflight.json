@@ -1,0 +1,80 @@
+{
+  "format": "WFU-PREFLIGHT/1",
+  "observed_at": "2026-08-27T10:41:46Z",
+  "status": "quiescent_with_recorded_baseline_failure",
+  "skills": {
+    "authoritative_checkout": "/home/tumlinson/.agents/skills",
+    "base_commit": "d956052dff0c15867e8ab99be4a6b41fcb72f091",
+    "remote": "git@github.com:tumlinso/skills.git",
+    "remote_main": "d956052dff0c15867e8ab99be4a6b41fcb72f091",
+    "tracked_clean": true,
+    "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bootstrap_todo_cli": "/home/tumlinson/.agents/skills/todo-orchestrator/scripts/todo.py",
+    "isolated_branch": "workflow-unification-v3",
+    "isolated_worktree": "/home/tumlinson/.local/state/codex-worktrees/skills-workflow-unification-v3"
+  },
+  "todo": {
+    "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+    "pre_plan_revision": 132,
+    "pre_plan_database_schema_version": 9,
+    "pre_plan_snapshot_sha256": "8ef76a866255e3efbb98905e8d1eff2d571108886d710ec5361771a6d2b9b4ef",
+    "active_claims": 0,
+    "orphaned_claims": 0,
+    "active_child_executions": 0,
+    "active_child_attempts": 0,
+    "active_child_scope_leases": 0,
+    "active_lock_leases": 0,
+    "active_resource_leases": 0,
+    "ready_tasks": 0,
+    "preserved_unrelated_blocked_task": "C4Q-01",
+    "preserved_unrelated_discrepancy": "C4Q-UNIT gate_inputs_changed"
+  },
+  "processes": {
+    "observable_mutating_workers": 0,
+    "observable_gate_processes": 0,
+    "observable_cuda_or_background_campaigns": 0,
+    "local_worker_supervisor_running": false,
+    "recorded_session_pids_alive": 0,
+    "project_control_agent_state": "unavailable_cross_checked_locally"
+  },
+  "baseline": {
+    "todo_orchestrator": {
+      "run": 126,
+      "passed": 125,
+      "failed": 1,
+      "pre_existing_failure": "test_semantic_state.SemanticStateTests.test_current_only_retains_most_recent_completed_program_when_no_work_remains"
+    },
+    "coding_workflow_mcp": {"run": 46, "passed": 46, "failed": 0},
+    "project_control": {"run": 64, "passed": 64, "failed": 0},
+    "git_diff_check": "passed"
+  },
+  "installed_coding_workflow": {
+    "registration_name": "coding-workflow",
+    "entrypoint": "/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python -m coding_workflow_mcp",
+    "skills_root_environment_name": "CODING_WORKFLOW_SKILLS_ROOT",
+    "skills_root": "/home/tumlinson/.agents/skills",
+    "package_version": "0.1.0",
+    "source_path": "/home/tumlinson/.agents/skills/integrations/coding-workflow-mcp",
+    "registration_enabled": true
+  },
+  "project_control": {
+    "authoritative_checkout": "/home/tumlinson/project-control",
+    "base_commit": "9d1d4dd2e265f29cb292943b78bc6475d34be6f4",
+    "tracked_clean": true,
+    "public_tool_count": 8,
+    "mutation_authority": false
+  },
+  "bootstrap_plan": {
+    "file": "workflow-unification-v3.plan.json",
+    "validated_task_count": 14,
+    "validated_checkpoint_count": 2,
+    "validated_barrier_count": 2,
+    "validated_interface_count": 2,
+    "pre_apply_revision": 132,
+    "applied_revision": 133,
+    "first_claim_revision": 136,
+    "required_checkpoint": "WFU-KERNEL-CONTRACT-V1",
+    "core_barrier": "WFU-CORE-RENDEZVOUS",
+    "release_barrier": "WFU-RELEASE-RENDEZVOUS"
+  }
+}

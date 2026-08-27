@@ -1,0 +1,146 @@
+{
+  "schema_version": 2,
+  "project": {"name": "Workflow Unification v3"},
+  "invariants": [
+    {"id": "WFU-SQLITE-AUTHORITY", "severity": "error", "rule": "Todo SQLite is the sole live semantic authority; every mutation is transactional, revisioned, and append-only in event history."},
+    {"id": "WFU-FRONT-DOOR", "severity": "error", "rule": "coding-workflow is the only ordinary model-facing workflow protocol; todo-orchestrator is its transactional kernel and maintenance interface."},
+    {"id": "WFU-CHILD-BOUNDARY", "severity": "error", "rule": "Local-worker child executions remain bounded subordinates of exactly one active parent claim and are never lanes, roles, run participants, todo owners, communicators, rendezvous participants, or parent completers."},
+    {"id": "WFU-PRESERVE-COMPAT", "severity": "error", "rule": "Existing v2 plans, snapshots, lifecycle entities, terminal provenance, child executions, gates, leases, interfaces, decisions, evidence, and historical audit remain readable and functional through forward-only migrations."},
+    {"id": "WFU-PRESERVE-WORK", "severity": "error", "rule": "Never reset, clean, overwrite, delete, or silently attribute user files, dirty worktrees, commits, patches, or unrelated C4Q state."},
+    {"id": "WFU-PC-READONLY", "severity": "error", "rule": "Project-control remains a separate stateless read-only observation plane with exactly eight public MCP tools."},
+    {"id": "WFU-LAZY-SPECIALISTS", "severity": "error", "rule": "cpp-context-compiler, CUDA, and local-coding-worker remain bounded specialized engines; MCP startup performs no GPU, model, repository scan, or benchmark work."},
+    {"id": "WFU-OPAQUE-SECRETS", "severity": "error", "rule": "Raw todo, session, child, recovery, GPU, endpoint, packet, log, and transcript secrets never cross the model-facing MCP boundary."},
+    {"id": "WFU-INTEGRATION-OWNERSHIP", "severity": "error", "rule": "Parallel lanes own disjoint modules and worktrees; shared service, command, schema normalization, projection, registry, and compatibility integration files are owned only by WFU-20 or later release tasks."}
+  ],
+  "locks": [
+    {"name": "wfu-kernel-foundation", "capacity": 1},
+    {"name": "wfu-shared-integration", "capacity": 1},
+    {"name": "wfu-release-cutover", "capacity": 1}
+  ],
+  "interfaces": [
+    {"id": "WFU-KERNEL-CONTRACT", "owner_task_id": "WFU-02", "state": "draft", "version": "1", "contract_paths": ["workflow-unification/contracts/kernel-contract-v1.md"]},
+    {"id": "WFU-SEMANTIC-READ", "owner_task_id": "WFU-20", "state": "draft", "version": "1", "contract_paths": ["workflow-unification/contracts/semantic-read-v1.md"]}
+  ],
+  "barriers": [
+    {"id": "WFU-CORE-RENDEZVOUS", "title": "All core workflow modules ready for integration", "mode": "all", "requirements": [
+      {"type": "task", "id": "WFU-10", "state": "done"},
+      {"type": "task", "id": "WFU-11", "state": "done"},
+      {"type": "task", "id": "WFU-12", "state": "done"},
+      {"type": "task", "id": "WFU-13", "state": "done"},
+      {"type": "task", "id": "WFU-14", "state": "done"},
+      {"type": "task", "id": "WFU-15", "state": "done"}
+    ]},
+    {"id": "WFU-RELEASE-RENDEZVOUS", "title": "Integrated implementation, routing, observation, and validation ready for cutover", "mode": "all", "requirements": [
+      {"type": "task", "id": "WFU-20", "state": "done"},
+      {"type": "task", "id": "WFU-21", "state": "done"},
+      {"type": "task", "id": "WFU-22", "state": "done"},
+      {"type": "validation_task", "id": "WFU-30", "state": "done"}
+    ]}
+  ],
+  "tasks": [
+    {
+      "id": "WFU-00", "kind": "task", "title": "Freeze preflight and isolated bootstrap evidence",
+      "objective": "Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.",
+      "priority": 200, "parallel_policy": "project_exclusive", "next_action": "Write and verify the preflight and rollback record from already-collected evidence.",
+      "scope": {"exclusive_paths": ["workflow-unification/evidence/preflight.json", "workflow-unification/rollback.md", "workflow-unification-v3.plan.json", ".todo-orchestrator/state.snapshot.json", "todos.md", "todo-status.md", "todos/wfu-00.md", "todos/wfu-01.md", "todos/wfu-02.md", "todos/wfu-10.md", "todos/wfu-11.md", "todos/wfu-12.md", "todos/wfu-13.md", "todos/wfu-14.md", "todos/wfu-15.md", "todos/wfu-20.md", "todos/wfu-21.md", "todos/wfu-22.md", "todos/wfu-30.md", "todos/wfu-31.md"], "read_paths": [".todo-orchestrator", "integrations/coding-workflow-mcp", "todo-orchestrator"]},
+      "claim_locks": ["wfu-kernel-foundation"], "invariants": ["WFU-PRESERVE-WORK", "WFU-SQLITE-AUTHORITY"],
+      "gates": [{"id": "WFU-00-DIFF", "type": "command", "argv": ["git", "diff", "--check"], "input_paths": ["workflow-unification/evidence/preflight.json", "workflow-unification/rollback.md", "workflow-unification-v3.plan.json"], "required": true}]
+    },
+    {
+      "id": "WFU-01", "kind": "task", "title": "Freeze target architecture and implementation seams",
+      "objective": "Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.",
+      "priority": 190, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-00"}],
+      "scope": {"exclusive_paths": ["workflow-unification/architecture.md", "workflow-unification/contracts"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "local-coding-worker", "cpp-context-compiler", "cuda"]},
+      "claim_locks": ["wfu-kernel-foundation"], "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PC-READONLY", "WFU-LAZY-SPECIALISTS", "WFU-OPAQUE-SECRETS"],
+      "gates": [{"id": "WFU-01-CONTRACT", "type": "file_exists", "path": "workflow-unification/architecture.md", "required": true}]
+    },
+    {
+      "id": "WFU-02", "kind": "task", "title": "Implement forward-only kernel foundations and fixtures",
+      "objective": "Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.",
+      "priority": 180, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-01"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/migrations.py", "todo-orchestrator/todo_orchestrator/workflow/foundation.py", "todo-orchestrator/tests/test_workflow_foundation.py", "todo-orchestrator/tests/fixtures/workflow", "workflow-unification/contracts/kernel-contract-v1.md"], "read_paths": ["todo-orchestrator/todo_orchestrator", "todo-orchestrator/tests"]},
+      "claim_locks": ["wfu-kernel-foundation"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-COMPAT", "WFU-CHILD-BOUNDARY", "WFU-OPAQUE-SECRETS"],
+      "checkpoints": [{"id": "WFU-KERNEL-CONTRACT-V1", "title": "Workflow kernel database and service contract frozen", "publishes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "version": "1"}]}],
+      "gates": [{"id": "WFU-02-TEST", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "todo-orchestrator/tests", "-p", "test_workflow_foundation.py", "-v"], "input_paths": ["todo-orchestrator/todo_orchestrator/migrations.py", "todo-orchestrator/todo_orchestrator/workflow/foundation.py", "todo-orchestrator/tests/test_workflow_foundation.py"], "required": true, "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}]
+    },
+    {
+      "id": "WFU-10", "kind": "workstream", "title": "Runs, serial lanes, roles, dispatch, and scheduling",
+      "objective": "Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.",
+      "priority": 160, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/roles.py", "todo-orchestrator/todo_orchestrator/workflow/runs.py", "todo-orchestrator/todo_orchestrator/workflow/lanes.py", "todo-orchestrator/tests/test_workflow_runs_lanes.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "todo-orchestrator/todo_orchestrator/workflow/foundation.py"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-CHILD-BOUNDARY", "WFU-SQLITE-AUTHORITY", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-11", "kind": "workstream", "title": "Typed messages, cursors, rendezvous, and arrivals",
+      "objective": "Implement bounded typed first-class-lane messages, receipts and cursors, blocking questions and answers, durable decisions, rendezvous modes, idempotent arrivals, and atomic join readiness with parent-mediated child findings.",
+      "priority": 159, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/messages.py", "todo-orchestrator/todo_orchestrator/workflow/rendezvous.py", "todo-orchestrator/tests/test_workflow_messages_rendezvous.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "todo-orchestrator/todo_orchestrator/workflow/foundation.py"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-CHILD-BOUNDARY", "WFU-SQLITE-AUTHORITY", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-12", "kind": "workstream", "title": "Versioned context fragments and bounded composition",
+      "objective": "Implement hashed versioned run, lane, task, decision, delta, and source-reference fragments with targeted invalidation, strict response budgets, and deliberately narrower local-child packets.",
+      "priority": 158, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/context_fragments.py", "todo-orchestrator/tests/test_workflow_context_fragments.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "cpp-context-compiler", "local-coding-worker"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-CHILD-BOUNDARY", "WFU-OPAQUE-SECRETS", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-13", "kind": "workstream", "title": "Managed isolated workspaces and integration queues",
+      "objective": "Implement explicit workspace ownership modes, first-class lane worktree records, immutable patch and commit artifacts, integration queues, base enforcement, conflict preservation, and cleanup eligibility while retaining subordinate child scope leases.",
+      "priority": 157, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/workspaces.py", "todo-orchestrator/tests/test_workflow_workspaces.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "todo-orchestrator/todo_orchestrator/git_state.py", "local-coding-worker"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-CHILD-BOUNDARY", "WFU-PRESERVE-WORK", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-14", "kind": "workstream", "title": "Unified owner recovery engine and administrator command",
+      "objective": "Implement one interactive owner-only recovery engine covering first-class dispatches and distinct subordinate child degradation, with live-process refusal, dirty artifact preservation, idempotent terminal reconciliation, audit, and no approval-token round trip.",
+      "priority": 156, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/recovery.py", "todo-orchestrator/todo_orchestrator/workflow/admin.py", "todo-orchestrator/tests/test_workflow_recovery.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "todo-orchestrator/todo_orchestrator/claims.py", "todo-orchestrator/todo_orchestrator/completion.py", "local-coding-worker"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-CHILD-BOUNDARY", "WFU-PRESERVE-WORK", "WFU-OPAQUE-SECRETS", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-15", "kind": "workstream", "title": "Canonical workflow service, protocol v2, capabilities, and MCP",
+      "objective": "Implement the canonical in-process WorkflowKernel boundary, protocol v2 envelopes, hash-stored lineage-bound first-class capabilities, exact six-tool MCP server, fixed adapters, and compatibility shim without todo subprocess operations.",
+      "priority": 155, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-KERNEL-CONTRACT-V1"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/protocol.py", "todo-orchestrator/todo_orchestrator/workflow/capabilities.py", "todo-orchestrator/todo_orchestrator/workflow/adapters", "todo-orchestrator/todo_orchestrator/workflow/mcp", "todo-orchestrator/tests/test_workflow_protocol_mcp.py"], "read_paths": ["workflow-unification/contracts/kernel-contract-v1.md", "integrations/coding-workflow-mcp", "local-coding-worker", "cpp-context-compiler", "cuda"]},
+      "consumes_interfaces": [{"id": "WFU-KERNEL-CONTRACT", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-OPAQUE-SECRETS", "WFU-LAZY-SPECIALISTS", "WFU-INTEGRATION-OWNERSHIP"]
+    },
+    {
+      "id": "WFU-20", "kind": "integration_task", "title": "Integrate workflow modules into todo services and compatibility surfaces",
+      "objective": "Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.",
+      "priority": 130, "parallel_policy": "integration_exclusive", "depends_on": [{"type": "barrier", "barrier_id": "WFU-CORE-RENDEZVOUS"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/workflow/__init__.py", "todo-orchestrator/todo_orchestrator/workflow/service.py", "todo-orchestrator/todo_orchestrator/service.py", "todo-orchestrator/todo_orchestrator/commands", "todo-orchestrator/todo_orchestrator/plans.py", "todo-orchestrator/todo_orchestrator/projections.py", "todo-orchestrator/todo_orchestrator/snapshots.py", "todo-orchestrator/todo_orchestrator/semantic.py", "todo-orchestrator/scripts/todo.py", "todo-orchestrator/schemas", "todo-orchestrator/tests/test_workflow_integration.py", "workflow-unification/contracts/semantic-read-v1.md"], "read_paths": ["todo-orchestrator/todo_orchestrator/workflow", "todo-orchestrator/tests"]},
+      "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-COMPAT", "WFU-CHILD-BOUNDARY", "WFU-INTEGRATION-OWNERSHIP"],
+      "checkpoints": [{"id": "WFU-SEMANTIC-READ-V1", "title": "Additive normalized workflow semantic read frozen", "publishes_interfaces": [{"id": "WFU-SEMANTIC-READ", "version": "1"}]}]
+    },
+    {
+      "id": "WFU-21", "kind": "workstream", "title": "Rewrite routing, installer, migration, and operations documentation",
+      "objective": "Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.",
+      "priority": 120, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-20"}],
+      "scope": {"exclusive_paths": ["AGENTS.md", "todo-orchestrator/SKILL.md", "todo-orchestrator/references", "todo-orchestrator/agents", "integrations/coding-workflow-mcp", "cpp-context-compiler/SKILL.md", "cuda/SKILL.md", "local-coding-worker/SKILL.md", "workflow-unification/README.md"], "read_paths": ["workflow-unification/contracts"]},
+      "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-LAZY-SPECIALISTS"]
+    },
+    {
+      "id": "WFU-22", "kind": "workstream", "title": "Extend project-control additive read model",
+      "objective": "In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.",
+      "priority": 119, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-SEMANTIC-READ-V1"}],
+      "scope": {"exclusive_paths": ["workflow-unification/evidence/project-control"], "read_paths": ["workflow-unification/contracts/semantic-read-v1.md"]},
+      "consumes_interfaces": [{"id": "WFU-SEMANTIC-READ", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-PC-READONLY", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-WORK"]
+    },
+    {
+      "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
+      "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}],
+      "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
+      "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
+    },
+    {
+      "id": "WFU-31", "kind": "integration_task", "title": "Atomic cutover, installed smoke, rollback proof, and release",
+      "objective": "After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.",
+      "priority": 80, "parallel_policy": "project_exclusive", "depends_on": [{"type": "barrier", "barrier_id": "WFU-RELEASE-RENDEZVOUS"}],
+      "scope": {"exclusive_paths": ["workflow-unification/evidence/release", "workflow-unification/rollback.md"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
+      "claim_locks": ["wfu-release-cutover"], "invariants": ["WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS", "WFU-LAZY-SPECIALISTS"],
+      "result_policy": {"allowed_dispositions": ["validated", "failed"]}
+    }
+  ]
+}
