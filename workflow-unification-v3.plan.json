@@ -126,7 +126,7 @@
       "id": "WFU-21", "kind": "workstream", "title": "Rewrite routing, installer, migration, and operations documentation",
       "objective": "Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.",
       "priority": 120, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-20"}],
-      "scope": {"exclusive_paths": ["AGENTS.md", "todo-orchestrator/SKILL.md", "todo-orchestrator/references", "todo-orchestrator/agents", "integrations/coding-workflow-mcp", "cpp-context-compiler/SKILL.md", "cuda/SKILL.md", "local-coding-worker/SKILL.md", "workflow-unification/README.md"], "read_paths": ["workflow-unification/contracts"]},
+      "scope": {"exclusive_paths": ["AGENTS.md", "todo-orchestrator/SKILL.md", "todo-orchestrator/references", "todo-orchestrator/agents", "integrations/coding-workflow-mcp", "todo-orchestrator/todo_orchestrator/config.py", "todo-orchestrator/todo_orchestrator/service.py", "todo-orchestrator/todo_orchestrator/front_door.py", "todo-orchestrator/tests/test_workflow_front_door.py", "cpp-context-compiler/SKILL.md", "cuda/SKILL.md", "local-coding-worker/SKILL.md", "workflow-unification/README.md"], "read_paths": ["workflow-unification/contracts"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-LAZY-SPECIALISTS"]
     },
     {
