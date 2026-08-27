@@ -3,6 +3,10 @@ name: todo-orchestrator
 description: Transactional orchestration for substantial multi-step projects. Use when Codex should create or continue a persistent task graph, atomically claim safe work across parallel chats in one repository/worktree, coordinate checkpoints, barriers, interfaces, ownership scopes, named locks, scarce resources, gates, evidence, handoffs, or migrate legacy todos.md ledgers. A fresh chat should be able to invoke this skill and continue without the user restating project architecture.
 ---
 
+> Deprecated maintenance reference. For ordinary substantial repository work,
+> use coding-workflow. Use `coding-workflow-admin recover` for owner recovery;
+> the older recovery forest below remains compatibility-only.
+
 # Todo Orchestrator
 
 Use the v2 command line as the coordination authority. SQLite is the live operational source of truth; `.todo-orchestrator/state.snapshot.json` is durable recovery state; `todos.md`, `todo-status.md`, and `todos/*.md` are generated human projections and legacy migration inputs.

@@ -1,85 +1,76 @@
 ---
 name: todo-orchestrator
-description: Transactional orchestration for substantial multi-step projects. Use when Codex should create or continue a persistent task graph, atomically claim safe work across parallel chats, coordinate checkpoints, barriers, interfaces, ownership scopes, locks, resources, gates, evidence, handoffs, or migrate legacy Markdown ledgers.
+description: Internal transactional kernel and owner maintenance interface beneath coding-workflow. Use directly only for explicit maintenance, debugging, plan administration, recovery, or when coding-workflow provides bounded fallback authorization. It is not the ordinary model-facing coding workflow.
 ---
 
-# Todo Orchestrator
+# Todo Orchestrator Kernel
 
-## Repository workflow
+## Routing
 
-For substantial repository work, ALWAYS use `coding-workflow` first when it is
-available. Claim or resume the authoritative task through `coding-workflow`
-before using this skill for bounded orchestration, inspection, testing, or
-recovery. Do not directly claim todo work or begin repository mutations first.
-Use this lower-level CLI directly only when `coding-workflow` is unavailable,
-explicitly out of scope, or itself being debugged.
+For substantial repository work, use `coding-workflow`. Todo-orchestrator is
+the SQLite-backed transactional kernel used in-process by that protocol, not a
+second front door. Do not directly claim or mutate a migrated repository unless
+the user explicitly requests maintenance, coding-workflow is being debugged,
+or coding-workflow returns a bounded fallback authorization.
 
-SQLite is the v2 operational authority.
-`.todo-orchestrator/state.snapshot.json` is durable recovery state; Markdown is
-a generated projection and legacy migration input. Do not use this skill for a
-clearly narrow one-step request.
+Read-only status, explain, audit, doctor, export, and semantic reads remain
+available. Legacy repositories without `workflow_front_door` retain v2 CLI
+compatibility. Repositories migrated with
+`workflow_front_door = "coding-workflow"` return
+`workflow_front_door_required` for ordinary noninteractive direct mutations.
+Interactive owner maintenance and explicit in-process self-debug/test modes
+remain possible; neither uses a model-held fallback secret.
 
-## Direct fallback: Continue
+## Authority
 
-Use this section only under the direct-CLI exceptions above.
+SQLite is live semantic authority. `.todo-orchestrator/state.snapshot.json` is
+deterministic durable recovery state. Markdown todo files are generated human
+projections and legacy migration inputs only. Every semantic mutation remains a
+revisioned transaction with append-only event history.
 
-Read repository `AGENTS.md`, resolve this skill's `scripts/todo.py`, then run:
+First-class runs, serial lanes, roles, dispatches, messages, rendezvous,
+context fragments, managed workspaces, and integration queues describe Codex
+project agents. Existing child executions remain bounded subordinate work under
+one active parent claim. A child cannot claim a todo, receive a lane or role,
+message another lane, publish a decision/interface, arrive at a rendezvous, or
+complete its parent.
+
+## Explicit maintenance and debugging
+
+Use the stable CLI only within an explicit maintenance/debugging boundary:
 
 ```bash
-python <skill-dir>/scripts/todo.py bootstrap --repo-root <repo> --json
-python <skill-dir>/scripts/todo.py continue --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py status --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py semantic state --repo-root <repo> --json
+python <skill-dir>/scripts/todo.py doctor --repo-root <repo> --json
 ```
 
-Use the returned capsule rather than rereading every ledger. Continue atomically
-registers a session, reconciles leases, claims safe ready work, acquires
-claim-time locks/resources, and returns the claim token. Preserve that secret.
-Proceed without asking the user to choose among safe ready work.
+For an unmigrated legacy project or an explicitly authorized workflow
+self-debugging session, `bootstrap`, `continue`, plan administration, gates,
+and lifecycle commands keep their v2 contracts. Preserve returned tokens
+privately. Never edit SQLite or generated projections manually.
 
-Treat objective, next action, scope, prerequisites, checkpoints, gates,
-resources, interlocks, and active siblings as binding. Edit only exclusive
-paths; guard uncertain paths. Acquire named locks, lease exclusive resources,
-run required gates, pulse long work, inspect changes after pauses, and stop on
-invalidated contracts. Never reset, clean, overwrite, or attribute shared
-changes without audit.
+Owner recovery is one installed operation:
 
-Bounded local delegation uses `child create`, a restricted child token, and
-parent-side evidence acceptance; child output never completes the parent task.
+```bash
+coding-workflow-admin recover --repo <repo> [--task <id>] --reason "<reason>"
+```
 
-Finish through exactly one structured CLI path: `complete`, `handoff`,
-`block`, or `release`. Completion requires valid gates. Checkpoints,
-interfaces, barriers, recovery, plans, migration, resources, and cleanup must
-use their existing CLI commands; never edit SQLite or projections directly.
-Successful `complete` atomically publishes eligible task-owned checkpoints
-before releasing its claim. For a legacy successful terminal owner whose
-checkpoint is still pending, use the supported idempotent `recover
-terminal-checkpoints TASK [--checkpoint ID]` path; it derives authority from
-recorded completion provenance and requires no claim token or task reopening.
+It requires a TTY, prints a bounded plan, requires exact confirmation, refuses
+live mutable work, preserves dirty files/workspaces/patches, and records
+sanitized audit evidence. `--inspect-only` is non-mutating. Deprecated live
+override, force release, and terminal checkpoint commands are maintenance-only
+compatibility wrappers and are not normal model operations.
 
-For a new empty project, read `references/planning-workflow.md`, validate and
-diff a v2 JSON plan, then apply it transactionally. For legacy Markdown,
-bootstrap and run `migrate markdown --dry-run` before `--apply`. Expired dirty
-claims remain quarantined until explicit recovery.
+## Invariants
 
-Live claim replacement is not ordinary recovery. The `recover live-*` path is
-reserved for an unchanged, verifiably `coding-workflow`-owned lease and requires
-a short-lived one-use approval created manually in an interactive owner terminal.
-Never approve it from model context or use it to take over another client's claim.
+- Never bypass task scopes, interfaces, gates, locks, resources, or recovery refusal.
+- Never expose todo/session/child/resource/recovery tokens to a model.
+- Never treat child success as parent completion.
+- Never reset, clean, delete, or overwrite user files to release workflow state.
+- Never use Markdown, branch separation, or symbol-level scope as mutation authority.
 
-If a still-live claim token is lost and the claim is not eligible for facade
-replacement, an owner may use `recover force-release-inspect`, manually run
-interactive `recover force-release-approve`, and then consume the one-use token
-with `recover force-release`. This owner-only path requires no unsafe attached
-execution. A changed scope requires the human owner to add
-`--acknowledge-dirty` when inspecting and approving; the current material scope
-fingerprint is then bound into the one-use approval and every file is preserved.
-A model must never mint or self-authorize approval.
-
-Hard invariants: do not edit another active claim's paths, cross unopened
-barriers, bypass locks or leases, mark work done without gates, auto-clean
-state, or treat Markdown/branch separation as coordination authority.
-
-Conditional details and complete preserved procedure:
-`references/full-workflow-compatibility.md`. Stable command and data contracts:
-`references/cli-reference.md`, `references/v2-architecture.md`,
-`references/project-plan-v2.md`, `references/status-and-cleanup.md`, and
-`references/todo-format.md`.
+Read [workflow v3 operations](references/workflow-v3-operations.md) for the
+canonical product model. Read [maintenance compatibility](references/maintenance-compatibility.md)
+only for legacy CLI and deprecated wrapper details. Stable historical v2 data
+contracts remain documented in `references/`.

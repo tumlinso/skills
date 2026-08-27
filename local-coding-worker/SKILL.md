@@ -1,17 +1,15 @@
 ---
 name: local-coding-worker
-description: Delegate bounded, todo-authorized read-only or scoped writable coding work to a local backend using ctxpp packets and isolated source state. Use only when an active parent todo claim authorizes a child execution. Never use it for architecture, task ownership, commits, pushes, or recursive agents.
+description: Subordinate bounded child execution under exactly one active coding-workflow parent claim. Local workers return candidate findings or patches to the parent; they never become project agents, claim todos, receive run lanes or roles, communicate across lanes, join rendezvous, decide architecture, or complete parent tasks.
 ---
 
 # Local Coding Worker
 
 ## Repository workflow
 
-For substantial repository work, ALWAYS use `coding-workflow` first when it is
-available. Claim or resume the authoritative task through `coding-workflow`
-before using this skill for bounded delegation. Do not directly claim todo work
-or begin repository mutations first. Use lower-level skill CLIs directly only
-when `coding-workflow` is unavailable, explicitly out of scope, or itself being
+For substantial repository work, use `coding-workflow`. Invoke this skill only
+through `delegate_task`, under an explicit bounded fallback authorization, for
+user-requested worker maintenance, or while coding-workflow itself is being
 debugged.
 
 Use this skill only from an active todo parent claim. The parent retains task,
@@ -69,6 +67,12 @@ eligibility, authorization, isolation, or result semantics.
 - Never accept shell strings, recursive agents, architecture decisions,
   commits, pushes, scope expansion, or parent lifecycle actions.
 - Never expose the child token in output or telemetry.
+- Never claim project todos or receive a first-class run lane or role.
+- Never communicate directly with sibling lanes or the run inbox.
+- Never publish project decisions or run-level interfaces.
+- Never participate in rendezvous or integration queues.
+- Never complete, advance, block, or release the parent task.
+- Return only candidate results to the parent claim; the parent accepts, rejects, integrates, validates, and publishes them.
 - Never download or install a backend or model. Real execution requires the
   checked production policy and an already-verified persistent model cache;
   deterministic fake execution remains available for tests.

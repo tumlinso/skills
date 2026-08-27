@@ -7,12 +7,11 @@ description: Primary CUDA skill for datacenter NVIDIA GPUs. Use for CUDA build, 
 
 ## Repository workflow
 
-For substantial repository work, ALWAYS use `coding-workflow` first when it is
-available. Claim or resume the authoritative task through `coding-workflow`
-before using this skill for bounded implementation, debugging, testing, or
-profiling. Do not directly claim todo work or begin repository mutations first.
-Use lower-level skill CLIs directly only when `coding-workflow` is unavailable,
-explicitly out of scope, or itself being debugged.
+For substantial repository work, use `coding-workflow`. Invoke this skill only
+for the bounded CUDA operation and scope authorized by coding-workflow, when the
+user explicitly requests CUDA maintenance, or while coding-workflow itself is
+being debugged. MCP startup never imports GPU libraries, starts a model,
+reserves a GPU, scans a repository, or runs a benchmark.
 
 The model owns the CUDA question: define the workload, success metric, important
 operation or symbol, and concrete optimization hypothesis. It also decides
