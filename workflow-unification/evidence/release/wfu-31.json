@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "source": {
+    "skills_base": "d956052dff0c15867e8ab99be4a6b41fcb72f091",
+    "skills_cutover": "ffd2d7cda95ecf5c741acc196e6c26b88a696d14",
+    "project_control_base": "9d1d4dd2e265f29cb292943b78bc6475d34be6f4",
+    "project_control_cutover": "974d5841f62aca4a2abdbd85602030c700923424"
+  },
+  "installed": {
+    "entry_point": "/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python -m coding_workflow_mcp",
+    "skills_root": "/home/tumlinson/.agents/skills",
+    "protocol_version": 2,
+    "tools": [
+      "collect_delegation",
+      "coordinate_task",
+      "delegate_task",
+      "finish_task",
+      "inspect_task",
+      "next_task"
+    ],
+    "official_client_initialized": true,
+    "startup_side_effects_observed": false,
+    "admin_inspect_only": true,
+    "next_status": "claimed",
+    "inspect_status": "claimed",
+    "sync_status": "claimed",
+    "unavailable_delegation_status": "fallback_authorized",
+    "finish_status": "idle",
+    "secret_fields_present": false
+  },
+  "rollback": {
+    "registration": "/home/tumlinson/.local/share/coding-workflow-mcp/registration.rollback.json",
+    "prior_venv": "/home/tumlinson/.local/share/coding-workflow-mcp/venv.rollback-1787839555114474939",
+    "prior_tools": [
+      "collect_delegation",
+      "delegate_task",
+      "finish_task",
+      "inspect_task",
+      "next_task",
+      "recover_terminal_checkpoints",
+      "run_gates"
+    ],
+    "first_failed_cutover_restored_before_source_fix": true,
+    "source_reconstruction_required": false
+  },
+  "validation": {
+    "dogfood": {"passed": 1, "total": 1},
+    "workflow": {"passed": 106, "total": 106},
+    "todo_orchestrator": {"passed": 233, "total": 233},
+    "semantic_state_revision_ordering": {"passed": 7, "total": 7},
+    "project_control": {"passed": 70, "total": 70},
+    "installer_hardening": {"passed": 3, "total": 3}
+  },
+  "project_control": {
+    "service_active": true,
+    "service_pid": 507379,
+    "public_tool_count": 8,
+    "mutation_tools": 0,
+    "first_class_agents_field": true,
+    "subordinate_local_children_field": true,
+    "unavailable_todo_source_is_explicit_partial": true
+  },
+  "repository_migration": {
+    "mass_migration_performed": false
+  }
+}

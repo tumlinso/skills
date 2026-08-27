@@ -23,3 +23,20 @@ Before cutover, rollback means stopping work through the current claim lifecycle
 `WFU-31` must capture the immediately pre-cutover MCP registration and installed package artifact again. If installed smoke validation fails, restore that captured package/entry point and the registration above, verify `codex mcp list`, and leave the validated branch and evidence intact. Do not migrate user repositories during rollback.
 
 Rollback is not authorized before a failed cutover gate, and no old compatibility shim may be removed until installed validation succeeds.
+
+## Validated cutover
+
+The first installed attempt exposed an owner-admin locator defect. The prior
+package was restored from frozen source before `WFU-29` changed the installer.
+The successful cutover now retains both the registration snapshot and the
+complete prior installed venv:
+
+- registration: `/home/tumlinson/.local/share/coding-workflow-mcp/registration.rollback.json`
+- prior venv: `/home/tumlinson/.local/share/coding-workflow-mcp/venv.rollback-1787839555114474939`
+
+The prior venv independently discovers its historical seven-tool surface. To
+roll back a later runtime failure, stop the MCP client, move the current venv to
+a preserved failed-runtime path, move the retained prior venv to
+`/home/tumlinson/.local/share/coding-workflow-mcp/venv`, and restore the saved
+registration with fixed argument vectors. Never delete either runtime or
+modify a project repository during this operation.
