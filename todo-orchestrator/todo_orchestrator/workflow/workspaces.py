@@ -144,6 +144,19 @@ class WorkspaceService:
         )
         return commit
 
+    def _advance_integration_head(self, repository_root: Path, frozen_commit: str) -> None:
+        """Advance only the managed destination ref; its index/tree already match."""
+        previous = self._commit(repository_root, "HEAD")
+        self._git_ok(
+            repository_root,
+            ["update-ref", "HEAD", frozen_commit, previous],
+            code="integration_head_advance_failed",
+        )
+        if self._commit(repository_root, "HEAD") != frozen_commit:
+            raise TodoError("integration_head_advance_failed", "Managed destination did not advance to the frozen integration commit")
+        if self._git_ok(repository_root, ["status", "--porcelain=v1", "-z"], code="integration_status_failed"):
+            raise TodoError("integration_head_state_mismatch", "Managed destination does not exactly match the frozen integration commit")
+
     def _lane(self, conn: Any, run_id: str, lane_id: str) -> Any:
         row = conn.execute(
             "SELECT id,run_id,role,workspace_mode,state FROM workflow_lanes WHERE id=? AND run_id=?",
@@ -687,6 +700,7 @@ class WorkspaceService:
                     queue_id=queue_id,
                     source_identity=source_identity,
                 )
+                self._advance_integration_head(destination, frozen_commit)
                 integrated_artifact = {
                     "kind": "commit",
                     "ref": frozen_commit,

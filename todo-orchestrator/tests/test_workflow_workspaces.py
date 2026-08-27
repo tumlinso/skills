@@ -287,11 +287,48 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertTrue(eligible["cleanup_eligible"])
         self.assertFalse(eligible["deleted"])
         self.assertTrue(Path(str(producer["worktree_path"])).exists())
-        self.assert_code(
-            "workspace_dirty_preserved",
-            lambda: self.service.mark_cleanup_eligible(workspace_id=str(destination["workspace_id"])),
-        )
+        destination_eligible = self.service.mark_cleanup_eligible(workspace_id=str(destination["workspace_id"]))
+        self.assertTrue(destination_eligible["cleanup_eligible"])
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
+
+    def test_two_producer_artifacts_integrate_serially_into_one_destination(self) -> None:
+        destination = self.create_destination()
+        first = self.create_producer()
+        second = self.create_producer(lane="PRODUCER2")
+        first_commit = self.producer_commit(first, "alpha changed\nbeta\ngamma\n")
+        second_commit = self.producer_commit(second, "alpha\nbeta\ngamma changed\n")
+        first_artifact = self.service.publish_artifact(
+            workspace_id=str(first["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=first_commit
+        )
+        second_artifact = self.service.publish_artifact(
+            workspace_id=str(second["workspace_id"]), task_id="IMPL2", kind="commit", artifact_ref=second_commit
+        )
+        first_queue = self.service.enqueue_artifact(
+            artifact_id=str(first_artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        second_queue = self.service.enqueue_artifact(
+            artifact_id=str(second_artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        self.service.apply_next(queue_id=str(first_queue["queue_id"]))
+        first_result = self.service.record_post_merge_gates(
+            queue_id=str(first_queue["queue_id"]),
+            gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}],
+        )
+        destination_path = Path(str(destination["worktree_path"]))
+        self.assertEqual(git(destination_path, "rev-parse", "HEAD"), first_result["integrated_artifact"]["ref"])
+        self.assertEqual(git(destination_path, "status", "--porcelain=v1"), "")
+
+        self.service.apply_next(queue_id=str(second_queue["queue_id"]))
+        second_result = self.service.record_post_merge_gates(
+            queue_id=str(second_queue["queue_id"]),
+            gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}],
+        )
+        self.assertEqual(git(destination_path, "rev-parse", "HEAD"), second_result["integrated_artifact"]["ref"])
+        self.assertEqual(git(destination_path, "status", "--porcelain=v1"), "")
+        self.assertEqual(
+            (destination_path / "shared.txt").read_text(encoding="utf-8"),
+            "alpha changed\nbeta\ngamma changed\n",
+        )
 
     def test_canonical_gate_runner_binds_destination_workspace_and_source(self) -> None:
         destination = self.create_destination()

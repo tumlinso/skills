@@ -33,7 +33,12 @@ _BULK_CONTENT_KEYS = frozenset(
     {"log", "logs", "transcript", "transcripts", "stdout", "stderr", "raw_log", "raw_logs", "traceback", "packet", "packet_body", "child_packet"}
 )
 _SECRET_CONTENT_KEYS = frozenset(
-    {"token", "claim_token", "session_token", "worker_token", "capability_token", "password", "secret", "api_key", "gpu_identifier", "model_endpoint"}
+    {
+        "token", "claim_token", "session_token", "child_token", "worker_token",
+        "approval_token", "recovery_approval", "capability_token", "password",
+        "secret", "api_key", "gpu_identifier", "model_endpoint",
+        "capability_lineage", "child_lineage",
+    }
 )
 MESSAGE_ENVELOPE_BUDGET_BYTES = COORDINATE_TASK_BUDGET_BYTES - 512
 

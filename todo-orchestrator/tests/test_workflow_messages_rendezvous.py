@@ -243,6 +243,12 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         with self.assertRaises(TodoError) as client_secret:
             self.publish(payload={"client_secret": "secret"})
         self.assertEqual(client_secret.exception.code, "workflow_message_secret_forbidden")
+        with self.assertRaises(TodoError) as recovery_approval:
+            self.publish(payload={"recovery_approval": "owner-authority"})
+        self.assertEqual(recovery_approval.exception.code, "workflow_message_secret_forbidden")
+        with self.assertRaises(TodoError) as approval_reference:
+            self.publish(references=[{"type": "recovery", "recovery_approval": "owner-authority"}])
+        self.assertEqual(approval_reference.exception.code, "workflow_message_secret_forbidden")
         with self.assertRaises(TodoError) as packet:
             self.publish(references=[{"type": "source", "packet": "broad context"}])
         self.assertEqual(packet.exception.code, "workflow_message_bulk_content_forbidden")
