@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T14:05:17Z",
+  "generated_at": "2026-08-27T14:05:28Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 245,
+  "project_revision": 246,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -2617,6 +2617,16 @@
         "revision": 245,
         "seq": 245,
         "timestamp": "2026-08-27T14:05:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-29",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 246, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 246,
+        "seq": 246,
+        "timestamp": "2026-08-27T14:05:28Z"
       }
     ],
     "evidence": [
@@ -3911,6 +3921,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"64b4d4cfa9800b5a64eb8557e2b714c34e861877\", \"completion_gates\": [], \"completion_revision\": 161, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 194 +++++++++++++++++++++++++++------\\n todo-status.md                         |  12 +-\\n todos.md                               |  12 +-\\n todos/wfu-11.md                        |   6 +-\\n 4 files changed, 177 insertions(+), 47 deletions(-)\", \"git_head\": \"64b4d4cfa9800b5a64eb8557e2b714c34e861877\", \"interfaces\": [], \"note\": \"Commit 64b4d4c: 8/8 focused workflow message/rendezvous tests passed; 8/8 foundation tests passed; 8/8 existing graph coordination tests passed; no task gates configured.\", \"resources\": [], \"task_id\": \"WFU-11\"}",
         "revision": 161,
         "task_id": "WFU-11"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T14:05:28Z",
+        "id": "73f56d77-804e-4ce0-b079-ae6792093c45",
+        "kind": "complete",
+        "note": "Installed canonical XDG locator and full prior-venv rollback preservation; WFU-29-INSTALLER passed 3/3.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"47e1933db0c326171041338bfa1a8e79a2583639\", \"completion_gates\": [{\"evidence_id\": \"32475d5f-6daa-4d8f-a71f-391a30a82c6e\", \"evidence_revision\": 245, \"id\": \"WFU-29-INSTALLER\", \"input_fingerprint\": \"ec0ed01a7d63acde4405c65d74fd8158786527a4686b73920c2acf3af10b58c3\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"0a1c97c734bc2418077493c980e9fa45e3780dbc\"}], \"completion_revision\": 246, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-29-INSTALLER\", \"input_fingerprint\": \"ec0ed01a7d63acde4405c65d74fd8158786527a4686b73920c2acf3af10b58c3\", \"last_run_at\": \"2026-08-27T14:05:17Z\", \"revision\": 245, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"todos/wfu-00.md | 2 +-\\n todos/wfu-01.md | 2 +-\\n todos/wfu-02.md | 2 +-\\n todos/wfu-10.md | 2 +-\\n todos/wfu-11.md | 2 +-\\n todos/wfu-12.md | 2 +-\\n todos/wfu-13.md | 2 +-\\n todos/wfu-14.md | 2 +-\\n todos/wfu-15.md | 2 +-\\n todos/wfu-16.md | 2 +-\\n todos/wfu-20.md | 2 +-\\n todos/wfu-21.md | 2 +-\\n todos/wfu-22.md | 2 +-\\n todos/wfu-23.md | 2 +-\\n todos/wfu-24.md | 2 +-\\n todos/wfu-25.md | 2 +-\\n todos/wfu-26.md | 2 +-\\n todos/wfu-27.md | 2 +-\\n todos/wfu-28.md | 2 +-\\n todos/wfu-30.md | 2 +-\\n 20 files changed, 20 insertions(+), 20 deletions(-)\", \"git_head\": \"47e1933db0c326171041338bfa1a8e79a2583639\", \"interfaces\": [], \"note\": \"Installed canonical XDG locator and full prior-venv rollback preservation; WFU-29-INSTALLER passed 3/3.\", \"resources\": [], \"task_id\": \"WFU-29\"}",
+        "revision": 246,
+        "task_id": "WFU-29"
       },
       {
         "claim_id": null,
@@ -5612,6 +5632,19 @@
         "task_id": "WFU-28",
         "valid": 1,
         "validation_git_head": "f3f3e583043598a62056e6654f31c0c4277f0682"
+      },
+      {
+        "completion_git_head": "47e1933db0c326171041338bfa1a8e79a2583639",
+        "completion_revision": 246,
+        "evidence_id": "32475d5f-6daa-4d8f-a71f-391a30a82c6e",
+        "evidence_revision": 245,
+        "gate_id": "WFU-29-INSTALLER",
+        "input_fingerprint": "ec0ed01a7d63acde4405c65d74fd8158786527a4686b73920c2acf3af10b58c3",
+        "provenance_json": "{\"claim_id\": \"e78f2468-343a-4d3a-9b4c-1bb06063ffba\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_installer.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ec0ed01a7d63acde4405c65d74fd8158786527a4686b73920c2acf3af10b58c3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_installer.py\", \"-v\"]}, \"diff_fingerprint\": \"5ea59eadca78e39c2879099c83e9fc6c5e3607afcf65a4fd6e82715a4ce60a9b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py\", \"integrations/coding-workflow-mcp/scripts/install.py\", \"integrations/coding-workflow-mcp/tests/test_installer.py\", \"todo-status.md\", \"todos.md\", \"todos/wfu-00.md\", \"todos/wfu-01.md\", \"todos/wfu-02.md\", \"todos/wfu-10.md\", \"todos/wfu-11.md\", \"todos/wfu-12.md\", \"todos/wfu-13.md\", \"todos/wfu-14.md\", \"todos/wfu-15.md\", \"todos/wfu-16.md\", \"todos/wfu-20.md\", \"todos/wfu-21.md\", \"todos/wfu-22.md\", \"todos/wfu-23.md\", \"todos/wfu-24.md\", \"todos/wfu-25.md\", \"todos/wfu-26.md\", \"todos/wfu-27.md\", \"todos/wfu-28.md\", \"todos/wfu-29.md\", \"todos/wfu-30.md\", \"todos/wfu-31.md\", \"workflow-unification-v3.plan.json\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py\", \"sha256\": \"0311e0a2605666f41df98b31ad8eccfdac81de986270c34bfbdddfb7fb4f7fc0\"}, {\"path\": \"integrations/coding-workflow-mcp/scripts/install.py\", \"sha256\": \"da4214ea7eb91b3ddabbc5c89f5d176eadfd0793e19abf6509b7b939106ae4a1\"}, {\"path\": \"integrations/coding-workflow-mcp/tests/test_installer.py\", \"sha256\": \"9efbf95aa415a5fb76c7fb065e6c66bbe7d8e9598f628b38d8a74b9db78c7a0e\"}], \"interfaces\": [], \"recorded_git_head\": \"0a1c97c734bc2418077493c980e9fa45e3780dbc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 244}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/32475d5f-6daa-4d8f-a71f-391a30a82c6e\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-29",
+        "valid": 1,
+        "validation_git_head": "0a1c97c734bc2418077493c980e9fa45e3780dbc"
       }
     ],
     "task_dependencies": [
@@ -7502,9 +7535,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "47e1933db0c326171041338bfa1a8e79a2583639",
+        "completion_git_head": "47e1933db0c326171041338bfa1a8e79a2583639",
+        "completion_revision": 246,
         "created_at": "2026-08-27T14:03:52Z",
         "id": "WFU-29",
         "kind": "validation_task",
@@ -7516,14 +7549,14 @@
         "parallel_policy": "project_exclusive",
         "parent_id": null,
         "priority": 110,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 243,
-        "status": "in_progress",
+        "revision": 246,
+        "status": "done",
         "tags_json": "[]",
         "title": "Harden installed canonical locator and package rollback",
-        "updated_at": "2026-08-27T14:03:59Z",
-        "version": 2
+        "updated_at": "2026-08-27T14:05:28Z",
+        "version": 3
       },
       {
         "attention_reason": null,

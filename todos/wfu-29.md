@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-29: Harden installed canonical locator and package rollback
 
-Task revision: `243`; current project revision is in `todo-status.md`.
+Task revision: `246`; current project revision is in `todo-status.md`.
 
 ## Objective
 Fix the installed owner command to locate the canonical todo package without MCP-only environment variables, and preserve the complete prior installed package as a recoverable rollback artifact during cutover.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `project_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
