@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:26:23Z",
+  "generated_at": "2026-08-27T13:27:45Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 223,
+  "project_revision": 227,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2396,6 +2396,46 @@
         "revision": 223,
         "seq": 223,
         "timestamp": "2026-08-27T13:26:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-27",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-27\"}",
+        "revision": 224,
+        "seq": 224,
+        "timestamp": "2026-08-27T13:26:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-27-CLAIMS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-27-CLAIMS\"}",
+        "revision": 225,
+        "seq": 225,
+        "timestamp": "2026-08-27T13:27:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-27-CLAIMS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5c00b2a7-747b-4ca8-8a37-8d27e4cf9534\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 226,
+        "seq": 226,
+        "timestamp": "2026-08-27T13:27:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-27",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 227, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 227,
+        "seq": 227,
+        "timestamp": "2026-08-27T13:27:45Z"
       }
     ],
     "evidence": [
@@ -2658,6 +2698,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/597462f5-bdeb-487f-ba8b-79fe673e77e2",
         "revision": 43,
         "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T13:27:45Z",
+        "gate_id": "WFU-27-CLAIMS",
+        "id": "5c00b2a7-747b-4ca8-8a37-8d27e4cf9534",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"]}, \"diff_fingerprint\": \"dcac4e1139b295c28b9f3c33b4ee4f82fd42a8a1638a48ba39dff291079b834b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-27.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_isolated_claims.py\", \"sha256\": \"72880d6b41ef2ec8a9c4e8640ad8af221b53f8c67900a1acdaa020d46de211f4\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/ownership.py\", \"sha256\": \"5bc791f6b4d5637e7d1f2dca46f224ebd25646ad73006228c31f5fa81fda438d\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"c7710da8fac52fec40e107e4751997a37018d0a3e9912ecc5b6d0844a839f648\"}], \"interfaces\": [], \"recorded_git_head\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 225}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5c00b2a7-747b-4ca8-8a37-8d27e4cf9534",
+        "revision": 226,
+        "status": "passed"
       },
       {
         "checkpoint_id": null,
@@ -3445,14 +3498,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/ownership.py\", \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"todo-orchestrator/tests/test_workflow_isolated_claims.py\"]}",
         "id": "WFU-27-CLAIMS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367",
+        "last_run_at": "2026-08-27T13:27:45Z",
         "required": 1,
-        "revision": 223,
-        "status": "pending",
+        "revision": 226,
+        "status": "passed",
         "task_id": "WFU-27",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -3465,6 +3518,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-03-GATE\", \"last_run_at\": \"2026-08-24T20:05:00Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 858 ++++++++++++++++++++++++++++++++-\\n todo-status.md                         |   9 +-\\n todos.md                               |   9 +-\\n 3 files changed, 869 insertions(+), 7 deletions(-)\", \"git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\", \"interfaces\": [], \"note\": \"\", \"resources\": [], \"task_id\": \"CWM-03\"}",
         "revision": 36,
         "task_id": "CWM-03"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:27:45Z",
+        "id": "03522df6-98ad-4eb1-af75-8978e274dc8d",
+        "kind": "complete",
+        "note": "Managed isolated overlap dispatch proven; focused 2/2 and workflow 101/101 passed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\", \"completion_gates\": [{\"evidence_id\": \"5c00b2a7-747b-4ca8-8a37-8d27e4cf9534\", \"evidence_revision\": 226, \"id\": \"WFU-27-CLAIMS\", \"input_fingerprint\": \"c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\"}], \"completion_revision\": 227, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-27-CLAIMS\", \"input_fingerprint\": \"c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367\", \"last_run_at\": \"2026-08-27T13:27:45Z\", \"revision\": 226, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 63 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +--\\n todos.md                               |  2 +-\\n todos/wfu-27.md                        |  4 +--\\n 4 files changed, 58 insertions(+), 15 deletions(-)\", \"git_head\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\", \"interfaces\": [], \"note\": \"Managed isolated overlap dispatch proven; focused 2/2 and workflow 101/101 passed.\", \"resources\": [], \"task_id\": \"WFU-27\"}",
+        "revision": 227,
+        "task_id": "WFU-27"
       },
       {
         "claim_id": null,
@@ -5205,6 +5268,19 @@
         "task_id": "WFU-26",
         "valid": 1,
         "validation_git_head": "092f03c5758d292dca0c3c0d657c5500c2b2599d"
+      },
+      {
+        "completion_git_head": "514257bd8f1c909a59033a59bed0e6fdb158e765",
+        "completion_revision": 227,
+        "evidence_id": "5c00b2a7-747b-4ca8-8a37-8d27e4cf9534",
+        "evidence_revision": 226,
+        "gate_id": "WFU-27-CLAIMS",
+        "input_fingerprint": "c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367",
+        "provenance_json": "{\"claim_id\": \"9a984e17-95ff-4122-9d23-39f0eada2253\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"]}, \"diff_fingerprint\": \"dcac4e1139b295c28b9f3c33b4ee4f82fd42a8a1638a48ba39dff291079b834b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-27.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_isolated_claims.py\", \"sha256\": \"72880d6b41ef2ec8a9c4e8640ad8af221b53f8c67900a1acdaa020d46de211f4\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/ownership.py\", \"sha256\": \"5bc791f6b4d5637e7d1f2dca46f224ebd25646ad73006228c31f5fa81fda438d\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"c7710da8fac52fec40e107e4751997a37018d0a3e9912ecc5b6d0844a839f648\"}], \"interfaces\": [], \"recorded_git_head\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 225}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5c00b2a7-747b-4ca8-8a37-8d27e4cf9534\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "WFU-27",
+        "valid": 1,
+        "validation_git_head": "514257bd8f1c909a59033a59bed0e6fdb158e765"
       }
     ],
     "task_dependencies": [
@@ -6972,10 +7048,10 @@
         "version": 5
       },
       {
-        "attention_reason": "Expand exact scope for required managed workspace dispatch integration",
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "attention_reason": null,
+        "completion_commit": "514257bd8f1c909a59033a59bed0e6fdb158e765",
+        "completion_git_head": "514257bd8f1c909a59033a59bed0e6fdb158e765",
+        "completion_revision": 227,
         "created_at": "2026-08-27T13:24:19Z",
         "id": "WFU-27",
         "kind": "validation_task",
@@ -6987,14 +7063,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 113,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 223,
-        "status": "in_progress",
+        "revision": 227,
+        "status": "done",
         "tags_json": "[]",
         "title": "Authorize isolated-merge overlap in claim readiness",
-        "updated_at": "2026-08-27T13:26:23Z",
-        "version": 4
+        "updated_at": "2026-08-27T13:27:45Z",
+        "version": 6
       },
       {
         "attention_reason": null,
