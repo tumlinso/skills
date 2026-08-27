@@ -203,10 +203,16 @@ class WorkflowKernel:
                 owner_instance_id="fi_" + uuid.uuid4().hex,
             )
             context_version = self._context_version(conn, selected_run, str(selected["lane_id"]), str(selected["task_id"]))
+            workspace = conn.execute(
+                "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
+                "AND state IN ('active','artifact_ready') ORDER BY id LIMIT 1",
+                (selected_run, str(selected["lane_id"])),
+            ).fetchone()
             dispatch = dispatch_claim_in_transaction(
                 conn, revision, run_id=selected_run, lane_id=str(selected["lane_id"]),
                 session_id=str(session["id"]), claim_id=str(claim["claim_id"]),
-                context_version=context_version, hostname=socket.gethostname(), pid=os.getpid(),
+                context_version=context_version, workspace_id=str(workspace["id"]) if workspace else None,
+                hostname=socket.gethostname(), pid=os.getpid(),
             )
             lineage = CapabilityLineage(
                 "first_class", project_uuid, repo_identity, str(session["id"]), str(claim["claim_id"]),

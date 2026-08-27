@@ -46,6 +46,60 @@ def _frozen_contract_read_allowed(conn: sqlite3.Connection, reader_task_id: str,
     return False
 
 
+def _isolated_merge_overlap_allowed(
+    conn: sqlite3.Connection,
+    candidate_task_id: str,
+    active_task_id: str,
+    active_claim_id: str,
+) -> bool:
+    """Prove that an overlap is isolated from the shared authoritative tree.
+
+    A branch name or symbolic scope is never enough. Both tasks must be assigned
+    to first-class isolated lanes with active managed workspaces from one base,
+    and the declared integration task must have its own active exclusive
+    destination workspace owned by an integrator lane.
+    """
+    candidate = conn.execute(
+        "SELECT l.id AS lane_id,l.run_id,l.workspace_mode,w.base_commit,w.integration_task_id,w.state "
+        "FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
+        "JOIN workflow_runs r ON r.id=l.run_id AND r.status='active' "
+        "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
+        "WHERE lt.task_id=? AND lt.state='queued' AND l.state='ready' AND l.workspace_mode='isolated_merge' "
+        "AND w.mode='isolated_merge' AND w.state IN ('active','artifact_ready') "
+        "ORDER BY l.run_id,l.id LIMIT 1",
+        (candidate_task_id,),
+    ).fetchone()
+    active = conn.execute(
+        "SELECT l.id AS lane_id,l.run_id,l.workspace_mode,w.base_commit,w.integration_task_id,w.state "
+        "FROM workflow_dispatches d JOIN workflow_lanes l ON l.id=d.lane_id "
+        "JOIN workflow_lane_tasks lt ON lt.lane_id=l.id AND lt.task_id=? AND lt.state='active' "
+        "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
+        "WHERE d.claim_id=? AND d.state='active' AND l.workspace_mode='isolated_merge' "
+        "AND w.mode='isolated_merge' AND w.state IN ('active','artifact_ready') LIMIT 1",
+        (active_task_id, active_claim_id),
+    ).fetchone()
+    if not candidate or not active:
+        return False
+    integration_task_id = candidate["integration_task_id"]
+    if not (
+        candidate["run_id"] == active["run_id"]
+        and candidate["base_commit"] == active["base_commit"]
+        and integration_task_id
+        and integration_task_id == active["integration_task_id"]
+    ):
+        return False
+    destination = conn.execute(
+        "SELECT 1 FROM workflow_lanes l "
+        "JOIN workflow_lane_tasks lt ON lt.lane_id=l.id AND lt.task_id=? "
+        "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
+        "WHERE l.run_id=? AND l.role='integrator' AND l.workspace_mode='exclusive' "
+        "AND w.mode='exclusive' AND w.integration_task_id=? AND w.base_commit=? "
+        "AND w.state IN ('active','artifact_ready') LIMIT 1",
+        (integration_task_id, candidate["run_id"], integration_task_id, candidate["base_commit"]),
+    ).fetchone()
+    return destination is not None
+
+
 def sweep_lock_leases(conn: sqlite3.Connection) -> list[str]:
     now = utc_now()
     released: list[str] = []
@@ -60,7 +114,7 @@ def sweep_lock_leases(conn: sqlite3.Connection) -> list[str]:
 def ownership_conflicts(conn: sqlite3.Connection, task_id: str) -> list[dict[str, str]]:
     task = conn.execute("SELECT parallel_policy FROM tasks WHERE id=?", (task_id,)).fetchone()
     active = conn.execute(
-        "SELECT c.task_id,t.parallel_policy FROM claims c JOIN tasks t ON t.id=c.task_id WHERE c.state='active' AND c.task_id<>?",
+        "SELECT c.id AS claim_id,c.task_id,t.parallel_policy FROM claims c JOIN tasks t ON t.id=c.task_id WHERE c.state='active' AND c.task_id<>?",
         (task_id,),
     ).fetchall()
     if not task:
@@ -76,13 +130,14 @@ def ownership_conflicts(conn: sqlite3.Connection, task_id: str) -> list[dict[str
     conflicts: list[dict[str, str]] = []
     for row in active:
         theirs = scopes_for(conn, row["task_id"], "exclusive")
+        isolated = _isolated_merge_overlap_allowed(conn, task_id, row["task_id"], row["claim_id"])
         for our_path in ours:
             for their_path in theirs:
-                if paths_overlap(our_path, their_path):
+                if paths_overlap(our_path, their_path) and not isolated:
                     conflicts.append({"type": "path", "path": our_path, "other_path": their_path, "task_id": row["task_id"]})
         for read_path in reads:
             for their_path in theirs:
-                if paths_overlap(read_path, their_path) and not _frozen_contract_read_allowed(conn, task_id, row["task_id"], read_path, their_path):
+                if paths_overlap(read_path, their_path) and not isolated and not _frozen_contract_read_allowed(conn, task_id, row["task_id"], read_path, their_path):
                     conflicts.append({"type": "path", "path": read_path, "other_path": their_path, "task_id": row["task_id"]})
     return conflicts
 
