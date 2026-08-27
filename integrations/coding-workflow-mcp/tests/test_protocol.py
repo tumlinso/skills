@@ -37,6 +37,18 @@ class ProtocolTests(unittest.TestCase):
 
         asyncio.run(scenario())
 
+    def test_installed_live_smoke_tracks_exact_v2_surface(self) -> None:
+        package = Path(__file__).resolve().parents[1]
+        smoke = (package / "scripts" / "live_two_readonly_smoke.py").read_text(encoding="utf-8")
+        self.assertIn('"coordinate_task"', smoke)
+        self.assertNotIn('"run_gates", "finish_task"', smoke)
+
+    def test_local_worker_guidance_keeps_children_subordinate(self) -> None:
+        package = Path(__file__).resolve().parents[1]
+        skill = (package.parents[1] / "local-coding-worker" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("nonblocking subordinate child work", skill)
+        self.assertNotIn("authorize independent,", skill)
+
 
 if __name__ == "__main__":
     unittest.main()

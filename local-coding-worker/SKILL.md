@@ -22,7 +22,7 @@ python <skill-dir>/scripts/local_worker.py delegate \
   --claim-token <parent-claim-token> --mode <readonly|writable> --wait --json
 ```
 
-Omit `--wait` to launch explicitly authorized independent work without blocking,
+Omit `--wait` to launch explicitly authorized nonblocking subordinate child work,
 then collect it by execution ID:
 
 ```bash
@@ -32,8 +32,9 @@ python <skill-dir>/scripts/local_worker.py delegate \
   --collect <execution-id-from-launch> --wait --json
 ```
 
-Launching twice is demand-driven: todo must already authorize independent,
-non-conflicting child work. The facade does not queue, split, or schedule tasks.
+Launching twice is demand-driven: todo must already authorize separate,
+non-conflicting subordinate child work. The facade does not queue, split, or
+schedule project tasks.
 
 The controller creates the bounded child execution, selects isolated source
 state, starts or reuses the verified local service, validates model output, and
