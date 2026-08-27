@@ -33,6 +33,7 @@ from .claims import (
     recover_adopt,
     recover_release,
     release_claim,
+    release_claim_id,
     sweep_expired,
 )
 from .config import create_project_identity, project_paths, read_project, utc_now
@@ -287,72 +288,61 @@ class Service:
         )
         return {**result, "project_revision": revision, "projection": projection}
 
-    def complete(self, claim_token: str, disposition: str, note: str = "") -> dict[str, object]:
-        def operation(conn, revision):
-            claim = authenticate_claim(conn, claim_token)
-            task = conn.execute("SELECT * FROM tasks WHERE id=?", (claim["task_id"],)).fetchone()
-            policy = json.loads(task["result_policy_json"] or "{}")
-            allowed = policy.get("allowed_dispositions", ["implemented", "validated", "evaluated_not_promoted", "no_change_required", "superseded", "failed"])
-            if disposition not in allowed:
-                raise TodoError("invalid_disposition", f"Disposition {disposition} is not allowed for {task['id']}")
-            unsatisfied = [gate for gate in required_gates(conn, task["id"]) if not gate_is_satisfied(gate)]
-            if unsatisfied:
-                raise TodoError("required_gates_unsatisfied", "Required gates are missing, failed, or invalidated", ExitCode.GATE_FAILURE, unsatisfied)
-            now = utc_now()
-            completion_head = git_head(self.paths.repo_root)
-            conn.execute(
-                "UPDATE tasks SET status='done',result=?,attention_reason=NULL,updated_at=?,revision=?,"
-                "completion_revision=?,completion_git_head=?,completion_commit=? WHERE id=?",
-                (disposition, now, revision, revision, completion_head, completion_head, task["id"]),
-            )
-            completion_gates = snapshot_completion_gates(
-                conn, task, revision, completion_head,
-            )
-            checkpoint_finalization = (
-                reach_eligible_owned_checkpoints(
-                    conn, self.paths.repo_root, str(task["id"]), revision,
-                )
-                if disposition in SUCCESSFUL_DISPOSITIONS
-                else {"reached": [], "skipped": []}
-            )
-            handoff_id = str(uuid.uuid4())
-            payload = self._handoff_payload(conn, claim, note)
-            payload.update({
-                "completion_revision": revision,
-                "completion_commit": completion_head,
-                "completion_gates": [
-                    {
-                        "id": gate["gate_id"], "status": gate["status"],
-                        "valid": bool(gate["valid"]),
-                        "input_fingerprint": gate["input_fingerprint"],
-                        "evidence_id": gate["evidence_id"],
-                        "evidence_revision": gate["evidence_revision"],
-                        "validation_git_head": gate["validation_git_head"],
-                    }
-                    for gate in completion_gates
-                ],
-                "finalized_checkpoints": [
-                    item["checkpoint_id"] for item in checkpoint_finalization["reached"]
-                ],
-            })
-            conn.execute("INSERT INTO handoffs(id,task_id,claim_id,kind,note,payload_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?)", (handoff_id, task["id"], claim["id"], "complete", note, json.dumps(payload, sort_keys=True), now, revision))
-            release_claim(conn, claim_token, next_status="done")
-            barriers = reevaluate_barriers(conn, revision)
-            checkpoint_barriers = [
-                change for item in checkpoint_finalization["reached"]
-                for change in item.get("barrier_changes", [])
-            ]
-            return {
-                "task_id": task["id"], "session_id": claim["session_id"],
-                "status": "done", "disposition": disposition,
-                "handoff_id": handoff_id, "handoff": payload,
-                "reached_checkpoints": [
-                    item["checkpoint_id"] for item in checkpoint_finalization["reached"]
-                ],
-                "skipped_checkpoints": checkpoint_finalization["skipped"],
-                "barrier_changes": checkpoint_barriers + barriers,
-            }
+    def _complete_claim_in_transaction(self, conn, revision, claim, disposition: str, note: str, terminal_hook=None):
+        if claim is None:
+            raise TodoError("invalid_claim_authority", "Workflow capability claim is inactive", ExitCode.INVALID_TOKEN)
+        task = conn.execute("SELECT * FROM tasks WHERE id=?", (claim["task_id"],)).fetchone()
+        policy = json.loads(task["result_policy_json"] or "{}")
+        allowed = policy.get("allowed_dispositions", ["implemented", "validated", "evaluated_not_promoted", "no_change_required", "superseded", "failed"])
+        if disposition not in allowed:
+            raise TodoError("invalid_disposition", f"Disposition {disposition} is not allowed for {task['id']}")
+        unsatisfied = [gate for gate in required_gates(conn, task["id"]) if not gate_is_satisfied(gate)]
+        if unsatisfied:
+            raise TodoError("required_gates_unsatisfied", "Required gates are missing, failed, or invalidated", ExitCode.GATE_FAILURE, unsatisfied)
+        now = utc_now()
+        completion_head = git_head(self.paths.repo_root)
+        conn.execute(
+            "UPDATE tasks SET status='done',result=?,attention_reason=NULL,updated_at=?,revision=?,"
+            "completion_revision=?,completion_git_head=?,completion_commit=? WHERE id=?",
+            (disposition, now, revision, revision, completion_head, completion_head, task["id"]),
+        )
+        completion_gates = snapshot_completion_gates(conn, task, revision, completion_head)
+        checkpoint_finalization = (
+            reach_eligible_owned_checkpoints(conn, self.paths.repo_root, str(task["id"]), revision)
+            if disposition in SUCCESSFUL_DISPOSITIONS else {"reached": [], "skipped": []}
+        )
+        handoff_id = str(uuid.uuid4())
+        payload = self._handoff_payload(conn, claim, note)
+        payload.update({
+            "completion_revision": revision,
+            "completion_commit": completion_head,
+            "completion_gates": [
+                {
+                    "id": gate["gate_id"], "status": gate["status"], "valid": bool(gate["valid"]),
+                    "input_fingerprint": gate["input_fingerprint"], "evidence_id": gate["evidence_id"],
+                    "evidence_revision": gate["evidence_revision"], "validation_git_head": gate["validation_git_head"],
+                }
+                for gate in completion_gates
+            ],
+            "finalized_checkpoints": [item["checkpoint_id"] for item in checkpoint_finalization["reached"]],
+        })
+        conn.execute(
+            "INSERT INTO handoffs(id,task_id,claim_id,kind,note,payload_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?)",
+            (handoff_id, task["id"], claim["id"], "complete", note, json.dumps(payload, sort_keys=True), now, revision),
+        )
+        terminal = terminal_hook(conn, revision, claim, task, payload) if terminal_hook else {}
+        release_claim_id(conn, str(claim["id"]), next_status="done")
+        barriers = reevaluate_barriers(conn, revision)
+        checkpoint_barriers = [change for item in checkpoint_finalization["reached"] for change in item.get("barrier_changes", [])]
+        return {
+            "task_id": task["id"], "session_id": claim["session_id"], "status": "done",
+            "disposition": disposition, "handoff_id": handoff_id, "handoff": payload,
+            "reached_checkpoints": [item["checkpoint_id"] for item in checkpoint_finalization["reached"]],
+            "skipped_checkpoints": checkpoint_finalization["skipped"],
+            "barrier_changes": checkpoint_barriers + barriers, **dict(terminal or {}),
+        }
 
+    def complete(self, claim_token: str, disposition: str, note: str = "") -> dict[str, object]:
         result, revision, projection = self.mutate(
             actor=lambda value: value.get("session_id"),
             entity_type="task",
@@ -363,7 +353,29 @@ class Service:
                 "completion_revision": value.get("handoff", {}).get("completion_revision"),
                 "reached_checkpoints": value.get("reached_checkpoints", []),
             },
-            operation=operation,
+            operation=lambda conn, revision: self._complete_claim_in_transaction(
+                conn, revision, authenticate_claim(conn, claim_token), disposition, note,
+            ),
+        )
+        return {**result, "project_revision": revision, "projection": projection}
+
+    def complete_claim_id(self, claim_id: str, disposition: str, note: str = "", *, terminal_hook=None) -> dict[str, object]:
+        result, revision, projection = self.mutate(
+            actor=lambda value: value.get("session_id"), entity_type="task",
+            entity_id=lambda value: value.get("task_id"), event_type="task.completed",
+            payload=lambda value: {
+                "disposition": disposition,
+                "completion_revision": value.get("handoff", {}).get("completion_revision"),
+                "reached_checkpoints": value.get("reached_checkpoints", []),
+            },
+            operation=lambda conn, revision: self._complete_claim_in_transaction(
+                conn,
+                revision,
+                conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone(),
+                disposition,
+                note,
+                terminal_hook,
+            ),
         )
         return {**result, "project_revision": revision, "projection": projection}
 

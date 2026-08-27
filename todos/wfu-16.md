@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-16: Harden cross-core authority and concurrency contracts
 
-Task revision: `182`; current project revision is in `todo-status.md`.
+Task revision: `185`; current project revision is in `todo-status.md`.
 
 ## Objective
 After all core lanes arrive, correct cross-module defects found by read-only integration review: authoritative integration-gate provenance, completion-bound rendezvous and canonical barrier composition, workspace reservation/provenance/immutability/final artifact rules, required workspace dispatch validation, child packet source-scope containment, composite fragment ownership, lossless message cursors and resolution deltas, and idempotent synchronization.

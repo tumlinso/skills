@@ -153,6 +153,20 @@ def pulse_claim(conn: sqlite3.Connection, claim_token: str, lease_seconds: int) 
 
 def release_claim(conn: sqlite3.Connection, claim_token: str, *, next_status: str = "in_progress", reason: str | None = None) -> dict[str, object]:
     claim = authenticate_claim(conn, claim_token)
+    return release_claim_id(conn, str(claim["id"]), next_status=next_status, reason=reason)
+
+
+def release_claim_id(
+    conn: sqlite3.Connection,
+    claim_id: str,
+    *,
+    next_status: str = "in_progress",
+    reason: str | None = None,
+) -> dict[str, object]:
+    """Release a claim already authorized by an in-process workflow capability."""
+    claim = conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone()
+    if not claim:
+        raise TodoError("invalid_claim_authority", "Authorized claim is no longer active", ExitCode.INVALID_TOKEN)
     now = utc_now()
     release_claim_locks(conn, claim["id"])
     conn.execute("UPDATE resource_leases SET state='released',released_at=? WHERE claim_id=? AND state='active'", (now, claim["id"]))

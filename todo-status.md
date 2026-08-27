@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `182`
+Project revision: `185`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
@@ -16,7 +16,7 @@ Project revision: `182`
 - `WFU-14` | status: done | execution: closed | next: Implement one interactive owner-only recovery engine covering first-class dispatches and distinct subordinate child degradation, with live-process refusal, dirty artifact preservation, idempotent terminal reconciliation, audit, and no approval-token round trip.
 - `WFU-15` | status: done | execution: closed | next: Implement the canonical in-process WorkflowKernel boundary, protocol v2 envelopes, hash-stored lineage-bound first-class capabilities, exact six-tool MCP server, fixed adapters, and compatibility shim without todo subprocess operations.
 - `WFU-16` | status: done | execution: closed | next: After all core lanes arrive, correct cross-module defects found by read-only integration review: authoritative integration-gate provenance, completion-bound rendezvous and canonical barrier composition, workspace reservation/provenance/immutability/final artifact rules, required workspace dispatch validation, child packet source-scope containment, composite fragment ownership, lossless message cursors and resolution deltas, and idempotent synchronization.
-- `WFU-20` | status: planned | execution: ready | next: Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.
+- `WFU-20` | status: in_progress | execution: claimed | next: Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.
 - `WFU-21` | status: planned | execution: ready | next: Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.
 - `WFU-22` | status: planned | execution: ready | next: In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.
 - `WFU-23` | status: planned | execution: ready | next: Fix the recorded semantic-state regression so current-only selection retains the most recently completed parent-defined program rather than an unrelated terminal task, while preserving read-only behavior and generic lifecycle filtering.

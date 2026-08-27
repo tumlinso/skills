@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # WFU-00: Freeze preflight and isolated bootstrap evidence
 
-Task revision: `177`; current project revision is in `todo-status.md`.
+Task revision: `185`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.

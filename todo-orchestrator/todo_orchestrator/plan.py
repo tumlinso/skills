@@ -8,7 +8,7 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
-from . import SCHEMA_VERSION
+from . import PLAN_SCHEMA_VERSION, SCHEMA_VERSION
 from .config import utc_now
 from .git_state import canonical_relative
 from .graph import validate_acyclic
@@ -43,8 +43,9 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
                 raise ValueError(value)
         except Exception:
             errors.append(f"{label} has unsafe repository path: {value}")
-    if int(data.get("schema_version", 0)) != SCHEMA_VERSION:
-        errors.append(f"schema_version must be {SCHEMA_VERSION}")
+    plan_version = int(data.get("schema_version", 0))
+    if plan_version not in {SCHEMA_VERSION, PLAN_SCHEMA_VERSION}:
+        errors.append(f"schema_version must be {SCHEMA_VERSION} or {PLAN_SCHEMA_VERSION}")
     tasks = data.get("tasks")
     if not isinstance(tasks, list):
         errors.append("tasks must be an array")
@@ -92,6 +93,58 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
     lock_names = [str(item["name"]) for item in locks if isinstance(item, dict) and item.get("name")]
     resource_class_ids = [str(item["id"]) for item in resource_classes if isinstance(item, dict) and item.get("id")]
     resource_instance_ids = [str(instance["id"]) for item in resource_classes if isinstance(item, dict) for instance in item.get("instances", []) if isinstance(instance, dict) and instance.get("id")]
+    runs = data.get("runs", []) if isinstance(data.get("runs", []), list) else []
+    if plan_version == SCHEMA_VERSION and runs:
+        errors.append("schema v2 plans cannot declare first-class runs")
+    run_ids: set[str] = set()
+    lane_ids: set[str] = set()
+    assigned_tasks: set[tuple[str, str]] = set()
+    for run in runs:
+        if not isinstance(run, dict) or not run.get("id") or not isinstance(run.get("charter"), dict):
+            errors.append("schema v3 runs require id and charter")
+            continue
+        run_id = str(run["id"])
+        if run_id in run_ids:
+            errors.append(f"duplicate run ID: {run_id}")
+        run_ids.add(run_id)
+        if run.get("root_task_id") and run["root_task_id"] not in task_ids:
+            errors.append(f"run {run_id} has unknown root task {run.get('root_task_id')}")
+        local_lanes: set[str] = set()
+        for lane in run.get("lanes", []):
+            if not isinstance(lane, dict) or not lane.get("id"):
+                errors.append(f"run {run_id} has a lane without id")
+                continue
+            lane_id = str(lane["id"])
+            if lane_id in lane_ids:
+                errors.append(f"duplicate lane ID: {lane_id}")
+            lane_ids.add(lane_id)
+            local_lanes.add(lane_id)
+            if lane.get("role") not in {"coordinator", "implementer", "validator", "integrator", "specialist"}:
+                errors.append(f"lane {lane_id} has unsupported role")
+            workspace = lane.get("workspace", {})
+            if workspace and workspace.get("mode", "exclusive") not in {"exclusive", "read_shared", "isolated_merge", "contract_split"}:
+                errors.append(f"lane {lane_id} has unsupported workspace mode")
+            if workspace.get("integration_task_id") and workspace["integration_task_id"] not in task_ids:
+                errors.append(f"lane {lane_id} has unknown integration task")
+            for task in lane.get("tasks", []):
+                if task not in task_ids:
+                    errors.append(f"lane {lane_id} has unknown task {task}")
+                key = (run_id, str(task))
+                if key in assigned_tasks:
+                    errors.append(f"task {task} is assigned to multiple lanes in run {run_id}")
+                assigned_tasks.add(key)
+        roots = [lane for lane in run.get("lanes", []) if isinstance(lane, dict) and not lane.get("parent_lane_id")]
+        if len(roots) != 1:
+            errors.append(f"run {run_id} must have exactly one root lane")
+        for lane in run.get("lanes", []):
+            if isinstance(lane, dict) and lane.get("parent_lane_id") and lane["parent_lane_id"] not in local_lanes:
+                errors.append(f"lane {lane.get('id')} has unknown parent {lane.get('parent_lane_id')}")
+        for rendezvous in run.get("rendezvous", []):
+            if rendezvous.get("join_task_id") not in task_ids or rendezvous.get("barrier_id") not in barrier_ids:
+                errors.append(f"run {run_id} rendezvous {rendezvous.get('id')} has unknown join task or barrier")
+            participants = set(rendezvous.get("participants", []))
+            if not participants or not participants <= local_lanes:
+                errors.append(f"run {run_id} rendezvous {rendezvous.get('id')} has invalid participants")
 
     for label, values in (
         ("checkpoint", checkpoint_ids), ("gate", gate_ids), ("interface", interface_ids),
@@ -390,7 +443,108 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
     from .graph import reevaluate_barriers
 
     barrier_changes = reevaluate_barriers(conn, revision)
-    return {"tasks_upserted": len(tasks), "barriers": barrier_changes}
+    workflow = _apply_workflow_plan(conn, data, revision)
+    barrier_changes.extend(reevaluate_barriers(conn, revision))
+    return {"tasks_upserted": len(tasks), "barriers": barrier_changes, "workflow": workflow}
+
+
+def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revision: int) -> dict[str, object]:
+    """Normalize v2 or apply explicit v3 first-class run declarations."""
+    from .workflow.foundation import canonical_json, content_hash
+    from .workflow.lanes import create_lane_in_transaction, enqueue_tasks_in_transaction
+    from .workflow.runs import create_run_in_transaction
+
+    now = utc_now()
+    runs = list(data.get("runs", []))
+    compatibility = int(data.get("schema_version", SCHEMA_VERSION)) == SCHEMA_VERSION
+    if compatibility and not conn.execute("SELECT 1 FROM workflow_runs LIMIT 1").fetchone():
+        ordered = [str(task["id"]) for task in _task_order(data.get("tasks", [])) if task.get("kind", "task") != "epic"]
+        root = next((str(task["id"]) for task in data.get("tasks", []) if task.get("kind") == "epic"), ordered[0] if ordered else None)
+        runs = [{
+            "id": "compat-v2",
+            "root_task_id": root,
+            "charter": {
+                "objective": str(data.get("project", {}).get("name", "Legacy v2 project")),
+                "boundaries": ["Compatibility run normalized from plan schema v2"],
+                "invariants": [],
+                "acceptance_conditions": [],
+                "glossary": {"lane": "single serial compatibility lane"},
+            },
+            "lanes": [{"id": "compat-v2-main", "role": "implementer", "tasks": ordered, "workspace": {"mode": "exclusive"}}],
+            "rendezvous": [],
+        }]
+    applied_runs: list[str] = []
+    for run in runs:
+        run_id = str(run["id"])
+        create_run_in_transaction(
+            conn,
+            revision,
+            run_id=run_id,
+            charter=dict(run["charter"]),
+            root_task_id=run.get("root_task_id"),
+        )
+        lanes = list(run.get("lanes", []))
+        pending = {str(lane["id"]): lane for lane in lanes}
+        while pending:
+            progressed = False
+            for lane_id, lane in list(pending.items()):
+                parent = lane.get("parent_lane_id")
+                if parent and parent in pending:
+                    continue
+                workspace = dict(lane.get("workspace", {}))
+                create_lane_in_transaction(
+                    conn,
+                    revision,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    parent_lane_id=parent,
+                    role=str(lane.get("role", "implementer")),
+                    workspace_mode=str(workspace.get("mode", "exclusive")),
+                )
+                enqueue_tasks_in_transaction(conn, revision, lane_id=lane_id, task_ids=[str(value) for value in lane.get("tasks", [])])
+                conn.execute(
+                    "UPDATE workflow_lane_tasks SET state=CASE "
+                    "WHEN task_id IN (SELECT id FROM tasks WHERE status='done') THEN 'completed' "
+                    "WHEN task_id IN (SELECT id FROM tasks WHERE status IN ('cancelled','superseded','stale')) THEN 'skipped' "
+                    "ELSE state END,revision=? WHERE lane_id=?",
+                    (revision, lane_id),
+                )
+                del pending[lane_id]
+                progressed = True
+            if not progressed:
+                raise TodoError("workflow_lane_parent_cycle", f"Run {run_id} lane hierarchy contains a cycle")
+        for rendezvous in run.get("rendezvous", []):
+            rendezvous_id = str(rendezvous["id"])
+            participants = [str(value) for value in rendezvous.get("participants", [])]
+            required_roles = sorted({str(value) for value in rendezvous.get("required_roles", [])})
+            conn.execute(
+                "INSERT INTO workflow_rendezvous(id,run_id,barrier_id,mode,quorum,join_task_id,state,required_roles_json,created_at,revision) "
+                "VALUES(?,?,?,?,?,?, 'open',?,?,?) ON CONFLICT(id) DO NOTHING",
+                (rendezvous_id, run_id, rendezvous["barrier_id"], rendezvous.get("mode", "all"), rendezvous.get("quorum"), rendezvous["join_task_id"], canonical_json(required_roles), now, revision),
+            )
+            conn.executemany(
+                "INSERT OR IGNORE INTO workflow_rendezvous_participants(rendezvous_id,lane_id,producer,required) VALUES(?,?,?,1)",
+                [(rendezvous_id, lane_id, int(lane_id in set(rendezvous.get("producers", [])))) for lane_id in participants],
+            )
+            conn.execute(
+                "INSERT OR IGNORE INTO barrier_requirements(barrier_id,type,entity_id,required_state,dispositions_json) VALUES(?,'rendezvous',?,'satisfied','[]')",
+                (rendezvous["barrier_id"], rendezvous_id),
+            )
+        for fragment in run.get("context_fragments", []):
+            content = dict(fragment.get("content", {}))
+            digest = content_hash(content)
+            owner_lane = fragment.get("lane_id")
+            owner_task = fragment.get("task_id")
+            kind = str(fragment["kind"])
+            version = int(fragment.get("version", 1))
+            identifier = str(fragment.get("id", f"{run_id}:{kind}:{owner_lane or '-'}:{owner_task or '-'}:{version}"))
+            conn.execute(
+                "INSERT OR IGNORE INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,version,content_json,content_hash,creation_revision,created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?)",
+                (identifier, run_id, owner_lane, owner_task, kind, version, canonical_json(content), digest, revision, now),
+            )
+        applied_runs.append(run_id)
+    return {"plan_schema_version": int(data.get("schema_version", SCHEMA_VERSION)), "compatibility": compatibility, "runs": applied_runs}
 
 
 def plan_diff(conn: sqlite3.Connection, data: dict[str, Any]) -> dict[str, object]:

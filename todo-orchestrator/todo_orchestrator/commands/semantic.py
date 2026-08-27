@@ -44,3 +44,7 @@ def register(subparsers, helpers) -> None:
         since_checkpoint=args.since_checkpoint, since_interface=args.since_interface,
         until_revision=args.until_revision, task_phase=args.task_phase,
     ))
+
+    workflow = actions.add_parser("workflow")
+    helpers.common(workflow)
+    workflow.set_defaults(handler=lambda args: SemanticReader(args.repo_root).workflow())

@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from . import SCHEMA_VERSION
+from . import SCHEMA_VERSION, SNAPSHOT_VERSION, WORKFLOW_SNAPSHOT_VERSION
 from .config import utc_now
 
 MANAGED_START = "<!-- todo-orchestrator:v2-managed:start -->"
@@ -42,6 +42,21 @@ DURABLE_TABLES = [
     "live_recovery_audit",
     "migration_warnings",
     "events",
+    "workflow_runs",
+    "workflow_run_charters",
+    "workflow_lanes",
+    "workflow_lane_tasks",
+    "workflow_messages",
+    "workflow_message_recipients",
+    "workflow_message_receipts",
+    "workflow_rendezvous",
+    "workflow_rendezvous_participants",
+    "workflow_rendezvous_arrivals",
+    "workflow_context_fragments",
+    "workflow_workspaces",
+    "workflow_patch_artifacts",
+    "workflow_integration_queue",
+    "workflow_recovery_audit",
 ]
 
 
@@ -139,6 +154,8 @@ def build_snapshot(conn, project: dict[str, object]) -> dict[str, object]:
     event = conn.execute("SELECT timestamp FROM events WHERE revision=?", (revision,)).fetchone()
     return {
         "schema_version": SCHEMA_VERSION,
+        "snapshot_version": SNAPSHOT_VERSION,
+        "workflow_snapshot_version": WORKFLOW_SNAPSHOT_VERSION,
         "project": project,
         "project_revision": revision,
         "generated_at": event[0] if event else project.get("created_at"),
@@ -159,6 +176,8 @@ def restore_snapshot(db, paths, project: dict[str, object]) -> bool:
     snapshot = json.loads(paths.snapshot_file.read_text(encoding="utf-8"))
     if int(snapshot.get("schema_version", 0)) != SCHEMA_VERSION:
         raise ValueError("snapshot schema version is incompatible")
+    if int(snapshot.get("snapshot_version", SNAPSHOT_VERSION)) > SNAPSHOT_VERSION:
+        raise ValueError("snapshot format version is newer than this runtime")
     tables = snapshot.get("tables", {})
 
     snapshot_revision = int(snapshot.get("project_revision", 0))

@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import secrets
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
+from pathlib import Path
 
 from ..config import utc_now
 from ..models import TodoError
@@ -408,3 +410,46 @@ def default_first_class_operations(role: str = "implementer") -> frozenset[str]:
 
 def child_operations() -> frozenset[str]:
     return frozenset({"collect_delegation"})
+
+
+class WorkflowCapabilityLocator:
+    """Semantics-free XDG hint mapping a handle hash to its project database.
+
+    Losing this cache is harmless: ``next_task`` can prove continuity from todo
+    state and issue a replacement. Every lookup is revalidated by the
+    authoritative per-project ``WorkflowCapabilityStore``.
+    """
+
+    def __init__(self, state_dir: str | Path | None = None):
+        base = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
+        self.root = Path(state_dir) if state_dir is not None else base / "coding-workflow" / "locators"
+
+    def register(self, handle: str, repo_root: str | Path) -> None:
+        self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(self.root, 0o700)
+        target = self.root / capability_hash(handle)
+        temporary = target.with_suffix(".tmp-" + secrets.token_hex(6))
+        temporary.write_text(str(Path(repo_root).resolve()) + "\n", encoding="utf-8")
+        os.chmod(temporary, 0o600)
+        temporary.replace(target)
+
+    def forget(self, handle: str) -> None:
+        try:
+            (self.root / capability_hash(handle)).unlink()
+        except FileNotFoundError:
+            pass
+
+    def resolve(self, handle: str, *, required_operation: str, expected_class: str | None = None) -> AuthorizedCapability:
+        if not isinstance(handle, str) or not handle.startswith((FIRST_CLASS_PREFIX, CHILD_PREFIX)):
+            raise TodoError("invalid_workflow_capability", "Capability is unknown, expired, or inactive")
+        try:
+            repo = Path((self.root / capability_hash(handle)).read_text(encoding="utf-8").strip()).resolve()
+        except (FileNotFoundError, OSError, ValueError):
+            raise TodoError("invalid_workflow_capability", "Capability locator is absent; call next_task to resume") from None
+        # Imports remain lazy so MCP startup does not open a repository or DB.
+        from ..service import Service
+
+        service = Service(repo)
+        return WorkflowCapabilityStore(service.db).resolve(
+            handle, required_operation=required_operation, expected_class=expected_class
+        )

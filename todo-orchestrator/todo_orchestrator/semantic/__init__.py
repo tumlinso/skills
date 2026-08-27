@@ -10,6 +10,7 @@ from ..db import Database
 from .anchors import resolve_anchor
 from .history import semantic_delta
 from .state import semantic_state
+from .workflow import workflow_state
 
 
 class SemanticReader:
@@ -46,6 +47,13 @@ class SemanticReader:
     def delta(self, **selector) -> dict[str, object]:
         with self.db.read() as conn:
             result = semantic_delta(conn, **selector)
+            result["project_uuid"] = self.project["project_uuid"]
+            result["read_authority_fingerprint"] = self._fingerprint(conn)
+            return result
+
+    def workflow(self) -> dict[str, object]:
+        with self.db.read() as conn:
+            result = workflow_state(conn, self.project)
             result["project_uuid"] = self.project["project_uuid"]
             result["read_authority_fingerprint"] = self._fingerprint(conn)
             return result

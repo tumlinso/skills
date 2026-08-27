@@ -200,11 +200,15 @@ class WorkflowRecoveryTests(unittest.TestCase):
             attempt = conn.execute("SELECT state FROM child_attempts WHERE id='ATTEMPT'").fetchone()[0]
             lease = conn.execute("SELECT state FROM child_scope_leases WHERE child_execution_id='CHILD'").fetchone()[0]
             candidate = conn.execute("SELECT state,payload_json,artifact_refs_json FROM workflow_child_result_candidates WHERE id='CANDIDATE'").fetchone()
-            lane_membership = conn.execute("SELECT COUNT(*) FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0]
+            parent_lane_membership = conn.execute("SELECT COUNT(*) FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0]
+            child_lane_membership = conn.execute(
+                "SELECT COUNT(*) FROM workflow_lane_tasks lt JOIN child_executions c ON c.id=lt.task_id WHERE c.id='CHILD'"
+            ).fetchone()[0]
         self.assertEqual((execution, attempt, lease), ("failed", "failed", "released"))
         self.assertEqual(candidate["state"], "collected")
         self.assertIn("patch:1", candidate["artifact_refs_json"])
-        self.assertEqual(lane_membership, 0)
+        self.assertEqual(parent_lane_membership, 1)  # v2 plans normalize to one serial compatibility lane.
+        self.assertEqual(child_lane_membership, 0)
 
     def test_supervisor_status_overrides_child_lease_age_safely(self) -> None:
         self.seed_dispatch()

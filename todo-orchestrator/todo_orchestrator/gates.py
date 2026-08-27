@@ -145,6 +145,7 @@ def run_gate(
     db, paths, project: dict[str, object], gate_id: str, claim_token: str | None,
     accept_child: str | None = None,
     *,
+    authorized_claim_id: str | None = None,
     execution_root: Path | None = None,
     workspace_base_commit: str | None = None,
 ) -> tuple[dict[str, object], int]:
@@ -153,6 +154,8 @@ def run_gate(
     claim_seconds = int(configuration.get("claim_lease_seconds", 7200))
     acquired: dict[str, object] = {}
     raw_tokens: dict[str, str] = {}
+    if claim_token and authorized_claim_id:
+        raise TodoError("ambiguous_gate_authority", "Gate execution accepts one claim authority")
     gate_root = Path(execution_root or paths.repo_root).resolve()
     if execution_root is not None and not workspace_base_commit:
         raise TodoError("workspace_gate_base_required", "Managed-workspace gates require the frozen workspace base commit")
@@ -163,7 +166,19 @@ def run_gate(
             raise TodoError("gate_not_found", f"Unknown gate {gate_id}")
         config = json.loads(gate["config_json"])
         child = None
-        if gate["task_id"] and str(claim_token or "").startswith("toch_"):
+        if authorized_claim_id:
+            claim = conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (authorized_claim_id,)).fetchone()
+            if not claim:
+                raise TodoError("invalid_claim_authority", "Workflow capability claim is no longer active", ExitCode.INVALID_TOKEN)
+            if claim["task_id"] != gate["task_id"]:
+                raise TodoError("claim_task_mismatch", "Gate does not belong to the capability claim", ExitCode.INVALID_TOKEN)
+            claim_expires = (datetime.now(timezone.utc) + timedelta(seconds=claim_seconds)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+            conn.execute(
+                "UPDATE claims SET heartbeat_at=?,expires_at=? WHERE id=?",
+                (utc_now(), claim_expires, authorized_claim_id),
+            )
+            child = None
+        elif gate["task_id"] and str(claim_token or "").startswith("toch_"):
             attempt = authenticate_child_token(conn, claim_token)
             execution = conn.execute(
                 "SELECT id,gates_json FROM child_executions WHERE id=?",

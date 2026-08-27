@@ -140,6 +140,35 @@ def authorize_child_execution(
 ) -> dict[str, object]:
     """Authorize one bounded child and return its first restricted token."""
     claim = authenticate_claim(conn, claim_token)
+    return authorize_child_execution_for_claim(
+        conn,
+        repo_root,
+        str(claim["id"]),
+        objective=objective,
+        scopes=scopes,
+        gates=gates,
+        access=access,
+        max_attempts=max_attempts,
+        lease_seconds=lease_seconds,
+    )
+
+
+def authorize_child_execution_for_claim(
+    conn: sqlite3.Connection,
+    repo_root: Path,
+    claim_id: str,
+    *,
+    objective: str,
+    scopes: list[str],
+    gates: list[str] | None = None,
+    access: str = "write",
+    max_attempts: int = 1,
+    lease_seconds: int = 300,
+) -> dict[str, object]:
+    """Authorize a child after an in-process capability authenticated its parent claim."""
+    claim = conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone()
+    if not claim:
+        raise TodoError("invalid_claim_authority", "Parent claim is no longer active", ExitCode.INVALID_TOKEN)
     objective = objective.strip()
     if not objective:
         raise TodoError("invalid_child_objective", "Child objective must not be empty")
@@ -298,7 +327,23 @@ def disposition_child_execution(
     action: str,
 ) -> dict[str, object]:
     claim = _parent_claim(conn, claim_token, child_id)
+    return disposition_child_execution_for_claim(conn, str(claim["id"]), child_id, action=action)
+
+
+def disposition_child_execution_for_claim(
+    conn: sqlite3.Connection,
+    claim_id: str,
+    child_id: str,
+    *,
+    action: str,
+) -> dict[str, object]:
+    """Accept or reject a child after an opaque parent capability was resolved."""
+    claim = conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone()
+    if not claim:
+        raise TodoError("invalid_claim_authority", "Parent claim is no longer active", ExitCode.INVALID_TOKEN)
     child = _execution(conn, child_id)
+    if child["parent_claim_id"] != claim_id or child["task_id"] != claim["task_id"]:
+        raise TodoError("child_parent_mismatch", "Child execution belongs to another parent claim", ExitCode.INVALID_TOKEN)
     target = {"accept": "accepted", "reject": "rejected", "stale": "stale", "supersede": "stale"}.get(action)
     if not target:
         raise TodoError("invalid_child_disposition", f"Unknown child disposition {action}")
@@ -320,6 +365,17 @@ def disposition_child_execution(
     conn.execute("UPDATE child_executions SET state=?,completed_at=? WHERE id=?", (target, now, child_id))
     _release_scopes(conn, child_id, now)
     return {"child_execution_id": child_id, "task_id": claim["task_id"], "state": target}
+
+
+def child_execution_status_for_claim(
+    conn: sqlite3.Connection, claim_id: str, child_id: str,
+) -> dict[str, object]:
+    """Read child status after an opaque parent/child capability was resolved."""
+    claim = conn.execute("SELECT * FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone()
+    child = _execution(conn, child_id)
+    if not claim or child["parent_claim_id"] != claim_id or child["task_id"] != claim["task_id"]:
+        raise TodoError("child_parent_mismatch", "Child execution belongs to another parent claim", ExitCode.INVALID_TOKEN)
+    return _child_execution_status(conn, claim, child)
 
 
 def adopt_child_execution(conn: sqlite3.Connection, claim_token: str, child_id: str) -> dict[str, object]:
@@ -379,6 +435,11 @@ def recover_child_execution(
 def child_execution_status(conn: sqlite3.Connection, claim_token: str, child_id: str) -> dict[str, object]:
     claim = _parent_claim(conn, claim_token, child_id)
     child = _execution(conn, child_id)
+    return _child_execution_status(conn, claim, child)
+
+
+def _child_execution_status(conn: sqlite3.Connection, claim: sqlite3.Row, child: sqlite3.Row) -> dict[str, object]:
+    child_id = str(child["id"])
     scopes = [dict(row) for row in conn.execute(
         "SELECT path,state,acquired_at,released_at FROM child_scope_leases WHERE child_execution_id=? ORDER BY path",
         (child_id,),
