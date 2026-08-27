@@ -132,7 +132,7 @@
     {
       "id": "WFU-22", "kind": "workstream", "title": "Extend project-control additive read model",
       "objective": "In a separate project-control branch/worktree, consume todo's normalized semantic read to display runs, first-class lanes and dispatches, messages, rendezvous, workspaces, patches, recovery, context versions, and subordinate local children separately while preserving exact eight-tool read-only behavior.",
-      "priority": 119, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-SEMANTIC-READ-V1"}, {"type": "task", "task_id": "WFU-24"}],
+      "priority": 119, "parallel_policy": "parallel_safe", "depends_on": [{"type": "checkpoint", "checkpoint_id": "WFU-SEMANTIC-READ-V1"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-26"}],
       "scope": {"exclusive_paths": ["workflow-unification/evidence/project-control"], "read_paths": ["workflow-unification/contracts/semantic-read-v1.md"]},
       "consumes_interfaces": [{"id": "WFU-SEMANTIC-READ", "required_state": "frozen", "required_version": "1"}], "invariants": ["WFU-PC-READONLY", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-WORK"]
     },
@@ -163,9 +163,18 @@
       "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
     },
     {
+      "id": "WFU-26", "kind": "validation_task", "title": "Complete the frozen workflow semantic read contract",
+      "objective": "Expose normalized immutable patch artifacts, synthesize recovery-needed state across authoritative claims, sessions, dispatches, children, gates, locks, resources, workspaces, and integration failures, and emit safe parallel groups only after dependency, interface, lock, resource, and scope checks.",
+      "priority": 114, "parallel_policy": "serial", "depends_on": [{"type": "task", "task_id": "WFU-24"}],
+      "scope": {"exclusive_paths": ["todo-orchestrator/todo_orchestrator/semantic/workflow.py", "todo-orchestrator/tests/test_workflow_semantic_read.py"], "read_paths": ["workflow-unification/contracts/semantic-read-v1.md", "todo-orchestrator/todo_orchestrator/semantic", "todo-orchestrator/todo_orchestrator/workflow", "todo-orchestrator/tests/v2_helpers.py"]},
+      "gates": [{"id": "WFU-26-SEMANTIC", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "todo-orchestrator/tests", "-p", "test_workflow_semantic_read.py", "-v"], "input_paths": ["todo-orchestrator/todo_orchestrator/semantic/workflow.py", "todo-orchestrator/tests/test_workflow_semantic_read.py"], "required": true}],
+      "completion_contract": "The additive semantic read satisfies every field promised by WFU-SEMANTIC-READ-V1 without raw-table interpretation in project-control and without overstating parallel safety.",
+      "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PC-READONLY", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
-      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}],
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}, {"type": "task", "task_id": "WFU-26"}],
       "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
     },
