@@ -154,9 +154,18 @@
       "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-PRESERVE-COMPAT", "WFU-OPAQUE-SECRETS"]
     },
     {
+      "id": "WFU-25", "kind": "validation_task", "title": "Remove obsolete protocol discovery and child-independence guidance",
+      "objective": "Update the installed two-worker smoke to the exact six-tool protocol and coordinate_task gate action, remove residual wording that describes subordinate local-worker children as independent project work, and add focused regression coverage.",
+      "priority": 115, "parallel_policy": "parallel_safe", "depends_on": [{"type": "task", "task_id": "WFU-21"}],
+      "scope": {"exclusive_paths": ["integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py", "integrations/coding-workflow-mcp/tests/test_protocol.py", "local-coding-worker/SKILL.md"], "read_paths": ["integrations/coding-workflow-mcp", "todo-orchestrator/todo_orchestrator/workflow/mcp/server.py"]},
+      "gates": [{"id": "WFU-25-ROUTING", "type": "command", "argv": ["python", "-m", "unittest", "discover", "-s", "integrations/coding-workflow-mcp/tests", "-p", "test_protocol.py", "-v"], "input_paths": ["integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py", "integrations/coding-workflow-mcp/tests/test_protocol.py", "local-coding-worker/SKILL.md"], "required": true}],
+      "completion_contract": "Every installed discovery example expects exactly six tools, explicit gates use coordinate_task, and local-worker documentation consistently describes nonblocking subordinate child execution.",
+      "invariants": ["WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT"]
+    },
+    {
       "id": "WFU-30", "kind": "validation_task", "title": "Full compatibility, concurrency, recovery, MCP, observation, and dogfood validation",
       "objective": "Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.",
-      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}],
+      "priority": 100, "parallel_policy": "project_exclusive", "depends_on": [{"type": "task", "task_id": "WFU-20"}, {"type": "task", "task_id": "WFU-21"}, {"type": "task", "task_id": "WFU-22"}, {"type": "task", "task_id": "WFU-23"}, {"type": "task", "task_id": "WFU-24"}, {"type": "task", "task_id": "WFU-25"}],
       "scope": {"exclusive_paths": ["workflow-unification/dogfood", "workflow-unification/evidence/validation", "todo-orchestrator/tests/test_workflow_dogfood.py"], "read_paths": ["todo-orchestrator", "integrations/coding-workflow-mcp", "workflow-unification"]},
       "claim_locks": ["wfu-shared-integration"], "invariants": ["WFU-SQLITE-AUTHORITY", "WFU-FRONT-DOOR", "WFU-CHILD-BOUNDARY", "WFU-PRESERVE-COMPAT", "WFU-PRESERVE-WORK", "WFU-PC-READONLY", "WFU-OPAQUE-SECRETS"]
     },
