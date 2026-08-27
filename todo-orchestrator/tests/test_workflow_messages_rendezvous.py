@@ -240,6 +240,12 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
         with self.assertRaises(TodoError) as reference_secret:
             self.publish(references=[{"type": "artifact", "worker_token": "secret"}])
         self.assertEqual(reference_secret.exception.code, "workflow_message_secret_forbidden")
+        with self.assertRaises(TodoError) as client_secret:
+            self.publish(payload={"client_secret": "secret"})
+        self.assertEqual(client_secret.exception.code, "workflow_message_secret_forbidden")
+        with self.assertRaises(TodoError) as packet:
+            self.publish(references=[{"type": "source", "packet": "broad context"}])
+        self.assertEqual(packet.exception.code, "workflow_message_bulk_content_forbidden")
         near_limit = self.publish(payload={"summary": "x" * 3900}, message_id="NEAR-LIMIT")
         delivered = self.messages.sync(capability_class="first_class", run_id="RUN", lane_id="L2")
         self.assertIn(near_limit["message"]["id"], {item["id"] for item in delivered["messages"]})
@@ -372,6 +378,33 @@ class WorkflowMessagesRendezvousTests(unittest.TestCase):
                 rendezvous_id="RV-TERMINAL", lane_id="L1", reason="late revocation",
             )
         self.assertEqual(caught.exception.code, "rendezvous_terminal_invalidation_requires_recovery")
+
+    def test_arrival_invalidation_is_scoped_to_its_run(self) -> None:
+        self.create_rendezvous("RV-RUN-SCOPE", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])
+        self.arrive("RV-RUN-SCOPE", "L1", "A")
+        def other_run(conn, revision):
+            now = "2026-08-27T00:00:00Z"
+            conn.execute(
+                "INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('OTHER','JALL',?,?,?)",
+                (now, now, revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_lanes(id,run_id,role,created_at,updated_at,revision) "
+                "VALUES('OTHER-VAL','OTHER','validator',?,?,?)",
+                (now, now, revision),
+            )
+        self.mutate(other_run)
+        with self.assertRaises(TodoError) as caught:
+            self.rendezvous.invalidate_arrival(
+                capability_class="first_class", run_id="OTHER", author_lane_id="OTHER-VAL",
+                rendezvous_id="RV-RUN-SCOPE", lane_id="L1", reason="cross-run attempt",
+            )
+        self.assertEqual(caught.exception.code, "rendezvous_arrival_not_found")
+        with self.repo.service.db.read() as conn:
+            state = conn.execute(
+                "SELECT state FROM workflow_rendezvous_arrivals WHERE rendezvous_id='RV-RUN-SCOPE' AND lane_id='L1'"
+            ).fetchone()[0]
+        self.assertEqual(state, "valid")
 
     def test_satisfied_rendezvous_does_not_clear_attention_for_closed_composite_barrier(self) -> None:
         self.create_rendezvous("RV-COMPOSITE", "all", "JALL", "BR-ALL", [{"lane_id": "L1"}])

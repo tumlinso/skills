@@ -83,6 +83,17 @@ class WorkspaceService:
             raise TodoError(code, "Git operation failed", details={"returncode": result.returncode})
         return result.stdout
 
+    def _git_input_ok(self, repo: Path, args: Sequence[str], content: bytes, *, code: str) -> bytes:
+        result = self.runner(
+            ["git", "-C", str(repo), *args],
+            input=content,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise TodoError(code, "Git operation failed", details={"returncode": result.returncode})
+        return result.stdout
+
     def _managed_path(self, value: Path) -> Path:
         target = value.resolve()
         try:
@@ -106,6 +117,32 @@ class WorkspaceService:
                 code="integration_source_identity_failed",
             )
         )
+
+    def _freeze_integration_commit(
+        self,
+        repository_root: Path,
+        *,
+        base_commit: str,
+        queue_id: str,
+        source_identity: str,
+    ) -> str:
+        """Create an immutable commit/ref for the gated index without moving HEAD."""
+        tree = self._git_ok(repository_root, ["write-tree"], code="integration_tree_freeze_failed").decode().strip()
+        frozen_diff = self._git_ok(repository_root, ["diff", "--binary", base_commit, tree], code="integration_tree_verify_failed")
+        if _sha256(frozen_diff) != source_identity:
+            raise TodoError("integration_tree_mismatch", "Frozen integration tree differs from the gated source")
+        commit = self._git_input_ok(
+            repository_root,
+            ["commit-tree", tree, "-p", base_commit],
+            f"coding-workflow integration {queue_id}\n".encode("utf-8"),
+            code="integration_commit_freeze_failed",
+        ).decode().strip()
+        self._git_ok(
+            repository_root,
+            ["update-ref", f"refs/coding-workflow/integrations/{queue_id}", commit],
+            code="integration_ref_freeze_failed",
+        )
+        return commit
 
     def _lane(self, conn: Any, run_id: str, lane_id: str) -> Any:
         row = conn.execute(
@@ -644,7 +681,18 @@ class WorkspaceService:
                 artifact_dir.mkdir(parents=True, exist_ok=True)
                 artifact_path = artifact_dir / f"integration-{digest}.patch"
                 _write_immutable(artifact_path, content)
-                integrated_artifact = {"kind": "patch", "ref": str(artifact_path), "content_hash": digest}
+                frozen_commit = self._freeze_integration_commit(
+                    destination,
+                    base_commit=queue["base_commit"],
+                    queue_id=queue_id,
+                    source_identity=source_identity,
+                )
+                integrated_artifact = {
+                    "kind": "commit",
+                    "ref": frozen_commit,
+                    "patch_ref": str(artifact_path),
+                    "content_hash": digest,
+                }
 
             def operation(conn: Any, revision: int) -> dict[str, object]:
                 row = conn.execute(
@@ -677,6 +725,14 @@ class WorkspaceService:
                         raise TodoError("integration_gate_provenance_stale", "Integration gate provenance changed before finalization")
                 if self._source_identity(destination, queue["base_commit"]) != source_identity:
                     raise TodoError("integration_source_changed", "Destination source changed before authoritative finalization")
+                if integrated_artifact:
+                    frozen = self._git_ok(
+                        destination,
+                        ["diff", "--binary", queue["base_commit"], str(integrated_artifact["ref"])],
+                        code="integration_frozen_commit_missing",
+                    )
+                    if _sha256(frozen) != source_identity:
+                        raise TodoError("integration_frozen_commit_changed", "Frozen integration commit no longer matches gated source")
                 merge_result = {"state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact, "source_identity": source_identity}
                 conn.execute(
                     "UPDATE workflow_integration_queue SET state=?,merge_result_json=?,updated_at=? WHERE id=?",

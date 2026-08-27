@@ -495,18 +495,16 @@ class RendezvousService:
             if author["role"] not in {"coordinator", "validator", "integrator"}:
                 raise TodoError("rendezvous_invalidation_forbidden", "Lane role cannot invalidate an arrival")
             row = conn.execute(
-                "SELECT state FROM workflow_rendezvous_arrivals WHERE rendezvous_id=? AND lane_id=?",
-                (rendezvous_id, lane_id),
+                "SELECT a.state,r.join_task_id FROM workflow_rendezvous_arrivals a "
+                "JOIN workflow_rendezvous r ON r.id=a.rendezvous_id "
+                "WHERE a.rendezvous_id=? AND a.lane_id=? AND r.run_id=?",
+                (rendezvous_id, lane_id, run_id),
             ).fetchone()
             if not row:
                 raise TodoError("rendezvous_arrival_not_found", "Arrival does not exist")
             if row["state"] == "invalid":
                 return {"already_invalid": True, "condition": _condition(conn, rendezvous_id)}
-            rendezvous = conn.execute(
-                "SELECT join_task_id FROM workflow_rendezvous WHERE id=? AND run_id=?",
-                (rendezvous_id, run_id),
-            ).fetchone()
-            join_task = conn.execute("SELECT status FROM tasks WHERE id=?", (rendezvous["join_task_id"],)).fetchone() if rendezvous else None
+            join_task = conn.execute("SELECT status FROM tasks WHERE id=?", (row["join_task_id"],)).fetchone()
             if join_task and join_task["status"] in {"done", "cancelled", "superseded"}:
                 raise TodoError(
                     "rendezvous_terminal_invalidation_requires_recovery",

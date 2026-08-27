@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import re
 import subprocess
@@ -143,12 +144,18 @@ def _evaluate_static(repo_root: Path, gate_type: str, config: dict[str, object],
 def run_gate(
     db, paths, project: dict[str, object], gate_id: str, claim_token: str | None,
     accept_child: str | None = None,
+    *,
+    execution_root: Path | None = None,
+    workspace_base_commit: str | None = None,
 ) -> tuple[dict[str, object], int]:
     configuration = project.get("configuration", {})
     resource_seconds = int(configuration.get("resource_lease_seconds", 300))
     claim_seconds = int(configuration.get("claim_lease_seconds", 7200))
     acquired: dict[str, object] = {}
     raw_tokens: dict[str, str] = {}
+    gate_root = Path(execution_root or paths.repo_root).resolve()
+    if execution_root is not None and not workspace_base_commit:
+        raise TodoError("workspace_gate_base_required", "Managed-workspace gates require the frozen workspace base commit")
 
     def acquire(conn, revision):
         gate = conn.execute("SELECT * FROM gates WHERE id=?", (gate_id,)).fetchone()
@@ -190,7 +197,17 @@ def run_gate(
         session_id = claim["session_id"] if claim else config.get("session_id")
         if not session_id:
             raise TodoError("gate_session_required", "Gate execution requires an active claim")
-        fingerprint, inputs = gate_input_fingerprint(conn, paths.repo_root, config)
+        fingerprint, inputs = gate_input_fingerprint(conn, gate_root, config)
+        workspace_source_identity = None
+        if workspace_base_commit:
+            source = subprocess.run(
+                ["git", "-C", str(gate_root), "diff", "--binary", workspace_base_commit],
+                capture_output=True,
+                check=False,
+            )
+            if source.returncode != 0:
+                raise TodoError("workspace_gate_source_unavailable", "Cannot establish managed-workspace gate source identity")
+            workspace_source_identity = hashlib.sha256(source.stdout).hexdigest()
         if accept_child and child:
             raise TodoError("child_acceptance_token_invalid", "Child acceptance requires the parent claim token", ExitCode.INVALID_TOKEN)
         if accept_child:
@@ -246,6 +263,8 @@ def run_gate(
             accept_candidate=accept_candidate, resources=resources, locks=locks,
             fingerprint=fingerprint, inputs=inputs,
             explicit_accept_child=accept_child,
+            workspace_path=str(gate_root) if execution_root is not None else None,
+            workspace_source_identity=workspace_source_identity,
         )
         return {"gate_id": gate_id, "resources": resources, "locks": [{k: v for k, v in item.items() if k != "token"} for item in locks]}
 
@@ -314,7 +333,7 @@ def run_gate(
             environment.update(resource_environment(acquired["resources"]))
             result = subprocess.run(
                 [str(item) for item in argv],
-                cwd=paths.repo_root / str(config.get("cwd", ".")),
+                cwd=gate_root / str(config.get("cwd", ".")),
                 env=environment,
                 capture_output=True,
                 text=True,
@@ -330,7 +349,7 @@ def run_gate(
             if executed and gate_type in {"benchmark", "json_predicate"}:
                 source: object
                 metric_file = config.get("metric_file")
-                source = json.loads((paths.repo_root / str(metric_file)).read_text(encoding="utf-8")) if metric_file else json.loads(stdout)
+                source = json.loads((gate_root / str(metric_file)).read_text(encoding="utf-8")) if metric_file else json.loads(stdout)
                 actual = _json_value(source, str(config.get("metric_path", "")))
                 passed = _compare(float(actual), str(config.get("operator", ">=")), float(config["threshold"]))
                 details.update(actual=actual, threshold=config["threshold"], operator=config.get("operator", ">="))
@@ -342,7 +361,7 @@ def run_gate(
                     status, valid = "failed", False
         else:
             with db.read() as read_conn:
-                status, valid, details = _evaluate_static(paths.repo_root, gate_type, config, read_conn)
+                status, valid, details = _evaluate_static(gate_root, gate_type, config, read_conn)
     except subprocess.TimeoutExpired as exc:
         stdout = exc.stdout or ""
         stderr = exc.stderr or ""
@@ -368,6 +387,9 @@ def run_gate(
         "locks": [{k: v for k, v in item.items() if k != "token"} for item in acquired["locks"]],
         "started_revision": acquire_revision,
     }
+    if acquired.get("workspace_path"):
+        metadata["workspace_path"] = acquired["workspace_path"]
+        metadata["source_identity"] = acquired["workspace_source_identity"]
     if acquired.get("child"):
         metadata.update(acquired["child"])
         metadata["candidate_evidence"] = True

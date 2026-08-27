@@ -29,7 +29,9 @@ from .foundation import (
 
 RECIPIENT_TYPES = frozenset({"lane", "role", "task", "run"})
 InterfaceChangeHook = Callable[[sqlite3.Connection, dict[str, Any], int], dict[str, Any]]
-_BULK_CONTENT_KEYS = frozenset({"log", "logs", "transcript", "stdout", "stderr", "raw_log", "raw_logs"})
+_BULK_CONTENT_KEYS = frozenset(
+    {"log", "logs", "transcript", "transcripts", "stdout", "stderr", "raw_log", "raw_logs", "traceback", "packet", "packet_body", "child_packet"}
+)
 _SECRET_CONTENT_KEYS = frozenset(
     {"token", "claim_token", "session_token", "worker_token", "capability_token", "password", "secret", "api_key", "gpu_identifier", "model_endpoint"}
 )
@@ -60,7 +62,10 @@ def _reject_bulk_content(value: object) -> None:
                 "Run messages must reference bounded artifacts instead of embedding logs or transcripts",
                 details={"fields": forbidden},
             )
-        secret = sorted(key for key in lowered if key in _SECRET_CONTENT_KEYS or key.endswith("_token"))
+        secret = sorted(
+            key for key in lowered
+            if key in _SECRET_CONTENT_KEYS or key.endswith("_token") or key.endswith("_secret")
+        )
         if secret:
             raise TodoError(
                 "workflow_message_secret_forbidden",

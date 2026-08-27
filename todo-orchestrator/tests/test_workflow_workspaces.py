@@ -11,7 +11,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from todo_orchestrator.db import Database
 from todo_orchestrator.config import utc_now
-from todo_orchestrator.models import TodoError
+from todo_orchestrator.claims import claim_best
+from todo_orchestrator.gates import run_gate
+from todo_orchestrator.models import ProjectPaths, TodoError
+from todo_orchestrator.sessions import create_session
 from todo_orchestrator.workflow.workspaces import WorkspaceService
 
 
@@ -289,6 +292,72 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             lambda: self.service.mark_cleanup_eligible(workspace_id=str(destination["workspace_id"])),
         )
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
+
+    def test_canonical_gate_runner_binds_destination_workspace_and_source(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
+
+        def authorize(conn, revision):
+            conn.execute(
+                "UPDATE gates SET type='command',config_json=? WHERE id='POST'",
+                (json.dumps({
+                    "argv": [sys.executable, "-c", "from pathlib import Path; assert Path('shared.txt').read_text().startswith('alpha changed')"],
+                    "input_paths": ["shared.txt"],
+                }, sort_keys=True),),
+            )
+            session, _ = create_session(conn, self.repo)
+            _, claim_token = claim_best(
+                conn, self.repo, str(session["agent_id"]), revision, 7200,
+                requested_task_id="INTEGRATE", reconcile_expired=False,
+            )
+            return claim_token
+
+        claim_token, _ = self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="INTEGRATE",
+            event_type="fixture_gate_authorized", payload={}, operation=authorize,
+        )
+        evidence_dir = self.root / "evidence"
+        evidence_dir.mkdir()
+        paths = ProjectPaths(
+            repo_root=self.repo,
+            control_dir=self.root / "control",
+            project_file=self.root / "project.json",
+            snapshot_file=self.root / "snapshot.json",
+            state_dir=self.root,
+            db_file=self.root / "state.sqlite3",
+            evidence_dir=evidence_dir,
+        )
+        gate, _ = run_gate(
+            self.db,
+            paths,
+            {"configuration": {}},
+            "POST",
+            claim_token,
+            execution_root=Path(str(destination["worktree_path"])),
+            workspace_base_commit=self.base,
+        )
+        self.assertEqual(gate["status"], "passed")
+        finished = self.service.record_post_merge_gates(
+            queue_id=str(queued["queue_id"]),
+            gate_results=[{"gate_id": "POST", "evidence_id": gate["evidence_id"]}],
+        )
+        self.assertEqual(finished["state"], "integrated")
+        self.assertEqual(finished["integrated_artifact"]["kind"], "commit")
+        self.assertEqual(
+            _sha := subprocess.run(
+                ["git", "-C", str(destination["worktree_path"]), "rev-parse", f"{finished['integrated_artifact']['ref']}^{{commit}}"],
+                capture_output=True, text=True, check=True,
+            ).stdout.strip(),
+            finished["integrated_artifact"]["ref"],
+        )
 
     def test_integrator_role_and_exclusive_destination_are_authoritative(self) -> None:
         self.create_destination(lane="NOT_INTEGRATOR")
