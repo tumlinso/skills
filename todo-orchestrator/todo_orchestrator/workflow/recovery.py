@@ -338,6 +338,20 @@ class RecoveryEngine:
                         conn.execute("UPDATE tasks SET status='attention_required',attention_reason='recovery preserved dirty scope',updated_at=?,revision=? WHERE id=?", (now, revision, action["task_id"]))
                     else:
                         conn.execute("UPDATE tasks SET status='planned',attention_reason=NULL,updated_at=?,revision=? WHERE id=? AND status IN ('in_progress','attention_required')", (now, revision, action["task_id"]))
+                    dispatch = conn.execute(
+                        "SELECT lane_id FROM workflow_dispatches WHERE claim_id=? ORDER BY created_at DESC LIMIT 1",
+                        (action["id"],),
+                    ).fetchone()
+                    if dispatch:
+                        conn.execute(
+                            "UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? "
+                            "WHERE lane_id=? AND task_id=? AND state='active'",
+                            (revision, dispatch["lane_id"], action["task_id"]),
+                        )
+                        conn.execute(
+                            "UPDATE workflow_lanes SET state=?,updated_at=?,revision=? WHERE id=?",
+                            ("attention_required" if action["dirty"] else "ready", now, revision, dispatch["lane_id"]),
+                        )
                 elif kind == "terminalize_dead_child":
                     if action.get("attempt_id"):
                         conn.execute("UPDATE child_attempts SET state='failed',completed_at=? WHERE id=? AND state='active'", (now, action["attempt_id"]))

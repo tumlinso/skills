@@ -640,8 +640,27 @@ class WorkflowKernel:
                     "INSERT INTO handoffs(id,task_id,claim_id,kind,note,payload_json,created_at,revision) VALUES(?,?,?,?,?,?,?,?)",
                     (handoff_id, lineage.task_id, lineage.claim_id, action, note or "", json.dumps(body, sort_keys=True), utc_now(), revision),
                 )
+            dispatch = conn.execute(
+                "SELECT id,lane_id FROM workflow_dispatches WHERE claim_id=? AND state='active'",
+                (lineage.claim_id,),
+            ).fetchone()
+            if not dispatch:
+                raise TodoError("workflow_dispatch_inactive", "Nonterminal disposition requires the active first-class dispatch")
             release_claim_id(conn, str(lineage.claim_id), next_status=status, reason=reason)
-            conn.execute("UPDATE workflow_dispatches SET state='released',released_at=?,revision=? WHERE id=?", (utc_now(), revision, conn.execute("SELECT id FROM workflow_dispatches WHERE claim_id=? AND state='active'", (lineage.claim_id,)).fetchone()[0]))
+            now = utc_now()
+            conn.execute(
+                "UPDATE workflow_dispatches SET state='released',released_at=?,revision=? WHERE id=?",
+                (now, revision, dispatch["id"]),
+            )
+            conn.execute(
+                "UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? "
+                "WHERE lane_id=? AND task_id=? AND state='active'",
+                (revision, dispatch["lane_id"], lineage.task_id),
+            )
+            conn.execute(
+                "UPDATE workflow_lanes SET state=?,updated_at=?,revision=? WHERE id=?",
+                ("attention_required" if action == "block" else "ready", now, revision, dispatch["lane_id"]),
+            )
             WorkflowCapabilityStore(service.db).stage_revoke(conn, capability_id=capability.id, family=True)
             return {"status": "finished", "task_id": lineage.task_id, "handoff_id": handoff_id, "terminal": True}
         result, revision, projection = service.mutate(
