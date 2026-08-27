@@ -9,6 +9,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
 from todo_orchestrator.models import TodoError
 from todo_orchestrator.workflow.capabilities import WorkflowCapabilityLocator
 from todo_orchestrator.workflow.protocol import WorkflowProtocol
+from todo_orchestrator.workflow.protocol import _validate_action
 from todo_orchestrator.workflow.service import WorkflowKernel
 
 
@@ -45,6 +46,8 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         self.assertEqual((claimed["status"], claimed["run_id"], claimed["lane_id"]), ("claimed", "compat-v2", "compat-v2-main"))
         self.assertLess(len(str(claimed).encode()), 8192)
         self.assertNotIn("claim_token", str(claimed))
+        self.assertEqual(claimed["context"]["task_brief"]["objective"], "Implement A")
+        self.assertIn("exclusive_paths", claimed["context"]["task_brief"]["scope"])
         handle = claimed["workflow_handle"]
         synced = self.protocol.coordinate_task(workflow_handle=handle, action="sync", payload={})
         self.assertEqual(synced["messages"], [])
@@ -80,6 +83,16 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "in_progress")
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_lanes WHERE id=?", (delegated["child_execution_id"],)).fetchone()[0], 0)
+
+    def test_arrival_schema_requires_full_provenance(self):
+        with self.assertRaises(TodoError) as error:
+            _validate_action("arrive", {"rendezvous_id": "R", "summary": "done"})
+        self.assertEqual(error.exception.code, "invalid_coordination_payload")
+        _validate_action("arrive", {
+            "rendezvous_id": "R", "summary": "done", "base_source_identity": "base",
+            "final_source_identity": "final", "artifact": {"kind": "commit", "ref": "abc"},
+            "evidence": [{"type": "gate", "id": "G"}], "context_version": 1,
+        })
 
 
 if __name__ == "__main__":

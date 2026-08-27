@@ -349,10 +349,23 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
 
     for interface in data.get("interfaces", []):
         paths = [canonical_relative(repo_root, value) for value in interface.get("contract_paths", [])]
+        existing_interface = conn.execute("SELECT * FROM interfaces WHERE id=?", (interface["id"],)).fetchone()
+        requested_state = str(interface.get("state", existing_interface["state"] if existing_interface else "draft"))
+        # Plan reapplication is not an interface lifecycle operation. Once a
+        # contract is frozen or revised, a historical/default draft declaration
+        # must not silently revoke that authority.
+        if existing_interface and existing_interface["state"] in {"frozen", "revised"} and requested_state == "draft":
+            requested_state = str(existing_interface["state"])
+        requested_version = str(interface.get("version", existing_interface["version"] if existing_interface else "0"))
         conn.execute(
             "INSERT INTO interfaces(id,owner_task_id,state,version,contract_paths_json,content_hash,frozen_at,revised_at,revision) VALUES(?,?,?,?,?,?,?,?,?) "
             "ON CONFLICT(id) DO UPDATE SET owner_task_id=excluded.owner_task_id,state=excluded.state,version=excluded.version,contract_paths_json=excluded.contract_paths_json,revision=excluded.revision",
-            (interface["id"], interface["owner_task_id"], interface.get("state", "draft"), str(interface.get("version", "0")), json.dumps(paths), interface.get("content_hash"), interface.get("frozen_at"), interface.get("revised_at"), revision),
+            (
+                interface["id"], interface["owner_task_id"], requested_state, requested_version,
+                json.dumps(paths), interface.get("content_hash", existing_interface["content_hash"] if existing_interface else None),
+                interface.get("frozen_at", existing_interface["frozen_at"] if existing_interface else None),
+                interface.get("revised_at", existing_interface["revised_at"] if existing_interface else None), revision,
+            ),
         )
         conn.execute("DELETE FROM interface_consumers WHERE interface_id=?", (interface["id"],))
 
@@ -530,7 +543,47 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                 "INSERT OR IGNORE INTO barrier_requirements(barrier_id,type,entity_id,required_state,dispositions_json) VALUES(?,'rendezvous',?,'satisfied','[]')",
                 (rendezvous["barrier_id"], rendezvous_id),
             )
-        for fragment in run.get("context_fragments", []):
+        declared_fragments = list(run.get("context_fragments", []))
+        declared_kinds = {
+            (str(fragment["kind"]), fragment.get("lane_id"), fragment.get("task_id"))
+            for fragment in declared_fragments
+        }
+        if ("run_charter", None, None) not in declared_kinds:
+            declared_fragments.append({"kind": "run_charter", "content": dict(run["charter"])})
+        for lane in lanes:
+            lane_id = str(lane["id"])
+            if ("lane_brief", lane_id, None) not in declared_kinds:
+                declared_fragments.append({
+                    "kind": "lane_brief", "lane_id": lane_id,
+                    "content": {
+                        "role": str(lane.get("role", "implementer")),
+                        "authority": "server_enforced_role_and_task_scope",
+                        "ordered_tasks": [str(value) for value in lane.get("tasks", [])],
+                        "interfaces": [], "rendezvous": [
+                            str(item["id"]) for item in run.get("rendezvous", [])
+                            if lane_id in item.get("participants", [])
+                        ],
+                        "workspace_mode": str(dict(lane.get("workspace", {})).get("mode", "exclusive")),
+                    },
+                })
+            for task_id in lane.get("tasks", []):
+                task_id = str(task_id)
+                if ("task_brief", lane_id, task_id) in declared_kinds:
+                    continue
+                task = next(item for item in data.get("tasks", []) if str(item["id"]) == task_id)
+                declared_fragments.append({
+                    "kind": "task_brief", "lane_id": lane_id, "task_id": task_id,
+                    "content": {
+                        "objective": str(task.get("objective", task.get("title", task_id))),
+                        "next_action": str(task.get("next_action", task.get("objective", task.get("title", task_id)))),
+                        "scope": dict(task.get("scope", {})),
+                        "completion_contract": task.get("completion_contract"),
+                        "tests": [gate.get("id") for gate in task.get("gates", [])],
+                        "gates": [gate.get("id") for gate in task.get("gates", [])],
+                        "forbidden_mutations": list(dict(task.get("scope", {})).get("forbidden_paths", [])),
+                    },
+                })
+        for fragment in declared_fragments:
             content = dict(fragment.get("content", {}))
             digest = content_hash(content)
             owner_lane = fragment.get("lane_id")
@@ -538,10 +591,15 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
             kind = str(fragment["kind"])
             version = int(fragment.get("version", 1))
             identifier = str(fragment.get("id", f"{run_id}:{kind}:{owner_lane or '-'}:{owner_task or '-'}:{version}"))
+            owner_scope = {"run_id": run_id}
+            if owner_lane:
+                owner_scope["lane_id"] = str(owner_lane)
+            if owner_task:
+                owner_scope["task_id"] = str(owner_task)
             conn.execute(
-                "INSERT OR IGNORE INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,version,content_json,content_hash,creation_revision,created_at) "
-                "VALUES(?,?,?,?,?,?,?,?,?,?)",
-                (identifier, run_id, owner_lane, owner_task, kind, version, canonical_json(content), digest, revision, now),
+                "INSERT OR IGNORE INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,owner_scope_json,version,content_json,content_hash,creation_revision,created_at) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                (identifier, run_id, owner_lane, owner_task, kind, canonical_json(owner_scope), version, canonical_json(content), digest, revision, now),
             )
         applied_runs.append(run_id)
     return {"plan_schema_version": int(data.get("schema_version", SCHEMA_VERSION)), "compatibility": compatibility, "runs": applied_runs}

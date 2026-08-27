@@ -47,6 +47,7 @@ from .messages import MessageService
 from .rendezvous import RendezvousService
 from .roles import require_role_action
 from .runs import RunService
+from .workspaces import WorkspaceService
 
 
 ServiceFactory = Callable[[str | Path], Service]
@@ -397,7 +398,46 @@ class WorkflowKernel:
             )
             return {**result, "project_revision": revision, "parent_task_completed": False}
         if action == "request_integration":
-            return {"status": "attention_required", "integration_request": dict(payload), "warnings": ["integration queue requires immutable published artifact ids"]}
+            artifact_ids = [str(value) for value in payload["artifacts"]]
+            if not artifact_ids or len(artifact_ids) != len(set(artifact_ids)):
+                raise TodoError("invalid_integration_request", "Integration requires unique immutable artifact ids")
+            with service.db.read() as conn:
+                placeholders = ",".join("?" for _ in artifact_ids)
+                artifacts = conn.execute(
+                    f"SELECT a.id,a.task_id,w.run_id,w.integration_task_id FROM workflow_patch_artifacts a "
+                    f"JOIN workflow_workspaces w ON w.id=a.workspace_id WHERE a.id IN ({placeholders}) ORDER BY a.id",
+                    artifact_ids,
+                ).fetchall()
+                if len(artifacts) != len(artifact_ids) or any(str(item["run_id"]) != str(lineage.run_id) for item in artifacts):
+                    raise TodoError("integration_artifact_scope_mismatch", "Artifacts must exist in the authorized run")
+                if lineage.role != "coordinator" and any(str(item["task_id"]) != lineage.task_id for item in artifacts):
+                    raise TodoError("integration_artifact_owner_mismatch", "A lane may request integration only for its task artifacts")
+                configured = str(payload.get("integration_task_id") or artifacts[0]["integration_task_id"] or "")
+                if not configured or any(str(item["integration_task_id"] or "") != configured for item in artifacts):
+                    raise TodoError("integration_task_mismatch", "Artifacts must share one declared integration task")
+                integrator = conn.execute(
+                    "SELECT l.id FROM workflow_lanes l JOIN workflow_lane_tasks lt ON lt.lane_id=l.id "
+                    "WHERE l.run_id=? AND l.role='integrator' AND lt.task_id=? ORDER BY l.id LIMIT 1",
+                    (lineage.run_id, configured),
+                ).fetchone()
+                if not integrator:
+                    raise TodoError("integrator_lane_missing", "No integrator lane owns the declared integration task")
+            workspaces = WorkspaceService(
+                service.db,
+                managed_root=service.paths.state_dir / "workflow-workspaces",
+                repository_identity_resolver=lambda root: repository_identity(root, str(service.project["project_uuid"])),
+            )
+            queued = [
+                workspaces.enqueue_artifact(
+                    artifact_id=artifact_id, integrator_lane_id=str(integrator["id"]),
+                    integration_task_id=configured, actor_session_id=lineage.session_id,
+                )
+                for artifact_id in artifact_ids
+            ]
+            return {
+                "status": "claimed", "integration_task_id": configured,
+                "integrator_lane_id": str(integrator["id"]), "queued": queued,
+            }
         raise TodoError("invalid_coordination_action", "Coordination action is unsupported")
 
     def _child_scope(self, service: Service, claim_id: str, *, access: str) -> tuple[list[str], list[str]]:

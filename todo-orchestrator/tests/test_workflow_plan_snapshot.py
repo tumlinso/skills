@@ -21,6 +21,43 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
             queue = conn.execute("SELECT lane_id,position,task_id FROM workflow_lane_tasks ORDER BY position").fetchall()
         self.assertEqual([tuple(row) for row in run], [("compat-v2", "active")])
         self.assertEqual([tuple(row) for row in queue], [("compat-v2-main", 0, "A"), ("compat-v2-main", 1, "B")])
+        with self.repo.service.db.read() as conn:
+            fragments = conn.execute(
+                "SELECT kind,lane_id,task_id,owner_scope_json FROM workflow_context_fragments ORDER BY kind,task_id"
+            ).fetchall()
+        self.assertEqual({row["kind"] for row in fragments}, {"run_charter", "lane_brief", "task_brief"})
+        self.assertTrue(all(row["owner_scope_json"] for row in fragments))
+
+    def test_plan_reapply_never_downgrades_a_frozen_interface(self):
+        contract = self.repo.root / "contracts" / "api.txt"
+        contract.parent.mkdir(parents=True)
+        contract.write_text("v1\n", encoding="utf-8")
+        plan = base_plan(
+            [safe_task("A", "contracts")],
+            interfaces=[{"id": "API", "owner_task_id": "A", "contract_paths": ["contracts/api.txt"]}],
+        )
+        self.repo.apply(plan)
+        capsule = self.repo.service.continue_work(task_id="A")
+        self.repo.service.interface("freeze", "API", "1", capsule["claim"]["claim_token"])
+        self.repo.apply(plan)
+        status = self.repo.service.interface("status", "API")
+        self.assertEqual((status["state"], status["version"]), ("frozen", "1"))
+        self.assertTrue(status["content_hash"])
+
+    def test_explicit_v3_fragments_include_owner_scope(self):
+        plan = base_plan([safe_task("A", "src/a")])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT", "role": "coordinator", "tasks": ["A"]}],
+            "context_fragments": [{"kind": "decision_ledger", "content": {"decisions": []}}],
+        }]
+        self.repo.apply(plan)
+        with self.repo.service.db.read() as conn:
+            rows = conn.execute("SELECT kind,owner_scope_json FROM workflow_context_fragments WHERE run_id='RUN'").fetchall()
+        self.assertIn("decision_ledger", {row["kind"] for row in rows})
+        self.assertTrue(all(row["owner_scope_json"] for row in rows))
 
     def test_workflow_snapshot_is_deterministic_and_excludes_volatile_authority(self):
         self.repo.apply(base_plan([safe_task("A", "src/a")]))

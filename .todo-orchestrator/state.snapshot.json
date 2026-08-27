@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T13:02:51Z",
+  "generated_at": "2026-08-27T13:06:17Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 201,
+  "project_revision": 204,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -2176,6 +2176,36 @@
         "revision": 201,
         "seq": 201,
         "timestamp": "2026-08-27T13:02:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-24",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-24\"}",
+        "revision": 202,
+        "seq": 202,
+        "timestamp": "2026-08-27T13:02:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-24-WORKFLOW",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"WFU-24-WORKFLOW\"}",
+        "revision": 203,
+        "seq": 203,
+        "timestamp": "2026-08-27T13:05:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-24-WORKFLOW",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"532aa451-b5a0-4398-8ddf-0aaf58efcd75\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 204,
+        "seq": 204,
+        "timestamp": "2026-08-27T13:06:17Z"
       }
     ],
     "evidence": [
@@ -2372,6 +2402,19 @@
         "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e504a5d1f587b1fc1f52fff91861bd4da1595be838535769a4af723c31ea5606\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_handles.py\", \"-v\"]}, \"diff_fingerprint\": \"0845647e365dd44ad25ad1cfd8beaee53b4321566eff61a19f76e51cc42ae1ea\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"2ac23b1947e253abe89605155f8850b63be25bb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 94}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/44662c28-816d-40a6-a87c-0eea51ec4661",
         "revision": 95,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-27T13:06:17Z",
+        "gate_id": "WFU-24-WORKFLOW",
+        "id": "532aa451-b5a0-4398-8ddf-0aaf58efcd75",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"]}, \"diff_fingerprint\": \"05fe1aec09d512639ee5065a387493e67b8a1ce24cbb4b54ff2232a98e8bb9f0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-orchestrator/tests/test_workflow_integration.py\", \"todo-orchestrator/tests/test_workflow_plan_snapshot.py\", \"todo-orchestrator/todo_orchestrator/plan.py\", \"todo-orchestrator/todo_orchestrator/workflow/protocol.py\", \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"todo-status.md\", \"todos.md\", \"todos/wfu-24.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_integration.py\", \"sha256\": \"92629d09155fdb55b58ddb46421133f6669dda386e7a3e81b64f23a4f679c4e6\"}, {\"path\": \"todo-orchestrator/tests/test_workflow_plan_snapshot.py\", \"sha256\": \"1d49d3d3c1e28a4f022f814130559a28be2115f40323e1e7dfa382ac32864734\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/plan.py\", \"sha256\": \"53128dca191a8408b4800da71607baeb7a2cb5b6c6a1c84b8bb0b23e1b459ff1\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/protocol.py\", \"sha256\": \"9b70fcb64dc5761ec4479890d92ba7ddc3de5a65c1a4c7084e9bb717f8656257\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"c6b5ee801876c513533f7502cfb257105a9a8e740fa1e74eebaadd220d078f74\"}], \"interfaces\": [], \"recorded_git_head\": \"c41ff026c4b691a75c9018f8efca7cfa38081994\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 203}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/532aa451-b5a0-4398-8ddf-0aaf58efcd75",
+        "revision": 204,
         "status": "passed"
       },
       {
@@ -3147,14 +3190,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_*.py\", \"-v\"], \"input_paths\": [\"todo-orchestrator/todo_orchestrator/plan.py\", \"todo-orchestrator/todo_orchestrator/workflow/protocol.py\", \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"todo-orchestrator/tests/test_workflow_plan_snapshot.py\", \"todo-orchestrator/tests/test_workflow_integration.py\"]}",
         "id": "WFU-24-WORKFLOW",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0",
+        "last_run_at": "2026-08-27T13:06:17Z",
         "required": 1,
-        "revision": 201,
-        "status": "pending",
+        "revision": 204,
+        "status": "passed",
         "task_id": "WFU-24",
         "type": "command",
-        "valid": 0
+        "valid": 1
       }
     ],
     "handoffs": [
@@ -6341,12 +6384,12 @@
         "priority": 116,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 201,
-        "status": "planned",
+        "revision": 202,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Harden plan idempotence and canonical protocol integration seams",
-        "updated_at": "2026-08-27T13:02:51Z",
-        "version": 1
+        "updated_at": "2026-08-27T13:02:58Z",
+        "version": 2
       },
       {
         "attention_reason": null,

@@ -118,8 +118,8 @@ _ACTION_SCHEMAS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
     ),
     "answer": (frozenset({"question_id", "payload"}), frozenset({"question_id", "payload", "references"})),
     "arrive": (
-        frozenset({"rendezvous_id", "summary"}),
-        frozenset({"rendezvous_id", "summary", "artifact", "interfaces", "evidence", "warnings", "context_version"}),
+        frozenset({"rendezvous_id", "summary", "base_source_identity", "final_source_identity", "artifact", "evidence", "context_version"}),
+        frozenset({"rendezvous_id", "summary", "base_source_identity", "final_source_identity", "artifact", "interfaces", "evidence", "warnings", "context_version"}),
     ),
     "publish_interface": (
         frozenset({"interface_id", "version", "content_hash"}),
