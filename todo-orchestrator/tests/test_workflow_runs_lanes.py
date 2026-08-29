@@ -126,6 +126,43 @@ class WorkflowRunsLanesTests(unittest.TestCase):
         self.assertEqual([("A", 1), ("B", 1)], [(row["lane_id"], row["n"]) for row in active])
         self.assertEqual([("A", 1), ("B", 1)], [(row["lane_id"], row["n"]) for row in lane_tasks])
 
+    def test_serial_policy_is_lane_local_in_first_class_run(self) -> None:
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="test",
+            entity_id="serial-lanes",
+            event_type="test.serial_lanes",
+            payload={},
+            operation=lambda conn, revision: conn.execute(
+                "UPDATE tasks SET parallel_policy='serial',revision=? "
+                "WHERE id IN ('T-A1','T-B1')",
+                (revision,),
+            ).rowcount,
+        )
+        self._claim("T-A1")
+        self.assertEqual("ready", self.repo.service.explain("T-B1")["execution"])
+        self._claim("T-B1")
+
+    def test_serial_policy_remains_project_wide_without_distinct_lanes(self) -> None:
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="test",
+            entity_id="legacy-serial",
+            event_type="test.legacy_serial",
+            payload={},
+            operation=lambda conn, revision: (
+                conn.execute(
+                    "UPDATE tasks SET parallel_policy='serial',revision=? WHERE id='T-ROOT'",
+                    (revision,),
+                ),
+                conn.execute(
+                    "DELETE FROM workflow_lane_tasks WHERE task_id='T-ROOT'"
+                ),
+            )[0].rowcount,
+        )
+        self._claim("T-A1")
+        self.assertEqual("blocked_scope", self.repo.service.explain("T-ROOT")["execution"])
+
     def test_database_constraints_reject_double_lane_dispatch(self) -> None:
         session_a, claim_a = self._claim("T-A1")
         self.lanes.dispatch(run_id="RUN", session_id=session_a, claim_id=claim_a, context_version=1)

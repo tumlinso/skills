@@ -111,6 +111,35 @@ def sweep_lock_leases(conn: sqlite3.Connection) -> list[str]:
     return released
 
 
+def _different_active_workflow_lanes(
+    conn: sqlite3.Connection,
+    candidate_task_id: str,
+    active_task_id: str,
+) -> bool:
+    """Return whether workflow-v3 lane order already separates two tasks.
+
+    ``parallel_policy=serial`` predates first-class workflow lanes and remains
+    project-wide for unassigned/legacy work. In a schema-v3 run, seriality is
+    the lane queue contract: distinct lanes may proceed together after the
+    ordinary scope, lock, and resource checks below pass.
+    """
+    rows = conn.execute(
+        "SELECT lt.task_id,l.id AS lane_id,l.run_id FROM workflow_lane_tasks lt "
+        "JOIN workflow_lanes l ON l.id=lt.lane_id "
+        "JOIN workflow_runs r ON r.id=l.run_id AND r.status='active' "
+        "WHERE lt.task_id IN (?,?) AND lt.state IN ('queued','active') "
+        "ORDER BY lt.task_id,l.run_id,l.id",
+        (candidate_task_id, active_task_id),
+    ).fetchall()
+    candidate = [row for row in rows if row["task_id"] == candidate_task_id]
+    active = [row for row in rows if row["task_id"] == active_task_id]
+    return any(
+        left["run_id"] == right["run_id"] and left["lane_id"] != right["lane_id"]
+        for left in candidate
+        for right in active
+    )
+
+
 def ownership_conflicts(conn: sqlite3.Connection, task_id: str) -> list[dict[str, str]]:
     task = conn.execute("SELECT parallel_policy FROM tasks WHERE id=?", (task_id,)).fetchone()
     active = conn.execute(
@@ -119,10 +148,28 @@ def ownership_conflicts(conn: sqlite3.Connection, task_id: str) -> list[dict[str
     ).fetchall()
     if not task:
         return [{"type": "missing_task", "task_id": task_id}]
-    if task[0] in {"project_exclusive", "serial", "integration_exclusive"} and active:
+    if task[0] in {"project_exclusive", "integration_exclusive"} and active:
         return [{"type": "parallel_policy", "task_id": row["task_id"]} for row in active]
-    if any(row["parallel_policy"] in {"project_exclusive", "serial", "integration_exclusive"} for row in active):
-        return [{"type": "active_parallel_policy", "task_id": row["task_id"]} for row in active]
+    if task[0] == "serial":
+        blocked = [
+            row for row in active
+            if not _different_active_workflow_lanes(conn, task_id, str(row["task_id"]))
+        ]
+        if blocked:
+            return [{"type": "parallel_policy", "task_id": row["task_id"]} for row in blocked]
+    blocking_active = [
+        row for row in active
+        if row["parallel_policy"] in {"project_exclusive", "integration_exclusive"}
+        or (
+            row["parallel_policy"] == "serial"
+            and not _different_active_workflow_lanes(conn, task_id, str(row["task_id"]))
+        )
+    ]
+    if blocking_active:
+        return [
+            {"type": "active_parallel_policy", "task_id": row["task_id"]}
+            for row in blocking_active
+        ]
     ours = scopes_for(conn, task_id, "exclusive")
     reads = scopes_for(conn, task_id, "read")
     if task[0] == "parallel_safe" and not ours and not conn.execute("SELECT 1 FROM task_locks WHERE task_id=?", (task_id,)).fetchone():
