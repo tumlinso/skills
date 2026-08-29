@@ -77,7 +77,7 @@ def create_server(
             }
 
     @server.tool(
-        description="Atomically bootstrap or resume a first-class run lane and its current task.",
+        description="Atomically resume or claim a first-class run lane and its current task.",
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,
     )

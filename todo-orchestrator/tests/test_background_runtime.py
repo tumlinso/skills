@@ -8,6 +8,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 from v2_helpers import V2Repo, base_plan, safe_task
@@ -63,6 +64,46 @@ class BackgroundRuntimeTests(unittest.TestCase):
         popen.assert_not_called()
         self.assertEqual(result["project_revision"], 2)
         self.assertIn("projection", result)
+
+    def test_wake_fails_closed_for_runtime_a_canonical_b_mismatch(self) -> None:
+        class RuntimeMismatch(RuntimeError):
+            code = "runtime_identity_mismatch"
+            expected = "/canonical-b/todo_orchestrator/__init__.py"
+            observed = "/runtime-a/todo_orchestrator/__init__.py"
+
+        self._arm()
+        with mock.patch("todo_orchestrator.background.wake._worker_is_live", return_value=False), \
+                mock.patch("coding_workflow_mcp.runtime_identity.bind_canonical_runtime",
+                           side_effect=RuntimeMismatch("runtime A is noncanonical")), \
+                mock.patch("todo_orchestrator.background.wake.subprocess.Popen") as popen:
+            self.assertFalse(wake_worker(self.repo.root))
+        popen.assert_not_called()
+
+    def test_wake_launches_with_explicit_canonical_b_identity(self) -> None:
+        self._arm()
+        identity = SimpleNamespace(
+            skills_root=Path("/canonical-b"),
+            package_root=Path("/canonical-b/todo-orchestrator/todo_orchestrator"),
+            fingerprint="b" * 64,
+        )
+        with mock.patch.dict(os.environ, {
+                "TODO_ORCHESTRATOR_STATE_DIR": str(self.repo.state_root),
+                "TODO_ORCHESTRATOR_READ_ONLY": "1",
+                "PYTHONPATH": "/runtime-a/todo-orchestrator",
+            }), mock.patch("todo_orchestrator.background.wake._worker_is_live",
+                           side_effect=[False, True]), \
+                mock.patch("coding_workflow_mcp.runtime_identity.bind_canonical_runtime",
+                           return_value=identity), \
+                mock.patch("coding_workflow_mcp.runtime_identity.validate_runtime") as validate, \
+                mock.patch("todo_orchestrator.background.wake.subprocess.Popen") as popen:
+            self.assertTrue(wake_worker(self.repo.root))
+        validate.assert_called_once_with(identity)
+        environment = popen.call_args.kwargs["env"]
+        self.assertEqual(environment["CODING_WORKFLOW_SKILLS_ROOT"], "/canonical-b")
+        self.assertEqual(environment["CODING_WORKFLOW_RUNTIME_FINGERPRINT"], "b" * 64)
+        self.assertEqual(environment["TODO_ORCHESTRATOR_STATE_DIR"], str(self.repo.state_root))
+        self.assertEqual(environment["PYTHONPATH"], "/canonical-b/todo-orchestrator")
+        self.assertNotIn("TODO_ORCHESTRATOR_READ_ONLY", environment)
 
     def test_armed_watch_auto_wakes_and_runs_structured_argv(self) -> None:
         watch_id = self._arm()

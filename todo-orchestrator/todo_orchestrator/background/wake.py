@@ -12,6 +12,24 @@ from pathlib import Path
 from .store import runtime_paths
 
 
+def _canonical_worker_environment() -> dict[str, str] | None:
+    try:
+        from coding_workflow_mcp.runtime_identity import (
+            bind_canonical_runtime,
+            controlled_subprocess_env,
+            validate_runtime,
+        )
+
+        identity = bind_canonical_runtime()
+        validate_runtime(identity)
+        environment = controlled_subprocess_env(identity)
+        environment["PYTHONPATH"] = str(identity.package_root.parent)
+        environment.pop("TODO_ORCHESTRATOR_READ_ONLY", None)
+        return environment
+    except Exception:
+        return None
+
+
 def _worker_is_live(database: Path) -> bool:
     try:
         connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True, timeout=0.05)
@@ -63,12 +81,9 @@ def wake_worker(project_root: str | Path) -> bool:
             return False
         if _worker_is_live(paths.database):
             return True
-        environment = os.environ.copy()
-        package_root = str(Path(__file__).resolve().parents[2])
-        integration_root = str(Path(__file__).resolve().parents[3] / "integrations/coding-workflow-mcp")
-        environment["PYTHONPATH"] = os.pathsep.join((package_root, integration_root))
-        environment.pop("TODO_ORCHESTRATOR_READ_ONLY", None)
-        environment["TODO_ORCHESTRATOR_PACKAGE_ROOT"] = package_root
+        environment = _canonical_worker_environment()
+        if environment is None:
+            return False
         process = subprocess.Popen(
             [sys.executable, "-m", "todo_orchestrator.background.worker", "--project", str(root)],
             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

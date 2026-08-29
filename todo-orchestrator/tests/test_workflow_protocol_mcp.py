@@ -417,6 +417,9 @@ class McpAndAdapterTests(unittest.TestCase):
         self.assertEqual(set(names), set(TOOL_NAMES))
         self.assertNotIn("run_gates", names)
         self.assertNotIn("recover_terminal_checkpoints", names)
+        next_task = next(tool for tool in tools if tool.name == "next_task")
+        self.assertNotIn("bootstrap", next_task.description.casefold())
+        self.assertIn("resume or claim", next_task.description.casefold())
 
     def test_server_construction_is_lazy_and_errors_are_bounded(self) -> None:
         calls = []
