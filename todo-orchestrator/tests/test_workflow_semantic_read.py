@@ -62,6 +62,19 @@ class WorkflowSemanticReadTests(unittest.TestCase):
         )
         self.assertEqual(self.read()["safe_parallel_groups"], [])
 
+    def test_active_run_prefers_a_run_with_actionable_lane_heads(self) -> None:
+        def older_blocked_run(conn, revision):
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('BLOCKED-RUN','ROOT','before','before',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('BLOCKED-LANE','BLOCKED-RUN','implementer','ready','before','before',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('BLOCKED-LANE',0,'ROOT','queued','before',?)", (revision,))
+            conn.execute("UPDATE tasks SET status='blocked',attention_reason='permission not granted' WHERE id='ROOT'")
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="test", entity_id="BLOCKED-RUN",
+            event_type="test.blocked_run", payload={}, operation=older_blocked_run,
+        )
+        self.assertEqual(self.read()["active_run_id"], "RUN")
+
     def test_safe_parallel_groups_reject_unsatisfied_contracts_and_resource_or_scope_conflicts(self) -> None:
         def dependency(conn, revision):
             conn.execute(

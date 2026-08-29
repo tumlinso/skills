@@ -16,9 +16,11 @@ import venv
 SERVER_NAME = "coding-workflow"
 
 
-def run(argv: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
+def run(
+    argv: list[str], *, check: bool = True, env: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        argv, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=check, shell=False,
+        argv, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=check, shell=False, env=env,
     )
 
 
@@ -94,6 +96,18 @@ def install() -> dict[str, object]:
         ]).stdout)
         if not smoke.get("ok"):
             raise RuntimeError("installed MCP initialization smoke failed")
+        sterile_environment = dict(os.environ)
+        sterile_environment.pop("PYTHONPATH", None)
+        sterile_environment.pop("CODING_WORKFLOW_SKILLS_ROOT", None)
+        sterile_environment.pop("CODING_WORKFLOW_RUNTIME_FINGERPRINT", None)
+        admin = venv_root / "bin" / "coding-workflow-admin"
+        run([str(admin), "--help"], env=sterile_environment)
+        recovery_smoke = json.loads(run([
+            str(admin), "recover", "--repo", str(skills_root),
+            "--reason", "installed-admin-smoke", "--inspect-only",
+        ], env=sterile_environment).stdout)
+        if not isinstance(recovery_smoke, dict):
+            raise RuntimeError("installed admin recovery smoke failed")
     except Exception:
         if codex is not None:
             run([codex, "mcp", "remove", SERVER_NAME], check=False)
@@ -111,7 +125,7 @@ def install() -> dict[str, object]:
         raise
     return {
         "status": "installed", "server": SERVER_NAME, "venv": str(venv_root),
-        "skills_root": str(skills_root), "protocol": smoke,
+        "skills_root": str(skills_root), "protocol": smoke, "admin": {"ok": True},
         "rollback_registration": str(rollback_file) if prior is not None else None,
         "rollback_venv": str(rollback_venv) if rollback_venv is not None else None,
     }

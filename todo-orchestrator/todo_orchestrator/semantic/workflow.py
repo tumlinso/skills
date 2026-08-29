@@ -148,6 +148,7 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     runs: list[dict[str, object]] = []
     first_class: list[dict[str, object]] = []
     safe_parallel: list[list[str]] = []
+    actionable_run_ids: list[str] = []
     for run in conn.execute("SELECT * FROM workflow_runs ORDER BY created_at,id"):
         lanes: list[dict[str, object]] = []
         ready_candidates: list[dict[str, str]] = []
@@ -209,6 +210,8 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
                 "dispatch": dispatch_view, "workspace": dict(workspace) if workspace else None,
             })
         group = _safe_parallel_group(conn, str(run["id"]), ready_candidates)
+        if run["status"] == "active" and ready_candidates:
+            actionable_run_ids.append(str(run["id"]))
         if group:
             safe_parallel.append(group)
         runs.append({
@@ -323,7 +326,11 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     return {
         "available": True,
         "revision": revision,
-        "active_run_id": next((str(run["id"]) for run in runs if run["status"] == "active"), None),
+        "active_run_id": (
+            actionable_run_ids[0]
+            if actionable_run_ids
+            else next((str(run["id"]) for run in runs if run["status"] == "active"), None)
+        ),
         "runs": runs,
         "first_class_agents": first_class,
         "local_children": local_children,

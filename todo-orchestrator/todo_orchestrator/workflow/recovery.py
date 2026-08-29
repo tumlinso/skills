@@ -288,6 +288,21 @@ class RecoveryEngine:
                 if str(capability.get("claim_id")) in recovering_claims:
                     actions.append({"kind": "retire_capability", "id": capability["id"], "task_id": capability["task_id"]})
 
+            if not task_id:
+                released_attention = conn.execute(
+                    "SELECT DISTINCT t.id FROM tasks t "
+                    "JOIN workflow_lane_tasks lt ON lt.task_id=t.id AND lt.state='queued' "
+                    "JOIN workflow_lanes l ON l.id=lt.lane_id AND l.state='ready' "
+                    "WHERE t.status='in_progress' AND t.attention_reason IS NOT NULL "
+                    "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=t.id AND c.state='active') "
+                    "AND EXISTS(SELECT 1 FROM claims c WHERE c.task_id=t.id AND c.state IN ('released','force_released','recovered_released')) "
+                    "ORDER BY t.id"
+                ).fetchall()
+                actions.extend(
+                    {"kind": "clear_released_attention", "task_id": str(row["id"])}
+                    for row in released_attention
+                )
+
         plan = {
             "project_uuid": self.project_uuid,
             "task_id": task_id,
@@ -365,6 +380,12 @@ class RecoveryEngine:
                     conn.execute("UPDATE workflow_workspaces SET state='quarantined',cleanup_eligible=0,updated_at=? WHERE id=?", (now, action["id"]))
                 elif kind == "retire_capability":
                     conn.execute("UPDATE workflow_capabilities SET state='retired',revoked_at=? WHERE id=? AND state='active'", (now, action["id"]))
+                elif kind == "clear_released_attention":
+                    conn.execute(
+                        "UPDATE tasks SET attention_reason=NULL,updated_at=?,revision=? "
+                        "WHERE id=? AND status='in_progress'",
+                        (now, revision, action["task_id"]),
+                    )
                 elif kind == "finalize_terminal_checkpoints":
                     results.append({"kind": kind, **recover_terminal_checkpoints(conn, self.repo_root, str(action["task_id"]), None, revision)})
                 results.append({"kind": kind, "id": action.get("id"), "task_id": action.get("task_id")})

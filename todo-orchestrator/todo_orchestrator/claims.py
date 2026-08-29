@@ -677,6 +677,10 @@ def force_release_live_claim(
         (task_id,),
     ).fetchone()
     now = utc_now()
+    dispatches = conn.execute(
+        "SELECT id,lane_id FROM workflow_dispatches WHERE claim_id=? AND state='active' ORDER BY id",
+        (claim["id"],),
+    ).fetchall()
     release_claim_locks(conn, claim["id"])
     conn.execute(
         "UPDATE resource_leases SET state='released',released_at=? WHERE claim_id=? AND state='active'",
@@ -689,6 +693,24 @@ def force_release_live_claim(
     conn.execute(
         "UPDATE tasks SET status='planned',attention_reason=NULL,updated_at=?,version=version+1,revision=? WHERE id=?",
         (now, revision, task_id),
+    )
+    for dispatch in dispatches:
+        conn.execute(
+            "UPDATE workflow_dispatches SET state='released',released_at=?,revision=? WHERE id=? AND state='active'",
+            (now, revision, dispatch["id"]),
+        )
+        conn.execute(
+            "UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? "
+            "WHERE lane_id=? AND task_id=? AND state='active'",
+            (revision, dispatch["lane_id"], task_id),
+        )
+        conn.execute(
+            "UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=?",
+            (now, revision, dispatch["lane_id"]),
+        )
+    conn.execute(
+        "UPDATE workflow_capabilities SET state='retired',revoked_at=? WHERE claim_id=? AND state='active'",
+        (now, claim["id"]),
     )
     conn.execute(
         "UPDATE live_recovery_approvals SET state='consumed',consumed_at=? WHERE id=? AND state='pending'",
@@ -710,6 +732,7 @@ def force_release_live_claim(
         "session_id": claim["session_id"],
         "status": "planned",
         "claim_state": "force_released",
+        "retired_dispatch_ids": [str(item["id"]) for item in dispatches],
         "retired_claim_fingerprint": approval["claim_fingerprint"],
         "acknowledged_dirty_scope": acknowledge_dirty and bool(report["scope_changed"]),
         "scope_context": context,

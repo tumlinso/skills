@@ -5,11 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 
-from ._canonical import skills_root
+from ._canonical import runtime_identity
 
 
 def main() -> None:
-    skills_root()
+    runtime_identity()
     from todo_orchestrator.service import Service
     from todo_orchestrator.workflow.admin import inspect_owner_recovery, run_owner_recovery
     from todo_orchestrator.workflow.recovery import RecoveryEngine

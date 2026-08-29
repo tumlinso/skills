@@ -111,6 +111,28 @@ class WorkflowRecoveryTests(unittest.TestCase):
         self.assertEqual(result["resume"], "next_task")
         self.assertEqual(result["status"], "recovered")
 
+    def test_global_recovery_clears_attention_left_by_released_lane_claim(self) -> None:
+        self.seed_dispatch()
+
+        def release_with_attention(conn, revision):
+            conn.execute("UPDATE claims SET state='released',released_at='now' WHERE id=?", (self.claim_id,))
+            conn.execute("UPDATE workflow_dispatches SET state='released',released_at='now' WHERE id='DISPATCH'")
+            conn.execute("UPDATE workflow_lanes SET state='ready' WHERE id='LANE'")
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('LANE',0,'A','queued','now',?)", (revision,))
+            conn.execute("UPDATE tasks SET status='in_progress',attention_reason='historical release note' WHERE id='A'")
+
+        self.mutate(release_with_attention)
+        engine = self.engine()
+        plan = engine.inspect()
+        self.assertIn(
+            {"kind": "clear_released_attention", "task_id": "A"},
+            plan["actions"],
+        )
+        engine.execute(plan, "clear released lane residue")
+        with self.repo.service.db.read() as conn:
+            task = conn.execute("SELECT status,attention_reason FROM tasks WHERE id='A'").fetchone()
+        self.assertEqual(tuple(task), ("in_progress", None))
+
     def test_dirty_scope_and_workspace_are_quarantined_without_file_loss(self) -> None:
         self.seed_dispatch(workspace=True)
         source = self.repo.root / "src" / "a" / "dirty.txt"

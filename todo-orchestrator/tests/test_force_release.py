@@ -104,6 +104,37 @@ class ForceReleaseTests(unittest.TestCase):
         self.assertEqual(reclaimed["task"]["id"], "A")
         self.assertNotEqual(reclaimed["claim"]["claim_token"], original_token)
 
+    def test_force_release_retires_first_class_dispatch_and_requeues_lane(self) -> None:
+        original = self.claim()
+
+        def seed_workflow(conn, revision):
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','A','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','active','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,activated_at,revision) VALUES('LANE',0,'A','active','now','now',?)", (revision,))
+            conn.execute(
+                "INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,state,context_version,heartbeat_at,created_at,revision) "
+                "VALUES('DISPATCH','LANE',?,?,'active',1,'now','now',?)",
+                (original["session"]["agent_id"], original["claim"]["claim_id"], revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_capabilities(id,token_hash,capability_class,project_uuid,repository_identity,session_id,claim_id,run_id,lane_id,role,task_id,allowed_operations_json,state,created_at,expires_at) "
+                "VALUES('CAP','hash','first_class',?,'repo',?,?,'RUN','LANE','implementer','A','[]','active','now','2999-01-01T00:00:00Z')",
+                (self.repo.service.project["project_uuid"], original["session"]["agent_id"], original["claim"]["claim_id"]),
+            )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="A",
+            event_type="fixture.workflow", payload={}, operation=seed_workflow,
+        )
+        approval = self.approve("halted first-class worker")
+        released = self.repo.service.force_release("A", approval["approval_token"])
+        self.assertEqual(released["retired_dispatch_ids"], ["DISPATCH"])
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], "released")
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='LANE'").fetchone()[0], "ready")
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='LANE'").fetchone()[0], "queued")
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], "retired")
+
     def test_cli_inspect_and_force_release_use_environment_capability(self) -> None:
         self.claim()
         process, inspected = self.repo.run("recover", "force-release-inspect", "A")

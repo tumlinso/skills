@@ -21,6 +21,11 @@ class RecoveryCompatibilityTests(unittest.TestCase):
         self.assertNotIn("live-approve", old)
         self.assertNotIn("approval_token", old)
 
+    def test_admin_binds_canonical_runtime_before_todo_imports(self) -> None:
+        source = (PACKAGE / "coding_workflow_mcp" / "admin.py").read_text(encoding="utf-8")
+        self.assertIn("runtime_identity()", source)
+        self.assertNotIn("skills_root()", source)
+
 
 if __name__ == "__main__":
     unittest.main()
