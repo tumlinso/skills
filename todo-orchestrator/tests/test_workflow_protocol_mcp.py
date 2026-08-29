@@ -432,6 +432,21 @@ class McpAndAdapterTests(unittest.TestCase):
         self.assertEqual(result["diagnostic_id"], "diag-safe")
         self.assertNotIn("traceback", canonical_json(result))
 
+    def test_runtime_identity_failure_is_typed_and_sanitized(self) -> None:
+        def factory():
+            raise TodoError(
+                "runtime_identity_mismatch", "restart",
+                details={"canonical_package_root": "/skills/todo-orchestrator/todo_orchestrator",
+                         "project_uuid": "project-1", "db_path": "/state/project-1/state.sqlite3",
+                         "remediation": "restart the persistent workflow process"},
+            )
+
+        server = create_server(protocol_factory=factory)
+        result = asyncio.run(server._tool_manager.call_tool("next_task", {"repo_root": "/repo"}))
+        self.assertEqual(result["reason"], "runtime_identity_mismatch")
+        self.assertEqual(result["compatibility"]["project_uuid"], "project-1")
+        self.assertNotIn("environment", canonical_json(result))
+
     def test_all_six_mcp_tools_invoke_the_in_process_protocol(self) -> None:
         fixture = Fixture()
         try:

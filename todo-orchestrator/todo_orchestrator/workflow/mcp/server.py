@@ -54,7 +54,7 @@ def create_server(
         try:
             return getattr(active_protocol(), method)(**arguments)
         except TodoError as error:
-            return {
+            result = {
                 "protocol_version": PROTOCOL_VERSION,
                 "status": "attention_required",
                 "reason": error.code,
@@ -62,6 +62,9 @@ def create_server(
                 "recommended_next_call": "next_task",
                 "warnings": [],
             }
+            if error.code == "runtime_identity_mismatch" and isinstance(error.details, dict):
+                result["compatibility"] = error.details
+            return result
         except Exception:
             return {
                 "protocol_version": PROTOCOL_VERSION,

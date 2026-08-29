@@ -41,6 +41,14 @@ state, starts or reuses the verified local service, validates model output, and
 returns `completed`, `accepted`, `needs_codex`, or `failed`. JSON contracts and
 compatibility details live in the references below.
 
+Local delegation requires the normal four-GPU topology: two disconnected
+two-GPU NVLink components. Admission checks the live output of
+`nvidia-smi topo -m`; when all four GPUs form one NVLink-connected component
+(X mode), new delegation is unavailable and the parent continues the frontier
+directly. Unknown or unsupported topology also fails closed. This admission
+interlock does not terminate or invalidate already-running work or an admission
+that was granted before the topology changed.
+
 ## Workflow
 
 1. Prefer the public `delegate` command above.

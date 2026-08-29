@@ -7,6 +7,7 @@ import time
 import unittest
 from contextlib import contextmanager
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 SKILL = Path(__file__).resolve().parents[1]
@@ -143,15 +144,24 @@ class SupervisorTests(unittest.TestCase):
             self.assertFalse((root / "supervisor.sock").exists())
             self.assertFalse((root / "supervisor-state.json").exists())
 
-    def test_busy_owner_socket_is_not_probed_or_restarted(self):
+    def test_live_owner_is_probed_and_runtime_mismatch_fails_closed(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             (root / "supervisor.sock").touch()
             (root / "supervisor.pid").write_text(str(os.getpid()) + "\n", encoding="ascii")
             client = SupervisorClient(temporary, root=root)
-            with mock.patch.object(client, "_request", side_effect=AssertionError("must not probe busy owner")), \
+            with mock.patch.object(client, "_request", return_value={"running": True}), \
                  mock.patch("local_worker.supervisor.subprocess.Popen", side_effect=AssertionError("must not restart owner")):
-                client.ensure_running()
+                with self.assertRaisesRegex(SupervisorError, "runtime_identity_mismatch"):
+                    client.ensure_running()
+
+    def test_authority_database_path_mismatch_fails_closed(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            client = SupervisorClient(temporary, root=Path(temporary) / "runtime")
+            observed = dict(client.runtime_context)
+            observed["db_path"] = "/different/state.sqlite3"
+            with self.assertRaisesRegex(SupervisorError, "runtime_identity_mismatch"):
+                client._validate_status({"runtime_identity": observed})
 
 
 class _Cache:
@@ -177,8 +187,10 @@ class _Host:
         self.owners = {}
         self.preemptions = set()
         self.serial = 0
+        self.discoveries = 0
+        self.priority_changes = 0
 
-    def discover_gpus(self): return []
+    def discover_gpus(self): self.discoveries += 1; return []
     def compound_gpu_bundles(self, count): return list(self.bundles)
     def reserve_service(self, **kwargs):
         request = kwargs["resource_request"]
@@ -189,7 +201,9 @@ class _Host:
         owner = f"owner-{self.serial}"
         self.owners[owner] = wanted
         return {"owner_id": owner, "resource_ids": list(request["ids"])}
-    def set_priority(self, owner_id, priority): return owner_id in self.owners
+    def set_priority(self, owner_id, priority):
+        self.priority_changes += 1
+        return owner_id in self.owners
     def heartbeat(self, owner_id, pid=None): return None
     def preempt_requested(self, owner_id): return owner_id in self.preemptions
     def release(self, owner_id): self.owners.pop(owner_id, None)
@@ -257,9 +271,68 @@ class ServicePoolTests(unittest.TestCase):
     def backend(self, *, islands=2, maximum=2, ttl=900, service=None):
         runtime = _Runtime(islands=islands)
         service = service or _Service()
+        topology = {"value": SimpleNamespace(mode="normal", status="available")}
         backend = _PoolBackend(".", profile=_profile(maximum=maximum, ttl=ttl), cache=_Cache(),
-                               runtime=runtime, adapter=_Adapter(), service=service)
+                               runtime=runtime, adapter=_Adapter(), service=service,
+                               topology_classifier=lambda: topology["value"])
+        backend.test_topology = topology
         return backend, runtime, service
+
+    def test_x_mode_rejects_admission_before_idle_reuse_or_resource_activity(self):
+        backend, runtime, service = self.backend()
+        endpoint = backend.warm()
+        backend.release(endpoint["service_lease_id"])
+        before = (len(backend._admissions), runtime.host.discoveries,
+                  runtime.host.priority_changes, service.starts, dict(runtime.host.owners))
+        backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
+        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE.*retryable=false"):
+            backend.admit()
+        after = (len(backend._admissions), runtime.host.discoveries,
+                 runtime.host.priority_changes, service.starts, dict(runtime.host.owners))
+        self.assertEqual(after, before)
+        self.assertEqual(backend.status()["slots"][0]["state"], "idle")
+        backend.close()
+
+    def test_topology_change_does_not_disturb_active_work_but_blocks_next_admission(self):
+        backend, runtime, service = self.backend()
+        endpoint = backend.warm()
+        owners = dict(runtime.host.owners)
+        backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
+        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE"):
+            backend.admit()
+        self.assertEqual(dict(runtime.host.owners), owners)
+        self.assertTrue(service.handles)
+        slot = backend.status()["slots"][0]
+        self.assertEqual((slot["state"], slot["leased"]), ("active", True))
+        backend.release(endpoint["service_lease_id"])
+        backend.close()
+
+    def test_existing_admission_survives_change_to_x_mode(self):
+        backend, _, service = self.backend()
+        admission = backend.admit()
+        backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
+        endpoint = backend.warm(admission["admission_id"])
+        self.assertEqual((endpoint["reused"], service.starts), (False, 1))
+        backend.release(endpoint["service_lease_id"])
+        backend.close()
+
+    def test_direct_warm_fails_closed_before_reuse_or_start(self):
+        backend, runtime, service = self.backend()
+        endpoint = backend.warm()
+        backend.release(endpoint["service_lease_id"])
+        before = (service.starts, runtime.host.discoveries, runtime.host.priority_changes)
+        backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
+        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE"):
+            backend.warm()
+        self.assertEqual((service.starts, runtime.host.discoveries, runtime.host.priority_changes), before)
+        backend.close()
+
+        backend, runtime, service = self.backend()
+        backend.test_topology["value"] = SimpleNamespace(mode="unknown", status="unsupported")
+        with self.assertRaisesRegex(SupervisorError, "HOST_TOPOLOGY_UNSUPPORTED"):
+            backend.warm()
+        self.assertEqual((service.starts, runtime.host.discoveries, runtime.host.owners), (0, 0, {}))
+        backend.close()
 
     def test_two_disjoint_slots_hot_reuse_and_third_rejected(self):
         backend, _, service = self.backend()

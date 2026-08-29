@@ -25,6 +25,9 @@ from local_worker.acceptance import AcceptanceError  # noqa: E402
 from local_worker.controller import DelegationNotEligible, IntegrationController, IntegrationError  # noqa: E402
 from local_worker.model_cache import ModelCache, ModelCacheError  # noqa: E402
 from local_worker.supervisor import SupervisorClient, SupervisorError, runtime_root  # noqa: E402
+from local_worker.canonical_runtime import CanonicalRuntimeError  # noqa: E402
+from local_worker.canonical_runtime import bind as bind_canonical_runtime  # noqa: E402
+from local_worker.canonical_runtime import subprocess_environment  # noqa: E402
 from local_worker.production_checks import (ProductionCheckError, evaluate, host_check,
                                             release_check, validate_policy)  # noqa: E402
 from local_worker.service import AdapterError  # noqa: E402
@@ -111,11 +114,20 @@ def _launch_delegate(
     try:
         admission = supervisor.request("admit")
     except SupervisorError as error:
-        if "resource_unavailable" not in str(error):
+        message = str(error)
+        if "HOST_INTERLOCK_X_MODE" in message:
+            reason = "host_interlock_x_mode"
+        elif "HOST_TOPOLOGY_UNAVAILABLE" in message:
+            reason = "host_topology_unavailable"
+        elif "HOST_TOPOLOGY_UNSUPPORTED" in message:
+            reason = "host_topology_unsupported"
+        elif "resource_unavailable" in message:
+            reason = "all_local_worker_slots_busy"
+        else:
             raise
         return {
             "status": "local_unavailable",
-            "reason": "all_local_worker_slots_busy",
+            "reason": reason,
             "fallback": "continue_frontier",
             "retry_recommended": False,
             "child_created": False,
@@ -133,9 +145,11 @@ def _launch_delegate(
         _atomic_json(request_path, {"execution_id": execution_id, "request": request})
         log_path = _execution_path(execution_id, "log")
         with log_path.open("ab") as log:
+            runtime_identity, _runtime_context = bind_canonical_runtime(repo)
             process = subprocess.Popen(
                 [sys.executable, str(Path(__file__).resolve()), "_delegate-worker", "--request", str(request_path)],
                 cwd=repo, stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True,
+                env=subprocess_environment(runtime_identity),
             )
         _atomic_json(_execution_path(execution_id, "launch.json"), {"pid": process.pid})
     except Exception:
@@ -360,7 +374,7 @@ def main() -> int:
         return 0 if result.get("eligible", True) else 2
     except (OSError, json.JSONDecodeError, WorkerError, IntegrationError, AdapterError,
             AcceptanceError, VerificationError, WorkspaceError, ModelCacheError,
-            ProductionCheckError, SupervisorError) as error:
+            ProductionCheckError, SupervisorError, CanonicalRuntimeError) as error:
         print(json.dumps({"format": "LOCAL-CODING-WORKER-ERROR/1", "error": str(error)}, sort_keys=True,
                          separators=(",", ":")))
         return 2

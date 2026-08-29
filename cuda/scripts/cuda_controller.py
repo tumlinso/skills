@@ -26,10 +26,12 @@ from typing import Any
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILL_ROOT = SCRIPT_DIR.parent
-TODO_ROOT = SKILL_ROOT.parent / "todo-orchestrator"
 CTXPP = SKILL_ROOT.parent / "cpp-context-compiler" / "scripts" / "ctxpp"
-if str(TODO_ROOT) not in sys.path:
-    sys.path.insert(0, str(TODO_ROOT))
+WORKFLOW_INTEGRATION = SKILL_ROOT.parent / "integrations" / "coding-workflow-mcp"
+if str(WORKFLOW_INTEGRATION) not in sys.path:
+    sys.path.insert(0, str(WORKFLOW_INTEGRATION))
+from coding_workflow_mcp.runtime_identity import bind_canonical_runtime  # noqa: E402
+bind_canonical_runtime()
 
 from todo_orchestrator.background.artifacts import file_digest  # noqa: E402
 from todo_orchestrator.background.host import HostCoordinator  # noqa: E402

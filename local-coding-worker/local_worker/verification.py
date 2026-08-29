@@ -12,11 +12,8 @@ class VerificationError(RuntimeError):
 
 
 def _runtime_contracts():
-    import sys
-    skills_root = Path(__file__).resolve().parents[2]
-    todo_root = skills_root / "todo-orchestrator"
-    if str(todo_root) not in sys.path:
-        sys.path.insert(0, str(todo_root))
+    from .canonical_runtime import bind
+    bind(Path.cwd())
     from todo_orchestrator.runtime import normalize_command_spec
     return normalize_command_spec
 

@@ -23,6 +23,8 @@ from urllib import request as urllib_request
 from .model_cache import ModelCache
 from .servers import LlamaCppServerAdapter
 from .service import AdapterService, AdapterError
+from .canonical_runtime import bind as bind_canonical_runtime
+from .canonical_runtime import subprocess_environment, validate as validate_canonical_runtime
 
 
 class SupervisorError(RuntimeError):
@@ -116,7 +118,7 @@ class ProductionBackend:
 
     def __init__(self, repo_root: str | Path, *, profile: dict[str, Any] | None = None,
                  cache: Any = None, runtime: Any = None, adapter: Any = None,
-                 service: Any = None):
+                 service: Any = None, topology_classifier: Any = None):
         self.repo_root = Path(repo_root).resolve()
         skill_root = Path(__file__).resolve().parents[1]
         self.profile = profile or tomllib.loads(
@@ -124,11 +126,18 @@ class ProductionBackend:
         )
         storage = self.profile["storage"]
         self.cache = cache or ModelCache(storage["cache_root"], storage["canonical_root"])
-        todo_root = Path(__file__).resolve().parents[2] / "todo-orchestrator"
-        if str(todo_root) not in sys.path:
-            sys.path.insert(0, str(todo_root))
-        from todo_orchestrator.runtime import RuntimeFacade
-        self.runtime = runtime or RuntimeFacade(self.repo_root)
+        if runtime is None:
+            self.runtime_identity, self.runtime_context = bind_canonical_runtime(self.repo_root)
+            from todo_orchestrator.runtime import RuntimeFacade, classify_local_worker_host_topology
+            self.runtime = RuntimeFacade(self.repo_root)
+            self._classify_host_topology = topology_classifier or classify_local_worker_host_topology
+        else:
+            self.runtime_identity = None
+            self.runtime_context = None
+            self.runtime = runtime
+            if topology_classifier is None:
+                raise SupervisorError("an injected runtime requires an injected topology classifier")
+            self._classify_host_topology = topology_classifier
         self.adapter = adapter or LlamaCppServerAdapter(str(self.profile["server"]["binary"]))
         self.service = service or AdapterService()
         if service is None:
@@ -182,6 +191,8 @@ class ProductionBackend:
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
     def status(self) -> dict[str, Any]:
+        if self.runtime_identity is not None:
+            validate_canonical_runtime(self.runtime_identity)
         summaries = []
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
             summaries.append({
@@ -200,8 +211,19 @@ class ProductionBackend:
             "endpoint": endpoint, "slots": summaries,
         }
 
+    def _enforce_host_topology(self) -> None:
+        topology = self._classify_host_topology()
+        if topology.mode == "normal":
+            return
+        if topology.mode == "x_mode":
+            raise SupervisorError("HOST_INTERLOCK_X_MODE: retryable=false")
+        reason = ("HOST_TOPOLOGY_UNAVAILABLE" if topology.status == "unavailable"
+                  else "HOST_TOPOLOGY_UNSUPPORTED")
+        raise SupervisorError(f"{reason}: retryable=false")
+
     def admit(self) -> dict[str, Any]:
         """Atomically reserve a real GPU island without starting a model."""
+        self._enforce_host_topology()
         if self.draining:
             raise SupervisorError("resource_unavailable: model service is draining; retryable=false")
         if len(self._leases) + len(self._admissions) >= self.max_slots:
@@ -290,6 +312,8 @@ class ProductionBackend:
         }
 
     def warm(self, admission_id: str | None = None) -> dict[str, Any]:
+        if admission_id is None:
+            self._enforce_host_topology()
         if self.draining:
             raise SupervisorError("model service is draining for foreground preemption")
         if admission_id is None:
@@ -512,11 +536,17 @@ class SupervisorServer:
         self.state_path = self.root / "supervisor-state.json"
         self.lock_path = self.root / "supervisor.lock"
         self.stopping = False
+        self.runtime_identity, self.runtime_context = bind_canonical_runtime(
+            getattr(backend, "repo_root", Path.cwd())
+        )
+        if not hasattr(backend, "repo_root"):
+            self.runtime_context = self.runtime_identity.public()
 
     def _dispatch(self, request: dict[str, Any]) -> dict[str, Any]:
+        validate_canonical_runtime(self.runtime_identity)
         operation = request.get("operation")
         if operation == "status":
-            return self.backend.status()
+            return {**self.backend.status(), "runtime_identity": self.runtime_context}
         if operation == "admit":
             return self.backend.admit()
         if operation == "cancel-admission":
@@ -597,6 +627,15 @@ class SupervisorClient:
         self.repo_root = Path(repo_root).resolve()
         self.root = root or runtime_root()
         self.socket_path = self.root / "supervisor.sock"
+        self.runtime_identity, self.runtime_context = bind_canonical_runtime(self.repo_root)
+
+    def _validate_status(self, status: dict[str, Any]) -> None:
+        observed = status.get("runtime_identity")
+        if observed != self.runtime_context:
+            raise SupervisorError(
+                "runtime_identity_mismatch: persistent supervisor is bound to a different "
+                "todo runtime or authority; stop and restart it"
+            )
 
     def _request(self, operation: str, *, timeout: float = 660, **parameters: Any) -> dict[str, Any]:
         connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -634,6 +673,7 @@ class SupervisorClient:
         if self.socket_path.exists():
             try:
                 if _pid_alive(int(pid_path.read_text(encoding="ascii").strip())):
+                    self._validate_status(self._request("status", timeout=1))
                     return
             except (OSError, ValueError):
                 pass
@@ -644,9 +684,8 @@ class SupervisorClient:
             self._recover_stale()
         _private_directory(self.root)
         skill_root = Path(__file__).resolve().parents[1]
-        todo_root = Path(__file__).resolve().parents[2] / "todo-orchestrator"
-        environment = os.environ.copy()
-        environment["PYTHONPATH"] = os.pathsep.join(filter(None, [str(skill_root), str(todo_root), environment.get("PYTHONPATH")]))
+        environment = subprocess_environment(self.runtime_identity)
+        environment["PYTHONPATH"] = str(skill_root)
         log_root = state_root()
         _private_directory(log_root)
         stream = (log_root / "supervisor.log").open("a", encoding="utf-8")
@@ -658,7 +697,7 @@ class SupervisorClient:
         deadline = time.monotonic() + 10
         while time.monotonic() < deadline:
             try:
-                self._request("status", timeout=1)
+                self._validate_status(self._request("status", timeout=1))
                 return
             except (OSError, ValueError, json.JSONDecodeError, SupervisorError):
                 time.sleep(0.05)

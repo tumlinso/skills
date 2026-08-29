@@ -23,6 +23,11 @@ class ProductionCheckError(RuntimeError):
     pass
 
 
+def _bind_todo(repo: Path) -> None:
+    from .canonical_runtime import bind
+    bind(repo)
+
+
 def _repo() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -55,9 +60,7 @@ def _write_compact(repo: Path, name: str, value: dict[str, Any]) -> dict[str, An
 
 
 def _service_preemption(repo: Path, count: int) -> dict[str, Any]:
-    todo = repo / "todo-orchestrator"
-    if str(todo) not in sys.path:
-        sys.path.insert(0, str(todo))
+    _bind_todo(repo)
     from todo_orchestrator.runtime import RuntimeFacade
     host = RuntimeFacade(repo).host
     host.discover_gpus()
@@ -266,9 +269,7 @@ def _host_writable(repo: Path) -> dict[str, Any]:
     from .harnesses import QwenCodeAdapter
     from .verification import require_verification
     from .workspace import materialize_writable_workspace
-    todo = repo / "todo-orchestrator"
-    if str(todo) not in sys.path:
-        sys.path.insert(0, str(todo))
+    _bind_todo(repo)
     from todo_orchestrator.runtime import capture_source_identity
 
     nvcc = shutil.which("nvcc")
@@ -711,9 +712,7 @@ def _meaningful_evaluation(repo: Path) -> dict[str, Any]:
     from .harnesses import QwenCodeAdapter
     from .verification import require_verification
     from .workspace import materialize_writable_workspace
-    todo = repo / "todo-orchestrator"
-    if str(todo) not in sys.path:
-        sys.path.insert(0, str(todo))
+    _bind_todo(repo)
     from todo_orchestrator.runtime import capture_source_identity
 
     class ReadOnlyAdapter(QwenCodeAdapter):
@@ -1276,9 +1275,7 @@ def _integrated_evaluation(repo: Path) -> dict[str, Any]:
                                    "zerodivisionerror" in diagnosis_text.casefold() and
                                    "divis" in diagnosis_text.casefold() and "zero" in diagnosis_text.casefold()))
 
-    todo_root = repo / "todo-orchestrator"
-    if str(todo_root) not in sys.path:
-        sys.path.insert(0, str(todo_root))
+    _bind_todo(repo)
     from todo_orchestrator.runtime import RuntimeFacade
     endpoint_gpus = [str(item) for item in second_endpoint.get("gpu_uuids", [])]
     resources = [f"accelerator:{item}" for item in endpoint_gpus]

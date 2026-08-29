@@ -14,7 +14,7 @@ SPEC = importlib.util.spec_from_file_location("coding_workflow_install", SCRIPT)
 assert SPEC and SPEC.loader
 installer = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(installer)
-CANONICAL = Path(__file__).resolve().parents[1] / "coding_workflow_mcp" / "_canonical.py"
+PACKAGE = Path(__file__).resolve().parents[1]
 
 
 class InstallerTests(unittest.TestCase):
@@ -52,15 +52,14 @@ class InstallerTests(unittest.TestCase):
             locator = root / "coding-workflow-mcp" / "skills-root.json"
             locator.parent.mkdir()
             locator.write_text(json.dumps({"skills_root": str(skills)}) + "\n", encoding="utf-8")
-            spec = importlib.util.spec_from_file_location("canonical_locator_test", CANONICAL)
-            assert spec and spec.loader
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
+            import sys
+            sys.path.insert(0, str(PACKAGE))
+            from coding_workflow_mcp import runtime_identity
             environment = dict(os.environ)
             environment.pop("CODING_WORKFLOW_SKILLS_ROOT", None)
             environment["XDG_DATA_HOME"] = str(root)
             with patch.dict(os.environ, environment, clear=True):
-                self.assertEqual(module.skills_root(), skills.resolve())
+                self.assertEqual(runtime_identity.locate_skills_root(), skills.resolve())
 
 
 if __name__ == "__main__":

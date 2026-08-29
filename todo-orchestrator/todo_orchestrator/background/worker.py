@@ -7,11 +7,23 @@ import concurrent.futures
 import os
 import time
 import traceback
+from pathlib import Path
+import sys
 
 from .runner import run_job
 from .host import HostCoordinator
 from .scheduler import claim_runnable, dispatch_watch_handlers
 from .store import BackgroundStore
+
+
+def _canonical_identity():
+    try:
+        from coding_workflow_mcp.runtime_identity import bind_canonical_runtime, validate_runtime
+    except ModuleNotFoundError:
+        integration = Path(__file__).resolve().parents[3] / "integrations/coding-workflow-mcp"
+        sys.path.insert(0, str(integration))
+        from coding_workflow_mcp.runtime_identity import bind_canonical_runtime, validate_runtime
+    return bind_canonical_runtime(), validate_runtime
 
 
 def _execute(store: BackgroundStore, worker_id: str, claimed) -> None:
@@ -69,6 +81,7 @@ def main() -> int:
     parser.add_argument("--idle-seconds", type=float, default=float(os.environ.get("TODO_BACKGROUND_IDLE_SECONDS", "15")))
     parser.add_argument("--max-children", type=int, default=int(os.environ.get("TODO_BACKGROUND_MAX_CHILDREN", "4")))
     args = parser.parse_args()
+    runtime_identity, validate_runtime = _canonical_identity()
     store = BackgroundStore(args.project)
     worker_id = store.register_worker()
     idle_since = time.monotonic()
@@ -80,6 +93,11 @@ def main() -> int:
     consecutive_supervisor_errors = 0
     try:
         while True:
+            try:
+                validate_runtime(runtime_identity)
+            except Exception as error:
+                _record_supervisor_error(store, error)
+                return 2
             launched = False
             try:
                 store.heartbeat(worker_id)

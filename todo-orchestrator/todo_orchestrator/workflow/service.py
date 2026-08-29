@@ -77,20 +77,19 @@ class WorkflowKernel:
         locator: WorkflowCapabilityLocator | None = None,
         ctxpp_adapter: Any | None = None,
         local_worker_adapter: Any | None = None,
+        runtime_guard: Callable[[Path], None] | None = None,
     ):
         self.service_factory = service_factory
         self.locator = locator or WorkflowCapabilityLocator()
         self.ctxpp_adapter = ctxpp_adapter
         self.local_worker_adapter = local_worker_adapter
+        self.runtime_guard = runtime_guard
 
-    def _service(self, repo_root: str | Path, *, bootstrap: bool = False) -> Service:
+    def _service(self, repo_root: str | Path) -> Service:
         root = Path(repo_root).resolve()
-        try:
-            return self.service_factory(root)
-        except TodoError as exc:
-            if bootstrap and exc.code == "project_not_bootstrapped":
-                return Service(root, bootstrap=True)
-            raise
+        if self.runtime_guard is not None:
+            self.runtime_guard(root)
+        return self.service_factory(root)
 
     def _resolve_service(self, capability: AuthorizedCapability) -> Service:
         # A locator contains no lineage semantics, only a hash -> repository hint.
@@ -131,7 +130,7 @@ class WorkflowKernel:
         return row
 
     def next_task(self, *, repo_root: str, task_id: str | None) -> Mapping[str, Any]:
-        service = self._service(repo_root, bootstrap=True)
+        service = self._service(repo_root)
         capabilities = WorkflowCapabilityStore(service.db)
         project_uuid = str(service.project["project_uuid"])
         repo_identity = repository_identity(service.paths.repo_root, project_uuid)

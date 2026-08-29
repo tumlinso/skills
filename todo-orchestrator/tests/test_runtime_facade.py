@@ -21,6 +21,7 @@ from todo_orchestrator.runtime import (
     ContractError,
     RuntimeFacade,
     capture_source_identity,
+    classify_local_worker_host_topology,
     normalize_artifact_ref,
     normalize_command_spec,
     normalize_evidence_summary,
@@ -222,6 +223,47 @@ class RuntimeFacadeTests(unittest.TestCase):
         self.assertEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-b"]["nvlink_domain"])
         self.assertNotEqual(tags["GPU-a"]["nvlink_domain"], tags["GPU-c"]["nvlink_domain"])
         self.assertEqual((tags["GPU-a"]["numa_node"], tags["GPU-c"]["numa_node"]), ("0", "1"))
+
+    def test_local_worker_topology_classifies_two_nvlink_pairs_as_normal(self) -> None:
+        topology = (
+            "\tGPU0\tGPU1\tGPU2\tGPU3\tCPU Affinity\tNUMA Affinity\n"
+            "GPU0\tX\tNV1\tSYS\tSYS\t0-19\t0\n"
+            "GPU1\tNV1\tX\tSYS\tSYS\t0-19\t0\n"
+            "GPU2\tSYS\tSYS\tX\tNV4\t20-39\t1\n"
+            "GPU3\tSYS\tSYS\tNV4\tX\t20-39\t1\n"
+        )
+        result = classify_local_worker_host_topology(lambda argv: topology)
+        self.assertEqual((result.mode, result.gpu_count, result.status), ("normal", 4, "available"))
+        self.assertEqual(result.nvlink_components, ((0, 1), (2, 3)))
+
+    def test_local_worker_topology_classifies_transitive_four_gpu_graph_as_x_mode(self) -> None:
+        topology = (
+            "\tGPU0\tGPU1\tGPU2\tGPU3\n"
+            "GPU0\tX\tNV2\tSYS\tSYS\n"
+            "GPU1\tNV2\tX\tNV1\tSYS\n"
+            "GPU2\tSYS\tNV1\tX\tNV4\n"
+            "GPU3\tSYS\tSYS\tNV4\tX\n"
+        )
+        result = classify_local_worker_host_topology(lambda argv: topology)
+        self.assertEqual((result.mode, result.nvlink_components), ("x_mode", ((0, 1, 2, 3),)))
+
+    def test_local_worker_topology_fails_closed_for_unsupported_and_unavailable_graphs(self) -> None:
+        matrices = [
+            "\tGPU0\tGPU1\tGPU2\tGPU3\nGPU0\tX\tSYS\tSYS\tSYS\nGPU1\tSYS\tX\tSYS\tSYS\nGPU2\tSYS\tSYS\tX\tSYS\nGPU3\tSYS\tSYS\tSYS\tX\n",
+            "\tGPU0\tGPU1\tGPU2\tGPU3\nGPU0\tX\tNV1\tSYS\tSYS\nGPU1\tNV1\tX\tNV2\tSYS\nGPU2\tSYS\tNV2\tX\tSYS\nGPU3\tSYS\tSYS\tSYS\tX\n",
+            "\tGPU0\tGPU1\tGPU2\tGPU3\nGPU0\tX\tNV4\tSYS\tSYS\nGPU1\tNV4\tX\tSYS\tSYS\nGPU2\tSYS\tSYS\tX\tSYS\nGPU3\tSYS\tSYS\tSYS\tX\n",
+            "\tGPU0\tGPU1\nGPU0\tX\tNV1\nGPU1\tNV1\tX\n",
+        ]
+        for topology in matrices:
+            with self.subTest(topology=topology):
+                result = classify_local_worker_host_topology(lambda argv, value=topology: value)
+                self.assertEqual((result.mode, result.status), ("unknown", "unsupported"))
+        malformed = classify_local_worker_host_topology(lambda argv: "not a topology matrix")
+        self.assertEqual((malformed.mode, malformed.status), ("unknown", "unavailable"))
+        failed = classify_local_worker_host_topology(
+            lambda argv: (_ for _ in ()).throw(OSError("nvidia unavailable"))
+        )
+        self.assertEqual((failed.mode, failed.status), ("unknown", "unavailable"))
 
 
 if __name__ == "__main__":

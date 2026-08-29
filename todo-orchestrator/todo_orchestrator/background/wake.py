@@ -65,7 +65,10 @@ def wake_worker(project_root: str | Path) -> bool:
             return True
         environment = os.environ.copy()
         package_root = str(Path(__file__).resolve().parents[2])
-        environment["PYTHONPATH"] = package_root + (os.pathsep + environment["PYTHONPATH"] if environment.get("PYTHONPATH") else "")
+        integration_root = str(Path(__file__).resolve().parents[3] / "integrations/coding-workflow-mcp")
+        environment["PYTHONPATH"] = os.pathsep.join((package_root, integration_root))
+        environment.pop("TODO_ORCHESTRATOR_READ_ONLY", None)
+        environment["TODO_ORCHESTRATOR_PACKAGE_ROOT"] = package_root
         process = subprocess.Popen(
             [sys.executable, "-m", "todo_orchestrator.background.worker", "--project", str(root)],
             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

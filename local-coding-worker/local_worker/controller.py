@@ -337,10 +337,8 @@ class ProductionReadOnlyRuntime:
 
 
 def _runtime_source():
-    skills_root = Path(__file__).resolve().parents[2]
-    todo_root = skills_root / "todo-orchestrator"
-    if str(todo_root) not in sys.path:
-        sys.path.insert(0, str(todo_root))
+    from .canonical_runtime import bind
+    bind(Path.cwd())
     from todo_orchestrator.runtime import capture_source_identity
     return capture_source_identity
 

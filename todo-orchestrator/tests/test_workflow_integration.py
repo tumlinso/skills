@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import os
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.models import TodoError
+from todo_orchestrator.semantic import SemanticReader
+from todo_orchestrator.service import Service
 from todo_orchestrator.workflow.capabilities import WorkflowCapabilityLocator
 from todo_orchestrator.workflow.protocol import WorkflowProtocol
 from todo_orchestrator.workflow.protocol import _validate_action
@@ -83,6 +87,28 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "in_progress")
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_lanes WHERE id=?", (delegated["child_execution_id"],)).fetchone()[0], 0)
+
+    def test_ce_geo_shaped_claim_delegation_preserves_all_read_surfaces(self):
+        def assert_observable() -> None:
+            with patch.dict(os.environ, {"TODO_ORCHESTRATOR_READ_ONLY": "1"}):
+                service = Service(self.repo.root)
+                semantic = SemanticReader(self.repo.root)
+                revisions = (
+                    service.status()["project_revision"], service.export()["project_revision"],
+                    semantic.state()["revision"], semantic.workflow()["revision"],
+                )
+                self.assertEqual(len(set(revisions)), 1)
+                self.assertTrue(semantic.workflow()["available"])
+
+        assert_observable()
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root))
+        assert_observable()
+        delegated = self.protocol.delegate_task(
+            workflow_handle=claimed["workflow_handle"], delegated_objective="bounded preflight", mode="readonly"
+        )
+        assert_observable()
+        self.protocol.collect_delegation(delegation_handle=delegated["delegation_handle"])
+        assert_observable()
 
     def test_arrival_schema_requires_full_provenance(self):
         with self.assertRaises(TodoError) as error:

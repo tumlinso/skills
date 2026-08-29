@@ -2,45 +2,64 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
-import json
-import sys
+
+from .runtime_identity import (
+    bind_canonical_runtime,
+    locate_skills_root,
+    project_runtime_context,
+    validate_runtime,
+)
 
 
-def _locator_file() -> Path:
-    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share")).expanduser()
-    return data_home / "coding-workflow-mcp" / "skills-root.json"
+_BOUND_RUNTIME = None
 
 
 def skills_root() -> Path:
-    configured = os.environ.get("CODING_WORKFLOW_SKILLS_ROOT")
-    if configured:
-        root = Path(configured).expanduser().resolve()
-    elif _locator_file().is_file():
-        locator = json.loads(_locator_file().read_text(encoding="utf-8"))
-        root = Path(str(locator["skills_root"])).expanduser().resolve()
+    return locate_skills_root()
+
+
+def runtime_identity():
+    global _BOUND_RUNTIME
+    if _BOUND_RUNTIME is None:
+        _BOUND_RUNTIME = bind_canonical_runtime()
     else:
-        root = Path(__file__).resolve().parents[3]
-    package = root / "todo-orchestrator" / "todo_orchestrator"
-    if not package.is_dir():
-        raise RuntimeError("canonical todo-orchestrator package is unavailable")
-    parent = str(package.parent)
-    if parent not in sys.path:
-        sys.path.insert(0, parent)
-    return root
+        validate_runtime(_BOUND_RUNTIME)
+    return _BOUND_RUNTIME
 
 
 def protocol():
-    skills_root()
+    identity = runtime_identity()
     from todo_orchestrator.workflow import WorkflowCapabilityLocator, WorkflowKernel, WorkflowProtocol
+    from todo_orchestrator.models import TodoError
+
+    def guard(repo_root: Path) -> None:
+        try:
+            validate_runtime(identity)
+        except Exception as exc:
+            if getattr(exc, "code", None) == "runtime_identity_mismatch":
+                details = {
+                    "expected": str(getattr(exc, "expected", identity.module_file)),
+                    "observed": str(getattr(exc, "observed", "unknown")),
+                    "canonical_skills_root": str(identity.skills_root),
+                    "canonical_package_root": str(identity.package_root),
+                    "runtime_fingerprint": identity.fingerprint,
+                    "remediation": "restart the persistent workflow process using the canonical Skills runtime",
+                }
+                try:
+                    context = project_runtime_context(repo_root, identity)
+                    details.update({key: context[key] for key in ("project_uuid", "db_path")})
+                except Exception:
+                    pass
+                raise TodoError("runtime_identity_mismatch", str(exc), details=details) from exc
+            raise
 
     locator = WorkflowCapabilityLocator()
-    return WorkflowProtocol(WorkflowKernel(locator=locator), locator)
+    return WorkflowProtocol(WorkflowKernel(locator=locator, runtime_guard=guard), locator)
 
 
 def canonical_server():
-    skills_root()
+    runtime_identity()
     from todo_orchestrator.workflow.mcp import create_server
 
     return create_server(protocol_factory=protocol)
