@@ -7,6 +7,7 @@ from pathlib import Path
 
 from ..config import project_paths, read_project
 from ..db import Database
+from ..models import ExitCode, TodoError
 from .anchors import resolve_anchor
 from .history import semantic_delta
 from .state import semantic_state
@@ -25,6 +26,11 @@ class SemanticReader:
             busy_timeout_ms=int(configuration.get("busy_timeout_ms", 5000)),
             read_only=True,
         )
+        if not self.paths.db_file.exists():
+            raise TodoError(
+                "todo_state_unavailable", "Todo state is unavailable", ExitCode.CONSISTENCY_ERROR
+            )
+        self.db.require_current_schema(self.project, repo_root=self.paths.repo_root)
 
     @staticmethod
     def _fingerprint(conn) -> str:

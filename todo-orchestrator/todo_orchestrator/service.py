@@ -84,7 +84,9 @@ class Service:
         database_existed = self.paths.db_file.exists()
         if self.read_only and not database_existed:
             raise TodoError("todo_state_unavailable", "Todo state is unavailable", ExitCode.CONSISTENCY_ERROR)
-        if not self.read_only:
+        if self.read_only:
+            self.db.require_current_schema(self.project, repo_root=self.paths.repo_root)
+        else:
             self.db.initialize(self.project)
         if not database_existed and self.paths.snapshot_file.exists():
             restore_snapshot(self.db, self.paths, self.project)

@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterator, TypeVar
 
 from .config import utc_now
-from .migrations import MIGRATIONS, SCHEMA_VERSION
-from .models import TodoError
+from .migrations import DATABASE_MIGRATION_VERSION, MIGRATIONS, SCHEMA_VERSION
+from .models import ExitCode, TodoError
 
 T = TypeVar("T")
 
@@ -82,6 +82,43 @@ class Database:
                 if conn is not None:
                     conn.close()
         raise TodoError("database_contention", str(last_error or "database is busy"))
+
+    def require_current_schema(
+        self,
+        project: dict[str, object],
+        *,
+        repo_root: Path | None = None,
+    ) -> int:
+        """Reject an old authority before current-schema read code executes."""
+        with self.read() as conn:
+            migrations_table = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='schema_migrations'"
+            ).fetchone()
+            observed = (
+                int(conn.execute(
+                    "SELECT COALESCE(MAX(version),0) FROM schema_migrations"
+                ).fetchone()[0])
+                if migrations_table
+                else 0
+            )
+        if observed < DATABASE_MIGRATION_VERSION:
+            raise TodoError(
+                "schema_migration_required",
+                "Todo authority schema migration is required before read-only observation",
+                ExitCode.CONSISTENCY_ERROR,
+                {
+                    "observed_migration_version": observed,
+                    "required_migration_version": DATABASE_MIGRATION_VERSION,
+                    "project_uuid": project.get("project_uuid"),
+                    "project_name": project.get("project_name"),
+                    "repository": str(repo_root) if repo_root is not None else None,
+                    "remediation": (
+                        "Run a current writable todo status invocation to initialize and "
+                        "migrate this authority, then retry the read-only operation."
+                    ),
+                },
+            )
+        return observed
 
     @contextmanager
     def read(self) -> Iterator[sqlite3.Connection]:
