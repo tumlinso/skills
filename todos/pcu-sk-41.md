@@ -1,12 +1,12 @@
 
 
 <!-- todo-orchestrator:v2-managed:start -->
-# PCU-SK-40: Repin and cut over the corrected Project Control read provider
+# PCU-SK-41: Retry the corrected read-port candidate cutover
 
-Task revision: `778`; current project revision is in `todo-status.md`.
+Task revision: `779`; current project revision is in `todo-status.md`.
 
 ## Objective
-Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.
+Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
 
 ## State
 - Lifecycle: `blocked`
@@ -30,6 +30,7 @@ _None._
 - `forbidden`: `todos/C4Q-01.md`
 - `forbidden`: `workflow-unification/evidence`
 - `read`: `.gitmodules`
+- `read`: `pcu-v1-read-port-remediation.plan.json`
 - `read`: `todo-orchestrator`
 - `read`: `unification/pcu-v1/contracts`
 - `read`: `unification/pcu-v1/scripts`
