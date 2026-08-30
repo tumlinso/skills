@@ -500,10 +500,13 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         )
         self.assertEqual(result["state"], "gate_failed")
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
-        self.assert_code(
-            "workspace_cleanup_not_terminal",
-            lambda: self.service.mark_cleanup_eligible(workspace_id=str(producer["workspace_id"])),
+        retried = self.service.retry_failed_gates(queue_id=str(queued["queue_id"]))
+        self.assertEqual(retried["state"], "awaiting_gates")
+        finalized = self.service.record_post_merge_gates(
+            queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}]
         )
+        self.assertEqual(finalized["state"], "integrated")
+        self.assertTrue(self.service.mark_cleanup_eligible(workspace_id=str(producer["workspace_id"]))["cleanup_eligible"])
 
     def test_caller_asserted_gate_status_cannot_authorize_integration(self) -> None:
         self.create_destination()

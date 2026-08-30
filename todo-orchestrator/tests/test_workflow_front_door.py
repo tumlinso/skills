@@ -209,6 +209,10 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
         self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
         self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")
+        finished_integrator = protocol.finish_task(
+            workflow_handle=integrator["workflow_handle"], action="complete", disposition="implemented"
+        )
+        self.assertEqual(finished_integrator["status"], "idle")
 
 
 if __name__ == "__main__":

@@ -119,7 +119,10 @@ class WorkflowKernel:
         if row is None or row["id"] is None:
             return None
         workspace = dict(row)
-        if workspace["state"] not in {"active", "artifact_ready", "queued"}:
+        allowed_states = {"active", "artifact_ready", "queued"}
+        if lineage.role == "integrator":
+            allowed_states.update({"conflict", "awaiting_gates", "gate_failed", "integrated"})
+        if workspace["state"] not in allowed_states:
             raise TodoError("workflow_workspace_inactive", "The dispatch workspace is not active")
         if workspace["run_id"] != lineage.run_id or workspace["lane_id"] != lineage.lane_id:
             raise TodoError("workflow_workspace_scope_mismatch", "The dispatch workspace does not belong to this lane")
@@ -561,7 +564,7 @@ class WorkflowKernel:
                         queued = conn.execute(
                             "SELECT id,state FROM workflow_integration_queue "
                             "WHERE run_id=? AND integrator_lane_id=? AND integration_task_id=? "
-                            "AND state IN ('queued','awaiting_gates','conflict') ORDER BY position LIMIT 1",
+                            "AND state IN ('queued','awaiting_gates','conflict','gate_failed') ORDER BY position LIMIT 1",
                             (lineage.run_id, lineage.lane_id, lineage.task_id),
                         ).fetchone()
                     if queued is None:
@@ -575,6 +578,12 @@ class WorkflowKernel:
                             actor_session_id=lineage.session_id,
                         )
                         queue_state = "queued"
+                    if queue_state == "gate_failed":
+                        workspaces.retry_failed_gates(
+                            queue_id=queue_id,
+                            actor_session_id=lineage.session_id,
+                        )
+                        queue_state = "awaiting_gates"
                     if queue_state == "queued":
                         applied = dict(
                             workspaces.apply_next(

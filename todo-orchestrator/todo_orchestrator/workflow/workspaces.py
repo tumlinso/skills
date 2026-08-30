@@ -634,6 +634,57 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
+    def retry_failed_gates(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
+        """Reopen preserved applied source after a corrected gate contract."""
+
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT q.state,q.run_id,q.integrator_lane_id,q.merge_result_json,a.base_commit,d.worktree_path "
+                "FROM workflow_integration_queue q "
+                "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+        if row is None or row["state"] != "gate_failed":
+            raise TodoError("integration_gate_failure_required", "Only a preserved gate failure can be retried")
+        merge_result = json.loads(row["merge_result_json"] or "{}")
+        source_identity = str(merge_result.get("source_identity") or "")
+        destination = Path(row["worktree_path"])
+        if not source_identity or self._source_identity(destination, str(row["base_commit"])) != source_identity:
+            raise TodoError("integration_source_changed", "Preserved gate-failed source changed before retry")
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
+            if current is None or current["state"] != "gate_failed":
+                raise TodoError("integration_state_changed", "Gate-failed integration changed during retry")
+            conn.execute(
+                "UPDATE workflow_integration_queue SET state='awaiting_gates',merge_result_json=?,updated_at=? WHERE id=?",
+                (_json({
+                    "state": "awaiting_gates",
+                    "apply_revision": revision,
+                    "source_identity": source_identity,
+                    "destination_worktree": str(destination.resolve()),
+                    "gate_retry": True,
+                }), utc_now(), queue_id),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='awaiting_gates',updated_at=? WHERE run_id=? AND lane_id=?",
+                (utc_now(), row["run_id"], row["integrator_lane_id"]),
+            )
+            return {"queue_id": queue_id, "state": "awaiting_gates", "source_identity": source_identity}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_integration_gates_retried",
+            payload={"source_identity": source_identity},
+            operation=operation,
+        )
+        result["revision"] = revision
+        return result
+
     def record_post_merge_gates(
         self,
         *,
