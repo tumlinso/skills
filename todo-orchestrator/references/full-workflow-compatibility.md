@@ -4,18 +4,25 @@ description: Transactional orchestration for substantial multi-step projects. Us
 ---
 
 > Deprecated maintenance reference. For ordinary substantial repository work,
-> use coding-workflow. Use `coding-workflow-admin recover` for owner recovery;
-> the older recovery forest below remains compatibility-only.
+> use the `project-control` Codex profile. Use `project-control admin recover`
+> for owner recovery; the older recovery forest below remains compatibility-only.
+> The historical `coding-workflow` name and commands documented below are not a
+> second ordinary front door or live MCP registration.
 
 # Todo Orchestrator
 
-Use the v2 command line as the coordination authority. SQLite is the live operational source of truth; `.todo-orchestrator/state.snapshot.json` is durable recovery state; `todos.md`, `todo-status.md`, and `todos/*.md` are generated human projections and legacy migration inputs.
+Within an explicitly authorized legacy maintenance boundary, use the v2 command
+line as the coordination interface. SQLite is the live operational source of
+truth; `.todo-orchestrator/state.snapshot.json` is durable recovery state;
+`todos.md`, `todo-status.md`, and `todos/*.md` are generated human projections
+and legacy migration inputs.
 
 Do not use this skill for a narrow one-step request that clearly belongs to another specialized skill.
 
-## Normal Startup: Continue
+## Legacy maintenance startup: Continue
 
-When the user says “Use `$todo-orchestrator` and continue”:
+Only when the user explicitly requests Todo maintenance and says “Use
+`$todo-orchestrator` and continue”:
 
 1. Locate the repository root and read repository `AGENTS.md` if present.
 2. Resolve this skill’s `scripts/todo.py` path. Do not assume it is inside the target repository.
@@ -145,8 +152,8 @@ released in the same authority transaction; the old claim becomes explicitly
 `force_released`, its token stops authenticating, the task returns to `planned`,
 the revision advances, projections refresh, all repository files remain intact,
 and the reason plus prior claim and scope fingerprints are recorded in audit
-history. Coding-workflow cannot mint this approval; after owner release it
-simply calls ordinary `next_task` again.
+history. Project Control cannot mint this approval; after owner release its
+Codex profile simply calls ordinary `next_task` again.
 
 ## Planning a New Project
 

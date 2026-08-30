@@ -1,23 +1,26 @@
 ---
 name: todo-orchestrator
-description: Internal transactional kernel and owner maintenance interface beneath coding-workflow. Use directly only for explicit maintenance, debugging, plan administration, recovery, or when coding-workflow provides bounded fallback authorization. It is not the ordinary model-facing coding workflow.
+description: Internal transactional kernel and owner maintenance interface beneath Project Control. Use directly only for explicit maintenance, debugging, plan administration, recovery, or when Project Control provides bounded fallback authorization. It is not the ordinary model-facing workflow.
 ---
 
 # Todo Orchestrator Kernel
 
 ## Routing
 
-For substantial repository work, use `coding-workflow`. Todo-orchestrator is
-the SQLite-backed transactional kernel used in-process by that protocol, not a
-second front door. Do not directly claim or mutate a migrated repository unless
-the user explicitly requests maintenance, coding-workflow is being debugged,
-or coding-workflow returns a bounded fallback authorization.
+For substantial repository work, use the `project-control` Codex profile.
+Todo-orchestrator is the SQLite-backed transactional kernel used in-process by
+that profile, not a second front door. Do not directly claim or mutate a
+migrated repository unless the user explicitly requests maintenance, Project
+Control is being debugged, or Project Control returns a bounded fallback
+authorization.
 
 Read-only status, explain, audit, doctor, export, and semantic reads remain
 available. Legacy repositories without `workflow_front_door` retain v2 CLI
-compatibility. Repositories migrated with
-`workflow_front_door = "coding-workflow"` return
+compatibility. New and newly canonicalized repositories use
+`workflow_front_door = "project-control"` and return
 `workflow_front_door_required` for ordinary noninteractive direct mutations.
+The historical `coding-workflow` value remains accepted during the bounded
+compatibility window; it is not a second ordinary front door or live server.
 Interactive owner maintenance and explicit in-process self-debug/test modes
 remain possible; neither uses a model-held fallback secret.
 
@@ -53,7 +56,7 @@ privately. Never edit SQLite or generated projections manually.
 Owner recovery is one installed operation:
 
 ```bash
-coding-workflow-admin recover --repo <repo> [--task <id>] --reason "<reason>"
+project-control admin recover --repo <repo> [--task <id>] --reason "<reason>"
 ```
 
 It requires a TTY, prints a bounded plan, requires exact confirmation, refuses
