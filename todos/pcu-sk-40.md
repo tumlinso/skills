@@ -9,8 +9,8 @@ Task revision: `769`; current project revision is in `todo-status.md`.
 Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `blocked`
+- Execution: `blocked_dependency`
 - Parallel policy: `integration_exclusive`
 - Result: `-`
 
