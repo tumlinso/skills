@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "task_id": "PCU-SK-33",
+  "observed_at": "2026-08-30T16:35:54Z",
+  "result": "validated_final_state_pending_parent_delivery",
+  "installed_runtime": {
+    "product_name": "project-control",
+    "package_version": "0.3.1",
+    "service_active": true,
+    "service_substate": "running",
+    "service_main_pid": 883351,
+    "service_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "service_working_directory": "~/.agents/skills/project-control",
+    "service_unit_sha256": "7455e76ea1dc2acdbb36697e4c4bcdfdca9627285fd037a38658e5dabf7c0bab",
+    "canonical_skills_root_environment": true,
+    "candidate_path_environment": true,
+    "health": "ok",
+    "readiness": "ready",
+    "tool_schema_version": 3,
+    "registration_names": [
+      "project-control"
+    ],
+    "registration_sha256": "0f0e4e45f2b26e0e41bf8c6bc10964bce59ae91a81d89d20f657f9d263775488",
+    "coding_workflow_concurrently_registered": false,
+    "loopback_endpoint": "127.0.0.1:8767",
+    "tunnel_listener": "127.0.0.1:8080",
+    "tunnel_pid": 2311,
+    "endpoint_unchanged": true,
+    "tunnel_unchanged": true
+  },
+  "profiles": {
+    "official_streamable_http_client": "passed",
+    "official_stdio_client": "passed",
+    "observer_tool_count": 15,
+    "codex_tool_count": 20,
+    "observer_schema_hashes_exact": true,
+    "codex_schema_hashes_exact": true,
+    "observer_hidden_workflow_denied": true,
+    "codex_terminal_capture_denied": true,
+    "client_info_spoof_resistant": true
+  },
+  "release_identity": {
+    "skills_validated_source_commit": "047a5a4858f16b560d34aadf8e3a87e8fac96e6c",
+    "project_control_commit": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "project_control_git_tree": "34e5e282c842c69bdf15981f3212a9fcd7853d06",
+    "todo_git_tree": "be7073c73325335f9ea86b876811e694e93e418d",
+    "submodule_gitlink": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "candidate_identity_manifest_sha256": "3c19de424fc316c447d373fdc70fcd17429ce94e0a05557f195f8c0208b9f113",
+    "project_control_release_manifest_sha256": "249fd4859f68bfebe3d4a0f70e047018a80a6fcb842165833bc2920559488ece",
+    "semantic_identity_matches_sk30": true,
+    "raw_identity_digest_is_path_sensitive": true,
+    "submodule_pin_exact": true,
+    "local_path_only_submodule_url": false
+  },
+  "authority": {
+    "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+    "revision": 758,
+    "todo_semantic_fingerprint": "3a9afc0115ab08009b23af47650918f9396e595c458c1dccb75b8ba0d20e6f7d",
+    "workflow_semantic_fingerprint": "3a9afc0115ab08009b23af47650918f9396e595c458c1dccb75b8ba0d20e6f7d",
+    "same_authority_visible_through_live_observer": true,
+    "todo_audit_command_ok": true,
+    "audit_clean": false,
+    "audit_discrepancies": {
+      "preserved_c4q_gate_inputs_changed": 1,
+      "historical_code_inspection_required": 11,
+      "pcu_foundation_tasks_without_structured_gates": [
+        "PCU-SK-00",
+        "PCU-SK-01"
+      ]
+    },
+    "audit_note": "No audit repair or cleanup was attempted. The C4Q discrepancy is preserved unrelated state; the two PCU foundation tasks were bootstrap-completed architecture records without structured command gates."
+  },
+  "workflow_quiescence_before_handoff": {
+    "active_claim_count": 1,
+    "active_claim_task_ids": [
+      "PCU-SK-33"
+    ],
+    "first_class_agent_count": 1,
+    "first_class_agent_task_ids": [
+      "PCU-SK-33"
+    ],
+    "other_active_claims": 0,
+    "other_first_class_agents": 0,
+    "local_children": 0,
+    "live_integration_requests": 0,
+    "historical_integrated_queue_entries_preserved": 7,
+    "expected_after_handoff": "zero active PCU claims, first-class agents, and local children"
+  },
+  "rollback": {
+    "cutover_evidence_sha256": "29127bf265048c549ed985ca4f24404a565c8891948fd4733a29d50046cd60e1",
+    "old_service_unit_sha256": "ab4a5c371803698fdcbcf0e32282df481c6dc86478212d5a219d72adedcd6fd5",
+    "old_service_executable_preserved": true,
+    "old_coding_workflow_venv_preserved": true,
+    "standalone_project_control_checkout_preserved": true,
+    "compatibility_package_preserved": true,
+    "historical_worktrees_preserved": true,
+    "stale_sessions_preserved": true,
+    "actual_rollback_and_reapply_smoke": "passed",
+    "rollback_deletes_candidate": false
+  },
+  "project_control_repository": {
+    "standalone_head": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "local_origin_main": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "remote_main": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "worktree_clean": true,
+    "pushed": true
+  },
+  "skills_repository": {
+    "main_head_before_parent_delivery": "1ca8d6ba26ec3abcc8fb0471b39e033240cc8ba8",
+    "origin_main_before_parent_delivery": "94aef9424595e5d082570af66a1b194d199901b6",
+    "remote_main_before_parent_delivery": "94aef9424595e5d082570af66a1b194d199901b6",
+    "cutover_workspace_parent_commit": "f9859d7bbbc9b1bb8e6d62d6237874adbe8c2ba2",
+    "cutover_workspace_clean_before_final_evidence": true,
+    "worktree_count": 21,
+    "main_dirty_paths_are_expected_workflow_metadata": true,
+    "main_dirty_path_classes": [
+      "pcu-v1.skills.plan.json",
+      ".todo-orchestrator/state.snapshot.json",
+      "todos.md",
+      "todo-status.md",
+      "todos/pcu-sk-*.md"
+    ],
+    "unexpected_main_dirty_paths": [],
+    "parent_delivery_required": true,
+    "parent_delivery_actions": [
+      "integrate the immutable PCU-SK-32 and PCU-SK-33 evidence commits",
+      "review and commit deterministic workflow projections explicitly",
+      "verify clean main worktree",
+      "push Skills main without force"
+    ]
+  },
+  "c4q_sentinel": {
+    "task_id": "C4Q-01",
+    "bootstrap_status": "blocked",
+    "final_lifecycle": "blocked",
+    "final_execution": "blocked_dependency",
+    "reason_unchanged": true,
+    "c4q_paths_changed_since_bootstrap": false,
+    "c4q_worktree_paths_dirty": false,
+    "repair_or_cleanup_attempted": false
+  },
+  "cellerator_sentinel": {
+    "observation_surface": "live_project_control_observer_only",
+    "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+    "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "primary_sentinels_match_cutover_and_pre_cutover": true,
+    "todo_revision": null,
+    "todo_authority_fingerprint": null,
+    "provider_classes": {
+      "todo_export": "todo_export_unavailable",
+      "todo_semantic_state": "todo_semantic_unavailable",
+      "todo_status": "todo_status_unavailable",
+      "todo_workflow": "todo_workflow_semantic_unavailable"
+    },
+    "provider_state": "pre_cutover_partial_provider_baseline",
+    "continuous_provider_availability_claimed": false,
+    "unavailable_fields_bypassed": false,
+    "mutation_inferred": false,
+    "direct_cellerator_command_invoked_during_pcu_sk_33": false
+  },
+  "preserved_safety_deviation": {
+    "occurred_during_pcu_sk_32": true,
+    "occurred_during_pcu_sk_33": false,
+    "classification": "nonconforming_incidental_read_only_observation",
+    "summary": "A pre-cutover candidate doctor command in PCU-SK-32 used the existing configuration and read Todo providers for configured workspaces including Cellerator. It invoked no Git or workflow mutation and is not used as primary sentinel proof.",
+    "pcu_sk_33_cellerator_observation_was_observer_only": true
+  },
+  "non_destructive_preservation": {
+    "compatibility_package_deleted": false,
+    "old_venv_deleted": false,
+    "standalone_checkout_deleted": false,
+    "stale_sessions_deleted": false,
+    "worktrees_deleted": false,
+    "downstream_repository_modified": false,
+    "c4q_modified": false,
+    "secrets_recorded": false
+  },
+  "manual_gate": {
+    "self_accepted": false,
+    "recommended_deterministic_gate": "Require the exact installed candidate identity and submodule pin, sole project-control registration, active observer health/readiness, exact official-client 15/20 schemas and profile denials, live Skills revision/fingerprint visibility, usable rollback inventory, unchanged endpoint/tunnel and observer-only Cellerator primary sentinels, unchanged C4Q, clean pushed standalone Project Control, one PCU-SK-33 claim before handoff and zero active PCU claims after handoff, then integrate and push the final Skills evidence and projections with ordinary forward commits."
+  },
+  "remaining_blocker": {
+    "code": "parent_delivery_pending",
+    "description": "The coordinator must accept the manual gate, integrate this lane's two evidence commits, commit deterministic Skills workflow projections, verify main clean, and push Skills main."
+  }
+}
