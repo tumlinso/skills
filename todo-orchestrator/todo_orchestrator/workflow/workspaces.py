@@ -492,12 +492,13 @@ class WorkspaceService:
             status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
             if status:
                 raise TodoError("integration_workspace_dirty", "Destination has dirty changes; all files are preserved")
+            pre_apply_head = self._commit(destination, "HEAD")
             if row["kind"] == "commit":
                 current = self._commit(destination, row["artifact_ref"])
                 diff = self._git_ok(destination, ["diff", "--binary", row["base_commit"], current], code="artifact_diff_failed")
                 if _sha256(diff) != row["content_hash"]:
                     raise TodoError("artifact_content_changed", "Commit artifact no longer matches its immutable hash")
-                command = ["cherry-pick", "--no-commit", current]
+                command = ["cherry-pick", "--no-commit", f"{row['base_commit']}..{current}"]
             else:
                 patch = Path(row["artifact_ref"])
                 content = patch.read_bytes() if patch.is_file() else b""
@@ -546,6 +547,7 @@ class WorkspaceService:
                 "returncode": applied.returncode,
                 "state": state,
                 "apply_revision": revision,
+                "pre_apply_head": pre_apply_head,
                 "source_identity": source_identity,
                 "destination_worktree": str(destination.resolve()),
             }
@@ -565,6 +567,58 @@ class WorkspaceService:
             entity_id=queue_id,
             event_type="workflow_integration_applied" if applied.returncode == 0 else "workflow_integration_conflict",
             payload={"state": state, "conflict_paths": conflicts},
+            operation=operation,
+        )
+        result["revision"] = revision
+        return result
+
+    def retry_conflict(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
+        """Restore a preserved cherry-pick conflict to its recorded base for one explicit retry."""
+
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT q.state,q.position,q.run_id,q.integrator_lane_id,q.merge_result_json,a.base_commit,d.worktree_path "
+                "FROM workflow_integration_queue q "
+                "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+        if row is None or row["state"] != "conflict":
+            raise TodoError("integration_conflict_required", "Only a preserved integration conflict can be retried")
+        merge_result = json.loads(row["merge_result_json"] or "{}")
+        pre_apply_head = str(merge_result.get("pre_apply_head") or (row["base_commit"] if int(row["position"]) == 0 else ""))
+        if not pre_apply_head:
+            raise TodoError("integration_conflict_provenance_missing", "Conflict retry requires the recorded pre-apply commit")
+        destination = Path(row["worktree_path"])
+        aborted = self._git(destination, ["cherry-pick", "--abort"])
+        if aborted.returncode != 0:
+            raise TodoError("integration_conflict_abort_failed", "Preserved conflict could not be restored safely")
+        if self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed"):
+            raise TodoError("integration_conflict_restore_dirty", "Conflict restoration did not produce a clean destination")
+        if self._commit(destination, "HEAD") != pre_apply_head:
+            raise TodoError("integration_conflict_restore_mismatch", "Conflict restoration did not return to the recorded pre-apply commit")
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
+            if current is None or current["state"] != "conflict":
+                raise TodoError("integration_state_changed", "Integration conflict changed during restoration")
+            conn.execute(
+                "UPDATE workflow_integration_queue SET state='queued',conflict_json='{}',merge_result_json='{}',updated_at=? WHERE id=?",
+                (utc_now(), queue_id),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='active',merge_result_json='{}',updated_at=? WHERE run_id=? AND lane_id=?",
+                (utc_now(), row["run_id"], row["integrator_lane_id"]),
+            )
+            return {"queue_id": queue_id, "state": "queued", "restored_head": pre_apply_head}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_integration_conflict_retried",
+            payload={"restored_head": pre_apply_head},
             operation=operation,
         )
         result["revision"] = revision

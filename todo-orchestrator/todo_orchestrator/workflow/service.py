@@ -561,14 +561,21 @@ class WorkflowKernel:
                         queued = conn.execute(
                             "SELECT id,state FROM workflow_integration_queue "
                             "WHERE run_id=? AND integrator_lane_id=? AND integration_task_id=? "
-                            "AND state IN ('queued','awaiting_gates') ORDER BY position LIMIT 1",
+                            "AND state IN ('queued','awaiting_gates','conflict') ORDER BY position LIMIT 1",
                             (lineage.run_id, lineage.lane_id, lineage.task_id),
                         ).fetchone()
                     if queued is None:
                         break
                     queue_id = str(queued["id"])
+                    queue_state = str(queued["state"])
                     applied: dict[str, Any] | None = None
-                    if queued["state"] == "queued":
+                    if queue_state == "conflict":
+                        workspaces.retry_conflict(
+                            queue_id=queue_id,
+                            actor_session_id=lineage.session_id,
+                        )
+                        queue_state = "queued"
+                    if queue_state == "queued":
                         applied = dict(
                             workspaces.apply_next(
                                 queue_id=queue_id,

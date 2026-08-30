@@ -44,6 +44,27 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
         self.assertEqual((status["state"], status["version"]), ("frozen", "1"))
         self.assertTrue(status["content_hash"])
 
+    def test_plan_reapply_accepts_unchanged_tasks_in_a_closed_lane(self):
+        plan = base_plan([safe_task("A", "src/a")])
+        self.repo.apply(plan)
+
+        def close_lane(conn, revision):
+            conn.execute("UPDATE workflow_lanes SET state='closed',revision=? WHERE id='compat-v2-main'", (revision,))
+            conn.execute("UPDATE workflow_lane_tasks SET state='completed',revision=? WHERE lane_id='compat-v2-main'", (revision,))
+
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="compat-v2-main",
+            event_type="fixture.lane.closed",
+            payload={},
+            operation=close_lane,
+        )
+        self.repo.apply(plan)
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='compat-v2-main'").fetchone()[0], "closed")
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='compat-v2-main'").fetchone()[0], "completed")
+
     def test_explicit_v3_fragments_include_owner_scope(self):
         plan = base_plan([safe_task("A", "src/a")])
         plan["schema_version"] = 3

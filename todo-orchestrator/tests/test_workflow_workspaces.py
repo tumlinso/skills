@@ -330,6 +330,29 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             "alpha changed\nbeta\ngamma changed\n",
         )
 
+    def test_commit_artifact_applies_the_complete_base_to_tip_range(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        producer_path = Path(str(producer["worktree_path"]))
+        (producer_path / "first.txt").write_text("first\n", encoding="utf-8")
+        git(producer_path, "add", "first.txt")
+        git(producer_path, "commit", "-qm", "first producer commit")
+        (producer_path / "second.txt").write_text("second\n", encoding="utf-8")
+        git(producer_path, "add", "second.txt")
+        git(producer_path, "commit", "-qm", "second producer commit")
+        tip = git(producer_path, "rev-parse", "HEAD")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=tip
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assertEqual(applied["state"], "awaiting_gates")
+        destination_path = Path(str(destination["worktree_path"]))
+        self.assertEqual((destination_path / "first.txt").read_text(), "first\n")
+        self.assertEqual((destination_path / "second.txt").read_text(), "second\n")
+
     def test_canonical_gate_runner_binds_destination_workspace_and_source(self) -> None:
         destination = self.create_destination()
         producer = self.create_producer()
@@ -433,6 +456,12 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertTrue(result["conflict"]["preserved"])
         self.assertTrue(destination_path.exists())
         self.assertIn("UU shared.txt", git(destination_path, "status", "--porcelain=v1"))
+        pre_apply_head = git(destination_path, "rev-parse", "HEAD")
+        retried = self.service.retry_conflict(queue_id=str(queued["queue_id"]))
+        self.assertEqual(retried["state"], "queued")
+        self.assertEqual(retried["restored_head"], pre_apply_head)
+        self.assertEqual(git(destination_path, "status", "--porcelain=v1"), "")
+        self.assertEqual(git(destination_path, "rev-parse", "HEAD"), pre_apply_head)
 
     def test_patch_is_copied_to_immutable_managed_artifact(self) -> None:
         self.create_destination()
