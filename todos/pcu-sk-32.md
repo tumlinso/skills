@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-32: Atomically cut over the installed runtime
 
-Task revision: `739`; current project revision is in `todo-status.md`.
+Task revision: `761`; current project revision is in `todo-status.md`.
 
 ## Objective
 Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

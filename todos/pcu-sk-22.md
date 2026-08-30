@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-22: Build and smoke the unified candidate runtime
 
-Task revision: `739`; current project revision is in `todo-status.md`.
+Task revision: `761`; current project revision is in `todo-status.md`.
 
 ## Objective
 Build an isolated candidate from Skills plus the pinned submodule, resolving only missing Todo distribution metadata and a forward validated Project Control repin as necessary; verify both profiles and one authority without live registration/service changes.

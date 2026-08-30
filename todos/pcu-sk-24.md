@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-24: Integrate fresh-clone validation fixes
 
-Task revision: `739`; current project revision is in `todo-status.md`.
+Task revision: `761`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.

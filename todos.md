@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `745`
+Project revision: `767`
 
 ## Workstreams
 - `PCU-SK-00` | kind: workstream | status: done | parent: - | objective: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
@@ -48,12 +48,12 @@ Project revision: `745`
 - `CWM-08` | kind: integration_task | status: done | parent: - | objective: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
 - `CWM-09` | kind: integration_task | status: done | parent: - | objective: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | kind: integration_task | status: done | parent: - | objective: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
-- `PCU-SK-32` | kind: task | status: planned | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
+- `PCU-SK-32` | kind: task | status: done | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `WFU-30` | kind: validation_task | status: done | parent: - | objective: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
 - `CWM-01` | kind: workstream | status: done | parent: - | objective: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | kind: workstream | status: done | parent: - | objective: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | kind: integration_task | status: done | parent: - | objective: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.
-- `PCU-SK-33` | kind: task | status: planned | parent: PCU-SK-00 | objective: Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.
+- `PCU-SK-33` | kind: task | status: done | parent: PCU-SK-00 | objective: Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.
 - `CWM-04` | kind: workstream | status: done | parent: - | objective: Create the isolated installer, Codex stdio registration, protocol smoke test, idempotent AGENTS routing migration, removal path, and migration report without rewriting active plans.
 - `WFU-31` | kind: integration_task | status: done | parent: - | objective: After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
 - `CWM-05` | kind: integration_task | status: done | parent: - | objective: Integrate the user's latest local-worker repair, validate todo/ctxpp/local-worker/CUDA adapters, run one real read-only MCP delegation, one bounded writable delegation, and preserve immediate local-unavailable fallback.

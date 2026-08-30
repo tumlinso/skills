@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-14: Reduce coding-workflow-mcp to a compatibility alias
 
-Task revision: `739`; current project revision is in `todo-status.md`.
+Task revision: `761`; current project revision is in `todo-status.md`.
 
 ## Objective
 Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
