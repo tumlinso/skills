@@ -67,7 +67,7 @@ class LiveClaimOverrideTests(unittest.TestCase):
         with self.assertRaises(TodoError) as refused:
             other.service.live_recovery_approve("A", "not facade owned", 300)
         self.assertEqual(refused.exception.code, "live_override_blocked")
-        self.assertIn("not owned by coding-workflow", refused.exception.message)
+        self.assertIn("not owned by a compatible Project Control workflow facade", refused.exception.message)
 
     def test_ineligible_manual_approval_fails_before_confirmation_prompt(self) -> None:
         args = build_parser().parse_args([
@@ -103,6 +103,7 @@ class LiveClaimOverrideTests(unittest.TestCase):
         self.assertEqual(recovered["scope"]["exclusive_paths"], ["src/a"])
         self.assertEqual(recovered["gates"][0]["id"], "A-GATE")
         self.assertEqual(recovered["claim"]["owner_instance_id"], "fi_new")
+        self.assertEqual(recovered["claim"]["owner_system"], "project-control")
         with self.repo.service.db.read() as conn:
             states = [row[0] for row in conn.execute(
                 "SELECT state FROM claims WHERE task_id='A' ORDER BY created_at"

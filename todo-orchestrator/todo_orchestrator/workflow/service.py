@@ -1,4 +1,4 @@
-"""Canonical in-process coding-workflow service over todo semantic authority."""
+"""Canonical in-process Project Control workflow over Todo semantic authority."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from ..child_execution import (
     child_execution_status_for_claim,
     disposition_child_execution_for_claim,
 )
-from ..claims import claim_best, release_claim_id, sweep_expired
+from ..claims import CANONICAL_WORKFLOW_OWNER, claim_best, release_claim_id, sweep_expired
 from ..config import utc_now
 from ..evidence import required_gates
 from ..gates import run_gate
@@ -68,7 +68,7 @@ def repository_identity(repo_root: Path, project_uuid: str) -> str:
 
 
 class WorkflowKernel:
-    """One semantic service shared by the todo CLI and coding-workflow MCP."""
+    """One semantic service shared by Todo and the Project Control Codex profile."""
 
     def __init__(
         self,
@@ -104,6 +104,126 @@ class WorkflowKernel:
             except (OSError, TodoError):
                 continue
         raise TodoError("invalid_workflow_capability", "Capability project is no longer locatable")
+
+    @staticmethod
+    def _workspace_for_dispatch(service: Service, lineage: CapabilityLineage) -> dict[str, Any] | None:
+        """Resolve and verify the managed workspace bound to this exact dispatch."""
+
+        with service.db.read() as conn:
+            row = conn.execute(
+                "SELECT w.* FROM workflow_dispatches d "
+                "LEFT JOIN workflow_workspaces w ON w.id=d.workspace_id "
+                "WHERE d.claim_id=? AND w.run_id=? AND d.lane_id=? AND d.state='active'",
+                (lineage.claim_id, lineage.run_id, lineage.lane_id),
+            ).fetchone()
+        if row is None or row["id"] is None:
+            return None
+        workspace = dict(row)
+        if workspace["state"] not in {"active", "artifact_ready"}:
+            raise TodoError("workflow_workspace_inactive", "The dispatch workspace is not active")
+        if workspace["run_id"] != lineage.run_id or workspace["lane_id"] != lineage.lane_id:
+            raise TodoError("workflow_workspace_scope_mismatch", "The dispatch workspace does not belong to this lane")
+        expected_identity = repository_identity(service.paths.repo_root, str(service.project["project_uuid"]))
+        if workspace["mode"] == "read_shared":
+            return workspace
+        raw_path = workspace.get("worktree_path")
+        if not raw_path:
+            raise TodoError("workspace_path_required", "Writable dispatch workspace has no managed path")
+        root = Path(str(raw_path)).resolve()
+        if not root.is_dir():
+            raise TodoError("workflow_workspace_missing", "The managed dispatch workspace is unavailable")
+        if repository_identity(root, str(service.project["project_uuid"])) != expected_identity:
+            raise TodoError("repository_identity_mismatch", "The managed worktree is not attached to the authority repository")
+        if not workspace.get("base_commit"):
+            raise TodoError("workspace_gate_base_required", "Managed workspace has no frozen base commit")
+        workspace["worktree_path"] = str(root)
+        return workspace
+
+    @staticmethod
+    def _gate_workspace(workspace: Mapping[str, Any] | None) -> tuple[Path | None, str | None]:
+        if not workspace or workspace.get("mode") == "read_shared":
+            return None, None
+        return Path(str(workspace["worktree_path"])), str(workspace["base_commit"])
+
+    @staticmethod
+    def _publish_and_queue_workspace_artifact(
+        service: Service,
+        lineage: CapabilityLineage,
+        workspace: Mapping[str, Any],
+    ) -> dict[str, Any]:
+        """Publish the producer HEAD and enqueue it using existing workspace authority."""
+
+        if workspace.get("mode") != "isolated_merge":
+            return {}
+        with service.db.read() as conn:
+            later = conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks current JOIN workflow_lane_tasks pending "
+                "ON pending.lane_id=current.lane_id AND pending.position>current.position "
+                "WHERE current.lane_id=? AND current.task_id=? "
+                "AND pending.state NOT IN ('completed','cancelled','skipped') LIMIT 1",
+                (lineage.lane_id, lineage.task_id),
+            ).fetchone()
+        if later:
+            return {}
+        root = Path(str(workspace["worktree_path"]))
+        status = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain=v1", "-z"],
+            capture_output=True,
+            check=False,
+        )
+        if status.returncode != 0:
+            raise TodoError("workspace_status_failed", "Cannot verify the producer workspace state")
+        if status.stdout:
+            raise TodoError(
+                "workspace_uncommitted_changes",
+                "Completion requires all producer workspace changes in an immutable commit",
+                ExitCode.BLOCKED,
+            )
+        head = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "--verify", "HEAD^{commit}"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if head.returncode != 0 or not head.stdout.strip():
+            raise TodoError("workspace_head_missing", "Producer workspace HEAD is unavailable")
+        integration_task_id = str(workspace.get("integration_task_id") or "")
+        if not integration_task_id:
+            raise TodoError("integration_task_required", "Isolated producer workspace has no integration task")
+        with service.db.read() as conn:
+            integrator = conn.execute(
+                "SELECT l.id FROM workflow_lanes l JOIN workflow_lane_tasks lt ON lt.lane_id=l.id "
+                "WHERE l.run_id=? AND l.role='integrator' AND lt.task_id=? ORDER BY l.id LIMIT 1",
+                (lineage.run_id, integration_task_id),
+            ).fetchone()
+        if not integrator:
+            raise TodoError("integrator_lane_missing", "No integrator lane owns the declared integration task")
+        workspaces = WorkspaceService(
+            service.db,
+            managed_root=service.paths.state_dir / "workflow-workspaces",
+            repository_identity_resolver=lambda candidate: repository_identity(
+                candidate, str(service.project["project_uuid"])
+            ),
+        )
+        artifact = workspaces.publish_artifact(
+            workspace_id=str(workspace["id"]),
+            task_id=lineage.task_id,
+            kind="commit",
+            artifact_ref=head.stdout.strip(),
+            actor_session_id=lineage.session_id,
+        )
+        queued = workspaces.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]),
+            integrator_lane_id=str(integrator["id"]),
+            integration_task_id=integration_task_id,
+            actor_session_id=lineage.session_id,
+        )
+        return {
+            "artifact": artifact,
+            "integration_request": queued,
+            "integration_task_id": integration_task_id,
+            "integrator_lane_id": str(integrator["id"]),
+        }
 
     @staticmethod
     def _context_version(conn: Any, run_id: str, lane_id: str, task_id: str) -> int:
@@ -168,7 +288,7 @@ class WorkflowKernel:
                     }
             else:
                 session_view, _raw_session_token = create_session(
-                    conn, service.paths.repo_root, {"command": "workflow.next_task", "owner_system": "coding-workflow"}
+                    conn, service.paths.repo_root, {"command": "workflow.next_task", "owner_system": CANONICAL_WORKFLOW_OWNER}
                 )
                 session = conn.execute("SELECT * FROM sessions WHERE id=?", (session_view["agent_id"],)).fetchone()
 
@@ -198,7 +318,7 @@ class WorkflowKernel:
             claim, _raw_claim_token = claim_best(
                 conn, service.paths.repo_root, str(session["id"]), revision,
                 service.claim_lease_seconds, requested_task_id=str(selected["task_id"]),
-                reconcile_expired=False, owner_system="coding-workflow",
+                reconcile_expired=False, owner_system=CANONICAL_WORKFLOW_OWNER,
                 owner_instance_id="fi_" + uuid.uuid4().hex,
             )
             context_version = self._context_version(conn, selected_run, str(selected["lane_id"]), str(selected["task_id"]))
@@ -376,11 +496,18 @@ class WorkflowKernel:
             )
             return {**result, "project_revision": revision}
         if action == "run_gates":
+            workspace = self._workspace_for_dispatch(service, lineage)
+            execution_root, workspace_base = self._gate_workspace(workspace)
             with service.db.read() as conn:
                 gates = required_gates(conn, lineage.task_id) if payload.get("required", True) else [dict(row) for row in conn.execute("SELECT * FROM gates WHERE task_id=?", (lineage.task_id,))]
             results = []
             for gate in gates:
-                result, revision = run_gate(service.db, service.paths, service.project, str(gate["id"]), None, authorized_claim_id=lineage.claim_id)
+                result, revision = run_gate(
+                    service.db, service.paths, service.project, str(gate["id"]), None,
+                    authorized_claim_id=lineage.claim_id,
+                    execution_root=execution_root,
+                    workspace_base_commit=workspace_base,
+                )
                 results.append({**result, "project_revision": revision})
             service.refresh({lineage.task_id})
             return {"status": "passed" if all(item.get("status") == "passed" for item in results) else "blocked", "gates": results}
@@ -575,13 +702,18 @@ class WorkflowKernel:
         if action == "complete":
             # Required completion gates are lifecycle authority, not an explicit
             # validator-role operation. They always run for the parent claim.
+            workspace = self._workspace_for_dispatch(service, lineage)
+            execution_root, workspace_base = self._gate_workspace(workspace)
             with service.db.read() as conn:
                 completion_gates = required_gates(conn, lineage.task_id)
             for gate in completion_gates:
                 run_gate(
                     service.db, service.paths, service.project, str(gate["id"]), None,
                     authorized_claim_id=lineage.claim_id,
+                    execution_root=execution_root,
+                    workspace_base_commit=workspace_base,
                 )
+            integration = self._publish_and_queue_workspace_artifact(service, lineage, workspace or {})
             capabilities = WorkflowCapabilityStore(service.db)
             rendezvous = RendezvousService(service.db)
             with service.db.read() as conn:
@@ -610,8 +742,8 @@ class WorkflowKernel:
                             conn, revision, capability_class="first_class", run_id=str(lineage.run_id),
                             lane_id=str(lineage.lane_id), rendezvous_id=str(row["id"]), task_id=lineage.task_id,
                             summary=note or "task completed", base_source_identity=str(claim["baseline_head"] or "unknown"),
-                            final_source_identity=str(handoff.get("git_head") or "unknown"),
-                            artifact={"kind": "commit", "ref": str(handoff.get("git_head") or "unknown")},
+                            final_source_identity=str(integration.get("artifact", {}).get("artifact_ref") or handoff.get("git_head") or "unknown"),
+                            artifact={"kind": "commit", "ref": str(integration.get("artifact", {}).get("artifact_ref") or handoff.get("git_head") or "unknown")},
                             interfaces={}, evidence=[{"type": "handoff", "id": handoff.get("task_id")}], warnings=[],
                             context_version=int(dispatch["context_version"]),
                         ))
@@ -624,7 +756,7 @@ class WorkflowKernel:
             completed = service.complete_claim_id(
                 str(lineage.claim_id), disposition or "implemented", note or "", terminal_hook=terminal
             )
-            return {**completed, "status": "idle", "terminal": True}
+            return {**completed, **integration, "status": "idle", "terminal": True}
 
         status = {"handoff": "in_progress", "block": "blocked", "release": "in_progress"}[action]
         def operation(conn: Any, revision: int) -> dict[str, Any]:
