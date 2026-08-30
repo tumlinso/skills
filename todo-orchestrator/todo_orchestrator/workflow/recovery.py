@@ -141,8 +141,8 @@ class RecoveryEngine:
                 "FROM tasks t JOIN workflow_lane_tasks lt ON lt.task_id=t.id "
                 "JOIN workflow_lanes l ON l.id=lt.lane_id "
                 "LEFT JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
-                "WHERE t.status='blocked' AND lt.state='queued' AND l.state='attention_required' "
-                "AND EXISTS(SELECT 1 FROM handoffs h WHERE h.task_id=t.id AND h.kind='block') "
+                "WHERE t.status IN ('blocked','attention_required') "
+                "AND lt.state='queued' AND l.state='attention_required' "
                 "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=t.id AND c.state IN ('active','orphaned'))"
                 + (" AND t.id=?" if task_id else "")
                 + " ORDER BY t.id,l.id"
@@ -435,7 +435,7 @@ class RecoveryEngine:
                 elif kind == "requeue_blocked_task":
                     conn.execute(
                         "UPDATE tasks SET status='planned',attention_reason=NULL,updated_at=?,revision=? "
-                        "WHERE id=? AND status='blocked'",
+                        "WHERE id=? AND status IN ('blocked','attention_required')",
                         (now, revision, action["task_id"]),
                     )
                     conn.execute(
