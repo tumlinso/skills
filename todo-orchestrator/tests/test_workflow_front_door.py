@@ -205,7 +205,7 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         )
         self.assertEqual((integrated["status"], integrated["operation_status"]), ("claimed", "passed"))
         self.assertEqual(len(integrated["integration"]), 1)
-        self.assertEqual(integrated["integration"][0]["finalized"]["state"], "integrated")
+        self.assertEqual(integrated["integration"][0]["state"], "integrated")
         destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
         self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
         self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")

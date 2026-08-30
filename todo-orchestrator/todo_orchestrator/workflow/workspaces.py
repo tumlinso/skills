@@ -648,7 +648,13 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
-    def retry_failed_gates(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
+    def retry_failed_gates(
+        self,
+        *,
+        queue_id: str,
+        actor_session_id: str | None = None,
+        allow_source_resolution: bool = False,
+    ) -> dict[str, object]:
         """Reopen preserved applied source after a corrected gate contract."""
 
         with self.db.read() as conn:
@@ -663,10 +669,14 @@ class WorkspaceService:
         if row is None or row["state"] != "gate_failed":
             raise TodoError("integration_gate_failure_required", "Only a preserved gate failure can be retried")
         merge_result = json.loads(row["merge_result_json"] or "{}")
-        source_identity = str(merge_result.get("source_identity") or "")
+        previous_source_identity = str(merge_result.get("source_identity") or "")
         destination = Path(row["worktree_path"])
-        if not source_identity or self._source_identity(destination, str(row["base_commit"])) != source_identity:
+        current_source_identity = self._source_identity(destination, str(row["base_commit"]))
+        if not previous_source_identity:
+            raise TodoError("integration_apply_provenance_missing", "Gate retry requires preserved source provenance")
+        if current_source_identity != previous_source_identity and not allow_source_resolution:
             raise TodoError("integration_source_changed", "Preserved gate-failed source changed before retry")
+        source_identity = current_source_identity
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
             current = conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
@@ -680,6 +690,8 @@ class WorkspaceService:
                     "source_identity": source_identity,
                     "destination_worktree": str(destination.resolve()),
                     "gate_retry": True,
+                    "resolved_source": source_identity != previous_source_identity,
+                    "previous_source_identity": previous_source_identity,
                 }), utc_now(), queue_id),
             )
             conn.execute(
@@ -693,7 +705,11 @@ class WorkspaceService:
             entity_type="workflow_integration_queue",
             entity_id=queue_id,
             event_type="workflow_integration_gates_retried",
-            payload={"source_identity": source_identity},
+            payload={
+                "source_identity": source_identity,
+                "previous_source_identity": previous_source_identity,
+                "resolved_source": source_identity != previous_source_identity,
+            },
             operation=operation,
         )
         result["revision"] = revision

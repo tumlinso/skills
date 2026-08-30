@@ -598,6 +598,7 @@ class WorkflowKernel:
                         workspaces.retry_failed_gates(
                             queue_id=queue_id,
                             actor_session_id=lineage.session_id,
+                            allow_source_resolution=True,
                         )
                         queue_state = "awaiting_gates"
                     if queue_state == "queued":
@@ -632,9 +633,16 @@ class WorkflowKernel:
                             actor_session_id=lineage.session_id,
                         )
                     )
-                    integration_results.append(
-                        {"queue_id": queue_id, "apply": applied, "gates": gate_results, "finalized": finalized}
-                    )
+                    integration_results.append({
+                        "queue_id": queue_id,
+                        "apply_state": (applied or {}).get("state"),
+                        "gates": [
+                            {key: item.get(key) for key in ("gate_id", "status", "evidence_id")}
+                            for item in gate_results
+                        ],
+                        "state": finalized.get("state"),
+                        "integrated_artifact": finalized.get("integrated_artifact"),
+                    })
                     if finalized.get("state") != "integrated":
                         service.refresh({lineage.task_id})
                         return {

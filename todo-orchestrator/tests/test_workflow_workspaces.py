@@ -500,7 +500,16 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         )
         self.assertEqual(result["state"], "gate_failed")
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
-        retried = self.service.retry_failed_gates(queue_id=str(queued["queue_id"]))
+        destination_path = Path(str(destination["worktree_path"]))
+        (destination_path / "resolution.txt").write_text("integrator resolution\n", encoding="utf-8")
+        git(destination_path, "add", "resolution.txt")
+        self.assert_code(
+            "integration_source_changed",
+            lambda: self.service.retry_failed_gates(queue_id=str(queued["queue_id"])),
+        )
+        retried = self.service.retry_failed_gates(
+            queue_id=str(queued["queue_id"]), allow_source_resolution=True
+        )
         self.assertEqual(retried["state"], "awaiting_gates")
         finalized = self.service.record_post_merge_gates(
             queue_id=str(queued["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}]
