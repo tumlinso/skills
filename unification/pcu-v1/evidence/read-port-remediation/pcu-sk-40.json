@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_id": "PCU-SK-40",
+  "observed_at": "2026-08-30T17:15:00Z",
+  "result": "blocked_before_cutover",
+  "blocker": {
+    "code": "cellerator_authority_fingerprint_unavailable",
+    "message": "The candidate observer did not expose the frozen Cellerator Todo authority fingerprint, project UUID, or revision; the hard gate was not weakened.",
+    "warnings": [
+      "todo_read_port_schema_incompatible",
+      "todo_semantic_unavailable",
+      "todo_workflow_semantic_unavailable"
+    ]
+  },
+  "source": {
+    "skills_pin_commit": "96c9635c2f403aa85b98af2c7dc72b5f90e4cc46",
+    "project_control_release_commit": "e753f9834a6722ba55b5a0681c6b16ccad498004",
+    "project_control_source_parent": "934235d4f337fe88cb7b672a94f1e9949440fbcd",
+    "project_control_source_tree_hash": "8f6f8af7bc7234629cb0b97cdaec3410ccd8b587dc6e2ef36e48381147439189",
+    "release_manifest_sha256": "f10caa50b366c26dde5e5cf5ddd3831a55d26c7d7205a10b13b102d053391957",
+    "release_lock_sha256": "43fcd557dbf3fb34988408131e6b76a21df7881915eaf56767a37bb3934e26e2",
+    "gitmodules_remote_unchanged": true
+  },
+  "candidate": {
+    "identity_digest": "ce74c5ddd49d49f3a29946298fda973b22e166deb3dbe9eb79e690a633e63411",
+    "project_control_tree": "dfc88b7ba7cf6ed98712eb9ea274866927fb2e61",
+    "todo_tree": "70ca74309f03e30eb573249bf07d5d9b2608dba2",
+    "observer_official_client": {
+      "tool_count": 15,
+      "tool_names_exact": true,
+      "schema_hashes_exact": true
+    },
+    "codex_official_client": {
+      "tool_count": 20,
+      "tool_names_exact": true,
+      "schema_hashes_exact": true
+    }
+  },
+  "cellerator_observer_sentinel": {
+    "observation_surface": "candidate_project_control_observer_streamable_http",
+    "direct_downstream_access": false,
+    "expected": {
+      "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+      "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "todo_revision": 3016,
+      "authority_fingerprint": "c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5"
+    },
+    "observed": {
+      "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+      "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "project_uuid": null,
+      "todo_revision": null,
+      "authority_fingerprint": null
+    },
+    "head_exact": true,
+    "working_tree_fingerprint_exact": true,
+    "project_uuid_exact": false,
+    "todo_revision_exact": false,
+    "authority_fingerprint_exact": false
+  },
+  "rollback_inventory": {
+    "registration_name": "project-control",
+    "registration_executable": "/home/tumlinson/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "registration_args": [
+      "codex"
+    ],
+    "service_executable": "/home/tumlinson/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "service_main_pid": 883351,
+    "service_active_state": "active",
+    "service_sub_state": "running",
+    "service_unit_sha256": "7455e76ea1dc2acdbb36697e4c4bcdfdca9627285fd037a38658e5dabf7c0bab"
+  },
+  "safety": {
+    "live_cutover_attempted": false,
+    "live_registration_changed": false,
+    "live_service_changed": false,
+    "live_service_restarted": false,
+    "tunnel_changed": false,
+    "compatibility_material_deleted": false,
+    "downstream_repository_accessed_directly": false,
+    "downstream_repository_changed": false,
+    "c4q_changed": false,
+    "candidate_observer_stopped": true,
+    "candidate_environment_retained_for_inspection": true,
+    "secrets_or_capability_handles_recorded": false
+  }
+}
