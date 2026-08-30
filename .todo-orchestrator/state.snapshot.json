@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T16:39:02Z",
+  "generated_at": "2026-08-30T17:11:41Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 767,
+  "project_revision": 770,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -7972,6 +7972,36 @@
         "revision": 767,
         "seq": 767,
         "timestamp": "2026-08-30T16:39:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/pcu-v1-read-port-remediation.plan.json\"}",
+        "revision": 768,
+        "seq": 768,
+        "timestamp": "2026-08-30T16:48:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-REMEDIATION-LANE\", \"run_id\": \"PCU-SK-READ-PORT-REMEDIATION-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-40\"}",
+        "revision": 769,
+        "seq": 769,
+        "timestamp": "2026-08-30T17:11:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-REMEDIATION-LANE\", \"run_id\": \"PCU-SK-READ-PORT-REMEDIATION-V1\", \"status\": \"resumed\", \"task_id\": \"PCU-SK-40\"}",
+        "revision": 770,
+        "seq": 770,
+        "timestamp": "2026-08-30T17:11:41Z"
       }
     ],
     "evidence": [
@@ -10917,6 +10947,32 @@
       },
       {
         "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"]}",
+        "id": "PCU-SK-40-DIFF",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 768,
+        "status": "pending",
+        "task_id": "PCU-SK-40",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import json; p=Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-40.json'); d=json.loads(p.read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; assert d['cellerator']['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and d['cellerator']['revision']==3016 and d['cellerator']['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and d['cellerator']['authority_fingerprint']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5'; assert d['cellerator']['observer_only'] and not d['cellerator']['direct_access']; assert d['quiescence']['active_claims_after']==0 and d['quiescence']['active_agents_after']==0 and d['quiescence']['local_children_after']==0\"]}",
+        "id": "PCU-SK-40-REMEDIATION",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 768,
+        "status": "pending",
+        "task_id": "PCU-SK-40",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"workflow-unification/evidence/preflight.json\", \"workflow-unification/rollback.md\", \"workflow-unification-v3.plan.json\"]}",
         "id": "WFU-00-DIFF",
         "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
@@ -12006,7 +12062,7 @@
       {
         "enforcement": null,
         "id": "PCU-SK-NO-CLEANUP",
-        "rule": "PCU-V1 does not delete the compatibility package, standalone checkout, historical worktrees, stale sessions, or state files.",
+        "rule": "PCU-V1 does not delete the compatibility package, standalone Project Control checkout, historical worktrees, stale sessions, or state files.",
         "scope_json": "{}",
         "severity": "error"
       },
@@ -13100,6 +13156,81 @@
         "mode": "read",
         "path": "unification/pcu-v1",
         "task_id": "PCU-SK-33"
+      },
+      {
+        "mode": "exclusive",
+        "path": "project-control",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/PCU_RELEASE.lock.json",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/evidence/read-port-remediation",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "Baseplane",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "BioPrep",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "C4Q-01",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "CellShard",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "Cellerator",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "GlassHelix",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todos/C4Q-01.md",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "forbidden",
+        "path": "workflow-unification/evidence",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "read",
+        "path": ".gitmodules",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/scripts",
+        "task_id": "PCU-SK-40"
       },
       {
         "mode": "exclusive",
@@ -15469,6 +15600,30 @@
         "task_id": "PCU-SK-33"
       },
       {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-CLEANUP",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-MCP-RECURSION",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "invariant_id": "PCU-SK-ONE-LIVE-REGISTRATION",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "invariant_id": "PCU-SK-ROLLBACK",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-40"
+      },
+      {
         "invariant_id": "WFU-PRESERVE-WORK",
         "task_id": "WFU-00"
       },
@@ -15866,6 +16021,16 @@
         "lock_name": "pcu-installed-runtime",
         "phase": "manual",
         "task_id": "PCU-SK-32"
+      },
+      {
+        "lock_name": "pcu-installed-runtime",
+        "phase": "manual",
+        "task_id": "PCU-SK-40"
+      },
+      {
+        "lock_name": "pcu-submodule-update",
+        "phase": "manual",
+        "task_id": "PCU-SK-40"
       },
       {
         "lock_name": "wfu-kernel-foundation",
@@ -16661,6 +16826,31 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T16:48:04Z",
+        "id": "PCU-SK-40",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "External precondition: PCU-PC-40 has produced a clean ordinary forward Project Control commit. Cellerator verification is exclusively through Project Control's existing observer tools; never invoke Todo, Git, shell, or filesystem commands against its real checkout.",
+        "objective": "Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": null,
+        "priority": 500,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 769,
+        "status": "in_progress",
+        "tags_json": "[\"release_task\", \"validation_resolution\"]",
+        "title": "Repin and cut over the corrected Project Control read provider",
+        "updated_at": "2026-08-30T17:11:30Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
         "completion_commit": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
         "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
         "completion_revision": 139,
@@ -17211,6 +17401,54 @@
       }
     ],
     "workflow_context_fragments": [
+      {
+        "content_hash": "a9ef78a1e8d06021f904eb32f79db6de7b527d99550ec8c499f9da21512c8bd5",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-40\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-30T16:48:04Z",
+        "creation_revision": 768,
+        "id": "PCU-SK-READ-PORT-REMEDIATION-V1:lane_brief:PCU-SK-READ-PORT-REMEDIATION-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-REMEDIATION-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\"}",
+        "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "502bb885d4e9a0434c19b88da9c4dfd4ccc1274ecc81971798b7190c9ff0d050",
+        "content_json": "{\"acceptance_conditions\":[\"The Skills gitlink pins the corrected Project Control commit.\",\"The observer and Codex profiles retain exact 15 and 20 tool sets.\",\"The observer exposes the unchanged Cellerator revision, UUID, HEAD, and authority fingerprint.\",\"The installed service is healthy and only project-control is registered.\",\"No downstream checkout was accessed directly or mutated.\"],\"boundaries\":[\"Cellerator remains observer-only.\",\"No downstream migration or cleanup.\",\"Only project-control remains registered after success.\",\"Rollback remains automatic and recoverable.\"],\"invariants\":[\"PCU-SK-TODO-AUTHORITY\",\"PCU-SK-ONE-LIVE-REGISTRATION\",\"PCU-SK-CELLERATOR-SENTINEL\",\"PCU-SK-ROLLBACK\",\"PCU-SK-NO-MCP-RECURSION\",\"PCU-SK-NO-CLEANUP\"],\"objective\":\"Repin and atomically deploy the corrected read-provider composition, then close the remaining PCU-V1 sentinel proof.\"}",
+        "created_at": "2026-08-30T16:48:04Z",
+        "creation_revision": 768,
+        "id": "PCU-SK-READ-PORT-REMEDIATION-V1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\"}",
+        "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "97d31e78e7e7bb799200bf5514e5adb496686103eb4d2ee94cf351f2660e405a",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[\"C4Q-01\",\"workflow-unification/evidence\",\"todos/C4Q-01.md\",\"Cellerator\",\"CellShard\",\"Baseplane\",\"GlassHelix\",\"BioPrep\"],\"gates\":[\"PCU-SK-40-REMEDIATION\",\"PCU-SK-40-DIFF\"],\"next_action\":\"Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.\",\"objective\":\"Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.\",\"scope\":{\"exclusive_paths\":[\"project-control\",\"unification/pcu-v1/PCU_RELEASE.lock.json\",\"unification/pcu-v1/evidence/read-port-remediation\"],\"forbidden_paths\":[\"C4Q-01\",\"workflow-unification/evidence\",\"todos/C4Q-01.md\",\"Cellerator\",\"CellShard\",\"Baseplane\",\"GlassHelix\",\"BioPrep\"],\"read_paths\":[\".gitmodules\",\"todo-orchestrator\",\"unification/pcu-v1/contracts\",\"unification/pcu-v1/scripts\"],\"shared_locks\":[\"pcu-installed-runtime\",\"pcu-submodule-update\"]},\"tests\":[\"PCU-SK-40-REMEDIATION\",\"PCU-SK-40-DIFF\"]}",
+        "created_at": "2026-08-30T16:48:04Z",
+        "creation_revision": 768,
+        "id": "PCU-SK-READ-PORT-REMEDIATION-V1:task_brief:PCU-SK-READ-PORT-REMEDIATION-LANE:PCU-SK-40:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-REMEDIATION-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\",\"task_id\":\"PCU-SK-40\"}",
+        "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-40",
+        "version": 1
+      },
       {
         "content_hash": "ddee5bf10145dcc8b76b7cc9741585aea2a660f54cb6caefa6b505cd46bee0d2",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-32\",\"PCU-SK-33\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
@@ -18307,6 +18545,16 @@
         "task_id": "PCU-SK-10"
       },
       {
+        "activated_at": "2026-08-30T17:11:30Z",
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T16:48:04Z",
+        "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "position": 0,
+        "revision": 769,
+        "state": "active",
+        "task_id": "PCU-SK-40"
+      },
+      {
         "activated_at": "2026-08-30T16:04:50Z",
         "completed_at": "2026-08-30T16:05:56Z",
         "enqueued_at": "2026-08-30T15:56:20Z",
@@ -18673,6 +18921,18 @@
         "state": "closed",
         "updated_at": "2026-08-30T16:38:40Z",
         "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T16:48:04Z",
+        "id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+        "parent_lane_id": null,
+        "revision": 769,
+        "role": "integrator",
+        "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "state": "active",
+        "updated_at": "2026-08-30T17:11:30Z",
+        "workspace_mode": "exclusive"
       },
       {
         "context_cursor": 0,
@@ -19308,6 +19568,16 @@
     ],
     "workflow_run_charters": [
       {
+        "content_hash": "502bb885d4e9a0434c19b88da9c4dfd4ccc1274ecc81971798b7190c9ff0d050",
+        "content_json": "{\"acceptance_conditions\":[\"The Skills gitlink pins the corrected Project Control commit.\",\"The observer and Codex profiles retain exact 15 and 20 tool sets.\",\"The observer exposes the unchanged Cellerator revision, UUID, HEAD, and authority fingerprint.\",\"The installed service is healthy and only project-control is registered.\",\"No downstream checkout was accessed directly or mutated.\"],\"boundaries\":[\"Cellerator remains observer-only.\",\"No downstream migration or cleanup.\",\"Only project-control remains registered after success.\",\"Rollback remains automatic and recoverable.\"],\"invariants\":[\"PCU-SK-TODO-AUTHORITY\",\"PCU-SK-ONE-LIVE-REGISTRATION\",\"PCU-SK-CELLERATOR-SENTINEL\",\"PCU-SK-ROLLBACK\",\"PCU-SK-NO-MCP-RECURSION\",\"PCU-SK-NO-CLEANUP\"],\"objective\":\"Repin and atomically deploy the corrected read-provider composition, then close the remaining PCU-V1 sentinel proof.\"}",
+        "created_at": "2026-08-30T16:48:04Z",
+        "creation_revision": 768,
+        "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "1c4a3f6ee7446ee9a81d0767bc36cdedcefb1d020d7432b991f4577fc8c2092a",
         "content_json": "{\"acceptance_conditions\":[\"Todo remains the one kernel\",\"Project Control release is pinned as submodule\",\"candidate and rollback are proven\",\"cross-stack validation succeeds\",\"migration rehearsal is independent\",\"atomic cutover leaves one live registration\",\"downstream sentinels remain unchanged\"],\"boundaries\":[\"Todo Orchestrator remains sole transactional authority.\",\"C4Q-01 and downstream repositories are outside scope.\",\"Project Control source history stays standalone and later enters only as a gitlink.\",\"No installed cutover before complete validation.\",\"All core work uses first-class Codex lanes; local workers remain subordinate only.\"],\"invariants\":[\"PCU-SK-HISTORY\",\"PCU-SK-TODO-AUTHORITY\",\"PCU-SK-C4Q-ISOLATION\",\"PCU-SK-SUBMODULE-HISTORY\",\"PCU-SK-FRONTDOOR-COMPATIBILITY\",\"PCU-SK-LEGACY-OWNER-COMPATIBILITY\",\"PCU-SK-ONE-LIVE-REGISTRATION\",\"PCU-SK-DOWNSTREAM-NONDESTRUCTIVE\",\"PCU-SK-CELLERATOR-SENTINEL\",\"PCU-SK-NO-CLEANUP\",\"PCU-SK-ROLLBACK\",\"PCU-SK-NO-MCP-RECURSION\",\"PCU-SK-SECRETS\"],\"objective\":\"Own Todo kernel changes, current guidance, compatibility shim, submodule adoption, cross-stack validation, and eventual installed cutover without owning Project Control source history.\"}",
         "created_at": "2026-08-30T11:43:03Z",
@@ -19329,6 +19599,16 @@
       }
     ],
     "workflow_runs": [
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-08-30T16:48:04Z",
+        "id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "revision": 768,
+        "root_task_id": "PCU-SK-40",
+        "status": "active",
+        "updated_at": "2026-08-30T16:48:04Z"
+      },
       {
         "active_charter_version": 1,
         "completed_at": null,

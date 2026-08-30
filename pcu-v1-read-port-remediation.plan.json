@@ -1,0 +1,128 @@
+{
+  "schema_version": 3,
+  "project": {
+    "name": "Skills PCU-V1 Read Port Remediation"
+  },
+  "invariants": [
+    {"id": "PCU-SK-TODO-AUTHORITY", "severity": "error", "rule": "Todo Orchestrator remains the sole workflow database, transaction, revision, scheduling, capability, and recovery authority."},
+    {"id": "PCU-SK-ONE-LIVE-REGISTRATION", "severity": "error", "rule": "Only project-control is registered as the live Codex MCP after cutover."},
+    {"id": "PCU-SK-CELLERATOR-SENTINEL", "severity": "error", "rule": "Cellerator is outside PCU-V1 mutation authority; only read-only Project Control observation and genuinely independent-clone rehearsal are allowed, and detected mutation is a campaign failure without automatic repair."},
+    {"id": "PCU-SK-ROLLBACK", "severity": "error", "rule": "Candidate installation and final cutover retain an automatic restoration path."},
+    {"id": "PCU-SK-NO-MCP-RECURSION", "severity": "error", "rule": "No Skills shim or Todo component implements a workflow operation by calling another MCP server."},
+    {"id": "PCU-SK-NO-CLEANUP", "severity": "error", "rule": "PCU-V1 does not delete the compatibility package, standalone Project Control checkout, historical worktrees, stale sessions, or state files."}
+  ],
+  "tasks": [
+    {
+      "id": "PCU-SK-40",
+      "kind": "task",
+      "tags": [
+        "release_task",
+        "validation_resolution"
+      ],
+      "title": "Repin and cut over the corrected Project Control read provider",
+      "objective": "Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.",
+      "priority": 500,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "project-control",
+          "unification/pcu-v1/PCU_RELEASE.lock.json",
+          "unification/pcu-v1/evidence/read-port-remediation"
+        ],
+        "read_paths": [
+          ".gitmodules",
+          "todo-orchestrator",
+          "unification/pcu-v1/contracts",
+          "unification/pcu-v1/scripts"
+        ],
+        "forbidden_paths": [
+          "C4Q-01",
+          "workflow-unification/evidence",
+          "todos/C4Q-01.md",
+          "Cellerator",
+          "CellShard",
+          "Baseplane",
+          "GlassHelix",
+          "BioPrep"
+        ],
+        "shared_locks": [
+          "pcu-installed-runtime",
+          "pcu-submodule-update"
+        ]
+      },
+      "invariants": [
+        "PCU-SK-TODO-AUTHORITY",
+        "PCU-SK-ONE-LIVE-REGISTRATION",
+        "PCU-SK-CELLERATOR-SENTINEL",
+        "PCU-SK-ROLLBACK",
+        "PCU-SK-NO-MCP-RECURSION",
+        "PCU-SK-NO-CLEANUP"
+      ],
+      "notes": "External precondition: PCU-PC-40 has produced a clean ordinary forward Project Control commit. Cellerator verification is exclusively through Project Control's existing observer tools; never invoke Todo, Git, shell, or filesystem commands against its real checkout.",
+      "gates": [
+        {
+          "id": "PCU-SK-40-REMEDIATION",
+          "type": "command",
+          "argv": [
+            "python",
+            "-c",
+            "from pathlib import Path; import json; p=Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-40.json'); d=json.loads(p.read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; assert d['cellerator']['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and d['cellerator']['revision']==3016 and d['cellerator']['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and d['cellerator']['authority_fingerprint']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5'; assert d['cellerator']['observer_only'] and not d['cellerator']['direct_access']; assert d['quiescence']['active_claims_after']==0 and d['quiescence']['active_agents_after']==0 and d['quiescence']['local_children_after']==0"
+          ],
+          "required": true
+        },
+        {
+          "id": "PCU-SK-40-DIFF",
+          "type": "command",
+          "argv": [
+            "git",
+            "diff",
+            "--check"
+          ],
+          "required": true
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+      "root_task_id": "PCU-SK-40",
+      "charter": {
+        "objective": "Repin and atomically deploy the corrected read-provider composition, then close the remaining PCU-V1 sentinel proof.",
+        "boundaries": [
+          "Cellerator remains observer-only.",
+          "No downstream migration or cleanup.",
+          "Only project-control remains registered after success.",
+          "Rollback remains automatic and recoverable."
+        ],
+        "invariants": [
+          "PCU-SK-TODO-AUTHORITY",
+          "PCU-SK-ONE-LIVE-REGISTRATION",
+          "PCU-SK-CELLERATOR-SENTINEL",
+          "PCU-SK-ROLLBACK",
+          "PCU-SK-NO-MCP-RECURSION",
+          "PCU-SK-NO-CLEANUP"
+        ],
+        "acceptance_conditions": [
+          "The Skills gitlink pins the corrected Project Control commit.",
+          "The observer and Codex profiles retain exact 15 and 20 tool sets.",
+          "The observer exposes the unchanged Cellerator revision, UUID, HEAD, and authority fingerprint.",
+          "The installed service is healthy and only project-control is registered.",
+          "No downstream checkout was accessed directly or mutated."
+        ]
+      },
+      "lanes": [
+        {
+          "id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+          "role": "integrator",
+          "tasks": [
+            "PCU-SK-40"
+          ],
+          "workspace": {
+            "mode": "exclusive"
+          }
+        }
+      ]
+    }
+  ]
+}
