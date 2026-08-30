@@ -67,6 +67,7 @@ class Service:
         bootstrap: bool = False,
         name: str | None = None,
         mutation_mode: str = "automated",
+        read_only: bool | None = None,
     ):
         if bootstrap:
             self.paths, self.project = create_project_identity(repo_root, name)
@@ -75,7 +76,11 @@ class Service:
             self.project = read_project(self.paths.repo_root)
         configuration = self.project.get("configuration", {})
         self.mutation_mode = mutation_mode
-        self.read_only = os.environ.get("TODO_ORCHESTRATOR_READ_ONLY") == "1"
+        self.read_only = (
+            os.environ.get("TODO_ORCHESTRATOR_READ_ONLY") == "1"
+            if read_only is None
+            else read_only
+        )
         self.db = Database(
             self.paths.db_file,
             busy_timeout_ms=int(configuration.get("busy_timeout_ms", 5000)),

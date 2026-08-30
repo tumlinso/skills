@@ -15,6 +15,7 @@ from todo_orchestrator.db import Database
 from todo_orchestrator.migrations import DATABASE_MIGRATION_VERSION, MIGRATIONS
 from todo_orchestrator.models import ExitCode, TodoError
 from todo_orchestrator.semantic import SemanticReader
+from todo_orchestrator.read_port import create_todo_read_port
 from todo_orchestrator.service import Service
 
 
@@ -137,6 +138,20 @@ class ReadOnlySchemaCompatibilityTests(unittest.TestCase):
         for label, operation in operations.items():
             with self.subTest(operation=label):
                 self.assert_migration_required(operation)
+        self.assertEqual(self.fixture.authority_fingerprint(), before)
+
+    def test_in_process_read_port_preserves_schema_failure_envelope_without_mutation(self) -> None:
+        before = self.fixture.authority_fingerprint()
+        port = create_todo_read_port(TODO_SCRIPT.parents[2])
+        for operation in ("status", "export", "semantic.state", "semantic.workflow"):
+            with self.subTest(operation=operation):
+                payload = port.invoke(operation, repo_root=self.fixture.root)
+                self.assertFalse(payload["ok"])
+                self.assertEqual(payload["code"], "schema_migration_required")
+                self.assertEqual(
+                    payload["error"]["details"]["observed_migration_version"],
+                    OLD_MIGRATION_VERSION,
+                )
         self.assertEqual(self.fixture.authority_fingerprint(), before)
 
     def test_cli_surfaces_typed_error_instead_of_internal_error(self) -> None:
