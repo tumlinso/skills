@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "task_id": "PCU-SK-32",
+  "result": "validated_live_cutover",
+  "candidate": {
+    "destination": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4",
+    "identity_manifest_sha256": "3c19de424fc316c447d373fdc70fcd17429ce94e0a05557f195f8c0208b9f113",
+    "project_control_commit": "79fde52bbc05d76c19365959af4a574a5f52cedc",
+    "project_control_tree": "34e5e282c842c69bdf15981f3212a9fcd7853d06",
+    "skills_commit": "047a5a4858f16b560d34aadf8e3a87e8fac96e6c",
+    "todo_tree": "be7073c73325335f9ea86b876811e694e93e418d",
+    "release_manifest_sha256": "249fd4859f68bfebe3d4a0f70e047018a80a6fcb842165833bc2920559488ece",
+    "candidate_was_non_overwriting": true,
+    "source_content_matches_validated_candidate": true,
+    "raw_digest_reconciliation": {
+      "sk30_manifest_sha256": "ff306c3c9573652a1b2ed343cfabf1c1e5440cbd50ed69ccb7297d687aa591ae",
+      "current_manifest_sha256": "3c19de424fc316c447d373fdc70fcd17429ce94e0a05557f195f8c0208b9f113",
+      "content_fields_equal": [
+        "schema_version",
+        "project_control_commit",
+        "project_control_tree",
+        "todo_commit",
+        "todo_tree"
+      ],
+      "path_dependent_fields_differ": [
+        "project_control_root",
+        "todo_root",
+        "python_executable"
+      ],
+      "classification": "path_sensitive_manifest_bytes_only"
+    }
+  },
+  "rollback_inventory": {
+    "registration_names": [
+      "coding-workflow"
+    ],
+    "registration_digest": "851b05ad69d7c471a4a136b224916bfedbf4ce8c079e1c16bf1c7631b30f8da1",
+    "old_registration": {
+      "transport": "stdio",
+      "executable": "~/.local/share/coding-workflow-mcp/venv/bin/python",
+      "arguments": [
+        "-m",
+        "coding_workflow_mcp"
+      ],
+      "environment": {
+        "CODING_WORKFLOW_SKILLS_ROOT": "~/.agents/skills"
+      }
+    },
+    "service_unit_sha256": "ab4a5c371803698fdcbcf0e32282df481c6dc86478212d5a219d72adedcd6fd5",
+    "old_service_executable": "~/.local/state/project-control/venvs/project-control-0.3.1-603d48d/bin/project-control",
+    "old_service_working_directory": "~/project-control",
+    "service_active": true,
+    "loopback_endpoint": "127.0.0.1:8767",
+    "tunnel_listener": "127.0.0.1:8080",
+    "tunnel_pid": 2311,
+    "configuration_sha256": "f46e6fc11abf41c8f0399581eb77e3569c3fcf9b6b4390ea9f3da23f89c4c3fe",
+    "observer_schema_set_sha256": "be5ec2e2cd169ed969a82e3f1d54b31e4e43e4f70e56519910b842eef31649fd",
+    "workflow_schema_set_sha256": "569b8dd0e257fdf94054b80ae197cde2e724cc01f098c1d673ac38baf7b648e7",
+    "secret_bearing_environment_captured": false
+  },
+  "pre_cutover_validation": {
+    "official_streamable_http_client": "passed",
+    "official_stdio_client": "passed",
+    "observer_tool_count": 15,
+    "codex_tool_count": 20,
+    "schema_hashes_match_release_manifest": true,
+    "observer_hidden_workflow_denied": true,
+    "codex_terminal_capture_denied": true,
+    "client_info_spoof_resistant": true,
+    "candidate_console_entry_point": "passed",
+    "candidate_module_entry_point": "passed"
+  },
+  "cutover": {
+    "atomic_swap_completed": true,
+    "final_registration_names": [
+      "project-control"
+    ],
+    "legacy_concurrently_registered": false,
+    "final_registration_sha256": "0f0e4e45f2b26e0e41bf8c6bc10964bce59ae91a81d89d20f657f9d263775488",
+    "final_service_unit_sha256": "7455e76ea1dc2acdbb36697e4c4bcdfdca9627285fd037a38658e5dabf7c0bab",
+    "final_service_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "final_service_working_directory": "~/.agents/skills/project-control",
+    "canonical_skills_root_environment": true,
+    "candidate_path_environment": true,
+    "observer_health": "ok",
+    "observer_readiness": "ready",
+    "observer_tool_count": 15,
+    "codex_tool_count": 20,
+    "schema_hashes_exact": true,
+    "profile_isolation": true,
+    "tunnel_pid_unchanged": true,
+    "endpoint_unchanged": true,
+    "candidate_preserved": true,
+    "old_venv_preserved": true,
+    "standalone_checkout_preserved": true,
+    "legacy_package_preserved": true,
+    "historical_worktrees_and_sessions_preserved": true
+  },
+  "live_authority_smoke": {
+    "repository": "independent_temporary_repository",
+    "project_uuid": "e3a52b2b-3ac7-4cc1-b0b4-4ebf82b2e04a",
+    "initial_revision": 2,
+    "claim_revision": 3,
+    "finish_revision": 8,
+    "project_control_observed_revision": 8,
+    "exact_six_protocol_used": true,
+    "claim_passed": true,
+    "inspect_passed": true,
+    "coordinate_passed": true,
+    "required_gate_passed": true,
+    "finish_passed": true,
+    "todo_audit_clean": true,
+    "active_claims_after": 0,
+    "capability_handle_persisted": false
+  },
+  "live_observer_authority": {
+    "skills_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+    "skills_revision": 748,
+    "skills_semantic_and_workflow_fingerprint": "d610d071ed3786ff9db59dedb09914b839b9eace1548f0db6ec8e36cfe27f41e",
+    "skills_provider_status": "available",
+    "project_control_provider_status": "fail_closed_unavailable",
+    "cellerator_provider_status": "fail_closed_unavailable",
+    "provider_note": "The candidate service PATH restores canonical Todo visibility for Skills. Project Control and Cellerator Todo components remain unavailable as they were in the captured pre-cutover observer; their rich Git and identity reads remain available. Unavailable fields were not bypassed."
+  },
+  "rollback_smoke": {
+    "performed": true,
+    "old_registration_restored": true,
+    "old_service_unit_hash_restored": true,
+    "old_service_executable_restored": true,
+    "old_observer_health_passed": true,
+    "validated_cutover_reapplied": true,
+    "automatic_rollback_inventory_remains_usable": true,
+    "rollback_deletes_candidate": false
+  },
+  "cellerator_sentinel": {
+    "observation_surface": "live_project_control_observer_only",
+    "head_before": "12a495f3dc3e3376728b160121086408be5f30f5",
+    "head_after": "12a495f3dc3e3376728b160121086408be5f30f5",
+    "working_tree_fingerprint_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "working_tree_fingerprint_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "project_uuid_before": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "project_uuid_after": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+    "todo_revision_before": null,
+    "todo_authority_before": null,
+    "todo_revision_after": null,
+    "todo_authority_after": null,
+    "final_provider_classes": {
+      "todo_export": "todo_export_unavailable",
+      "todo_semantic_state": "todo_semantic_unavailable",
+      "todo_status": "todo_status_unavailable",
+      "todo_workflow": "todo_workflow_semantic_unavailable"
+    },
+    "first_cutover_observer_observation": {
+      "todo_revision": 3016,
+      "authority_fingerprint": "c23d7bca565c4d5e102156171104d76731e2715cbec5bd3ffdacf50edf71739f",
+      "matched_nonconforming_incidental_observation": true
+    },
+    "post_rollback_reapply_state": "returned_to_pre_cutover_partial_provider_baseline",
+    "continuous_provider_availability_claimed": false,
+    "mutation_inferred_from_provider_availability_change": false,
+    "unavailable_fields_bypassed": false,
+    "primary_sentinels_unchanged": true,
+    "direct_downstream_mutation_command_invoked": false
+  },
+  "safety_deviation": {
+    "occurred": true,
+    "classification": "nonconforming_incidental_read_only_observation",
+    "command_sanitized": "[CANDIDATE] project-control doctor --json",
+    "cause": "The existing configuration was used once during pre-cutover runtime-identity validation.",
+    "effect": "The candidate performed read-only Todo provider observations for configured workspaces including Cellerator instead of observing Cellerator solely through the already-live observer.",
+    "incidental_cellerator_revision": 3016,
+    "incidental_cellerator_authority_fingerprint": "c23d7bca565c4d5e102156171104d76731e2715cbec5bd3ffdacf50edf71739f",
+    "used_as_primary_sentinel_proof": false,
+    "workflow_or_git_mutation_invoked": false,
+    "bootstrap_projection_recovery_or_claim_invoked": false,
+    "further_direct_or_candidate_cellerator_access": false
+  },
+  "scope_sentinels": {
+    "c4q_modified": false,
+    "downstream_repository_modified": false,
+    "chatgpt_tunnel_changed": false,
+    "implementation_source_modified": false,
+    "submodule_pin_changed": false,
+    "secrets_recorded": false
+  },
+  "manual_gate": {
+    "self_accepted": false,
+    "recommended_deterministic_gate": "Require the semantic candidate identity, exact 15/20 schemas and profile denial checks, sole project-control registration, active candidate observer with unchanged endpoint and tunnel, disposable revision-8 convergence with clean audit and zero claims, successful actual rollback/reapply smoke, unchanged Cellerator HEAD/fingerprint/UUID through the live observer, and explicit preservation of unavailable fields and the recorded nonconforming read-only observation."
+  }
+}
