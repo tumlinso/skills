@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "project_control_commit": "e753f9834a6722ba55b5a0681c6b16ccad498004",
-  "manifest_sha256": "f10caa50b366c26dde5e5cf5ddd3831a55d26c7d7205a10b13b102d053391957",
-  "source_tree_hash": "8f6f8af7bc7234629cb0b97cdaec3410ccd8b587dc6e2ef36e48381147439189",
+  "project_control_commit": "61f74254f07e015985760e1ca6aa5498a7b84576",
+  "manifest_sha256": "5a4a5e4fda0922c236c6772bdfd276712c9bdd315f05bcf39646e9a051120256",
+  "source_tree_hash": "56b562ae8c10987487b99cbfef2b11b6b070c1426ef71d91f89087b4c02fd2f4",
   "remote_url": "git@github.com:tumlinso/project-control.git"
 }
