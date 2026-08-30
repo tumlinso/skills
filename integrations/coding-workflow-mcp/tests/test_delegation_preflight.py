@@ -7,12 +7,9 @@ import unittest
 PACKAGE = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACKAGE))
 
-from coding_workflow_mcp._canonical import skills_root
-
-
 class DelegationCompatibilityTests(unittest.TestCase):
     def test_local_worker_remains_subordinate_adapter_not_backend(self) -> None:
-        root = skills_root()
+        root = PACKAGE.parents[1]
         canonical = (root / "todo-orchestrator" / "todo_orchestrator" / "workflow" / "service.py").read_text(encoding="utf-8")
         child_skill = (root / "local-coding-worker" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("compose_child_packet", canonical)

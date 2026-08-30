@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "coding-workflow-mcp"
-version = "0.2.0"
-description = "Installer and compatibility entry point for canonical coding-workflow"
+version = "0.3.0"
+description = "Temporary compatibility aliases forwarding to Project Control"
 requires-python = ">=3.11"
 dependencies = ["mcp>=1,<2"]
 

@@ -1,3 +1,3 @@
-"""Compatibility entry point for canonical todo-orchestrator coding-workflow."""
+"""Temporary compatibility aliases for the Project Control product."""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
