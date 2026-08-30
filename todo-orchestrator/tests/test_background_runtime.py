@@ -105,6 +105,22 @@ class BackgroundRuntimeTests(unittest.TestCase):
         self.assertEqual(environment["PYTHONPATH"], "/canonical-b/todo-orchestrator")
         self.assertNotIn("TODO_ORCHESTRATOR_READ_ONLY", environment)
 
+    def test_shared_runtime_child_environment_keeps_canonical_and_legacy_aliases_equal(self) -> None:
+        from todo_orchestrator import runtime_identity
+
+        skills_root = Path(__file__).resolve().parents[2]
+        runtime_identity._reset_for_testing()
+        try:
+            with mock.patch.dict(os.environ, {
+                "PROJECT_CONTROL_SKILLS_ROOT": str(skills_root),
+            }, clear=True):
+                identity = runtime_identity.bind_canonical_runtime()
+                environment = runtime_identity.controlled_subprocess_env(identity)
+        finally:
+            runtime_identity._reset_for_testing()
+        self.assertEqual(environment["PROJECT_CONTROL_SKILLS_ROOT"], str(skills_root))
+        self.assertEqual(environment["CODING_WORKFLOW_SKILLS_ROOT"], str(skills_root))
+
     def test_armed_watch_auto_wakes_and_runs_structured_argv(self) -> None:
         watch_id = self._arm()
         job_id, created = self.store.enqueue({
