@@ -1,0 +1,31 @@
+name: Project Control unification validation
+
+on:
+  pull_request:
+    paths:
+      - "unification/pcu-v1/**"
+      - "tests/pcu_v1/**"
+      - ".github/workflows/project-control-unification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "unification/pcu-v1/**"
+      - "tests/pcu_v1/**"
+      - ".github/workflows/project-control-unification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run fixture-only PCU harness tests
+        run: python -m unittest discover -s tests/pcu_v1 -v
+      - name: Check harness diffs
+        run: git diff --check
