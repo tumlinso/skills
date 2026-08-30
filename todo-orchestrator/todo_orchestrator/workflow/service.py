@@ -541,6 +541,76 @@ class WorkflowKernel:
         if action == "run_gates":
             workspace = self._workspace_for_dispatch(service, lineage)
             execution_root, workspace_base = self._gate_workspace(workspace)
+            workspaces = WorkspaceService(
+                service.db,
+                managed_root=service.paths.state_dir / "workflow-workspaces",
+                repository_identity_resolver=lambda root: repository_identity(
+                    root, str(service.project["project_uuid"])
+                ),
+            )
+
+            # Integration is an integrator-only specialization of the existing
+            # run_gates action.  The model never receives a WorkspaceService
+            # capability: the kernel selects only queue entries owned by this
+            # exact run, lane, and task, applies them serially, and finalizes
+            # each artifact before considering the next one.
+            integration_results: list[dict[str, Any]] = []
+            if lineage.role == "integrator" and payload.get("required", True):
+                while True:
+                    with service.db.read() as conn:
+                        queued = conn.execute(
+                            "SELECT id,state FROM workflow_integration_queue "
+                            "WHERE run_id=? AND integrator_lane_id=? AND integration_task_id=? "
+                            "AND state IN ('queued','awaiting_gates') ORDER BY position LIMIT 1",
+                            (lineage.run_id, lineage.lane_id, lineage.task_id),
+                        ).fetchone()
+                    if queued is None:
+                        break
+                    queue_id = str(queued["id"])
+                    applied: dict[str, Any] | None = None
+                    if queued["state"] == "queued":
+                        applied = dict(
+                            workspaces.apply_next(
+                                queue_id=queue_id,
+                                actor_session_id=lineage.session_id,
+                            )
+                        )
+                        if applied.get("state") != "awaiting_gates":
+                            integration_results.append({"apply": applied})
+                            break
+
+                    with service.db.read() as conn:
+                        gates = required_gates(conn, lineage.task_id)
+                    gate_results = []
+                    for gate in gates:
+                        result, revision = run_gate(
+                            service.db, service.paths, service.project, str(gate["id"]), None,
+                            authorized_claim_id=lineage.claim_id,
+                            execution_root=execution_root,
+                            workspace_base_commit=workspace_base,
+                        )
+                        gate_results.append({**result, "project_revision": revision})
+                    finalized = dict(
+                        workspaces.record_post_merge_gates(
+                            queue_id=queue_id,
+                            gate_results=[
+                                {"gate_id": str(item["gate_id"]), "evidence_id": str(item["evidence_id"])}
+                                for item in gate_results
+                            ],
+                            actor_session_id=lineage.session_id,
+                        )
+                    )
+                    integration_results.append(
+                        {"queue_id": queue_id, "apply": applied, "gates": gate_results, "finalized": finalized}
+                    )
+                    if finalized.get("state") != "integrated":
+                        service.refresh({lineage.task_id})
+                        return {
+                            "status": "blocked",
+                            "gates": gate_results,
+                            "integration": integration_results,
+                        }
+
             with service.db.read() as conn:
                 gates = required_gates(conn, lineage.task_id) if payload.get("required", True) else [dict(row) for row in conn.execute("SELECT * FROM gates WHERE task_id=?", (lineage.task_id,))]
             results = []
@@ -553,7 +623,11 @@ class WorkflowKernel:
                 )
                 results.append({**result, "project_revision": revision})
             service.refresh({lineage.task_id})
-            return {"status": "passed" if all(item.get("status") == "passed" for item in results) else "blocked", "gates": results}
+            return {
+                "status": "passed" if all(item.get("status") == "passed" for item in results) else "blocked",
+                "gates": results,
+                "integration": integration_results,
+            }
         if action in {"accept_child", "reject_child"}:
             child_id = str(payload["child_execution_id"])
             target = "accepted" if action == "accept_child" else "rejected"

@@ -102,7 +102,7 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         self.assertEqual(caught.exception.details["workflow_front_door"], "coding-workflow")
         self.assertEqual(caught.exception.details["canonical_workflow_front_door"], "project-control")
 
-    def test_isolated_completion_runs_gates_in_producer_and_queues_commit(self) -> None:
+    def test_isolated_completion_queues_and_integrator_run_gates_consumes_commit(self) -> None:
         self.repo.close()
         self.repo = V2Repo()
         task = safe_task("A", "src/a", gates=[{
@@ -136,6 +136,14 @@ class WorkflowFrontDoorTests(unittest.TestCase):
                 "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
                 "VALUES('INTEGRATOR',0,'INTEGRATE','queued',?,?)",
                 (now, revision),
+            )
+            conn.execute(
+                "INSERT INTO gates(id,task_id,type,config_json,required,status,valid,revision) "
+                "VALUES('INTEGRATE-GATE','INTEGRATE','command',?,1,'pending',0,?)",
+                (json.dumps({
+                    "argv": [sys.executable, "-c", "from pathlib import Path; assert Path('src/a/result.txt').read_text() == 'producer\\n'"],
+                    "input_paths": ["src/a/result.txt"],
+                }, sort_keys=True), revision),
             )
             return {"task_id": "A"}
 
@@ -189,6 +197,18 @@ class WorkflowFrontDoorTests(unittest.TestCase):
                 "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id"
             ).fetchone()
             self.assertEqual((queued["state"], queued["artifact_ref"]), ("queued", producer_head))
+
+        integrator = protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")
+        self.assertEqual(integrator["role"], "integrator")
+        integrated = protocol.coordinate_task(
+            workflow_handle=integrator["workflow_handle"], action="run_gates", payload={"required": True}
+        )
+        self.assertEqual((integrated["status"], integrated["operation_status"]), ("claimed", "passed"))
+        self.assertEqual(len(integrated["integration"]), 1)
+        self.assertEqual(integrated["integration"][0]["finalized"]["state"], "integrated")
+        destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
+        self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
+        self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")
 
 
 if __name__ == "__main__":
