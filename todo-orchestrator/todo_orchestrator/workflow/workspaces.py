@@ -598,6 +598,20 @@ class WorkspaceService:
             # immediately before apply, so restoring the recorded pre-apply
             # tree is the only bounded fallback; untracked residue still makes
             # the subsequent cleanliness check fail closed.
+            unmerged = self._git_ok(
+                destination,
+                ["diff", "--name-only", "--diff-filter=U", "-z"],
+                code="integration_conflict_paths_failed",
+            ).decode("utf-8", errors="strict").split("\0")
+            for path in filter(None, unmerged):
+                existed = self._git(destination, ["cat-file", "-e", f"{pre_apply_head}:{path}"])
+                command = (
+                    ["restore", "--source", pre_apply_head, "--staged", "--worktree", "--", path]
+                    if existed.returncode == 0
+                    else ["rm", "-f", "--", path]
+                )
+                if self._git(destination, command).returncode != 0:
+                    raise TodoError("integration_conflict_abort_failed", "Preserved conflict could not be restored safely")
             restored = self._git(
                 destination,
                 ["restore", "--source", pre_apply_head, "--staged", "--worktree", "--", "."],
