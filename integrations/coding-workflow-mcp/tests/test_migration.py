@@ -1,82 +1,55 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
-import subprocess
 import sys
-import tempfile
+from types import ModuleType
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from coding_workflow_mcp.migration import END_MARKER, ROUTING_SECTION, START_MARKER, migrate
+from coding_workflow_mcp import migration
 
 
-class MigrationTests(unittest.TestCase):
-    def setUp(self) -> None:
-        self.temporary = tempfile.TemporaryDirectory()
-        self.root = Path(self.temporary.name).resolve()
-        subprocess.run(["git", "init", "-q", str(self.root)], check=True)
-        self.original = """# Repository guidance
-
-Use todo task IDs and gates as authority.
-Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.
-"""
-        (self.root / "AGENTS.md").write_text(self.original, encoding="utf-8")
-        (self.root / "plan.json").write_text('{"task_id":"CE-ARCH-71"}\n', encoding="utf-8")
-        (self.root / ".todo-orchestrator").mkdir()
-        (self.root / ".todo-orchestrator" / "project.json").write_text(json.dumps({
-            "schema_version": 2,
-            "project_uuid": "project-1",
-            "configuration": {"claim_lease_seconds": 7200},
-        }) + "\n", encoding="utf-8")
-
-    def tearDown(self) -> None:
-        self.temporary.cleanup()
-
-    def test_dry_run_changes_nothing_and_classifies_existing_prose(self) -> None:
-        result = migrate(self.root)
-        self.assertEqual(result["status"], "dry_run")
-        self.assertEqual((self.root / "AGENTS.md").read_text(), self.original)
-        self.assertIn("task plans", result["classification"]["preserve"])
-        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
-        self.assertNotIn("workflow_front_door", project["configuration"])
-
-    def test_apply_is_idempotent_and_preserves_active_plans(self) -> None:
-        before_plan = (self.root / "plan.json").read_bytes()
-        first = migrate(self.root, apply=True)
-        first_content = (self.root / "AGENTS.md").read_text()
-        second = migrate(self.root, apply=True)
-        self.assertEqual(first["status"], "applied")
-        self.assertEqual(second["status"], "unchanged")
-        self.assertEqual((self.root / "AGENTS.md").read_text(), first_content)
-        self.assertEqual(first_content.count(START_MARKER), 1)
-        self.assertEqual(first_content.count(END_MARKER), 1)
-        self.assertEqual((self.root / "plan.json").read_bytes(), before_plan)
-        self.assertIn("Use todo task IDs and gates as authority.\n", first_content)
-        self.assertIn("Run ctxpp for C++ context and retain CUDA and local-worker CLI fallback details.\n", first_content)
-        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
-        self.assertEqual(project["configuration"]["workflow_front_door"], "coding-workflow")
-        self.assertIn("Local workers are bounded children", first_content)
-
-    def test_remove_deletes_only_marked_section(self) -> None:
-        migrate(self.root, apply=True)
-        result = migrate(self.root, apply=True, remove=True)
-        content = (self.root / "AGENTS.md").read_text()
-        self.assertEqual(result["status"], "applied")
-        self.assertNotIn(START_MARKER, content)
-        self.assertNotIn(END_MARKER, content)
-        self.assertEqual(content, self.original)
-        project = json.loads((self.root / ".todo-orchestrator" / "project.json").read_text())
-        self.assertNotIn("workflow_front_door", project["configuration"])
-
-    def test_script_emits_json_and_supports_dry_run(self) -> None:
-        script = Path(__file__).resolve().parents[1] / "scripts" / "migrate.py"
-        process = subprocess.run(
-            [sys.executable, str(script), "--repo", str(self.root), "--dry-run"],
-            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True,
+class MigrationForwardingTests(unittest.TestCase):
+    def test_all_modes_forward_to_project_control(self) -> None:
+        product = ModuleType("project_control.migration")
+        product.MigrationError = ValueError  # type: ignore[attr-defined]
+        calls: list[tuple[object, bool, bool]] = []
+        product.migrate = (  # type: ignore[attr-defined]
+            lambda repo, *, apply=False, remove=False:
+            calls.append((repo, apply, remove)) or {"status": "dry_run"}
         )
-        self.assertEqual(json.loads(process.stdout)["status"], "dry_run")
+        with patch.object(migration, "migration_api", return_value=product):
+            self.assertEqual(migration.migrate("/repo"), {"status": "dry_run"})
+            migration.migrate("/repo", apply=True)
+            migration.migrate("/repo", apply=True, remove=True)
+        self.assertEqual(calls, [
+            ("/repo", False, False),
+            ("/repo", True, False),
+            ("/repo", True, True),
+        ])
+
+    def test_product_error_is_preserved_as_legacy_error_type(self) -> None:
+        class ProductMigrationError(RuntimeError):
+            pass
+
+        product = ModuleType("project_control.migration")
+        product.MigrationError = ProductMigrationError  # type: ignore[attr-defined]
+        product.migrate = lambda *args, **kwargs: (_ for _ in ()).throw(  # type: ignore[attr-defined]
+            ProductMigrationError("owned marker conflict")
+        )
+        with patch.object(migration, "migration_api", return_value=product):
+            with self.assertRaisesRegex(migration.MigrationError, "owned marker conflict"):
+                migration.migrate("/repo")
+
+    def test_missing_product_is_a_bounded_legacy_error(self) -> None:
+        with patch.object(
+            migration, "migration_api",
+            side_effect=migration.ProjectControlUnavailable("Project Control required"),
+        ):
+            with self.assertRaisesRegex(migration.MigrationError, "Project Control required"):
+                migration.migrate("/repo")
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
 from todo_orchestrator.background.store import BackgroundStore
 from todo_orchestrator.background.host import HostCoordinator
 from todo_orchestrator.background.runner import run_job
-from todo_orchestrator.background.worker import _reap_done
+from todo_orchestrator.background.worker import _reap_done, _runtime_schema_available
 from todo_orchestrator.background.wake import wake_worker
 
 
@@ -95,6 +95,14 @@ class BackgroundRuntimeTests(unittest.TestCase):
                 mock.patch("coding_workflow_mcp.runtime_identity.bind_canonical_runtime",
                            return_value=identity), \
                 mock.patch("coding_workflow_mcp.runtime_identity.validate_runtime") as validate, \
+                mock.patch("coding_workflow_mcp.runtime_identity.controlled_subprocess_env",
+                           return_value={
+                               **os.environ,
+                               "PROJECT_CONTROL_SKILLS_ROOT": "/canonical-b",
+                               "CODING_WORKFLOW_SKILLS_ROOT": "/canonical-b",
+                               "CODING_WORKFLOW_RUNTIME_FINGERPRINT": "b" * 64,
+                               "PYTHONPATH": "/canonical-b/todo-orchestrator",
+                           }), \
                 mock.patch("todo_orchestrator.background.wake.subprocess.Popen") as popen:
             self.assertTrue(wake_worker(self.repo.root))
         validate.assert_called_once_with(identity)
@@ -104,6 +112,22 @@ class BackgroundRuntimeTests(unittest.TestCase):
         self.assertEqual(environment["TODO_ORCHESTRATOR_STATE_DIR"], str(self.repo.state_root))
         self.assertEqual(environment["PYTHONPATH"], "/canonical-b/todo-orchestrator")
         self.assertNotIn("TODO_ORCHESTRATOR_READ_ONLY", environment)
+
+    def test_shared_runtime_child_environment_keeps_canonical_and_legacy_aliases_equal(self) -> None:
+        from todo_orchestrator import runtime_identity
+
+        skills_root = Path(__file__).resolve().parents[2]
+        runtime_identity._reset_for_testing()
+        try:
+            with mock.patch.dict(os.environ, {
+                "PROJECT_CONTROL_SKILLS_ROOT": str(skills_root),
+            }, clear=True):
+                identity = runtime_identity.bind_canonical_runtime()
+                environment = runtime_identity.controlled_subprocess_env(identity)
+        finally:
+            runtime_identity._reset_for_testing()
+        self.assertEqual(environment["PROJECT_CONTROL_SKILLS_ROOT"], str(skills_root))
+        self.assertEqual(environment["CODING_WORKFLOW_SKILLS_ROOT"], str(skills_root))
 
     def test_armed_watch_auto_wakes_and_runs_structured_argv(self) -> None:
         watch_id = self._arm()
@@ -218,6 +242,15 @@ class BackgroundRuntimeTests(unittest.TestCase):
         active = {failed, succeeded}
         _reap_done(active)
         self.assertEqual(active, set())
+
+    def test_torn_down_runtime_schema_stops_supervisor(self) -> None:
+        self.assertTrue(_runtime_schema_available(self.store))
+        self.store.paths.database.unlink()
+        self.store.paths.database.touch()
+        try:
+            self.assertFalse(_runtime_schema_available(self.store))
+        finally:
+            self.store.initialize()
 
     def test_runner_reaps_child_when_queue_heartbeat_is_temporarily_unavailable(self) -> None:
         watch_id = self._arm()

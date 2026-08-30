@@ -89,10 +89,19 @@ def enqueue_tasks_in_transaction(
     task_ids: list[str],
 ) -> dict[str, object]:
     lane = _lane(conn, lane_id)
-    if lane["state"] in {"closed", "cancelled"}:
-        raise TodoError("workflow_lane_closed", f"Workflow lane {lane_id} is {lane['state']}")
     if len(task_ids) != len(set(task_ids)):
         raise TodoError("duplicate_lane_task", "A task may appear only once in an enqueue request")
+    assigned_by_task = {
+        str(row["task_id"]): str(row["lane_id"])
+        for row in conn.execute(
+            "SELECT lt.task_id,lt.lane_id FROM workflow_lane_tasks lt "
+            "JOIN workflow_lanes l ON l.id=lt.lane_id WHERE l.run_id=?",
+            (lane["run_id"],),
+        )
+    }
+    new_task_ids = [task_id for task_id in task_ids if task_id not in assigned_by_task]
+    if new_task_ids and lane["state"] in {"closed", "cancelled"}:
+        raise TodoError("workflow_lane_closed", f"Workflow lane {lane_id} is {lane['state']}")
     position = int(conn.execute(
         "SELECT COALESCE(MAX(position),-1)+1 FROM workflow_lane_tasks WHERE lane_id=?",
         (lane_id,),
@@ -102,17 +111,13 @@ def enqueue_tasks_in_transaction(
     for task_id in task_ids:
         if not conn.execute("SELECT 1 FROM tasks WHERE id=?", (task_id,)).fetchone():
             raise TodoError("workflow_lane_task_missing", f"Task {task_id} does not exist")
-        assigned = conn.execute(
-            "SELECT lt.lane_id FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
-            "WHERE l.run_id=? AND lt.task_id=?",
-            (lane["run_id"], task_id),
-        ).fetchone()
-        if assigned:
-            if assigned["lane_id"] == lane_id:
+        assigned_lane = assigned_by_task.get(task_id)
+        if assigned_lane:
+            if assigned_lane == lane_id:
                 continue
             raise TodoError(
                 "workflow_task_already_assigned",
-                f"Task {task_id} is already assigned to lane {assigned['lane_id']} in this run",
+                f"Task {task_id} is already assigned to lane {assigned_lane} in this run",
             )
         conn.execute(
             "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
@@ -266,7 +271,10 @@ def dispatch_claim_in_transaction(
             raise TodoError("workflow_workspace_mismatch", "Workspace is not assigned to the selected run and lane")
         if workspace["mode"] != lane["workspace_mode"]:
             raise TodoError("workflow_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
-        if workspace["state"] not in {"active", "artifact_ready"}:
+        dispatchable_states = {"active", "artifact_ready", "queued"}
+        if lane["role"] == "integrator":
+            dispatchable_states.update({"conflict", "awaiting_gates", "gate_failed", "integrated"})
+        if workspace["state"] not in dispatchable_states:
             raise TodoError("workflow_workspace_inactive", "Workspace is not in a dispatchable state")
     now = utc_now()
     dispatch_id = dispatch_id or str(uuid.uuid4())

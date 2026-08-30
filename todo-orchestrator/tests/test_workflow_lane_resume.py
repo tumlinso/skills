@@ -66,6 +66,17 @@ class WorkflowLaneResumeTests(unittest.TestCase):
         )
         self.assertEqual(self.lane_state(), ("attention_required", "queued"))
         self.assertEqual(self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")["status"], "idle")
+        engine = RecoveryEngine(
+            self.repo.service.db, self.repo.root, str(self.repo.service.project["project_uuid"]),
+            process_probe=lambda hostname, pid, process_start: False,
+        )
+        plan = engine.inspect("A")
+        self.assertEqual([item["kind"] for item in plan["actions"]], ["requeue_blocked_task"])
+        recovered = engine.execute(plan, "resolved the recorded blocking condition")
+        self.assertEqual(recovered["resume"], "next_task")
+        self.assertEqual(self.lane_state(), ("ready", "queued"))
+        resumed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        self.assertEqual(resumed["status"], "claimed")
 
     def test_clean_owner_recovery_requeues_and_next_task_reissues_capability(self) -> None:
         claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")

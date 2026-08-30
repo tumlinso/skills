@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import os
+import sqlite3
 import time
 import traceback
 from pathlib import Path
@@ -14,6 +15,20 @@ from .runner import run_job
 from .host import HostCoordinator
 from .scheduler import claim_runnable, dispatch_watch_handlers
 from .store import BackgroundStore
+
+
+def _runtime_schema_available(store: BackgroundStore) -> bool:
+    """Return false when a torn-down runtime can no longer supervise work."""
+
+    try:
+        with store.connect(readonly=True) as connection:
+            row = connection.execute(
+                "SELECT 1 FROM sqlite_master "
+                "WHERE type='table' AND name='background_workers'"
+            ).fetchone()
+        return row is not None
+    except (OSError, sqlite3.Error):
+        return False
 
 
 def _canonical_identity():
@@ -122,7 +137,7 @@ def main() -> int:
                 _reap_done(active)
                 consecutive_supervisor_errors += 1
                 _record_supervisor_error(store, error)
-                if consecutive_supervisor_errors >= 20 and not store.paths.database.exists():
+                if not _runtime_schema_available(store):
                     return 1
                 time.sleep(0.25)
                 continue

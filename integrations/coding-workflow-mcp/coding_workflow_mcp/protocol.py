@@ -1,4 +1,4 @@
-"""Official-SDK initialization and exact-six-tool discovery smoke."""
+"""Official-SDK smoke for the six preserved workflow tool contracts."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 
-EXPECTED_TOOLS = {
+EXPECTED_WORKFLOW_TOOLS = {
     "next_task", "inspect_task", "coordinate_task", "delegate_task",
     "collect_delegation", "finish_task",
 }
@@ -30,11 +30,17 @@ async def smoke(command: str, skills_root: str) -> dict[str, object]:
     names = {tool.name for tool in tools.tools}
     instructions = initialized.instructions or ""
     return {
-        "ok": names == EXPECTED_TOOLS and "only ordinary workflow protocol" in instructions,
+        "ok": EXPECTED_WORKFLOW_TOOLS <= names,
         "server": initialized.serverInfo.name,
         "tools": sorted(names),
+        "workflow_tools": sorted(EXPECTED_WORKFLOW_TOOLS),
         "instructions_bytes": len(instructions.encode("utf-8")),
     }
+
+
+# Historical import name. It identifies the six required workflow contracts,
+# not the complete Project Control Codex profile (which also has rich reads).
+EXPECTED_TOOLS = EXPECTED_WORKFLOW_TOOLS
 
 
 def main() -> None:

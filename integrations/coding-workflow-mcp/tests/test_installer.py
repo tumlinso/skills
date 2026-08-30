@@ -47,7 +47,7 @@ class InstallerTests(unittest.TestCase):
         self.assertIn("rollback_venv.rename(venv_root)", source)
         self.assertNotIn("shell=True", source)
 
-    def test_installed_admin_can_resolve_canonical_source_from_xdg_locator(self) -> None:
+    def test_compatibility_loader_can_resolve_source_from_xdg_locator(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             skills = root / "skills"
@@ -61,7 +61,10 @@ class InstallerTests(unittest.TestCase):
             environment = dict(os.environ)
             environment.pop("CODING_WORKFLOW_SKILLS_ROOT", None)
             environment["XDG_DATA_HOME"] = str(root)
-            with patch.dict(os.environ, environment, clear=True):
+            api = type("Api", (), {"locate_skills_root": staticmethod(lambda root: Path(root).resolve())})
+            with patch.dict(os.environ, environment, clear=True), patch.object(
+                runtime_identity, "_api", return_value=api,
+            ):
                 self.assertEqual(runtime_identity.locate_skills_root(), skills.resolve())
 
 

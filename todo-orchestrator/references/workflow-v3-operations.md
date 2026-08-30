@@ -1,14 +1,19 @@
-# Coding-workflow v3 operations
+# Project Control workflow v3 operations
 
 ## Boundary and protocol
 
-Coding-workflow is protocol v2; todo-orchestrator is its in-process kernel.
-SQLite remains the only semantic authority. Project-control reads normalized
-semantics and never mutates them. Normal tools are `next_task`, `inspect_task`,
-`coordinate_task`, `delegate_task`, `collect_delegation`, and `finish_task`.
+Project Control's Codex profile exposes workflow protocol v2;
+todo-orchestrator is its in-process kernel and SQLite remains the only semantic
+authority. Project Control's observer profile reads normalized semantics and
+never mutates them. The cheap-first workflow tools are `next_task`,
+`inspect_task`, `coordinate_task`, `delegate_task`, `collect_delegation`, and
+`finish_task`.
 Responses include stable status, run/lane/role/task identity where applicable,
 context cursor or versions, allowed actions, recommended next call, and bounded
 blockers. Opaque capabilities are hash-stored and revalidated on every use.
+Use Project Control's rich read tools only when this bounded context is
+insufficient or source, architecture, history, impact, performance, or
+cross-project context is genuinely needed.
 
 `next_task` atomically resolves the project, registers/resumes a session,
 selects a safe serial lane, derives its role, claims the lane head, acquires
@@ -48,13 +53,18 @@ remain subordinate and produce candidates only.
 
 ## Recovery and compatibility
 
-`coding-workflow-admin recover` requires a TTY, locks the project, prints a
+`project-control admin recover` requires a TTY, locks the project, prints a
 bounded plan, refuses live mutable work, requires exact confirmation, preserves
 files/workspaces/patches, reconciles safe state, and audits the result.
 `--inspect-only` is read-only.
 
 Plan schema v2 remains accepted; schema v3 adds run/lane/rendezvous/workspace
-declarations. Migrated projects set `workflow_front_door` to `coding-workflow`:
+declarations. New and newly canonicalized projects set `workflow_front_door`
+to `project-control`:
 read-only todo remains available, ordinary noninteractive direct mutation
 returns `workflow_front_door_required`, and owner TTY maintenance plus explicit
 self-debug/test service modes remain available.
+
+The old `coding-workflow` name remains accepted only as a temporary historical
+compatibility alias. It is neither a second implementation nor a second
+ordinary or live MCP registration.
