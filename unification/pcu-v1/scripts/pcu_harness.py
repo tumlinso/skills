@@ -108,9 +108,9 @@ def git_common_dir(repo: Path) -> Path:
 
 
 def git_tree_digest(repo: Path, ref: str) -> str:
-    """Hash the canonical NUL-delimited tree listing for ``ref``."""
+    """Hash the frozen newline-delimited ``git ls-tree`` listing for ``ref``."""
     result = subprocess.run(
-        ["git", "ls-tree", "-rz", "--full-tree", ref],
+        ["git", "ls-tree", "-r", "--full-tree", ref],
         cwd=str(repo),
         check=False,
         stdout=subprocess.PIPE,
