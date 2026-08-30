@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "task_id": "PCU-SK-22",
+  "result": "blocked_external_release",
+  "candidate_source": {
+    "skills_commit": "47126708e7763a3faea8fe94720aa46133901815",
+    "project_control_commit": "aa11ee1f9cbcfb1dbf4a9fa957dbd669e88f8d8b",
+    "project_control_manifest_sha256": "f63ad5757546d469e91998051b829ad15ed2acf0bcd67b658b128f28a7e065d8",
+    "project_control_source_tree_sha256": "ae09c6b3b2311cf70d5624299b22b2138a26b7f84e20f14fd23f5a3f37032ff6",
+    "release_manifest_validation": "passed",
+    "release_lock_validation": "passed",
+    "submodule_pin_validation": "passed",
+    "managed_destination_clean_before_validation": true
+  },
+  "todo_distribution": {
+    "distribution_name": "todo-orchestrator",
+    "distribution_version": "0.3.0",
+    "canonical_package": "todo_orchestrator",
+    "runtime_dependencies": ["mcp[cli]>=1.0,<2"],
+    "focused_tests_run": 2,
+    "focused_tests_result": "passed"
+  },
+  "candidate_environment": {
+    "isolated": true,
+    "published_outside_source_and_live_paths": true,
+    "identity_manifest_sha256": "bc71f83fa50fee9ca03d24016ab5d4413ee130418f57b00fe14b4dc3e2680ecd",
+    "project_control_version": "0.3.1",
+    "todo_orchestrator_version": "0.3.0",
+    "project_control_imported_from_candidate": true,
+    "todo_orchestrator_imported_from_candidate": true,
+    "isolated_config_ready": true,
+    "isolated_config_workspaces": ["candidate", "disposable"]
+  },
+  "profile_matrix": {
+    "official_streamable_http_client": "passed",
+    "official_stdio_client": "passed_via_candidate_interpreter",
+    "observer_tool_count": 15,
+    "codex_tool_count": 20,
+    "observer_names_exact": true,
+    "codex_names_exact": true,
+    "observer_schema_hashes_exact": true,
+    "codex_schema_hashes_exact": true,
+    "observer_hidden_workflow_invocation_denied": true,
+    "observer_client_info_spoof_resistant": true,
+    "codex_client_info_spoof_resistant": true,
+    "terminal_capture_observer_only": true,
+    "codex_terminal_capture_denied": true
+  },
+  "disposable_workflow": {
+    "repository": "independent_temporary_repository",
+    "project_uuid": "200c7b8b-a0ec-46c2-a7f3-63f5c2faa4c3",
+    "initial_revision": 2,
+    "claim_revision": 3,
+    "finish_revision": 4,
+    "project_control_observed_revision": 4,
+    "todo_semantic_revision": 4,
+    "claimed_through_project_control_codex": true,
+    "inspected_through_project_control_codex": true,
+    "coordinated_through_project_control_codex": true,
+    "finished_through_project_control_codex": true,
+    "terminal_task_state": "done",
+    "active_claims_after": 0,
+    "active_sessions_after": 0,
+    "active_dispatches_after": 0,
+    "first_class_agents_after": 0,
+    "local_children_after": 0,
+    "todo_audit_clean": true,
+    "capability_handle_recorded": false
+  },
+  "mutation_sentinels": {
+    "candidate_source_git_clean_after": true,
+    "candidate_source_head_after": "47126708e7763a3faea8fe94720aa46133901815",
+    "candidate_source_snapshot_sha256_before": "fe636633b063000d719fc9e4b9010a3e13001f4f8d85eedbf901b82197006e66",
+    "candidate_source_snapshot_sha256_after": "fe636633b063000d719fc9e4b9010a3e13001f4f8d85eedbf901b82197006e66",
+    "observer_source_mutation_detected": false,
+    "workflow_mutation_restricted_to_disposable_authority": true
+  },
+  "live_runtime_sentinels": {
+    "registration_names_before": ["coding-workflow"],
+    "registration_names_after": ["coding-workflow"],
+    "registration_digest_before": "851b05ad69d7c471a4a136b224916bfedbf4ce8c079e1c16bf1c7631b30f8da1",
+    "registration_digest_after": "851b05ad69d7c471a4a136b224916bfedbf4ce8c079e1c16bf1c7631b30f8da1",
+    "project_control_service_active_before": true,
+    "project_control_service_active_after": true,
+    "project_control_service_main_pid_before": 25125,
+    "project_control_service_main_pid_after": 25125,
+    "service_unit_capture_sha256_before": "9a5e1c8f491e97440ad4f62f6573b428fd45391475558c8963dd862e1ac349fe",
+    "service_unit_capture_sha256_after": "9a5e1c8f491e97440ad4f62f6573b428fd45391475558c8963dd862e1ac349fe",
+    "registration_changed": false,
+    "service_changed": false,
+    "live_venv_changed": false,
+    "tunnel_changed": false
+  },
+  "external_blocker": {
+    "code": "installer_release_missing",
+    "candidate_console_command_exit_code": 127,
+    "cause": "The promoted Project Control installer renames a completed virtual environment after console scripts are generated, leaving the project-control shebang bound to the removed temporary build directory.",
+    "stale_shebang_sanitized": "#![CANDIDATE_BUILD_TEMP]/bin/python",
+    "candidate_interpreter_module_path_works": true,
+    "required_resolution": "Publish and repin the already-active forward Project Control installer release, then rebuild this candidate and rerun the executable-backed profile matrix."
+  },
+  "safety_deviation": {
+    "occurred": true,
+    "classification": "accidental_read_only_observation",
+    "command_sanitized": "[CANDIDATE_PYTHON] -m project_control doctor --json",
+    "cause": "XDG_CONFIG_HOME was omitted once, so the existing Project Control config was loaded.",
+    "effect": "Normal read-only provider observations were performed for registered workspaces, including Cellerator.",
+    "downstream_mutation_surface_invoked": false,
+    "direct_downstream_git_or_todo_command_invoked": false,
+    "downstream_unchanged_claimed_from_this_observation": false,
+    "followup": "All later config-loading commands used an explicit isolated XDG_CONFIG_HOME. Final downstream sentinel verification remains outside this task and must use the campaign's existing Project Control read-only evidence."
+  },
+  "manual_gate": {
+    "accepted": false,
+    "recommended_deterministic_gate": "Build into a fresh external candidate directory; require candidate/bin/project-control --help to exit zero; validate release manifest, lock, and pin; run focused package metadata tests; use official clients to assert exact 15/20 names and schema hashes, hidden-tool denial, spoof resistance, and terminal separation; complete one disposable claim-inspect-sync-finish cycle; assert Project Control and Todo both observe the same terminal revision with zero claims, sessions, dispatches, agents, or children; compare source and live registration/service sentinels byte-for-byte."
+  }
+}
