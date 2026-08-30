@@ -1,4 +1,4 @@
-"""Bridge local-worker startup to coding-workflow's canonical runtime contract."""
+"""Bridge local-worker startup to Todo's canonical runtime contract."""
 
 from __future__ import annotations
 
@@ -14,20 +14,37 @@ class CanonicalRuntimeError(RuntimeError):
 
 def _api():
     try:
-        from coding_workflow_mcp import runtime_identity
+        from todo_orchestrator import runtime_identity
         return runtime_identity
-    except ModuleNotFoundError:
-        configured = os.environ.get("CODING_WORKFLOW_SKILLS_ROOT")
-        if configured:
-            root = Path(configured).expanduser().resolve()
-        else:
-            data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")).expanduser()
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"todo_orchestrator", "todo_orchestrator.runtime_identity"}:
+            raise
+        canonical = os.environ.get("PROJECT_CONTROL_SKILLS_ROOT")
+        legacy = os.environ.get("CODING_WORKFLOW_SKILLS_ROOT")
+        if canonical and legacy and Path(canonical).expanduser().resolve() != Path(legacy).expanduser().resolve():
+            raise CanonicalRuntimeError(
+                "runtime_identity_mismatch: canonical and legacy Skills roots differ"
+            )
+        configured = canonical or legacy
+        if not configured:
+            data_home = Path(os.environ.get(
+                "XDG_DATA_HOME", Path.home() / ".local/share"
+            )).expanduser()
             locator = data_home / "coding-workflow-mcp/skills-root.json"
-            root = Path(str(json.loads(locator.read_text(encoding="utf-8"))["skills_root"])).expanduser().resolve()
-        integration = root / "integrations/coding-workflow-mcp"
-        sys.path.insert(0, str(integration))
-        from coding_workflow_mcp import runtime_identity
-        return runtime_identity
+            try:
+                configured = str(json.loads(locator.read_text(encoding="utf-8"))["skills_root"])
+            except (OSError, KeyError, TypeError, json.JSONDecodeError) as locator_error:
+                raise CanonicalRuntimeError(
+                    "runtime_identity_mismatch: set PROJECT_CONTROL_SKILLS_ROOT"
+                ) from locator_error
+        package_parent = Path(configured).expanduser().resolve() / "todo-orchestrator"
+        original = list(sys.path)
+        try:
+            sys.path.insert(0, str(package_parent))
+            from todo_orchestrator import runtime_identity
+            return runtime_identity
+        finally:
+            sys.path[:] = original
 
 
 def bind(repo_root: str | Path):

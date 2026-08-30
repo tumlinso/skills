@@ -1,4 +1,4 @@
-"""Additive routing policy for repositories migrated to coding-workflow.
+"""Additive routing policy for repositories migrated to Project Control.
 
 The project identity is the durable policy source.  This module deliberately
 does not carry a token or approval secret: canonical workflow operations are
@@ -14,7 +14,8 @@ from typing import Mapping, TextIO
 from .models import ExitCode, TodoError
 
 
-WORKFLOW_FRONT_DOOR = "coding-workflow"
+WORKFLOW_FRONT_DOOR = "project-control"
+COMPATIBLE_WORKFLOW_FRONT_DOORS = frozenset({WORKFLOW_FRONT_DOOR, "coding-workflow"})
 MUTATION_MODES = frozenset({"automated", "self_debug", "test"})
 
 
@@ -48,7 +49,7 @@ def require_mutation_route(
     front_door = configured_front_door(project)
     if front_door is None:
         return
-    if front_door != WORKFLOW_FRONT_DOOR:
+    if front_door not in COMPATIBLE_WORKFLOW_FRONT_DOORS:
         raise TodoError(
             "unsupported_workflow_front_door",
             "The configured workflow front door is not supported",
@@ -61,10 +62,11 @@ def require_mutation_route(
         return
     raise TodoError(
         "workflow_front_door_required",
-        "Automated todo mutations for this repository must use coding-workflow",
+        "Automated todo mutations for this repository must use Project Control",
         ExitCode.BLOCKED,
         {
-            "workflow_front_door": WORKFLOW_FRONT_DOOR,
+            "workflow_front_door": front_door,
+            "canonical_workflow_front_door": WORKFLOW_FRONT_DOOR,
             "operation": operation,
             "read_only_commands_available": True,
             "interactive_maintenance_available": True,

@@ -22,6 +22,16 @@ from .resources import acquire_resource, local_process_alive
 from .sessions import authenticate_claim, create_session, token_hash
 
 
+CANONICAL_WORKFLOW_OWNER = "project-control"
+COMPATIBLE_WORKFLOW_OWNERS = frozenset({CANONICAL_WORKFLOW_OWNER, "coding-workflow"})
+
+
+def compatible_workflow_owner(value: object) -> bool:
+    """Return whether an owner is a canonical or migration-window workflow facade."""
+
+    return isinstance(value, str) and value in COMPATIBLE_WORKFLOW_OWNERS
+
+
 def _iso_after(seconds: int) -> str:
     return (datetime.now(timezone.utc) + timedelta(seconds=seconds)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -337,7 +347,7 @@ def inspect_live_override(
     blockers = _live_override_blockers(conn, repo_root, claim)
     if claim["expires_at"] <= utc_now():
         blockers.append("claim_lease_not_live")
-    if claim["owner_system"] != "coding-workflow" or not claim["owner_instance_id"]:
+    if not compatible_workflow_owner(claim["owner_system"]) or not claim["owner_instance_id"]:
         blockers.append("claim_owner_not_verifiable_facade")
     return {
         "repo_root": str(repo_root.resolve()),
@@ -471,9 +481,9 @@ def approve_live_override(
     if not report["eligible"]:
         blockers = set(report.get("blockers") or [])
         message = (
-            "Live claim is not owned by coding-workflow and cannot be manually overridden"
+            "Live claim is not owned by a compatible Project Control workflow facade and cannot be manually overridden"
             if "claim_owner_not_verifiable_facade" in blockers
-            else "Live claim is not eligible for manual coding-workflow recovery"
+            else "Live claim is not eligible for manual Project Control workflow recovery"
         )
         raise TodoError("live_override_blocked", message, ExitCode.BLOCKED, report)
     return _create_live_recovery_approval(
@@ -568,7 +578,7 @@ def override_live_claim(
     session, session_token = create_session(
         conn,
         repo_root,
-        {"command": "recover live-override", "owner_system": "coding-workflow", "owner_instance_id": new_instance_id},
+        {"command": "recover live-override", "owner_system": CANONICAL_WORKFLOW_OWNER, "owner_instance_id": new_instance_id},
     )
     now = utc_now()
     expires = _iso_after(lease_seconds)
@@ -584,7 +594,7 @@ def override_live_claim(
         (
             new_claim_id, task_id, session["agent_id"], token_hash(claim_token), "active",
             now, now, expires, old_claim["baseline_head"], old_claim["baseline_manifest_json"],
-            old_claim["baseline_revision"], "coding-workflow", new_instance_id,
+            old_claim["baseline_revision"], CANONICAL_WORKFLOW_OWNER, new_instance_id,
         ),
     )
     conn.execute(
@@ -624,7 +634,7 @@ def override_live_claim(
         "baseline_manifest": json.loads(old_claim["baseline_manifest_json"] or "{}"),
         "locks": locks, "resources": [], "claim_fingerprint": new_fingerprint,
         "retired_claim_fingerprint": approval["claim_fingerprint"],
-        "owner_system": "coding-workflow", "owner_instance_id": new_instance_id,
+        "owner_system": CANONICAL_WORKFLOW_OWNER, "owner_instance_id": new_instance_id,
     }
     return claim, {"claim_token": claim_token, "session_token": session_token, "session": session}
 

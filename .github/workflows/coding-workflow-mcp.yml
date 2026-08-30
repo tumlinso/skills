@@ -1,4 +1,4 @@
-name: coding-workflow MCP
+name: coding-workflow compatibility alias
 
 on:
   push:
@@ -20,4 +20,7 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install integrations/coding-workflow-mcp
       - run: python -m unittest discover -s integrations/coding-workflow-mcp/tests -v
-
+      - run: >-
+          ! rg -n 'class .*Backend|sqlite3|ClientSession|stdio_client|subprocess.*coding-workflow'
+          integrations/coding-workflow-mcp/coding_workflow_mcp
+          -g '!protocol.py'
