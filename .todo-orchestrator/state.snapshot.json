@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T17:35:58Z",
+  "generated_at": "2026-08-30T17:42:42Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 784,
+  "project_revision": 791,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -8142,6 +8142,76 @@
         "revision": 784,
         "seq": 784,
         "timestamp": "2026-08-30T17:35:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-41",
+        "entity_type": "workflow_recovery",
+        "event_type": "workflow_recovery.completed",
+        "payload_json": "{\"audit_id\": \"cea9378e-3ba8-4290-a6ec-454d1f1bf587\", \"reason\": \"User authorized like-for-like sentinel recovery and completion\", \"task_id\": \"PCU-SK-41\"}",
+        "revision": 785,
+        "seq": 785,
+        "timestamp": "2026-08-30T17:37:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/pcu-v1-read-port-remediation.plan.json\"}",
+        "revision": 786,
+        "seq": 786,
+        "timestamp": "2026-08-30T17:37:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-RETRY-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-RETRY-LANE\", \"run_id\": \"PCU-SK-READ-PORT-REMEDIATION-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-41\"}",
+        "revision": 787,
+        "seq": 787,
+        "timestamp": "2026-08-30T17:37:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-41-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-41-DIFF\"}",
+        "revision": 788,
+        "seq": 788,
+        "timestamp": "2026-08-30T17:42:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-41-DIFF",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"fbd96630-85c0-4ed6-bf96-ce97c23a6fad\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 789,
+        "seq": 789,
+        "timestamp": "2026-08-30T17:42:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-41-REMEDIATION",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-41-REMEDIATION\"}",
+        "revision": 790,
+        "seq": 790,
+        "timestamp": "2026-08-30T17:42:42Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-41-REMEDIATION",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5c0b29a6-cc58-4002-b98c-64db564ce063\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 791,
+        "seq": 791,
+        "timestamp": "2026-08-30T17:42:42Z"
       }
     ],
     "evidence": [
@@ -9066,6 +9136,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"c92fa0dee039281e8b4ed27c25bef2933e922acac1abc1bcc3ca68b6742bc367\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_isolated_claims.py\", \"-v\"]}, \"diff_fingerprint\": \"dcac4e1139b295c28b9f3c33b4ee4f82fd42a8a1638a48ba39dff291079b834b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/wfu-27.md\"], \"files\": [{\"path\": \"todo-orchestrator/tests/test_workflow_isolated_claims.py\", \"sha256\": \"72880d6b41ef2ec8a9c4e8640ad8af221b53f8c67900a1acdaa020d46de211f4\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/ownership.py\", \"sha256\": \"5bc791f6b4d5637e7d1f2dca46f224ebd25646ad73006228c31f5fa81fda438d\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/workflow/service.py\", \"sha256\": \"c7710da8fac52fec40e107e4751997a37018d0a3e9912ecc5b6d0844a839f648\"}], \"interfaces\": [], \"recorded_git_head\": \"514257bd8f1c909a59033a59bed0e6fdb158e765\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 225}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5c00b2a7-747b-4ca8-8a37-8d27e4cf9534",
         "revision": 226,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T17:42:42Z",
+        "gate_id": "PCU-SK-41-REMEDIATION",
+        "id": "5c0b29a6-cc58-4002-b98c-64db564ce063",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import json,re; d=json.loads(Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json').read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; c=d['cellerator']; assert c['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and c['clean'] and c['working_tree_fingerprint']=='e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' and c['revision']==3016 and c['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and c['observer_only'] and not c['direct_access']; h=c['historical_fingerprint']; assert h['value']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5' and h['class']!='todo_read_authority_fingerprint' and not h['directly_comparable']; a=c['observer_semantic_baseline']; fp=a['read_authority_fingerprint']; assert re.fullmatch(r'[0-9a-f]{64}',fp) and fp==a['semantic_state_fingerprint']==a['semantic_workflow_fingerprint']==a['repeat_read_authority_fingerprint']; assert a['baseline_sha256']==a['repeat_baseline_sha256'] and re.fullmatch(r'[0-9a-f]{64}',a['baseline_sha256']); assert not a['revision_skew'] and a['component_skew']==[] and a['provider_status']=='available'; q=d['quiescence']; assert q['active_claims_after']==0 and q['active_agents_after']==0 and q['local_children_after']==0\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"77cc6052d154e669ca389dc09f08b45f4d24f04f8d467c5ab6fc6cced6ab7733\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import json,re; d=json.loads(Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json').read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; c=d['cellerator']; assert c['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and c['clean'] and c['working_tree_fingerprint']=='e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' and c['revision']==3016 and c['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and c['observer_only'] and not c['direct_access']; h=c['historical_fingerprint']; assert h['value']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5' and h['class']!='todo_read_authority_fingerprint' and not h['directly_comparable']; a=c['observer_semantic_baseline']; fp=a['read_authority_fingerprint']; assert re.fullmatch(r'[0-9a-f]{64}',fp) and fp==a['semantic_state_fingerprint']==a['semantic_workflow_fingerprint']==a['repeat_read_authority_fingerprint']; assert a['baseline_sha256']==a['repeat_baseline_sha256'] and re.fullmatch(r'[0-9a-f]{64}',a['baseline_sha256']); assert not a['revision_skew'] and a['component_skew']==[] and a['provider_status']=='available'; q=d['quiescence']; assert q['active_claims_after']==0 and q['active_agents_after']==0 and q['local_children_after']==0\"]}, \"diff_fingerprint\": \"8ac385d6109b55181f6e50fd86bad488b57cdf7e8b694ef533335610f2282ce2\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-40.md\", \"todos/pcu-sk-41.md\", \"unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"95f14d501758f698e5a811328bb2489d442f2b48\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 790}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5c0b29a6-cc58-4002-b98c-64db564ce063",
+        "revision": 791,
         "status": "passed"
       },
       {
@@ -10484,6 +10567,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/fa3d603a-96fc-444d-9318-94bcb8517c09",
         "revision": 73,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T17:42:42Z",
+        "gate_id": "PCU-SK-41-DIFF",
+        "id": "fbd96630-85c0-4ed6-bf96-ce97c23a6fad",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"79db190ee0a08e64acf271a9c774708a9f46fa975dff8796ffc44ed1c407eca3\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"8ac385d6109b55181f6e50fd86bad488b57cdf7e8b694ef533335610f2282ce2\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-40.md\", \"todos/pcu-sk-41.md\", \"unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"95f14d501758f698e5a811328bb2489d442f2b48\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 788}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/fbd96630-85c0-4ed6-bf96-ce97c23a6fad",
+        "revision": 789,
+        "status": "passed"
       }
     ],
     "gates": [
@@ -11144,7 +11240,7 @@
         "input_fingerprint": "79db190ee0a08e64acf271a9c774708a9f46fa975dff8796ffc44ed1c407eca3",
         "last_run_at": "2026-08-30T17:15:48Z",
         "required": 1,
-        "revision": 778,
+        "revision": 786,
         "status": "passed",
         "task_id": "PCU-SK-40",
         "type": "command",
@@ -11157,7 +11253,7 @@
         "input_fingerprint": "570e7c56da06d61434ee1333994dcb5ca2c113330266aead11f7e8990095f696",
         "last_run_at": "2026-08-30T17:15:48Z",
         "required": 1,
-        "revision": 778,
+        "revision": 786,
         "status": "failed",
         "task_id": "PCU-SK-40",
         "type": "command",
@@ -11168,9 +11264,9 @@
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"]}",
         "id": "PCU-SK-41-DIFF",
         "input_fingerprint": "79db190ee0a08e64acf271a9c774708a9f46fa975dff8796ffc44ed1c407eca3",
-        "last_run_at": "2026-08-30T17:35:49Z",
+        "last_run_at": "2026-08-30T17:42:42Z",
         "required": 1,
-        "revision": 781,
+        "revision": 789,
         "status": "passed",
         "task_id": "PCU-SK-41",
         "type": "command",
@@ -11178,16 +11274,16 @@
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import json; d=json.loads(Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json').read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; c=d['cellerator']; assert c['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and c['revision']==3016 and c['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and c['authority_fingerprint']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5' and c['observer_only'] and not c['direct_access']; q=d['quiescence']; assert q['active_claims_after']==0 and q['active_agents_after']==0 and q['local_children_after']==0\"]}",
+        "config_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import json,re; d=json.loads(Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json').read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; c=d['cellerator']; assert c['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and c['clean'] and c['working_tree_fingerprint']=='e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855' and c['revision']==3016 and c['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and c['observer_only'] and not c['direct_access']; h=c['historical_fingerprint']; assert h['value']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5' and h['class']!='todo_read_authority_fingerprint' and not h['directly_comparable']; a=c['observer_semantic_baseline']; fp=a['read_authority_fingerprint']; assert re.fullmatch(r'[0-9a-f]{64}',fp) and fp==a['semantic_state_fingerprint']==a['semantic_workflow_fingerprint']==a['repeat_read_authority_fingerprint']; assert a['baseline_sha256']==a['repeat_baseline_sha256'] and re.fullmatch(r'[0-9a-f]{64}',a['baseline_sha256']); assert not a['revision_skew'] and a['component_skew']==[] and a['provider_status']=='available'; q=d['quiescence']; assert q['active_claims_after']==0 and q['active_agents_after']==0 and q['local_children_after']==0\"]}",
         "id": "PCU-SK-41-REMEDIATION",
-        "input_fingerprint": "3aad760ce5514696b87bd93f65f82802fe609535110f63b95785a4b84af302bc",
-        "last_run_at": "2026-08-30T17:35:49Z",
+        "input_fingerprint": "77cc6052d154e669ca389dc09f08b45f4d24f04f8d467c5ab6fc6cced6ab7733",
+        "last_run_at": "2026-08-30T17:42:42Z",
         "required": 1,
-        "revision": 783,
-        "status": "failed",
+        "revision": 791,
+        "status": "passed",
         "task_id": "PCU-SK-41",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -17194,15 +17290,15 @@
         "priority": 500,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 778,
+        "revision": 786,
         "status": "blocked",
         "tags_json": "[\"release_task\", \"validation_resolution\"]",
         "title": "Repin and cut over the corrected Project Control read provider",
-        "updated_at": "2026-08-30T17:19:36Z",
-        "version": 4
+        "updated_at": "2026-08-30T17:37:30Z",
+        "version": 5
       },
       {
-        "attention_reason": "cellerator_authority_fingerprint_mismatch: candidate observer reported 4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044; required c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5 was absent. No live cutover attempted.",
+        "attention_reason": null,
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -17219,12 +17315,12 @@
         "priority": 490,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 779,
-        "status": "blocked",
+        "revision": 787,
+        "status": "in_progress",
         "tags_json": "[\"release_task\", \"validation_resolution\"]",
         "title": "Retry the corrected read-port candidate cutover",
-        "updated_at": "2026-08-30T17:35:58Z",
-        "version": 3
+        "updated_at": "2026-08-30T17:37:48Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -18959,18 +19055,18 @@
         "enqueued_at": "2026-08-30T16:48:04Z",
         "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
         "position": 0,
-        "revision": 778,
+        "revision": 786,
         "state": "queued",
         "task_id": "PCU-SK-40"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-08-30T17:37:48Z",
         "completed_at": null,
         "enqueued_at": "2026-08-30T17:19:36Z",
         "lane_id": "PCU-SK-READ-PORT-RETRY-LANE",
         "position": 0,
-        "revision": 784,
-        "state": "queued",
+        "revision": 787,
+        "state": "active",
         "task_id": "PCU-SK-41"
       },
       {
@@ -19346,11 +19442,11 @@
         "created_at": "2026-08-30T16:48:04Z",
         "id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
         "parent_lane_id": null,
-        "revision": 778,
+        "revision": 786,
         "role": "integrator",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
         "state": "attention_required",
-        "updated_at": "2026-08-30T17:19:36Z",
+        "updated_at": "2026-08-30T17:37:30Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -19358,11 +19454,11 @@
         "created_at": "2026-08-30T17:19:36Z",
         "id": "PCU-SK-READ-PORT-RETRY-LANE",
         "parent_lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
-        "revision": 784,
+        "revision": 787,
         "role": "integrator",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
-        "state": "attention_required",
-        "updated_at": "2026-08-30T17:35:58Z",
+        "state": "active",
+        "updated_at": "2026-08-30T17:37:48Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -19787,6 +19883,20 @@
         "revision": 664,
         "run_id": null,
         "task_id": "PCU-SK-22"
+      },
+      {
+        "actor_identity": "interactive-owner",
+        "completed_at": "2026-08-30T17:37:03Z",
+        "created_at": "2026-08-30T17:37:03Z",
+        "id": "cea9378e-3ba8-4290-a6ec-454d1f1bf587",
+        "lane_id": null,
+        "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "proposed_plan_json": "{\"actions\":[{\"kind\":\"requeue_blocked_task\",\"lane_id\":\"PCU-SK-READ-PORT-RETRY-LANE\",\"task_id\":\"PCU-SK-41\",\"workspace_id\":null}],\"file_policy\":\"preserve_all_no_repository_mutation\",\"project_uuid\":\"460468fe-ee72-4a64-a565-87cfec640d0c\",\"status\":\"recovery_needed\",\"task_id\":\"PCU-SK-41\",\"warnings\":[]}",
+        "reason": "User authorized like-for-like sentinel recovery and completion",
+        "result_json": "{\"actions_applied\":1,\"details\":[{\"id\":null,\"kind\":\"requeue_blocked_task\",\"task_id\":\"PCU-SK-41\"}],\"dirty_tasks\":[],\"files_mutated\":false,\"project_uuid\":\"460468fe-ee72-4a64-a565-87cfec640d0c\",\"resume\":\"next_task\",\"status\":\"recovered\",\"task_id\":\"PCU-SK-41\"}",
+        "revision": 785,
+        "run_id": null,
+        "task_id": "PCU-SK-41"
       }
     ],
     "workflow_rendezvous": [

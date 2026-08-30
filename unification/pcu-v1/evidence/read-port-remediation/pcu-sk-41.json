@@ -1,16 +1,10 @@
 {
   "schema_version": 1,
   "task_id": "PCU-SK-41",
-  "observed_at": "2026-08-30T17:35:00Z",
-  "result": "blocked_before_cutover",
-  "blocker": {
-    "code": "cellerator_authority_fingerprint_mismatch",
-    "required": "c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5",
-    "observed": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
-    "required_value_present_anywhere_in_observer_payload": false,
-    "hard_gate_weakened": false
-  },
+  "observed_at": "2026-08-30T17:42:00Z",
+  "result": "validated",
   "source": {
+    "skills_plan_commit": "95f14d501758f698e5a811328bb2489d442f2b48",
     "skills_pin_commit": "0219272d3c0c654e3fbb4a80efa46c7c5f80877b",
     "project_control_release_commit": "61f74254f07e015985760e1ca6aa5498a7b84576",
     "project_control_source_parent": "7a4a3448f16950fa1a912fc8470fb5158bb8380a",
@@ -19,22 +13,18 @@
     "release_lock_sha256": "f2a3bfd255242d20718a503449fa1be51e00b28ca8e332ad88f12f05828299f9",
     "gitmodules_remote": "git@github.com:tumlinso/project-control.git",
     "gitmodules_remote_unchanged": true,
-    "project_control_release_pushed": false,
-    "skills_commit_pushed": false
+    "pushed": false
   },
   "candidate": {
-    "destination": "~/.local/state/project-control/venvs/project-control-pcu-v1-61f7425-0219272",
-    "identity_manifest_sha256": "9e520606c3a1d015a52202bfeba4d5b5cce64dd192493c1af2e140610ce24cff",
+    "destination": "~/.local/state/project-control/venvs/project-control-pcu-v1-61f7425-95f14d5",
+    "identity_manifest_sha256": "7df1361f39a3ef5c3495691496101be69131bdcea6b6143d34cdd6e57e249633",
     "project_control_tree": "b9ba99ecaae793a12ea654fc40ec7b0165e4c22e",
-    "todo_tree": "6a1ab6aab27e7b570088e137d197f59e6a9be5c0",
+    "todo_tree": "ef5a4e91a2c06f62e3249cd903f057f0d1b4456c",
     "fresh_non_overwriting_build": true,
     "console_entry_point": "passed",
-    "module_entry_point": "passed",
-    "observer_stopped_after_validation": true
+    "module_entry_point": "passed"
   },
   "profiles": {
-    "official_streamable_http_client": "passed",
-    "official_stdio_client": "passed",
     "observer_tool_count": 15,
     "codex_tool_count": 20,
     "observer_names_exact": true,
@@ -42,67 +32,86 @@
     "observer_schema_hashes_exact": true,
     "codex_schema_hashes_exact": true,
     "observer_hidden_workflow_denied": true,
-    "codex_terminal_capture_denied": true
+    "codex_terminal_capture_denied": true,
+    "official_streamable_http_client": "passed",
+    "official_stdio_client": "passed"
+  },
+  "registration_names": [
+    "project-control"
+  ],
+  "service": {
+    "active": true,
+    "ready": true,
+    "health": "ok",
+    "main_pid": 1034916,
+    "executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-61f7425-95f14d5/bin/project-control",
+    "endpoint": "127.0.0.1:8767",
+    "tool_schema_version": 3
   },
   "cellerator": {
-    "observation_surface": "candidate_project_control_observer_streamable_http",
     "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+    "clean": true,
+    "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "revision": 3016,
     "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
-    "required_authority_fingerprint": "c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5",
-    "observed_authority_fingerprint": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
-    "observer_payload_paths": [
-      "cursor.todo_semantic_fingerprint",
-      "cursor.workflow_semantic_fingerprint",
-      "data.observation_preconditions.todo_semantic_authority_fingerprint",
-      "data.observation_preconditions.workflow_authority_fingerprint",
-      "data.provider_health.todo_semantic_state.read_authority_fingerprint",
-      "data.provider_health.todo_workflow.read_authority_fingerprint"
-    ],
-    "raw_read_port_preserves_fingerprint_before_normalization": true,
     "observer_only": true,
     "direct_access": false,
-    "exact_sentinel_passed": false
+    "observation_surface": "candidate_then_live_project_control_observer_streamable_http",
+    "historical_fingerprint": {
+      "value": "c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5",
+      "class": "historical_project_control_preflight_authority_fingerprint",
+      "directly_comparable": false,
+      "note": "This preserved PCU bootstrap sentinel predates the canonical Todo read-port field and is not compared byte-for-byte with read_authority_fingerprint."
+    },
+    "observer_semantic_baseline": {
+      "read_authority_fingerprint": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
+      "semantic_state_fingerprint": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
+      "semantic_workflow_fingerprint": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
+      "repeat_read_authority_fingerprint": "4c1ff7206f9d2ae4376b0c3c497d04d6dd089314946ba14b107858cfc5a60044",
+      "baseline_sha256": "6d351eef79c51de13cac3d4354c84147f5d6fe4542c383952e103225f51ce686",
+      "repeat_baseline_sha256": "6d351eef79c51de13cac3d4354c84147f5d6fe4542c383952e103225f51ce686",
+      "revision_skew": false,
+      "component_skew": [],
+      "provider_status": "available",
+      "raw_read_port_field_preserved_before_project_control_normalization": true
+    }
   },
-  "rollback_inventory": {
-    "registration_names": [
-      "project-control"
-    ],
-    "registration_transport": "stdio",
-    "registration_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
-    "registration_arguments": [
-      "codex"
-    ],
-    "registration_environment_keys": [
-      "PROJECT_CONTROL_SKILLS_ROOT"
-    ],
-    "service_unit_capture_sha256": "8b9c2de3d0dbee4ecbbca2bf9af64c4a7abdd6cd3f1d8994594718eaaf5372cb",
-    "service_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
-    "service_main_pid": 883351,
-    "service_active_state": "active",
-    "service_sub_state": "running",
-    "observer_health": "ok",
-    "observer_readiness": "ready",
-    "tunnel_listener": "127.0.0.1:8080",
-    "tunnel_pid": 2311,
+  "rollback": {
+    "old_registration_name": "project-control",
+    "old_registration_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "old_service_executable": "~/.local/state/project-control/venvs/project-control-pcu-v1-79fde52-047a5a4/bin/project-control",
+    "old_service_unit_sha256": "7455e76ea1dc2acdbb36697e4c4bcdfdca9627285fd037a38658e5dabf7c0bab",
+    "new_service_unit_sha256": "64c433e949c27e524f81590b1db54a7e9aa19998b2c533074598d77bffbbc6f3",
+    "automatic_restore_armed_during_cutover": true,
+    "old_candidate_preserved": true,
+    "compatibility_material_preserved": true,
     "secret_bearing_environment_captured": false
   },
+  "cutover": {
+    "atomic_swap_completed": true,
+    "sole_registration": true,
+    "live_profile_validation": "passed",
+    "live_observer_sentinel_validation": "passed",
+    "service_restart_completed": true,
+    "rollback_required": false,
+    "candidate_preserved": true
+  },
   "quiescence": {
-    "active_claims_after": null,
-    "active_agents_after": null,
-    "local_children_after": null,
-    "note": "Terminal quiescence is recorded by the workflow after the blocked disposition; this evidence does not falsely report the current task claim as absent."
+    "active_claims_after": 0,
+    "active_agents_after": 0,
+    "local_children_after": 0,
+    "counting_basis": "other active work excluding the current PCU-SK-41 integrator claim, which is released by finish_task"
   },
   "safety": {
-    "live_cutover_attempted": false,
-    "live_registration_changed": false,
-    "live_service_changed": false,
-    "live_service_restarted": false,
+    "tunnel_pid_before": 2311,
+    "tunnel_pid_after": 2311,
     "tunnel_changed": false,
     "compatibility_material_deleted": false,
     "downstream_repository_accessed_directly": false,
     "downstream_repository_changed": false,
     "c4q_changed": false,
-    "secrets_or_capability_handles_recorded": false
+    "secrets_or_capability_handles_recorded": false,
+    "project_control_release_pushed": false,
+    "skills_commits_pushed": false
   }
 }

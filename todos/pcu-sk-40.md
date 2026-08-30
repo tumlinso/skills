@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-40: Repin and cut over the corrected Project Control read provider
 
-Task revision: `778`; current project revision is in `todo-status.md`.
+Task revision: `786`; current project revision is in `todo-status.md`.
 
 ## Objective
 Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.

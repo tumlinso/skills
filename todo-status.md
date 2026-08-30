@@ -3,13 +3,13 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `784`
+Project revision: `791`
 
 ## Workstreams
 - `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-40` | status: blocked | execution: blocked_dependency | next: Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.
 - `PCU-SK-01` | status: done | execution: closed | next: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
-- `PCU-SK-41` | status: blocked | execution: blocked_dependency | next: Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
+- `PCU-SK-41` | status: in_progress | execution: claimed | next: Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
 - `PCU-SK-10` | status: done | execution: closed | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
 - `PCU-SK-11` | status: done | execution: closed | next: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
 - `PCU-SK-12` | status: done | execution: closed | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
