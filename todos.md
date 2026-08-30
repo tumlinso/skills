@@ -3,13 +3,13 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `791`
+Project revision: `796`
 
 ## Workstreams
 - `PCU-SK-00` | kind: workstream | status: done | parent: - | objective: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-40` | kind: task | status: blocked | parent: - | objective: Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.
 - `PCU-SK-01` | kind: task | status: done | parent: PCU-SK-00 | objective: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
-- `PCU-SK-41` | kind: task | status: in_progress | parent: - | objective: Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
+- `PCU-SK-41` | kind: task | status: done | parent: - | objective: Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
 - `PCU-SK-10` | kind: task | status: done | parent: PCU-SK-00 | objective: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
 - `PCU-SK-11` | kind: task | status: done | parent: PCU-SK-00 | objective: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
 - `PCU-SK-12` | kind: task | status: done | parent: PCU-SK-00 | objective: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-41: Retry the corrected read-port candidate cutover
 
-Task revision: `787`; current project revision is in `todo-status.md`.
+Task revision: `796`; current project revision is in `todo-status.md`.
 
 ## Objective
 Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
