@@ -3,17 +3,17 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `249`
+Project revision: `311`
 
 ## Workstreams
 - `PCU-SK-00` | kind: workstream | status: done | parent: - | objective: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-01` | kind: task | status: done | parent: PCU-SK-00 | objective: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
-- `PCU-SK-10` | kind: task | status: planned | parent: PCU-SK-00 | objective: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
-- `PCU-SK-11` | kind: task | status: planned | parent: PCU-SK-00 | objective: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
-- `PCU-SK-12` | kind: task | status: planned | parent: PCU-SK-00 | objective: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
-- `PCU-SK-13` | kind: task | status: planned | parent: PCU-SK-00 | objective: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
-- `PCU-SK-14` | kind: task | status: planned | parent: PCU-SK-00 | objective: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
-- `PCU-SK-15` | kind: validation_task | status: planned | parent: PCU-SK-00 | objective: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
+- `PCU-SK-10` | kind: task | status: in_progress | parent: PCU-SK-00 | objective: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
+- `PCU-SK-11` | kind: task | status: done | parent: PCU-SK-00 | objective: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
+- `PCU-SK-12` | kind: task | status: in_progress | parent: PCU-SK-00 | objective: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
+- `PCU-SK-13` | kind: task | status: in_progress | parent: PCU-SK-00 | objective: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
+- `PCU-SK-14` | kind: task | status: done | parent: PCU-SK-00 | objective: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
+- `PCU-SK-15` | kind: validation_task | status: in_progress | parent: PCU-SK-00 | objective: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
 - `PCU-SK-20` | kind: integration_task | status: planned | parent: PCU-SK-00 | objective: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
 - `PCU-SK-21` | kind: integration_task | status: planned | parent: PCU-SK-00 | objective: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
 - `PCU-SK-22` | kind: validation_task | status: planned | parent: PCU-SK-00 | objective: Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.

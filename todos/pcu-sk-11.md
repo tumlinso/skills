@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-11: Canonicalize the workflow front door and owner identity
 
-Task revision: `249`; current project revision is in `todo-status.md`.
+Task revision: `298`; current project revision is in `todo-status.md`.
 
 ## Objective
 Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

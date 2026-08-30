@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-31: Rehearse downstream migration in independent clones
 
-Task revision: `249`; current project revision is in `todo-status.md`.
+Task revision: `288`; current project revision is in `todo-status.md`.
 
 ## Objective
 Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.

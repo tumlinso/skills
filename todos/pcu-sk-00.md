@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-00: Freeze Skills preflight, C4Q isolation, and rollback
 
-Task revision: `249`; current project revision is in `todo-status.md`.
+Task revision: `288`; current project revision is in `todo-status.md`.
 
 ## Objective
 Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.

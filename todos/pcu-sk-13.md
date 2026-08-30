@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-13: Update current guidance and migration-facing documentation
 
-Task revision: `249`; current project revision is in `todo-status.md`.
+Task revision: `288`; current project revision is in `todo-status.md`.
 
 ## Objective
 Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

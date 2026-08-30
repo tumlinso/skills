@@ -3,17 +3,17 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `249`
+Project revision: `311`
 
 ## Workstreams
 - `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-01` | status: done | execution: closed | next: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
-- `PCU-SK-10` | status: planned | execution: ready | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
-- `PCU-SK-11` | status: planned | execution: ready | next: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
-- `PCU-SK-12` | status: planned | execution: ready | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
-- `PCU-SK-13` | status: planned | execution: ready | next: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
-- `PCU-SK-14` | status: planned | execution: ready | next: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
-- `PCU-SK-15` | status: planned | execution: ready | next: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
+- `PCU-SK-10` | status: in_progress | execution: idle | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
+- `PCU-SK-11` | status: done | execution: closed | next: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
+- `PCU-SK-12` | status: in_progress | execution: idle | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
+- `PCU-SK-13` | status: in_progress | execution: idle | next: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
+- `PCU-SK-14` | status: done | execution: closed | next: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
+- `PCU-SK-15` | status: in_progress | execution: idle | next: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
 - `PCU-SK-20` | status: planned | execution: ready | next: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
 - `PCU-SK-21` | status: planned | execution: ready | next: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
 - `PCU-SK-22` | status: planned | execution: ready | next: Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.

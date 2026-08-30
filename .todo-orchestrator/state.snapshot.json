@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-30T11:43:03Z",
+  "generated_at": "2026-08-30T12:58:57Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 249,
+  "project_revision": 311,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -107,7 +107,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-10",
-        "id": 191,
+        "id": 201,
         "required_state": "done",
         "type": "task"
       },
@@ -115,7 +115,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-11",
-        "id": 192,
+        "id": 202,
         "required_state": "done",
         "type": "task"
       },
@@ -123,7 +123,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-12",
-        "id": 193,
+        "id": 203,
         "required_state": "done",
         "type": "task"
       },
@@ -131,7 +131,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-13",
-        "id": 194,
+        "id": 204,
         "required_state": "done",
         "type": "task"
       },
@@ -139,7 +139,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-14",
-        "id": 195,
+        "id": 205,
         "required_state": "done",
         "type": "task"
       },
@@ -147,7 +147,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-15",
-        "id": 196,
+        "id": 206,
         "required_state": "done",
         "type": "task"
       },
@@ -155,7 +155,7 @@
         "barrier_id": "PCU-SK-VALIDATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-30",
-        "id": 197,
+        "id": 207,
         "required_state": "done",
         "type": "validation_task"
       },
@@ -163,7 +163,7 @@
         "barrier_id": "PCU-SK-VALIDATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-31",
-        "id": 198,
+        "id": 208,
         "required_state": "done",
         "type": "validation_task"
       },
@@ -171,7 +171,7 @@
         "barrier_id": "PCU-SK-CORE-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-CORE-RENDEZVOUS",
-        "id": 199,
+        "id": 209,
         "required_state": "satisfied",
         "type": "rendezvous"
       },
@@ -179,19 +179,19 @@
         "barrier_id": "PCU-SK-VALIDATION-BARRIER",
         "dispositions_json": "[]",
         "entity_id": "PCU-SK-VALIDATION-RENDEZVOUS",
-        "id": 200,
+        "id": 210,
         "required_state": "satisfied",
         "type": "rendezvous"
       }
     ],
     "barriers": [
       {
-        "explanation": "0/7 requirements satisfied; target=7",
+        "explanation": "2/7 requirements satisfied; target=7",
         "id": "PCU-SK-CORE-BARRIER",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 249,
+        "revision": 304,
         "state": "closed",
         "title": "All Skills core lanes ready for integration"
       },
@@ -201,7 +201,7 @@
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 249,
+        "revision": 288,
         "state": "closed",
         "title": "Cross-stack validation and independent-clone migration rehearsal complete"
       },
@@ -274,7 +274,7 @@
         "id": "PCU-SK-CONTRACTS-FROZEN",
         "metadata_json": "{}",
         "reached_at": "2026-08-30T11:43:03Z",
-        "revision": 249,
+        "revision": 288,
         "revoked_at": null,
         "state": "reached",
         "task_id": "PCU-SK-01",
@@ -2792,6 +2792,626 @@
         "revision": 249,
         "seq": 249,
         "timestamp": "2026-08-30T11:43:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "dc8fff05-c5cc-405b-88c0-c22a1ba7ce72",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 250,
+        "seq": 250,
+        "timestamp": "2026-08-30T12:02:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "dc8fff05-c5cc-405b-88c0-c22a1ba7ce72",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 251,
+        "seq": 251,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "c8becf05-ec05-400e-bd15-2ff843aa7932",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-FRONTDOOR-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 252,
+        "seq": 252,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "c8becf05-ec05-400e-bd15-2ff843aa7932",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-FRONTDOOR-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 253,
+        "seq": 253,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "680bc36b-4cd0-49d7-a0a5-1eebdf5f2b70",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-RUNTIME-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 254,
+        "seq": 254,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "680bc36b-4cd0-49d7-a0a5-1eebdf5f2b70",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-RUNTIME-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 255,
+        "seq": 255,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "5d2d975d-44c0-4d28-ab52-14cf5ff05cfc",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-GUIDANCE-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 256,
+        "seq": 256,
+        "timestamp": "2026-08-30T12:02:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "5d2d975d-44c0-4d28-ab52-14cf5ff05cfc",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-GUIDANCE-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 257,
+        "seq": 257,
+        "timestamp": "2026-08-30T12:02:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "b17fd31f-a4c2-46c5-a5a9-fbb4d5551a12",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-SHIM-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 258,
+        "seq": 258,
+        "timestamp": "2026-08-30T12:02:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "b17fd31f-a4c2-46c5-a5a9-fbb4d5551a12",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-SHIM-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 259,
+        "seq": 259,
+        "timestamp": "2026-08-30T12:02:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "c63f4178-41c0-4fef-aa07-f19b00800f24",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-HARNESS-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 260,
+        "seq": 260,
+        "timestamp": "2026-08-30T12:02:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "c63f4178-41c0-4fef-aa07-f19b00800f24",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-HARNESS-LANE\", \"mode\": \"isolated_merge\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 261,
+        "seq": 261,
+        "timestamp": "2026-08-30T12:02:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "01d61529-0907-4f61-82ee-060de86aa104",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-INTEGRATION-LANE\", \"mode\": \"exclusive\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 262,
+        "seq": 262,
+        "timestamp": "2026-08-30T12:02:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "01d61529-0907-4f61-82ee-060de86aa104",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"lane_id\": \"PCU-SK-INTEGRATION-LANE\", \"mode\": \"exclusive\", \"run_id\": \"PCU-SK-RUN-V1\"}",
+        "revision": 263,
+        "seq": 263,
+        "timestamp": "2026-08-30T12:02:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-FRONTDOOR-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-FRONTDOOR-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-11\"}",
+        "revision": 264,
+        "seq": 264,
+        "timestamp": "2026-08-30T12:10:16Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-10\"}",
+        "revision": 265,
+        "seq": 265,
+        "timestamp": "2026-08-30T12:10:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"PCU-SK-10\"}",
+        "revision": 266,
+        "seq": 266,
+        "timestamp": "2026-08-30T12:14:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-10",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding\"}",
+        "revision": 267,
+        "seq": 267,
+        "timestamp": "2026-08-30T12:15:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FRONTDOOR",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-11-FRONTDOOR\"}",
+        "revision": 268,
+        "seq": 268,
+        "timestamp": "2026-08-30T12:19:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FRONTDOOR",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7f1957bb-e8d3-4d9d-977b-c60c5eca55d9\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 269,
+        "seq": 269,
+        "timestamp": "2026-08-30T12:19:41Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding_and_manual_gate_bootstrap\"}",
+        "revision": 270,
+        "seq": 270,
+        "timestamp": "2026-08-30T12:20:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-RUNTIME-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-RUNTIME-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-12\"}",
+        "revision": 271,
+        "seq": 271,
+        "timestamp": "2026-08-30T12:21:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-GUIDANCE-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-GUIDANCE-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-13\"}",
+        "revision": 272,
+        "seq": 272,
+        "timestamp": "2026-08-30T12:24:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-12-RUNTIME",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-12-RUNTIME\"}",
+        "revision": 273,
+        "seq": 273,
+        "timestamp": "2026-08-30T12:27:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-12-RUNTIME",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5dee7872-dd57-451c-97fd-abf4a9752c80\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 274,
+        "seq": 274,
+        "timestamp": "2026-08-30T12:27:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-RUNTIME-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-RUNTIME-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"PCU-SK-12\"}",
+        "revision": 275,
+        "seq": 275,
+        "timestamp": "2026-08-30T12:27:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-12",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding\"}",
+        "revision": 276,
+        "seq": 276,
+        "timestamp": "2026-08-30T12:27:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-SHIM-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-SHIM-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-14\"}",
+        "revision": 277,
+        "seq": 277,
+        "timestamp": "2026-08-30T12:28:10Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-13-GUIDANCE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-13-GUIDANCE\"}",
+        "revision": 278,
+        "seq": 278,
+        "timestamp": "2026-08-30T12:28:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-13-GUIDANCE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6a72ee22-f363-4a6c-9f1c-2023cb0895ef\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 279,
+        "seq": 279,
+        "timestamp": "2026-08-30T12:28:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-13",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding\"}",
+        "revision": 280,
+        "seq": 280,
+        "timestamp": "2026-08-30T12:28:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-HARNESS-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-HARNESS-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-15\"}",
+        "revision": 281,
+        "seq": 281,
+        "timestamp": "2026-08-30T12:29:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-15-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-15-HARNESS\"}",
+        "revision": 282,
+        "seq": 282,
+        "timestamp": "2026-08-30T12:36:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-15-HARNESS",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"48998c4a-da99-448b-bc6f-616252529c71\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 283,
+        "seq": 283,
+        "timestamp": "2026-08-30T12:36:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-15",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding\"}",
+        "revision": 284,
+        "seq": 284,
+        "timestamp": "2026-08-30T12:37:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14-SHIM",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-14-SHIM\"}",
+        "revision": 285,
+        "seq": 285,
+        "timestamp": "2026-08-30T12:38:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14-SHIM",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"107de70e-ea53-4c2e-848a-0275e1d18565\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 286,
+        "seq": 286,
+        "timestamp": "2026-08-30T12:38:22Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_workspace_binding\"}",
+        "revision": 287,
+        "seq": 287,
+        "timestamp": "2026-08-30T12:38:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/pcu-v1.skills.plan.json\"}",
+        "revision": 288,
+        "seq": 288,
+        "timestamp": "2026-08-30T12:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-FRONTDOOR-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-FRONTDOOR-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-11\"}",
+        "revision": 289,
+        "seq": 289,
+        "timestamp": "2026-08-30T12:43:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FORCE-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-11-FORCE-RELEASE\"}",
+        "revision": 290,
+        "seq": 290,
+        "timestamp": "2026-08-30T12:43:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FORCE-RELEASE",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 291,
+        "seq": 291,
+        "timestamp": "2026-08-30T12:43:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FRONTDOOR",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-11-FRONTDOOR\"}",
+        "revision": 292,
+        "seq": 292,
+        "timestamp": "2026-08-30T12:43:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-FRONTDOOR",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"b77f8398-6e5e-493c-bef6-b1a1d25e9df5\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 293,
+        "seq": 293,
+        "timestamp": "2026-08-30T12:43:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-LIVE-RECOVERY",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-11-LIVE-RECOVERY\"}",
+        "revision": 294,
+        "seq": 294,
+        "timestamp": "2026-08-30T12:43:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11-LIVE-RECOVERY",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"96ba3273-7737-4757-87dd-a30b7e0948b4\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 295,
+        "seq": 295,
+        "timestamp": "2026-08-30T12:43:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "fd30970d-8253-48a5-bb73-195badf5eecf",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow_patch_artifact_published",
+        "payload_json": "{\"content_hash\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"kind\": \"commit\", \"task_id\": \"PCU-SK-11\", \"workspace_id\": \"c8becf05-ec05-400e-bd15-2ff843aa7932\"}",
+        "revision": 296,
+        "seq": 296,
+        "timestamp": "2026-08-30T12:43:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "a2bce713-e91d-4433-9c86-f1bec349533d",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_artifact_queued",
+        "payload_json": "{\"artifact_id\": \"fd30970d-8253-48a5-bb73-195badf5eecf\", \"integration_task_id\": \"PCU-SK-20\", \"integrator_lane_id\": \"PCU-SK-INTEGRATION-LANE\"}",
+        "revision": 297,
+        "seq": 297,
+        "timestamp": "2026-08-30T12:43:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-11",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 298, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 298,
+        "seq": 298,
+        "timestamp": "2026-08-30T12:43:23Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-SHIM-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-SHIM-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-14\"}",
+        "revision": 299,
+        "seq": 299,
+        "timestamp": "2026-08-30T12:57:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14-SHIM",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-14-SHIM\"}",
+        "revision": 300,
+        "seq": 300,
+        "timestamp": "2026-08-30T12:57:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14-SHIM",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 301,
+        "seq": 301,
+        "timestamp": "2026-08-30T12:57:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "c131e54f-97b9-4fbc-88b6-36bb883dabb8",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow_patch_artifact_published",
+        "payload_json": "{\"content_hash\": \"59526689612201a0d2fbd6b3e9e1e2ead4e6977f671961b19a7926f9271f702a\", \"kind\": \"commit\", \"task_id\": \"PCU-SK-14\", \"workspace_id\": \"b17fd31f-a4c2-46c5-a5a9-fbb4d5551a12\"}",
+        "revision": 302,
+        "seq": 302,
+        "timestamp": "2026-08-30T12:57:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "d9f3000e-7774-4553-b278-eda65f25dfc1",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_artifact_queued",
+        "payload_json": "{\"artifact_id\": \"c131e54f-97b9-4fbc-88b6-36bb883dabb8\", \"integration_task_id\": \"PCU-SK-20\", \"integrator_lane_id\": \"PCU-SK-INTEGRATION-LANE\"}",
+        "revision": 303,
+        "seq": 303,
+        "timestamp": "2026-08-30T12:57:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-14",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 304, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 304,
+        "seq": 304,
+        "timestamp": "2026-08-30T12:57:19Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"PCU-SK-10\"}",
+        "revision": 305,
+        "seq": 305,
+        "timestamp": "2026-08-30T12:57:59Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-10-READ-PORT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"PCU-SK-10-READ-PORT\"}",
+        "revision": 306,
+        "seq": 306,
+        "timestamp": "2026-08-30T12:58:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-10-READ-PORT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"3d1299ea-0751-4a90-a461-eb82e640503e\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 307,
+        "seq": 307,
+        "timestamp": "2026-08-30T12:58:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "d3f6d6ce-e422-4a60-b679-54f225e34691",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow_patch_artifact_published",
+        "payload_json": "{\"content_hash\": \"4a5477ab197ce3d636f9a2ab748393a74fab93379e47b92c890b87b6bb83ec12\", \"kind\": \"commit\", \"task_id\": \"PCU-SK-10\", \"workspace_id\": \"dc8fff05-c5cc-405b-88c0-c22a1ba7ce72\"}",
+        "revision": 308,
+        "seq": 308,
+        "timestamp": "2026-08-30T12:58:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "b8715a89-b321-413a-bccc-09b6d9f8cf1a",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_artifact_queued",
+        "payload_json": "{\"artifact_id\": \"d3f6d6ce-e422-4a60-b679-54f225e34691\", \"integration_task_id\": \"PCU-SK-20\", \"integrator_lane_id\": \"PCU-SK-INTEGRATION-LANE\"}",
+        "revision": 309,
+        "seq": 309,
+        "timestamp": "2026-08-30T12:58:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-READ-PORT-LANE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"PCU-SK-READ-PORT-LANE\", \"run_id\": \"PCU-SK-RUN-V1\", \"status\": \"resumed\", \"task_id\": \"PCU-SK-10\"}",
+        "revision": 310,
+        "seq": 310,
+        "timestamp": "2026-08-30T12:58:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "PCU-SK-10",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": \"gate_python_environment\"}",
+        "revision": 311,
+        "seq": 311,
+        "timestamp": "2026-08-30T12:58:57Z"
       }
     ],
     "evidence": [
@@ -2872,6 +3492,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/0e2d8ecc-7522-4dba-af45-f9fd77f1ed87",
         "revision": 173,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:38:22Z",
+        "gate_id": "PCU-SK-14-SHIM",
+        "id": "107de70e-ea53-4c2e-848a-0275e1d18565",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": false, \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"inputs\": {\"command_contract\": {}, \"diff_fingerprint\": \"e36688aa3dcf127c0b2c4fa073c3b1c07aa03d9719dd3ff5ba82134d48099e1c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-10.md\", \"todos/pcu-sk-11.md\", \"todos/pcu-sk-12.md\", \"todos/pcu-sk-13.md\", \"todos/pcu-sk-14.md\", \"todos/pcu-sk-15.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"note\": null, \"resources\": [], \"started_revision\": 285}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/107de70e-ea53-4c2e-848a-0275e1d18565",
+        "revision": 286,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -2981,6 +3614,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-30T12:58:01Z",
+        "gate_id": "PCU-SK-10-READ-PORT",
+        "id": "3d1299ea-0751-4a90-a461-eb82e640503e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_read*.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d2f2a17dd0301b916c50ad56a922b62dfb3b524130be8dcee5ba1349bf2d910e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_read*.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e06905165a380a56d485481217c0db08f2effa6e\"}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"source_identity\": \"4a5477ab197ce3d636f9a2ab748393a74fab93379e47b92c890b87b6bb83ec12\", \"started_revision\": 306, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-10\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/3d1299ea-0751-4a90-a461-eb82e640503e",
+        "revision": 307,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T10:53:52Z",
         "gate_id": "CWM-08-DIFF",
         "id": "423217c3-cb79-4d0c-8cc6-6ab95968201d",
@@ -3015,6 +3661,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/47fcf012-3855-4b55-8261-d6e612d96629",
         "revision": 211,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:36:54Z",
+        "gate_id": "PCU-SK-15-HARNESS",
+        "id": "48998c4a-da99-448b-bc6f-616252529c71",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": false, \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"inputs\": {\"command_contract\": {}, \"diff_fingerprint\": \"e36688aa3dcf127c0b2c4fa073c3b1c07aa03d9719dd3ff5ba82134d48099e1c\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-10.md\", \"todos/pcu-sk-11.md\", \"todos/pcu-sk-12.md\", \"todos/pcu-sk-13.md\", \"todos/pcu-sk-14.md\", \"todos/pcu-sk-15.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"note\": null, \"resources\": [], \"started_revision\": 282}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/48998c4a-da99-448b-bc6f-616252529c71",
+        "revision": 283,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -3085,6 +3744,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-30T12:27:15Z",
+        "gate_id": "PCU-SK-12-RUNTIME",
+        "id": "5dee7872-dd57-451c-97fd-abf4a9752c80",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": false, \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"inputs\": {\"command_contract\": {}, \"diff_fingerprint\": \"6480634c0decf027d6c85a753a1816ddb7ded2a1540670673ddcd203a499440b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-10.md\", \"todos/pcu-sk-11.md\", \"todos/pcu-sk-12.md\", \"todos/pcu-sk-13.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"note\": null, \"resources\": [], \"started_revision\": 273}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5dee7872-dd57-451c-97fd-abf4a9752c80",
+        "revision": 274,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T20:05:00Z",
         "gate_id": "CWM-03-GATE",
         "id": "5e7d50c8-5a88-4219-99ef-7332eea2c5e5",
@@ -3092,6 +3764,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_parallel_agents.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ea6a6283bc277a4fafacbeb706498f529e6d991aad42b3f08cf21507a18010c6\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_parallel_agents.py\", \"-v\"]}, \"diff_fingerprint\": \"96249e3edacd49b7c8f69311fbd18a1316170b7b1e60e97b892a0e0aa5bd5d34\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9975fe5b31924d9d2fac87078f2e73fe04ae6541\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 34}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5e7d50c8-5a88-4219-99ef-7332eea2c5e5",
         "revision": 35,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:57:18Z",
+        "gate_id": "PCU-SK-14-SHIM",
+        "id": "6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"59526689612201a0d2fbd6b3e9e1e2ead4e6977f671961b19a7926f9271f702a\", \"started_revision\": 300, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-14\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756",
+        "revision": 301,
         "status": "passed"
       },
       {
@@ -3106,6 +3791,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6678f697-6efc-43bb-b3a6-9d1e124692a5",
         "revision": 217,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:28:35Z",
+        "gate_id": "PCU-SK-13-GUIDANCE",
+        "id": "6a72ee22-f363-4a6c-9f1c-2023cb0895ef",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": false, \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"inputs\": {\"command_contract\": {}, \"diff_fingerprint\": \"c63a94c258ccf569cbecac6d8b2882fc77e9545becfc4577d04d2e7ad5c854d7\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-10.md\", \"todos/pcu-sk-11.md\", \"todos/pcu-sk-12.md\", \"todos/pcu-sk-13.md\", \"todos/pcu-sk-14.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"note\": null, \"resources\": [], \"started_revision\": 278}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6a72ee22-f363-4a6c-9f1c-2023cb0895ef",
+        "revision": 279,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -3189,6 +3887,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-30T12:19:41Z",
+        "gate_id": "PCU-SK-11-FRONTDOOR",
+        "id": "7f1957bb-e8d3-4d9d-977b-c60c5eca55d9",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": false, \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"inputs\": {\"command_contract\": {}, \"diff_fingerprint\": \"368a050f5e11d244736ef5a7e734032cd2477e3d19a48192973997562cd94da0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/pcu-sk-10.md\", \"todos/pcu-sk-11.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"note\": null, \"resources\": [], \"started_revision\": 268}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7f1957bb-e8d3-4d9d-977b-c60c5eca55d9",
+        "revision": 269,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T19:29:30Z",
         "gate_id": "C4Q2-UNIT",
         "id": "7f3c89b4-b9a4-4952-9a07-1c01419ca233",
@@ -3228,6 +3939,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-08-30T12:43:14Z",
+        "gate_id": "PCU-SK-11-FORCE-RELEASE",
+        "id": "8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 290, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce",
+        "revision": 291,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-25T10:25:44Z",
         "gate_id": "CWM-07-MCP",
         "id": "9074d523-22b2-4b03-a18d-48f35e38e2af",
@@ -3235,6 +3959,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_tools.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"50fe9cf90b0b46b0b71aae9c4fef2b0af1cd42d08ba4cd23e1444614dec13d8b\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_tools.py\", \"-v\"]}, \"diff_fingerprint\": \"8948597e47e39704b21259e90183402d995696ed354224dad79f96fc02b25a8d\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"03a48dbbd53658942764a68da28d45996c8e7cbb\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 66}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/9074d523-22b2-4b03-a18d-48f35e38e2af",
         "revision": 67,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:43:23Z",
+        "gate_id": "PCU-SK-11-LIVE-RECOVERY",
+        "id": "96ba3273-7737-4757-87dd-a30b7e0948b4",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 294, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/96ba3273-7737-4757-87dd-a30b7e0948b4",
+        "revision": 295,
         "status": "passed"
       },
       {
@@ -3274,6 +4011,19 @@
         "metadata_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"930accfbba8b70419ec31396db0835cfa8df6ca69b9b78a4e33cfba87ba9dcaa\", \"inputs\": {\"command_contract\": {\"argv\": [\"git\", \"diff\", \"--check\"]}, \"diff_fingerprint\": \"daac0bc01f94b7be8b809dff78d75d2ce93ec3964dd187e07f3aac7104f8e9b0\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/__init__.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/__main__.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/migration.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/normalize.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/protocol.py\", \"integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/PKG-INFO\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/SOURCES.txt\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/dependency_links.txt\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/entry_points.txt\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/requires.txt\", \"integrations/coding-workflow-mcp/coding_workflow_mcp.egg-info/top_level.txt\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\"], \"files\": [{\"path\": \".gitignore\", \"sha256\": \"d7c8c6441f2e016316a5d27c06297f443e72be8a2bdb5ea0f728c02421797918\"}, {\"path\": \"AGENTS.md\", \"sha256\": \"858ade1577f137445d15e989a57ab452d1c9125a37622d27650d6899afab0387\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"01ad362c586e3c66ffb358ab821de5217d539275\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 56}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/b3799f1a-f727-408d-89e3-12c862cb0e9d",
         "revision": 57,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-08-30T12:43:18Z",
+        "gate_id": "PCU-SK-11-FRONTDOOR",
+        "id": "b77f8398-6e5e-493c-bef6-b1a1d25e9df5",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_front_door.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_front_door.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 292, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/b77f8398-6e5e-493c-bef6-b1a1d25e9df5",
+        "revision": 293,
         "status": "passed"
       },
       {
@@ -3774,80 +4524,132 @@
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"description\": \"Focused read-port and existing read-only compatibility suites.\"}",
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_read*.py\", \"-v\"]}",
         "id": "PCU-SK-10-READ-PORT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "d2f2a17dd0301b916c50ad56a922b62dfb3b524130be8dcee5ba1349bf2d910e",
+        "last_run_at": "2026-08-30T12:58:01Z",
         "required": 1,
-        "revision": 249,
-        "status": "pending",
+        "revision": 307,
+        "status": "failed",
         "task_id": "PCU-SK-10",
-        "type": "manual",
+        "type": "command",
         "valid": 0
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"description\": \"Front-door, historical recovery, denial, and recovery suites.\"}",
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"]}",
+        "id": "PCU-SK-11-FORCE-RELEASE",
+        "input_fingerprint": "0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021",
+        "last_run_at": "2026-08-30T12:43:14Z",
+        "required": 1,
+        "revision": 291,
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_front_door.py\", \"-v\"]}",
         "id": "PCU-SK-11-FRONTDOOR",
+        "input_fingerprint": "d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846",
+        "last_run_at": "2026-08-30T12:43:18Z",
+        "required": 1,
+        "revision": 293,
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"]}",
+        "id": "PCU-SK-11-LIVE-RECOVERY",
+        "input_fingerprint": "3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171",
+        "last_run_at": "2026-08-30T12:43:23Z",
+        "required": 1,
+        "revision": 295,
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_canonical_runtime.py\", \"-v\"]}",
+        "id": "PCU-SK-12-LOCAL-RUNTIME",
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
-        "task_id": "PCU-SK-11",
-        "type": "manual",
+        "task_id": "PCU-SK-12",
+        "type": "command",
         "valid": 0
       },
       {
         "checkpoint_id": null,
         "config_json": "{\"description\": \"Runtime identity, local-worker canonical runtime, and background runtime suites.\"}",
         "id": "PCU-SK-12-RUNTIME",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc",
+        "last_run_at": "2026-08-30T12:27:15Z",
         "required": 1,
-        "revision": 249,
-        "status": "pending",
+        "revision": 274,
+        "status": "failed",
         "task_id": "PCU-SK-12",
         "type": "manual",
         "valid": 0
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"description\": \"Current guidance contains no second ordinary coding-workflow front door.\"}",
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_*runtime*.py\", \"-v\"]}",
+        "id": "PCU-SK-12-TODO-RUNTIME",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 288,
+        "status": "pending",
+        "task_id": "PCU-SK-12",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; ps=[Path(x) for x in ('AGENTS.md','todo-orchestrator/SKILL.md','todo-orchestrator/references/workflow-v3-operations.md','todo-orchestrator/references/full-workflow-compatibility.md','cpp-context-compiler/SKILL.md','cuda/SKILL.md')]; ts=[p.read_text(encoding='utf-8') for p in ps]; j='\\\\n'.join(ts); n=' '.join(j.split()); assert all('project-control' in t or 'Project Control' in t for t in ts); assert all(x not in j for x in ('For substantial repository work, use `coding-workflow`','use coding-workflow.','workflow_front_door = \\\"coding-workflow\\\"','<!-- coding-workflow:start -->')); assert '<!-- project-control:start -->' in ts[0] and '<!-- project-control:end -->' in ts[0]; assert all(x in ts[0] for x in ('`next_task`','`inspect_task`','`coordinate_task`','`delegate_task`','`collect_delegation`','`finish_task`','rich read tools','Local workers','first-class')); assert 'temporary compatibility alias' in n and 'not a second ordinary front' in n\"]}",
         "id": "PCU-SK-13-GUIDANCE",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc",
+        "last_run_at": "2026-08-30T12:28:35Z",
         "required": 1,
-        "revision": 249,
-        "status": "pending",
+        "revision": 288,
+        "status": "failed",
         "task_id": "PCU-SK-13",
-        "type": "manual",
+        "type": "command",
         "valid": 0
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"description\": \"Entry-point, six-tool, no-second-backend, installer rollback, and historical recovery compatibility.\"}",
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"]}",
         "id": "PCU-SK-14-SHIM",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f",
+        "last_run_at": "2026-08-30T12:57:18Z",
         "required": 1,
-        "revision": 249,
-        "status": "pending",
+        "revision": 301,
+        "status": "passed",
         "task_id": "PCU-SK-14",
-        "type": "manual",
-        "valid": 0
+        "type": "command",
+        "valid": 1
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"description\": \"Fixture-only harness tests and no-live-repository-mutation sentinel.\"}",
+        "config_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"tests/pcu_v1\", \"-v\"]}",
         "id": "PCU-SK-15-HARNESS",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc",
+        "last_run_at": "2026-08-30T12:36:54Z",
         "required": 1,
-        "revision": 249,
-        "status": "pending",
+        "revision": 288,
+        "status": "failed",
         "task_id": "PCU-SK-15",
-        "type": "manual",
+        "type": "command",
         "valid": 0
       },
       {
@@ -3857,7 +4659,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-20",
         "type": "manual",
@@ -3870,7 +4672,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-21",
         "type": "manual",
@@ -3883,7 +4685,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-22",
         "type": "manual",
@@ -3896,7 +4698,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-30",
         "type": "manual",
@@ -3909,7 +4711,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-31",
         "type": "manual",
@@ -3922,7 +4724,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-32",
         "type": "manual",
@@ -3935,7 +4737,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 249,
+        "revision": 288,
         "status": "pending",
         "task_id": "PCU-SK-33",
         "type": "manual",
@@ -4118,6 +4920,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-30T12:58:57Z",
+        "id": "0eb615be-6989-4bcf-b373-150a873c1683",
+        "kind": "handoff",
+        "note": "Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-10-READ-PORT\", \"input_fingerprint\": \"d2f2a17dd0301b916c50ad56a922b62dfb3b524130be8dcee5ba1349bf2d910e\", \"last_run_at\": \"2026-08-30T12:58:01Z\", \"revision\": 307, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1589 ++++++++++++++++++++++++++++----\\n pcu-v1.skills.plan.json                |   12 +-\\n todo-status.md                         |   14 +-\\n todos.md                               |   14 +-\\n todos/pcu-sk-00.md                     |    4 +-\\n todos/pcu-sk-01.md                     |    4 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |   10 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |   10 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    4 +-\\n todos/pcu-sk-21.md                     |    4 +-\\n todos/pcu-sk-22.md                     |    4 +-\\n todos/pcu-sk-30.md                     |    4 +-\\n todos/pcu-sk-31.md                     |    4 +-\\n todos/pcu-sk-32.md                     |    4 +-\\n todos/pcu-sk-33.md                     |    4 +-\\n 19 files changed, 1477 insertions(+), 240 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-10\"}",
+        "revision": 311,
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T13:19:56Z",
         "id": "13174899-319d-410b-a489-9d1ab8c577b5",
         "kind": "complete",
@@ -4218,6 +5030,26 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-30T12:15:26Z",
+        "id": "4b54540d-fe04-4214-8ba0-27aa7277a5f6",
+        "kind": "handoff",
+        "note": "Implemented PCU-TODO-READ-PORT/1 as commit e06905165a380a56d485481217c0db08f2effa6e. Added strict in-process read allowlist, stable identity/factories, explicit SQLite read-only Service binding, semantic compatibility export, normalized envelopes, and fail-closed/no-mutation/schema-compatibility tests. Focused tests: 9 passed; compileall and git diff --check passed; workspace clean. Canonical completion is deferred because the pre-repair workflow gate/workspace binding rejects implementer run_gates.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-10-READ-PORT\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 249, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 350 ++++++++++++++++++++++++++++++---\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n 5 files changed, 343 insertions(+), 35 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Implemented PCU-TODO-READ-PORT/1 as commit e06905165a380a56d485481217c0db08f2effa6e. Added strict in-process read allowlist, stable identity/factories, explicit SQLite read-only Service binding, semantic compatibility export, normalized envelopes, and fail-closed/no-mutation/schema-compatibility tests. Focused tests: 9 passed; compileall and git diff --check passed; workspace clean. Canonical completion is deferred because the pre-repair workflow gate/workspace binding rejects implementer run_gates.\", \"resources\": [], \"task_id\": \"PCU-SK-10\"}",
+        "revision": 267,
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-30T12:27:30Z",
+        "id": "4f0ebfb4-707e-4cde-acc7-ca6ec21f0d04",
+        "kind": "handoff",
+        "note": "Immutable producer commit 6cb370b in managed pcu-sk-12 workspace. Canonical complete was refused required_gates_unsatisfied because gates execute against the authority checkout instead of this isolated workspace. Focused runtime identity, local supervisor, and background suites passed 38/38; compileall and git diff --check passed; workspace clean.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-12-RUNTIME\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T12:27:15Z\", \"revision\": 274, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 534 ++++++++++++++++++++++++++++++---\\n todo-status.md                         |  10 +-\\n todos.md                               |  10 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n todos/pcu-sk-12.md                     |   8 +-\\n todos/pcu-sk-13.md                     |   8 +-\\n 7 files changed, 517 insertions(+), 69 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Immutable producer commit 6cb370b in managed pcu-sk-12 workspace. Canonical complete was refused required_gates_unsatisfied because gates execute against the authority checkout instead of this isolated workspace. Focused runtime identity, local supervisor, and background suites passed 38/38; compileall and git diff --check passed; workspace clean.\", \"resources\": [], \"task_id\": \"PCU-SK-12\"}",
+        "revision": 276,
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T11:08:00Z",
         "id": "4f9b4e78-97f4-4a13-9ed1-23f91f555511",
         "kind": "complete",
@@ -4288,6 +5120,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-30T12:28:43Z",
+        "id": "782b4c51-5ffc-494f-a74a-c3f739d5c625",
+        "kind": "handoff",
+        "note": "Immutable commit a8c642da7de4df6eee954b6bac08430a146a6d63 in managed pcu-sk-13 workspace. Required manual gate PCU-SK-13-GUIDANCE could not be satisfied through implementer finish; canonical complete returned required_gates_unsatisfied. Validation passed: deterministic no-second-front-door check, skill-creator quick_validate for todo-orchestrator/cpp-context-compiler/cuda, and git diff --check. Worktree clean.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-13-GUIDANCE\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T12:28:35Z\", \"revision\": 279, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 580 +++++++++++++++++++++++++++++----\\n todo-status.md                         |  12 +-\\n todos.md                               |  12 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n todos/pcu-sk-12.md                     |   8 +-\\n todos/pcu-sk-13.md                     |   8 +-\\n todos/pcu-sk-14.md                     |   8 +-\\n 8 files changed, 562 insertions(+), 82 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Immutable commit a8c642da7de4df6eee954b6bac08430a146a6d63 in managed pcu-sk-13 workspace. Required manual gate PCU-SK-13-GUIDANCE could not be satisfied through implementer finish; canonical complete returned required_gates_unsatisfied. Validation passed: deterministic no-second-front-door check, skill-creator quick_validate for todo-orchestrator/cpp-context-compiler/cuda, and git diff --check. Worktree clean.\", \"resources\": [], \"task_id\": \"PCU-SK-13\"}",
+        "revision": 280,
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T11:15:45Z",
         "id": "8167b4b6-bad0-484f-869c-7c0c1ae68aea",
         "kind": "complete",
@@ -4295,6 +5137,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"37e950385dae74289f3cdce37d0ea64bfb0aa45c\", \"completion_gates\": [], \"completion_revision\": 165, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 468 ++++++++++++++++++++++++++-------\\n todo-status.md                         |  15 +-\\n todos.md                               |  15 +-\\n todos/wfu-10.md                        |   6 +-\\n todos/wfu-11.md                        |   6 +-\\n todos/wfu-12.md                        |   8 +-\\n todos/wfu-13.md                        |   6 +-\\n 7 files changed, 399 insertions(+), 125 deletions(-)\", \"git_head\": \"37e950385dae74289f3cdce37d0ea64bfb0aa45c\", \"interfaces\": [], \"note\": \"Commit 37e9503 implements managed first-class lane workspaces, exact-base immutable artifacts, exclusive integrator queues, preserved conflicts, post-merge gate state, and explicit non-destructive cleanup eligibility. Tests: workflow workspaces 8/8; foundation contract 8/8; diff and py_compile clean. Local-worker children are explicitly rejected from first-class workspace ownership.\", \"resources\": [], \"task_id\": \"WFU-13\"}",
         "revision": 165,
         "task_id": "WFU-13"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-30T12:20:44Z",
+        "id": "816be8d8-3380-4fbc-9b64-8ed1bfbcbe7f",
+        "kind": "handoff",
+        "note": "Immutable commit 21de9bd51acc328a6fec23236893925cfd84a7e6. Validation passed: 116 workflow tests, 6 live-claim recovery tests, 12 force-release tests, and git diff --check. Completion was blocked because the live pre-fix kernel executed the required manual gate outside the producer workspace and implementer run_gates is role-forbidden. Integrate only through PCU-SK-20.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-11-FRONTDOOR\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T12:19:41Z\", \"revision\": 269, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 366 +++++++++++++++++++++++++++++++--\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n 5 files changed, 361 insertions(+), 33 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Immutable commit 21de9bd51acc328a6fec23236893925cfd84a7e6. Validation passed: 116 workflow tests, 6 live-claim recovery tests, 12 force-release tests, and git diff --check. Completion was blocked because the live pre-fix kernel executed the required manual gate outside the producer workspace and implementer run_gates is role-forbidden. Integrate only through PCU-SK-20.\", \"resources\": [], \"task_id\": \"PCU-SK-11\"}",
+        "revision": 270,
+        "task_id": "PCU-SK-11"
       },
       {
         "claim_id": null,
@@ -4328,6 +5180,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-30T12:43:23Z",
+        "id": "8f7fa820-f8a9-4fde-975d-2eded298b888",
+        "kind": "complete",
+        "note": "Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"completion_gates\": [{\"evidence_id\": \"8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce\", \"evidence_revision\": 291, \"id\": \"PCU-SK-11-FORCE-RELEASE\", \"input_fingerprint\": \"0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, {\"evidence_id\": \"b77f8398-6e5e-493c-bef6-b1a1d25e9df5\", \"evidence_revision\": 293, \"id\": \"PCU-SK-11-FRONTDOOR\", \"input_fingerprint\": \"d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, {\"evidence_id\": \"96ba3273-7737-4757-87dd-a30b7e0948b4\", \"evidence_revision\": 295, \"id\": \"PCU-SK-11-LIVE-RECOVERY\", \"input_fingerprint\": \"3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}], \"completion_revision\": 298, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-11-FRONTDOOR\", \"input_fingerprint\": \"d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846\", \"last_run_at\": \"2026-08-30T12:43:18Z\", \"revision\": 293, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"PCU-SK-11-LIVE-RECOVERY\", \"input_fingerprint\": \"3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171\", \"last_run_at\": \"2026-08-30T12:43:23Z\", \"revision\": 295, \"status\": \"passed\", \"valid\": 1}, {\"id\": \"PCU-SK-11-FORCE-RELEASE\", \"input_fingerprint\": \"0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021\", \"last_run_at\": \"2026-08-30T12:43:14Z\", \"revision\": 291, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1039 +++++++++++++++++++++++++++-----\\n pcu-v1.skills.plan.json                |   12 +-\\n todo-status.md                         |   14 +-\\n todos.md                               |   14 +-\\n todos/pcu-sk-00.md                     |    4 +-\\n todos/pcu-sk-01.md                     |    4 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |    8 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |    8 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    4 +-\\n todos/pcu-sk-21.md                     |    4 +-\\n todos/pcu-sk-22.md                     |    4 +-\\n todos/pcu-sk-30.md                     |    4 +-\\n todos/pcu-sk-31.md                     |    4 +-\\n todos/pcu-sk-32.md                     |    4 +-\\n todos/pcu-sk-33.md                     |    4 +-\\n 19 files changed, 952 insertions(+), 211 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-11\"}",
+        "revision": 298,
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-25T12:02:33Z",
         "id": "8fb4fd5c-e941-464c-9191-50c71a8475aa",
         "kind": "complete",
@@ -4338,6 +5200,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-30T12:38:30Z",
+        "id": "929e9002-5d86-4e8a-8bdf-d4b92009fff3",
+        "kind": "handoff",
+        "note": "Immutable producer commit 5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e is clean and ready for designated integrator. Required gate could not be credited because canonical finish evaluates the authority checkout rather than this managed isolated_merge workspace. Verified in workspace: 28/28 compatibility tests pass; compileall, static no-second-backend scan, and git diff --check pass. Do not bypass; integrate through PCU-SK-20 after workflow gate binding repair.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-14-SHIM\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T12:38:22Z\", \"revision\": 286, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 724 +++++++++++++++++++++++++++++----\\n todo-status.md                         |  14 +-\\n todos.md                               |  14 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n todos/pcu-sk-12.md                     |   8 +-\\n todos/pcu-sk-13.md                     |   8 +-\\n todos/pcu-sk-14.md                     |   8 +-\\n todos/pcu-sk-15.md                     |   8 +-\\n 9 files changed, 699 insertions(+), 101 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Immutable producer commit 5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e is clean and ready for designated integrator. Required gate could not be credited because canonical finish evaluates the authority checkout rather than this managed isolated_merge workspace. Verified in workspace: 28/28 compatibility tests pass; compileall, static no-second-backend scan, and git diff --check pass. Do not bypass; integrate through PCU-SK-20 after workflow gate binding repair.\", \"resources\": [], \"task_id\": \"PCU-SK-14\"}",
+        "revision": 287,
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T13:06:34Z",
         "id": "93595cfb-fac2-491a-b39b-ab8fc310fde1",
         "kind": "complete",
@@ -4345,6 +5217,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"e80c516c5005a3d335a674a1787c4e1ddb510b36\", \"completion_gates\": [{\"evidence_id\": \"532aa451-b5a0-4398-8ddf-0aaf58efcd75\", \"evidence_revision\": 204, \"id\": \"WFU-24-WORKFLOW\", \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"c41ff026c4b691a75c9018f8efca7cfa38081994\"}], \"completion_revision\": 205, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-24-WORKFLOW\", \"input_fingerprint\": \"7e8a189f7f460b27efb03d586363e22d4d2c4417732ed3b1609ba95f0571fae0\", \"last_run_at\": \"2026-08-27T13:06:17Z\", \"revision\": 204, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"e80c516c5005a3d335a674a1787c4e1ddb510b36\", \"interfaces\": [], \"note\": \"Plan reapply preserves frozen interfaces; v2/v3 context fragments are owner-scoped and bounded; arrival provenance and immutable integration requests are validated. Gate WFU-24-WORKFLOW passed with evidence 532aa451-b5a0-4398-8ddf-0aaf58efcd75.\", \"resources\": [], \"task_id\": \"WFU-24\"}",
         "revision": 205,
         "task_id": "WFU-24"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-30T12:37:01Z",
+        "id": "9695d752-de17-407c-bda7-00e6f7bf1eda",
+        "kind": "handoff",
+        "note": "Immutable producer commit f3a9519d42b7b1f2a9cf67b05fc35044051cd05b is complete and the managed workspace is clean. Focused gate command passed 10/10 in the assigned isolated_merge workspace and git diff --check passed. Canonical complete returned required_gates_unsatisfied because the bootstrap workflow binds the gate to the authority checkout rather than this producer workspace. Safe handoff; no authority bypass or integration performed.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-15-HARNESS\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T12:36:54Z\", \"revision\": 283, \"status\": \"failed\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 667 +++++++++++++++++++++++++++++----\\n todo-status.md                         |  14 +-\\n todos.md                               |  14 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-11.md                     |   8 +-\\n todos/pcu-sk-12.md                     |   8 +-\\n todos/pcu-sk-13.md                     |   8 +-\\n todos/pcu-sk-14.md                     |   8 +-\\n todos/pcu-sk-15.md                     |   8 +-\\n 9 files changed, 644 insertions(+), 99 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Immutable producer commit f3a9519d42b7b1f2a9cf67b05fc35044051cd05b is complete and the managed workspace is clean. Focused gate command passed 10/10 in the assigned isolated_merge workspace and git diff --check passed. Canonical complete returned required_gates_unsatisfied because the bootstrap workflow binds the gate to the authority checkout rather than this producer workspace. Safe handoff; no authority bypass or integration performed.\", \"resources\": [], \"task_id\": \"PCU-SK-15\"}",
+        "revision": 284,
+        "task_id": "PCU-SK-15"
       },
       {
         "claim_id": null,
@@ -4365,6 +5247,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"completion_gates\": [{\"evidence_id\": \"13079fb8-085a-437f-a67d-24085c6af0ba\", \"evidence_revision\": 181, \"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\"}], \"completion_revision\": 182, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"last_run_at\": \"2026-08-27T12:12:36Z\", \"revision\": 181, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 76 +++++++++++++++++++++++++++++++---\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n todos/wfu-00.md                        |  2 +-\\n todos/wfu-01.md                        |  2 +-\\n todos/wfu-02.md                        |  2 +-\\n todos/wfu-10.md                        |  2 +-\\n todos/wfu-11.md                        |  2 +-\\n todos/wfu-12.md                        |  2 +-\\n todos/wfu-13.md                        |  2 +-\\n todos/wfu-14.md                        |  2 +-\\n todos/wfu-15.md                        |  2 +-\\n todos/wfu-16.md                        |  3 +-\\n todos/wfu-20.md                        |  2 +-\\n todos/wfu-21.md                        |  2 +-\\n todos/wfu-22.md                        |  2 +-\\n todos/wfu-23.md                        |  2 +-\\n todos/wfu-30.md                        |  2 +-\\n todos/wfu-31.md                        |  2 +-\\n 19 files changed, 90 insertions(+), 23 deletions(-)\", \"git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"interfaces\": [], \"note\": \"Core authority contracts hardened; workflow gate 13079fb8-085a-437f-a67d-24085c6af0ba passed; commits f22031b, 2ccebb8, c7461f3, 93a7d7f.\", \"resources\": [], \"task_id\": \"WFU-16\"}",
         "revision": 182,
         "task_id": "WFU-16"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-30T12:57:19Z",
+        "id": "aca29aad-25ab-4767-b07e-dd19bb13a535",
+        "kind": "complete",
+        "note": "Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"completion_gates\": [{\"evidence_id\": \"6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756\", \"evidence_revision\": 301, \"id\": \"PCU-SK-14-SHIM\", \"input_fingerprint\": \"e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e\"}], \"completion_revision\": 304, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-14-SHIM\", \"input_fingerprint\": \"e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f\", \"last_run_at\": \"2026-08-30T12:57:18Z\", \"revision\": 301, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 1324 +++++++++++++++++++++++++++-----\\n pcu-v1.skills.plan.json                |   12 +-\\n todo-status.md                         |   14 +-\\n todos.md                               |   14 +-\\n todos/pcu-sk-00.md                     |    4 +-\\n todos/pcu-sk-01.md                     |    4 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |   10 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |    8 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    4 +-\\n todos/pcu-sk-21.md                     |    4 +-\\n todos/pcu-sk-22.md                     |    4 +-\\n todos/pcu-sk-30.md                     |    4 +-\\n todos/pcu-sk-31.md                     |    4 +-\\n todos/pcu-sk-32.md                     |    4 +-\\n todos/pcu-sk-33.md                     |    4 +-\\n 19 files changed, 1222 insertions(+), 228 deletions(-)\", \"git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-14\"}",
+        "revision": 304,
+        "task_id": "PCU-SK-14"
       },
       {
         "claim_id": null,
@@ -4509,7 +5401,7 @@
         "id": "PCU-FRONTDOOR/1",
         "owner_task_id": "PCU-SK-01",
         "revised_at": null,
-        "revision": 249,
+        "revision": 288,
         "state": "frozen",
         "version": "1"
       },
@@ -4520,7 +5412,7 @@
         "id": "PCU-RUNTIME-IDENTITY/1",
         "owner_task_id": "PCU-SK-01",
         "revised_at": null,
-        "revision": 249,
+        "revision": 288,
         "state": "frozen",
         "version": "1"
       },
@@ -4531,7 +5423,7 @@
         "id": "PCU-SHIM-COMPAT/1",
         "owner_task_id": "PCU-SK-01",
         "revised_at": null,
-        "revision": 249,
+        "revision": 288,
         "state": "frozen",
         "version": "1"
       },
@@ -4542,7 +5434,7 @@
         "id": "PCU-SUBMODULE/1",
         "owner_task_id": "PCU-SK-01",
         "revised_at": null,
-        "revision": 249,
+        "revision": 288,
         "state": "frozen",
         "version": "1"
       },
@@ -4553,7 +5445,7 @@
         "id": "PCU-TODO-READ-PORT/1",
         "owner_task_id": "PCU-SK-01",
         "revised_at": null,
-        "revision": 249,
+        "revision": 288,
         "state": "frozen",
         "version": "1"
       },
@@ -6369,6 +7261,58 @@
     "task_artifacts": [],
     "task_completion_gates": [
       {
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 298,
+        "evidence_id": "8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce",
+        "evidence_revision": 291,
+        "gate_id": "PCU-SK-11-FORCE-RELEASE",
+        "input_fingerprint": "0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021",
+        "provenance_json": "{\"claim_id\": \"27b2ede9-33cc-4a23-a440-19e88b9e7aa3\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 290, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "valid": 1,
+        "validation_git_head": "21de9bd51acc328a6fec23236893925cfd84a7e6"
+      },
+      {
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 298,
+        "evidence_id": "b77f8398-6e5e-493c-bef6-b1a1d25e9df5",
+        "evidence_revision": 293,
+        "gate_id": "PCU-SK-11-FRONTDOOR",
+        "input_fingerprint": "d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846",
+        "provenance_json": "{\"claim_id\": \"27b2ede9-33cc-4a23-a440-19e88b9e7aa3\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_front_door.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"d994dfb0c5845ac797c9a3f5a062b4895ea1f961121a1e0f7c75e892412a4846\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_workflow_front_door.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 292, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/b77f8398-6e5e-493c-bef6-b1a1d25e9df5\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "valid": 1,
+        "validation_git_head": "21de9bd51acc328a6fec23236893925cfd84a7e6"
+      },
+      {
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 298,
+        "evidence_id": "96ba3273-7737-4757-87dd-a30b7e0948b4",
+        "evidence_revision": 295,
+        "gate_id": "PCU-SK-11-LIVE-RECOVERY",
+        "input_fingerprint": "3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171",
+        "provenance_json": "{\"claim_id\": \"27b2ede9-33cc-4a23-a440-19e88b9e7aa3\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"3df48ab0353ff195c21d0e7707bd8f6021150d14f191f3a8168232953aa6f171\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_live_claim_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 294, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/96ba3273-7737-4757-87dd-a30b7e0948b4\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "PCU-SK-11",
+        "valid": 1,
+        "validation_git_head": "21de9bd51acc328a6fec23236893925cfd84a7e6"
+      },
+      {
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 304,
+        "evidence_id": "6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756",
+        "evidence_revision": 301,
+        "gate_id": "PCU-SK-14-SHIM",
+        "input_fingerprint": "e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f",
+        "provenance_json": "{\"claim_id\": \"5babe4ff-9ed8-4a52-b06a-40155fec03d4\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e30d256fb56d03c5fd0d2259b40409bc711c46a18c4524d9fc9f351b58c93d4f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"59526689612201a0d2fbd6b3e9e1e2ead4e6977f671961b19a7926f9271f702a\", \"started_revision\": 300, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-14\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6174f5e6-c3ce-42dd-bfe4-c2f5dfb3d756\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "PCU-SK-14",
+        "valid": 1,
+        "validation_git_head": "5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e"
+      },
+      {
         "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
         "completion_revision": 139,
         "evidence_id": "f3da80bb-4977-4396-998e-3a86b12e7d37",
@@ -6991,7 +7935,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 490,
+        "id": 504,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-00",
         "task_id": "PCU-SK-01",
@@ -7002,7 +7946,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 491,
+        "id": 505,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-10",
@@ -7013,7 +7957,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 492,
+        "id": 506,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-11",
@@ -7024,7 +7968,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 493,
+        "id": 507,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-12",
@@ -7035,7 +7979,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 494,
+        "id": 508,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-13",
@@ -7046,7 +7990,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 495,
+        "id": 509,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-14",
@@ -7057,7 +8001,7 @@
         "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
         "condition_json": "{}",
         "decision_id": null,
-        "id": 496,
+        "id": 510,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-15",
@@ -7068,7 +8012,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 497,
+        "id": 511,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-20",
@@ -7079,7 +8023,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 498,
+        "id": 512,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-20",
         "task_id": "PCU-SK-21",
@@ -7090,7 +8034,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 499,
+        "id": 513,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-21",
         "task_id": "PCU-SK-22",
@@ -7101,7 +8045,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 500,
+        "id": 514,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-22",
         "task_id": "PCU-SK-30",
@@ -7112,7 +8056,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 501,
+        "id": 515,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-22",
         "task_id": "PCU-SK-31",
@@ -7123,7 +8067,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 502,
+        "id": 516,
         "interface_id": null,
         "prerequisite_task_id": null,
         "task_id": "PCU-SK-32",
@@ -7134,7 +8078,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 503,
+        "id": 517,
         "interface_id": null,
         "prerequisite_task_id": "PCU-SK-32",
         "task_id": "PCU-SK-33",
@@ -8266,12 +9210,12 @@
         "priority": 500,
         "result": "validated",
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "done",
         "tags_json": "[]",
         "title": "Freeze Skills preflight, C4Q isolation, and rollback",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8291,15 +9235,15 @@
         "priority": 490,
         "result": "validated",
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "done",
         "tags_json": "[\"architecture_task\"]",
         "title": "Freeze Skills-side kernel, compatibility, and submodule contracts",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
-        "attention_reason": null,
+        "attention_reason": "gate_python_environment",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -8316,18 +9260,18 @@
         "priority": 400,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 305,
+        "status": "in_progress",
         "tags_json": "[\"implementation_task\"]",
         "title": "Add the explicit Todo read-only in-process port",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:58:57Z",
+        "version": 6
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 298,
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-11",
         "kind": "task",
@@ -8339,17 +9283,17 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "PCU-SK-00",
         "priority": 400,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 298,
+        "status": "done",
         "tags_json": "[\"implementation_task\"]",
         "title": "Canonicalize the workflow front door and owner identity",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:43:23Z",
+        "version": 6
       },
       {
-        "attention_reason": null,
+        "attention_reason": "gate_workspace_binding",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -8366,15 +9310,15 @@
         "priority": 400,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 288,
+        "status": "in_progress",
         "tags_json": "[\"implementation_task\"]",
         "title": "Consolidate runtime identity and compatibility variables",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 4
       },
       {
-        "attention_reason": null,
+        "attention_reason": "gate_workspace_binding",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -8391,18 +9335,18 @@
         "priority": 400,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 288,
+        "status": "in_progress",
         "tags_json": "[\"documentation_task\"]",
         "title": "Update current guidance and migration-facing documentation",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 4
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_git_head": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "completion_revision": 304,
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-14",
         "kind": "task",
@@ -8414,17 +9358,17 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "PCU-SK-00",
         "priority": 400,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 304,
+        "status": "done",
         "tags_json": "[\"implementation_task\"]",
         "title": "Reduce coding-workflow-mcp to a compatibility alias",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:57:19Z",
+        "version": 6
       },
       {
-        "attention_reason": null,
+        "attention_reason": "gate_workspace_binding",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -8441,12 +9385,12 @@
         "priority": 400,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
-        "status": "planned",
+        "revision": 288,
+        "status": "in_progress",
         "tags_json": "[\"validation_infrastructure_task\"]",
         "title": "Build fresh-clone, release-pin, and migration rehearsal harnesses",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -8466,12 +9410,12 @@
         "priority": 300,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[]",
         "title": "Integrate Skills kernel and compatibility changes",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8491,12 +9435,12 @@
         "priority": 290,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[]",
         "title": "Add and pin the Project Control Git submodule",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8516,12 +9460,12 @@
         "priority": 280,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[]",
         "title": "Build and smoke the unified candidate runtime",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8541,12 +9485,12 @@
         "priority": 200,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[]",
         "title": "Run complete cross-stack validation",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8566,12 +9510,12 @@
         "priority": 200,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[]",
         "title": "Rehearse downstream migration in independent clones",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8591,12 +9535,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[\"release_task\"]",
         "title": "Atomically cut over the installed runtime",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -8616,12 +9560,12 @@
         "priority": 90,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 249,
+        "revision": 288,
         "status": "planned",
         "tags_json": "[\"release_task\"]",
         "title": "Finalize PCU-V1 release state",
-        "updated_at": "2026-08-30T11:43:03Z",
-        "version": 1
+        "updated_at": "2026-08-30T12:42:05Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -9992,7 +10936,47 @@
         "version": 1
       }
     ],
-    "workflow_integration_queue": [],
+    "workflow_integration_queue": [
+      {
+        "conflict_json": "{}",
+        "created_at": "2026-08-30T12:43:23Z",
+        "id": "a2bce713-e91d-4433-9c86-f1bec349533d",
+        "integration_task_id": "PCU-SK-20",
+        "integrator_lane_id": "PCU-SK-INTEGRATION-LANE",
+        "merge_result_json": "{}",
+        "patch_artifact_id": "fd30970d-8253-48a5-bb73-195badf5eecf",
+        "position": 0,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:43:23Z"
+      },
+      {
+        "conflict_json": "{}",
+        "created_at": "2026-08-30T12:58:01Z",
+        "id": "b8715a89-b321-413a-bccc-09b6d9f8cf1a",
+        "integration_task_id": "PCU-SK-20",
+        "integrator_lane_id": "PCU-SK-INTEGRATION-LANE",
+        "merge_result_json": "{}",
+        "patch_artifact_id": "d3f6d6ce-e422-4a60-b679-54f225e34691",
+        "position": 2,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:58:01Z"
+      },
+      {
+        "conflict_json": "{}",
+        "created_at": "2026-08-30T12:57:19Z",
+        "id": "d9f3000e-7774-4553-b278-eda65f25dfc1",
+        "integration_task_id": "PCU-SK-20",
+        "integrator_lane_id": "PCU-SK-INTEGRATION-LANE",
+        "merge_result_json": "{}",
+        "patch_artifact_id": "c131e54f-97b9-4fbc-88b6-36bb883dabb8",
+        "position": 1,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:57:19Z"
+      }
+    ],
     "workflow_lane_tasks": [
       {
         "activated_at": null,
@@ -10000,7 +10984,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-CUTOVER-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-32"
       },
@@ -10010,7 +10994,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-CUTOVER-LANE",
         "position": 1,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-33"
       },
@@ -10020,7 +11004,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-FOUNDATION-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "completed",
         "task_id": "PCU-SK-00"
       },
@@ -10030,18 +11014,18 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-FOUNDATION-LANE",
         "position": 1,
-        "revision": 249,
+        "revision": 288,
         "state": "completed",
         "task_id": "PCU-SK-01"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-30T12:43:04Z",
+        "completed_at": "2026-08-30T12:43:23Z",
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-FRONTDOOR-LANE",
         "position": 0,
-        "revision": 249,
-        "state": "queued",
+        "revision": 298,
+        "state": "completed",
         "task_id": "PCU-SK-11"
       },
       {
@@ -10050,7 +11034,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-GUIDANCE-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-13"
       },
@@ -10060,7 +11044,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-HARNESS-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-15"
       },
@@ -10070,7 +11054,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-20"
       },
@@ -10080,7 +11064,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "position": 1,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-21"
       },
@@ -10090,7 +11074,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "position": 2,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-22"
       },
@@ -10100,7 +11084,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-MIGRATION-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-31"
       },
@@ -10110,7 +11094,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-READ-PORT-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 311,
         "state": "queued",
         "task_id": "PCU-SK-10"
       },
@@ -10120,18 +11104,18 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-RUNTIME-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-12"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-08-30T12:57:17Z",
+        "completed_at": "2026-08-30T12:57:19Z",
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-SHIM-LANE",
         "position": 0,
-        "revision": 249,
-        "state": "queued",
+        "revision": 304,
+        "state": "completed",
         "task_id": "PCU-SK-14"
       },
       {
@@ -10140,7 +11124,7 @@
         "enqueued_at": "2026-08-30T11:43:03Z",
         "lane_id": "PCU-SK-VALIDATION-LANE",
         "position": 0,
-        "revision": 249,
+        "revision": 288,
         "state": "queued",
         "task_id": "PCU-SK-30"
       },
@@ -10371,11 +11355,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-CUTOVER-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "integrator",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -10383,11 +11367,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-FOUNDATION-LANE",
         "parent_lane_id": null,
-        "revision": 249,
+        "revision": 288,
         "role": "coordinator",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -10395,11 +11379,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-FRONTDOOR-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 298,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "state": "closed",
+        "updated_at": "2026-08-30T12:43:23Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10407,11 +11391,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-GUIDANCE-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10419,11 +11403,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-HARNESS-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10431,11 +11415,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-INTEGRATION-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "integrator",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -10443,11 +11427,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-MIGRATION-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "validator",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "read_shared"
       },
       {
@@ -10455,11 +11439,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-READ-PORT-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 311,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:58:57Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10467,11 +11451,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-RUNTIME-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10479,11 +11463,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-SHIM-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 304,
         "role": "implementer",
         "run_id": "PCU-SK-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "state": "closed",
+        "updated_at": "2026-08-30T12:57:19Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -10491,11 +11475,11 @@
         "created_at": "2026-08-30T11:43:03Z",
         "id": "PCU-SK-VALIDATION-LANE",
         "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
-        "revision": 249,
+        "revision": 288,
         "role": "validator",
         "run_id": "PCU-SK-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-08-30T11:43:03Z",
+        "updated_at": "2026-08-30T12:42:05Z",
         "workspace_mode": "read_shared"
       },
       {
@@ -10512,9 +11496,85 @@
       }
     ],
     "workflow_message_receipts": [],
-    "workflow_message_recipients": [],
-    "workflow_messages": [],
-    "workflow_patch_artifacts": [],
+    "workflow_message_recipients": [
+      {
+        "message_id": "28b94e8b-e075-49af-9580-f95f52d90653",
+        "recipient_id": "PCU-SK-RUN-V1",
+        "recipient_type": "run"
+      },
+      {
+        "message_id": "85639625-052a-408c-a8b4-283f1e940d8e",
+        "recipient_id": "PCU-SK-RUN-V1",
+        "recipient_type": "run"
+      }
+    ],
+    "workflow_messages": [
+      {
+        "author_lane_id": "PCU-SK-SHIM-LANE",
+        "blocking": 0,
+        "created_at": "2026-08-30T12:57:19Z",
+        "id": "28b94e8b-e075-49af-9580-f95f52d90653",
+        "kind": "rendezvous_arrival",
+        "linked_message_id": null,
+        "payload_json": "{\"condition\":{\"achieved\":2,\"arrived\":[\"PCU-SK-FRONTDOOR-LANE\",\"PCU-SK-SHIM-LANE\"],\"arrived_roles\":[\"implementer\"],\"barrier_changes\":[{\"affected_active_tasks\":[],\"barrier_id\":\"PCU-SK-CORE-BARRIER\",\"explanation\":\"2/7 requirements satisfied; target=7\",\"state\":\"closed\"}],\"join_ready\":false,\"join_task_id\":\"PCU-SK-20\",\"required_roles\":[],\"satisfied\":false,\"state\":\"open\",\"target\":6},\"rendezvous_id\":\"PCU-SK-CORE-RENDEZVOUS\",\"summary\":\"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\"}",
+        "references_json": "[{\"id\":\"PCU-SK-CORE-RENDEZVOUS\",\"type\":\"rendezvous\"}]",
+        "resolved_at": null,
+        "revision": 304,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "open",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "author_lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "blocking": 0,
+        "created_at": "2026-08-30T12:43:23Z",
+        "id": "85639625-052a-408c-a8b4-283f1e940d8e",
+        "kind": "rendezvous_arrival",
+        "linked_message_id": null,
+        "payload_json": "{\"condition\":{\"achieved\":1,\"arrived\":[\"PCU-SK-FRONTDOOR-LANE\"],\"arrived_roles\":[\"implementer\"],\"barrier_changes\":[{\"affected_active_tasks\":[],\"barrier_id\":\"PCU-SK-CORE-BARRIER\",\"explanation\":\"1/7 requirements satisfied; target=7\",\"state\":\"closed\"}],\"join_ready\":false,\"join_task_id\":\"PCU-SK-20\",\"required_roles\":[],\"satisfied\":false,\"state\":\"open\",\"target\":6},\"rendezvous_id\":\"PCU-SK-CORE-RENDEZVOUS\",\"summary\":\"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\"}",
+        "references_json": "[{\"id\":\"PCU-SK-CORE-RENDEZVOUS\",\"type\":\"rendezvous\"}]",
+        "resolved_at": null,
+        "revision": 298,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "open",
+        "task_id": "PCU-SK-11"
+      }
+    ],
+    "workflow_patch_artifacts": [
+      {
+        "artifact_ref": "5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "content_hash": "59526689612201a0d2fbd6b3e9e1e2ead4e6977f671961b19a7926f9271f702a",
+        "created_at": "2026-08-30T12:57:18Z",
+        "id": "c131e54f-97b9-4fbc-88b6-36bb883dabb8",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "PCU-SK-14",
+        "workspace_id": "b17fd31f-a4c2-46c5-a5a9-fbb4d5551a12"
+      },
+      {
+        "artifact_ref": "e06905165a380a56d485481217c0db08f2effa6e",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "content_hash": "4a5477ab197ce3d636f9a2ab748393a74fab93379e47b92c890b87b6bb83ec12",
+        "created_at": "2026-08-30T12:58:01Z",
+        "id": "d3f6d6ce-e422-4a60-b679-54f225e34691",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "PCU-SK-10",
+        "workspace_id": "dc8fff05-c5cc-405b-88c0-c22a1ba7ce72"
+      },
+      {
+        "artifact_ref": "21de9bd51acc328a6fec23236893925cfd84a7e6",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "content_hash": "f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553",
+        "created_at": "2026-08-30T12:43:23Z",
+        "id": "fd30970d-8253-48a5-bb73-195badf5eecf",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "PCU-SK-11",
+        "workspace_id": "c8becf05-ec05-400e-bd15-2ff843aa7932"
+      }
+    ],
     "workflow_recovery_audit": [],
     "workflow_rendezvous": [
       {
@@ -10526,7 +11586,7 @@
         "opened_at": null,
         "quorum": null,
         "required_roles_json": "[]",
-        "revision": 249,
+        "revision": 304,
         "run_id": "PCU-SK-RUN-V1",
         "state": "open"
       },
@@ -10544,7 +11604,40 @@
         "state": "open"
       }
     ],
-    "workflow_rendezvous_arrivals": [],
+    "workflow_rendezvous_arrivals": [
+      {
+        "arrived_at": "2026-08-30T12:43:23Z",
+        "artifact_json": "{\"kind\":\"commit\",\"ref\":\"21de9bd51acc328a6fec23236893925cfd84a7e6\"}",
+        "base_source_identity": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "context_version": 1,
+        "evidence_json": "[{\"id\":\"PCU-SK-11\",\"type\":\"handoff\"}]",
+        "final_source_identity": "21de9bd51acc328a6fec23236893925cfd84a7e6",
+        "interfaces_json": "{}",
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "revision": 298,
+        "state": "valid",
+        "summary": "Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.",
+        "task_id": "PCU-SK-11",
+        "warnings_json": "[]"
+      },
+      {
+        "arrived_at": "2026-08-30T12:57:19Z",
+        "artifact_json": "{\"kind\":\"commit\",\"ref\":\"5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e\"}",
+        "base_source_identity": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "context_version": 1,
+        "evidence_json": "[{\"id\":\"PCU-SK-14\",\"type\":\"handoff\"}]",
+        "final_source_identity": "5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e",
+        "interfaces_json": "{}",
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "revision": 304,
+        "state": "valid",
+        "summary": "Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.",
+        "task_id": "PCU-SK-14",
+        "warnings_json": "[]"
+      }
+    ],
     "workflow_rendezvous_participants": [
       {
         "lane_id": "PCU-SK-FRONTDOOR-LANE",
@@ -10639,7 +11732,141 @@
         "updated_at": "2026-08-27T14:03:52Z"
       }
     ],
-    "workflow_workspaces": []
+    "workflow_workspaces": [
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/integration-destination",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:15Z",
+        "diff_hash": null,
+        "id": "01d61529-0907-4f61-82ee-060de86aa104",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "merge_result_json": "{}",
+        "mode": "exclusive",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-08-30T12:02:15Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination"
+      },
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-13",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:13Z",
+        "diff_hash": null,
+        "id": "5d2d975d-44c0-4d28-ab52-14cf5ff05cfc",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-GUIDANCE-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-08-30T12:02:14Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-13"
+      },
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-12",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:13Z",
+        "diff_hash": null,
+        "id": "680bc36b-4cd0-49d7-a0a5-1eebdf5f2b70",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-RUNTIME-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-08-30T12:02:13Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-12"
+      },
+      {
+        "artifact_kind": "commit",
+        "artifact_ref": "5ccdd99ad13aaaee9f3fe1c21b0811a9ad89712e",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-14",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:14Z",
+        "diff_hash": "59526689612201a0d2fbd6b3e9e1e2ead4e6977f671961b19a7926f9271f702a",
+        "id": "b17fd31f-a4c2-46c5-a5a9-fbb4d5551a12",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:57:19Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-14"
+      },
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-15",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:14Z",
+        "diff_hash": null,
+        "id": "c63f4178-41c0-4fef-aa07-f19b00800f24",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-HARNESS-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-08-30T12:02:14Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-15"
+      },
+      {
+        "artifact_kind": "commit",
+        "artifact_ref": "21de9bd51acc328a6fec23236893925cfd84a7e6",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-11",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:13Z",
+        "diff_hash": "f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553",
+        "id": "c8becf05-ec05-400e-bd15-2ff843aa7932",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:43:23Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11"
+      },
+      {
+        "artifact_kind": "commit",
+        "artifact_ref": "e06905165a380a56d485481217c0db08f2effa6e",
+        "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
+        "branch": "pcu-v1/pcu-sk-10",
+        "cleanup_eligible": 0,
+        "created_at": "2026-08-30T12:02:12Z",
+        "diff_hash": "4a5477ab197ce3d636f9a2ab748393a74fab93379e47b92c890b87b6bb83ec12",
+        "id": "dc8fff05-c5cc-405b-88c0-c22a1ba7ce72",
+        "integration_task_id": "PCU-SK-20",
+        "lane_id": "PCU-SK-READ-PORT-LANE",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-08-30T12:58:01Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-10"
+      }
+    ]
   },
   "workflow_snapshot_version": 1
 }

@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-01: Freeze Skills-side kernel, compatibility, and submodule contracts
 
-Task revision: `249`; current project revision is in `todo-status.md`.
+Task revision: `288`; current project revision is in `todo-status.md`.
 
 ## Objective
 Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
