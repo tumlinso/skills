@@ -271,7 +271,10 @@ def dispatch_claim_in_transaction(
             raise TodoError("workflow_workspace_mismatch", "Workspace is not assigned to the selected run and lane")
         if workspace["mode"] != lane["workspace_mode"]:
             raise TodoError("workflow_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
-        if workspace["state"] not in {"active", "artifact_ready", "queued"}:
+        dispatchable_states = {"active", "artifact_ready", "queued"}
+        if lane["role"] == "integrator":
+            dispatchable_states.update({"conflict", "awaiting_gates", "gate_failed", "integrated"})
+        if workspace["state"] not in dispatchable_states:
             raise TodoError("workflow_workspace_inactive", "Workspace is not in a dispatchable state")
     now = utc_now()
     dispatch_id = dispatch_id or str(uuid.uuid4())

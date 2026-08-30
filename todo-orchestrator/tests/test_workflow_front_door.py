@@ -209,8 +209,18 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
         self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
         self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")
+        handed_off_integrator = protocol.finish_task(
+            workflow_handle=integrator["workflow_handle"], action="handoff", reason="resume integrated workspace"
+        )
+        self.assertEqual(handed_off_integrator["status"], "idle")
+        resumed_integrator = protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")
+        with self.repo.service.db.read() as conn:
+            rebound = conn.execute(
+                "SELECT workspace_id FROM workflow_dispatches WHERE lane_id='INTEGRATOR' ORDER BY created_at DESC LIMIT 1"
+            ).fetchone()
+        self.assertIsNotNone(rebound["workspace_id"])
         finished_integrator = protocol.finish_task(
-            workflow_handle=integrator["workflow_handle"], action="complete", disposition="implemented"
+            workflow_handle=resumed_integrator["workflow_handle"], action="complete", disposition="implemented"
         )
         self.assertEqual(finished_integrator["status"], "idle")
 

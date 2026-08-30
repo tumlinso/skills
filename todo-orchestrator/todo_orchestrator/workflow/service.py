@@ -315,6 +315,20 @@ class WorkflowKernel:
                 ).fetchone()
                 if resumed and (task_id is None or resumed["task_id"] == task_id):
                     now = utc_now()
+                    workspace_id = resumed["workspace_id"]
+                    if workspace_id is None and resumed["role"] == "integrator":
+                        recoverable = conn.execute(
+                            "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
+                            "AND state IN ('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','integrated') "
+                            "ORDER BY id LIMIT 1",
+                            (resumed["run_id"], resumed["lane_id"]),
+                        ).fetchone()
+                        if recoverable is not None:
+                            workspace_id = str(recoverable["id"])
+                            conn.execute(
+                                "UPDATE workflow_dispatches SET workspace_id=? WHERE id=?",
+                                (workspace_id, resumed["id"]),
+                            )
                     conn.execute("UPDATE sessions SET last_seen_at=? WHERE id=?", (now, session["id"]))
                     conn.execute("UPDATE claims SET heartbeat_at=? WHERE id=?", (now, resumed["claim_id"]))
                     conn.execute("UPDATE workflow_dispatches SET heartbeat_at=?,revision=? WHERE id=?", (now, revision, resumed["id"]))
@@ -370,8 +384,10 @@ class WorkflowKernel:
             context_version = self._context_version(conn, selected_run, str(selected["lane_id"]), str(selected["task_id"]))
             workspace = conn.execute(
                 "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
-                "AND state IN ('active','artifact_ready','queued') ORDER BY id LIMIT 1",
-                (selected_run, str(selected["lane_id"])),
+                "AND (state IN ('active','artifact_ready','queued') OR "
+                "(?='integrator' AND state IN ('conflict','awaiting_gates','gate_failed','integrated'))) "
+                "ORDER BY id LIMIT 1",
+                (selected_run, str(selected["lane_id"]), str(selected["role"])),
             ).fetchone()
             dispatch = dispatch_claim_in_transaction(
                 conn, revision, run_id=selected_run, lane_id=str(selected["lane_id"]),
