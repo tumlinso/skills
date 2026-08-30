@@ -119,7 +119,7 @@ class WorkflowKernel:
         if row is None or row["id"] is None:
             return None
         workspace = dict(row)
-        if workspace["state"] not in {"active", "artifact_ready"}:
+        if workspace["state"] not in {"active", "artifact_ready", "queued"}:
             raise TodoError("workflow_workspace_inactive", "The dispatch workspace is not active")
         if workspace["run_id"] != lineage.run_id or workspace["lane_id"] != lineage.lane_id:
             raise TodoError("workflow_workspace_scope_mismatch", "The dispatch workspace does not belong to this lane")
@@ -166,6 +166,49 @@ class WorkflowKernel:
         if later:
             return {}
         root = Path(str(workspace["worktree_path"]))
+        if workspace.get("state") == "queued":
+            with service.db.read() as conn:
+                existing = conn.execute(
+                    "SELECT a.id AS artifact_id,a.artifact_ref,a.content_hash,q.id AS queue_id,"
+                    "q.position,q.run_id,q.integration_task_id,q.integrator_lane_id "
+                    "FROM workflow_patch_artifacts a JOIN workflow_integration_queue q "
+                    "ON q.patch_artifact_id=a.id WHERE a.workspace_id=? AND a.task_id=? "
+                    "AND a.state='queued' AND q.state='queued' ORDER BY q.position LIMIT 1",
+                    (workspace["id"], lineage.task_id),
+                ).fetchone()
+            if existing is None:
+                raise TodoError(
+                    "queued_workspace_artifact_missing",
+                    "Queued producer workspace has no recoverable integration artifact",
+                )
+            head = subprocess.run(
+                ["git", "-C", str(root), "rev-parse", "--verify", "HEAD^{commit}"],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if head.returncode != 0 or head.stdout.strip() != str(existing["artifact_ref"]):
+                raise TodoError(
+                    "queued_workspace_head_mismatch",
+                    "Queued artifact no longer matches the managed producer HEAD",
+                )
+            return {
+                "artifact": {
+                    "artifact_id": str(existing["artifact_id"]),
+                    "workspace_id": str(workspace["id"]),
+                    "kind": "commit",
+                    "artifact_ref": str(existing["artifact_ref"]),
+                    "diff_hash": str(existing["content_hash"]),
+                },
+                "integration_request": {
+                    "queue_id": str(existing["queue_id"]),
+                    "position": int(existing["position"]),
+                    "run_id": str(existing["run_id"]),
+                    "artifact_id": str(existing["artifact_id"]),
+                },
+                "integration_task_id": str(existing["integration_task_id"]),
+                "integrator_lane_id": str(existing["integrator_lane_id"]),
+            }
         status = subprocess.run(
             ["git", "-C", str(root), "status", "--porcelain=v1", "-z"],
             capture_output=True,
@@ -324,7 +367,7 @@ class WorkflowKernel:
             context_version = self._context_version(conn, selected_run, str(selected["lane_id"]), str(selected["task_id"]))
             workspace = conn.execute(
                 "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
-                "AND state IN ('active','artifact_ready') ORDER BY id LIMIT 1",
+                "AND state IN ('active','artifact_ready','queued') ORDER BY id LIMIT 1",
                 (selected_run, str(selected["lane_id"])),
             ).fetchone()
             dispatch = dispatch_claim_in_transaction(
