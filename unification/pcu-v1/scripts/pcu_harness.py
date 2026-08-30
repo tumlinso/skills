@@ -413,10 +413,10 @@ def candidate_plan(
             "-m",
             "pip",
             "install",
-            "--no-deps",
             str(skills_root / "todo-orchestrator"),
             str(project_control_root),
         ),
+        (str(destination / "bin" / "project-control"), "--help"),
         (str(candidate_python), "-m", "project_control", "--help"),
     )
     return CandidatePlan(str(destination), commands, str(rollback_state.resolve()))

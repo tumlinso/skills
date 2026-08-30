@@ -186,6 +186,37 @@ class CandidateAndRollbackTests(unittest.TestCase):
             ))
             self.assertIn(str(skills / "todo-orchestrator"), plan.commands[1])
             self.assertIn(str(project_control), plan.commands[1])
+            self.assertNotIn("--no-deps", plan.commands[1])
+            self.assertEqual(plan.commands[2], (str(destination / "bin" / "project-control"), "--help"))
+            self.assertEqual(
+                plan.commands[3],
+                (str(destination / "bin" / "python"), "-m", "project_control", "--help"),
+            )
+
+    def test_candidate_plan_retains_both_local_distributions_and_dependencies(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            temp = Path(raw)
+            skills = init_repo(temp / "skills")
+            (skills / "todo-orchestrator").mkdir()
+            (skills / "todo-orchestrator" / "pyproject.toml").write_text("[project]\nname='todo-orchestrator'\n")
+            commit_all(skills, "skills")
+            project_control = init_repo(temp / "project-control")
+            (project_control / "pyproject.toml").write_text("[project]\nname='project-control'\n")
+            commit_all(project_control, "project control")
+
+            plan = HARNESS.candidate_plan(
+                skills_root=skills,
+                project_control_root=project_control,
+                destination=temp / "candidate",
+                rollback_state=temp / "rollback.json",
+            )
+
+            install = plan.commands[1]
+            self.assertEqual(install[:4], (str(temp / "candidate/bin/python"), "-m", "pip", "install"))
+            self.assertEqual(
+                install[4:],
+                (str(skills / "todo-orchestrator"), str(project_control)),
+            )
 
     def test_atomic_swap_runs_rollback_on_verification_failure(self) -> None:
         calls: list[str] = []
