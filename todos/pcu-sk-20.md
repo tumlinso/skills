@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-20: Integrate Skills kernel and compatibility changes
 
-Task revision: `288`; current project revision is in `todo-status.md`.
+Task revision: `694`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `integration_exclusive`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "task_id": "PCU-SK-31",
+  "observed_at": "2026-08-30T15:47:40Z",
+  "scope": {
+    "rehearsal_targets": "synthetic representative repositories in temporary directories only",
+    "clone_method": "git clone --no-local",
+    "linked_worktrees_used": false,
+    "real_downstream_repositories_used": false,
+    "real_downstream_remotes_pushed": false
+  },
+  "fixture_harness_rehearsal": {
+    "source_unchanged": true,
+    "independent_common_dir": true,
+    "dry_run_clean": true,
+    "apply_changed_paths": [
+      ".todo-orchestrator/project.json",
+      "AGENTS.md"
+    ],
+    "reapply_idempotent": true,
+    "remove_restored": true,
+    "original_ancestry_reachable": true
+  },
+  "project_control_migrator_rehearsal": {
+    "source_unchanged": true,
+    "independent_common_dir": true,
+    "dry_run_clean": true,
+    "apply_status": "applied",
+    "apply_changed_paths": [
+      ".project-control/pcu-v1-migration.json",
+      ".todo-orchestrator/project.json",
+      "AGENTS.md"
+    ],
+    "reapply_idempotent": true,
+    "remove_status": "applied",
+    "remove_changed_paths": [
+      ".project-control/pcu-v1-migration.json",
+      ".todo-orchestrator/project.json",
+      "AGENTS.md"
+    ],
+    "remove_only_owned_fields": true,
+    "project_uuid_unchanged": true,
+    "sqlite_authority_bytes_unchanged": true,
+    "task_history_unchanged": true,
+    "event_history_unchanged": true,
+    "user_authored_content_preserved": true,
+    "ordinary_forward_apply_commit": true,
+    "ordinary_forward_remove_commit": true,
+    "forward_commit_count": 2,
+    "original_ancestry_reachable": true,
+    "connectivity_check": "passed",
+    "final_clone_clean": true
+  },
+  "cellerator_observer_sentinel": {
+    "observation_method": "official MCP client against the existing installed Project Control Streamable HTTP observer",
+    "direct_cellerator_git_todo_or_shell_access": false,
+    "before": {
+      "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+      "dirty": false,
+      "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "todo_revision": null,
+      "todo_semantic_authority_fingerprint": null,
+      "workflow_authority_fingerprint": null,
+      "observer_status": "partial"
+    },
+    "after": {
+      "head": "12a495f3dc3e3376728b160121086408be5f30f5",
+      "dirty": false,
+      "working_tree_fingerprint": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "project_uuid": "0ccaac37-dbbf-448e-a5f8-def197a70aba",
+      "todo_revision": null,
+      "todo_semantic_authority_fingerprint": null,
+      "workflow_authority_fingerprint": null,
+      "observer_status": "partial"
+    },
+    "available_fields_unchanged": true,
+    "unavailable_components": {
+      "todo_export": "todo_export_unavailable",
+      "todo_semantic_state": "todo_semantic_unavailable",
+      "todo_status": "todo_status_unavailable",
+      "todo_workflow": "todo_workflow_semantic_unavailable"
+    },
+    "limitation": "The installed observer proved unchanged Git HEAD, clean working-tree fingerprint, and project UUID. It could not expose Todo revision or authority fingerprints, so this task does not claim direct proof for unavailable Todo/event/session/resource fields and did not bypass the observer to obtain them."
+  },
+  "safety": {
+    "cellerator_rehearsal_targeted": false,
+    "cellerator_direct_accessed": false,
+    "live_runtime_changed": false,
+    "c4q_changed": false,
+    "real_downstream_changed": false,
+    "local_worker_launched": false,
+    "credentials_or_capability_handles_recorded": false
+  },
+  "gate": {
+    "validation_result": "passed_with_observer_limitation",
+    "manual_gate_accepted": false,
+    "recommended_command_contract": "Parse this evidence and require both independent_common_dir values, both dry_run_clean values, idempotent reapply, owned-path-only apply/remove, unchanged UUID/SQLite/task/event evidence, two ordinary forward commits, reachable ancestry, clean connectivity, unchanged available Cellerator observer fields, explicit Todo-provider limitation, and every safety flag false."
+  }
+}

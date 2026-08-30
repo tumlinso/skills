@@ -3,22 +3,24 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `311`
+Project revision: `694`
 
 ## Workstreams
 - `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-01` | status: done | execution: closed | next: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
-- `PCU-SK-10` | status: in_progress | execution: idle | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
+- `PCU-SK-10` | status: done | execution: closed | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
 - `PCU-SK-11` | status: done | execution: closed | next: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
-- `PCU-SK-12` | status: in_progress | execution: idle | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
-- `PCU-SK-13` | status: in_progress | execution: idle | next: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
+- `PCU-SK-12` | status: done | execution: closed | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
+- `PCU-SK-13` | status: done | execution: closed | next: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
 - `PCU-SK-14` | status: done | execution: closed | next: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
-- `PCU-SK-15` | status: in_progress | execution: idle | next: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
-- `PCU-SK-20` | status: planned | execution: ready | next: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
-- `PCU-SK-21` | status: planned | execution: ready | next: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
-- `PCU-SK-22` | status: planned | execution: ready | next: Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.
-- `PCU-SK-30` | status: planned | execution: ready | next: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
-- `PCU-SK-31` | status: planned | execution: ready | next: Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.
+- `PCU-SK-15` | status: done | execution: closed | next: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
+- `PCU-SK-20` | status: done | execution: closed | next: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
+- `PCU-SK-21` | status: done | execution: closed | next: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
+- `PCU-SK-22` | status: done | execution: closed | next: Build an isolated candidate from Skills plus the pinned submodule, resolving only missing Todo distribution metadata and a forward validated Project Control repin as necessary; verify both profiles and one authority without live registration/service changes.
+- `PCU-SK-23` | status: planned | execution: ready | next: Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
+- `PCU-SK-24` | status: planned | execution: ready | next: Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.
+- `PCU-SK-30` | status: in_progress | execution: idle | next: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
+- `PCU-SK-31` | status: done | execution: closed | next: Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: done | execution: closed | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
 - `WFU-02` | status: done | execution: closed | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-10: Add the explicit Todo read-only in-process port
 
-Task revision: `305`; current project revision is in `todo-status.md`.
+Task revision: `694`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `idle`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._

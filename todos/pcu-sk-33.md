@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-33: Finalize PCU-V1 release state
 
-Task revision: `288`; current project revision is in `todo-status.md`.
+Task revision: `694`; current project revision is in `todo-status.md`.
 
 ## Objective
 Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.
@@ -18,7 +18,11 @@ Record installed versions, pin, schemas, authority fingerprints, compatibility, 
 _None._
 
 ## Ownership
-_No structured ownership._
+- `exclusive`: `unification/pcu-v1/evidence/release/pcu-sk-33.final.json`
+- `read`: `.gitmodules`
+- `read`: `project-control`
+- `read`: `todo-orchestrator`
+- `read`: `unification/pcu-v1`
 
 ## Dependencies
 - `task`: `PCU-SK-32`

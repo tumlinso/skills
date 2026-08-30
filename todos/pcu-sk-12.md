@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-12: Consolidate runtime identity and compatibility variables
 
-Task revision: `288`; current project revision is in `todo-status.md`.
+Task revision: `694`; current project revision is in `todo-status.md`.
 
 ## Objective
 Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `idle`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `implemented`
 
 ## Next Action
 _None._
