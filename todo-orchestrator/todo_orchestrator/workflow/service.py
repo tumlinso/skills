@@ -647,7 +647,10 @@ class WorkflowKernel:
                         service.refresh({lineage.task_id})
                         return {
                             "status": "blocked",
-                            "gates": gate_results,
+                            "gates": [
+                                {key: item.get(key) for key in ("gate_id", "status", "evidence_id")}
+                                for item in gate_results
+                            ],
                             "integration": integration_results,
                         }
 
@@ -665,7 +668,10 @@ class WorkflowKernel:
             service.refresh({lineage.task_id})
             return {
                 "status": "passed" if all(item.get("status") == "passed" for item in results) else "blocked",
-                "gates": results,
+                "gates": [
+                    {key: item.get(key) for key in ("gate_id", "status", "evidence_id")}
+                    for item in results
+                ],
                 "integration": integration_results,
             }
         if action in {"accept_child", "reject_child"}:
