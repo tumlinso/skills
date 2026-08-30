@@ -12,6 +12,7 @@ import json
 import os
 import re
 import socket
+import subprocess
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -133,6 +134,45 @@ class RecoveryEngine:
                 raise TodoError("recovery_project_mismatch", "Recovery project identity does not match the database")
             if task_id and not conn.execute("SELECT 1 FROM tasks WHERE id=?", (task_id,)).fetchone():
                 raise TodoError("task_not_found", f"Unknown task {task_id}")
+
+            resumable_workspace_ids: set[str] = set()
+            blocked_query = (
+                "SELECT t.id AS task_id,l.id AS lane_id,w.id AS workspace_id,w.worktree_path "
+                "FROM tasks t JOIN workflow_lane_tasks lt ON lt.task_id=t.id "
+                "JOIN workflow_lanes l ON l.id=lt.lane_id "
+                "LEFT JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
+                "WHERE t.status='blocked' AND lt.state='queued' AND l.state='attention_required' "
+                "AND EXISTS(SELECT 1 FROM handoffs h WHERE h.task_id=t.id AND h.kind='block') "
+                "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=t.id AND c.state IN ('active','orphaned'))"
+                + (" AND t.id=?" if task_id else "")
+                + " ORDER BY t.id,l.id"
+            )
+            for blocked in (dict(row) for row in conn.execute(blocked_query, args)):
+                workspace_path = blocked.get("worktree_path")
+                dirty = False
+                if workspace_path:
+                    status = subprocess.run(
+                        ["git", "-C", str(workspace_path), "status", "--porcelain=v1", "-z"],
+                        capture_output=True,
+                        check=False,
+                    )
+                    dirty = status.returncode != 0 or bool(status.stdout)
+                if dirty:
+                    blockers.append({
+                        "kind": "blocked_task_workspace",
+                        "task_id": blocked["task_id"],
+                        "lane_id": blocked["lane_id"],
+                        "state": "dirty_or_unavailable",
+                    })
+                    continue
+                actions.append({
+                    "kind": "requeue_blocked_task",
+                    "task_id": blocked["task_id"],
+                    "lane_id": blocked["lane_id"],
+                    "workspace_id": blocked.get("workspace_id"),
+                })
+                if blocked.get("workspace_id"):
+                    resumable_workspace_ids.add(str(blocked["workspace_id"]))
 
             dispatch_query = (
                 "SELECT d.*,c.task_id FROM workflow_dispatches d JOIN claims c ON c.id=d.claim_id "
@@ -257,6 +297,12 @@ class RecoveryEngine:
             )
             workspace_args = (task_id, task_id) if task_id else ()
             for workspace in (dict(row) for row in conn.execute(workspace_query, workspace_args)):
+                if str(workspace["id"]) in resumable_workspace_ids:
+                    warnings.append({
+                        "kind": "workspace_preserved", "id": workspace["id"], "state": workspace["state"],
+                        "worktree_path": workspace.get("worktree_path"), "cleanup_eligible": False,
+                    })
+                    continue
                 warnings.append({
                     "kind": "workspace_preserved", "id": workspace["id"], "state": workspace["state"],
                     "worktree_path": workspace.get("worktree_path"), "cleanup_eligible": False,
@@ -385,6 +431,17 @@ class RecoveryEngine:
                         "UPDATE tasks SET attention_reason=NULL,updated_at=?,revision=? "
                         "WHERE id=? AND status='in_progress'",
                         (now, revision, action["task_id"]),
+                    )
+                elif kind == "requeue_blocked_task":
+                    conn.execute(
+                        "UPDATE tasks SET status='planned',attention_reason=NULL,updated_at=?,revision=? "
+                        "WHERE id=? AND status='blocked'",
+                        (now, revision, action["task_id"]),
+                    )
+                    conn.execute(
+                        "UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? "
+                        "WHERE id=? AND state='attention_required'",
+                        (now, revision, action["lane_id"]),
                     )
                 elif kind == "finalize_terminal_checkpoints":
                     results.append({"kind": kind, **recover_terminal_checkpoints(conn, self.repo_root, str(action["task_id"]), None, revision)})
