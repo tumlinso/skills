@@ -593,7 +593,17 @@ class WorkspaceService:
         destination = Path(row["worktree_path"])
         aborted = self._git(destination, ["cherry-pick", "--abort"])
         if aborted.returncode != 0:
-            raise TodoError("integration_conflict_abort_failed", "Preserved conflict could not be restored safely")
+            # Older --no-commit integrations may leave an unmerged index
+            # without a sequencer record.  The destination was proven clean
+            # immediately before apply, so restoring the recorded pre-apply
+            # tree is the only bounded fallback; untracked residue still makes
+            # the subsequent cleanliness check fail closed.
+            restored = self._git(
+                destination,
+                ["restore", "--source", pre_apply_head, "--staged", "--worktree", "--", "."],
+            )
+            if restored.returncode != 0:
+                raise TodoError("integration_conflict_abort_failed", "Preserved conflict could not be restored safely")
         if self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed"):
             raise TodoError("integration_conflict_restore_dirty", "Conflict restoration did not produce a clean destination")
         if self._commit(destination, "HEAD") != pre_apply_head:

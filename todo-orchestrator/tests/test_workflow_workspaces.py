@@ -457,6 +457,9 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertTrue(destination_path.exists())
         self.assertIn("UU shared.txt", git(destination_path, "status", "--porcelain=v1"))
         pre_apply_head = git(destination_path, "rev-parse", "HEAD")
+        cherry_pick_head = Path(git(destination_path, "rev-parse", "--git-path", "CHERRY_PICK_HEAD"))
+        if cherry_pick_head.exists():
+            cherry_pick_head.unlink()
         retried = self.service.retry_conflict(queue_id=str(queued["queue_id"]))
         self.assertEqual(retried["state"], "queued")
         self.assertEqual(retried["restored_head"], pre_apply_head)
