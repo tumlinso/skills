@@ -1,0 +1,16 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "todo-orchestrator"
+version = "0.3.0"
+description = "Transactional workflow kernel and semantic authority"
+requires-python = ">=3.11"
+dependencies = [
+  "mcp[cli]>=1.0,<2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["todo_orchestrator"]
+
