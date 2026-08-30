@@ -81,6 +81,67 @@
           "required": true
         }
       ]
+    },
+    {
+      "id": "PCU-SK-41",
+      "kind": "task",
+      "tags": ["release_task", "validation_resolution"],
+      "title": "Retry the corrected read-port candidate cutover",
+      "objective": "Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.",
+      "priority": 490,
+      "parallel_policy": "integration_exclusive",
+      "scope": {
+        "exclusive_paths": [
+          "project-control",
+          "unification/pcu-v1/PCU_RELEASE.lock.json",
+          "unification/pcu-v1/evidence/read-port-remediation"
+        ],
+        "read_paths": [
+          ".gitmodules",
+          "todo-orchestrator",
+          "unification/pcu-v1/contracts",
+          "unification/pcu-v1/scripts",
+          "pcu-v1-read-port-remediation.plan.json"
+        ],
+        "forbidden_paths": [
+          "C4Q-01",
+          "workflow-unification/evidence",
+          "todos/C4Q-01.md",
+          "Cellerator",
+          "CellShard",
+          "Baseplane",
+          "GlassHelix",
+          "BioPrep"
+        ],
+        "shared_locks": ["pcu-installed-runtime", "pcu-submodule-update"]
+      },
+      "invariants": [
+        "PCU-SK-TODO-AUTHORITY",
+        "PCU-SK-ONE-LIVE-REGISTRATION",
+        "PCU-SK-CELLERATOR-SENTINEL",
+        "PCU-SK-ROLLBACK",
+        "PCU-SK-NO-MCP-RECURSION",
+        "PCU-SK-NO-CLEANUP"
+      ],
+      "notes": "External precondition: PCU-PC-42 has produced a clean ordinary forward Project Control capability-remediation release. Cellerator remains observer-only without exception.",
+      "gates": [
+        {
+          "id": "PCU-SK-41-REMEDIATION",
+          "type": "command",
+          "argv": [
+            "python",
+            "-c",
+            "from pathlib import Path; import json; d=json.loads(Path('unification/pcu-v1/evidence/read-port-remediation/pcu-sk-41.json').read_text()); assert d['result']=='validated'; assert d['profiles']['observer_tool_count']==15 and d['profiles']['codex_tool_count']==20; assert d['registration_names']==['project-control']; assert d['service']['active'] and d['service']['ready']; c=d['cellerator']; assert c['head']=='12a495f3dc3e3376728b160121086408be5f30f5' and c['revision']==3016 and c['project_uuid']=='0ccaac37-dbbf-448e-a5f8-def197a70aba' and c['authority_fingerprint']=='c15eb156aec331173cbb553948cccca8c99830acd1deafa64e532672b3c0cda5' and c['observer_only'] and not c['direct_access']; q=d['quiescence']; assert q['active_claims_after']==0 and q['active_agents_after']==0 and q['local_children_after']==0"
+          ],
+          "required": true
+        },
+        {
+          "id": "PCU-SK-41-DIFF",
+          "type": "command",
+          "argv": ["git", "diff", "--check"],
+          "required": true
+        }
+      ]
     }
   ],
   "runs": [
@@ -121,6 +182,13 @@
           "workspace": {
             "mode": "exclusive"
           }
+        },
+        {
+          "id": "PCU-SK-READ-PORT-RETRY-LANE",
+          "parent_lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
+          "role": "integrator",
+          "tasks": ["PCU-SK-41"],
+          "workspace": {"mode": "exclusive"}
         }
       ]
     }
