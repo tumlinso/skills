@@ -3,9 +3,22 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `248`
+Project revision: `249`
 
 ## Workstreams
+- `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
+- `PCU-SK-01` | status: done | execution: closed | next: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
+- `PCU-SK-10` | status: planned | execution: ready | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
+- `PCU-SK-11` | status: planned | execution: ready | next: Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.
+- `PCU-SK-12` | status: planned | execution: ready | next: Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.
+- `PCU-SK-13` | status: planned | execution: ready | next: Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.
+- `PCU-SK-14` | status: planned | execution: ready | next: Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.
+- `PCU-SK-15` | status: planned | execution: ready | next: Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.
+- `PCU-SK-20` | status: planned | execution: ready | next: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
+- `PCU-SK-21` | status: planned | execution: ready | next: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
+- `PCU-SK-22` | status: planned | execution: ready | next: Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.
+- `PCU-SK-30` | status: planned | execution: ready | next: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
+- `PCU-SK-31` | status: planned | execution: ready | next: Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: done | execution: closed | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
 - `WFU-02` | status: done | execution: closed | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
@@ -33,10 +46,12 @@ Project revision: `248`
 - `CWM-08` | status: done | execution: closed | next: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
 - `CWM-09` | status: done | execution: closed | next: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | status: done | execution: closed | next: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
+- `PCU-SK-32` | status: planned | execution: ready | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `WFU-30` | status: done | execution: closed | next: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
 - `CWM-01` | status: done | execution: closed | next: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | status: done | execution: closed | next: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | status: done | execution: closed | next: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.
+- `PCU-SK-33` | status: planned | execution: ready | next: Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.
 - `CWM-04` | status: done | execution: closed | next: Create the isolated installer, Codex stdio registration, protocol smoke test, idempotent AGENTS routing migration, removal path, and migration report without rewriting active plans.
 - `WFU-31` | status: done | execution: closed | next: After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
 - `CWM-05` | status: done | execution: closed | next: Integrate the user's latest local-worker repair, validate todo/ctxpp/local-worker/CUDA adapters, run one real read-only MCP delegation, one bounded writable delegation, and preserve immediate local-unavailable fallback.

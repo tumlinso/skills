@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T14:08:44Z",
+  "generated_at": "2026-08-30T11:43:03Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 248,
+  "project_revision": 249,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -102,9 +102,109 @@
         "id": 190,
         "required_state": "done",
         "type": "validation_task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-10",
+        "id": 191,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-11",
+        "id": 192,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-12",
+        "id": 193,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-13",
+        "id": 194,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-14",
+        "id": 195,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-15",
+        "id": 196,
+        "required_state": "done",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-VALIDATION-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-30",
+        "id": 197,
+        "required_state": "done",
+        "type": "validation_task"
+      },
+      {
+        "barrier_id": "PCU-SK-VALIDATION-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-31",
+        "id": 198,
+        "required_state": "done",
+        "type": "validation_task"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-CORE-RENDEZVOUS",
+        "id": 199,
+        "required_state": "satisfied",
+        "type": "rendezvous"
+      },
+      {
+        "barrier_id": "PCU-SK-VALIDATION-BARRIER",
+        "dispositions_json": "[]",
+        "entity_id": "PCU-SK-VALIDATION-RENDEZVOUS",
+        "id": 200,
+        "required_state": "satisfied",
+        "type": "rendezvous"
       }
     ],
     "barriers": [
+      {
+        "explanation": "0/7 requirements satisfied; target=7",
+        "id": "PCU-SK-CORE-BARRIER",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "revision": 249,
+        "state": "closed",
+        "title": "All Skills core lanes ready for integration"
+      },
+      {
+        "explanation": "0/3 requirements satisfied; target=3",
+        "id": "PCU-SK-VALIDATION-BARRIER",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "revision": 249,
+        "state": "closed",
+        "title": "Cross-stack validation and independent-clone migration rehearsal complete"
+      },
       {
         "explanation": "6/6 requirements satisfied; target=6",
         "id": "WFU-CORE-RENDEZVOUS",
@@ -134,6 +234,31 @@
     ],
     "checkpoint_interfaces": [
       {
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "interface_id": "PCU-FRONTDOOR/1",
+        "version": "1"
+      },
+      {
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "interface_id": "PCU-RUNTIME-IDENTITY/1",
+        "version": "1"
+      },
+      {
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "interface_id": "PCU-SHIM-COMPAT/1",
+        "version": "1"
+      },
+      {
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "interface_id": "PCU-SUBMODULE/1",
+        "version": "1"
+      },
+      {
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "interface_id": "PCU-TODO-READ-PORT/1",
+        "version": "1"
+      },
+      {
         "checkpoint_id": "WFU-KERNEL-CONTRACT-V1",
         "interface_id": "WFU-KERNEL-CONTRACT",
         "version": "1"
@@ -145,6 +270,16 @@
       }
     ],
     "checkpoints": [
+      {
+        "id": "PCU-SK-CONTRACTS-FROZEN",
+        "metadata_json": "{}",
+        "reached_at": "2026-08-30T11:43:03Z",
+        "revision": 249,
+        "revoked_at": null,
+        "state": "reached",
+        "task_id": "PCU-SK-01",
+        "title": "PCU Skills contracts frozen"
+      },
       {
         "id": "WFU-KERNEL-CONTRACT-V1",
         "metadata_json": "{}",
@@ -2647,6 +2782,16 @@
         "revision": 248,
         "seq": 248,
         "timestamp": "2026-08-27T14:08:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.agents/skills/pcu-v1.skills.plan.json\"}",
+        "revision": 249,
+        "seq": 249,
+        "timestamp": "2026-08-30T11:43:03Z"
       }
     ],
     "evidence": [
@@ -3629,6 +3774,175 @@
       },
       {
         "checkpoint_id": null,
+        "config_json": "{\"description\": \"Focused read-port and existing read-only compatibility suites.\"}",
+        "id": "PCU-SK-10-READ-PORT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-10",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Front-door, historical recovery, denial, and recovery suites.\"}",
+        "id": "PCU-SK-11-FRONTDOOR",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-11",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Runtime identity, local-worker canonical runtime, and background runtime suites.\"}",
+        "id": "PCU-SK-12-RUNTIME",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-12",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Current guidance contains no second ordinary coding-workflow front door.\"}",
+        "id": "PCU-SK-13-GUIDANCE",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-13",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Entry-point, six-tool, no-second-backend, installer rollback, and historical recovery compatibility.\"}",
+        "id": "PCU-SK-14-SHIM",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-14",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Fixture-only harness tests and no-live-repository-mutation sentinel.\"}",
+        "id": "PCU-SK-15-HARNESS",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-15",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Full Todo, affected local-worker, compatibility package, and git diff-check suites.\"}",
+        "id": "PCU-SK-20-INTEGRATION",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-20",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Submodule status, recursive fresh clone, release lock, and no copied history.\"}",
+        "id": "PCU-SK-21-SUBMODULE",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-21",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Candidate build, discovery, disposable convergence, observer sentinel, and unchanged live runtime.\"}",
+        "id": "PCU-SK-22-CANDIDATE",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-22",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Complete cross-stack validation matrix.\"}",
+        "id": "PCU-SK-30-VALIDATION",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-30",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Independent-clone, ancestry, UUID/history, owned-field, forward-change, remove, and real-sentinel proof.\"}",
+        "id": "PCU-SK-31-MIGRATION",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-31",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Rollback capture, digest, atomic registration, health/discovery, shared revision, no concurrent alias, and rollback smoke.\"}",
+        "id": "PCU-SK-32-CUTOVER",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-32",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"description\": \"Clean repositories, exact pin, healthy services, no PCU claims, unchanged downstream sentinels.\"}",
+        "id": "PCU-SK-33-FINAL",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 249,
+        "status": "pending",
+        "task_id": "PCU-SK-33",
+        "type": "manual",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"workflow-unification/evidence/preflight.json\", \"workflow-unification/rollback.md\", \"workflow-unification-v3.plan.json\"]}",
         "id": "WFU-00-DIFF",
         "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
@@ -4189,6 +4503,61 @@
     ],
     "interfaces": [
       {
+        "content_hash": "f891836ce7dfa6a35c41387ac556a673d23464e598ad34e8a9a5eaea2e9a72db",
+        "contract_paths_json": "[\"unification/pcu-v1/contracts/frontdoor.md\"]",
+        "frozen_at": null,
+        "id": "PCU-FRONTDOOR/1",
+        "owner_task_id": "PCU-SK-01",
+        "revised_at": null,
+        "revision": 249,
+        "state": "frozen",
+        "version": "1"
+      },
+      {
+        "content_hash": "dc699bd82ef787661cb40321e67a63e0bb3d214fd7be9034aa56e41abf03953a",
+        "contract_paths_json": "[\"unification/pcu-v1/contracts/runtime-identity.md\"]",
+        "frozen_at": null,
+        "id": "PCU-RUNTIME-IDENTITY/1",
+        "owner_task_id": "PCU-SK-01",
+        "revised_at": null,
+        "revision": 249,
+        "state": "frozen",
+        "version": "1"
+      },
+      {
+        "content_hash": "6a2957990c6db128c348045d0b9ac26a1d1e527f173f911378b86a14255c9c05",
+        "contract_paths_json": "[\"unification/pcu-v1/contracts/shim-compat.md\"]",
+        "frozen_at": null,
+        "id": "PCU-SHIM-COMPAT/1",
+        "owner_task_id": "PCU-SK-01",
+        "revised_at": null,
+        "revision": 249,
+        "state": "frozen",
+        "version": "1"
+      },
+      {
+        "content_hash": "4f14721f3e0e9e2d69eef834b081af1e3166a8b8c128f807bc4fdcc7d509fec2",
+        "contract_paths_json": "[\"unification/pcu-v1/contracts/submodule.md\"]",
+        "frozen_at": null,
+        "id": "PCU-SUBMODULE/1",
+        "owner_task_id": "PCU-SK-01",
+        "revised_at": null,
+        "revision": 249,
+        "state": "frozen",
+        "version": "1"
+      },
+      {
+        "content_hash": "cb21272b0abfca489bbb1ac96df3d490a6a1f931727c7c8b7d40717c195a0a89",
+        "contract_paths_json": "[\"unification/pcu-v1/contracts/todo-read-port.md\"]",
+        "frozen_at": null,
+        "id": "PCU-TODO-READ-PORT/1",
+        "owner_task_id": "PCU-SK-01",
+        "revised_at": null,
+        "revision": 249,
+        "state": "frozen",
+        "version": "1"
+      },
+      {
         "content_hash": "1c9eae28541e40b85aa43a21f4246f317353fddffa5fe518956808c90360f76b",
         "contract_paths_json": "[\"workflow-unification/contracts/kernel-contract-v1.md\"]",
         "frozen_at": "2026-08-27T11:00:21Z",
@@ -4265,6 +4634,97 @@
         "enforcement": null,
         "id": "CWM-USER",
         "rule": "Never reset, clean, overwrite, or commit unrelated user work.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-C4Q-ISOLATION",
+        "rule": "C4Q-01 and every C4Q-owned source or evidence path are outside PCU scope.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-CELLERATOR-SENTINEL",
+        "rule": "Cellerator is outside PCU-V1 mutation authority; only read-only Project Control observation and genuinely independent-clone rehearsal are allowed, and detected mutation is a campaign failure without automatic repair.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-DOWNSTREAM-NONDESTRUCTIVE",
+        "rule": "Downstream migration changes only owned guidance/configuration in a new ordinary commit and never rewrites history or identity.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-FRONTDOOR-COMPATIBILITY",
+        "rule": "New projects use project-control; existing coding-workflow projects remain valid during the migration window.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-HISTORY",
+        "rule": "Existing Git and todo history remains intact and is extended only by ordinary forward commits and events.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-LEGACY-OWNER-COMPATIBILITY",
+        "rule": "Historical coding-workflow sessions and claims remain readable and recoverable.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-NO-CLEANUP",
+        "rule": "PCU-V1 does not delete the compatibility package, standalone checkout, historical worktrees, stale sessions, or state files.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-NO-MCP-RECURSION",
+        "rule": "No Skills shim or Todo component implements a workflow operation by calling another MCP server.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-ONE-LIVE-REGISTRATION",
+        "rule": "Only project-control is registered as the live Codex MCP after cutover.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-ROLLBACK",
+        "rule": "Candidate installation and final cutover retain an automatic restoration path.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-SECRETS",
+        "rule": "No runtime or approval secret enters repository artifacts.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-SUBMODULE-HISTORY",
+        "rule": "Project Control enters Skills only as a gitlink to its existing repository history.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "PCU-SK-TODO-AUTHORITY",
+        "rule": "Todo Orchestrator remains the sole workflow database, transaction, revision, scheduling, capability, and recovery authority.",
         "scope_json": "{}",
         "severity": "error"
       },
@@ -4354,6 +4814,21 @@
         "capacity": 1,
         "metadata_json": "{}",
         "name": "cwm-tools"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{}",
+        "name": "pcu-installation-candidate"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{}",
+        "name": "pcu-installed-runtime"
+      },
+      {
+        "capacity": 1,
+        "metadata_json": "{}",
+        "name": "pcu-submodule-update"
       },
       {
         "capacity": 1,
@@ -4631,6 +5106,366 @@
         "mode": "read",
         "path": "todo-orchestrator",
         "task_id": "CWM-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "pcu-v1.skills.plan.json",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/ROLLBACK.md",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/evidence/preflight.json",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "C4Q",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "c4q",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "forbidden",
+        "path": "workflow-unification/evidence/c4q",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "read",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "read",
+        "path": "workflow-unification",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/CAMPAIGN.md",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/campaign.json",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "read",
+        "path": "AGENTS.md",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "read",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_read_only_schema_compatibility.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_read_port.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/db.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/read_port.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/semantic/read_port.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/service.py",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/todo_orchestrator/semantic",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_force_release.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_live_claim_override.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_workflow_front_door.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/claims.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/front_door.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/sessions.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/service.py",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/todo_orchestrator/workflow",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/canonical_runtime.py",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_canonical_runtime.py",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_background_runtime.py",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_runtime_identity.py",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/runtime_identity.py",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "mode": "exclusive",
+        "path": "AGENTS.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler/SKILL.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/SKILL.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/SKILL.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/references/full-workflow-compatibility.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/references/workflow-v3-operations.md",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "forbidden",
+        "path": "todos",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "forbidden",
+        "path": "workflow-unification-v3.plan.json",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "forbidden",
+        "path": "workflow-unification/evidence",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".github/workflows/coding-workflow-mcp.yml",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".github/workflows/project-control-unification.yml",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/pcu_v1",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/fixtures",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/scripts",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".github/workflows",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/pyproject.toml",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/__init__.py",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow/mcp/server.py",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "read",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".gitmodules",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "mode": "exclusive",
+        "path": "project-control",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "mode": "exclusive",
+        "path": "unification/pcu-v1/PCU_RELEASE.lock.json",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "mode": "read",
+        "path": "unification/pcu-v1/contracts",
+        "task_id": "PCU-SK-21"
       },
       {
         "mode": "exclusive",
@@ -6150,6 +6985,160 @@
         "prerequisite_task_id": null,
         "task_id": "WFU-31",
         "type": "barrier"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 490,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-00",
+        "task_id": "PCU-SK-01",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 491,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-10",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 492,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-11",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 493,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-12",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 494,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-13",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 495,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-14",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": "PCU-SK-CONTRACTS-FROZEN",
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 496,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-15",
+        "type": "checkpoint"
+      },
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 497,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-20",
+        "type": "barrier"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 498,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-20",
+        "task_id": "PCU-SK-21",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 499,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-21",
+        "task_id": "PCU-SK-22",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 500,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-22",
+        "task_id": "PCU-SK-30",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 501,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-22",
+        "task_id": "PCU-SK-31",
+        "type": "task"
+      },
+      {
+        "barrier_id": "PCU-SK-VALIDATION-BARRIER",
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 502,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "PCU-SK-32",
+        "type": "barrier"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 503,
+        "interface_id": null,
+        "prerequisite_task_id": "PCU-SK-32",
+        "task_id": "PCU-SK-33",
+        "type": "task"
       }
     ],
     "task_invariants": [
@@ -6336,6 +7325,162 @@
       {
         "invariant_id": "CWM-USER",
         "task_id": "CWM-10"
+      },
+      {
+        "invariant_id": "PCU-SK-C4Q-ISOLATION",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "invariant_id": "PCU-SK-HISTORY",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "invariant_id": "PCU-SK-SECRETS",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "invariant_id": "PCU-SK-FRONTDOOR-COMPATIBILITY",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-MCP-RECURSION",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "invariant_id": "PCU-SK-SUBMODULE-HISTORY",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "invariant_id": "PCU-SK-FRONTDOOR-COMPATIBILITY",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "invariant_id": "PCU-SK-LEGACY-OWNER-COMPATIBILITY",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "invariant_id": "PCU-SK-SECRETS",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "invariant_id": "PCU-SK-C4Q-ISOLATION",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "invariant_id": "PCU-SK-HISTORY",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "invariant_id": "PCU-SK-LEGACY-OWNER-COMPATIBILITY",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-CLEANUP",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-MCP-RECURSION",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "invariant_id": "PCU-SK-DOWNSTREAM-NONDESTRUCTIVE",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-MCP-RECURSION",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "invariant_id": "PCU-SK-HISTORY",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "invariant_id": "PCU-SK-SUBMODULE-HISTORY",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-22"
+      },
+      {
+        "invariant_id": "PCU-SK-ROLLBACK",
+        "task_id": "PCU-SK-22"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-22"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-MCP-RECURSION",
+        "task_id": "PCU-SK-30"
+      },
+      {
+        "invariant_id": "PCU-SK-SECRETS",
+        "task_id": "PCU-SK-30"
+      },
+      {
+        "invariant_id": "PCU-SK-TODO-AUTHORITY",
+        "task_id": "PCU-SK-30"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-31"
+      },
+      {
+        "invariant_id": "PCU-SK-DOWNSTREAM-NONDESTRUCTIVE",
+        "task_id": "PCU-SK-31"
+      },
+      {
+        "invariant_id": "PCU-SK-HISTORY",
+        "task_id": "PCU-SK-31"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-32"
+      },
+      {
+        "invariant_id": "PCU-SK-ONE-LIVE-REGISTRATION",
+        "task_id": "PCU-SK-32"
+      },
+      {
+        "invariant_id": "PCU-SK-ROLLBACK",
+        "task_id": "PCU-SK-32"
+      },
+      {
+        "invariant_id": "PCU-SK-CELLERATOR-SENTINEL",
+        "task_id": "PCU-SK-33"
+      },
+      {
+        "invariant_id": "PCU-SK-HISTORY",
+        "task_id": "PCU-SK-33"
+      },
+      {
+        "invariant_id": "PCU-SK-NO-CLEANUP",
+        "task_id": "PCU-SK-33"
       },
       {
         "invariant_id": "WFU-PRESERVE-WORK",
@@ -6722,6 +7867,21 @@
         "task_id": "CWM-10"
       },
       {
+        "lock_name": "pcu-submodule-update",
+        "phase": "manual",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "lock_name": "pcu-installation-candidate",
+        "phase": "manual",
+        "task_id": "PCU-SK-22"
+      },
+      {
+        "lock_name": "pcu-installed-runtime",
+        "phase": "manual",
+        "task_id": "PCU-SK-32"
+      },
+      {
         "lock_name": "wfu-kernel-foundation",
         "phase": "claim",
         "task_id": "WFU-00"
@@ -7087,6 +8247,381 @@
         "title": "Preflight bounded source context before local delegation",
         "updated_at": "2026-08-25T12:02:33Z",
         "version": 4
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-00",
+        "kind": "workstream",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "Bootstrap acceptance: existing identity resolved; clean baseline; zero claims/agents/dispatches/children/integration requests; rollback and downstream sentinels captured.",
+        "objective": "Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.",
+        "parallel_policy": "project_exclusive",
+        "parent_id": null,
+        "priority": 500,
+        "result": "validated",
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Freeze Skills preflight, C4Q isolation, and rollback",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-01",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "All Skills-side contract files exist and recorded interface hashes match current files.",
+        "objective": "Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.",
+        "parallel_policy": "serial",
+        "parent_id": "PCU-SK-00",
+        "priority": 490,
+        "result": "validated",
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "done",
+        "tags_json": "[\"architecture_task\"]",
+        "title": "Freeze Skills-side kernel, compatibility, and submodule contracts",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-10",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"implementation_task\"]",
+        "title": "Add the explicit Todo read-only in-process port",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-11",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"implementation_task\"]",
+        "title": "Canonicalize the workflow front door and owner identity",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-12",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"implementation_task\"]",
+        "title": "Consolidate runtime identity and compatibility variables",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-13",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"documentation_task\"]",
+        "title": "Update current guidance and migration-facing documentation",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-14",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"implementation_task\"]",
+        "title": "Reduce coding-workflow-mcp to a compatibility alias",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-15",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 400,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"validation_infrastructure_task\"]",
+        "title": "Build fresh-clone, release-pin, and migration rehearsal harnesses",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-20",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": "PCU-SK-00",
+        "priority": 300,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Integrate Skills kernel and compatibility changes",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-21",
+        "kind": "integration_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "External precondition: completed PCU-PC-31 release, legitimate remote, clean repository, validated manifest/source/schema hashes; otherwise block external_release_missing.",
+        "objective": "Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": "PCU-SK-00",
+        "priority": 290,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Add and pin the Project Control Git submodule",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-22",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.",
+        "parallel_policy": "serial",
+        "parent_id": "PCU-SK-00",
+        "priority": 280,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Build and smoke the unified candidate runtime",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-30",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 200,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Run complete cross-stack validation",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-31",
+        "kind": "validation_task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "Any Cellerator rehearsal uses git clone --no-local or a bundle-derived clone sharing neither Git common state nor Todo state; no real downstream commits or pushes.",
+        "objective": "Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "PCU-SK-00",
+        "priority": 200,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Rehearse downstream migration in independent clones",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-32",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": "PCU-SK-00",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"release_task\"]",
+        "title": "Atomically cut over the installed runtime",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-33",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "",
+        "notes": "",
+        "objective": "Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.",
+        "parallel_policy": "integration_exclusive",
+        "parent_id": "PCU-SK-00",
+        "priority": 90,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
+        "revision": 249,
+        "status": "planned",
+        "tags_json": "[\"release_task\"]",
+        "title": "Finalize PCU-V1 release state",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "version": 1
       },
       {
         "attention_reason": null,
@@ -7641,6 +9176,438 @@
     ],
     "workflow_context_fragments": [
       {
+        "content_hash": "ddee5bf10145dcc8b76b7cc9741585aea2a660f54cb6caefa6b505cd46bee0d2",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-32\",\"PCU-SK-33\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-CUTOVER-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-CUTOVER-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "6d21db1d42b6dbffb3b19665d07709a32e25898a1ed1ecc691296301d51cab6f",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-00\",\"PCU-SK-01\"],\"rendezvous\":[],\"role\":\"coordinator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-FOUNDATION-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-FOUNDATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "91eed97bdab366ecbfce84cd237335cb955a934b35012386463cac56dcdc7b02",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-11\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-FRONTDOOR-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-FRONTDOOR-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "9bbcce1bf68fb219f74a292d4e85612db3aae2c7048c29775e54262ee78c258d",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-13\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-GUIDANCE-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-GUIDANCE-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-GUIDANCE-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "45d439dc59acd569cfaa12be778db333c3a0e361777b8e898bfd4c3dcf09d8d7",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-15\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-HARNESS-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-HARNESS-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-HARNESS-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "781b10d66e9166976881123104621252614d2f1ee8556483ac8d725e4f268ccb",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-20\",\"PCU-SK-21\",\"PCU-SK-22\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-INTEGRATION-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "f92316a7622d1139a20dc57c759748f2000223f37a710aef87c3c54143572e7d",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-31\"],\"rendezvous\":[\"PCU-SK-VALIDATION-RENDEZVOUS\"],\"role\":\"validator\",\"workspace_mode\":\"read_shared\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-MIGRATION-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-MIGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-MIGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "147355a53fdd1b672a7785af6c28a0d35f180d7976d39eba5b8db3f310df83e0",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-10\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-READ-PORT-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-READ-PORT-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "ebf0e50bf337a62e52e8e34c0d0ffba817a384fef57cd51083019d0b26edf61a",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-12\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-RUNTIME-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-RUNTIME-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-RUNTIME-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "4a81a1f5c1e396bc05d9db611fb2d86837847fdaec4cd46e3bd63c36e2ceac20",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-14\"],\"rendezvous\":[\"PCU-SK-CORE-RENDEZVOUS\"],\"role\":\"implementer\",\"workspace_mode\":\"isolated_merge\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-SHIM-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-SHIM-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "eb6c917781fe1ede469b4fbff78942b34b11c2f73b4751b1011f68e3f15e1e31",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"PCU-SK-30\"],\"rendezvous\":[\"PCU-SK-VALIDATION-RENDEZVOUS\"],\"role\":\"validator\",\"workspace_mode\":\"read_shared\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:lane_brief:PCU-SK-VALIDATION-LANE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "PCU-SK-VALIDATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-VALIDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "1c4a3f6ee7446ee9a81d0767bc36cdedcefb1d020d7432b991f4577fc8c2092a",
+        "content_json": "{\"acceptance_conditions\":[\"Todo remains the one kernel\",\"Project Control release is pinned as submodule\",\"candidate and rollback are proven\",\"cross-stack validation succeeds\",\"migration rehearsal is independent\",\"atomic cutover leaves one live registration\",\"downstream sentinels remain unchanged\"],\"boundaries\":[\"Todo Orchestrator remains sole transactional authority.\",\"C4Q-01 and downstream repositories are outside scope.\",\"Project Control source history stays standalone and later enters only as a gitlink.\",\"No installed cutover before complete validation.\",\"All core work uses first-class Codex lanes; local workers remain subordinate only.\"],\"invariants\":[\"PCU-SK-HISTORY\",\"PCU-SK-TODO-AUTHORITY\",\"PCU-SK-C4Q-ISOLATION\",\"PCU-SK-SUBMODULE-HISTORY\",\"PCU-SK-FRONTDOOR-COMPATIBILITY\",\"PCU-SK-LEGACY-OWNER-COMPATIBILITY\",\"PCU-SK-ONE-LIVE-REGISTRATION\",\"PCU-SK-DOWNSTREAM-NONDESTRUCTIVE\",\"PCU-SK-CELLERATOR-SENTINEL\",\"PCU-SK-NO-CLEANUP\",\"PCU-SK-ROLLBACK\",\"PCU-SK-NO-MCP-RECURSION\",\"PCU-SK-SECRETS\"],\"objective\":\"Own Todo kernel changes, current guidance, compatibility shim, submodule adoption, cross-stack validation, and eventual installed cutover without owning Project Control source history.\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"PCU-SK-RUN-V1\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "e02d0f20e79869d95b3d6ce83c54a359740a16002bdb5a7c09d1daa76a517b26",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-32-CUTOVER\"],\"next_action\":\"Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.\",\"objective\":\"Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.\",\"scope\":{\"shared_locks\":[\"pcu-installed-runtime\"]},\"tests\":[\"PCU-SK-32-CUTOVER\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-CUTOVER-LANE:PCU-SK-32:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-CUTOVER-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-32\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-32",
+        "version": 1
+      },
+      {
+        "content_hash": "6b0b26396d0ecaa2e3ebf4b3be75c7e06095ad7705431c6e0f45984e6a287b5e",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-33-FINAL\"],\"next_action\":\"Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.\",\"objective\":\"Record installed versions, pin, schemas, authority fingerprints, compatibility, migration guidance, and rollback state; leave repositories clean and compatibility material intact.\",\"scope\":{},\"tests\":[\"PCU-SK-33-FINAL\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-CUTOVER-LANE:PCU-SK-33:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-CUTOVER-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-33\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-33",
+        "version": 1
+      },
+      {
+        "content_hash": "19cf7db10a15623a642347778ac1a9e94878bf8dbf3bca24afca3b8532060702",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[\"c4q\",\"C4Q\",\"workflow-unification/evidence/c4q\"],\"gates\":[],\"next_action\":\"Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.\",\"objective\":\"Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.\",\"scope\":{\"exclusive_paths\":[\"unification/pcu-v1/evidence/preflight.json\",\"unification/pcu-v1/ROLLBACK.md\",\"pcu-v1.skills.plan.json\"],\"forbidden_paths\":[\"c4q\",\"C4Q\",\"workflow-unification/evidence/c4q\"],\"read_paths\":[\"AGENTS.md\",\"todo-orchestrator\",\"integrations/coding-workflow-mcp\",\"workflow-unification\"]},\"tests\":[]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-FOUNDATION-LANE:PCU-SK-00:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-FOUNDATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-00\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-00",
+        "version": 1
+      },
+      {
+        "content_hash": "85bddbaf8d8bf3c0024aa3d8a4d233d8f22e537af50d9648fbfb818fcde485e1",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.\",\"objective\":\"Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.\",\"scope\":{\"exclusive_paths\":[\"unification/pcu-v1/CAMPAIGN.md\",\"unification/pcu-v1/campaign.json\",\"unification/pcu-v1/contracts\"],\"read_paths\":[\"todo-orchestrator\",\"integrations/coding-workflow-mcp\",\"AGENTS.md\"]},\"tests\":[]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-FOUNDATION-LANE:PCU-SK-01:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-FOUNDATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-01\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-01",
+        "version": 1
+      },
+      {
+        "content_hash": "c483e9f600d0f2a74446c16a794deeb3619f7be045be6ae368378f48f6d58586",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-11-FRONTDOOR\"],\"next_action\":\"Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.\",\"objective\":\"Make project-control canonical for new automated ownership while accepting historical coding-workflow identities and preserving current exceptions.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/front_door.py\",\"todo-orchestrator/todo_orchestrator/workflow/service.py\",\"todo-orchestrator/todo_orchestrator/claims.py\",\"todo-orchestrator/todo_orchestrator/sessions.py\",\"todo-orchestrator/tests/test_workflow_front_door.py\",\"todo-orchestrator/tests/test_live_claim_override.py\",\"todo-orchestrator/tests/test_force_release.py\"],\"read_paths\":[\"todo-orchestrator/todo_orchestrator/workflow\",\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-11-FRONTDOOR\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-FRONTDOOR-LANE:PCU-SK-11:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-FRONTDOOR-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-11\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-11",
+        "version": 1
+      },
+      {
+        "content_hash": "e9706f2eb9b5a1042da794e5c7072c7e9e0b87b7eb81664b5d7c3e78ae6673c7",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[\"workflow-unification/evidence\",\"workflow-unification-v3.plan.json\",\"todos\"],\"gates\":[\"PCU-SK-13-GUIDANCE\"],\"next_action\":\"Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.\",\"objective\":\"Direct new work through Project Control, preserve first-class/local-child boundaries, cheap-first reads, and compatibility without falsifying history.\",\"scope\":{\"exclusive_paths\":[\"AGENTS.md\",\"todo-orchestrator/SKILL.md\",\"todo-orchestrator/references/workflow-v3-operations.md\",\"todo-orchestrator/references/full-workflow-compatibility.md\",\"cpp-context-compiler/SKILL.md\",\"cuda/SKILL.md\"],\"forbidden_paths\":[\"workflow-unification/evidence\",\"workflow-unification-v3.plan.json\",\"todos\"],\"read_paths\":[\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-13-GUIDANCE\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-GUIDANCE-LANE:PCU-SK-13:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-GUIDANCE-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-GUIDANCE-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-13\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-13",
+        "version": 1
+      },
+      {
+        "content_hash": "26e46a711ce564f4ab1df8f46aedfb07f27a80a32905ed2382a1a7fa5e7b18ce",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-15-HARNESS\"],\"next_action\":\"Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.\",\"objective\":\"Build deterministic manifest, recursive clone, candidate install, registration rollback, and independent downstream-clone verification without live mutation.\",\"scope\":{\"exclusive_paths\":[\"unification/pcu-v1/scripts\",\"unification/pcu-v1/fixtures\",\".github/workflows/project-control-unification.yml\",\"tests/pcu_v1\"],\"read_paths\":[\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-15-HARNESS\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-HARNESS-LANE:PCU-SK-15:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-HARNESS-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-HARNESS-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-15\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-15",
+        "version": 1
+      },
+      {
+        "content_hash": "1ee3232c3dbe8c578cf9843ff5d0b0d3d21917d43cb90cc1a31813a798d2b2e6",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-20-INTEGRATION\"],\"next_action\":\"Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.\",\"objective\":\"Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/pyproject.toml\",\"todo-orchestrator/todo_orchestrator/__init__.py\",\"todo-orchestrator/todo_orchestrator/workflow/mcp/server.py\",\".github/workflows\"],\"read_paths\":[\"todo-orchestrator\",\"local-coding-worker\",\"integrations/coding-workflow-mcp\",\"unification/pcu-v1\"]},\"tests\":[\"PCU-SK-20-INTEGRATION\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-INTEGRATION-LANE:PCU-SK-20:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-20\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-20",
+        "version": 1
+      },
+      {
+        "content_hash": "f4f92e5469fe567f15ed42886662d156cff856c64b63553428ceee69ceaf26cc",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-21-SUBMODULE\"],\"next_action\":\"Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.\",\"objective\":\"Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.\",\"scope\":{\"exclusive_paths\":[\".gitmodules\",\"project-control\",\"unification/pcu-v1/PCU_RELEASE.lock.json\"],\"read_paths\":[\"unification/pcu-v1/contracts\"],\"shared_locks\":[\"pcu-submodule-update\"]},\"tests\":[\"PCU-SK-21-SUBMODULE\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-INTEGRATION-LANE:PCU-SK-21:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-21\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-21",
+        "version": 1
+      },
+      {
+        "content_hash": "7a4bf0ab341663a11ed96e24632e1f1e97c9e7705d08eaf62840a39d3370678e",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-22-CANDIDATE\"],\"next_action\":\"Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.\",\"objective\":\"Build an isolated candidate from Skills plus the pinned submodule and verify both profiles and one authority without live registration/service changes.\",\"scope\":{\"shared_locks\":[\"pcu-installation-candidate\"]},\"tests\":[\"PCU-SK-22-CANDIDATE\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-INTEGRATION-LANE:PCU-SK-22:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-22\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-22",
+        "version": 1
+      },
+      {
+        "content_hash": "4e713ed1a314c2baa76ad938b7acf80cc995e36d3d9cf72ea21e9256fbd7d1d5",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-31-MIGRATION\"],\"next_action\":\"Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.\",\"objective\":\"Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.\",\"scope\":{},\"tests\":[\"PCU-SK-31-MIGRATION\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-MIGRATION-LANE:PCU-SK-31:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-MIGRATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-MIGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-31\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-31",
+        "version": 1
+      },
+      {
+        "content_hash": "79bdcd0a273987aeae564cff18958c2aacf53700a7ab2ab990a15d89091d478f",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-10-READ-PORT\"],\"next_action\":\"Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.\",\"objective\":\"Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/db.py\",\"todo-orchestrator/todo_orchestrator/service.py\",\"todo-orchestrator/todo_orchestrator/read_port.py\",\"todo-orchestrator/todo_orchestrator/semantic/read_port.py\",\"todo-orchestrator/tests/test_read_port.py\",\"todo-orchestrator/tests/test_read_only_schema_compatibility.py\"],\"read_paths\":[\"todo-orchestrator/todo_orchestrator/semantic\",\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-10-READ-PORT\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-READ-PORT-LANE:PCU-SK-10:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-READ-PORT-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-10\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-10",
+        "version": 1
+      },
+      {
+        "content_hash": "1f938814ba03a973eb912d84140fd3bcd69c69002dd5bff4043a181bb8477c8b",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-12-RUNTIME\"],\"next_action\":\"Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.\",\"objective\":\"Provide one reusable identity contract, canonical and legacy variables, skew/rebind rejection, and preserved local-worker/background behavior.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/runtime_identity.py\",\"local-coding-worker/local_worker/canonical_runtime.py\",\"local-coding-worker/tests/test_canonical_runtime.py\",\"todo-orchestrator/tests/test_runtime_identity.py\",\"todo-orchestrator/tests/test_background_runtime.py\"],\"read_paths\":[\"todo-orchestrator\",\"local-coding-worker\",\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-12-RUNTIME\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-RUNTIME-LANE:PCU-SK-12:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-RUNTIME-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-RUNTIME-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-12\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-12",
+        "version": 1
+      },
+      {
+        "content_hash": "c6b62abb2c241edf612ae72acd7699b989762854519c2eb25e185b6b15603290",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-14-SHIM\"],\"next_action\":\"Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.\",\"objective\":\"Forward old executable/admin entry points to verified Project Control while retaining fail-safe fallback and removing independent backend semantics without deleting the package.\",\"scope\":{\"exclusive_paths\":[\"integrations/coding-workflow-mcp\",\".github/workflows/coding-workflow-mcp.yml\"],\"read_paths\":[\"todo-orchestrator\",\"unification/pcu-v1/contracts\"]},\"tests\":[\"PCU-SK-14-SHIM\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-SHIM-LANE:PCU-SK-14:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-SHIM-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-14\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-14",
+        "version": 1
+      },
+      {
+        "content_hash": "25cf2b3c2d825501a1c8def7fc0b6cd03f73c70ece6e017cc6ec690ff17485f9",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"PCU-SK-30-VALIDATION\"],\"next_action\":\"Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.\",\"objective\":\"Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.\",\"scope\":{},\"tests\":[\"PCU-SK-30-VALIDATION\"]}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "id": "PCU-SK-RUN-V1:task_brief:PCU-SK-VALIDATION-LANE:PCU-SK-30:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "PCU-SK-VALIDATION-LANE",
+        "owner_scope_json": "{\"lane_id\":\"PCU-SK-VALIDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-30\"}",
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_by": null,
+        "task_id": "PCU-SK-30",
+        "version": 1
+      },
+      {
         "content_hash": "f9b52262d4cb21d538cbfe05d3a2d31ec6adff97088c57f4c9e5ca2f992431c8",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"WFU-00\",\"WFU-01\",\"WFU-02\",\"WFU-10\",\"WFU-11\",\"WFU-12\",\"WFU-13\",\"WFU-14\",\"WFU-15\",\"WFU-16\",\"WFU-20\",\"WFU-21\",\"WFU-22\",\"WFU-23\",\"WFU-24\",\"WFU-25\",\"WFU-26\",\"WFU-27\",\"WFU-28\",\"WFU-29\",\"WFU-30\",\"WFU-31\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-08-27T14:03:52Z",
@@ -8030,6 +9997,156 @@
       {
         "activated_at": null,
         "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-CUTOVER-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-32"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-CUTOVER-LANE",
+        "position": 1,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-33"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-FOUNDATION-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "completed",
+        "task_id": "PCU-SK-00"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-FOUNDATION-LANE",
+        "position": 1,
+        "revision": 249,
+        "state": "completed",
+        "task_id": "PCU-SK-01"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-11"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-GUIDANCE-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-13"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-HARNESS-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-15"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-20"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "position": 1,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-21"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-INTEGRATION-LANE",
+        "position": 2,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-22"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-MIGRATION-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-31"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-READ-PORT-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-10"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-RUNTIME-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-12"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-14"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-08-30T11:43:03Z",
+        "lane_id": "PCU-SK-VALIDATION-LANE",
+        "position": 0,
+        "revision": 249,
+        "state": "queued",
+        "task_id": "PCU-SK-30"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
         "enqueued_at": "2026-08-27T14:03:52Z",
         "lane_id": "compat-v2-main",
         "position": 0,
@@ -8251,6 +10368,138 @@
     "workflow_lanes": [
       {
         "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-CUTOVER-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "integrator",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-FOUNDATION-LANE",
+        "parent_lane_id": null,
+        "revision": 249,
+        "role": "coordinator",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-FRONTDOOR-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-GUIDANCE-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-HARNESS-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-INTEGRATION-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "integrator",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-MIGRATION-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "validator",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-READ-PORT-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-RUNTIME-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-SHIM-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "implementer",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-VALIDATION-LANE",
+        "parent_lane_id": "PCU-SK-FOUNDATION-LANE",
+        "revision": 249,
+        "role": "validator",
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "ready",
+        "updated_at": "2026-08-30T11:43:03Z",
+        "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-08-27T14:03:52Z",
         "id": "compat-v2-main",
         "parent_lane_id": null,
@@ -8267,10 +10516,96 @@
     "workflow_messages": [],
     "workflow_patch_artifacts": [],
     "workflow_recovery_audit": [],
-    "workflow_rendezvous": [],
+    "workflow_rendezvous": [
+      {
+        "barrier_id": "PCU-SK-CORE-BARRIER",
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-CORE-RENDEZVOUS",
+        "join_task_id": "PCU-SK-20",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "required_roles_json": "[]",
+        "revision": 249,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "open"
+      },
+      {
+        "barrier_id": "PCU-SK-VALIDATION-BARRIER",
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-VALIDATION-RENDEZVOUS",
+        "join_task_id": "PCU-SK-32",
+        "mode": "all",
+        "opened_at": null,
+        "quorum": null,
+        "required_roles_json": "[]",
+        "revision": 249,
+        "run_id": "PCU-SK-RUN-V1",
+        "state": "open"
+      }
+    ],
     "workflow_rendezvous_arrivals": [],
-    "workflow_rendezvous_participants": [],
+    "workflow_rendezvous_participants": [
+      {
+        "lane_id": "PCU-SK-FRONTDOOR-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-GUIDANCE-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-HARNESS-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-READ-PORT-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-RUNTIME-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-SHIM-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-CORE-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-MIGRATION-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-VALIDATION-RENDEZVOUS",
+        "required": 1
+      },
+      {
+        "lane_id": "PCU-SK-VALIDATION-LANE",
+        "producer": 0,
+        "rendezvous_id": "PCU-SK-VALIDATION-RENDEZVOUS",
+        "required": 1
+      }
+    ],
     "workflow_run_charters": [
+      {
+        "content_hash": "1c4a3f6ee7446ee9a81d0767bc36cdedcefb1d020d7432b991f4577fc8c2092a",
+        "content_json": "{\"acceptance_conditions\":[\"Todo remains the one kernel\",\"Project Control release is pinned as submodule\",\"candidate and rollback are proven\",\"cross-stack validation succeeds\",\"migration rehearsal is independent\",\"atomic cutover leaves one live registration\",\"downstream sentinels remain unchanged\"],\"boundaries\":[\"Todo Orchestrator remains sole transactional authority.\",\"C4Q-01 and downstream repositories are outside scope.\",\"Project Control source history stays standalone and later enters only as a gitlink.\",\"No installed cutover before complete validation.\",\"All core work uses first-class Codex lanes; local workers remain subordinate only.\"],\"invariants\":[\"PCU-SK-HISTORY\",\"PCU-SK-TODO-AUTHORITY\",\"PCU-SK-C4Q-ISOLATION\",\"PCU-SK-SUBMODULE-HISTORY\",\"PCU-SK-FRONTDOOR-COMPATIBILITY\",\"PCU-SK-LEGACY-OWNER-COMPATIBILITY\",\"PCU-SK-ONE-LIVE-REGISTRATION\",\"PCU-SK-DOWNSTREAM-NONDESTRUCTIVE\",\"PCU-SK-CELLERATOR-SENTINEL\",\"PCU-SK-NO-CLEANUP\",\"PCU-SK-ROLLBACK\",\"PCU-SK-NO-MCP-RECURSION\",\"PCU-SK-SECRETS\"],\"objective\":\"Own Todo kernel changes, current guidance, compatibility shim, submodule adoption, cross-stack validation, and eventual installed cutover without owning Project Control source history.\"}",
+        "created_at": "2026-08-30T11:43:03Z",
+        "creation_revision": 249,
+        "run_id": "PCU-SK-RUN-V1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
       {
         "content_hash": "e737a3d0c80261286cbd1831d904a48c46fdcdf59ae1410928208093590121a1",
         "content_json": "{\"acceptance_conditions\":[],\"boundaries\":[\"Compatibility run normalized from plan schema v2\"],\"glossary\":{\"lane\":\"single serial compatibility lane\"},\"invariants\":[],\"objective\":\"Workflow Unification v3\"}",
@@ -8283,6 +10618,16 @@
       }
     ],
     "workflow_runs": [
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-08-30T11:43:03Z",
+        "id": "PCU-SK-RUN-V1",
+        "revision": 249,
+        "root_task_id": "PCU-SK-00",
+        "status": "active",
+        "updated_at": "2026-08-30T11:43:03Z"
+      },
       {
         "active_charter_version": 1,
         "completed_at": null,

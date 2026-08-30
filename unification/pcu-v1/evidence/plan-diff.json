@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "plan": "pcu-v1.skills.plan.json",
+  "validated": true,
+  "semantic_review": "accepted",
+  "task_diff": {"add": ["PCU-SK-00","PCU-SK-01","PCU-SK-10","PCU-SK-11","PCU-SK-12","PCU-SK-13","PCU-SK-14","PCU-SK-15","PCU-SK-20","PCU-SK-21","PCU-SK-22","PCU-SK-30","PCU-SK-31","PCU-SK-32","PCU-SK-33"], "update": [], "omitted_existing_entities_are_untouched": true},
+  "added": {"run":["PCU-SK-RUN-V1"],"lanes":["PCU-SK-FOUNDATION-LANE","PCU-SK-READ-PORT-LANE","PCU-SK-FRONTDOOR-LANE","PCU-SK-RUNTIME-LANE","PCU-SK-GUIDANCE-LANE","PCU-SK-SHIM-LANE","PCU-SK-HARNESS-LANE","PCU-SK-INTEGRATION-LANE","PCU-SK-VALIDATION-LANE","PCU-SK-MIGRATION-LANE","PCU-SK-CUTOVER-LANE"],"barriers":["PCU-SK-CORE-BARRIER","PCU-SK-VALIDATION-BARRIER"],"rendezvous":["PCU-SK-CORE-RENDEZVOUS","PCU-SK-VALIDATION-RENDEZVOUS"],"interfaces":["PCU-TODO-READ-PORT/1","PCU-FRONTDOOR/1","PCU-RUNTIME-IDENTITY/1","PCU-SHIM-COMPAT/1","PCU-SUBMODULE/1"],"named_locks":["pcu-submodule-update","pcu-installation-candidate","pcu-installed-runtime"],"invariant_count":13,"checkpoint":["PCU-SK-CONTRACTS-FROZEN"],"gate_count":13},
+  "proof": {"all_added_ids_pcu_prefixed": true, "existing_tasks_updated": [], "existing_interfaces_updated": [], "existing_runs_or_lanes_updated": [], "project_uuid_change": false, "historical_projection_deletion": false, "c4q_01_change": false, "c4q_owned_path_change": false}
+}
