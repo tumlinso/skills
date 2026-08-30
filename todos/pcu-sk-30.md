@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-30: Run complete cross-stack validation
 
-Task revision: `694`; current project revision is in `todo-status.md`.
+Task revision: `745`; current project revision is in `todo-status.md`.
 
 ## Objective
 Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `idle`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._

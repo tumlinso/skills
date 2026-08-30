@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `694`
+Project revision: `745`
 
 ## Workstreams
 - `PCU-SK-00` | kind: workstream | status: done | parent: - | objective: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
@@ -17,9 +17,9 @@ Project revision: `694`
 - `PCU-SK-20` | kind: integration_task | status: done | parent: PCU-SK-00 | objective: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
 - `PCU-SK-21` | kind: integration_task | status: done | parent: PCU-SK-00 | objective: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
 - `PCU-SK-22` | kind: validation_task | status: done | parent: PCU-SK-00 | objective: Build an isolated candidate from Skills plus the pinned submodule, resolving only missing Todo distribution metadata and a forward validated Project Control repin as necessary; verify both profiles and one authority without live registration/service changes.
-- `PCU-SK-23` | kind: task | status: planned | parent: PCU-SK-00 | objective: Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
-- `PCU-SK-24` | kind: integration_task | status: planned | parent: PCU-SK-00 | objective: Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.
-- `PCU-SK-30` | kind: validation_task | status: in_progress | parent: PCU-SK-00 | objective: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
+- `PCU-SK-23` | kind: task | status: done | parent: PCU-SK-00 | objective: Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
+- `PCU-SK-24` | kind: integration_task | status: done | parent: PCU-SK-00 | objective: Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.
+- `PCU-SK-30` | kind: validation_task | status: done | parent: PCU-SK-00 | objective: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
 - `PCU-SK-31` | kind: validation_task | status: done | parent: PCU-SK-00 | objective: Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.
 - `WFU-00` | kind: task | status: done | parent: - | objective: Record quiescence, baseline results, source and runtime identities, deterministic snapshot, registration, installer configuration, dedicated branch/worktree, and rollback procedure without modifying the installed runtime.
 - `WFU-01` | kind: task | status: done | parent: - | objective: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.

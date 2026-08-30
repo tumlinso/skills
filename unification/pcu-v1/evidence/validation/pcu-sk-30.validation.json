@@ -1,9 +1,26 @@
 {
   "schema_version": 1,
   "task_id": "PCU-SK-30",
-  "result": "attention_required",
+  "result": "validated",
+  "validation_attempts": [
+    {
+      "candidate_commit": "dc6285acc474dc70536583264db95243f40acaa6",
+      "result": "attention_required",
+      "findings": [
+        "tracked_cmake_cache_non_relocatable",
+        "candidate_plan_missing_dependencies"
+      ],
+      "workflow_disposition": "handoff"
+    },
+    {
+      "candidate_commit": "047a5a4858f16b560d34aadf8e3a87e8fac96e6c",
+      "result": "validated",
+      "resolves_attempt": 0,
+      "workflow_disposition": "handoff"
+    }
+  ],
   "candidate": {
-    "skills_commit": "dc6285acc474dc70536583264db95243f40acaa6",
+    "skills_commit": "047a5a4858f16b560d34aadf8e3a87e8fac96e6c",
     "project_control_commit": "79fde52bbc05d76c19365959af4a574a5f52cedc",
     "source_clean_before_and_after": true,
     "submodule_clean": true
@@ -15,10 +32,10 @@
       "environment": "candidate local distributions and equal canonical/legacy root bindings"
     },
     "local_coding_worker": {
-      "tests_run": 104,
-      "status": "failed_setup",
-      "reason": "tracked_non_relocatable_cmake_cache",
-      "detail": "The fresh independent clone contains cpp-context-compiler/tool/build/CMakeCache.txt with an absolute source path from another checkout; test_read_only_mvp setup cannot configure the tool."
+      "tests_run": 109,
+      "status": "passed",
+      "fresh_recursive_clone_tests": 109,
+      "fresh_recursive_clone_status": "passed"
     },
     "compatibility_shim": {
       "tests": 28,
@@ -29,7 +46,7 @@
       "status": "passed"
     },
     "pcu_harness": {
-      "tests": 10,
+      "tests": 11,
       "status": "passed"
     }
   },
@@ -52,15 +69,16 @@
   },
   "installation_and_rollback": {
     "real_candidate_installer": "passed",
-    "candidate_digest": "9ffa5f93d355e45d6c8e1d1e623df5922587e4cca2c73be234601ab00eed30f2",
-    "candidate_plan": "failed",
-    "candidate_plan_reason": "The emitted fresh-venv pip command uses --no-deps, then project_control --help fails because required runtime dependencies are absent.",
+    "candidate_digest": "ff306c3c9573652a1b2ed343cfabf1c1e5440cbd50ed69ccb7297d687aa591ae",
+    "candidate_plan": "passed_verbatim",
+    "candidate_plan_console_entry_point": "passed",
+    "candidate_plan_module_entry_point": "passed",
     "rollback_unit_contracts": "passed_in_project_control_shim_and_harness_suites",
     "live_cutover_attempted": false
   },
   "git_and_clone": {
     "recursive_independent_clone": "passed",
-    "independent_clone_head": "dc6285acc474dc70536583264db95243f40acaa6",
+    "independent_clone_head": "047a5a4858f16b560d34aadf8e3a87e8fac96e6c",
     "independent_clone_submodule": "79fde52bbc05d76c19365959af4a574a5f52cedc",
     "skills_connectivity": "passed",
     "project_control_connectivity": "passed",
@@ -77,17 +95,19 @@
     "installed_runtime_changed": false,
     "downstream_repository_accessed": false
   },
-  "blocking_findings": [
+  "resolved_findings": [
     {
       "code": "tracked_cmake_cache_non_relocatable",
       "scope": "cpp-context-compiler/tool/build",
-      "required_resolution": "Remove generated absolute-path CMake build products from release source and make the build use a fresh checkout-local or external build directory."
+      "resolution": "PCU-SK-24 removed the non-relocatable tracked build products; the full 109-test local-worker suite passes in both the managed destination and a recursive independent clone."
     },
     {
       "code": "candidate_plan_missing_dependencies",
       "scope": "unification/pcu-v1/scripts/pcu_harness.py",
-      "required_resolution": "Make candidate-plan install a runnable dependency-complete environment while retaining local Project Control and Todo distributions."
+      "resolution": "PCU-SK-24 made candidate-plan dependency-complete; all emitted commands pass verbatim, including both console and module entry points."
     }
   ],
-  "recommended_deterministic_gate": "In a git clone --no-local --recurse-submodules destination, require a clean checkout with no tracked CMake cache, run all local-coding-worker tests successfully, execute candidate-plan commands verbatim and require both candidate/bin/project-control --help and candidate/bin/python -m project_control --help to exit zero, then rerun Todo 269, shim 28, Project Control 199, PCU harness 10, exact 15/20 official-client discovery, connectivity checks, and clean live/source sentinels."
+  "blocking_findings": [],
+  "manual_gate_self_accepted": false,
+  "recommended_deterministic_gate": "Require candidate commit 047a5a4858f16b560d34aadf8e3a87e8fac96e6c and Project Control pin 79fde52bbc05d76c19365959af4a574a5f52cedc; rerun Todo 269, local-worker 109 in both managed and recursive no-local clones, shim 28, Project Control 199, PCU harness 11, candidate-plan commands verbatim, real candidate installer, official-client exact 15/20 discovery, runtime identity/concurrency/database-busy/security checks, Git connectivity, and clean source/live sentinels; require every result to pass before an owner accepts the manual gate."
 }

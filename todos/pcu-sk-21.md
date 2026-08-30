@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-21: Add and pin the Project Control Git submodule
 
-Task revision: `694`; current project revision is in `todo-status.md`.
+Task revision: `739`; current project revision is in `todo-status.md`.
 
 ## Objective
 Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `694`
+Project revision: `745`
 
 ## Workstreams
 - `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
@@ -17,9 +17,9 @@ Project revision: `694`
 - `PCU-SK-20` | status: done | execution: closed | next: Integrate Skills-side changes while retaining Todo as kernel, preserving history, and leaving installed servers unchanged.
 - `PCU-SK-21` | status: done | execution: closed | next: Consume the validated standalone release, verify manifest/digests, add the legitimate remote as project-control, and record the exact pin; block if release is missing.
 - `PCU-SK-22` | status: done | execution: closed | next: Build an isolated candidate from Skills plus the pinned submodule, resolving only missing Todo distribution metadata and a forward validated Project Control repin as necessary; verify both profiles and one authority without live registration/service changes.
-- `PCU-SK-23` | status: planned | execution: ready | next: Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
-- `PCU-SK-24` | status: planned | execution: ready | next: Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.
-- `PCU-SK-30` | status: in_progress | execution: idle | next: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
+- `PCU-SK-23` | status: done | execution: closed | next: Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
+- `PCU-SK-24` | status: done | execution: closed | next: Integrate the bounded PCU-SK-23 artifact into the candidate destination and prove the focused release blockers are resolved.
+- `PCU-SK-30` | status: done | execution: closed | next: Validate Todo, Project Control, compatibility, concurrency, installation, rollback, recursive clones, security boundaries, and schema budgets.
 - `PCU-SK-31` | status: done | execution: closed | next: Rehearse dry-run, apply, idempotent reapply, and remove in genuinely independent clones; never touch a real downstream checkout or Todo authority.
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: done | execution: closed | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.

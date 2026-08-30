@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # PCU-SK-23: Resolve fresh-clone validation blockers
 
-Task revision: `694`; current project revision is in `todo-status.md`.
+Task revision: `739`; current project revision is in `todo-status.md`.
 
 ## Objective
 Remove tracked non-relocatable CMake products, keep them ignored, and make candidate-plan dependency-complete while preserving deterministic local source installation.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 _None._
