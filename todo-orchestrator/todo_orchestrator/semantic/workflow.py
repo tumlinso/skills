@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta, timezone
 
+from ..completion import is_successful_terminal
 from ..graph import evaluate_dependencies
 from ..resources import matching_instances
 
@@ -276,7 +277,7 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     recovery_needed.extend(
         {"kind": "workspace", "id": row["id"], "reason": row["state"]}
         for row in conn.execute(
-            "SELECT id,state FROM workflow_workspaces WHERE state IN ('conflict','apply_failed','finalization_failed','quarantined','provisioning_failed')"
+            "SELECT id,state FROM workflow_workspaces WHERE state IN ('conflict','apply_failed','finalization_failed','provisioning_failed')"
         )
     )
     recovery_needed.extend(
@@ -286,7 +287,11 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     )
     recovery_needed.extend(
         {"kind": "session", "id": row["id"], "reason": "stale_heartbeat"}
-        for row in conn.execute("SELECT id,last_seen_at FROM sessions WHERE state='active' ORDER BY id")
+        for row in conn.execute(
+            "SELECT DISTINCT s.id,s.last_seen_at FROM sessions s "
+            "JOIN claims c ON c.session_id=s.id AND c.state='active' "
+            "WHERE s.state='active' ORDER BY s.id"
+        )
         if not _fresh(row["last_seen_at"], freshness)
     )
     recovery_needed.extend(
@@ -297,9 +302,13 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     recovery_needed.extend(
         {"kind": "gate", "id": row["id"], "task_id": row["task_id"], "reason": row["status"]}
         for row in conn.execute(
-            "SELECT g.id,g.task_id,g.status FROM gates g JOIN tasks t ON t.id=g.task_id "
+            "SELECT g.id,g.task_id,g.status,t.status AS task_status,t.result AS task_result "
+            "FROM gates g JOIN tasks t ON t.id=g.task_id "
             "WHERE g.required=1 AND g.status IN ('running','failed','invalidated') "
             "AND t.status IN ('in_progress','done') ORDER BY g.id"
+        )
+        if not is_successful_terminal(
+            {"status": row["task_status"], "result": row["task_result"]}
         )
     )
     recovery_needed.extend(

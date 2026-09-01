@@ -185,6 +185,34 @@ class WorkflowSemanticReadTests(unittest.TestCase):
         self.assertIn("claim", kinds)
         self.assertIn("session", kinds)
 
+    def test_recovery_needed_excludes_terminal_history_and_inert_records(self) -> None:
+        def historical_records(conn, revision):
+            now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+            conn.execute(
+                "UPDATE tasks SET status='done',result='validated',completion_revision=?,revision=? WHERE id='A'",
+                (revision, revision),
+            )
+            conn.execute(
+                "INSERT INTO gates(id,task_id,type,config_json,required,status,valid,revision) "
+                "VALUES('A-HISTORICAL','A','manual','{}',1,'invalidated',0,?)",
+                (revision,),
+            )
+            conn.execute("UPDATE sessions SET last_seen_at=?", (past(),))
+            conn.execute(
+                "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,"
+                "created_at,updated_at) VALUES('OLD-WS','repo','RUN','A-LANE','exclusive','base','quarantined',?,?)",
+                (now, now),
+            )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="test", entity_id="history",
+            event_type="test.historical_recovery_records", payload={}, operation=historical_records,
+        )
+        needed = self.read()["recovery_needed"]
+        self.assertNotIn("A-HISTORICAL", {item["id"] for item in needed})
+        self.assertNotIn("OLD-WS", {item["id"] for item in needed})
+        self.assertNotIn("session", {item["kind"] for item in needed})
+
 
 if __name__ == "__main__":
     unittest.main()

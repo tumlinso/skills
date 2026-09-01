@@ -28,7 +28,25 @@ def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) 
             discrepancies.append({"code": "snapshot_invalid", "error": str(exc)})
     else:
         discrepancies.append({"code": "snapshot_missing"})
-    for interface in conn.execute("SELECT * FROM interfaces WHERE state='frozen'"):
+    for interface in conn.execute(
+        "SELECT i.*,t.status AS owner_status,t.result AS owner_result,"
+        "EXISTS(SELECT 1 FROM interface_consumers c JOIN tasks ct ON ct.id=c.task_id "
+        "WHERE c.interface_id=i.id AND ct.status NOT IN ('done','superseded','cancelled')) AS has_current_consumer,"
+        "EXISTS(SELECT 1 FROM task_dependencies d JOIN tasks dt ON dt.id=d.task_id "
+        "WHERE d.interface_id=i.id AND dt.status NOT IN ('done','superseded','cancelled')) AS has_current_dependency "
+        "FROM interfaces i JOIN tasks t ON t.id=i.owner_task_id WHERE i.state='frozen'"
+    ):
+        if (
+            (
+                is_successful_terminal(
+                    {"status": interface["owner_status"], "result": interface["owner_result"]}
+                )
+                or interface["owner_status"] in {"superseded", "cancelled"}
+            )
+            and not interface["has_current_consumer"]
+            and not interface["has_current_dependency"]
+        ):
+            continue
         try:
             digest, _ = interface_hash(repo_root, json.loads(interface["contract_paths_json"]))
             if digest != interface["content_hash"]:
@@ -89,12 +107,15 @@ def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) 
         owned_dirty = [path for path in current_dirty if any(path_contains(scope, path) for scope in scopes)]
         active_claims.append({"task_id": claim["task_id"], "claim_id": claim["id"], "state": claim["state"], "baseline_head": claim["baseline_head"], "current_head": git_head(repo_root), "owned_dirty_paths": owned_dirty, "changed_since_baseline": baseline.get("fingerprint") != current.get("fingerprint")})
     owned_by_active = {path for item in active_claims for path in item["owned_dirty_paths"]}
+    blocking_discrepancies = [
+        item for item in discrepancies if item["code"] != "code_inspection_required"
+    ]
     return {
         "project_revision": revision,
         "discrepancies": discrepancies,
         "active_claims": active_claims,
         "pre_existing_or_unowned_dirty_paths": sorted(set(current_dirty) - owned_by_active),
-        "clean": not discrepancies,
+        "clean": not blocking_discrepancies,
     }
 
 
