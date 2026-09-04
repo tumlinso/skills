@@ -687,6 +687,33 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             lambda: self.service.apply_next(queue_id=str(queued["queue_id"])),
         )
 
+    def test_active_integration_task_remains_first_in_lane_order(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta active\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL",
+            kind="commit", artifact_ref=commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR",
+            integration_task_id="INTEGRATE",
+        )
+
+        def activate_current(conn, revision):
+            conn.execute(
+                "UPDATE workflow_lane_tasks SET state='active',revision=? "
+                "WHERE lane_id='INTEGRATOR' AND task_id='INTEGRATE'",
+                (revision,),
+            )
+
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="INTEGRATE",
+            event_type="fixture_integrator_activated", payload={}, operation=activate_current,
+        )
+        applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assertEqual(applied["state"], "awaiting_gates")
+
     def test_identical_pending_artifact_publish_is_idempotent(self) -> None:
         producer = self.create_producer()
         commit = self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")

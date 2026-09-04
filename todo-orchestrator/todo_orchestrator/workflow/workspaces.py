@@ -737,8 +737,8 @@ class WorkspaceService:
             if earlier is not None:
                 raise TodoError("integration_queue_order", "An earlier integration entry must finish first")
             next_owned = conn.execute(
-                "SELECT task_id FROM workflow_lane_tasks WHERE lane_id=? AND state='queued' "
-                "ORDER BY position LIMIT 1",
+                "SELECT task_id FROM workflow_lane_tasks WHERE lane_id=? "
+                "AND state IN ('active','queued') ORDER BY position LIMIT 1",
                 (row["integrator_lane_id"],),
             ).fetchone()
             if next_owned is None or next_owned["task_id"] != row["integration_task_id"]:
