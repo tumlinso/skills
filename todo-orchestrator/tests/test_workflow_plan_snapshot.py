@@ -5,6 +5,7 @@ import unittest
 from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.projections import build_snapshot
+from todo_orchestrator.models import TodoError
 
 
 class WorkflowPlanSnapshotTests(unittest.TestCase):
@@ -64,6 +65,77 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='compat-v2-main'").fetchone()[0], "closed")
             self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='compat-v2-main'").fetchone()[0], "completed")
+
+    def test_v3_plan_reapply_reconciles_idle_lane_order_and_preserves_omitted_tasks(self):
+        tasks = [safe_task("A", "src/a"), safe_task("B", "src/b"), safe_task("C", "src/c")]
+        plan = base_plan(tasks)
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT", "role": "coordinator", "tasks": ["A", "B", "C"]}],
+        }]
+        self.repo.apply(plan)
+
+        reordered = base_plan(tasks)
+        reordered["schema_version"] = 3
+        reordered["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT", "role": "coordinator", "tasks": ["C", "A"]}],
+        }]
+        self.repo.apply(reordered)
+
+        with self.repo.service.db.read() as conn:
+            queue = conn.execute(
+                "SELECT position,task_id,state FROM workflow_lane_tasks WHERE lane_id='ROOT' ORDER BY position"
+            ).fetchall()
+        self.assertEqual(
+            [(0, "C", "queued"), (1, "A", "queued"), (2, "B", "queued")],
+            [tuple(row) for row in queue],
+        )
+
+    def test_v3_plan_reapply_refuses_to_reorder_active_lane(self):
+        tasks = [safe_task("A", "src/a"), safe_task("B", "src/b")]
+        plan = base_plan(tasks)
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT", "role": "coordinator", "tasks": ["A", "B"]}],
+        }]
+        self.repo.apply(plan)
+
+        def activate_lane(conn, revision):
+            conn.execute(
+                "UPDATE workflow_lane_tasks SET state='active',revision=? WHERE lane_id='ROOT' AND task_id='A'",
+                (revision,),
+            )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="ROOT",
+            event_type="fixture.lane.active",
+            payload={},
+            operation=activate_lane,
+        )
+        reordered = base_plan(tasks)
+        reordered["schema_version"] = 3
+        reordered["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT", "role": "coordinator", "tasks": ["B", "A"]}],
+        }]
+        with self.assertRaises(TodoError) as caught:
+            self.repo.apply(reordered)
+        self.assertEqual("workflow_lane_order_in_use", caught.exception.code)
+
+        with self.repo.service.db.read() as conn:
+            queue = conn.execute(
+                "SELECT position,task_id,state FROM workflow_lane_tasks WHERE lane_id='ROOT' ORDER BY position"
+            ).fetchall()
+        self.assertEqual([(0, "A", "active"), (1, "B", "queued")], [tuple(row) for row in queue])
 
     def test_explicit_v3_fragments_include_owner_scope(self):
         plan = base_plan([safe_task("A", "src/a")])

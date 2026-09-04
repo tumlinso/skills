@@ -464,7 +464,11 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
 def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revision: int) -> dict[str, object]:
     """Normalize v2 or apply explicit v3 first-class run declarations."""
     from .workflow.foundation import canonical_json, content_hash
-    from .workflow.lanes import create_lane_in_transaction, enqueue_tasks_in_transaction
+    from .workflow.lanes import (
+        create_lane_in_transaction,
+        enqueue_tasks_in_transaction,
+        reconcile_lane_task_order_in_transaction,
+    )
     from .workflow.runs import create_run_in_transaction
 
     now = utc_now()
@@ -514,7 +518,14 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                     role=str(lane.get("role", "implementer")),
                     workspace_mode=str(workspace.get("mode", "exclusive")),
                 )
-                enqueue_tasks_in_transaction(conn, revision, lane_id=lane_id, task_ids=[str(value) for value in lane.get("tasks", [])])
+                declared_task_ids = [str(value) for value in lane.get("tasks", [])]
+                enqueue_tasks_in_transaction(conn, revision, lane_id=lane_id, task_ids=declared_task_ids)
+                reconcile_lane_task_order_in_transaction(
+                    conn,
+                    revision,
+                    lane_id=lane_id,
+                    task_ids=declared_task_ids,
+                )
                 conn.execute(
                     "UPDATE workflow_lane_tasks SET state=CASE "
                     "WHEN task_id IN (SELECT id FROM tasks WHERE status='done') THEN 'completed' "

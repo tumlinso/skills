@@ -130,6 +130,55 @@ def enqueue_tasks_in_transaction(
     return {"run_id": lane["run_id"], "lane_id": lane_id, "enqueued": added}
 
 
+def reconcile_lane_task_order_in_transaction(
+    conn: sqlite3.Connection,
+    revision: int,
+    *,
+    lane_id: str,
+    task_ids: list[str],
+) -> dict[str, object]:
+    """Align an idle lane with declared plan order while preserving omitted tasks."""
+
+    lane = _lane(conn, lane_id)
+    if len(task_ids) != len(set(task_ids)):
+        raise TodoError("duplicate_lane_task", "A task may appear only once in a lane order")
+    rows = conn.execute(
+        "SELECT position,task_id,state FROM workflow_lane_tasks WHERE lane_id=? ORDER BY position",
+        (lane_id,),
+    ).fetchall()
+    current = [str(row["task_id"]) for row in rows]
+    current_set = set(current)
+    missing = [task_id for task_id in task_ids if task_id not in current_set]
+    if missing:
+        raise TodoError("workflow_lane_task_missing", f"Lane {lane_id} is missing declared task {missing[0]}")
+    declared = set(task_ids)
+    desired = list(task_ids) + [task_id for task_id in current if task_id not in declared]
+    if desired == current:
+        return {"run_id": lane["run_id"], "lane_id": lane_id, "changed": False, "task_ids": current}
+    if conn.execute(
+        "SELECT 1 FROM workflow_dispatches WHERE lane_id=? AND state IN ('active','revoking')",
+        (lane_id,),
+    ).fetchone() or any(str(row["state"]) == "active" for row in rows):
+        raise TodoError(
+            "workflow_lane_order_in_use",
+            f"Cannot reorder workflow lane {lane_id} while it has active mutable work",
+        )
+
+    temporary_base = max((int(row["position"]) for row in rows), default=-1) + len(rows) + 1
+    for offset, task_id in enumerate(current):
+        conn.execute(
+            "UPDATE workflow_lane_tasks SET position=? WHERE lane_id=? AND task_id=?",
+            (temporary_base + offset, lane_id, task_id),
+        )
+    for position, task_id in enumerate(desired):
+        conn.execute(
+            "UPDATE workflow_lane_tasks SET position=?,revision=? WHERE lane_id=? AND task_id=?",
+            (position, revision, lane_id, task_id),
+        )
+    conn.execute("UPDATE workflow_lanes SET updated_at=?,revision=? WHERE id=?", (utc_now(), revision, lane_id))
+    return {"run_id": lane["run_id"], "lane_id": lane_id, "changed": True, "task_ids": desired}
+
+
 def assign_lane_role_in_transaction(
     conn: sqlite3.Connection,
     revision: int,
