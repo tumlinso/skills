@@ -11,6 +11,32 @@ from typing import Iterable
 from .models import TodoError
 
 
+GENERATED_PROJECTION_FILES = {
+    ".todo-orchestrator/state.snapshot.json",
+    "todo-status.md",
+    "todos.md",
+}
+
+
+def is_generated_projection(path: str) -> bool:
+    return path in GENERATED_PROJECTION_FILES or path == "todos" or path.startswith("todos/")
+
+
+def material_dirty_paths(repo_root: Path) -> list[str]:
+    return [path for path in dirty_paths(repo_root) if not is_generated_projection(path)]
+
+
+def integration_diff_args(base_commit: str) -> list[str]:
+    return [
+        "diff", "--binary", base_commit, "--", ".",
+        ":(exclude).todo-orchestrator/state.snapshot.json",
+        ":(exclude)todo-status.md",
+        ":(exclude)todos.md",
+        ":(exclude)todos",
+        ":(exclude)todos/**",
+    ]
+
+
 def git_head(repo_root: Path) -> str | None:
     result = subprocess.run(["git", "-C", str(repo_root), "rev-parse", "HEAD"], capture_output=True, text=True, check=False)
     return result.stdout.strip() if result.returncode == 0 else None

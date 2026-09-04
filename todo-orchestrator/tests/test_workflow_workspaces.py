@@ -355,6 +355,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual((destination_path / "second.txt").read_text(), "second\n")
 
     def test_canonical_gate_runner_binds_destination_workspace_and_source(self) -> None:
+        (self.repo / ".todo-orchestrator").mkdir()
+        (self.repo / ".todo-orchestrator" / "state.snapshot.json").write_text("{}\n", encoding="utf-8")
+        git(self.repo, "add", ".todo-orchestrator/state.snapshot.json")
+        git(self.repo, "commit", "-qm", "tracked authority projection")
+        self.base = git(self.repo, "rev-parse", "HEAD")
         destination = self.create_destination()
         producer = self.create_producer()
         commit = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
@@ -403,6 +408,19 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             "POST",
             claim_token,
             execution_root=Path(str(destination["worktree_path"])),
+            workspace_base_commit=self.base,
+        )
+        self.assertEqual(gate["status"], "passed")
+        destination_path = Path(str(destination["worktree_path"]))
+        snapshot = destination_path / ".todo-orchestrator" / "state.snapshot.json"
+        snapshot.write_text("{\"revision\": 2}\n", encoding="utf-8")
+        gate, _ = run_gate(
+            self.db,
+            paths,
+            {"configuration": {}},
+            "POST",
+            claim_token,
+            execution_root=destination_path,
             workspace_base_commit=self.base,
         )
         self.assertEqual(gate["status"], "passed")

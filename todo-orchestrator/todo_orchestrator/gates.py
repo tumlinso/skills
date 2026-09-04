@@ -17,6 +17,7 @@ from .child_execution import authenticate_child_token, heartbeat_child_execution
 from .config import utc_now
 from .claims import pulse_claim
 from .evidence import gate_input_fingerprint
+from .git_state import integration_diff_args
 from .graph import reevaluate_barriers
 from .models import ExitCode, TodoError
 from .ownership import acquire_named_locks, release_lock
@@ -216,7 +217,7 @@ def run_gate(
         workspace_source_identity = None
         if workspace_base_commit:
             source = subprocess.run(
-                ["git", "-C", str(gate_root), "diff", "--binary", workspace_base_commit],
+                ["git", "-C", str(gate_root), *integration_diff_args(workspace_base_commit)],
                 capture_output=True,
                 check=False,
             )
