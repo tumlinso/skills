@@ -374,6 +374,29 @@ class WorkspaceService:
             if queued is not None:
                 raise TodoError("workspace_artifact_already_consumed", "Queued workspace artifacts cannot be rebased")
             pending_artifact_ids = [str(row["id"]) for row in published]
+            integrator_destination_row = conn.execute(
+                "SELECT w.*,current.position AS current_position,required.position AS required_position "
+                "FROM workflow_lane_tasks required JOIN workflow_lanes l ON l.id=required.lane_id "
+                "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
+                "LEFT JOIN workflow_lane_tasks current ON current.lane_id=l.id "
+                "AND current.task_id=w.integration_task_id "
+                "WHERE required.task_id=? AND required.lane_id=l.id AND l.run_id=? AND l.role='integrator'",
+                (selected_workspace["integration_task_id"], run_id),
+            ).fetchone()
+            integrator_destination = dict(integrator_destination_row) if integrator_destination_row else None
+            if (integrator_destination is not None and
+                    integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
+                if (integrator_destination["required_position"] is None or
+                        integrator_destination["current_position"] is None or
+                        integrator_destination["required_position"] >= integrator_destination["current_position"]):
+                    raise TodoError("integration_task_order_invalid", "Integrator destination cannot move backward to the requested task")
+                consumed_future = conn.execute(
+                    "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? "
+                    "AND state<>'queued' LIMIT 1",
+                    (run_id, integrator_destination["integration_task_id"]),
+                ).fetchone()
+                if consumed_future is not None:
+                    raise TodoError("integration_task_already_consumed", "Cannot restore ordering after future integration work was consumed")
 
         reconciled_workspaces: list[dict[str, object]] = []
         for workspace in participants:
@@ -401,6 +424,13 @@ class WorkspaceService:
                 "head": head,
                 "state": workspace["state"],
             })
+        if (integrator_destination is not None and
+                integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
+            destination_path = self._managed_path(Path(str(integrator_destination["worktree_path"])))
+            if material_dirty_paths(destination_path):
+                raise TodoError("integration_workspace_dirty", "Integrator destination must be clean before task-order repair")
+            if self._commit(destination_path, "HEAD") != canonical_base:
+                raise TodoError("integration_stale_base", "Integrator destination HEAD must match the restored integration base")
 
         now = utc_now()
 
@@ -429,6 +459,23 @@ class WorkspaceService:
                 "artifact_ref=NULL,diff_hash=NULL,updated_at=? WHERE id=?",
                 [(canonical_base, now, workspace["workspace_id"]) for workspace in reconciled_workspaces],
             )
+            repaired_destination = None
+            if (integrator_destination is not None and
+                    integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
+                changed = conn.execute(
+                    "UPDATE workflow_workspaces SET integration_task_id=?,state='active',updated_at=? "
+                    "WHERE id=? AND integration_task_id=? AND state='active'",
+                    (selected_workspace["integration_task_id"], now, integrator_destination["id"],
+                     integrator_destination["integration_task_id"]),
+                )
+                if changed.rowcount != 1:
+                    raise TodoError("workspace_reconcile_state_changed", "Integrator destination changed during task-order repair")
+                repaired_destination = {
+                    "workspace_id": integrator_destination["id"],
+                    "lane_id": integrator_destination["lane_id"],
+                    "from_task_id": integrator_destination["integration_task_id"],
+                    "integration_task_id": selected_workspace["integration_task_id"],
+                }
             return {
                 "workspace_id": selected_workspace["id"],
                 "run_id": run_id,
@@ -437,6 +484,7 @@ class WorkspaceService:
                 "base_commit": canonical_base,
                 "reason": reason,
                 "reconciled_workspaces": reconciled_workspaces,
+                "repaired_integrator_destination": repaired_destination,
                 "superseded_artifact_ids": pending_artifact_ids,
             }
 
@@ -591,21 +639,26 @@ class WorkspaceService:
                 raise TodoError("exclusive_integration_workspace_required", "Integrator must exclusively own the destination workspace")
             if destination["repository_identity"] != artifact["repository_identity"]:
                 raise TodoError("integration_repository_mismatch", "Producer and destination repositories differ")
+            next_owned = conn.execute(
+                "SELECT task_id FROM workflow_lane_tasks WHERE lane_id=? AND state='queued' "
+                "ORDER BY position LIMIT 1",
+                (integrator_lane_id,),
+            ).fetchone()
+            if next_owned is None:
+                raise TodoError("integration_task_owner_mismatch", "Integrator lane has no queued integration task")
+            is_next_owned_task = next_owned["task_id"] == integration_task_id
             if (destination["state"] == "integrated" and
-                    destination["integration_task_id"] != integration_task_id):
-                owns_next_task = conn.execute(
-                    "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=? AND state='queued'",
-                    (integrator_lane_id, integration_task_id),
-                ).fetchone()
+                    destination["integration_task_id"] != integration_task_id and
+                    is_next_owned_task):
                 unfinished = conn.execute(
                     "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integrator_lane_id=? "
-                    "AND state NOT IN ('integrated','rejected') LIMIT 1",
-                    (artifact["run_id"], integrator_lane_id),
+                    "AND integration_task_id=? AND state NOT IN ('integrated','rejected') LIMIT 1",
+                    (artifact["run_id"], integrator_lane_id, integration_task_id),
                 ).fetchone()
                 destination_path = self._managed_path(Path(str(destination["worktree_path"])))
                 status = self._git(destination_path, ["status", "--porcelain=v1", "-z"])
                 head = self._git(destination_path, ["rev-parse", "--verify", "HEAD^{commit}"], text=True)
-                if (owns_next_task is None or unfinished is not None or status.returncode != 0 or
+                if (unfinished is not None or status.returncode != 0 or
                         status.stdout or head.returncode != 0 or
                         head.stdout.strip() != artifact["base_commit"]):
                     raise TodoError(
@@ -623,10 +676,12 @@ class WorkspaceService:
                 ).fetchone()
             if destination["base_commit"] != artifact["base_commit"]:
                 raise TodoError("integration_stale_base", "Producer and destination must have the exact same recorded base")
-            if destination["integration_task_id"] != integration_task_id or not conn.execute(
+            owns_task = conn.execute(
                 "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
                 (integrator_lane_id, integration_task_id),
-            ).fetchone():
+            ).fetchone()
+            if owns_task is None or (
+                    destination["integration_task_id"] != integration_task_id and is_next_owned_task):
                 raise TodoError("integration_task_owner_mismatch", "Integration task is not declared for the integrator workspace and lane")
             position = conn.execute(
                 "SELECT COALESCE(MAX(position),-1)+1 FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=?",
@@ -658,7 +713,8 @@ class WorkspaceService:
         def reserve(conn: Any, revision: int) -> dict[str, object]:
             row = conn.execute(
                 """SELECT q.*,a.kind,a.artifact_ref,a.content_hash,a.base_commit,a.workspace_id,
-                          d.worktree_path AS destination_path,d.state AS destination_state
+                          d.worktree_path AS destination_path,d.state AS destination_state,
+                          d.integration_task_id AS destination_task,d.base_commit AS destination_base
                    FROM workflow_integration_queue q
                    JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id
                    JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id
@@ -674,6 +730,22 @@ class WorkspaceService:
             ).fetchone()
             if earlier is not None:
                 raise TodoError("integration_queue_order", "An earlier integration entry must finish first")
+            next_owned = conn.execute(
+                "SELECT task_id FROM workflow_lane_tasks WHERE lane_id=? AND state='queued' "
+                "ORDER BY position LIMIT 1",
+                (row["integrator_lane_id"],),
+            ).fetchone()
+            if next_owned is None or next_owned["task_id"] != row["integration_task_id"]:
+                raise TodoError("integration_task_out_of_order", "A prior integrator-lane task must finish first")
+            if row["destination_task"] != row["integration_task_id"]:
+                if (row["destination_state"] != "integrated" or
+                        row["destination_base"] != row["base_commit"]):
+                    raise TodoError("integration_task_owner_mismatch", "Integrator destination is not ready for this task")
+                conn.execute(
+                    "UPDATE workflow_workspaces SET integration_task_id=?,state='active',updated_at=? "
+                    "WHERE run_id=? AND lane_id=?",
+                    (row["integration_task_id"], utc_now(), row["run_id"], row["integrator_lane_id"]),
+                )
             conn.execute(
                 "UPDATE workflow_integration_queue SET state='applying',updated_at=? WHERE id=? AND state='queued'",
                 (utc_now(), queue_id),

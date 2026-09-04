@@ -267,17 +267,41 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertFalse((self.managed / "producer2").exists())
 
     def test_clean_workspace_base_can_be_reconciled_after_prior_integration(self) -> None:
+        destination = self.create_destination()
         producer = self.create_producer()
         (self.repo / "integrated.txt").write_text("prior wave\n", encoding="utf-8")
         git(self.repo, "add", "integrated.txt")
         git(self.repo, "commit", "-qm", "prior integration")
         integrated_base = git(self.repo, "rev-parse", "HEAD")
+        git(Path(str(destination["worktree_path"])), "merge", "--ff-only", integrated_base)
         producer_path = Path(str(producer["worktree_path"]))
         git(producer_path, "merge", "--ff-only", integrated_base)
         commit = self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")
         artifact = self.service.publish_artifact(
             workspace_id=str(producer["workspace_id"]), task_id="IMPL",
             kind="commit", artifact_ref=commit,
+        )
+
+        def misorder_destination(conn, revision):
+            now = "2026-08-27T01:00:00Z"
+            conn.execute(
+                "INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) "
+                "VALUES('INTEGRATE2','workstream','INTEGRATE2','planned',?,?,?)",
+                (now, now, revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES('INTEGRATOR',1,'INTEGRATE2','queued',?,?)",
+                (now, revision),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET integration_task_id='INTEGRATE2',state='active' WHERE id=?",
+                (destination["workspace_id"],),
+            )
+
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="INTEGRATE2",
+            event_type="fixture_misordered_destination", payload={}, operation=misorder_destination,
         )
 
         reconciled = self.service.reconcile_workspace_base(
@@ -290,6 +314,8 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(reconciled["base_commit"], integrated_base)
         self.assertEqual(len(reconciled["reconciled_workspaces"]), 1)
         self.assertEqual(reconciled["reconciled_workspaces"][0]["old_base_commit"], self.base)
+        self.assertEqual(reconciled["repaired_integrator_destination"]["from_task_id"], "INTEGRATE2")
+        self.assertEqual(reconciled["repaired_integrator_destination"]["integration_task_id"], "INTEGRATE")
         self.assertEqual(reconciled["superseded_artifact_ids"], [artifact["artifact_id"]])
         with self.db.read() as conn:
             recorded = conn.execute(
@@ -538,6 +564,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
                 (now, revision),
             )
             conn.execute(
+                "UPDATE workflow_lane_tasks SET state='completed',revision=? "
+                "WHERE lane_id='INTEGRATOR' AND task_id='INTEGRATE'",
+                (revision,),
+            )
+            conn.execute(
                 "UPDATE workflow_workspaces SET state='integrated' WHERE id=?",
                 (destination["workspace_id"],),
             )
@@ -584,6 +615,53 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(rolled["integration_task_id"], "INTEGRATE2")
         self.assertEqual(rolled["state"], "active")
         self.assertIsNone(rolled["artifact_ref"])
+
+    def test_future_integration_artifact_queues_without_skipping_current_task(self) -> None:
+        destination = self.create_destination()
+
+        def add_future_task(conn, revision):
+            now = "2026-08-27T01:00:00Z"
+            conn.execute(
+                "INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) "
+                "VALUES('INTEGRATE2','workstream','INTEGRATE2','planned',?,?,?)",
+                (now, now, revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES('INTEGRATOR',1,'INTEGRATE2','queued',?,?)",
+                (now, revision),
+            )
+
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="INTEGRATE2",
+            event_type="fixture_future_integration", payload={}, operation=add_future_task,
+        )
+        producer = self.service.create_workspace(
+            repository_root=self.repo, repository_identity="repo-identity", run_id="RUN",
+            lane_id="PRODUCER2", mode="isolated_merge", base_commit=self.base,
+            worktree_path=self.managed / "producer2", branch="test-producer2",
+            integration_task_id="INTEGRATE2",
+        )
+        commit = self.producer_commit(producer, "alpha\nbeta\nfuture wave\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL2",
+            kind="commit", artifact_ref=commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR",
+            integration_task_id="INTEGRATE2",
+        )
+        with self.db.read() as conn:
+            destination_state = conn.execute(
+                "SELECT integration_task_id,state FROM workflow_workspaces WHERE id=?",
+                (destination["workspace_id"],),
+            ).fetchone()
+        self.assertEqual(destination_state["integration_task_id"], "INTEGRATE")
+        self.assertEqual(destination_state["state"], "active")
+        self.assert_code(
+            "integration_task_out_of_order",
+            lambda: self.service.apply_next(queue_id=str(queued["queue_id"])),
+        )
 
     def test_identical_pending_artifact_publish_is_idempotent(self) -> None:
         producer = self.create_producer()
