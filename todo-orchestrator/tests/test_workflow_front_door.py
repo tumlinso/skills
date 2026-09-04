@@ -183,6 +183,9 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         locator = WorkflowCapabilityLocator(Path(locator_dir.name))
         protocol = WorkflowProtocol(WorkflowKernel(locator=locator), locator)
         claimed = protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        claimed_capability = locator.resolve(
+            claimed["workflow_handle"], required_operation="finish_task"
+        )
         finished = protocol.finish_task(
             workflow_handle=claimed["workflow_handle"], action="complete", disposition="implemented"
         )
@@ -197,6 +200,32 @@ class WorkflowFrontDoorTests(unittest.TestCase):
                 "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id"
             ).fetchone()
             self.assertEqual((queued["state"], queued["artifact_ref"]), ("queued", producer_head))
+
+        # A completion precondition can legitimately require one more commit
+        # after an artifact was queued. Refresh only a clean descendant and
+        # preserve the original artifact as superseded history.
+        (producer_root / "src" / "a" / "followup.txt").write_text("published interface\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(producer_root), "add", "src/a/followup.txt"], check=True)
+        subprocess.run(["git", "-C", str(producer_root), "commit", "-qm", "publish interface"], check=True)
+        refreshed_head = subprocess.check_output(
+            ["git", "-C", str(producer_root), "rev-parse", "HEAD"], text=True
+        ).strip()
+        with self.repo.service.db.read() as conn:
+            workspace = dict(conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE lane_id='compat-v2-main'"
+            ).fetchone())
+        refreshed = WorkflowKernel._publish_and_queue_workspace_artifact(
+            self.repo.service, claimed_capability.lineage, workspace
+        )
+        self.assertEqual(refreshed["artifact"]["artifact_ref"], refreshed_head)
+        with self.repo.service.db.read() as conn:
+            artifacts = conn.execute(
+                "SELECT state,artifact_ref FROM workflow_patch_artifacts ORDER BY created_at,id"
+            ).fetchall()
+            self.assertEqual(
+                [(row["state"], row["artifact_ref"]) for row in artifacts],
+                [("superseded", producer_head), ("queued", refreshed_head)],
+            )
 
         integrator = protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")
         self.assertEqual(integrator["role"], "integrator")
@@ -216,6 +245,7 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         self.assertEqual(len(integrated["integration"]), 1)
         self.assertEqual(integrated["integration"][0]["state"], "integrated")
         self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
+        self.assertEqual((destination / "src" / "a" / "followup.txt").read_text(), "published interface\n")
         self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")
         handed_off_integrator = protocol.finish_task(
             workflow_handle=integrator["workflow_handle"], action="handoff", reason="resume integrated workspace"

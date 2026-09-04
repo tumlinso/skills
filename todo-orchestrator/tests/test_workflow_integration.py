@@ -120,6 +120,41 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
             "evidence": [{"type": "gate", "id": "G"}], "context_version": 1,
         })
 
+    def test_terminal_interface_is_validated_before_artifact_publication(self):
+        self.repo.close()
+        self.repo = V2Repo()
+        task = safe_task(
+            "A",
+            "src/a",
+            checkpoints=[{
+                "id": "A-FROZEN",
+                "title": "A interface frozen",
+                "publishes_interfaces": [{"id": "A-API", "version": "1"}],
+            }],
+        )
+        self.repo.apply(base_plan(
+            [task],
+            interfaces=[{
+                "id": "A-API",
+                "owner_task_id": "A",
+                "contract_paths": ["include/a_api.hh"],
+            }],
+        ))
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        with self.assertRaises(TodoError) as caught:
+            self.protocol.finish_task(
+                workflow_handle=claimed["workflow_handle"],
+                action="complete",
+                disposition="implemented",
+            )
+        self.assertEqual(caught.exception.code, "interface_artifact_missing")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(
+                conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0],
+                "in_progress",
+            )
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_patch_artifacts").fetchone()[0], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

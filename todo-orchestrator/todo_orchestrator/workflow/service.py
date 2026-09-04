@@ -174,7 +174,7 @@ class WorkflowKernel:
         if workspace.get("state") == "queued":
             with service.db.read() as conn:
                 existing = conn.execute(
-                    "SELECT a.id AS artifact_id,a.artifact_ref,a.content_hash,q.id AS queue_id,"
+                    "SELECT a.id AS artifact_id,a.artifact_ref,a.content_hash,a.base_commit,q.id AS queue_id,"
                     "q.position,q.run_id,q.integration_task_id,q.integrator_lane_id "
                     "FROM workflow_patch_artifacts a JOIN workflow_integration_queue q "
                     "ON q.patch_artifact_id=a.id WHERE a.workspace_id=? AND a.task_id=? "
@@ -192,11 +192,83 @@ class WorkflowKernel:
                 text=True,
                 check=False,
             )
-            if head.returncode != 0 or head.stdout.strip() != str(existing["artifact_ref"]):
+            if head.returncode != 0:
                 raise TodoError(
                     "queued_workspace_head_mismatch",
                     "Queued artifact no longer matches the managed producer HEAD",
                 )
+            current_head = head.stdout.strip()
+            if current_head != str(existing["artifact_ref"]):
+                status = subprocess.run(
+                    ["git", "-C", str(root), "status", "--porcelain=v1", "-z"],
+                    capture_output=True,
+                    check=False,
+                )
+                descendant = subprocess.run(
+                    ["git", "-C", str(root), "merge-base", "--is-ancestor", str(existing["artifact_ref"]), current_head],
+                    capture_output=True,
+                    check=False,
+                )
+                diff = subprocess.run(
+                    ["git", "-C", str(root), "diff", "--binary", str(existing["base_commit"]), current_head],
+                    capture_output=True,
+                    check=False,
+                )
+                if (status.returncode != 0 or status.stdout or descendant.returncode != 0 or
+                        diff.returncode != 0 or not diff.stdout):
+                    raise TodoError(
+                        "queued_workspace_head_mismatch",
+                        "Queued artifact no longer matches the managed producer HEAD",
+                    )
+                replacement_id = str(uuid.uuid4())
+                replacement_hash = hashlib.sha256(diff.stdout).hexdigest()
+                now = utc_now()
+
+                def replace(conn: Any, revision: int) -> dict[str, Any]:
+                    current = conn.execute(
+                        "SELECT a.state AS artifact_state,q.state AS queue_state,w.state AS workspace_state "
+                        "FROM workflow_patch_artifacts a JOIN workflow_integration_queue q ON q.patch_artifact_id=a.id "
+                        "JOIN workflow_workspaces w ON w.id=a.workspace_id WHERE a.id=? AND q.id=?",
+                        (existing["artifact_id"], existing["queue_id"]),
+                    ).fetchone()
+                    if (current is None or current["artifact_state"] != "queued" or
+                            current["queue_state"] != "queued" or current["workspace_state"] != "queued"):
+                        raise TodoError("queued_workspace_changed", "Queued producer state changed during refresh")
+                    conn.execute(
+                        "INSERT INTO workflow_patch_artifacts("
+                        "id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
+                        "VALUES(?,?,?,?,?,?,?,?, 'queued')",
+                        (replacement_id, workspace["id"], lineage.task_id, "commit", current_head,
+                         replacement_hash, existing["base_commit"], now),
+                    )
+                    conn.execute(
+                        "UPDATE workflow_patch_artifacts SET state='superseded' WHERE id=?",
+                        (existing["artifact_id"],),
+                    )
+                    conn.execute(
+                        "UPDATE workflow_integration_queue SET patch_artifact_id=?,updated_at=? WHERE id=?",
+                        (replacement_id, now, existing["queue_id"]),
+                    )
+                    conn.execute(
+                        "UPDATE workflow_workspaces SET artifact_ref=?,diff_hash=?,updated_at=? WHERE id=?",
+                        (current_head, replacement_hash, now, workspace["id"]),
+                    )
+                    return {"artifact_id": replacement_id, "diff_hash": replacement_hash}
+
+                refreshed, _, _ = service.mutate(
+                    actor=lineage.session_id,
+                    entity_type="workflow_patch_artifact",
+                    entity_id=replacement_id,
+                    event_type="workflow_patch_artifact_refreshed",
+                    payload={"supersedes": str(existing["artifact_id"]), "queue_id": str(existing["queue_id"])},
+                    operation=replace,
+                )
+                existing = {
+                    **dict(existing),
+                    "artifact_id": refreshed["artifact_id"],
+                    "artifact_ref": current_head,
+                    "content_hash": refreshed["diff_hash"],
+                }
             return {
                 "artifact": {
                     "artifact_id": str(existing["artifact_id"]),
@@ -879,6 +951,21 @@ class WorkflowKernel:
         lineage = capability.lineage
         require_role_action(str(lineage.role), "finish_task")
         if action == "complete":
+            # A terminal producer may own a checkpoint interface. Validate its
+            # publication before creating the immutable integration queue item;
+            # otherwise a legitimate interface commit can make that item stale.
+            with service.db.read() as conn:
+                unpublished = conn.execute(
+                    "SELECT i.id FROM interfaces i JOIN checkpoint_interfaces ci ON ci.interface_id=i.id "
+                    "JOIN checkpoints c ON c.id=ci.checkpoint_id "
+                    "WHERE i.owner_task_id=? AND c.task_id=? AND i.state!='frozen' ORDER BY i.id LIMIT 1",
+                    (lineage.task_id, lineage.task_id),
+                ).fetchone()
+            if unpublished is not None:
+                raise TodoError(
+                    "interface_artifact_missing",
+                    f"Required owned interface is not frozen: {unpublished['id']}",
+                )
             # Required completion gates are lifecycle authority, not an explicit
             # validator-role operation. They always run for the parent claim.
             workspace = self._workspace_for_dispatch(service, lineage)
