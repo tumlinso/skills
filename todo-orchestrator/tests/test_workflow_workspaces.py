@@ -343,6 +343,30 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             ),
         )
 
+    def test_clean_quarantined_participant_is_reactivated_by_group_reconciliation(self) -> None:
+        producer = self.create_producer()
+
+        def quarantine(conn, revision):
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='quarantined' WHERE id=?",
+                (producer["workspace_id"],),
+            )
+
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id=str(producer["workspace_id"]),
+            event_type="fixture_workspace_quarantined", payload={}, operation=quarantine,
+        )
+        reconciled = self.service.reconcile_workspace_base(
+            repository_root=self.repo, run_id="RUN", lane_id="PRODUCER",
+            base_commit=self.base, reason="verified clean owner recovery",
+        )
+        self.assertEqual(reconciled["reconciled_workspaces"][0]["state"], "quarantined")
+        with self.db.read() as conn:
+            state = conn.execute(
+                "SELECT state FROM workflow_workspaces WHERE id=?", (producer["workspace_id"],)
+            ).fetchone()[0]
+        self.assertEqual(state, "active")
+
     def test_commit_artifact_queue_merge_gates_and_explicit_cleanup_eligibility(self) -> None:
         destination = self.create_destination()
         producer = self.create_producer()

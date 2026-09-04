@@ -345,7 +345,7 @@ class WorkspaceService:
         with self.db.read() as conn:
             selected = conn.execute(
                 "SELECT * FROM workflow_workspaces WHERE run_id=? AND lane_id=? AND state IN "
-                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed')",
+                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','quarantined')",
                 (run_id, lane_id),
             ).fetchall()
             if len(selected) != 1:
@@ -354,7 +354,7 @@ class WorkspaceService:
             participants = [dict(row) for row in conn.execute(
                 "SELECT * FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
                 "AND mode='isolated_merge' AND state IN "
-                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed') "
+                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','quarantined') "
                 "ORDER BY lane_id",
                 (run_id, selected_workspace["integration_task_id"]),
             ).fetchall()]
