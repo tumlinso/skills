@@ -316,6 +316,7 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(reconciled["reconciled_workspaces"][0]["old_base_commit"], self.base)
         self.assertEqual(reconciled["repaired_integrator_destination"]["from_task_id"], "INTEGRATE2")
         self.assertEqual(reconciled["repaired_integrator_destination"]["integration_task_id"], "INTEGRATE")
+        self.assertEqual(reconciled["repaired_integrator_destination"]["transition"], "restore_prior")
         self.assertEqual(reconciled["superseded_artifact_ids"], [artifact["artifact_id"]])
         with self.db.read() as conn:
             recorded = conn.execute(
@@ -397,6 +398,67 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         })
         applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
         self.assertEqual(applied["state"], "awaiting_gates")
+
+    def test_base_reconciliation_advances_completed_integrator_destination(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        old_commit = self.producer_commit(producer, "alpha\nbeta next wave\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL",
+            kind="commit", artifact_ref=old_commit,
+        )
+        self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR",
+            integration_task_id="INTEGRATE",
+        )
+
+        def seed_previous(conn, revision):
+            now = "2026-08-27T01:00:00Z"
+            conn.execute(
+                "INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) "
+                "VALUES('INTEGRATE0','workstream','INTEGRATE0','done',?,?,?)",
+                (now, now, revision),
+            )
+            conn.execute("UPDATE workflow_lane_tasks SET position=1 WHERE lane_id='INTEGRATOR'")
+            conn.execute(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES('INTEGRATOR',0,'INTEGRATE0','completed',?,?)",
+                (now, revision),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET integration_task_id='INTEGRATE0',state='integrated' "
+                "WHERE id=?",
+                (destination["workspace_id"],),
+            )
+
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="INTEGRATE0",
+            event_type="fixture_previous_integration", payload={}, operation=seed_previous,
+        )
+        (self.repo / "prior-wave.txt").write_text("complete\n", encoding="utf-8")
+        git(self.repo, "add", "prior-wave.txt")
+        git(self.repo, "commit", "-qm", "prior wave")
+        integrated_base = git(self.repo, "rev-parse", "HEAD")
+        git(Path(str(destination["worktree_path"])), "merge", "--ff-only", integrated_base)
+        producer_path = Path(str(producer["worktree_path"]))
+        git(producer_path, "merge", "--no-edit", integrated_base)
+
+        reconciled = self.service.reconcile_workspace_base(
+            repository_root=self.repo, run_id="RUN", lane_id="PRODUCER",
+            base_commit=integrated_base, reason="advance after completed integration",
+        )
+        repaired = reconciled["repaired_integrator_destination"]
+        self.assertEqual(repaired["from_task_id"], "INTEGRATE0")
+        self.assertEqual(repaired["integration_task_id"], "INTEGRATE")
+        self.assertEqual(repaired["transition"], "advance_next")
+        with self.db.read() as conn:
+            stored = conn.execute(
+                "SELECT integration_task_id,base_commit,state FROM workflow_workspaces WHERE id=?",
+                (destination["workspace_id"],),
+            ).fetchone()
+        self.assertEqual(dict(stored), {
+            "integration_task_id": "INTEGRATE", "base_commit": integrated_base, "state": "active",
+        })
 
     def test_clean_quarantined_participant_is_reactivated_by_group_reconciliation(self) -> None:
         producer = self.create_producer()

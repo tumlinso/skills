@@ -390,7 +390,8 @@ class WorkspaceService:
             pending_artifact_ids = [str(row["id"]) for row in published if row["state"] == "pending"]
             queued_artifacts = {str(row["workspace_id"]): dict(row) for row in published if row["state"] == "queued"}
             integrator_destination_row = conn.execute(
-                "SELECT w.*,current.position AS current_position,required.position AS required_position "
+                "SELECT w.*,current.position AS current_position,current.state AS current_task_state,"
+                "required.position AS required_position,required.state AS required_task_state "
                 "FROM workflow_lane_tasks required JOIN workflow_lanes l ON l.id=required.lane_id "
                 "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
                 "LEFT JOIN workflow_lane_tasks current ON current.lane_id=l.id "
@@ -401,17 +402,30 @@ class WorkspaceService:
             integrator_destination = dict(integrator_destination_row) if integrator_destination_row else None
             if (integrator_destination is not None and
                     integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
-                if (integrator_destination["required_position"] is None or
-                        integrator_destination["current_position"] is None or
-                        integrator_destination["required_position"] >= integrator_destination["current_position"]):
-                    raise TodoError("integration_task_order_invalid", "Integrator destination cannot move backward to the requested task")
-                consumed_future = conn.execute(
-                    "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? "
-                    "AND state<>'queued' LIMIT 1",
-                    (run_id, integrator_destination["integration_task_id"]),
-                ).fetchone()
-                if consumed_future is not None:
-                    raise TodoError("integration_task_already_consumed", "Cannot restore ordering after future integration work was consumed")
+                required_position = integrator_destination["required_position"]
+                current_position = integrator_destination["current_position"]
+                if required_position is None or current_position is None or required_position == current_position:
+                    raise TodoError("integration_task_order_invalid", "Integrator destination task ordering is invalid")
+                if required_position < current_position:
+                    consumed_future = conn.execute(
+                        "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? "
+                        "AND state<>'queued' LIMIT 1",
+                        (run_id, integrator_destination["integration_task_id"]),
+                    ).fetchone()
+                    if consumed_future is not None:
+                        raise TodoError("integration_task_already_consumed", "Cannot restore ordering after future integration work was consumed")
+                    integrator_destination["transition"] = "restore_prior"
+                else:
+                    unfinished_prior = conn.execute(
+                        "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND position<? "
+                        "AND state<>'completed' LIMIT 1",
+                        (integrator_destination["lane_id"], required_position),
+                    ).fetchone()
+                    if unfinished_prior is not None:
+                        raise TodoError("integration_task_order_invalid", "Prior integrator-lane tasks must complete before advancing the destination")
+                    if integrator_destination["current_task_state"] != "completed":
+                        raise TodoError("integration_task_order_invalid", "Current integrator task is not complete")
+                    integrator_destination["transition"] = "advance_next"
 
         reconciled_workspaces: list[dict[str, object]] = []
         retargeted_artifacts: list[dict[str, object]] = []
@@ -533,12 +547,21 @@ class WorkspaceService:
             repaired_destination = None
             if (integrator_destination is not None and
                     integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
-                changed = conn.execute(
-                    "UPDATE workflow_workspaces SET integration_task_id=?,state='active',updated_at=? "
-                    "WHERE id=? AND integration_task_id=? AND state='active'",
-                    (selected_workspace["integration_task_id"], now, integrator_destination["id"],
-                     integrator_destination["integration_task_id"]),
-                )
+                if integrator_destination["transition"] == "advance_next":
+                    changed = conn.execute(
+                        "UPDATE workflow_workspaces SET integration_task_id=?,base_commit=?,state='active',"
+                        "artifact_kind=NULL,artifact_ref=NULL,diff_hash=NULL,updated_at=? "
+                        "WHERE id=? AND integration_task_id=?",
+                        (selected_workspace["integration_task_id"], canonical_base, now,
+                         integrator_destination["id"], integrator_destination["integration_task_id"]),
+                    )
+                else:
+                    changed = conn.execute(
+                        "UPDATE workflow_workspaces SET integration_task_id=?,state='active',updated_at=? "
+                        "WHERE id=? AND integration_task_id=? AND state='active'",
+                        (selected_workspace["integration_task_id"], now, integrator_destination["id"],
+                         integrator_destination["integration_task_id"]),
+                    )
                 if changed.rowcount != 1:
                     raise TodoError("workspace_reconcile_state_changed", "Integrator destination changed during task-order repair")
                 repaired_destination = {
@@ -546,6 +569,7 @@ class WorkspaceService:
                     "lane_id": integrator_destination["lane_id"],
                     "from_task_id": integrator_destination["integration_task_id"],
                     "integration_task_id": selected_workspace["integration_task_id"],
+                    "transition": integrator_destination["transition"],
                 }
             return {
                 "workspace_id": selected_workspace["id"],
