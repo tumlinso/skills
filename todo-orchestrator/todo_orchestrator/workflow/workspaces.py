@@ -647,7 +647,7 @@ class WorkspaceService:
             )
             if restored.returncode != 0:
                 raise TodoError("integration_conflict_abort_failed", "Preserved conflict could not be restored safely")
-        if self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed"):
+        if material_dirty_paths(destination):
             raise TodoError("integration_conflict_restore_dirty", "Conflict restoration did not produce a clean destination")
         if self._commit(destination, "HEAD") != pre_apply_head:
             raise TodoError("integration_conflict_restore_mismatch", "Conflict restoration did not return to the recorded pre-apply commit")
