@@ -84,6 +84,14 @@ class WorkspaceService:
             raise TodoError(code, "Git operation failed", details={"returncode": result.returncode})
         return result.stdout
 
+    def _git_input(self, repo: Path, args: Sequence[str], content: bytes) -> subprocess.CompletedProcess[bytes]:
+        return self.runner(
+            ["git", "-C", str(repo), *args],
+            input=content,
+            capture_output=True,
+            check=False,
+        )
+
     def _git_input_ok(self, repo: Path, args: Sequence[str], content: bytes, *, code: str) -> bytes:
         result = self.runner(
             ["git", "-C", str(repo), *args],
@@ -510,14 +518,23 @@ class WorkspaceService:
                 diff = self._git_ok(destination, ["diff", "--binary", row["base_commit"], current], code="artifact_diff_failed")
                 if _sha256(diff) != row["content_hash"]:
                     raise TodoError("artifact_content_changed", "Commit artifact no longer matches its immutable hash")
-                command = ["cherry-pick", "--no-commit", f"{row['base_commit']}..{current}"]
+                material = self._git_ok(
+                    destination,
+                    integration_diff_args(str(row["base_commit"]), current),
+                    code="artifact_material_diff_failed",
+                )
+                applied = self._git_input(
+                    destination,
+                    ["apply", "--index", "--3way", "--allow-empty", "-"],
+                    material,
+                )
             else:
                 patch = Path(row["artifact_ref"])
                 content = patch.read_bytes() if patch.is_file() else b""
                 if _sha256(content) != row["content_hash"]:
                     raise TodoError("artifact_content_changed", "Patch artifact no longer matches its immutable hash")
                 command = ["apply", "--index", "--3way", str(patch)]
-            applied = self._git(destination, command)
+                applied = self._git(destination, command)
         except Exception as exc:
             code = exc.code if isinstance(exc, TodoError) else "integration_apply_exception"
             def fail_operation(conn: Any, revision: int) -> None:

@@ -296,6 +296,15 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         destination = self.create_destination()
         first = self.create_producer()
         second = self.create_producer(lane="PRODUCER2")
+        for producer, revision in ((first, 1), (second, 2)):
+            producer_path = Path(str(producer["worktree_path"]))
+            (producer_path / ".todo-orchestrator").mkdir()
+            (producer_path / ".todo-orchestrator" / "state.snapshot.json").write_text(
+                json.dumps({"revision": revision}) + "\n",
+                encoding="utf-8",
+            )
+            git(producer_path, "add", ".todo-orchestrator/state.snapshot.json")
+            git(producer_path, "commit", "-qm", "producer authority projection")
         first_commit = self.producer_commit(first, "alpha changed\nbeta\ngamma\n")
         second_commit = self.producer_commit(second, "alpha\nbeta\ngamma changed\n")
         first_artifact = self.service.publish_artifact(
