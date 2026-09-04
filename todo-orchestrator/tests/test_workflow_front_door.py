@@ -200,13 +200,21 @@ class WorkflowFrontDoorTests(unittest.TestCase):
 
         integrator = protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")
         self.assertEqual(integrator["role"], "integrator")
+        destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
+        dirty = destination / "dirty.txt"
+        dirty.write_text("preserve\n", encoding="utf-8")
+        with self.assertRaises(TodoError) as caught:
+            protocol.coordinate_task(
+                workflow_handle=integrator["workflow_handle"], action="run_gates", payload={"required": True}
+            )
+        self.assertEqual(caught.exception.code, "integration_workspace_dirty")
+        dirty.unlink()
         integrated = protocol.coordinate_task(
             workflow_handle=integrator["workflow_handle"], action="run_gates", payload={"required": True}
         )
         self.assertEqual((integrated["status"], integrated["operation_status"]), ("claimed", "passed"))
         self.assertEqual(len(integrated["integration"]), 1)
         self.assertEqual(integrated["integration"][0]["state"], "integrated")
-        destination = self.repo.service.paths.state_dir / "workflow-workspaces" / "destination"
         self.assertEqual((destination / "src" / "a" / "result.txt").read_text(), "producer\n")
         self.assertEqual(subprocess.check_output(["git", "-C", str(destination), "status", "--porcelain"], text=True), "")
         handed_off_integrator = protocol.finish_task(

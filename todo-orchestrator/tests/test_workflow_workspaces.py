@@ -603,6 +603,16 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         with self.db.read() as conn:
             self.assertEqual(conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queued["queue_id"],)).fetchone()[0], "apply_failed")
             self.assertEqual(conn.execute("SELECT state FROM workflow_workspaces WHERE id=?", (destination["workspace_id"],)).fetchone()[0], "apply_failed")
+        self.assert_code(
+            "integration_workspace_dirty",
+            lambda: self.service.retry_apply_failed(queue_id=str(queued["queue_id"])),
+        )
+        (destination_path / "dirty.txt").unlink()
+        retried = self.service.retry_apply_failed(queue_id=str(queued["queue_id"]))
+        self.assertEqual(retried["state"], "queued")
+        self.assertEqual(retried["destination_state"], "active")
+        applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assertEqual(applied["state"], "awaiting_gates")
 
         # A fresh fixture flow proves omitting any required gate cannot authorize integration.
         self.tearDown()

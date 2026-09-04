@@ -648,6 +648,68 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
+    def retry_apply_failed(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
+        """Requeue a clean destination after a pre-apply dirty-worktree refusal."""
+
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT q.state,q.run_id,q.integrator_lane_id,q.conflict_json,d.state AS destination_state,"
+                "d.worktree_path FROM workflow_integration_queue q "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+        if row is None or row["state"] != "apply_failed":
+            raise TodoError("integration_apply_failure_required", "Only a preserved apply failure can be retried")
+        failure = json.loads(row["conflict_json"] or "{}")
+        if failure.get("code") != "integration_workspace_dirty":
+            raise TodoError(
+                "integration_apply_failure_not_retryable",
+                "Only a pre-apply dirty-worktree refusal is retryable without owner intervention",
+            )
+        destination = Path(row["worktree_path"])
+        if not destination.is_dir():
+            raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
+        status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
+        if status:
+            raise TodoError("integration_workspace_dirty", "Destination remains dirty; all files are preserved")
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute(
+                "SELECT q.state,d.state AS destination_state FROM workflow_integration_queue q "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+            if (
+                current is None
+                or current["state"] != "apply_failed"
+                or current["destination_state"] != "apply_failed"
+            ):
+                raise TodoError("integration_state_changed", "Apply-failed integration changed during retry")
+            now = utc_now()
+            conn.execute(
+                "UPDATE workflow_integration_queue SET state='queued',conflict_json='{}',updated_at=? WHERE id=?",
+                (now, queue_id),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='active',merge_result_json='{}',updated_at=? "
+                "WHERE run_id=? AND lane_id=?",
+                (now, row["run_id"], row["integrator_lane_id"]),
+            )
+            return {"queue_id": queue_id, "state": "queued", "destination_state": "active"}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_integration_apply_retried",
+            payload={"failure_code": "integration_workspace_dirty"},
+            operation=operation,
+        )
+        result["revision"] = revision
+        return result
+
     def retry_failed_gates(
         self,
         *,
