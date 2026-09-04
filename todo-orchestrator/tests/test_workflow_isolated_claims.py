@@ -9,6 +9,7 @@ import unittest
 from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.workflow.capabilities import WorkflowCapabilityLocator
+from todo_orchestrator.interfaces import interface_hash
 from todo_orchestrator.workflow.protocol import WorkflowProtocol
 from todo_orchestrator.workflow.service import WorkflowKernel
 from todo_orchestrator.workflow.workspaces import WorkspaceService
@@ -37,6 +38,13 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
             safe_task("INT", "integration", priority=1),
         ])
         plan["schema_version"] = 3
+        plan["interfaces"] = [{
+            "id": "IFACE-A",
+            "owner_task_id": "A",
+            "state": "draft",
+            "version": "1",
+            "contract_paths": ["src/a/interface.hh"],
+        }]
         plan["runs"] = [{
             "id": "RUN", "root_task_id": "ROOT", "charter": {"objective": "isolated overlap"},
             "lanes": [
@@ -134,6 +142,29 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
         )
         self.assertEqual(self.protocol.port._resolve_service(first_capability).paths.repo_root, first_root)
         self.assertEqual(self.protocol.port._resolve_service(second_capability).paths.repo_root, second_root)
+
+    def test_interface_publication_hashes_exact_dispatch_worktree(self) -> None:
+        producer = self.workspace("A-LANE", "isolated_merge")
+        self.workspace("B-LANE", "isolated_merge")
+        self.workspace("INT-LANE", "exclusive")
+        producer_root = Path(str(producer["worktree_path"])).resolve()
+        contract = producer_root / "src" / "a" / "interface.hh"
+        contract.parent.mkdir(parents=True, exist_ok=True)
+        contract.write_text("#pragma once\n", encoding="utf-8")
+        digest, _ = interface_hash(producer_root, ["src/a/interface.hh"])
+
+        claimed = self.claim("thread-a", "A")
+        published = self.protocol.coordinate_task(
+            workflow_handle=str(claimed["workflow_handle"]),
+            action="publish_interface",
+            payload={"interface_id": "IFACE-A", "version": "1", "content_hash": digest},
+        )
+
+        self.assertEqual(published["interface_id"], "IFACE-A")
+        self.assertEqual(published["content_hash"], digest)
+        with self.repo.service.db.read() as conn:
+            row = conn.execute("SELECT state,content_hash FROM interfaces WHERE id='IFACE-A'").fetchone()
+        self.assertEqual((row["state"], row["content_hash"]), ("frozen", digest))
 
 
 if __name__ == "__main__":

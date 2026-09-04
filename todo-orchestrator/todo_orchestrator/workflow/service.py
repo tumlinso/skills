@@ -632,12 +632,17 @@ class WorkflowKernel:
             )
             return {**result, "project_revision": revision}
         if action == "publish_interface":
+            workspace = self._workspace_for_dispatch(service, lineage)
+            interface_root, _ = self._gate_workspace(workspace)
+            if interface_root is None:
+                interface_root = service.paths.repo_root
+
             def operation(conn: Any, revision: int) -> dict[str, Any]:
                 owner = conn.execute("SELECT owner_task_id,state FROM interfaces WHERE id=?", (payload["interface_id"],)).fetchone()
                 if not owner or owner["owner_task_id"] != lineage.task_id:
                     raise TodoError("interface_owner_mismatch", "Only the owning task may publish an interface")
                 fn = revise_interface if owner["state"] == "frozen" else freeze_interface
-                result = fn(conn, service.paths.repo_root, str(payload["interface_id"]), str(payload["version"]), revision)
+                result = fn(conn, interface_root, str(payload["interface_id"]), str(payload["version"]), revision)
                 if result["content_hash"] != payload["content_hash"]:
                     raise TodoError("interface_hash_mismatch", "Published interface hash differs from authoritative source")
                 return result
