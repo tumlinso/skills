@@ -355,6 +355,16 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR",
             integration_task_id="INTEGRATE",
         )
+        self.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="OLD-SUPERSEDED",
+            event_type="fixture_old_artifact", payload={},
+            operation=lambda conn, revision: conn.execute(
+                "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,"
+                "content_hash,base_commit,created_at,state) VALUES('OLD-SUPERSEDED',?,"
+                "'IMPL','commit',?,'old-hash',?,'2026-08-27T00:00:00Z','superseded')",
+                (producer["workspace_id"], old_commit, self.base),
+            ),
+        )
 
         (self.repo / "upstream.txt").write_text("integrated base\n", encoding="utf-8")
         git(self.repo, "add", "upstream.txt")

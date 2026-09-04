@@ -370,7 +370,8 @@ class WorkspaceService:
             placeholders = ",".join("?" for _ in workspace_ids)
             published = (conn.execute(
                 f"SELECT id,workspace_id,state,kind,artifact_ref,content_hash,base_commit "
-                f"FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})",
+                f"FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders}) "
+                "AND state IN ('pending','queued','applying','awaiting_gates','gate_failed','finalization_failed')",
                 workspace_ids,
             ).fetchall() if workspace_ids else [])
             if any(row["state"] not in {"pending", "queued"} for row in published):
