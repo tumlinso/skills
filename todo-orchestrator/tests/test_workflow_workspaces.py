@@ -343,6 +343,51 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             ),
         )
 
+    def test_queued_artifact_retargets_after_identical_forward_base_merge(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        old_commit = self.producer_commit(producer, "alpha\nbeta retargeted\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL",
+            kind="commit", artifact_ref=old_commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR",
+            integration_task_id="INTEGRATE",
+        )
+
+        (self.repo / "upstream.txt").write_text("integrated base\n", encoding="utf-8")
+        git(self.repo, "add", "upstream.txt")
+        git(self.repo, "commit", "-qm", "integrated base")
+        integrated_base = git(self.repo, "rev-parse", "HEAD")
+        git(Path(str(destination["worktree_path"])), "merge", "--ff-only", integrated_base)
+        producer_path = Path(str(producer["worktree_path"]))
+        git(producer_path, "merge", "--no-edit", integrated_base)
+        new_head = git(producer_path, "rev-parse", "HEAD")
+
+        reconciled = self.service.reconcile_workspace_base(
+            repository_root=self.repo, run_id="RUN", lane_id="PRODUCER",
+            base_commit=integrated_base, reason="prior integration advanced the base",
+        )
+        self.assertEqual(reconciled["retargeted_artifacts"][0]["artifact_id"], artifact["artifact_id"])
+        with self.db.read() as conn:
+            stored_artifact = conn.execute(
+                "SELECT artifact_ref,base_commit,state FROM workflow_patch_artifacts WHERE id=?",
+                (artifact["artifact_id"],),
+            ).fetchone()
+            stored_workspace = conn.execute(
+                "SELECT artifact_ref,base_commit,state FROM workflow_workspaces WHERE id=?",
+                (producer["workspace_id"],),
+            ).fetchone()
+        self.assertEqual(dict(stored_artifact), {
+            "artifact_ref": new_head, "base_commit": integrated_base, "state": "queued",
+        })
+        self.assertEqual(dict(stored_workspace), {
+            "artifact_ref": new_head, "base_commit": integrated_base, "state": "queued",
+        })
+        applied = self.service.apply_next(queue_id=str(queued["queue_id"]))
+        self.assertEqual(applied["state"], "awaiting_gates")
+
     def test_clean_quarantined_participant_is_reactivated_by_group_reconciliation(self) -> None:
         producer = self.create_producer()
 

@@ -334,8 +334,10 @@ class WorkspaceService:
         This is an owner recovery operation for workspaces prepared before an
         earlier integration wave reached the canonical branch. It never changes
         the worktree or branch; the desired base must already be in the lane's
-        history. An unqueued pending artifact may be explicitly superseded by
-        the same transaction; queued or otherwise consumed artifacts fail closed.
+        history. An unqueued pending artifact may be explicitly superseded. A
+        still-queued commit artifact may be retargeted only when its material
+        diff is byte-identical across the old and new bases. Any artifact that
+        integration has started consuming fails closed.
         """
         if not reason.strip():
             raise TodoError("workspace_base_reason_required", "Workspace base reconciliation requires a reason")
@@ -367,19 +369,25 @@ class WorkspaceService:
             workspace_ids = [str(workspace["id"]) for workspace in participants]
             placeholders = ",".join("?" for _ in workspace_ids)
             published = (conn.execute(
-                f"SELECT id,workspace_id,state FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})",
+                f"SELECT id,workspace_id,state,kind,artifact_ref,content_hash,base_commit "
+                f"FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})",
                 workspace_ids,
             ).fetchall() if workspace_ids else [])
-            if any(row["state"] != "pending" for row in published):
+            if any(row["state"] not in {"pending", "queued"} for row in published):
                 raise TodoError("workspace_artifact_already_consumed", "Consumed workspace artifacts cannot be rebased")
-            queued = (conn.execute(
-                "SELECT 1 FROM workflow_integration_queue WHERE patch_artifact_id IN "
-                f"(SELECT id FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})) LIMIT 1",
+            queue_rows = (conn.execute(
+                "SELECT patch_artifact_id,state FROM workflow_integration_queue WHERE patch_artifact_id IN "
+                f"(SELECT id FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders}))",
                 workspace_ids,
-            ).fetchone() if workspace_ids else None)
-            if queued is not None:
-                raise TodoError("workspace_artifact_already_consumed", "Queued workspace artifacts cannot be rebased")
-            pending_artifact_ids = [str(row["id"]) for row in published]
+            ).fetchall() if workspace_ids else [])
+            queued_by_artifact = {str(row["patch_artifact_id"]): str(row["state"]) for row in queue_rows}
+            if any(state != "queued" for state in queued_by_artifact.values()):
+                raise TodoError("workspace_artifact_already_consumed", "Consumed workspace artifacts cannot be rebased")
+            if any(row["state"] == "queued" and queued_by_artifact.get(str(row["id"])) != "queued"
+                   for row in published):
+                raise TodoError("workspace_reconcile_state_changed", "Queued artifact has no matching queue entry")
+            pending_artifact_ids = [str(row["id"]) for row in published if row["state"] == "pending"]
+            queued_artifacts = {str(row["workspace_id"]): dict(row) for row in published if row["state"] == "queued"}
             integrator_destination_row = conn.execute(
                 "SELECT w.*,current.position AS current_position,required.position AS required_position "
                 "FROM workflow_lane_tasks required JOIN workflow_lanes l ON l.id=required.lane_id "
@@ -405,6 +413,7 @@ class WorkspaceService:
                     raise TodoError("integration_task_already_consumed", "Cannot restore ordering after future integration work was consumed")
 
         reconciled_workspaces: list[dict[str, object]] = []
+        retargeted_artifacts: list[dict[str, object]] = []
         for workspace in participants:
             target = self._managed_path(Path(str(workspace["worktree_path"])))
             if material_dirty_paths(target):
@@ -423,6 +432,39 @@ class WorkspaceService:
                     "Reconciled base must advance every recorded base and already be an ancestor of every workspace HEAD",
                     details={"lane_id": workspace["lane_id"]},
                 )
+            queued_artifact = queued_artifacts.get(str(workspace["id"]))
+            if queued_artifact is not None:
+                if queued_artifact["kind"] != "commit" or queued_artifact["base_commit"] != old_base:
+                    raise TodoError(
+                        "workspace_artifact_not_retargetable",
+                        "Only a queued commit artifact on the recorded workspace base can be retargeted",
+                    )
+                old_material = self._git_ok(
+                    target,
+                    integration_diff_args(old_base, str(queued_artifact["artifact_ref"])),
+                    code="artifact_material_diff_failed",
+                )
+                new_material = self._git_ok(
+                    target, integration_diff_args(canonical_base, head),
+                    code="artifact_material_diff_failed",
+                )
+                if old_material != new_material:
+                    raise TodoError(
+                        "workspace_artifact_material_changed",
+                        "Queued artifact material changed while incorporating the new base",
+                        details={"lane_id": workspace["lane_id"]},
+                    )
+                new_content = self._git_ok(
+                    target, ["diff", "--binary", canonical_base, head],
+                    code="artifact_diff_failed",
+                )
+                retargeted_artifacts.append({
+                    "artifact_id": queued_artifact["id"],
+                    "workspace_id": workspace["id"],
+                    "artifact_ref": head,
+                    "content_hash": _sha256(new_content),
+                    "base_commit": canonical_base,
+                })
             reconciled_workspaces.append({
                 "workspace_id": workspace["id"],
                 "lane_id": workspace["lane_id"],
@@ -460,11 +502,33 @@ class WorkspaceService:
                     f"UPDATE workflow_patch_artifacts SET state='superseded' WHERE id IN ({placeholders})",
                     pending_artifact_ids,
                 )
-            conn.executemany(
-                "UPDATE workflow_workspaces SET base_commit=?,state='active',artifact_kind=NULL,"
-                "artifact_ref=NULL,diff_hash=NULL,updated_at=? WHERE id=?",
-                [(canonical_base, now, workspace["workspace_id"]) for workspace in reconciled_workspaces],
-            )
+            for artifact in retargeted_artifacts:
+                changed = conn.execute(
+                    "UPDATE workflow_patch_artifacts SET artifact_ref=?,content_hash=?,base_commit=? "
+                    "WHERE id=? AND state='queued'",
+                    (artifact["artifact_ref"], artifact["content_hash"], artifact["base_commit"],
+                     artifact["artifact_id"]),
+                )
+                if changed.rowcount != 1:
+                    raise TodoError("workspace_reconcile_state_changed", "Queued artifact changed during reconciliation")
+            retargeted_by_workspace = {
+                str(artifact["workspace_id"]): artifact for artifact in retargeted_artifacts
+            }
+            for workspace in reconciled_workspaces:
+                artifact = retargeted_by_workspace.get(str(workspace["workspace_id"]))
+                if artifact is None:
+                    conn.execute(
+                        "UPDATE workflow_workspaces SET base_commit=?,state='active',artifact_kind=NULL,"
+                        "artifact_ref=NULL,diff_hash=NULL,updated_at=? WHERE id=?",
+                        (canonical_base, now, workspace["workspace_id"]),
+                    )
+                else:
+                    conn.execute(
+                        "UPDATE workflow_workspaces SET base_commit=?,state='queued',artifact_kind='commit',"
+                        "artifact_ref=?,diff_hash=?,updated_at=? WHERE id=?",
+                        (canonical_base, artifact["artifact_ref"], artifact["content_hash"], now,
+                         workspace["workspace_id"]),
+                    )
             repaired_destination = None
             if (integrator_destination is not None and
                     integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
@@ -492,6 +556,7 @@ class WorkspaceService:
                 "reconciled_workspaces": reconciled_workspaces,
                 "repaired_integrator_destination": repaired_destination,
                 "superseded_artifact_ids": pending_artifact_ids,
+                "retargeted_artifacts": retargeted_artifacts,
             }
 
         result, revision = self.db.mutate(
@@ -507,6 +572,7 @@ class WorkspaceService:
                 "reason": reason,
                 "workspace_ids": workspace_ids,
                 "superseded_artifact_ids": pending_artifact_ids,
+                "retargeted_artifact_ids": [item["artifact_id"] for item in retargeted_artifacts],
             },
             operation=reconcile,
         )
