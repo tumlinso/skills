@@ -18,12 +18,18 @@ from pathlib import Path
 from typing import Any, Callable, Sequence
 
 from ..config import utc_now
+from ..git_state import dirty_paths
 from ..models import TodoError
 from .foundation import WORKSPACE_MODES, WorkflowDatabase
 
 
 Runner = Callable[..., subprocess.CompletedProcess[bytes]]
 _BRANCH = re.compile(r"^(?![-.])(?!.*(?:\.\.|@\{|//|[\\ ~^:?*\[]))(?!.*[/.]$).+$")
+_GENERATED_PROJECTION_FILES = {
+    ".todo-orchestrator/state.snapshot.json",
+    "todo-status.md",
+    "todos.md",
+}
 
 
 def _json(value: object) -> str:
@@ -32,6 +38,14 @@ def _json(value: object) -> str:
 
 def _sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def _is_generated_projection(path: str) -> bool:
+    return path in _GENERATED_PROJECTION_FILES or path == "todos" or path.startswith("todos/")
+
+
+def _material_dirty_paths(repository_root: Path) -> list[str]:
+    return [path for path in dirty_paths(repository_root) if not _is_generated_projection(path)]
 
 
 def _write_immutable(path: Path, content: bytes) -> None:
@@ -108,12 +122,27 @@ class WorkspaceService:
         raw = self._git_ok(repository_root, ["rev-parse", "--verify", f"{ref}^{{commit}}"], code="workspace_base_missing")
         return raw.decode("utf-8", errors="replace").strip()
 
+    def _source_diff(self, repository_root: Path, base_commit: str, *, code: str) -> bytes:
+        """Return material integration changes without mutable authority projections."""
+        return self._git_ok(
+            repository_root,
+            [
+                "diff", "--binary", base_commit, "--", ".",
+                ":(exclude).todo-orchestrator/state.snapshot.json",
+                ":(exclude)todo-status.md",
+                ":(exclude)todos.md",
+                ":(exclude)todos",
+                ":(exclude)todos/**",
+            ],
+            code=code,
+        )
+
     def _source_identity(self, repository_root: Path, base_commit: str) -> str:
-        """Hash the complete tracked destination state relative to its frozen base."""
+        """Hash material tracked destination state relative to its frozen base."""
         return _sha256(
-            self._git_ok(
+            self._source_diff(
                 repository_root,
-                ["diff", "--binary", base_commit],
+                base_commit,
                 code="integration_source_identity_failed",
             )
         )
@@ -154,7 +183,7 @@ class WorkspaceService:
         )
         if self._commit(repository_root, "HEAD") != frozen_commit:
             raise TodoError("integration_head_advance_failed", "Managed destination did not advance to the frozen integration commit")
-        if self._git_ok(repository_root, ["status", "--porcelain=v1", "-z"], code="integration_status_failed"):
+        if _material_dirty_paths(repository_root):
             raise TodoError("integration_head_state_mismatch", "Managed destination does not exactly match the frozen integration commit")
 
     def _lane(self, conn: Any, run_id: str, lane_id: str) -> Any:
@@ -489,8 +518,7 @@ class WorkspaceService:
         try:
             if not destination.exists():
                 raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
-            status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
-            if status:
+            if _material_dirty_paths(destination):
                 raise TodoError("integration_workspace_dirty", "Destination has dirty changes; all files are preserved")
             pre_apply_head = self._commit(destination, "HEAD")
             if row["kind"] == "commit":
@@ -670,8 +698,7 @@ class WorkspaceService:
         destination = Path(row["worktree_path"])
         if not destination.is_dir():
             raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
-        status = self._git_ok(destination, ["status", "--porcelain=v1", "-z"], code="integration_status_failed")
-        if status:
+        if _material_dirty_paths(destination):
             raise TodoError("integration_workspace_dirty", "Destination remains dirty; all files are preserved")
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
@@ -893,7 +920,11 @@ class WorkspaceService:
             if self._source_identity(destination, queue["base_commit"]) != source_identity:
                 raise TodoError("integration_source_changed", "Destination source changed during finalization")
             if passed:
-                content = self._git_ok(destination, ["diff", "--binary", queue["base_commit"]], code="integration_final_diff_failed")
+                content = self._source_diff(
+                    destination,
+                    str(queue["base_commit"]),
+                    code="integration_final_diff_failed",
+                )
                 digest = _sha256(content)
                 if digest != source_identity:
                     raise TodoError("integration_source_changed", "Final artifact does not match the gated destination source")
@@ -1043,7 +1074,7 @@ class WorkspaceService:
         if path is not None:
             if not path.exists():
                 raise TodoError("workspace_missing", "Workspace path is unavailable; no cleanup state was changed")
-            if self._git_ok(path, ["status", "--porcelain=v1", "-z"], code="workspace_status_failed"):
+            if _material_dirty_paths(path):
                 raise TodoError("workspace_dirty_preserved", "Dirty or conflicted workspace is preserved and cannot become cleanup eligible")
         now = utc_now()
 
@@ -1055,7 +1086,7 @@ class WorkspaceService:
                 "SELECT 1 FROM workflow_dispatches WHERE workspace_id=? AND state='active'", (workspace_id,)
             ).fetchone():
                 raise TodoError("workspace_cleanup_owner_active", "Active workspace owner must stop before cleanup eligibility")
-            if path is not None and self._git_ok(path, ["status", "--porcelain=v1", "-z"], code="workspace_status_failed"):
+            if path is not None and _material_dirty_paths(path):
                 raise TodoError("workspace_dirty_preserved", "Workspace became dirty during cleanup assessment")
             conn.execute("UPDATE workflow_workspaces SET cleanup_eligible=1,updated_at=? WHERE id=?", (now, workspace_id))
             return {"workspace_id": workspace_id, "cleanup_eligible": True, "deleted": False}

@@ -485,6 +485,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(self.service.apply_next(queue_id=str(queued["queue_id"]))["state"], "awaiting_gates")
 
     def test_failed_post_merge_gate_preserves_destination_and_blocks_cleanup(self) -> None:
+        (self.repo / ".todo-orchestrator").mkdir()
+        (self.repo / ".todo-orchestrator" / "state.snapshot.json").write_text("{}\n", encoding="utf-8")
+        git(self.repo, "add", ".todo-orchestrator/state.snapshot.json")
+        git(self.repo, "commit", "-qm", "tracked authority projection")
+        self.base = git(self.repo, "rev-parse", "HEAD")
         destination = self.create_destination()
         producer = self.create_producer()
         commit = self.producer_commit(producer, "alpha\nbeta\ngamma changed\n")
@@ -501,6 +506,17 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(result["state"], "gate_failed")
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
         destination_path = Path(str(destination["worktree_path"]))
+        snapshot = destination_path / ".todo-orchestrator" / "state.snapshot.json"
+        snapshot.write_text(snapshot.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+        retried_projection_refresh = self.service.retry_failed_gates(queue_id=str(queued["queue_id"]))
+        self.assertEqual(retried_projection_refresh["state"], "awaiting_gates")
+        self.assertEqual(
+            self.service.record_post_merge_gates(
+                queue_id=str(queued["queue_id"]),
+                gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("failed")}],
+            )["state"],
+            "gate_failed",
+        )
         (destination_path / "resolution.txt").write_text("integrator resolution\n", encoding="utf-8")
         git(destination_path, "add", "resolution.txt")
         self.assert_code(
