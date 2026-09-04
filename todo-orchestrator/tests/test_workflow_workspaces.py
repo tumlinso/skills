@@ -273,6 +273,14 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         artifact = self.service.publish_artifact(
             workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
         )
+        self.assert_code(
+            "integrator_role_required",
+            lambda: self.service.enqueue_artifact(
+                artifact_id=str(artifact["artifact_id"]),
+                integrator_lane_id="NOT_INTEGRATOR",
+                integration_task_id="INTEGRATE",
+            ),
+        )
         self.assertEqual(len(str(artifact["diff_hash"])), 64)
         queued = self.service.enqueue_artifact(
             artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
@@ -457,14 +465,97 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         artifact = self.service.publish_artifact(
             workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
         )
-        self.assert_code(
-            "integrator_role_required",
-            lambda: self.service.enqueue_artifact(
-                artifact_id=str(artifact["artifact_id"]),
-                integrator_lane_id="NOT_INTEGRATOR",
-                integration_task_id="INTEGRATE",
-            ),
+
+    def test_integrated_destination_rolls_forward_for_next_owned_integration_task(self) -> None:
+        destination = self.create_destination()
+        destination_path = Path(str(destination["worktree_path"]))
+        (destination_path / "integrated.txt").write_text("milestone one\n", encoding="utf-8")
+        git(destination_path, "add", "integrated.txt")
+        git(destination_path, "commit", "-qm", "integrated milestone")
+        next_base = git(destination_path, "rev-parse", "HEAD")
+
+        def advance_lane(conn, revision):
+            now = "2026-08-27T01:00:00Z"
+            conn.execute(
+                "INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) "
+                "VALUES('INTEGRATE2','workstream','INTEGRATE2','planned',?,?,?)",
+                (now, now, revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES('INTEGRATOR',1,'INTEGRATE2','queued',?,?)",
+                (now, revision),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='integrated' WHERE id=?",
+                (destination["workspace_id"],),
+            )
+
+        self.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="INTEGRATE2",
+            event_type="fixture_integrator_advanced",
+            payload={},
+            operation=advance_lane,
         )
+        producer = self.service.create_workspace(
+            repository_root=self.repo,
+            repository_identity="repo-identity",
+            run_id="RUN",
+            lane_id="PRODUCER2",
+            mode="isolated_merge",
+            base_commit=next_base,
+            worktree_path=self.managed / "producer2",
+            branch="test-producer2",
+            integration_task_id="INTEGRATE2",
+        )
+        commit = self.producer_commit(producer, "alpha\nbeta\nnext wave\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]),
+            task_id="IMPL2",
+            kind="commit",
+            artifact_ref=commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]),
+            integrator_lane_id="INTEGRATOR",
+            integration_task_id="INTEGRATE2",
+        )
+        self.assertEqual(queued["position"], 0)
+        with self.db.read() as conn:
+            rolled = conn.execute(
+                "SELECT base_commit,integration_task_id,state,artifact_ref FROM workflow_workspaces "
+                "WHERE id=?",
+                (destination["workspace_id"],),
+            ).fetchone()
+        self.assertEqual(rolled["base_commit"], next_base)
+        self.assertEqual(rolled["integration_task_id"], "INTEGRATE2")
+        self.assertEqual(rolled["state"], "active")
+        self.assertIsNone(rolled["artifact_ref"])
+
+    def test_identical_pending_artifact_publish_is_idempotent(self) -> None:
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")
+        first = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]),
+            task_id="IMPL",
+            kind="commit",
+            artifact_ref=commit,
+        )
+        second = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]),
+            task_id="IMPL",
+            kind="commit",
+            artifact_ref=commit,
+        )
+        self.assertEqual(second["artifact_id"], first["artifact_id"])
+        with self.db.read() as conn:
+            count = conn.execute(
+                "SELECT COUNT(*) FROM workflow_patch_artifacts WHERE workspace_id=?",
+                (producer["workspace_id"],),
+            ).fetchone()[0]
+        self.assertEqual(count, 1)
 
     def test_real_merge_conflict_becomes_preserved_integration_work(self) -> None:
         destination = self.create_destination()

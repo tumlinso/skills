@@ -366,6 +366,22 @@ class WorkspaceService:
             _write_immutable(immutable, content)
             artifact_ref = str(immutable)
         digest = _sha256(content)
+        with self.db.read() as conn:
+            existing = conn.execute(
+                "SELECT id,workspace_id,kind,artifact_ref,content_hash FROM workflow_patch_artifacts "
+                "WHERE workspace_id=? AND task_id=? AND state='pending' AND kind=? "
+                "AND artifact_ref=? AND content_hash=? AND base_commit=? ORDER BY created_at LIMIT 1",
+                (workspace_id, task_id, kind, artifact_ref, digest, base),
+            ).fetchone()
+        if existing is not None:
+            return {
+                "artifact_id": str(existing["id"]),
+                "workspace_id": str(existing["workspace_id"]),
+                "kind": str(existing["kind"]),
+                "artifact_ref": str(existing["artifact_ref"]),
+                "diff_hash": str(existing["content_hash"]),
+                "revision": self.db.revision(),
+            }
         artifact_id = str(uuid.uuid4())
         now = utc_now()
 
@@ -435,6 +451,36 @@ class WorkspaceService:
                 raise TodoError("exclusive_integration_workspace_required", "Integrator must exclusively own the destination workspace")
             if destination["repository_identity"] != artifact["repository_identity"]:
                 raise TodoError("integration_repository_mismatch", "Producer and destination repositories differ")
+            if (destination["state"] == "integrated" and
+                    destination["integration_task_id"] != integration_task_id):
+                owns_next_task = conn.execute(
+                    "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND task_id=? AND state='queued'",
+                    (integrator_lane_id, integration_task_id),
+                ).fetchone()
+                unfinished = conn.execute(
+                    "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integrator_lane_id=? "
+                    "AND state NOT IN ('integrated','rejected') LIMIT 1",
+                    (artifact["run_id"], integrator_lane_id),
+                ).fetchone()
+                destination_path = self._managed_path(Path(str(destination["worktree_path"])))
+                status = self._git(destination_path, ["status", "--porcelain=v1", "-z"])
+                head = self._git(destination_path, ["rev-parse", "--verify", "HEAD^{commit}"], text=True)
+                if (owns_next_task is None or unfinished is not None or status.returncode != 0 or
+                        status.stdout or head.returncode != 0 or
+                        head.stdout.strip() != artifact["base_commit"]):
+                    raise TodoError(
+                        "integration_stale_base",
+                        "Integrated destination cannot advance safely to the producer base",
+                    )
+                conn.execute(
+                    "UPDATE workflow_workspaces SET base_commit=?,integration_task_id=?,state='active',"
+                    "artifact_kind=NULL,artifact_ref=NULL,diff_hash=NULL,merge_result_json='{}',updated_at=? "
+                    "WHERE id=?",
+                    (artifact["base_commit"], integration_task_id, now, destination["id"]),
+                )
+                destination = conn.execute(
+                    "SELECT * FROM workflow_workspaces WHERE id=?", (destination["id"],)
+                ).fetchone()
             if destination["base_commit"] != artifact["base_commit"]:
                 raise TodoError("integration_stale_base", "Producer and destination must have the exact same recorded base")
             if destination["integration_task_id"] != integration_task_id or not conn.execute(
