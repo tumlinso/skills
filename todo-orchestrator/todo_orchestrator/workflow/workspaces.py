@@ -137,7 +137,11 @@ class WorkspaceService:
     ) -> str:
         """Create an immutable commit/ref for the gated index without moving HEAD."""
         tree = self._git_ok(repository_root, ["write-tree"], code="integration_tree_freeze_failed").decode().strip()
-        frozen_diff = self._git_ok(repository_root, ["diff", "--binary", base_commit, tree], code="integration_tree_verify_failed")
+        frozen_diff = self._git_ok(
+            repository_root,
+            integration_diff_args(base_commit, tree),
+            code="integration_tree_verify_failed",
+        )
         if _sha256(frozen_diff) != source_identity:
             raise TodoError("integration_tree_mismatch", "Frozen integration tree differs from the gated source")
         commit = self._git_input_ok(
@@ -960,7 +964,10 @@ class WorkspaceService:
                 if integrated_artifact:
                     frozen = self._git_ok(
                         destination,
-                        ["diff", "--binary", queue["base_commit"], str(integrated_artifact["ref"])],
+                        integration_diff_args(
+                            str(queue["base_commit"]),
+                            str(integrated_artifact["ref"]),
+                        ),
                         code="integration_frozen_commit_missing",
                     )
                     if _sha256(frozen) != source_identity:

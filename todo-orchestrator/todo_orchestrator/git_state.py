@@ -26,9 +26,10 @@ def material_dirty_paths(repo_root: Path) -> list[str]:
     return [path for path in dirty_paths(repo_root) if not is_generated_projection(path)]
 
 
-def integration_diff_args(base_commit: str) -> list[str]:
+def integration_diff_args(base_commit: str, target: str | None = None) -> list[str]:
+    revisions = [base_commit] if target is None else [base_commit, target]
     return [
-        "diff", "--binary", base_commit, "--", ".",
+        "diff", "--binary", *revisions, "--", ".",
         ":(exclude).todo-orchestrator/state.snapshot.json",
         ":(exclude)todo-status.md",
         ":(exclude)todos.md",

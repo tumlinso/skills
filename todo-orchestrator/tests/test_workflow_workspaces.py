@@ -361,6 +361,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         git(self.repo, "commit", "-qm", "tracked authority projection")
         self.base = git(self.repo, "rev-parse", "HEAD")
         destination = self.create_destination()
+        destination_path = Path(str(destination["worktree_path"]))
+        snapshot = destination_path / ".todo-orchestrator" / "state.snapshot.json"
+        snapshot.write_text("{\"revision\": 1}\n", encoding="utf-8")
+        git(destination_path, "add", ".todo-orchestrator/state.snapshot.json")
+        git(destination_path, "commit", "-qm", "refresh authority projection")
         producer = self.create_producer()
         commit = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
         artifact = self.service.publish_artifact(
@@ -411,8 +416,6 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             workspace_base_commit=self.base,
         )
         self.assertEqual(gate["status"], "passed")
-        destination_path = Path(str(destination["worktree_path"]))
-        snapshot = destination_path / ".todo-orchestrator" / "state.snapshot.json"
         snapshot.write_text("{\"revision\": 2}\n", encoding="utf-8")
         gate, _ = run_gate(
             self.db,
