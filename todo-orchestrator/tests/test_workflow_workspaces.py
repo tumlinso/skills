@@ -266,6 +266,44 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assert_code("workspace_base_mismatch", lambda: self.create_producer(lane="PRODUCER2", base=later))
         self.assertFalse((self.managed / "producer2").exists())
 
+    def test_clean_workspace_base_can_be_reconciled_after_prior_integration(self) -> None:
+        producer = self.create_producer()
+        (self.repo / "integrated.txt").write_text("prior wave\n", encoding="utf-8")
+        git(self.repo, "add", "integrated.txt")
+        git(self.repo, "commit", "-qm", "prior integration")
+        integrated_base = git(self.repo, "rev-parse", "HEAD")
+        producer_path = Path(str(producer["worktree_path"]))
+        git(producer_path, "merge", "--ff-only", integrated_base)
+        self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")
+
+        reconciled = self.service.reconcile_workspace_base(
+            repository_root=self.repo,
+            run_id="RUN",
+            lane_id="PRODUCER",
+            base_commit=integrated_base,
+            reason="prior integration reached the canonical branch",
+        )
+        self.assertEqual(reconciled["old_base_commit"], self.base)
+        self.assertEqual(reconciled["base_commit"], integrated_base)
+        with self.db.read() as conn:
+            recorded = conn.execute(
+                "SELECT base_commit FROM workflow_workspaces WHERE id=?",
+                (producer["workspace_id"],),
+            ).fetchone()[0]
+        self.assertEqual(recorded, integrated_base)
+
+    def test_workspace_base_reconciliation_rejects_dirty_or_unrelated_history(self) -> None:
+        producer = self.create_producer()
+        producer_path = Path(str(producer["worktree_path"]))
+        (producer_path / "dirty.txt").write_text("dirty\n", encoding="utf-8")
+        self.assert_code(
+            "workspace_reconcile_dirty",
+            lambda: self.service.reconcile_workspace_base(
+                repository_root=self.repo, run_id="RUN", lane_id="PRODUCER",
+                base_commit=self.base, reason="test dirty refusal",
+            ),
+        )
+
     def test_commit_artifact_queue_merge_gates_and_explicit_cleanup_eligibility(self) -> None:
         destination = self.create_destination()
         producer = self.create_producer()

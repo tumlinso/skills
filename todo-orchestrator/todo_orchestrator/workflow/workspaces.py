@@ -319,6 +319,103 @@ class WorkspaceService:
         result["worktree_path"] = str(target) if target else None
         return result
 
+    def reconcile_workspace_base(
+        self,
+        *,
+        repository_root: Path,
+        run_id: str,
+        lane_id: str,
+        base_commit: str,
+        reason: str,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Advance a clean workspace's recorded base after it incorporated that base.
+
+        This is an owner recovery operation for workspaces prepared before an
+        earlier integration wave reached the canonical branch. It never changes
+        the worktree or branch; the desired base must already be in the lane's
+        history and no integration artifact may have been published.
+        """
+        if not reason.strip():
+            raise TodoError("workspace_base_reason_required", "Workspace base reconciliation requires a reason")
+        repository_root = repository_root.resolve()
+        canonical_base = self._commit(repository_root, base_commit)
+
+        with self.db.read() as conn:
+            rows = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE run_id=? AND lane_id=? AND state IN "
+                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed')",
+                (run_id, lane_id),
+            ).fetchall()
+            if len(rows) != 1:
+                raise TodoError("workspace_reconcile_target_ambiguous", "Expected exactly one active lane workspace")
+            workspace = dict(rows[0])
+            published = conn.execute(
+                "SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=? LIMIT 1",
+                (workspace["id"],),
+            ).fetchone()
+            if published is not None:
+                raise TodoError("workspace_artifact_already_published", "Published workspace artifacts cannot be rebased")
+            sibling = conn.execute(
+                "SELECT id FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
+                "AND mode='isolated_merge' AND id<>? AND state NOT IN ('integrated') AND base_commit<>? LIMIT 1",
+                (run_id, workspace["integration_task_id"], workspace["id"], canonical_base),
+            ).fetchone()
+            if sibling is not None:
+                raise TodoError("workspace_base_mismatch", "Active integration participants must retain an exact common base")
+
+        target = self._managed_path(Path(str(workspace["worktree_path"])))
+        if material_dirty_paths(target):
+            raise TodoError("workspace_reconcile_dirty", "Workspace must be clean before base reconciliation")
+        head = self._commit(target, "HEAD")
+        old_base = str(workspace["base_commit"])
+        old_to_new = self._git(target, ["merge-base", "--is-ancestor", old_base, canonical_base])
+        new_to_head = self._git(target, ["merge-base", "--is-ancestor", canonical_base, head])
+        if old_to_new.returncode != 0 or new_to_head.returncode != 0:
+            raise TodoError(
+                "workspace_base_not_in_history",
+                "Reconciled base must advance the recorded base and already be an ancestor of workspace HEAD",
+            )
+
+        now = utc_now()
+
+        def reconcile(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute(
+                "SELECT base_commit,state FROM workflow_workspaces WHERE id=?", (workspace["id"],)
+            ).fetchone()
+            if current is None or current["base_commit"] != old_base or current["state"] != workspace["state"]:
+                raise TodoError("workspace_reconcile_state_changed", "Workspace state changed during reconciliation")
+            conn.execute(
+                "UPDATE workflow_workspaces SET base_commit=?,updated_at=? WHERE id=?",
+                (canonical_base, now, workspace["id"]),
+            )
+            return {
+                "workspace_id": workspace["id"],
+                "run_id": run_id,
+                "lane_id": lane_id,
+                "old_base_commit": old_base,
+                "base_commit": canonical_base,
+                "head": head,
+                "reason": reason,
+            }
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_workspace",
+            entity_id=str(workspace["id"]),
+            event_type="workflow_workspace_base_reconciled",
+            payload={
+                "run_id": run_id,
+                "lane_id": lane_id,
+                "old_base_commit": old_base,
+                "base_commit": canonical_base,
+                "reason": reason,
+            },
+            operation=reconcile,
+        )
+        result["revision"] = revision
+        return result
+
     def publish_artifact(
         self,
         *,
