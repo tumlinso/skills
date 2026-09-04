@@ -166,6 +166,27 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
             row = conn.execute("SELECT state,content_hash FROM interfaces WHERE id='IFACE-A'").fetchone()
         self.assertEqual((row["state"], row["content_hash"]), ("frozen", digest))
 
+    def test_validator_lane_can_own_integration_destination(self) -> None:
+        producer = self.workspace("B-LANE", "isolated_merge")
+        self.workspace("INT-LANE", "exclusive")
+        with self.repo.service.db.connect() as conn:
+            conn.execute("UPDATE workflow_lanes SET role='validator' WHERE id='INT-LANE'")
+        claimed = self.claim("thread-b", "B")
+        producer_root = Path(str(producer["worktree_path"])).resolve()
+        (producer_root / "shared.txt").write_text("alpha\nbeta\ngamma\n", encoding="utf-8")
+        git(producer_root, "add", "shared.txt")
+        git(producer_root, "commit", "-qm", "producer change")
+
+        completed = self.protocol.finish_task(
+            workflow_handle=str(claimed["workflow_handle"]),
+            action="complete",
+            disposition="implemented",
+            note="validator-owned integration destination",
+        )
+
+        self.assertEqual(completed["status"], "idle")
+        self.assertEqual(completed["integrator_lane_id"], "INT-LANE")
+
 
 if __name__ == "__main__":
     unittest.main()

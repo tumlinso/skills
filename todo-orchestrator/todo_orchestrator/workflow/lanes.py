@@ -272,7 +272,7 @@ def dispatch_claim_in_transaction(
         if workspace["mode"] != lane["workspace_mode"]:
             raise TodoError("workflow_workspace_mode_mismatch", "Workspace mode differs from the lane contract")
         dispatchable_states = {"active", "artifact_ready", "queued"}
-        if lane["role"] == "integrator":
+        if lane["role"] in {"integrator", "validator"}:
             dispatchable_states.update({
                 "apply_failed", "conflict", "awaiting_gates", "gate_failed", "finalization_failed", "integrated",
             })

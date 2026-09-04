@@ -92,7 +92,8 @@ def _isolated_merge_overlap_allowed(
         "SELECT 1 FROM workflow_lanes l "
         "JOIN workflow_lane_tasks lt ON lt.lane_id=l.id AND lt.task_id=? "
         "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
-        "WHERE l.run_id=? AND l.role='integrator' AND l.workspace_mode='exclusive' "
+        "WHERE l.run_id=? AND l.role IN ('integrator','validator') "
+        "AND l.workspace_mode='exclusive' "
         "AND w.mode='exclusive' AND w.integration_task_id=? AND w.base_commit=? "
         "AND w.state IN ('active','artifact_ready') LIMIT 1",
         (integration_task_id, candidate["run_id"], integration_task_id, candidate["base_commit"]),

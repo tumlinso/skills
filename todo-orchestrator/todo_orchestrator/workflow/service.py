@@ -135,7 +135,7 @@ class WorkflowKernel:
             return None
         workspace = dict(row)
         allowed_states = {"active", "artifact_ready", "queued"}
-        if lineage.role == "integrator":
+        if lineage.role in {"integrator", "validator"}:
             allowed_states.update({
                 "apply_failed", "conflict", "awaiting_gates", "gate_failed", "finalization_failed", "integrated",
             })
@@ -328,7 +328,8 @@ class WorkflowKernel:
         with service.db.read() as conn:
             integrator = conn.execute(
                 "SELECT l.id FROM workflow_lanes l JOIN workflow_lane_tasks lt ON lt.lane_id=l.id "
-                "WHERE l.run_id=? AND l.role='integrator' AND lt.task_id=? ORDER BY l.id LIMIT 1",
+                "WHERE l.run_id=? AND l.role IN ('integrator','validator') "
+                "AND lt.task_id=? ORDER BY l.id LIMIT 1",
                 (lineage.run_id, integration_task_id),
             ).fetchone()
         if not integrator:
@@ -405,7 +406,7 @@ class WorkflowKernel:
                 if resumed and (task_id is None or resumed["task_id"] == task_id):
                     now = utc_now()
                     workspace_id = resumed["workspace_id"]
-                    if workspace_id is None and resumed["role"] == "integrator":
+                    if workspace_id is None and resumed["role"] in {"integrator", "validator"}:
                         recoverable = conn.execute(
                             "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
                             "AND state IN ('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','integrated') "
@@ -668,7 +669,7 @@ class WorkflowKernel:
             # exact run, lane, and task, applies them serially, and finalizes
             # each artifact before considering the next one.
             integration_results: list[dict[str, Any]] = []
-            if lineage.role == "integrator" and payload.get("required", True):
+            if lineage.role in {"integrator", "validator"} and payload.get("required", True):
                 while True:
                     with service.db.read() as conn:
                         queued = conn.execute(
@@ -820,7 +821,8 @@ class WorkflowKernel:
                     raise TodoError("integration_task_mismatch", "Artifacts must share one declared integration task")
                 integrator = conn.execute(
                     "SELECT l.id FROM workflow_lanes l JOIN workflow_lane_tasks lt ON lt.lane_id=l.id "
-                    "WHERE l.run_id=? AND l.role='integrator' AND lt.task_id=? ORDER BY l.id LIMIT 1",
+                    "WHERE l.run_id=? AND l.role IN ('integrator','validator') "
+                    "AND lt.task_id=? ORDER BY l.id LIMIT 1",
                     (lineage.run_id, configured),
                 ).fetchone()
                 if not integrator:

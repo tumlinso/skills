@@ -396,7 +396,8 @@ class WorkspaceService:
                 "JOIN workflow_workspaces w ON w.run_id=l.run_id AND w.lane_id=l.id "
                 "LEFT JOIN workflow_lane_tasks current ON current.lane_id=l.id "
                 "AND current.task_id=w.integration_task_id "
-                "WHERE required.task_id=? AND required.lane_id=l.id AND l.run_id=? AND l.role='integrator'",
+                "WHERE required.task_id=? AND required.lane_id=l.id AND l.run_id=? "
+                "AND l.role IN ('integrator','validator')",
                 (selected_workspace["integration_task_id"], run_id),
             ).fetchone()
             integrator_destination = dict(integrator_destination_row) if integrator_destination_row else None
@@ -726,7 +727,7 @@ class WorkspaceService:
             if artifact["declared_task"] != integration_task_id:
                 raise TodoError("integration_task_mismatch", "Artifact was not declared for this integration task")
             lane = self._lane(conn, artifact["run_id"], integrator_lane_id)
-            if lane["role"] != "integrator":
+            if lane["role"] not in {"integrator", "validator"}:
                 raise TodoError("integrator_role_required", "Integration queue ownership requires an integrator lane")
             destination = conn.execute(
                 """SELECT * FROM workflow_workspaces WHERE run_id=? AND lane_id=?""",
