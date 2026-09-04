@@ -343,57 +343,75 @@ class WorkspaceService:
         canonical_base = self._commit(repository_root, base_commit)
 
         with self.db.read() as conn:
-            rows = conn.execute(
+            selected = conn.execute(
                 "SELECT * FROM workflow_workspaces WHERE run_id=? AND lane_id=? AND state IN "
                 "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed')",
                 (run_id, lane_id),
             ).fetchall()
-            if len(rows) != 1:
+            if len(selected) != 1:
                 raise TodoError("workspace_reconcile_target_ambiguous", "Expected exactly one active lane workspace")
-            workspace = dict(rows[0])
+            selected_workspace = dict(selected[0])
+            participants = [dict(row) for row in conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
+                "AND mode='isolated_merge' AND state IN "
+                "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed') "
+                "ORDER BY lane_id",
+                (run_id, selected_workspace["integration_task_id"]),
+            ).fetchall()]
+            workspace_ids = [str(workspace["id"]) for workspace in participants]
+            placeholders = ",".join("?" for _ in workspace_ids)
             published = conn.execute(
-                "SELECT id,state FROM workflow_patch_artifacts WHERE workspace_id=?",
-                (workspace["id"],),
+                f"SELECT id,workspace_id,state FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})",
+                workspace_ids,
             ).fetchall()
             if any(row["state"] != "pending" for row in published):
                 raise TodoError("workspace_artifact_already_consumed", "Consumed workspace artifacts cannot be rebased")
             queued = conn.execute(
                 "SELECT 1 FROM workflow_integration_queue WHERE patch_artifact_id IN "
-                "(SELECT id FROM workflow_patch_artifacts WHERE workspace_id=?) LIMIT 1",
-                (workspace["id"],),
+                f"(SELECT id FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})) LIMIT 1",
+                workspace_ids,
             ).fetchone()
             if queued is not None:
                 raise TodoError("workspace_artifact_already_consumed", "Queued workspace artifacts cannot be rebased")
             pending_artifact_ids = [str(row["id"]) for row in published]
-            sibling = conn.execute(
-                "SELECT id FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
-                "AND mode='isolated_merge' AND id<>? AND state NOT IN ('integrated') AND base_commit<>? LIMIT 1",
-                (run_id, workspace["integration_task_id"], workspace["id"], canonical_base),
-            ).fetchone()
-            if sibling is not None:
-                raise TodoError("workspace_base_mismatch", "Active integration participants must retain an exact common base")
 
-        target = self._managed_path(Path(str(workspace["worktree_path"])))
-        if material_dirty_paths(target):
-            raise TodoError("workspace_reconcile_dirty", "Workspace must be clean before base reconciliation")
-        head = self._commit(target, "HEAD")
-        old_base = str(workspace["base_commit"])
-        old_to_new = self._git(target, ["merge-base", "--is-ancestor", old_base, canonical_base])
-        new_to_head = self._git(target, ["merge-base", "--is-ancestor", canonical_base, head])
-        if old_to_new.returncode != 0 or new_to_head.returncode != 0:
-            raise TodoError(
-                "workspace_base_not_in_history",
-                "Reconciled base must advance the recorded base and already be an ancestor of workspace HEAD",
-            )
+        reconciled_workspaces: list[dict[str, object]] = []
+        for workspace in participants:
+            target = self._managed_path(Path(str(workspace["worktree_path"])))
+            if material_dirty_paths(target):
+                raise TodoError(
+                    "workspace_reconcile_dirty",
+                    "Every active integration participant must be clean before base reconciliation",
+                    details={"lane_id": workspace["lane_id"]},
+                )
+            head = self._commit(target, "HEAD")
+            old_base = str(workspace["base_commit"])
+            old_to_new = self._git(target, ["merge-base", "--is-ancestor", old_base, canonical_base])
+            new_to_head = self._git(target, ["merge-base", "--is-ancestor", canonical_base, head])
+            if old_to_new.returncode != 0 or new_to_head.returncode != 0:
+                raise TodoError(
+                    "workspace_base_not_in_history",
+                    "Reconciled base must advance every recorded base and already be an ancestor of every workspace HEAD",
+                    details={"lane_id": workspace["lane_id"]},
+                )
+            reconciled_workspaces.append({
+                "workspace_id": workspace["id"],
+                "lane_id": workspace["lane_id"],
+                "old_base_commit": old_base,
+                "head": head,
+                "state": workspace["state"],
+            })
 
         now = utc_now()
 
         def reconcile(conn: Any, revision: int) -> dict[str, object]:
-            current = conn.execute(
-                "SELECT base_commit,state FROM workflow_workspaces WHERE id=?", (workspace["id"],)
-            ).fetchone()
-            if current is None or current["base_commit"] != old_base or current["state"] != workspace["state"]:
-                raise TodoError("workspace_reconcile_state_changed", "Workspace state changed during reconciliation")
+            for workspace in reconciled_workspaces:
+                current = conn.execute(
+                    "SELECT base_commit,state FROM workflow_workspaces WHERE id=?", (workspace["workspace_id"],)
+                ).fetchone()
+                if (current is None or current["base_commit"] != workspace["old_base_commit"] or
+                        current["state"] != workspace["state"]):
+                    raise TodoError("workspace_reconcile_state_changed", "Workspace state changed during reconciliation")
             if pending_artifact_ids:
                 placeholders = ",".join("?" for _ in pending_artifact_ids)
                 rows = conn.execute(
@@ -406,33 +424,34 @@ class WorkspaceService:
                     f"UPDATE workflow_patch_artifacts SET state='superseded' WHERE id IN ({placeholders})",
                     pending_artifact_ids,
                 )
-            conn.execute(
+            conn.executemany(
                 "UPDATE workflow_workspaces SET base_commit=?,state='active',artifact_kind=NULL,"
                 "artifact_ref=NULL,diff_hash=NULL,updated_at=? WHERE id=?",
-                (canonical_base, now, workspace["id"]),
+                [(canonical_base, now, workspace["workspace_id"]) for workspace in reconciled_workspaces],
             )
             return {
-                "workspace_id": workspace["id"],
+                "workspace_id": selected_workspace["id"],
                 "run_id": run_id,
                 "lane_id": lane_id,
-                "old_base_commit": old_base,
+                "integration_task_id": selected_workspace["integration_task_id"],
                 "base_commit": canonical_base,
-                "head": head,
                 "reason": reason,
+                "reconciled_workspaces": reconciled_workspaces,
                 "superseded_artifact_ids": pending_artifact_ids,
             }
 
         result, revision = self.db.mutate(
             actor_session_id=actor_session_id,
-            entity_type="workflow_workspace",
-            entity_id=str(workspace["id"]),
-            event_type="workflow_workspace_base_reconciled",
+            entity_type="workflow_workspace_group",
+            entity_id=str(selected_workspace["integration_task_id"]),
+            event_type="workflow_workspace_bases_reconciled",
             payload={
                 "run_id": run_id,
                 "lane_id": lane_id,
-                "old_base_commit": old_base,
+                "integration_task_id": selected_workspace["integration_task_id"],
                 "base_commit": canonical_base,
                 "reason": reason,
+                "workspace_ids": workspace_ids,
                 "superseded_artifact_ids": pending_artifact_ids,
             },
             operation=reconcile,

@@ -287,8 +287,9 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             base_commit=integrated_base,
             reason="prior integration reached the canonical branch",
         )
-        self.assertEqual(reconciled["old_base_commit"], self.base)
         self.assertEqual(reconciled["base_commit"], integrated_base)
+        self.assertEqual(len(reconciled["reconciled_workspaces"]), 1)
+        self.assertEqual(reconciled["reconciled_workspaces"][0]["old_base_commit"], self.base)
         self.assertEqual(reconciled["superseded_artifact_ids"], [artifact["artifact_id"]])
         with self.db.read() as conn:
             recorded = conn.execute(
