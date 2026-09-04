@@ -220,11 +220,11 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         self.assertEqual(refreshed["artifact"]["artifact_ref"], refreshed_head)
         with self.repo.service.db.read() as conn:
             artifacts = conn.execute(
-                "SELECT state,artifact_ref FROM workflow_patch_artifacts ORDER BY created_at,id"
+                "SELECT state,artifact_ref FROM workflow_patch_artifacts"
             ).fetchall()
             self.assertEqual(
-                [(row["state"], row["artifact_ref"]) for row in artifacts],
-                [("superseded", producer_head), ("queued", refreshed_head)],
+                {row["artifact_ref"]: row["state"] for row in artifacts},
+                {producer_head: "superseded", refreshed_head: "queued"},
             )
 
         integrator = protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")

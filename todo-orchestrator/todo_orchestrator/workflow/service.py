@@ -259,7 +259,7 @@ class WorkflowKernel:
                     actor=lineage.session_id,
                     entity_type="workflow_patch_artifact",
                     entity_id=replacement_id,
-                    event_type="workflow_patch_artifact_refreshed",
+                    event_type="workflow.patch_artifact.refreshed",
                     payload={"supersedes": str(existing["artifact_id"]), "queue_id": str(existing["queue_id"])},
                     operation=replace,
                 )
