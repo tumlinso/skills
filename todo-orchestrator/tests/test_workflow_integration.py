@@ -63,6 +63,79 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "done")
             self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='compat-v2-main'").fetchone()[0], "closed")
 
+    def test_fresh_claim_receives_repaired_scope_and_consumed_interfaces(self):
+        repaired = safe_task(
+            "A",
+            "src/a",
+            scope={
+                "exclusive_paths": ["src/a"],
+                "read_paths": ["include/repaired_api.hh"],
+            },
+            consumes_interfaces=[{
+                "id": "REPAIRED-API",
+                "required_state": "frozen",
+                "required_version": "1",
+            }],
+        )
+        repaired_plan = base_plan(
+            [repaired],
+            interfaces=[{
+                "id": "REPAIRED-API",
+                "owner_task_id": "A",
+                "state": "frozen",
+                "version": "1",
+                "contract_paths": ["include/repaired_api.hh"],
+                "content_hash": "fixture-contract-hash",
+            }],
+        )
+        repaired_plan["schema_version"] = 3
+        repaired_plan["runs"] = [{
+            "id": "compat-v2",
+            "root_task_id": "A",
+            "charter": {
+                "objective": "test",
+                "boundaries": ["Compatibility run normalized from plan schema v2"],
+                "invariants": [],
+                "acceptance_conditions": [],
+                "glossary": {"lane": "single serial compatibility lane"},
+            },
+            "lanes": [{
+                "id": "compat-v2-main",
+                "role": "implementer",
+                "tasks": ["A"],
+                "workspace": {"mode": "exclusive"},
+            }],
+            "rendezvous": [],
+        }]
+        self.repo.apply(repaired_plan)
+
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        brief = claimed["context"]["task_brief"]
+        self.assertEqual(brief["version"], 2)
+        self.assertEqual(brief["scope"]["read_paths"], ["include/repaired_api.hh"])
+        self.assertEqual(brief["consumes_interfaces"], [{
+            "id": "REPAIRED-API",
+            "required_state": "frozen",
+            "required_version": "1",
+        }])
+        with self.repo.service.db.read() as conn:
+            fragments = conn.execute(
+                "SELECT version,invalidated_at,superseded_by FROM workflow_context_fragments "
+                "WHERE task_id='A' AND kind='task_brief' ORDER BY version"
+            ).fetchall()
+        self.assertEqual([row["version"] for row in fragments], [1, 2])
+        self.assertIsNotNone(fragments[0]["invalidated_at"])
+        self.assertIsNotNone(fragments[0]["superseded_by"])
+        self.assertIsNone(fragments[1]["invalidated_at"])
+
+        self.repo.apply(repaired_plan)
+        with self.repo.service.db.read() as conn:
+            count = conn.execute(
+                "SELECT COUNT(*) FROM workflow_context_fragments "
+                "WHERE task_id='A' AND kind='task_brief'"
+            ).fetchone()[0]
+        self.assertEqual(count, 2)
+
     def test_lost_locator_is_resumed_by_next_task_without_raw_token(self):
         claimed = self.protocol.next_task(repo_root=str(self.repo.root))
         self.locator.forget(claimed["workflow_handle"])

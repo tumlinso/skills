@@ -571,17 +571,22 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                 if ("task_brief", lane_id, task_id) in declared_kinds:
                     continue
                 task = next(item for item in data.get("tasks", []) if str(item["id"]) == task_id)
+                task_brief = {
+                    "objective": str(task.get("objective", task.get("title", task_id))),
+                    "next_action": str(task.get("next_action", task.get("objective", task.get("title", task_id)))),
+                    "scope": dict(task.get("scope", {})),
+                    "completion_contract": task.get("completion_contract"),
+                    "tests": [gate.get("id") for gate in task.get("gates", [])],
+                    "gates": [gate.get("id") for gate in task.get("gates", [])],
+                    "forbidden_mutations": list(dict(task.get("scope", {})).get("forbidden_paths", [])),
+                }
+                if task.get("consumes_interfaces"):
+                    task_brief["consumes_interfaces"] = [
+                        dict(interface) for interface in task["consumes_interfaces"]
+                    ]
                 declared_fragments.append({
                     "kind": "task_brief", "lane_id": lane_id, "task_id": task_id,
-                    "content": {
-                        "objective": str(task.get("objective", task.get("title", task_id))),
-                        "next_action": str(task.get("next_action", task.get("objective", task.get("title", task_id)))),
-                        "scope": dict(task.get("scope", {})),
-                        "completion_contract": task.get("completion_contract"),
-                        "tests": [gate.get("id") for gate in task.get("gates", [])],
-                        "gates": [gate.get("id") for gate in task.get("gates", [])],
-                        "forbidden_mutations": list(dict(task.get("scope", {})).get("forbidden_paths", [])),
-                    },
+                    "content": task_brief,
                 })
         for fragment in declared_fragments:
             content = dict(fragment.get("content", {}))
@@ -589,17 +594,43 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
             owner_lane = fragment.get("lane_id")
             owner_task = fragment.get("task_id")
             kind = str(fragment["kind"])
-            version = int(fragment.get("version", 1))
-            identifier = str(fragment.get("id", f"{run_id}:{kind}:{owner_lane or '-'}:{owner_task or '-'}:{version}"))
             owner_scope = {"run_id": run_id}
             if owner_lane:
                 owner_scope["lane_id"] = str(owner_lane)
             if owner_task:
                 owner_scope["task_id"] = str(owner_task)
+            prior = conn.execute(
+                "SELECT * FROM workflow_context_fragments WHERE run_id=? AND lane_id IS ? "
+                "AND task_id IS ? AND kind=? ORDER BY version DESC LIMIT 1",
+                (run_id, owner_lane, owner_task, kind),
+            ).fetchone()
+            if prior is not None and prior["content_hash"] == digest:
+                continue
+            requested_version = int(fragment.get("version", 1))
+            version = max(requested_version, int(prior["version"]) + 1 if prior is not None else 1)
+            default_identifier = f"{run_id}:{kind}:{owner_lane or '-'}:{owner_task or '-'}:{version}"
+            identifier = str(fragment.get("id", default_identifier))
+            if conn.execute(
+                "SELECT 1 FROM workflow_context_fragments WHERE id=?", (identifier,)
+            ).fetchone():
+                identifier = default_identifier
+            if conn.execute(
+                "SELECT 1 FROM workflow_context_fragments WHERE id=?", (identifier,)
+            ).fetchone():
+                raise TodoError(
+                    "context_fragment_identity_conflict",
+                    f"Context fragment identity is already occupied: {identifier}",
+                )
             conn.execute(
-                "INSERT OR IGNORE INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,owner_scope_json,version,content_json,content_hash,creation_revision,created_at) "
+                "INSERT INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,owner_scope_json,version,content_json,content_hash,creation_revision,created_at) "
                 "VALUES(?,?,?,?,?,?,?,?,?,?,?)",
                 (identifier, run_id, owner_lane, owner_task, kind, canonical_json(owner_scope), version, canonical_json(content), digest, revision, now),
+            )
+            conn.execute(
+                "UPDATE workflow_context_fragments SET invalidated_at=?,invalidation_revision=?,superseded_by=? "
+                "WHERE run_id=? AND lane_id IS ? AND task_id IS ? AND kind=? AND id<>? "
+                "AND invalidated_at IS NULL",
+                (now, revision, identifier, run_id, owner_lane, owner_task, kind, identifier),
             )
         applied_runs.append(run_id)
     return {"plan_schema_version": int(data.get("schema_version", SCHEMA_VERSION)), "compatibility": compatibility, "runs": applied_runs}

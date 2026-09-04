@@ -469,7 +469,7 @@ class ContextFragmentStore:
             "task_id": task_id,
             "run_summary": _compact_content(charter, ("objective", "boundaries", "invariants", "acceptance_conditions", "glossary")),
             "lane_brief": _compact_content(lane, ("role", "authority", "ordered_tasks", "interfaces", "rendezvous", "workspace_mode")),
-            "task_brief": _compact_content(task, ("objective", "next_action", "scope", "completion_contract", "tests", "gates", "forbidden_mutations")),
+            "task_brief": _compact_content(task, ("objective", "next_action", "scope", "completion_contract", "tests", "gates", "consumes_interfaces", "forbidden_mutations")),
             "unread_delta": _compact_content(delta, ("cursor", "messages", "state_changes", "fragment_changes", "interface_invalidations", "rendezvous_changes")),
             "fragment_manifest": manifest,
             "changed_fragments": changed,
