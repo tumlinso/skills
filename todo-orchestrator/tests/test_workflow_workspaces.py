@@ -5,6 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -532,6 +533,45 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         )
         self.assertEqual(finalized["state"], "integrated")
         self.assertTrue(self.service.mark_cleanup_eligible(workspace_id=str(producer["workspace_id"]))["cleanup_eligible"])
+
+    def test_finalization_failure_can_return_to_authoritative_gates(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha\nbeta\ngamma retry\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE"
+        )
+        self.service.apply_next(queue_id=str(queued["queue_id"]))
+        with mock.patch.object(
+            self.service,
+            "_freeze_integration_commit",
+            side_effect=TodoError("integration_tree_mismatch", "fixture finalization failure"),
+        ):
+            self.assert_code(
+                "integration_tree_mismatch",
+                lambda: self.service.record_post_merge_gates(
+                    queue_id=str(queued["queue_id"]),
+                    gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}],
+                ),
+            )
+        with self.db.read() as conn:
+            self.assertEqual(
+                conn.execute(
+                    "SELECT state FROM workflow_integration_queue WHERE id=?",
+                    (queued["queue_id"],),
+                ).fetchone()[0],
+                "finalization_failed",
+            )
+        retried = self.service.retry_finalization_failed(queue_id=str(queued["queue_id"]))
+        self.assertEqual(retried["state"], "awaiting_gates")
+        finalized = self.service.record_post_merge_gates(
+            queue_id=str(queued["queue_id"]),
+            gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}],
+        )
+        self.assertEqual(finalized["state"], "integrated")
 
     def test_caller_asserted_gate_status_cannot_authorize_integration(self) -> None:
         self.create_destination()

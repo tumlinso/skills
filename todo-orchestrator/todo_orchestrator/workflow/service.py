@@ -121,7 +121,9 @@ class WorkflowKernel:
         workspace = dict(row)
         allowed_states = {"active", "artifact_ready", "queued"}
         if lineage.role == "integrator":
-            allowed_states.update({"apply_failed", "conflict", "awaiting_gates", "gate_failed", "integrated"})
+            allowed_states.update({
+                "apply_failed", "conflict", "awaiting_gates", "gate_failed", "finalization_failed", "integrated",
+            })
         if workspace["state"] not in allowed_states:
             raise TodoError("workflow_workspace_inactive", "The dispatch workspace is not active")
         if workspace["run_id"] != lineage.run_id or workspace["lane_id"] != lineage.lane_id:
@@ -580,7 +582,7 @@ class WorkflowKernel:
                         queued = conn.execute(
                             "SELECT id,state FROM workflow_integration_queue "
                             "WHERE run_id=? AND integrator_lane_id=? AND integration_task_id=? "
-                            "AND state IN ('queued','apply_failed','awaiting_gates','conflict','gate_failed') "
+                            "AND state IN ('queued','apply_failed','awaiting_gates','conflict','gate_failed','finalization_failed') "
                             "ORDER BY position LIMIT 1",
                             (lineage.run_id, lineage.lane_id, lineage.task_id),
                         ).fetchone()
@@ -603,6 +605,13 @@ class WorkflowKernel:
                         queue_state = "queued"
                     if queue_state == "gate_failed":
                         workspaces.retry_failed_gates(
+                            queue_id=queue_id,
+                            actor_session_id=lineage.session_id,
+                            allow_source_resolution=True,
+                        )
+                        queue_state = "awaiting_gates"
+                    if queue_state == "finalization_failed":
+                        workspaces.retry_finalization_failed(
                             queue_id=queue_id,
                             actor_session_id=lineage.session_id,
                             allow_source_resolution=True,

@@ -1037,6 +1037,86 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
+    def retry_finalization_failed(
+        self,
+        *,
+        queue_id: str,
+        actor_session_id: str | None = None,
+        allow_source_resolution: bool = False,
+    ) -> dict[str, object]:
+        """Return a preserved finalization failure to authoritative gate validation."""
+
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT q.state,q.run_id,q.integrator_lane_id,q.merge_result_json,d.worktree_path,d.base_commit "
+                "FROM workflow_integration_queue q "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                "WHERE q.id=?",
+                (queue_id,),
+            ).fetchone()
+        if row is None or row["state"] != "finalization_failed":
+            raise TodoError(
+                "integration_finalization_failure_required",
+                "Only a preserved finalization failure can be retried",
+            )
+        destination = Path(str(row["worktree_path"]))
+        if not destination.is_dir():
+            raise TodoError("integration_workspace_missing", "Destination integration workspace is unavailable")
+        previous = json.loads(row["merge_result_json"] or "{}")
+        previous_source_identity = str(previous.get("source_identity") or "")
+        if not previous_source_identity:
+            raise TodoError("integration_apply_provenance_missing", "Finalization retry requires source provenance")
+        source_identity = self._source_identity(destination, str(row["base_commit"]))
+        if source_identity != previous_source_identity and not allow_source_resolution:
+            raise TodoError("integration_source_changed", "Preserved finalization source changed before retry")
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute(
+                "SELECT state FROM workflow_integration_queue WHERE id=?",
+                (queue_id,),
+            ).fetchone()
+            if current is None or current["state"] != "finalization_failed":
+                raise TodoError("integration_state_changed", "Finalization failure changed during retry")
+            merge_result = {
+                "state": "awaiting_gates",
+                "apply_revision": revision,
+                "source_identity": source_identity,
+                "destination_worktree": str(destination.resolve()),
+                "finalization_retry": True,
+                "resolved_source": source_identity != previous_source_identity,
+                "previous_source_identity": previous_source_identity,
+            }
+            now = utc_now()
+            conn.execute(
+                "UPDATE workflow_integration_queue SET state='awaiting_gates',merge_result_json=?,updated_at=? WHERE id=?",
+                (_json(merge_result), now, queue_id),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='awaiting_gates',updated_at=? WHERE run_id=? AND lane_id=?",
+                (now, row["run_id"], row["integrator_lane_id"]),
+            )
+            return {
+                "queue_id": queue_id,
+                "state": "awaiting_gates",
+                "source_identity": source_identity,
+                "resolved_source": source_identity != previous_source_identity,
+            }
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_integration_finalization_retried",
+            payload={
+                "source_identity": source_identity,
+                "previous_source_identity": previous_source_identity,
+                "resolved_source": source_identity != previous_source_identity,
+            },
+            operation=operation,
+        )
+        result["revision"] = revision
+        return result
+
     def reject_artifact(self, *, artifact_id: str, actor_session_id: str | None = None) -> dict[str, object]:
         now = utc_now()
 
