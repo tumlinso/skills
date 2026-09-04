@@ -274,7 +274,11 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         integrated_base = git(self.repo, "rev-parse", "HEAD")
         producer_path = Path(str(producer["worktree_path"]))
         git(producer_path, "merge", "--ff-only", integrated_base)
-        self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")
+        commit = self.producer_commit(producer, "alpha\nbeta changed\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL",
+            kind="commit", artifact_ref=commit,
+        )
 
         reconciled = self.service.reconcile_workspace_base(
             repository_root=self.repo,
@@ -285,12 +289,20 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         )
         self.assertEqual(reconciled["old_base_commit"], self.base)
         self.assertEqual(reconciled["base_commit"], integrated_base)
+        self.assertEqual(reconciled["superseded_artifact_ids"], [artifact["artifact_id"]])
         with self.db.read() as conn:
             recorded = conn.execute(
-                "SELECT base_commit FROM workflow_workspaces WHERE id=?",
+                "SELECT base_commit,state,artifact_ref FROM workflow_workspaces WHERE id=?",
                 (producer["workspace_id"],),
+            ).fetchone()
+            artifact_state = conn.execute(
+                "SELECT state FROM workflow_patch_artifacts WHERE id=?",
+                (artifact["artifact_id"],),
             ).fetchone()[0]
-        self.assertEqual(recorded, integrated_base)
+        self.assertEqual(recorded["base_commit"], integrated_base)
+        self.assertEqual(recorded["state"], "active")
+        self.assertIsNone(recorded["artifact_ref"])
+        self.assertEqual(artifact_state, "superseded")
 
     def test_workspace_base_reconciliation_rejects_dirty_or_unrelated_history(self) -> None:
         producer = self.create_producer()

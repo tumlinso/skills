@@ -334,7 +334,8 @@ class WorkspaceService:
         This is an owner recovery operation for workspaces prepared before an
         earlier integration wave reached the canonical branch. It never changes
         the worktree or branch; the desired base must already be in the lane's
-        history and no integration artifact may have been published.
+        history. An unqueued pending artifact may be explicitly superseded by
+        the same transaction; queued or otherwise consumed artifacts fail closed.
         """
         if not reason.strip():
             raise TodoError("workspace_base_reason_required", "Workspace base reconciliation requires a reason")
@@ -351,11 +352,19 @@ class WorkspaceService:
                 raise TodoError("workspace_reconcile_target_ambiguous", "Expected exactly one active lane workspace")
             workspace = dict(rows[0])
             published = conn.execute(
-                "SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=? LIMIT 1",
+                "SELECT id,state FROM workflow_patch_artifacts WHERE workspace_id=?",
+                (workspace["id"],),
+            ).fetchall()
+            if any(row["state"] != "pending" for row in published):
+                raise TodoError("workspace_artifact_already_consumed", "Consumed workspace artifacts cannot be rebased")
+            queued = conn.execute(
+                "SELECT 1 FROM workflow_integration_queue WHERE patch_artifact_id IN "
+                "(SELECT id FROM workflow_patch_artifacts WHERE workspace_id=?) LIMIT 1",
                 (workspace["id"],),
             ).fetchone()
-            if published is not None:
-                raise TodoError("workspace_artifact_already_published", "Published workspace artifacts cannot be rebased")
+            if queued is not None:
+                raise TodoError("workspace_artifact_already_consumed", "Queued workspace artifacts cannot be rebased")
+            pending_artifact_ids = [str(row["id"]) for row in published]
             sibling = conn.execute(
                 "SELECT id FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
                 "AND mode='isolated_merge' AND id<>? AND state NOT IN ('integrated') AND base_commit<>? LIMIT 1",
@@ -385,8 +394,21 @@ class WorkspaceService:
             ).fetchone()
             if current is None or current["base_commit"] != old_base or current["state"] != workspace["state"]:
                 raise TodoError("workspace_reconcile_state_changed", "Workspace state changed during reconciliation")
+            if pending_artifact_ids:
+                placeholders = ",".join("?" for _ in pending_artifact_ids)
+                rows = conn.execute(
+                    f"SELECT id,state FROM workflow_patch_artifacts WHERE id IN ({placeholders})",
+                    pending_artifact_ids,
+                ).fetchall()
+                if len(rows) != len(pending_artifact_ids) or any(row["state"] != "pending" for row in rows):
+                    raise TodoError("workspace_reconcile_state_changed", "Workspace artifact state changed during reconciliation")
+                conn.execute(
+                    f"UPDATE workflow_patch_artifacts SET state='superseded' WHERE id IN ({placeholders})",
+                    pending_artifact_ids,
+                )
             conn.execute(
-                "UPDATE workflow_workspaces SET base_commit=?,updated_at=? WHERE id=?",
+                "UPDATE workflow_workspaces SET base_commit=?,state='active',artifact_kind=NULL,"
+                "artifact_ref=NULL,diff_hash=NULL,updated_at=? WHERE id=?",
                 (canonical_base, now, workspace["id"]),
             )
             return {
@@ -397,6 +419,7 @@ class WorkspaceService:
                 "base_commit": canonical_base,
                 "head": head,
                 "reason": reason,
+                "superseded_artifact_ids": pending_artifact_ids,
             }
 
         result, revision = self.db.mutate(
@@ -410,6 +433,7 @@ class WorkspaceService:
                 "old_base_commit": old_base,
                 "base_commit": canonical_base,
                 "reason": reason,
+                "superseded_artifact_ids": pending_artifact_ids,
             },
             operation=reconcile,
         )
