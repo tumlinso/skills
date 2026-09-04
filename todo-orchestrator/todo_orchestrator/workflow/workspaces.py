@@ -351,26 +351,32 @@ class WorkspaceService:
             if len(selected) != 1:
                 raise TodoError("workspace_reconcile_target_ambiguous", "Expected exactly one active lane workspace")
             selected_workspace = dict(selected[0])
-            participants = [dict(row) for row in conn.execute(
+            all_participants = [dict(row) for row in conn.execute(
                 "SELECT * FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
                 "AND mode='isolated_merge' AND state IN "
                 "('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','quarantined') "
                 "ORDER BY lane_id",
                 (run_id, selected_workspace["integration_task_id"]),
             ).fetchall()]
+            participants = [
+                workspace for workspace in all_participants
+                if workspace["base_commit"] != canonical_base or
+                workspace["state"] in {"quarantined", "artifact_ready"} or
+                workspace["id"] == selected_workspace["id"]
+            ]
             workspace_ids = [str(workspace["id"]) for workspace in participants]
             placeholders = ",".join("?" for _ in workspace_ids)
-            published = conn.execute(
+            published = (conn.execute(
                 f"SELECT id,workspace_id,state FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})",
                 workspace_ids,
-            ).fetchall()
+            ).fetchall() if workspace_ids else [])
             if any(row["state"] != "pending" for row in published):
                 raise TodoError("workspace_artifact_already_consumed", "Consumed workspace artifacts cannot be rebased")
-            queued = conn.execute(
+            queued = (conn.execute(
                 "SELECT 1 FROM workflow_integration_queue WHERE patch_artifact_id IN "
                 f"(SELECT id FROM workflow_patch_artifacts WHERE workspace_id IN ({placeholders})) LIMIT 1",
                 workspace_ids,
-            ).fetchone()
+            ).fetchone() if workspace_ids else None)
             if queued is not None:
                 raise TodoError("workspace_artifact_already_consumed", "Queued workspace artifacts cannot be rebased")
             pending_artifact_ids = [str(row["id"]) for row in published]
