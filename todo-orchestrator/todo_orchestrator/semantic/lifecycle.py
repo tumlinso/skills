@@ -65,7 +65,7 @@ def normalize_task(conn, row) -> dict[str, object]:
     terminal = effective in TERMINAL_EFFECTIVE_STATES
     kind = str(row["kind"])
     frontier_eligible = (
-        not terminal and kind != "epic" and effective in {"ready", "active", "blocked", "planned"}
+        not terminal and effective in {"ready", "active", "blocked", "planned"}
         and "unknown_lifecycle_combination" not in reasons
     )
     attention_eligible = not terminal and effective == "blocked"

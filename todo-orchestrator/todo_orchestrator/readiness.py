@@ -17,8 +17,28 @@ def explain_task(conn: sqlite3.Connection, task_id: str) -> dict[str, object]:
     if not task:
         return {"task_id": task_id, "execution": "missing", "ready": False, "reasons": ["task does not exist"]}
     reasons: list[object] = []
-    if task["kind"] == "epic":
-        return {"task_id": task_id, "lifecycle": task["status"], "execution": "inactive", "ready": False, "reasons": ["epics are not claimable"]}
+    if task["kind"] in {"epic", "workstream"}:
+        children = conn.execute(
+            "SELECT id,status FROM tasks WHERE parent_id=? ORDER BY id",
+            (task_id,),
+        ).fetchall()
+        incomplete = [str(row["id"]) for row in children if str(row["status"]) != "done"]
+        if incomplete:
+            return {
+                "task_id": task_id,
+                "lifecycle": task["status"],
+                "execution": "inactive",
+                "ready": False,
+                "reasons": [{"incomplete_children": incomplete}],
+            }
+        if task["kind"] == "epic" and not children:
+            return {
+                "task_id": task_id,
+                "lifecycle": task["status"],
+                "execution": "inactive",
+                "ready": False,
+                "reasons": ["leaf epics are not claimable"],
+            }
     if task["status"] in TERMINAL:
         return {"task_id": task_id, "lifecycle": task["status"], "execution": "closed", "ready": False, "reasons": ["task is terminal"]}
     if task["status"] == "attention_required":
@@ -67,7 +87,7 @@ def ready_tasks(conn: sqlite3.Connection) -> list[dict[str, object]]:
     candidates: list[dict[str, object]] = []
     now = datetime.now(timezone.utc)
     for task in conn.execute(
-        "SELECT * FROM tasks WHERE status IN ('planned','in_progress','review') AND kind<>'epic' ORDER BY id"
+        "SELECT * FROM tasks WHERE status IN ('planned','in_progress','review') ORDER BY id"
     ).fetchall():
         explanation = explain_task(conn, task["id"])
         if not explanation["ready"]:

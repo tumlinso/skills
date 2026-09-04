@@ -6,6 +6,7 @@ from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.projections import build_snapshot
 from todo_orchestrator.models import TodoError
+from todo_orchestrator.readiness import explain_task, ready_tasks
 
 
 class WorkflowPlanSnapshotTests(unittest.TestCase):
@@ -136,6 +137,55 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
                 "SELECT position,task_id,state FROM workflow_lane_tasks WHERE lane_id='ROOT' ORDER BY position"
             ).fetchall()
         self.assertEqual([(0, "A", "active"), (1, "B", "queued")], [tuple(row) for row in queue])
+
+    def test_aggregate_epic_unlocks_only_after_all_direct_children_complete(self):
+        tasks = [
+            {**safe_task("ROOT", "root"), "kind": "epic"},
+            {**safe_task("GROUP", "group"), "kind": "workstream", "parent_id": "ROOT"},
+            {**safe_task("LEAF", "leaf"), "parent_id": "GROUP"},
+        ]
+        plan = base_plan(tasks)
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "ROOT",
+            "charter": {"objective": "bounded"},
+            "lanes": [{"id": "ROOT-L", "role": "coordinator", "tasks": ["GROUP", "ROOT"]}],
+        }]
+        self.repo.apply(plan)
+        with self.repo.service.db.read() as conn:
+            self.assertFalse(explain_task(conn, "GROUP")["ready"])
+            self.assertFalse(explain_task(conn, "ROOT")["ready"])
+
+        def complete_leaf(conn, revision):
+            conn.execute("UPDATE tasks SET status='done',revision=? WHERE id='LEAF'", (revision,))
+
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="LEAF",
+            event_type="fixture.task.completed",
+            payload={},
+            operation=complete_leaf,
+        )
+        with self.repo.service.db.read() as conn:
+            self.assertTrue(explain_task(conn, "GROUP")["ready"])
+            self.assertFalse(explain_task(conn, "ROOT")["ready"])
+            self.assertIn("GROUP", {item["task_id"] for item in ready_tasks(conn)})
+
+        def complete_group(conn, revision):
+            conn.execute("UPDATE tasks SET status='done',revision=? WHERE id='GROUP'", (revision,))
+
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="GROUP",
+            event_type="fixture.task.completed",
+            payload={},
+            operation=complete_group,
+        )
+        with self.repo.service.db.read() as conn:
+            self.assertTrue(explain_task(conn, "ROOT")["ready"])
+            self.assertIn("ROOT", {item["task_id"] for item in ready_tasks(conn)})
 
     def test_explicit_v3_fragments_include_owner_scope(self):
         plan = base_plan([safe_task("A", "src/a")])

@@ -112,6 +112,44 @@ class WorkflowRunsLanesTests(unittest.TestCase):
         candidates = self.lanes.candidates("RUN")
         self.assertEqual(["T-A1"], [item["task_id"] for item in candidates])
 
+    def test_advancing_final_root_task_completes_run(self) -> None:
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="RUN",
+            event_type="fixture.run.root_ready",
+            payload={},
+            operation=lambda conn, revision: (
+                conn.execute("UPDATE workflow_runs SET root_task_id='T-A2',revision=? WHERE id='RUN'", (revision,)),
+                conn.execute("UPDATE tasks SET status='done',revision=? WHERE id IN ('T-A1','T-B1','T-B2')", (revision,)),
+                conn.execute("UPDATE workflow_lane_tasks SET state='completed',revision=? WHERE task_id IN ('T-A1','T-B1','T-B2')", (revision,)),
+            ),
+        )
+        session_id, claim_id = self._claim("T-A2")
+        dispatched = self.lanes.dispatch(run_id="RUN", session_id=session_id, claim_id=claim_id, context_version=1)
+
+        def complete_and_advance(conn, revision):
+            conn.execute("UPDATE tasks SET status='done',revision=? WHERE id='T-A2'", (revision,))
+            return advance_lane_in_transaction(
+                conn,
+                revision,
+                lane_id="A",
+                task_id="T-A2",
+                dispatch_id=dispatched["dispatch_id"],
+            )
+
+        result, _ = self.repo.service.db.mutate(
+            actor_session_id=session_id,
+            entity_type="fixture",
+            entity_id="T-A2",
+            event_type="fixture.root.completed",
+            payload={},
+            operation=complete_and_advance,
+        )
+        self.assertTrue(result["run_completed"])
+        with self.repo.service.db.read() as conn:
+            self.assertEqual("completed", conn.execute("SELECT status FROM workflow_runs WHERE id='RUN'").fetchone()[0])
+
     def test_each_lane_is_serial_while_different_lanes_dispatch_concurrently(self) -> None:
         session_a, claim_a = self._claim("T-A1")
         session_b, claim_b = self._claim("T-B1")

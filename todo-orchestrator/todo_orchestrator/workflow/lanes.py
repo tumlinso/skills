@@ -400,7 +400,28 @@ def advance_lane_in_transaction(
     remaining = _lane_head(conn, lane_id)
     state = "ready" if remaining else "closed"
     conn.execute("UPDATE workflow_lanes SET state=?,updated_at=?,revision=? WHERE id=?", (state, now, revision, lane_id))
-    return {"run_id": lane["run_id"], "lane_id": lane_id, "task_id": task_id, "lane_state": state, "next_task_id": remaining["task_id"] if remaining else None}
+    run = conn.execute("SELECT root_task_id,status FROM workflow_runs WHERE id=?", (lane["run_id"],)).fetchone()
+    run_completed = False
+    pending = conn.execute(
+        "SELECT lt.task_id FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
+        "WHERE l.run_id=? AND lt.state NOT IN ('completed','cancelled','skipped') ORDER BY l.id,lt.position LIMIT 1",
+        (lane["run_id"],),
+    ).fetchone()
+    root = conn.execute("SELECT status FROM tasks WHERE id=?", (run["root_task_id"],)).fetchone() if run and run["root_task_id"] else None
+    if run and run["status"] == "active" and root and root["status"] == "done" and not pending:
+        conn.execute(
+            "UPDATE workflow_runs SET status='completed',updated_at=?,revision=? WHERE id=?",
+            (now, revision, lane["run_id"]),
+        )
+        run_completed = True
+    return {
+        "run_id": lane["run_id"],
+        "run_completed": run_completed,
+        "lane_id": lane_id,
+        "task_id": task_id,
+        "lane_state": state,
+        "next_task_id": remaining["task_id"] if remaining else None,
+    }
 
 
 def reconcile_stale_dispatches_in_transaction(
