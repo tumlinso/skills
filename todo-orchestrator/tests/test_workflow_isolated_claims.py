@@ -85,6 +85,10 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
         os.environ["CODEX_THREAD_ID"] = thread
         return self.protocol.next_task(repo_root=str(self.repo.root), task_id=task)
 
+    def claim_from(self, thread: str, task: str, root: Path) -> dict[str, object]:
+        os.environ["CODEX_THREAD_ID"] = thread
+        return self.protocol.next_task(repo_root=str(root), task_id=task)
+
     def test_complete_managed_contract_allows_overlapping_first_class_claims(self) -> None:
         self.workspace("A-LANE", "isolated_merge")
         self.workspace("B-LANE", "isolated_merge")
@@ -105,6 +109,31 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
         self.assertEqual(second["status"], "idle")
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM claims WHERE state='active'").fetchone()[0], 1)
+
+    def test_capability_resolves_its_exact_dispatch_worktree(self) -> None:
+        first_workspace = self.workspace("A-LANE", "isolated_merge")
+        second_workspace = self.workspace("B-LANE", "isolated_merge")
+        self.workspace("INT-LANE", "exclusive")
+        first_root = Path(str(first_workspace["worktree_path"])).resolve()
+        second_root = Path(str(second_workspace["worktree_path"])).resolve()
+        for root in (first_root, second_root):
+            control = root / ".todo-orchestrator"
+            control.mkdir(exist_ok=True)
+            (control / "project.json").write_text(
+                (self.repo.root / ".todo-orchestrator" / "project.json").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+        first = self.claim_from("thread-a", "A", first_root)
+        second = self.claim_from("thread-b", "B", second_root)
+
+        first_capability = self.locator.resolve(
+            str(first["workflow_handle"]), required_operation="inspect_task"
+        )
+        second_capability = self.locator.resolve(
+            str(second["workflow_handle"]), required_operation="inspect_task"
+        )
+        self.assertEqual(self.protocol.port._resolve_service(first_capability).paths.repo_root, first_root)
+        self.assertEqual(self.protocol.port._resolve_service(second_capability).paths.repo_root, second_root)
 
 
 if __name__ == "__main__":

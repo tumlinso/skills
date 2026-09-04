@@ -92,15 +92,30 @@ class WorkflowKernel:
         return self.service_factory(root)
 
     def _resolve_service(self, capability: AuthorizedCapability) -> Service:
-        # A locator contains no lineage semantics, only a hash -> repository hint.
+        # A locator contains no lineage semantics, only handle -> repository
+        # hints. Worktrees share one project database, so the first hint whose
+        # database contains a capability is not necessarily the repository root
+        # bound to that capability's dispatch. Resolve the exact active dispatch
+        # session root before doing any Git or projection operation. The session
+        # root is the caller's checked-out workspace; the dispatch workspace is
+        # still independently verified for gate and artifact operations.
         for hint in self.locator.root.glob("*"):
             try:
                 repo = Path(hint.read_text(encoding="utf-8").strip()).resolve()
                 service = self._service(repo)
                 with service.db.read() as conn:
-                    row = conn.execute("SELECT 1 FROM workflow_capabilities WHERE id=?", (capability.id,)).fetchone()
+                    row = conn.execute(
+                        "SELECT s.repo_root FROM workflow_capabilities c "
+                        "JOIN sessions s ON s.id=c.session_id WHERE c.id=?",
+                        (capability.id,),
+                    ).fetchone()
                 if row:
-                    return service
+                    exact = self._service(Path(str(row["repo_root"])).resolve())
+                    if repository_identity(
+                        exact.paths.repo_root, str(exact.project["project_uuid"])
+                    ) != capability.lineage.repository_identity:
+                        raise TodoError("repository_identity_mismatch", "Capability dispatch repository identity changed")
+                    return exact
             except (OSError, TodoError):
                 continue
         raise TodoError("invalid_workflow_capability", "Capability project is no longer locatable")
