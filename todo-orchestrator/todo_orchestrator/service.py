@@ -6,6 +6,7 @@ import json
 import os
 import socket
 import sqlite3
+import subprocess
 import uuid
 from pathlib import Path
 from typing import Any
@@ -321,6 +322,21 @@ class Service:
         )
         return {**result, "project_revision": revision, "projection": projection}
 
+    def _claim_source_root(self, conn, claim) -> Path:
+        row = conn.execute(
+            "SELECT w.mode,w.worktree_path FROM workflow_dispatches d "
+            "JOIN workflow_workspaces w ON w.id=d.workspace_id WHERE d.claim_id=? "
+            "ORDER BY d.created_at DESC LIMIT 1", (claim["id"],),
+        ).fetchone()
+        if row is None or row["mode"] == "read_shared":
+            return self.paths.repo_root
+        root = Path(str(row["worktree_path"])).resolve()
+        from .workflow.service import repository_identity
+        project_uuid = str(self.project["project_uuid"])
+        if not root.is_dir() or repository_identity(root, project_uuid) != repository_identity(self.paths.repo_root, project_uuid):
+            raise TodoError("completion_workspace_missing", "Completion source must be the verified dispatch workspace")
+        return root
+
     def _complete_claim_in_transaction(self, conn, revision, claim, disposition: str, note: str, terminal_hook=None):
         if claim is None:
             raise TodoError("invalid_claim_authority", "Workflow capability claim is inactive", ExitCode.INVALID_TOKEN)
@@ -333,7 +349,20 @@ class Service:
         if unsatisfied:
             raise TodoError("required_gates_unsatisfied", "Required gates are missing, failed, or invalidated", ExitCode.GATE_FAILURE, unsatisfied)
         now = utc_now()
-        completion_head = git_head(self.paths.repo_root)
+        source_root = self._claim_source_root(conn, claim)
+        missing = [str(row["path"]) for row in conn.execute(
+            "SELECT path FROM task_artifacts WHERE task_id=?", (task["id"],)
+        ) if not (source_root / str(row["path"])).exists()]
+        if disposition in SUCCESSFUL_DISPOSITIONS and missing:
+            raise TodoError("completion_artifacts_missing", "Declared task artifacts are missing from the producer workspace", details={"paths": missing})
+        if disposition in SUCCESSFUL_DISPOSITIONS and policy.get("require_tracked_artifacts"):
+            untracked = [str(row["path"]) for row in conn.execute(
+                "SELECT path FROM task_artifacts WHERE task_id=?", (task["id"],)
+            ) if subprocess.run(["git", "ls-files", "--error-unmatch", "--", str(row["path"])],
+                cwd=source_root, capture_output=True).returncode != 0]
+            if untracked:
+                raise TodoError("completion_artifacts_untracked", "Declared delivery artifacts must be tracked by Git", details={"paths": untracked})
+        completion_head = git_head(source_root)
         conn.execute(
             "UPDATE tasks SET status='done',result=?,attention_reason=NULL,updated_at=?,revision=?,"
             "completion_revision=?,completion_git_head=?,completion_commit=? WHERE id=?",
@@ -341,7 +370,7 @@ class Service:
         )
         completion_gates = snapshot_completion_gates(conn, task, revision, completion_head)
         checkpoint_finalization = (
-            reach_eligible_owned_checkpoints(conn, self.paths.repo_root, str(task["id"]), revision)
+            reach_eligible_owned_checkpoints(conn, source_root, str(task["id"]), revision)
             if disposition in SUCCESSFUL_DISPOSITIONS else {"reached": [], "skipped": []}
         )
         handoff_id = str(uuid.uuid4())
@@ -414,8 +443,9 @@ class Service:
         return {**result, "project_revision": revision, "projection": projection}
 
     def _handoff_payload(self, conn: sqlite3.Connection, claim: sqlite3.Row, note: str) -> dict[str, object]:
+        source_root = self._claim_source_root(conn, claim)
         scopes = scopes_for(conn, claim["task_id"], "exclusive")
-        dirty = [path for path in dirty_paths(self.paths.repo_root) if any(path_contains(root, path) for root in scopes)]
+        dirty = [path for path in dirty_paths(source_root) if any(path_contains(root, path) for root in scopes)]
         checkpoints = [dict(row) for row in conn.execute("SELECT id,state,reached_at FROM checkpoints WHERE task_id=?", (claim["task_id"],))]
         gates = [dict(row) for row in conn.execute(
             "SELECT id,status,valid,input_fingerprint,last_run_at,revision FROM gates WHERE task_id=?",
@@ -423,7 +453,7 @@ class Service:
         )]
         interfaces = [dict(row) for row in conn.execute("SELECT id,state,version,content_hash FROM interfaces WHERE owner_task_id=?", (claim["task_id"],))]
         resources = [dict(row) for row in conn.execute("SELECT instance_id,state,acquired_at,released_at FROM resource_leases WHERE claim_id=?", (claim["id"],))]
-        return {"task_id": claim["task_id"], "git_head": git_head(self.paths.repo_root), "git_diffstat": git_diffstat(self.paths.repo_root), "changed_owned_paths": dirty, "checkpoints": checkpoints, "gates": gates, "interfaces": interfaces, "resources": resources, "note": note}
+        return {"task_id": claim["task_id"], "git_head": git_head(source_root), "producer_commit": git_head(source_root), "producer_root": str(source_root), "authority_commit": git_head(self.paths.repo_root), "integration_commit": None, "git_diffstat": git_diffstat(source_root), "changed_owned_paths": dirty, "checkpoints": checkpoints, "gates": gates, "interfaces": interfaces, "resources": resources, "note": note}
 
     def handoff(self, claim_token: str, *, note: str = "", status: str = "in_progress", reason: str | None = None) -> dict[str, object]:
         def operation(conn, revision):

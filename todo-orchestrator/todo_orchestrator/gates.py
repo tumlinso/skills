@@ -347,15 +347,20 @@ def run_gate(
             environment = os.environ.copy()
             environment.update({str(k): str(v) for k, v in config.get("env", {}).items()})
             environment.update(resource_environment(acquired["resources"]))
-            result = subprocess.run(
-                [str(item) for item in argv],
-                cwd=gate_root / str(config.get("cwd", ".")),
-                env=environment,
-                capture_output=True,
-                text=True,
-                timeout=float(config.get("timeout", 3600)),
-                check=False,
-            )
+            if config.get("cuda") is not None:
+                from .cuda_gate import run as run_cuda_gate
+                result = run_cuda_gate([str(item) for item in argv],
+                    gate_root / str(config.get("cwd", ".")), environment, config["cuda"], float(config.get("timeout", 3600)))
+            else:
+                result = subprocess.run(
+                    [str(item) for item in argv],
+                    cwd=gate_root / str(config.get("cwd", ".")),
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    timeout=float(config.get("timeout", 3600)),
+                    check=False,
+                )
             stdout, stderr, returncode = result.stdout, result.stderr, result.returncode
             expected = int(config.get("expected_exit_code", 0))
             executed = returncode == expected

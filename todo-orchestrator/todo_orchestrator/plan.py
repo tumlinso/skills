@@ -133,6 +133,10 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
                 if key in assigned_tasks:
                     errors.append(f"task {task} is assigned to multiple lanes in run {run_id}")
                 assigned_tasks.add(key)
+                if any(interface.get("owner_task_id") == task for interface in interfaces if isinstance(interface, dict)):
+                    from .workflow.roles import ROLE_ACTIONS
+                    if "publish_interface" not in ROLE_ACTIONS.get(lane.get("role"), ()):
+                        errors.append(f"lane {lane_id} role cannot publish interfaces owned by task {task}")
         roots = [lane for lane in run.get("lanes", []) if isinstance(lane, dict) and not lane.get("parent_lane_id")]
         if len(roots) != 1:
             errors.append(f"run {run_id} must have exactly one root lane")
@@ -200,6 +204,15 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
                 if published.get("id") not in known_interfaces:
                     errors.append(f"checkpoint {checkpoint.get('id')} publishes unknown interface {published.get('id')}")
         for gate in task.get("gates", []):
+            cuda = gate.get("cuda")
+            if cuda is not None:
+                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths"}
+                if not isinstance(cuda, dict) or set(cuda) - allowed:
+                    errors.append(f"gate {gate.get('id')} has unsupported CUDA configuration")
+                elif not isinstance(cuda.get("gpus", 1), int) or cuda.get("gpus", 1) < 1:
+                    errors.append(f"gate {gate.get('id')} requires a positive CUDA GPU count")
+                if gate.get("type") not in {"command", "benchmark", "json_predicate"} or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
+                    errors.append(f"gate {gate.get('id')} CUDA execution requires a command, zero expected exit, and controller-owned resources")
             if gate.get("type") in {"command", "benchmark", "json_predicate"} and (not isinstance(gate.get("argv"), list) or not gate.get("argv")):
                 errors.append(f"gate {gate.get('id')} requires a non-empty argv array")
             if gate.get("checkpoint_id") and gate.get("checkpoint_id") not in known_checkpoints:
@@ -417,6 +430,15 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
             for published in checkpoint.get("publishes_interfaces", []):
                 conn.execute("INSERT INTO checkpoint_interfaces(checkpoint_id,interface_id,version) VALUES(?,?,?)", (checkpoint["id"], published["id"], published.get("version")))
         for gate in task.get("gates", []):
+            cuda = gate.get("cuda")
+            if cuda is not None:
+                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths"}
+                if not isinstance(cuda, dict) or set(cuda) - allowed:
+                    errors.append(f"gate {gate.get('id')} has unsupported CUDA configuration")
+                elif not isinstance(cuda.get("gpus", 1), int) or cuda.get("gpus", 1) < 1:
+                    errors.append(f"gate {gate.get('id')} requires a positive CUDA GPU count")
+                if gate.get("type") not in {"command", "benchmark", "json_predicate"} or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
+                    errors.append(f"gate {gate.get('id')} CUDA execution requires a command, zero expected exit, and controller-owned resources")
             conn.execute(
                 "INSERT INTO gates(id,task_id,checkpoint_id,type,config_json,required,status,valid,revision) VALUES(?,?,?,?,?,?,COALESCE((SELECT status FROM gates WHERE id=?),'pending'),COALESCE((SELECT valid FROM gates WHERE id=?),0),?) "
                 "ON CONFLICT(id) DO UPDATE SET task_id=excluded.task_id,checkpoint_id=excluded.checkpoint_id,type=excluded.type,config_json=excluded.config_json,required=excluded.required,revision=excluded.revision",

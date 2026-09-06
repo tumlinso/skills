@@ -23,7 +23,7 @@ def gate_input_fingerprint(conn: sqlite3.Connection, repo_root: Path, config: di
         key: config.get(key)
         for key in (
             "argv", "cwd", "env", "timeout", "expected_exit_code", "metric_file", "metric_path",
-            "operator", "threshold", "evaluation_required", "path", "pattern", "task_id", "status",
+            "cuda", "operator", "threshold", "evaluation_required", "path", "pattern", "task_id", "status",
             "result", "checkpoint_id", "interface_id", "state", "version", "accepted", "resources", "locks",
         )
         if key in config

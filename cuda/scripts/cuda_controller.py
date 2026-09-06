@@ -1174,7 +1174,43 @@ def _recipe(spec: dict[str, object], artifact_dir: Path) -> tuple[list[str], boo
 
 
 def foreground_run(spec: dict[str, object]) -> dict[str, object]:
+    if "build_argv" in spec:
+        raise ValueError("Top-level build_argv is unsupported; use benchmark.build_argv (one structured argv)")
+    if int(spec.get("schema_version", 1)) != 1:
+        raise ValueError("foreground spec schema_version must be 1")
+    if not isinstance(spec.get("argv"), list) or not spec["argv"] or not all(isinstance(x, str) for x in spec["argv"]):
+        raise ValueError("foreground argv must be a nonempty string array")
+    if "benchmark" in spec and set(spec["benchmark"]) - {"build_argv"}:
+        raise ValueError("foreground benchmark accepts only build_argv; timing fields belong at top level")
     project = git_root(Path(str(spec.get("project_root", "."))))
+    command_cwd = Path(str(spec.get("command_cwd", project))).resolve()
+    if not command_cwd.is_relative_to(project) or not command_cwd.is_dir():
+        raise ValueError("command_cwd must be an existing directory within project_root")
+    build_record = None
+    toolchain = None
+    build_environment = os.environ.copy()
+    if spec.get("toolchain"):
+        from cuda_toolchain import resolve_toolchain
+        toolchain = resolve_toolchain(**spec["toolchain"])
+        build_environment.update(toolchain["environment"])
+    build = spec.get("benchmark", {}).get("build_argv")
+    if build is not None:
+        if not isinstance(build, list) or not build or not all(isinstance(x, str) for x in build):
+            raise ValueError("benchmark.build_argv must be one nonempty structured argv")
+        built = subprocess.run(build, cwd=project, env=build_environment, capture_output=True, text=True,
+                               timeout=float(spec.get("build_timeout", 1800)))
+        build_record = {"argv": build, "returncode": built.returncode,
+                        "stdout_sha256": hashlib.sha256(built.stdout.encode()).hexdigest(),
+                        "stderr_sha256": hashlib.sha256(built.stderr.encode()).hexdigest()}
+        if built.returncode:
+            return {"ok": False, "code": "foreground_build_failed", "build": build_record,
+                    "stderr": built.stderr[-4000:]}
+    binaries = []
+    for value in spec.get("binary_paths", []):
+        binary = (project / value).resolve()
+        if not binary.is_relative_to(project) or not binary.is_file():
+            raise ValueError("binary_paths must identify existing project files")
+        binaries.append({"path": str(binary), "sha256": file_digest(binary)})
     store = BackgroundStore(project)
     runtime = RuntimeFacade(project, store=store)
     devices = probe_gpus(dynamic=True)
@@ -1186,6 +1222,9 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     count = int(resources.get("gpus", 1)) if isinstance(resources, dict) else 1
     if not requested:
         requested = [str(item["uuid"]) for item in devices[:count]]
+    available = {str(item["uuid"]) for item in devices}
+    if len(requested) < count or any(item not in available for item in requested):
+        return {"ok": False, "code": "requested_accelerator_unavailable"}
     resource_ids = [f"accelerator:{item}" for item in requested]
     recipe = str(spec.get("recipe", "baseline"))
     host_request = {
@@ -1231,6 +1270,14 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
         mapping = {str(item["uuid"]): int(item["index"]) for item in devices}
         indices = [mapping[item] for item in requested if item in mapping]
         environment = _command_environment(indices, requested, background=False)
+        if toolchain:
+            environment.update(toolchain["environment"])
+        lease_path = artifact_dir / "lease.json"
+        lease_path.write_text(json.dumps({"format": "CUDA-FOREGROUND-LEASE/1", "owner_id": host_owner,
+            "project_root": str(project), "pid": os.getpid(), "resource_ids": resource_ids,
+            "observed_unix": time.time(), "state": "active"}, indent=2) + "\n")
+        environment["TODO_GPU_LEASE_RECEIPT"] = str(lease_path)
+        environment["CELLERATOR_SS1_GPU_LEASE_RECEIPT"] = str(lease_path)
         environment["CUDA_BENCHMARK_FOREGROUND_INTENT_HELD"] = "1"
         environment["CUDA_BENCHMARK_FOREGROUND_INTENT_PATH"] = str(marker)
         correctness = None
@@ -1257,7 +1304,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
             record = {"argv": argv, "returncode": 0 if benchmark_outcome["valid"] else 1,
                       "statistics": benchmark_outcome["statistics"], "records": benchmark_outcome["records"]}
         else:
-            record = _foreground_capture(argv, project, environment, artifact_dir, float(spec.get("timeout", 3600)))
+            record = _foreground_capture(argv, command_cwd, environment, artifact_dir, float(spec.get("timeout", 3600)))
         after = sample_devices(requested)
         valid = record["returncode"] == 0 and not after.get("foreign_processes")
         classified = None
@@ -1270,7 +1317,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
             )
         result = {"status": "succeeded" if valid else "failed", "valid": valid,
                   "classification": "decision-result" if valid else "measurement-failure", "severity": 0 if valid else 90,
-                  "record": record, "correctness": correctness,
+                  "record": record, "correctness": correctness, "build": build_record, "toolchain": toolchain, "binaries": binaries,
                   "resource_samples": {"before": sample, "after": after, "quiescence": quiescence},
                   "context": _ctxpp_context(spec, project), "benchmark": benchmark_outcome,
                   "provenance": provenance(project, snapshot, [str(item) for item in spec["argv"]], [item for item in devices if item["uuid"] in requested], spec),
@@ -1290,6 +1337,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
         _, evidence_id = store.record_external_result(kind=f"foreground-{spec.get('recipe', 'baseline')}", argv=argv, cwd=str(project), source_fingerprint=snapshot.get("fingerprint"), snapshot=snapshot, result=result, artifacts=artifacts)
         return {"ok": valid, "status": result["status"], "classification": result["classification"],
                 "returncode": record["returncode"], "evidence_id": evidence_id,
+                "stdout_path": record.get("stdout"), "stderr_path": record.get("stderr"), "lease_receipt": str(lease_path),
                 "message": "No action-worthy result; evidence stored." if valid else f"MEASUREMENT FAILURE: foreground recipe failed. [e:{evidence_id}]"}
     finally:
         if host_owner:

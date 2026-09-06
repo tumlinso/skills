@@ -400,9 +400,12 @@ class WorkflowKernel:
                     "JOIN workflow_lanes l ON l.id=d.lane_id "
                     "JOIN workflow_lane_tasks lt ON lt.lane_id=d.lane_id AND lt.state='active' "
                     "JOIN claims c ON c.id=d.claim_id AND c.state='active' "
-                    "WHERE d.session_id=? AND d.state='active' ORDER BY d.created_at DESC LIMIT 1",
+                    "WHERE d.session_id=? AND d.state='active' ORDER BY d.created_at DESC",
                     (session["id"],),
-                ).fetchone()
+                ).fetchall()
+                if task_id is None and len(resumed) > 1:
+                    raise TodoError("ambiguous_lane_resume", "Multiple active lanes share this session; pass the assigned task_id")
+                resumed = next((row for row in resumed if task_id is None or row["task_id"] == task_id), None)
                 if resumed and (task_id is None or resumed["task_id"] == task_id):
                     now = utc_now()
                     workspace_id = resumed["workspace_id"]

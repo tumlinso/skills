@@ -360,6 +360,10 @@ class WorkspaceService:
                 "ORDER BY lane_id",
                 (run_id, selected_workspace["integration_task_id"]),
             ).fetchall()]
+            # Contract-split lanes recover independently; isolated participants
+            # retain their existing group reconciliation and integrator ordering.
+            if selected_workspace["mode"] == "contract_split":
+                all_participants = [selected_workspace]
             participants = [
                 workspace for workspace in all_participants
                 if workspace["base_commit"] != canonical_base or
@@ -400,7 +404,11 @@ class WorkspaceService:
                 "AND l.role IN ('integrator','validator')",
                 (selected_workspace["integration_task_id"], run_id),
             ).fetchone()
-            integrator_destination = dict(integrator_destination_row) if integrator_destination_row else None
+            integrator_destination = (
+                dict(integrator_destination_row)
+                if integrator_destination_row and selected_workspace["mode"] != "contract_split"
+                else None
+            )
             if (integrator_destination is not None and
                     integrator_destination["integration_task_id"] != selected_workspace["integration_task_id"]):
                 required_position = integrator_destination["required_position"]
@@ -1502,6 +1510,123 @@ class WorkspaceService:
         )
         result["revision"] = revision
         return result
+
+    def record_contract_split_integration(
+        self, *, repository_root: Path, workspace_id: str, integration_task_id: str,
+        accepted_commit: str, reason: str, apply: bool = False,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Record completed contract-split work already merged into canonical main.
+
+        This owner maintenance operation never merges Git, completes tasks,
+        supplies gate evidence, or makes cleanup eligible. The run must already
+        be completed and the accepted source must pass its recorded final gates.
+        """
+        from ..evidence import gate_input_fingerprint
+        from ..git_state import is_generated_projection
+
+        root = Path(repository_root).resolve()
+        if self.repository_identity_resolver is None:
+            raise TodoError("repository_identity_resolver_required", "Canonical repository identity is required")
+        if not reason.strip():
+            raise TodoError("integration_reason_required", "Record the owner integration reason")
+        accepted = self._commit(root, accepted_commit)
+
+        def validate(conn: Any) -> dict[str, object]:
+            row = conn.execute(
+                "SELECT w.*,l.state AS lane_state,r.status AS run_status "
+                "FROM workflow_workspaces w JOIN workflow_lanes l ON l.id=w.lane_id "
+                "JOIN workflow_runs r ON r.id=w.run_id WHERE w.id=?", (workspace_id,),
+            ).fetchone()
+            if row is None or row["mode"] != "contract_split" or row["state"] not in {"active", "integrated"}:
+                raise TodoError("contract_workspace_required", "Only active or integrated contract_split workspaces qualify")
+            if row["run_status"] != "completed" or row["lane_state"] != "closed":
+                raise TodoError("contract_run_not_terminal", "Run must be completed and producer lane closed")
+            if conn.execute(
+                "SELECT 1 FROM workflow_lanes WHERE run_id=? AND state!='closed'", (row["run_id"],),
+            ).fetchone():
+                raise TodoError("contract_run_not_terminal", "All run lanes must be closed")
+            if conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
+                "JOIN tasks t ON t.id=lt.task_id WHERE l.run_id=? AND (lt.state!='completed' OR t.status!='done')",
+                (row["run_id"],),
+            ).fetchone():
+                raise TodoError("contract_tasks_not_complete", "All run tasks must be completed")
+            if conn.execute(
+                "SELECT 1 FROM workflow_dispatches d JOIN workflow_lanes l ON l.id=d.lane_id WHERE l.run_id=? AND d.state='active'", (row["run_id"],),
+            ).fetchone() or conn.execute(
+                "SELECT 1 FROM claims c JOIN workflow_lane_tasks lt ON lt.task_id=c.task_id "
+                "JOIN workflow_lanes l ON l.id=lt.lane_id WHERE l.run_id=? AND c.state='active'", (row["run_id"],),
+            ).fetchone():
+                raise TodoError("contract_owner_active", "All run claims and dispatches must be inactive")
+            integration = conn.execute(
+                "SELECT t.status FROM tasks t JOIN workflow_lane_tasks lt ON lt.task_id=t.id "
+                "JOIN workflow_lanes l ON l.id=lt.lane_id WHERE t.id=? AND l.run_id=? "
+                "AND l.role='integrator' AND lt.state='completed'", (integration_task_id, row["run_id"]),
+            ).fetchone()
+            if integration is None or integration["status"] != "done":
+                raise TodoError("contract_integration_not_complete", "A completed integrator task in this run is required")
+            worktree = Path(str(row["worktree_path"])).resolve()
+            if (not worktree.is_dir() or self._managed_path(worktree) != worktree
+                    or self.repository_identity_resolver(root) != row["repository_identity"]
+                    or self.repository_identity_resolver(worktree) != row["repository_identity"]):
+                raise TodoError("contract_repository_mismatch", "Managed worktree and canonical repository must match")
+            if material_dirty_paths(root) or material_dirty_paths(worktree):
+                raise TodoError("workspace_dirty_preserved", "Dirty work is preserved")
+            if self._commit(root, "HEAD") != accepted or self._commit(root, "refs/heads/main") != accepted:
+                raise TodoError("contract_main_mismatch", "Accepted commit must equal canonical HEAD and main")
+            producer = self._commit(worktree, "HEAD")
+            if self._git(root, ["merge-base", "--is-ancestor", producer, accepted]).returncode != 0:
+                raise TodoError("contract_not_merged", "Producer HEAD must be an ancestor of accepted main")
+            gates = conn.execute("SELECT * FROM gates WHERE task_id=? AND required=1", (integration_task_id,)).fetchall()
+            if not gates:
+                raise TodoError("contract_gates_required", "Final integration requires recorded executable gates")
+            evidence = []
+            for gate in gates:
+                fingerprint, _ = gate_input_fingerprint(conn, root, json.loads(gate["config_json"]))
+                found = conn.execute(
+                    "SELECT id,metadata_json FROM evidence WHERE gate_id=? AND status='passed' ORDER BY revision DESC LIMIT 1",
+                    (gate["id"],),
+                ).fetchone()
+                if (gate["type"] not in {"command", "test"} or gate["status"] != "passed" or not gate["valid"]
+                        or gate["input_fingerprint"] != fingerprint or found is None
+                        or json.loads(found["metadata_json"]).get("input_fingerprint") != fingerprint):
+                    raise TodoError("contract_gate_stale", "Required executable gate evidence must match accepted main")
+                metadata = json.loads(found["metadata_json"])
+                if metadata.get("candidate_evidence") or any(
+                    not is_generated_projection(str(path))
+                    for path in metadata.get("inputs", {}).get("dirty_paths", [])
+                ):
+                    raise TodoError("contract_gate_stale", "Final evidence must validate committed material source")
+                recorded_head = metadata.get("inputs", {}).get("recorded_git_head")
+                if not recorded_head or self._source_diff(root, self._commit(root, recorded_head), code="contract_gate_source_unavailable"):
+                    raise TodoError("contract_gate_stale", "Accepted material source differs from recorded gate source")
+                evidence.append({"gate_id": gate["id"], "evidence_id": found["id"], "input_fingerprint": fingerprint})
+            return {"workspace_id": workspace_id, "run_id": row["run_id"], "lane_id": row["lane_id"],
+                    "producer_commit": producer, "accepted_commit": accepted, "integration_task_id": integration_task_id,
+                    "evidence": evidence, "reason": reason, "previous_state": row["state"],
+                    "cleanup_eligible": bool(row["cleanup_eligible"]), "deleted": False}
+
+        with self.db.read() as conn:
+            preview = validate(conn)
+        if not apply or preview["previous_state"] == "integrated":
+            return {**preview, "status": "noop" if preview["previous_state"] == "integrated" else "ready"}
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            observed = validate(conn)
+            if observed != preview:
+                raise TodoError("contract_integration_changed", "Integration observation changed; review a new preview")
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='integrated',merge_result_json=?,updated_at=? WHERE id=?",
+                (_json(observed), utc_now(), workspace_id),
+            )
+            return {**observed, "status": "integrated"}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id, entity_type="workflow_workspace", entity_id=workspace_id,
+            event_type="workflow_contract_split_integration_recorded", payload=preview, operation=operation,
+        )
+        return {**result, "revision": revision}
 
     def mark_cleanup_eligible(self, *, workspace_id: str, actor_session_id: str | None = None) -> dict[str, object]:
         with self.db.read() as conn:

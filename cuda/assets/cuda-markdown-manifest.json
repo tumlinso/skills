@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "SKILL.md",
-      "bytes": 3365,
-      "sha256": "675e52f44218fd823f03601c8359118a309bc559d7817cf390e633067ffa2e3e"
+      "bytes": 3776,
+      "sha256": "d0ffb0a4fa5009439775bff94fc5194cd3885869f3c05b55297b0d7fea6470d0"
     },
     {
       "path": "references/addendum-bio-data-layouts.md",
@@ -333,8 +333,8 @@
     },
     {
       "path": "references/controller-background-contract.md",
-      "bytes": 3606,
-      "sha256": "521b16839684ddeaf4f466514ebd14d9b9fc4da3177db6c217d9fc438c94770a"
+      "bytes": 4662,
+      "sha256": "39b355e5eb57099f71c7247c82099d3641b381b3f96c3b7fa8e4a76045dc836c"
     },
     {
       "path": "references/cpu-porting-decision-tree.md",

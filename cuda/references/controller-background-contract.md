@@ -106,3 +106,20 @@ does not alter historical todo tasks or events.
 
 Pause, resume, and stop operate on project watches. Enqueueing while paused is
 durable but does not wake work; stopped watches reject new revisions.
+
+## Foreground build and toolkit contract (2026-09-06)
+
+Foreground `run` accepts one structured `benchmark.build_argv`. It executes
+before GPU reservation; a nonzero build exits without acquiring an accelerator.
+Top-level `build_argv` is rejected. `binary_paths` records SHA-256 values of the
+specified project files after the build. `toolchain` accepts `root` and
+`require_sanitizer`; an explicit unusable toolkit fails rather than silently
+selecting another version. Compiler and sanitizer resolve from the same toolkit.
+`command_cwd` may select an existing subdirectory within the project.
+
+Todo command gates may declare a `cuda` object with controller resources,
+`toolchain`, `build_argv`, and `binary_paths`. Both explicit gate execution and
+completion reruns then use the canonical controller. Such gates must expect exit
+zero and leave Todo's separate `resources` list empty. The controller holds the
+host reservation and benchmark mutex during execution and writes a lease receipt
+for the child. A temporary project wrapper is no longer required.
