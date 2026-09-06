@@ -134,6 +134,37 @@ def _hash_file(path: Path) -> str:
         raise RuntimeIdentityError(f"runtime source is unreadable: {path}") from exc
 
 
+def _release_digest(root: Path, package_root: Path) -> str | None:
+    manifest = os.environ.get("PROJECT_CONTROL_RELEASE_MANIFEST")
+    pinned = os.environ.get("PROJECT_CONTROL_RELEASE_DIGEST")
+    if not manifest and not pinned:
+        return None
+    def fingerprint(package: Path) -> str:
+        digest = hashlib.sha256()
+        for path in sorted(package.rglob("*.py")):
+            if path.is_file():
+                digest.update(path.relative_to(package).as_posix().encode())
+                digest.update(b"\0")
+                digest.update(path.read_bytes())
+                digest.update(b"\0")
+        return digest.hexdigest()
+    try:
+        if not manifest or not pinned:
+            raise ValueError("incomplete release binding")
+        raw = Path(manifest).read_bytes()
+        data = json.loads(raw)
+        if hashlib.sha256(raw).hexdigest() != pinned or data["schema_version"] != 2:
+            raise ValueError("release manifest mismatch")
+        if Path(data["skills_root"]).resolve() != root:
+            raise ValueError("release Skills root mismatch")
+        expected = data["todo_runtime_fingerprint"]
+        if fingerprint(package_root) != expected or fingerprint(root / "todo-orchestrator" / "todo_orchestrator") != expected:
+            raise ValueError("release Todo package mismatch")
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        raise RuntimeIdentityError("Invalid Todo release binding", observed=str(error)) from error
+    return pinned
+
+
 def _candidate_identity(skills_root: Path) -> RuntimeIdentity:
     root = skills_root.resolve()
     expected_package = (root / "todo-orchestrator" / "todo_orchestrator").resolve()
@@ -144,7 +175,8 @@ def _candidate_identity(skills_root: Path) -> RuntimeIdentity:
             "configured Skills root does not contain Todo Orchestrator",
             expected=str(expected_package / "__init__.py"), observed="missing",
         )
-    if package_root != expected_package:
+    release_digest = _release_digest(root, package_root)
+    if package_root != expected_package and release_digest is None:
         raise RuntimeIdentityError(
             "imported Todo package is not the configured Skills runtime",
             expected=str(expected_package), observed=str(package_root),
@@ -157,6 +189,8 @@ def _candidate_identity(skills_root: Path) -> RuntimeIdentity:
         "package_init_sha256": _hash_file(package_source),
         "runtime_identity_sha256": _hash_file(Path(__file__).resolve()),
     }
+    if release_digest:
+        payload["release_digest"] = release_digest
     fingerprint = hashlib.sha256(
         json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()

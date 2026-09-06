@@ -14,7 +14,7 @@ from .store import runtime_paths
 
 def _canonical_worker_environment() -> dict[str, str] | None:
     try:
-        from coding_workflow_mcp.runtime_identity import (
+        from ..runtime_identity import (
             bind_canonical_runtime,
             controlled_subprocess_env,
             validate_runtime,

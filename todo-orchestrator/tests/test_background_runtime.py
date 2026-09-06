@@ -73,7 +73,7 @@ class BackgroundRuntimeTests(unittest.TestCase):
 
         self._arm()
         with mock.patch("todo_orchestrator.background.wake._worker_is_live", return_value=False), \
-                mock.patch("coding_workflow_mcp.runtime_identity.bind_canonical_runtime",
+                mock.patch("todo_orchestrator.runtime_identity.bind_canonical_runtime",
                            side_effect=RuntimeMismatch("runtime A is noncanonical")), \
                 mock.patch("todo_orchestrator.background.wake.subprocess.Popen") as popen:
             self.assertFalse(wake_worker(self.repo.root))
@@ -92,10 +92,10 @@ class BackgroundRuntimeTests(unittest.TestCase):
                 "PYTHONPATH": "/runtime-a/todo-orchestrator",
             }), mock.patch("todo_orchestrator.background.wake._worker_is_live",
                            side_effect=[False, True]), \
-                mock.patch("coding_workflow_mcp.runtime_identity.bind_canonical_runtime",
+                mock.patch("todo_orchestrator.runtime_identity.bind_canonical_runtime",
                            return_value=identity), \
-                mock.patch("coding_workflow_mcp.runtime_identity.validate_runtime") as validate, \
-                mock.patch("coding_workflow_mcp.runtime_identity.controlled_subprocess_env",
+                mock.patch("todo_orchestrator.runtime_identity.validate_runtime") as validate, \
+                mock.patch("todo_orchestrator.runtime_identity.controlled_subprocess_env",
                            return_value={
                                **os.environ,
                                "PROJECT_CONTROL_SKILLS_ROOT": "/canonical-b",

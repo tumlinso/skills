@@ -31,3 +31,12 @@ MCP lifecycle and V100 gate/completion reruns. The kernel suite must include
 `integrations/coding-workflow-mcp` on PYTHONPATH for compatibility/background tests.
 The initial omission caused five harness failures; the corrected affected suite
 passed. Python 3.13 emits existing unclosed-SQLite ResourceWarnings in fixtures.
+
+Installed-candidate validation additionally exposed Todo's older exact-path
+identity guard: it rejected a matching installed wheel and frozen source.
+The kernel now accepts that pair only with a digest-pinned release manifest,
+checking both source hashes and preserving strict path identity in development
+mode. Background wake imports the canonical Todo identity API directly, removing
+its installed-runtime dependency on the deprecated compatibility package.
+The installed GPU lifecycle smoke is a required release check; source-only
+success was insufficient to detect this boundary.
