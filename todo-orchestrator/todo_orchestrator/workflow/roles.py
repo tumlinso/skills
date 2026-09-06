@@ -31,7 +31,7 @@ ROLE_ACTIONS: dict[str, frozenset[str]] = {
     }),
     "integrator": frozenset({
         "inspect", "sync", "claim_task", "resume_dispatch", "heartbeat", "edit_scope",
-        "publish_artifact", "message", "answer", "arrive", "finish_task",
+        "publish_artifact", "publish_interface", "message", "answer", "arrive", "finish_task",
         "manage_integration_queue", "resolve_conflict", "run_gates",
     }),
     "specialist": frozenset({
