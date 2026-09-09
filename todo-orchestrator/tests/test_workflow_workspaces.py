@@ -518,6 +518,106 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertTrue(destination_eligible["cleanup_eligible"])
         self.assertTrue(Path(str(destination["worktree_path"])).exists())
 
+    def test_integrated_producer_advances_wave_without_losing_history(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        source = Path(str(producer["worktree_path"]))
+        first = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=first,
+        )
+        queue = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        )
+        self.service.apply_next(queue_id=str(queue["queue_id"]))
+        accepted = self.service.record_post_merge_gates(
+            queue_id=str(queue["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("passed")}],
+        )
+        base = accepted["integrated_artifact"]["ref"]
+
+        def add_wave(conn, revision):
+            now = utc_now()
+            for task in ("IMPL_NEXT", "INTEGRATE_NEXT"):
+                conn.execute("INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) VALUES(?,?,?,'planned',?,?,?)",
+                             (task, "workstream", task, now, now, revision))
+            for lane, task in (("PRODUCER", "IMPL_NEXT"), ("INTEGRATOR", "INTEGRATE_NEXT")):
+                conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES(?,1,?,'queued',?,?)",
+                             (lane, task, now, revision))
+            conn.execute("UPDATE tasks SET status='done' WHERE id IN ('IMPL','INTEGRATE')")
+            conn.execute("UPDATE workflow_lane_tasks SET state='completed' WHERE task_id IN ('IMPL','INTEGRATE')")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="wave_seeded", payload={}, operation=add_wave)
+        args = dict(repository_root=self.repo, workspace_id=str(producer["workspace_id"]),
+                    base_commit=base, integration_task_id="INTEGRATE_NEXT", reason="next accepted program milestone")
+        revision = self.db.revision()
+        self.assert_code("workspace_wave_source_unready", lambda: self.service.advance_producer_wave(**args))
+        self.assertEqual(self.db.revision(), revision)
+        git(source, "merge", "--no-edit", base)
+        head = git(source, "rev-parse", "HEAD")
+        self.assertNotEqual(head, base)  # No reset needed after patch-based integration.
+        self.assert_code("workspace_wave_base_unqualified", lambda: self.service.advance_producer_wave(**{**args, "base_commit": self.base}))
+        self.assert_code("workspace_wave_order_invalid", lambda: self.service.advance_producer_wave(**{**args, "integration_task_id": "INTEGRATE"}))
+        (source / "unpublished.txt").write_text("preserve me\n")
+        self.assert_code("workspace_wave_source_unready", lambda: self.service.advance_producer_wave(**args))
+        self.assertEqual((source / "unpublished.txt").read_text(), "preserve me\n")
+        (source / "unpublished.txt").unlink()  # Test-owned negative fixture only.
+        def mutate_fixture(sql, values=()):
+            self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="negative_fixture",
+                           payload={}, operation=lambda conn, rev: conn.execute(sql, values).rowcount)
+        mutate_fixture("UPDATE workflow_lanes SET state='active' WHERE id='PRODUCER'")
+        self.assert_code("workspace_wave_lane_busy", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE workflow_lanes SET state='ready' WHERE id='PRODUCER'")
+        mutate_fixture("UPDATE workflow_runs SET status='paused' WHERE id='RUN'")
+        self.assert_code("workspace_wave_run_inactive", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE workflow_runs SET status='active' WHERE id='RUN'")
+        def orphan_claim(conn, revision):
+            session, _ = create_session(conn, self.repo)
+            now = utc_now()
+            conn.execute("INSERT INTO claims(id,task_id,session_id,token_hash,state,created_at,heartbeat_at,expires_at,baseline_revision) "
+                         "VALUES('orphan','IMPL_NEXT',?,'fixture-only','active',?,?,?,?)", (session["agent_id"], now, now, now, revision))
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="orphan_claim_fixture", payload={}, operation=orphan_claim)
+        self.assert_code("workspace_wave_lane_busy", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE claims SET state='released' WHERE id='orphan'")
+        mutate_fixture("UPDATE tasks SET status='planned' WHERE id='INTEGRATE'")
+        self.assert_code("workspace_wave_order_invalid", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE tasks SET status='done' WHERE id='INTEGRATE'")
+        mutate_fixture("UPDATE workflow_lane_tasks SET state='completed' WHERE task_id='IMPL_NEXT'")
+        self.assert_code("workspace_wave_no_remaining_task", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE workflow_lane_tasks SET state='queued' WHERE task_id='IMPL_NEXT'")
+        mutate_fixture("UPDATE workflow_patch_artifacts SET state='pending' WHERE id=?", (artifact["artifact_id"],))
+        self.assert_code("workspace_wave_pending_artifacts", lambda: self.service.advance_producer_wave(**args))
+        mutate_fixture("UPDATE workflow_patch_artifacts SET state='integrated' WHERE id=?", (artifact["artifact_id"],))
+        # A terminal artifact alone is insufficient while its queue is unresolved.
+        mutate_fixture("UPDATE workflow_integration_queue SET state='gate_failed' WHERE id=?", (queue["queue_id"],))
+        unchanged_revision = self.db.revision()
+        self.assert_code("workspace_wave_pending_artifacts", lambda: self.service.advance_producer_wave(**args))
+        self.assertEqual(self.db.revision(), unchanged_revision)
+        self.assertEqual(git(source, "rev-parse", "HEAD"), head)
+        mutate_fixture("UPDATE workflow_integration_queue SET state='integrated' WHERE id=?", (queue["queue_id"],))
+        with self.db.read() as conn:
+            old_artifact = dict(conn.execute("SELECT * FROM workflow_patch_artifacts WHERE id=?", (artifact["artifact_id"],)).fetchone())
+            old_queue = dict(conn.execute("SELECT * FROM workflow_integration_queue WHERE id=?", (queue["queue_id"],)).fetchone())
+        result = self.service.advance_producer_wave(**args)
+        self.assertEqual(result["state"], "active")
+        self.assertEqual(git(source, "rev-parse", "HEAD"), head)
+        with self.db.read() as conn:
+            self.assertEqual(dict(conn.execute("SELECT * FROM workflow_patch_artifacts WHERE id=?", (artifact["artifact_id"],)).fetchone()), old_artifact)
+            self.assertEqual(dict(conn.execute("SELECT * FROM workflow_integration_queue WHERE id=?", (queue["queue_id"],)).fetchone()), old_queue)
+        second = self.producer_commit(producer, "alpha changed\nbeta next\ngamma\n")
+        next_artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL_NEXT", kind="commit", artifact_ref=second,
+        )
+        queued = self.service.enqueue_artifact(artifact_id=str(next_artifact["artifact_id"]),
+                                              integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE_NEXT")
+        self.assertEqual(queued["position"], 0)
+        self.assertEqual(self.service.apply_next(queue_id=str(queued["queue_id"]))["state"], "awaiting_gates")
+
+    def test_unintegrated_producer_cannot_advance_wave(self) -> None:
+        producer = self.create_producer()
+        self.assert_code("workspace_wave_not_integrated", lambda: self.service.advance_producer_wave(
+            repository_root=self.repo, workspace_id=str(producer["workspace_id"]), base_commit=self.base,
+            integration_task_id="INTEGRATE", reason="not qualified",
+        ))
+
     def test_two_producer_artifacts_integrate_serially_into_one_destination(self) -> None:
         destination = self.create_destination()
         first = self.create_producer()
