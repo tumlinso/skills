@@ -666,6 +666,49 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             "alpha changed\nbeta\ngamma changed\n",
         )
 
+        intermediate = first_result["integrated_artifact"]["ref"]
+        final = second_result["integrated_artifact"]["ref"]
+        # Cumulative queue commits are squashed against the same wave base.
+        self.assertEqual(git(self.repo, "rev-parse", intermediate + "^"), self.base)
+        self.assertEqual(git(self.repo, "rev-parse", final + "^"), self.base)
+        self.assertNotEqual(intermediate, final)
+        ancestor = subprocess.run(["git", "-C", str(self.repo), "merge-base", "--is-ancestor", intermediate, final])
+        self.assertEqual(ancestor.returncode, 1)
+
+        def next_wave(conn, revision):
+            now = utc_now()
+            for lane, task in (("PRODUCER", "IMPL_NEXT"), ("INTEGRATOR", "INTEGRATE_NEXT")):
+                conn.execute("INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) VALUES(?,?,?,'planned',?,?,?)",
+                             (task, "workstream", task, now, now, revision))
+                conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES(?,1,?,'queued',?,?)",
+                             (lane, task, now, revision))
+            conn.execute("UPDATE tasks SET status='done' WHERE id IN ('IMPL','IMPL2','INTEGRATE')")
+            conn.execute("UPDATE workflow_lane_tasks SET state='completed' WHERE task_id IN ('IMPL','IMPL2','INTEGRATE')")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="next_wave", payload={}, operation=next_wave)
+        source = Path(str(first["worktree_path"]))
+        git(source, "merge", "--no-edit", final)
+        preserved_projection = (source / ".todo-orchestrator/state.snapshot.json").read_bytes()
+        args = dict(repository_root=self.repo, workspace_id=str(first["workspace_id"]), base_commit=final,
+                    integration_task_id="INTEGRATE_NEXT", reason="continue first producer after cumulative integration")
+        self.assert_code("workspace_wave_base_unqualified", lambda: self.service.advance_producer_wave(**{**args, "base_commit": intermediate}))
+        # The first producer's receipt is terminal, but another queue must also finish.
+        def queue_state(state):
+            self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="queue_state", payload={},
+                           operation=lambda conn, revision: conn.execute("UPDATE workflow_integration_queue SET state=? WHERE id=?", (state, second_queue["queue_id"])).rowcount)
+        queue_state("gate_failed")
+        self.assert_code("workspace_wave_pending_artifacts", lambda: self.service.advance_producer_wave(**args))
+        queue_state("integrated")
+        self.producer_commit(first, "unpublished material\n")
+        unpublished_head = git(source, "rev-parse", "HEAD")
+        self.assert_code("workspace_wave_source_unready", lambda: self.service.advance_producer_wave(**args))
+        self.assertEqual(git(source, "rev-parse", "HEAD"), unpublished_head)
+        git(source, "revert", "--no-edit", unpublished_head)
+        result = self.service.advance_producer_wave(**args)
+        self.assertEqual(result["state"], "active")
+        self.assertEqual(result["base_commit"], final)
+        self.assertEqual((source / ".todo-orchestrator/state.snapshot.json").read_bytes(), preserved_projection)
+        self.assertEqual((source / "shared.txt").read_text(), "alpha changed\nbeta\ngamma changed\n")
+
     def test_commit_artifact_applies_the_complete_base_to_tip_range(self) -> None:
         destination = self.create_destination()
         producer = self.create_producer()

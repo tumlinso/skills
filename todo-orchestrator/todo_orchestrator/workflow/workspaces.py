@@ -686,18 +686,27 @@ class WorkspaceService:
             if (not previous_task or previous_task["status"] != "done" or not current or current["state"] != "completed"
                     or not following or following["task_id"] != integration_task_id or following["position"] <= current["position"]):
                 raise TodoError("workspace_wave_order_invalid", "Prior integration must complete before the next queued integration wave")
-            for q in accepted:
-                receipt = json.loads(q["merge_result_json"]).get("integrated_artifact") or {}
-                commit = receipt.get("ref") if receipt.get("kind") == "commit" else None
-                if not commit or self._git(repository_root, ["merge-base", "--is-ancestor", commit, base]).returncode:
-                    raise TodoError("workspace_wave_base_unqualified", "New base must contain every accepted current-wave commit")
+            wave_queues = conn.execute(
+                "SELECT * FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? ORDER BY position",
+                (row["run_id"], row["integration_task_id"]),
+            ).fetchall()
+            if any(q["state"] not in {"integrated", "rejected"} for q in wave_queues):
+                raise TodoError("workspace_wave_pending_artifacts", "The entire prior integration wave must be terminal")
+            # Each queue acceptance freezes the cumulative material tree against
+            # the wave base. These commits are siblings, not an ancestry chain.
+            # The final accepted queue therefore supersedes intermediate commits.
+            final_queue = next(q for q in reversed(wave_queues) if q["state"] == "integrated")
+            receipt = json.loads(final_queue["merge_result_json"]).get("integrated_artifact") or {}
+            commit = receipt.get("ref") if receipt.get("kind") == "commit" else None
+            if not commit or self._git(repository_root, ["merge-base", "--is-ancestor", commit, base]).returncode:
+                raise TodoError("workspace_wave_base_unqualified", "New base must contain the final accepted integration-wave commit")
             target = self._managed_path(Path(row["worktree_path"]))
             if self.repository_identity_resolver(target) != row["repository_identity"]:
                 raise TodoError("repository_identity_mismatch", "Producer worktree identity changed")
             head = self._commit(target, "HEAD")
             if material_dirty_paths(target) or self._git(target, ["merge-base", "--is-ancestor", base, head]).returncode:
                 raise TodoError("workspace_wave_source_unready", "Clean producer must already incorporate the new base")
-            if self._git_ok(target, ["diff", "--binary", base, head], code="workspace_wave_diff_failed"):
+            if self._git_ok(target, integration_diff_args(base, head), code="workspace_wave_diff_failed"):
                 raise TodoError("workspace_wave_source_unready", "Producer must have no unpublished difference from the new base")
             if conn.execute(
                 "SELECT 1 FROM workflow_workspaces WHERE run_id=? AND integration_task_id=? "
