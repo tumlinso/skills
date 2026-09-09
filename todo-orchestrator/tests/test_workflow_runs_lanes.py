@@ -12,6 +12,7 @@ from todo_orchestrator.sessions import create_session
 from todo_orchestrator.workflow.lanes import (
     LaneService,
     advance_lane_in_transaction,
+    create_lane_in_transaction,
     dispatch_claim_in_transaction,
     wait_graph,
 )
@@ -68,6 +69,38 @@ class WorkflowRunsLanesTests(unittest.TestCase):
         )
         self.assertTrue(credentials["claim_token"].startswith("toc_"))
         return result["session_id"], result["claim_id"]
+
+    def test_workspace_mode_revision_refuses_dispatch_even_with_idle_queue(self) -> None:
+        session_id, claim_id = self._claim("T-A1")
+        dispatch = self.lanes.dispatch(run_id="RUN", session_id=session_id, claim_id=claim_id, context_version=1)
+        for state in ("active", "revoking"):
+            with self.subTest(state=state):
+                def seed(conn, revision):
+                    conn.execute("UPDATE workflow_dispatches SET state=? WHERE id=?", (state, dispatch["dispatch_id"]))
+                    conn.execute("UPDATE workflow_lane_tasks SET state='queued' WHERE lane_id='A'")
+                    conn.execute("UPDATE workflow_lanes SET state='ready' WHERE id='A'")
+                self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="A",
+                    event_type="fixture.dispatch", payload={}, operation=seed)
+                with self.assertRaises(TodoError) as denied:
+                    self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="A",
+                        event_type="fixture.mode", payload={}, operation=lambda conn, rev: create_lane_in_transaction(
+                            conn, rev, run_id="RUN", lane_id="A", parent_lane_id="ROOT", role="implementer",
+                            workspace_mode="isolated_merge", allow_workspace_mode_update=True))
+                self.assertEqual("workflow_lane_workspace_in_use", denied.exception.code)
+                with self.repo.service.db.read() as conn:
+                    self.assertEqual("exclusive", conn.execute("SELECT workspace_mode FROM workflow_lanes WHERE id='A'").fetchone()[0])
+
+    def test_workspace_mode_revision_does_not_change_run_or_creation_contract(self) -> None:
+        with self.assertRaises(TodoError) as denied:
+            self.lanes.create(run_id="RUN", lane_id="A", parent_lane_id="ROOT", role="implementer", workspace_mode="isolated_merge")
+        self.assertEqual("workflow_lane_exists", denied.exception.code)
+        self.runs.create(run_id="OTHER", charter={"objective": "other"})
+        with self.assertRaises(TodoError) as denied:
+            self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="ROOT",
+                event_type="fixture.mode", payload={}, operation=lambda conn, rev: create_lane_in_transaction(
+                    conn, rev, run_id="OTHER", lane_id="ROOT", role="coordinator",
+                    workspace_mode="isolated_merge", allow_workspace_mode_update=True))
+        self.assertEqual("workflow_lane_exists", denied.exception.code)
 
     def test_run_charter_is_versioned_hashed_and_idempotent(self) -> None:
         duplicate = self.runs.create(run_id="RUN", charter={"objective": "parallel run", "invariants": ["children are subordinate"]})

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import json
 import unittest
 
 from v2_helpers import V2Repo, base_plan, safe_task
@@ -15,6 +17,80 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
 
     def tearDown(self):
         self.repo.close()
+
+    def _workspace_plan(self):
+        plan = base_plan([safe_task("A", "src/a")])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "A", "charter": {"objective": "bounded"},
+            "lanes": [
+                {"id": "ROOT", "role": "coordinator", "tasks": []},
+                {"id": "I", "parent_lane_id": "ROOT", "role": "integrator",
+                 "tasks": ["A"], "workspace": {"mode": "isolated_merge"}},
+            ],
+        }]
+        self.repo.apply(plan)
+        updated = copy.deepcopy(plan)
+        updated["runs"][0]["lanes"][1]["workspace"]["mode"] = "exclusive"
+        return plan, updated
+
+    def _fixture(self, operation):
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="I",
+            event_type="fixture.workspace_mode", payload={}, operation=operation,
+        )
+
+    def test_v3_plan_updates_idle_unprovisioned_lane_and_versions_context(self):
+        _, updated = self._workspace_plan()
+        with self.repo.service.db.read() as conn:
+            before = conn.execute("SELECT revision FROM workflow_lanes WHERE id='I'").fetchone()[0]
+        self.repo.apply(updated)
+        with self.repo.service.db.read() as conn:
+            lane = conn.execute("SELECT * FROM workflow_lanes WHERE id='I'").fetchone()
+            briefs = conn.execute("SELECT version,content_json FROM workflow_context_fragments WHERE lane_id='I' AND kind='lane_brief' ORDER BY version").fetchall()
+            self.assertEqual("exclusive", lane["workspace_mode"])
+            self.assertGreater(lane["revision"], before)
+            self.assertEqual(["isolated_merge", "exclusive"], [json.loads(row["content_json"])["workspace_mode"] for row in briefs])
+            self.assertEqual([1, 2], [row["version"] for row in briefs])
+        self.repo.apply(updated)
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(2, conn.execute("SELECT COUNT(*) FROM workflow_context_fragments WHERE lane_id='I' AND kind='lane_brief'").fetchone()[0])
+            self.assertEqual(("A", "queued"), tuple(conn.execute("SELECT task_id,state FROM workflow_lane_tasks WHERE lane_id='I'").fetchone()))
+
+    def test_v3_mode_update_refuses_closed_or_active_lane_and_rolls_back(self):
+        _, updated = self._workspace_plan()
+        for state in ("closed", "cancelled", "active", "active_lane"):
+            with self.subTest(state=state):
+                def seed(conn, revision):
+                    conn.execute("UPDATE workflow_lanes SET state=? WHERE id='I'", ("active" if state == "active_lane" else state if state != "active" else "ready",))
+                    conn.execute("UPDATE workflow_lane_tasks SET state=? WHERE lane_id='I'", ("active" if state == "active" else "queued",))
+                self._fixture(seed)
+                with self.assertRaises(TodoError) as denied:
+                    self.repo.apply(updated)
+                self.assertEqual("workflow_lane_workspace_in_use" if state in {"active", "active_lane"} else "workflow_lane_closed", denied.exception.code)
+                with self.repo.service.db.read() as conn:
+                    self.assertEqual("isolated_merge", conn.execute("SELECT workspace_mode FROM workflow_lanes WHERE id='I'").fetchone()[0])
+                    self.assertEqual(1, conn.execute("SELECT COUNT(*) FROM workflow_context_fragments WHERE lane_id='I' AND kind='lane_brief'").fetchone()[0])
+
+    def test_v3_mode_update_refuses_any_existing_workspace(self):
+        _, updated = self._workspace_plan()
+        self._fixture(lambda conn, revision: conn.execute(
+            "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) VALUES('W','repo','RUN','I','isolated_merge','base','cleaned','now','now')"
+        ).rowcount)
+        with self.assertRaises(TodoError) as denied:
+            self.repo.apply(updated)
+        self.assertEqual("workflow_lane_workspace_in_use", denied.exception.code)
+
+    def test_v3_mode_update_preserves_identity_refusals(self):
+        _, updated = self._workspace_plan()
+        for key, value in (("role", "implementer"), ("parent_lane_id", None)):
+            with self.subTest(key=key):
+                invalid = copy.deepcopy(updated)
+                invalid["runs"][0]["lanes"][1][key] = value
+                with self.assertRaises(TodoError):
+                    self.repo.apply(invalid)
+                with self.repo.service.db.read() as conn:
+                    self.assertEqual(("RUN", "ROOT", "integrator", "isolated_merge"), tuple(conn.execute("SELECT run_id,parent_lane_id,role,workspace_mode FROM workflow_lanes WHERE id='I'").fetchone()))
 
     def test_v2_plan_normalizes_to_one_serial_compatibility_lane(self):
         self.repo.apply(base_plan([safe_task("A", "src/a"), safe_task("B", "src/b")]))

@@ -539,6 +539,7 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                     parent_lane_id=parent,
                     role=str(lane.get("role", "implementer")),
                     workspace_mode=str(workspace.get("mode", "exclusive")),
+                    allow_workspace_mode_update=int(data.get("schema_version", SCHEMA_VERSION)) == 3,
                 )
                 declared_task_ids = [str(value) for value in lane.get("tasks", [])]
                 enqueue_tasks_in_transaction(conn, revision, lane_id=lane_id, task_ids=declared_task_ids)

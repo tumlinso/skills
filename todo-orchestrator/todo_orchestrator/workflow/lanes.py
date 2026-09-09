@@ -49,7 +49,10 @@ def create_lane_in_transaction(
     role: str,
     parent_lane_id: str | None = None,
     workspace_mode: str = "exclusive",
+    allow_workspace_mode_update: bool = False,
 ) -> dict[str, object]:
+    # Schema-v3 plan maintenance may repair an unprovisioned lane contract.
+    # Ordinary create remains idempotent and never revises existing authority.
     _run_active(conn, run_id)
     validate_role(role)
     if workspace_mode not in WORKSPACE_MODES:
@@ -66,7 +69,26 @@ def create_lane_in_transaction(
         actual = (existing["run_id"], existing["parent_lane_id"], existing["role"], existing["workspace_mode"])
         if actual == expected:
             return {"run_id": run_id, "lane_id": lane_id, "created": False, "role": role}
-        raise TodoError("workflow_lane_exists", f"Workflow lane {lane_id} already exists with different authority")
+        if actual[:3] != expected[:3] or not allow_workspace_mode_update:
+            raise TodoError("workflow_lane_exists", f"Workflow lane {lane_id} already exists with different authority")
+        if existing["state"] in {"closed", "cancelled"}:
+            raise TodoError("workflow_lane_closed", f"Workflow lane {lane_id} is {existing['state']}")
+        if existing["state"] == "active" or conn.execute(
+            "SELECT 1 FROM workflow_dispatches WHERE lane_id=? AND state IN ('active','revoking')",
+            (lane_id,),
+        ).fetchone() or conn.execute(
+            "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND state='active'",
+            (lane_id,),
+        ).fetchone():
+            raise TodoError("workflow_lane_workspace_in_use", f"Cannot change workspace mode for active lane {lane_id}")
+        if conn.execute("SELECT 1 FROM workflow_workspaces WHERE lane_id=?", (lane_id,)).fetchone():
+            raise TodoError("workflow_lane_workspace_in_use", f"Cannot change workspace mode for provisioned lane {lane_id}")
+        conn.execute(
+            "UPDATE workflow_lanes SET workspace_mode=?,updated_at=?,revision=? WHERE id=?",
+            (workspace_mode, utc_now(), revision, lane_id),
+        )
+        return {"run_id": run_id, "lane_id": lane_id, "created": False, "role": role,
+                "workspace_mode": workspace_mode, "previous_workspace_mode": actual[3], "changed": True}
     now = utc_now()
     try:
         conn.execute(
