@@ -172,6 +172,46 @@ class WorkflowRecoveryTests(unittest.TestCase):
         plan = self.engine(lambda *args: True).inspect('A')
         self.assertIn('dirty_or_unavailable_workspace', [b['state'] for b in plan['blockers']])
 
+    def test_unswept_expired_coordinator_preview_and_atomic_expiration(self):
+        other = self.repo.service.continue_work(task_id='T')
+        self.seed_expired_coordinator()
+        def seed(conn, revision):
+            conn.execute("UPDATE claims SET state='active',released_at=NULL WHERE id=?", (self.claim_id,))
+            conn.execute("UPDATE tasks SET status='in_progress' WHERE id='A'")
+            conn.execute("UPDATE claims SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (other['claim']['claim_id'],))
+        self.mutate(seed)
+        engine = self.engine(lambda *args: True)
+        with self.repo.service.db.read() as conn:
+            other_before = dict(conn.execute("SELECT * FROM claims WHERE id=?", (other['claim']['claim_id'],)).fetchone())
+        plan = engine.inspect('A')
+        self.assertEqual(plan['blockers'], [])
+        self.assertEqual(plan['actions'][0]['kind'], 'expire_and_requeue_coordinator')
+        self.assertEqual(plan['actions'][0]['claim_transition'], {'from': 'active', 'to': 'expired_clean', 'expires_at': '2000-01-01T00:00:00Z'})
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'active')
+        engine.execute(plan, 'selected unswept read-only coordinator')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'expired_clean')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0], 'queued')
+            self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], 'planned')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], 'revoked')
+            self.assertEqual(dict(conn.execute("SELECT * FROM claims WHERE id=?", (other['claim']['claim_id'],)).fetchone()), other_before)
+
+    def test_unswept_coordinator_refuses_unexpired_and_dirty_variants(self):
+        self.seed_expired_coordinator()
+        def seed(conn, revision):
+            conn.execute("UPDATE claims SET state='active',released_at=NULL,expires_at='2999-01-01T00:00:00Z' WHERE id=?", (self.claim_id,))
+            conn.execute("UPDATE tasks SET status='in_progress' WHERE id='A'")
+        self.mutate(seed)
+        engine = self.engine(lambda *args: True)
+        self.assertEqual(engine.inspect('A')['status'], 'refused')
+        def dirty(conn, revision):
+            conn.execute("UPDATE claims SET expires_at='2000-01-01T00:00:00Z',baseline_manifest_json='{}' WHERE id=?", (self.claim_id,))
+        self.mutate(dirty)
+        plan = engine.inspect('A')
+        self.assertIn('scope_changed', [b['state'] for b in plan['blockers']])
+        self.assertEqual(plan['actions'], [])
+
     def test_expired_coordinator_is_not_global_recovery_exception(self):
         self.seed_expired_coordinator()
         self.assertEqual(self.engine(lambda *args: True).inspect()['status'], 'refused')

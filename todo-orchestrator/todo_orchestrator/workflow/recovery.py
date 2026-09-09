@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Iterator
 
-from ..claims import _live_override_blockers
+from ..claims import _live_override_blockers, sweep_expired
 from ..completion import recover_terminal_checkpoints, terminal_finalization_report
 from ..config import utc_now
 from ..git_state import scope_manifest
@@ -138,7 +138,8 @@ class RecoveryEngine:
             "JOIN tasks t ON t.id=c.task_id WHERE c.task_id=? AND d.state='active'",
             (task_id,),
         )]
-        if not any(row['claim_state'] == 'expired_clean' and row['role'] == 'coordinator' for row in rows):
+        if not any(row['claim_state'] in {'expired_clean', 'active'} and row['role'] == 'coordinator'
+                   and _expired(str(row['expires_at']), now) for row in rows):
             return None
         blockers = []
         def refuse(state):
@@ -146,10 +147,12 @@ class RecoveryEngine:
         if len(rows) != 1:
             refuse("ambiguous_dispatch")
         row = rows[0]
-        if (row['claim_state'] != 'expired_clean' or row['role'] != 'coordinator'
+        unswept = row['claim_state'] == 'active'
+        if (row['claim_state'] not in {'expired_clean', 'active'} or row['role'] != 'coordinator'
                 or row['workspace_mode'] != 'read_shared' or row['task_state'] != 'active'
-                or row['status'] != 'planned' or row['claim_session_id'] != row['session_id']
-                or not row['claim_released_at']
+                or row['status'] != ('in_progress' if unswept else 'planned')
+                or row['claim_session_id'] != row['session_id']
+                or (bool(row['claim_released_at']) if unswept else not row['claim_released_at'])
                 or not _expired(str(row['expires_at']), now)):
             refuse("not_clean_expired_read_shared_seat")
         if scopes_for(conn, task_id, 'exclusive'):
@@ -160,7 +163,7 @@ class RecoveryEngine:
         dirty, _ = self._claim_dirty(conn, row)
         if dirty:
             refuse("scope_changed")
-        if conn.execute("SELECT 1 FROM claims WHERE task_id=? AND state IN ('active','orphaned')", (task_id,)).fetchone():
+        if conn.execute("SELECT 1 FROM claims WHERE task_id=? AND id!=? AND state IN ('active','orphaned')", (task_id, row['claim_id'])).fetchone():
             refuse("active_claim")
         if conn.execute("SELECT 1 FROM child_executions WHERE task_id=? AND state IN "
                         "('authorized','running','recovery_required','ready_for_acceptance','succeeded')", (task_id,)).fetchone():
@@ -183,8 +186,10 @@ class RecoveryEngine:
                     refuse("dirty_or_unavailable_workspace")
         if row['workspace_id'] and not workspaces:
             refuse("missing_workspace")
-        action = {"kind": "requeue_expired_coordinator", "id": row['id'], "claim_id": row['claim_id'],
-                  "lane_id": row['lane_id'], "task_id": task_id}
+        action = {"kind": "expire_and_requeue_coordinator" if unswept else "requeue_expired_coordinator",
+                  "id": row['id'], "claim_id": row['claim_id'], "lane_id": row['lane_id'], "task_id": task_id}
+        if unswept:
+            action["claim_transition"] = {"from": "active", "to": "expired_clean", "expires_at": row['expires_at']}
         plan = {"project_uuid": self.project_uuid, "task_id": task_id,
                 "authority_revision": int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0]),
                 "status": "refused" if blockers else "recovery_needed", "actions": [] if blockers else [action],
@@ -466,10 +471,14 @@ class RecoveryEngine:
             dirty_tasks: set[str] = set()
             for action in fresh["actions"]:
                 kind = str(action["kind"])
-                if kind == "requeue_expired_coordinator":
+                if kind in {"requeue_expired_coordinator", "expire_and_requeue_coordinator"}:
                     checked = self._expired_coordinator_plan(conn, str(action["task_id"]), datetime.now(timezone.utc))
                     if checked is None or canonical_json(checked) != canonical_json(fresh):
                         raise TodoError("recovery_plan_stale", "Coordinator safety state changed", ExitCode.CONTENTION)
+                    if kind == "expire_and_requeue_coordinator":
+                        expired = sweep_expired(conn, self.repo_root, claim_id=str(action["claim_id"]))
+                        if len(expired) != 1 or expired[0]["state"] != "released_clean":
+                            raise TodoError("recovery_plan_stale", "Selected coordinator did not expire cleanly", ExitCode.CONTENTION)
                     conn.execute("UPDATE workflow_dispatches SET state='recovered',released_at=?,revision=? WHERE id=?", (now, revision, action["id"]))
                     conn.execute("UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? WHERE lane_id=? AND task_id=?", (revision, action["lane_id"], action["task_id"]))
                     conn.execute("UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=?", (now, revision, action["lane_id"]))

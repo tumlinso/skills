@@ -49,10 +49,15 @@ def claim_fingerprint(claim: sqlite3.Row | dict[str, object]) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
-def sweep_expired(conn: sqlite3.Connection, repo_root: Path) -> list[dict[str, object]]:
+def sweep_expired(conn: sqlite3.Connection, repo_root: Path, *, claim_id: str | None = None) -> list[dict[str, object]]:
     now = utc_now()
     swept: list[dict[str, object]] = []
-    for claim in conn.execute("SELECT * FROM claims WHERE state='active' AND expires_at<=? ORDER BY expires_at", (now,)).fetchall():
+    query = "SELECT * FROM claims WHERE state='active' AND expires_at<=?"
+    args = (now,)
+    if claim_id is not None:
+        query += " AND id=?"
+        args += (claim_id,)
+    for claim in conn.execute(query + " ORDER BY expires_at", args).fetchall():
         roots = scopes_for(conn, claim["task_id"], "exclusive")
         baseline = json.loads(claim["baseline_manifest_json"] or "{}")
         current = scope_manifest(repo_root, roots)
