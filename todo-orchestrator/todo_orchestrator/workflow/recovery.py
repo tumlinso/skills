@@ -20,12 +20,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Iterator
 
+from ..claims import _live_override_blockers
 from ..completion import recover_terminal_checkpoints, terminal_finalization_report
 from ..config import utc_now
 from ..git_state import scope_manifest
 from ..models import ExitCode, TodoError
 from ..ownership import release_claim_locks, scopes_for
 from ..resources import local_process_alive
+from .capabilities import WorkflowCapabilityStore
 from .foundation import FINISH_TASK_BUDGET_BYTES, canonical_json, require_bounded_payload
 
 
@@ -119,6 +121,77 @@ class RecoveryEngine:
         current = scope_manifest(self.repo_root, roots)
         return baseline.get("fingerprint") != current.get("fingerprint"), current
 
+    def _expired_coordinator_plan(self, conn, task_id: str, now) -> dict[str, object] | None:
+        """Repair only a clean expired read-only seat, never a running worker.
+
+        The process may still serve other projects. Its expired claim no longer
+        authorizes this seat; preserve the claim as history and revoke its family.
+        All ordinary dispatch operations are revisioned transactions. The returned
+        revision is checked under the recovery write lock before applying changes.
+        """
+        rows = [dict(row) for row in conn.execute(
+            "SELECT d.*,c.task_id,c.session_id AS claim_session_id,c.state AS claim_state,c.expires_at,c.released_at AS claim_released_at,"
+            "c.baseline_manifest_json,l.role,l.workspace_mode,l.run_id,lt.state AS task_state,t.status "
+            "FROM workflow_dispatches d JOIN claims c ON c.id=d.claim_id "
+            "JOIN workflow_lanes l ON l.id=d.lane_id "
+            "LEFT JOIN workflow_lane_tasks lt ON lt.lane_id=l.id AND lt.task_id=c.task_id "
+            "JOIN tasks t ON t.id=c.task_id WHERE c.task_id=? AND d.state='active'",
+            (task_id,),
+        )]
+        if not any(row['claim_state'] == 'expired_clean' and row['role'] == 'coordinator' for row in rows):
+            return None
+        blockers = []
+        def refuse(state):
+            blockers.append({"kind": "expired_coordinator", "task_id": task_id, "state": state})
+        if len(rows) != 1:
+            refuse("ambiguous_dispatch")
+        row = rows[0]
+        if (row['claim_state'] != 'expired_clean' or row['role'] != 'coordinator'
+                or row['workspace_mode'] != 'read_shared' or row['task_state'] != 'active'
+                or row['status'] != 'planned' or row['claim_session_id'] != row['session_id']
+                or not row['claim_released_at']
+                or not _expired(str(row['expires_at']), now)):
+            refuse("not_clean_expired_read_shared_seat")
+        if scopes_for(conn, task_id, 'exclusive'):
+            refuse("writable_scope")
+        claim = conn.execute("SELECT * FROM claims WHERE id=?", (row['claim_id'],)).fetchone()
+        for activity in _live_override_blockers(conn, self.repo_root, claim):
+            refuse(activity)
+        dirty, _ = self._claim_dirty(conn, row)
+        if dirty:
+            refuse("scope_changed")
+        if conn.execute("SELECT 1 FROM claims WHERE task_id=? AND state IN ('active','orphaned')", (task_id,)).fetchone():
+            refuse("active_claim")
+        if conn.execute("SELECT 1 FROM child_executions WHERE task_id=? AND state IN "
+                        "('authorized','running','recovery_required','ready_for_acceptance','succeeded')", (task_id,)).fetchone():
+            refuse("child_operation")
+        # Retain the existing owner's global mutable-process safety boundary.
+        for table in ('gates', 'lock_leases', 'resource_leases'):
+            column, state = ('status', 'running') if table == 'gates' else ('state', 'active')
+            if conn.execute(f"SELECT 1 FROM {table} WHERE {column}=?", (state,)).fetchone():
+                refuse("active_" + table)
+        workspaces = [dict(w) for w in conn.execute(
+            "SELECT * FROM workflow_workspaces WHERE lane_id=? OR id=?", (row['lane_id'], row['workspace_id']))]
+        for workspace in workspaces:
+            if (workspace['mode'] != 'read_shared' or workspace['state'] != 'active'
+                    or workspace['lane_id'] != row['lane_id'] or workspace['run_id'] != row['run_id']):
+                refuse("writable_or_unavailable_workspace")
+            if workspace['worktree_path']:
+                status = subprocess.run(['git', '-C', workspace['worktree_path'], 'status', '--porcelain=v1', '-z'],
+                                        capture_output=True, check=False)
+                if status.returncode or status.stdout:
+                    refuse("dirty_or_unavailable_workspace")
+        if row['workspace_id'] and not workspaces:
+            refuse("missing_workspace")
+        action = {"kind": "requeue_expired_coordinator", "id": row['id'], "claim_id": row['claim_id'],
+                  "lane_id": row['lane_id'], "task_id": task_id}
+        plan = {"project_uuid": self.project_uuid, "task_id": task_id,
+                "authority_revision": int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0]),
+                "status": "refused" if blockers else "recovery_needed", "actions": [] if blockers else [action],
+                "blockers": blockers, "warnings": [], "file_policy": "preserve_all_no_repository_mutation"}
+        require_bounded_payload(plan, limit=FINISH_TASK_BUDGET_BYTES, code="recovery_plan_too_large")
+        return plan
+
     def inspect(self, task_id: str | None = None) -> dict[str, object]:
         """Return a bounded proposed plan without changing authoritative state."""
         now = datetime.now(timezone.utc)
@@ -134,6 +207,11 @@ class RecoveryEngine:
                 raise TodoError("recovery_project_mismatch", "Recovery project identity does not match the database")
             if task_id and not conn.execute("SELECT 1 FROM tasks WHERE id=?", (task_id,)).fetchone():
                 raise TodoError("task_not_found", f"Unknown task {task_id}")
+
+            if task_id:
+                expired_plan = self._expired_coordinator_plan(conn, task_id, now)
+                if expired_plan is not None:
+                    return expired_plan
 
             resumable_workspace_ids: set[str] = set()
             blocked_query = (
@@ -376,15 +454,29 @@ class RecoveryEngine:
 
         safe_reason = _sanitized_reason(reason)
         proposed = {key: fresh[key] for key in ("project_uuid", "task_id", "status", "actions", "warnings", "file_policy")}
+        if "authority_revision" in fresh:
+            proposed["authority_revision"] = fresh["authority_revision"]
         audit_id = str(uuid.uuid4())
 
         def operation(conn, revision):
+            if "authority_revision" in fresh and revision != fresh["authority_revision"] + 1:
+                raise TodoError("recovery_plan_stale", "Authority changed before recovery transaction", ExitCode.CONTENTION)
             now = utc_now()
             results: list[dict[str, object]] = []
             dirty_tasks: set[str] = set()
             for action in fresh["actions"]:
                 kind = str(action["kind"])
-                if kind == "retire_dispatch":
+                if kind == "requeue_expired_coordinator":
+                    checked = self._expired_coordinator_plan(conn, str(action["task_id"]), datetime.now(timezone.utc))
+                    if checked is None or canonical_json(checked) != canonical_json(fresh):
+                        raise TodoError("recovery_plan_stale", "Coordinator safety state changed", ExitCode.CONTENTION)
+                    conn.execute("UPDATE workflow_dispatches SET state='recovered',released_at=?,revision=? WHERE id=?", (now, revision, action["id"]))
+                    conn.execute("UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? WHERE lane_id=? AND task_id=?", (revision, action["lane_id"], action["task_id"]))
+                    conn.execute("UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=?", (now, revision, action["lane_id"]))
+                    store = WorkflowCapabilityStore(self.database)
+                    for capability in conn.execute("SELECT MIN(id) AS id FROM workflow_capabilities WHERE claim_id=? AND capability_class='first_class' GROUP BY project_uuid,repository_identity,session_id,claim_id,run_id,lane_id,task_id", (action["claim_id"],)).fetchall():
+                        store.stage_revoke(conn, capability_id=str(capability["id"]), family=True)
+                elif kind == "retire_dispatch":
                     conn.execute("UPDATE workflow_dispatches SET state='recovered',released_at=?,revision=? WHERE id=? AND state='active'", (now, revision, action["id"]))
                 elif kind == "release_claim":
                     release_claim_locks(conn, str(action["id"]))

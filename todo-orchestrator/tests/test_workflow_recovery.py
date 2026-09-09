@@ -6,6 +6,7 @@ import os
 import socket
 import tempfile
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 from v2_helpers import V2Repo, base_plan, safe_task
@@ -78,6 +79,147 @@ class WorkflowRecoveryTests(unittest.TestCase):
                     (self.project_uuid, self.session_id, self.claim_id),
                 )
         self.mutate(seed)
+
+    def seed_expired_coordinator(self):
+        from todo_orchestrator.git_state import scope_manifest
+        self.seed_dispatch(pid=os.getpid(), capability=True)
+        def seed(conn, revision):
+            conn.execute("DELETE FROM ownership_scopes WHERE task_id='A'")
+            conn.execute("UPDATE workflow_lanes SET role='coordinator',workspace_mode='read_shared',state='active' WHERE id='LANE'")
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('LANE',0,'A','active','now',?)", (revision,))
+            conn.execute("UPDATE claims SET state='expired_clean',released_at='2000-01-01T00:00:00Z',expires_at='2000-01-01T00:00:00Z',baseline_manifest_json=? WHERE id=?", (json.dumps(scope_manifest(self.repo.root, [])), self.claim_id))
+            conn.execute("UPDATE tasks SET status='planned' WHERE id='A'")
+            conn.execute("UPDATE workflow_capabilities SET role='coordinator' WHERE id='CAP'")
+            conn.execute("UPDATE lock_leases SET state='released' WHERE claim_id=?", (self.claim_id,))
+        self.mutate(seed)
+
+    def test_expired_readonly_coordinator_requeues_atomically_with_live_process(self):
+        self.seed_expired_coordinator()
+        engine = self.engine(lambda *args: True)
+        plan = engine.inspect('A')
+        self.assertEqual(plan['blockers'], [])
+        self.assertEqual([a['kind'] for a in plan['actions']], ['requeue_expired_coordinator'])
+        engine.execute(plan, 'recover expired read-only seat')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'expired_clean')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], 'recovered')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0], 'queued')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], 'revoked')
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_recovery_audit").fetchone()[0], 1)
+        self.assertEqual(engine.inspect('A')['status'], 'already_recovered')
+
+    def test_expired_coordinator_revokes_retired_family_preserves_other_claim(self):
+        other = self.repo.service.continue_work(task_id='T')
+        self.seed_expired_coordinator()
+        def seed(conn, revision):
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,parent_lane_id,role,state,created_at,updated_at,revision) VALUES('OTHER-LANE','RUN','LANE','implementer','active','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('OTHER-LANE',0,'T','active','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,context_version,heartbeat_at,created_at,revision) VALUES('OTHER-DISPATCH','OTHER-LANE',?,?,1,'now','now',?)", (other['session']['agent_id'], other['claim']['claim_id'], revision))
+            cap = dict(conn.execute("SELECT * FROM workflow_capabilities WHERE id='CAP'").fetchone())
+            other_cap = {**cap, 'id': 'OTHER-CAP', 'token_hash': 'other-cap-hash', 'claim_id': other['claim']['claim_id'], 'session_id': other['session']['agent_id'], 'lane_id': 'OTHER-LANE', 'task_id': 'T', 'role': 'implementer'}
+            conn.execute('INSERT INTO workflow_capabilities (' + ','.join(other_cap) + ') VALUES (' + ','.join('?' for _ in other_cap) + ')', tuple(other_cap.values()))
+            cap.update(id='OLD-CAP', token_hash='old-hash', state='retired')
+            conn.execute('INSERT INTO workflow_capabilities (' + ','.join(cap) + ') VALUES (' + ','.join('?' for _ in cap) + ')', tuple(cap.values()))
+        self.mutate(seed)
+        with self.repo.service.db.read() as conn:
+            before = dict(conn.execute("SELECT * FROM claims WHERE id=?", (other['claim']['claim_id'],)).fetchone())
+        engine = self.engine(lambda *args: True)
+        engine.execute(engine.inspect('A'), 'expired coordinator only')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(dict(conn.execute("SELECT * FROM claims WHERE id=?", (other['claim']['claim_id'],)).fetchone()), before)
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='OLD-CAP'").fetchone()[0], 'revoked')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='OTHER-CAP'").fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='OTHER-DISPATCH'").fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='OTHER-LANE'").fetchone()[0], 'active')
+
+
+    def test_expired_coordinator_refuses_running_gate_and_writable_scope(self):
+        self.seed_expired_coordinator()
+        engine = self.engine(lambda *args: True)
+        def seed(conn, revision):
+            conn.execute("INSERT INTO gates(id,task_id,type,status) VALUES('G','T','command','running')")
+        self.mutate(seed)
+        self.assertIn('active_gates', [b['state'] for b in engine.inspect('A')['blockers']])
+        def replace(conn, revision):
+            conn.execute("UPDATE gates SET status='passed' WHERE id='G'")
+            conn.execute("INSERT INTO ownership_scopes(task_id,path,mode) VALUES('A','src/a','exclusive')")
+        self.mutate(replace)
+        self.assertIn('writable_scope', [b['state'] for b in engine.inspect('A')['blockers']])
+
+    def test_expired_coordinator_refuses_child_even_if_process_stopped(self):
+        self.seed_expired_coordinator()
+        self.seed_child(expires_at='2000-01-01T00:00:00Z')
+        plan = self.engine().inspect('A')
+        self.assertIn('child_operation', [b['state'] for b in plan['blockers']])
+
+    def test_expired_coordinator_never_releases_unrelated_stale_lock(self):
+        self.seed_expired_coordinator()
+        def seed(conn, revision):
+            conn.execute("INSERT INTO named_locks(name,capacity,metadata_json) VALUES('other-lock',1,'{}')")
+            conn.execute("INSERT INTO lock_leases(id,lock_name,session_id,token_hash,state,acquired_at,heartbeat_at,expires_at) VALUES('OTHER','other-lock',?,'other-hash','active','now','now','2000-01-01T00:00:00Z')", (self.session_id,))
+        self.mutate(seed)
+        plan = self.engine().inspect('A')
+        self.assertIn('active_lock_leases', [b['state'] for b in plan['blockers']])
+        self.assertEqual(plan['actions'], [])
+
+    def test_expired_coordinator_refuses_dirty_read_shared_workspace(self):
+        self.seed_expired_coordinator()
+        def seed(conn, revision):
+            conn.execute("INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,worktree_path,state,created_at,updated_at) VALUES('WS','repo','RUN','LANE','read_shared','base',?,'active','now','now')", (str(self.repo.root),))
+            conn.execute("UPDATE workflow_dispatches SET workspace_id='WS' WHERE id='DISPATCH'")
+        self.mutate(seed)
+        # Fixture root contains untracked plan/runtime files, deliberately dirty.
+        plan = self.engine(lambda *args: True).inspect('A')
+        self.assertIn('dirty_or_unavailable_workspace', [b['state'] for b in plan['blockers']])
+
+    def test_expired_coordinator_is_not_global_recovery_exception(self):
+        self.seed_expired_coordinator()
+        self.assertEqual(self.engine(lambda *args: True).inspect()['status'], 'refused')
+
+    def test_expired_coordinator_refuses_unsafe_variants(self):
+        self.seed_expired_coordinator()
+        engine = self.engine(lambda *args: True)
+        variants = [
+            ("UPDATE claims SET state='active' WHERE id=?", (self.claim_id,)),
+            ("UPDATE workflow_lanes SET workspace_mode='exclusive' WHERE id='LANE'", ()),
+            ("UPDATE claims SET baseline_manifest_json='{}' WHERE id=?", (self.claim_id,)),
+            ("UPDATE tasks SET status='done' WHERE id='A'", ()),
+            ("UPDATE workflow_lane_tasks SET state='queued' WHERE task_id='A'", ()),
+        ]
+        for sql, args in variants:
+            with self.subTest(sql=sql):
+                with self.repo.service.db.read() as conn:
+                    conn.execute(sql, args)
+                    plan = engine._expired_coordinator_plan(conn, 'A', datetime.now(timezone.utc))
+                    if plan is None:
+                        # Active claim must retain the ordinary live refusal.
+                        pass
+                    else:
+                        self.assertEqual(plan['status'], 'refused')
+                    conn.rollback()
+        self.mutate(lambda conn, rev: conn.execute("UPDATE claims SET state='active' WHERE id=?", (self.claim_id,)))
+        self.assertEqual(engine.inspect('A')['status'], 'refused')
+
+    def test_expired_coordinator_transaction_refuses_revision_race(self):
+        self.seed_expired_coordinator()
+        engine = self.engine(lambda *args: True)
+        plan = engine.inspect('A')
+        original = self.repo.service.db.mutate
+        from unittest.mock import patch
+        def race(**kwargs):
+            self.mutate(lambda conn, rev: conn.execute("UPDATE tasks SET title='concurrent unrelated change' WHERE id='T'"))
+            return original(**kwargs)
+        # Inject a committed writer after execute's fresh inspection.
+        def intercepted(**kwargs):
+            with patch.object(type(self.repo.service.db), 'mutate', original):
+                return race(**kwargs)
+        with patch.object(type(self.repo.service.db), 'mutate', lambda db, **kwargs: intercepted(**kwargs)):
+            with self.assertRaises(TodoError) as caught:
+                engine.execute(plan, 'race check')
+        self.assertEqual(caught.exception.code, 'recovery_plan_stale')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_recovery_audit").fetchone()[0], 0)
 
     def test_stopped_first_class_worker_clean_scope_retires_lineage_and_is_idempotent(self) -> None:
         self.seed_dispatch(capability=True)
