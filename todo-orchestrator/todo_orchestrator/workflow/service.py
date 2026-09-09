@@ -16,7 +16,7 @@ from ..child_execution import (
     child_execution_status_for_claim,
     disposition_child_execution_for_claim,
 )
-from ..claims import CANONICAL_WORKFLOW_OWNER, claim_best, release_claim_id, sweep_expired
+from ..claims import CANONICAL_WORKFLOW_OWNER, claim_best, release_claim_id, renew_claim_for_session, sweep_expired
 from ..config import utc_now
 from ..evidence import required_gates
 from ..gates import run_gate
@@ -423,7 +423,7 @@ class WorkflowKernel:
                                 (workspace_id, resumed["id"]),
                             )
                     conn.execute("UPDATE sessions SET last_seen_at=? WHERE id=?", (now, session["id"]))
-                    conn.execute("UPDATE claims SET heartbeat_at=? WHERE id=?", (now, resumed["claim_id"]))
+                    renew_claim_for_session(conn, str(resumed["claim_id"]), str(session["id"]), service.claim_lease_seconds)
                     conn.execute("UPDATE workflow_dispatches SET heartbeat_at=?,revision=? WHERE id=?", (now, revision, resumed["id"]))
                     lineage = CapabilityLineage(
                         "first_class", project_uuid, repo_identity, str(session["id"]),

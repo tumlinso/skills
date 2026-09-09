@@ -153,6 +153,23 @@ def claim_best(
 
 def pulse_claim(conn: sqlite3.Connection, claim_token: str, lease_seconds: int) -> dict[str, object]:
     claim = authenticate_claim(conn, claim_token)
+    return _pulse_claim_row(conn, claim, lease_seconds)
+
+
+def renew_claim_for_session(conn: sqlite3.Connection, claim_id: str, session_id: str, lease_seconds: int) -> dict[str, object]:
+    """Renew a kernel-authenticated active seat inside its resume transaction.
+
+    Unlike owner recovery, resumption cannot revive an expired or foreign claim.
+    The caller has resolved the first-class session and its active dispatch.
+    """
+    claim = conn.execute("SELECT * FROM claims WHERE id=? AND session_id=? AND state='active' AND expires_at>?",
+                         (claim_id, session_id, utc_now())).fetchone()
+    if claim is None:
+        raise TodoError("claim_not_resumable", "Session does not own an unexpired active claim", ExitCode.INVALID_TOKEN)
+    return _pulse_claim_row(conn, claim, lease_seconds)
+
+
+def _pulse_claim_row(conn: sqlite3.Connection, claim: sqlite3.Row, lease_seconds: int) -> dict[str, object]:
     now = utc_now()
     expires = _iso_after(lease_seconds)
     conn.execute("UPDATE claims SET heartbeat_at=?,expires_at=? WHERE id=?", (now, expires, claim["id"]))

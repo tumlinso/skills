@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
 
 from v2_helpers import V2Repo, base_plan, safe_task
 
@@ -40,6 +41,48 @@ class WorkflowLaneResumeTests(unittest.TestCase):
                 "SELECT state FROM workflow_lane_tasks WHERE lane_id='compat-v2-main' AND task_id='A'"
             ).fetchone()[0]
         return lane, task
+
+    def test_active_resume_renews_same_claim_and_its_leases(self):
+        self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
+        soon = (datetime.now(timezone.utc) + timedelta(seconds=45)).isoformat().replace('+00:00', 'Z')
+        def seed(conn, revision):
+            claim = conn.execute("SELECT * FROM claims WHERE task_id='A' AND state='active'").fetchone()
+            conn.execute("UPDATE claims SET expires_at=? WHERE id=?", (soon, claim['id']))
+            conn.execute("INSERT INTO named_locks(name,capacity,metadata_json) VALUES('lease-test',1,'{}')")
+            conn.execute("INSERT INTO lock_leases(id,lock_name,claim_id,session_id,token_hash,state,acquired_at,heartbeat_at,expires_at) VALUES('LOCK','lease-test',?,?,'lock-hash','active','now','now',?)", (claim['id'], claim['session_id'], soon))
+            conn.execute("INSERT INTO resource_classes(id,mode,metadata_json) VALUES('cpu','exclusive','{}')")
+            conn.execute("INSERT INTO resource_instances(id,class_id,capacity,metadata_json) VALUES('cpu:0','cpu',1,'{}')")
+            conn.execute("INSERT INTO resource_leases(id,instance_id,claim_id,session_id,token_hash,state,hostname,acquired_at,heartbeat_at,expires_at) VALUES('RESOURCE','cpu:0',?,?,'resource-hash','active','test-host','now','now',?)", (claim['id'], claim['session_id'], soon))
+            return claim['id']
+        claim_id, _ = self.repo.service.db.mutate(actor_session_id=None, entity_type='fixture', entity_id='A', event_type='fixture', payload={}, operation=seed)
+        resumed = self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
+        self.assertEqual(resumed['status'], 'resumed')
+        with self.repo.service.db.read() as conn:
+            claim = conn.execute("SELECT * FROM claims WHERE id=?", (claim_id,)).fetchone()
+            self.assertGreater(claim['expires_at'], soon)
+            self.assertEqual(claim['state'], 'active')
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM claims WHERE task_id='A'").fetchone()[0], 1)
+            for table in ('lock_leases', 'resource_leases'):
+                self.assertEqual(conn.execute(f"SELECT expires_at FROM {table} WHERE claim_id=? AND state='active'", (claim_id,)).fetchone()[0], claim['expires_at'])
+
+    def test_expired_resume_does_not_revive_claim(self):
+        self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
+        self.repo.service.db.mutate(actor_session_id=None, entity_type='fixture', entity_id='A', event_type='fixture', payload={}, operation=lambda conn, rev: conn.execute("UPDATE claims SET expires_at='2000-01-01T00:00:00Z' WHERE task_id='A'"))
+        result = self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
+        self.assertEqual(result['status'], 'idle')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT expires_at FROM claims WHERE task_id='A'").fetchone()[0], '2000-01-01T00:00:00Z')
+
+    def test_renewal_rejects_foreign_session_without_mutation(self):
+        from todo_orchestrator.claims import renew_claim_for_session
+        from todo_orchestrator.models import TodoError
+        self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
+        with self.repo.service.db.read() as conn:
+            before = dict(conn.execute("SELECT * FROM claims WHERE task_id='A'").fetchone())
+            with self.assertRaises(TodoError) as caught:
+                renew_claim_for_session(conn, before['id'], 'foreign-session', 7200)
+            self.assertEqual(caught.exception.code, 'claim_not_resumable')
+            self.assertEqual(dict(conn.execute("SELECT * FROM claims WHERE task_id='A'").fetchone()), before)
 
     def test_release_and_handoff_requeue_the_same_serial_head(self) -> None:
         for action in ("release", "handoff"):
