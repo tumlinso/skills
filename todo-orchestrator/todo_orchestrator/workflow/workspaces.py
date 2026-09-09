@@ -1603,27 +1603,65 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
-    def reject_artifact(self, *, artifact_id: str, actor_session_id: str | None = None) -> dict[str, object]:
+    def reject_artifact(self, *, artifact_id: str, actor_session_id: str | None = None,
+                        resume_producer: bool = False, reason: str = "") -> dict[str, object]:
+        """Reject an unconsumed artifact, optionally withdrawing an early handoff.
+
+        The owner-maintenance resume option preserves committed work and lets
+        the idle producer finish more serial tasks before publishing again.
+        It cannot withdraw an integration that has begun consuming the source.
+        """
         now = utc_now()
 
         def operation(conn: Any, revision: int) -> dict[str, object]:
-            row = conn.execute("SELECT workspace_id,state FROM workflow_patch_artifacts WHERE id=?", (artifact_id,)).fetchone()
+            row = conn.execute("SELECT * FROM workflow_patch_artifacts WHERE id=?", (artifact_id,)).fetchone()
             if row is None or row["state"] not in {"pending", "queued"}:
                 raise TodoError("artifact_not_rejectable", "Artifact is missing or already terminal")
+            if resume_producer:
+                workspace = conn.execute("SELECT * FROM workflow_workspaces WHERE id=?", (row["workspace_id"],)).fetchone()
+                if not reason.strip() or workspace is None or workspace["mode"] != "isolated_merge" or workspace["state"] not in {"artifact_ready", "queued"}:
+                    raise TodoError("artifact_withdrawal_invalid", "Withdrawal needs a reason and an unconsumed isolated workspace")
+                lane = self._lane(conn, workspace["run_id"], workspace["lane_id"])
+                run = conn.execute("SELECT status FROM workflow_runs WHERE id=?", (workspace["run_id"],)).fetchone()
+                if run["status"] != "active" or lane["state"] != "ready" or conn.execute(
+                    "SELECT 1 FROM workflow_dispatches WHERE lane_id=? AND state IN ('active','revoking')", (lane["id"],),
+                ).fetchone() or conn.execute(
+                    "SELECT 1 FROM claims c JOIN workflow_lane_tasks t ON c.task_id=t.task_id WHERE t.lane_id=? AND c.state='active'", (lane["id"],),
+                ).fetchone() or conn.execute(
+                    "SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND state='active'", (lane["id"],),
+                ).fetchone():
+                    raise TodoError("artifact_withdrawal_busy", "Withdrawal requires an idle producer in an active run")
+                if not conn.execute("SELECT 1 FROM workflow_lane_tasks WHERE lane_id=? AND state='queued'", (lane["id"],)).fetchone():
+                    raise TodoError("artifact_withdrawal_no_remaining_task", "Producer has no remaining serial task")
+                if conn.execute(
+                    "SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=? AND id<>? AND state NOT IN ('integrated','rejected')",
+                    (workspace["id"], artifact_id),
+                ).fetchone() or conn.execute(
+                    "SELECT 1 FROM workflow_integration_queue WHERE patch_artifact_id=? AND state<>'queued'", (artifact_id,),
+                ).fetchone():
+                    raise TodoError("artifact_withdrawal_consumed", "Artifact must be the sole unconsumed handoff")
+                target = self._managed_path(Path(workspace["worktree_path"]))
+                if self.repository_identity_resolver is None or self.repository_identity_resolver(target) != workspace["repository_identity"]:
+                    raise TodoError("repository_identity_mismatch", "Withdrawal worktree identity is not authoritative")
+                if row["kind"] != "commit" or material_dirty_paths(target) or self._commit(target, "HEAD") != row["artifact_ref"]:
+                    raise TodoError("artifact_withdrawal_source_changed", "Withdrawal must preserve the exact clean published commit")
             conn.execute("UPDATE workflow_patch_artifacts SET state='rejected' WHERE id=?", (artifact_id,))
-            conn.execute("UPDATE workflow_workspaces SET state='rejected',updated_at=? WHERE id=?", (now, row["workspace_id"]))
+            target_state = "active" if resume_producer else "rejected"
+            conn.execute("UPDATE workflow_workspaces SET state=?,updated_at=? WHERE id=?", (target_state, now, row["workspace_id"]))
+            if resume_producer:
+                conn.execute("UPDATE workflow_workspaces SET artifact_kind=NULL,artifact_ref=NULL,diff_hash=NULL,merge_result_json='{}' WHERE id=?", (row["workspace_id"],))
             conn.execute(
                 "UPDATE workflow_integration_queue SET state='rejected',updated_at=? WHERE patch_artifact_id=? AND state='queued'",
                 (now, artifact_id),
             )
-            return {"artifact_id": artifact_id, "workspace_id": row["workspace_id"], "state": "rejected"}
+            return {"artifact_id": artifact_id, "workspace_id": row["workspace_id"], "state": "rejected", "workspace_state": target_state}
 
         result, revision = self.db.mutate(
             actor_session_id=actor_session_id,
             entity_type="workflow_patch_artifact",
             entity_id=artifact_id,
-            event_type="workflow_patch_artifact_rejected",
-            payload={"state": "rejected"},
+            event_type="workflow_patch_artifact_withdrawn" if resume_producer else "workflow_patch_artifact_rejected",
+            payload={"state": "rejected", "resume_producer": resume_producer, "reason": reason},
             operation=operation,
         )
         result["revision"] = revision

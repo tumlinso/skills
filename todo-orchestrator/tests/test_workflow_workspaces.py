@@ -618,6 +618,74 @@ class WorkflowWorkspaceTests(unittest.TestCase):
             integration_task_id="INTEGRATE", reason="not qualified",
         ))
 
+    def test_unconsumed_handoff_can_be_withdrawn_for_more_serial_work(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        source = Path(str(producer["worktree_path"]))
+        commit = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        queue = self.service.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        args = dict(artifact_id=str(artifact["artifact_id"]), resume_producer=True, reason="finish the next serial task before handoff")
+        # Queue fixtures begin with a remaining queued task. No file/HEAD may change.
+        (source / "unknown.txt").write_text("preserve")
+        rev = self.db.revision()
+        self.assert_code("artifact_withdrawal_source_changed", lambda: self.service.reject_artifact(**args))
+        self.assertEqual(self.db.revision(), rev)
+        self.assertEqual((source / "unknown.txt").read_text(), "preserve")
+        (source / "unknown.txt").unlink()
+        self.assert_code("artifact_withdrawal_invalid", lambda: self.service.reject_artifact(**{**args, "reason": ""}))
+        def fixture(sql, values=()):
+            self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="withdrawal_fixture", payload={},
+                           operation=lambda conn, revision: conn.execute(sql, values).rowcount)
+        fixture("UPDATE workflow_runs SET status='paused' WHERE id='RUN'")
+        self.assert_code("artifact_withdrawal_busy", lambda: self.service.reject_artifact(**args))
+        fixture("UPDATE workflow_runs SET status='active' WHERE id='RUN'")
+        fixture("UPDATE workflow_lanes SET state='active' WHERE id='PRODUCER'")
+        self.assert_code("artifact_withdrawal_busy", lambda: self.service.reject_artifact(**args))
+        fixture("UPDATE workflow_lanes SET state='ready' WHERE id='PRODUCER'")
+        fixture("UPDATE workflow_lane_tasks SET state='completed' WHERE lane_id='PRODUCER'")
+        self.assert_code("artifact_withdrawal_no_remaining_task", lambda: self.service.reject_artifact(**args))
+        fixture("UPDATE workflow_lane_tasks SET state='queued' WHERE lane_id='PRODUCER'")
+        def orphan_claim(conn, revision):
+            session, _ = create_session(conn, self.repo)
+            now = utc_now()
+            conn.execute("INSERT INTO claims(id,task_id,session_id,token_hash,state,created_at,heartbeat_at,expires_at,baseline_revision) "
+                         "VALUES('withdrawal-orphan','IMPL',?,'fixture-only','active',?,?,?,?)", (session["agent_id"], now, now, now, revision))
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="withdrawal_orphan", payload={}, operation=orphan_claim)
+        revision = self.db.revision()
+        self.assert_code("artifact_withdrawal_busy", lambda: self.service.reject_artifact(**args))
+        self.assertEqual(self.db.revision(), revision)
+        fixture("UPDATE claims SET state='released' WHERE id='withdrawal-orphan'")
+        result = self.service.reject_artifact(**args)
+        self.assertEqual(result["workspace_state"], "active")
+        self.assertEqual(git(source, "rev-parse", "HEAD"), commit)
+        with self.db.read() as conn:
+            old = dict(conn.execute("SELECT * FROM workflow_patch_artifacts WHERE id=?", (artifact["artifact_id"],)).fetchone())
+            self.assertEqual(old["state"], "rejected")
+            self.assertEqual(old["artifact_ref"], commit)
+            self.assertEqual(conn.execute("SELECT state FROM workflow_integration_queue WHERE id=?", (queue["queue_id"],)).fetchone()[0], "rejected")
+        later = self.producer_commit(producer, "alpha changed\nbeta next\ngamma\n")
+        new = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=later)
+        queued = self.service.enqueue_artifact(artifact_id=str(new["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        self.assertEqual(queued["position"], 1)
+        self.service.apply_next(queue_id=str(queued["queue_id"]))
+        before = self.db.revision()
+        self.assert_code("artifact_withdrawal_consumed", lambda: self.service.reject_artifact(**{**args, "artifact_id": str(new["artifact_id"])}))
+        self.assertEqual(self.db.revision(), before)
+
+    def test_withdrawal_preserves_clean_unpublished_commit(self) -> None:
+        producer = self.create_producer()
+        source = Path(str(producer["worktree_path"]))
+        commit = self.producer_commit(producer, "published\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        later = self.producer_commit(producer, "unpublished but committed\n")
+        revision = self.db.revision()
+        self.assert_code("artifact_withdrawal_source_changed", lambda: self.service.reject_artifact(
+            artifact_id=str(artifact["artifact_id"]), resume_producer=True, reason="must not discard newer work"))
+        self.assertEqual(self.db.revision(), revision)
+        self.assertEqual(git(source, "rev-parse", "HEAD"), later)
+        self.assertEqual((source / "shared.txt").read_text(), "unpublished but committed\n")
+
     def test_two_producer_artifacts_integrate_serially_into_one_destination(self) -> None:
         destination = self.create_destination()
         first = self.create_producer()
