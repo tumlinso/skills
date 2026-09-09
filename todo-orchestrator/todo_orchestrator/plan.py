@@ -10,6 +10,7 @@ from typing import Any
 
 from . import PLAN_SCHEMA_VERSION, SCHEMA_VERSION
 from .config import utc_now
+from .cuda_gate import validate_quiescence
 from .git_state import canonical_relative
 from .graph import validate_acyclic
 from .models import TodoError
@@ -206,11 +207,16 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
         for gate in task.get("gates", []):
             cuda = gate.get("cuda")
             if cuda is not None:
-                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths"}
+                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths", "quiescence"}
                 if not isinstance(cuda, dict) or set(cuda) - allowed:
                     errors.append(f"gate {gate.get('id')} has unsupported CUDA configuration")
                 elif not isinstance(cuda.get("gpus", 1), int) or cuda.get("gpus", 1) < 1:
                     errors.append(f"gate {gate.get('id')} requires a positive CUDA GPU count")
+                if isinstance(cuda, dict) and "quiescence" in cuda:
+                    try:
+                        validate_quiescence(cuda["quiescence"])
+                    except ValueError as exc:
+                        errors.append(f"gate {gate.get('id')}: {exc}")
                 if gate.get("type") not in {"command", "benchmark", "json_predicate"} or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
                     errors.append(f"gate {gate.get('id')} CUDA execution requires a command, zero expected exit, and controller-owned resources")
             if gate.get("type") in {"command", "benchmark", "json_predicate"} and (not isinstance(gate.get("argv"), list) or not gate.get("argv")):
@@ -432,11 +438,16 @@ def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, 
         for gate in task.get("gates", []):
             cuda = gate.get("cuda")
             if cuda is not None:
-                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths"}
+                allowed = {"gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root", "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths", "quiescence"}
                 if not isinstance(cuda, dict) or set(cuda) - allowed:
                     errors.append(f"gate {gate.get('id')} has unsupported CUDA configuration")
                 elif not isinstance(cuda.get("gpus", 1), int) or cuda.get("gpus", 1) < 1:
                     errors.append(f"gate {gate.get('id')} requires a positive CUDA GPU count")
+                if isinstance(cuda, dict) and "quiescence" in cuda:
+                    try:
+                        validate_quiescence(cuda["quiescence"])
+                    except ValueError as exc:
+                        errors.append(f"gate {gate.get('id')}: {exc}")
                 if gate.get("type") not in {"command", "benchmark", "json_predicate"} or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
                     errors.append(f"gate {gate.get('id')} CUDA execution requires a command, zero expected exit, and controller-owned resources")
             conn.execute(
