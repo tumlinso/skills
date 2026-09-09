@@ -530,8 +530,13 @@ class WorkflowKernel:
                     "scopes": scopes_for(conn, lineage.task_id),
                 }
             elif kind == "evidence":
+                # Evidence has no task_id. Retain task-owned gate precedence;
+                # checkpoint ownership supplies records without a task-owned gate.
                 payload = {"evidence": [dict(row) for row in conn.execute(
-                    "SELECT id,task_id,gate_id,kind,path,content_hash,created_at,revision FROM evidence WHERE task_id=? ORDER BY revision DESC LIMIT 50",
+                    "SELECT e.id,COALESCE(g.task_id,c.task_id) AS task_id,e.gate_id,e.kind,e.path,e.content_hash,e.created_at,e.revision "
+                    "FROM evidence e LEFT JOIN gates g ON g.id=e.gate_id "
+                    "LEFT JOIN checkpoints c ON c.id=COALESCE(e.checkpoint_id,g.checkpoint_id) "
+                    "WHERE COALESCE(g.task_id,c.task_id)=? ORDER BY e.revision DESC,e.id LIMIT 50",
                     (target or lineage.task_id,),
                 )]}
             elif kind == "run":
