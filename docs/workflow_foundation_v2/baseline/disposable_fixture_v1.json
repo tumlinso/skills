@@ -1,0 +1,30 @@
+{
+  "format": "wf2-disposable-todo-fixture-v1",
+  "fixture_version": 1,
+  "provenance": {
+    "kind": "synthetic_disposable_project",
+    "source_commit": "3652874793401944e3cde30a3134aeb5615316ba",
+    "live_authority_exported": false,
+    "real_project_databases_touched": []
+  },
+  "project": {
+    "name": "wf2-disposable-fixture",
+    "tasks": [
+      {
+        "id": "FIXTURE-01",
+        "title": "Synthetic fixture task",
+        "status": "planned"
+      }
+    ]
+  },
+  "redaction": {
+    "forbidden_fields": [
+      "token",
+      "secret",
+      "capability_handle",
+      "database_path",
+      "session_id"
+    ],
+    "contains_live_data": false
+  }
+}
