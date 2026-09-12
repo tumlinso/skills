@@ -707,6 +707,12 @@ def apply_selective_replan(conn: sqlite3.Connection, data: dict[str, Any], repo_
             raise TodoError("selective_replan_live_claim", f"Task has a live claim: {old}")
         if conn.execute("SELECT 1 FROM workflow_patch_artifacts WHERE task_id=? AND state NOT IN ('discarded','integrated')", (old,)).fetchone() or conn.execute("SELECT 1 FROM workflow_integration_queue q JOIN workflow_lane_tasks lt ON lt.lane_id=q.integrator_lane_id WHERE lt.task_id=? AND q.state NOT IN ('integrated','discarded')", (old,)).fetchone():
             raise TodoError("selective_replan_artifact_bound", f"Task has artifact or integration state: {old}")
+    rewrites = data.get("downstream_rewrites", [])
+    if not isinstance(rewrites, list):
+        raise TodoError("invalid_selective_replan", "downstream_rewrites must be an array")
+    declared_rewrites = {(str(x.get("task_id")), str(x.get("old_task_id"))): str(x.get("new_task_id")) for x in rewrites if isinstance(x, dict)}
+    if any(not a or not b or not c for (a, b), c in declared_rewrites.items()):
+        raise TodoError("invalid_selective_replan", "Each downstream rewrite requires task_id, old_task_id, new_task_id")
     replacements = {str(x["task_id"]): dict(x["replacement"]) for x in data["replacements"]}
     new_ids = [str(v.get("id")) for v in replacements.values()]
     if any(not value for value in new_ids) or len(new_ids) != len(set(new_ids)) or any(conn.execute("SELECT 1 FROM tasks WHERE id=?", (value,)).fetchone() for value in new_ids):
@@ -714,13 +720,28 @@ def apply_selective_replan(conn: sqlite3.Connection, data: dict[str, Any], repo_
     for old, replacement in replacements.items():
         replacement.setdefault("parent_id", conn.execute("SELECT parent_id FROM tasks WHERE id=?", (old,)).fetchone()[0])
         replacement.setdefault("status", "planned")
+        replacement.setdefault("scope", {})
+        replacement.setdefault("invariants", [])
+        replacement.setdefault("produced_artifacts", [])
+        replacement.setdefault("checkpoints", [])
+        replacement.setdefault("gates", [])
+        replacement.setdefault("completion_contract", {"assertions": [], "source_task_id": old})
     # Reuse canonical task/detail writer only for new records; old records retain all details/history.
     apply_plan(conn, {"schema_version": 3, "project": {}, "tasks": list(replacements.values())}, repo_root, revision)
     for old, replacement in replacements.items():
         new = str(replacement["id"])
         conn.execute("UPDATE tasks SET status='superseded',result='superseded',updated_at=?,revision=? WHERE id=?", (utc_now(), revision, old))
         conn.execute("UPDATE workflow_lane_tasks SET task_id=?,revision=? WHERE task_id=?", (new, revision, old))
-        conn.execute("UPDATE task_dependencies SET prerequisite_task_id=? WHERE prerequisite_task_id=? AND task_id NOT IN ({})".format(",".join("?" * len(selected))), (new, old, *selected))
+        for (downstream, referenced_old), referenced_new in declared_rewrites.items():
+            if referenced_old != old or referenced_new != new:
+                continue
+            if downstream in selected or not conn.execute("SELECT 1 FROM tasks WHERE id=?", (downstream,)).fetchone():
+                raise TodoError("selective_replan_rewrite_target", f"Invalid downstream rewrite: {downstream}")
+            changed = conn.execute("UPDATE task_dependencies SET prerequisite_task_id=? WHERE task_id=? AND type='task' AND prerequisite_task_id=?", (new, downstream, old)).rowcount
+            if changed != 1:
+                raise TodoError("selective_replan_rewrite_missing", f"Declared dependency not found: {downstream}->{old}")
+        if conn.execute("SELECT 1 FROM task_dependencies WHERE prerequisite_task_id=?", (old,)).fetchone():
+            raise TodoError("selective_replan_undeclared_downstream", f"Every downstream dependency must be declared: {old}")
     return {"superseded": sorted(selected), "replacements": sorted(new_ids)}
 
 
