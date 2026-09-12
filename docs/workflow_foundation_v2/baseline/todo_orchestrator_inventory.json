@@ -1,0 +1,1296 @@
+{
+  "format": "wf2-todo-donor-inventory-v1",
+  "baseline_commit": "3652874793401944e3cde30a3134aeb5615316ba",
+  "source_root": "todo-orchestrator",
+  "subtree_git_object": "8d60fe10dbefa9cf3a2034dfb86ee6ed9e938d22",
+  "tracked_file_count": 178,
+  "tracked_files": [
+    {
+      "path": "todo-orchestrator/SKILL.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "67bbe8540778f567ae38f99cae231f8a70f122c8",
+      "bytes": 3925
+    },
+    {
+      "path": "todo-orchestrator/agents/openai.yaml",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8747274a0f1eb37587a0fb72c73ea52bc8612c63",
+      "bytes": 306
+    },
+    {
+      "path": "todo-orchestrator/pyproject.toml",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6520a00b3ce35cb1956886549e70298ab1ac815d",
+      "bytes": 340
+    },
+    {
+      "path": "todo-orchestrator/references/child-execution-contract.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c633706ede652b6d6c3feafd1eda368528ac8623",
+      "bytes": 2906
+    },
+    {
+      "path": "todo-orchestrator/references/cli-reference.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c768d80df19a2e44fefa93633c61982e5bf20f25",
+      "bytes": 4886
+    },
+    {
+      "path": "todo-orchestrator/references/examples.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7c5e7014e6812023ae02bb24a7b96361e152c67b",
+      "bytes": 1222
+    },
+    {
+      "path": "todo-orchestrator/references/execution-rules.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "2916cd0134451c2c4ab009694b6a723a72f29cda",
+      "bytes": 847
+    },
+    {
+      "path": "todo-orchestrator/references/full-workflow-compatibility.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "52225a019e272dcc3828d232c6abdd0e7c075a79",
+      "bytes": 13327
+    },
+    {
+      "path": "todo-orchestrator/references/maintenance-compatibility.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "981607f4b9de276cb775706e661ef7e3e3c6eb2a",
+      "bytes": 994
+    },
+    {
+      "path": "todo-orchestrator/references/planning-workflow.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "60aab6a1d27621bee8e87fe287def9ab983cd4c0",
+      "bytes": 1553
+    },
+    {
+      "path": "todo-orchestrator/references/project-plan-v2.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "11471e7d898d68285d7635cdf5f3b4b2081bd0d4",
+      "bytes": 2618
+    },
+    {
+      "path": "todo-orchestrator/references/runtime-resource-contract.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e0c0c0bea50047f2d71219a7573b23443be60076",
+      "bytes": 1690
+    },
+    {
+      "path": "todo-orchestrator/references/status-and-cleanup.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "014cf042333e50f915f2c972566533dbd49e8b03",
+      "bytes": 1993
+    },
+    {
+      "path": "todo-orchestrator/references/todo-format.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ef374f5916960eb44f148089e640cce94c83fb51",
+      "bytes": 1127
+    },
+    {
+      "path": "todo-orchestrator/references/v2-architecture.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6d4982a8c8cae073ed701f8c03edb37059b0d30a",
+      "bytes": 3366
+    },
+    {
+      "path": "todo-orchestrator/references/v2-overhaul-dogfood.plan.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8c32066503e598a37c2c4d30fce76501ea99f5de",
+      "bytes": 14005
+    },
+    {
+      "path": "todo-orchestrator/references/workflow-v3-operations.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "740b5c4df296d234275cbf8481611788464a3dba",
+      "bytes": 3719
+    },
+    {
+      "path": "todo-orchestrator/schemas/child-execution-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "423eba4d573f43a9ef3fe25f8cfb432301f64896",
+      "bytes": 2724
+    },
+    {
+      "path": "todo-orchestrator/schemas/child-execution-v2.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6561f6ac8b672f803367111dc1eeb2994f987799",
+      "bytes": 1380
+    },
+    {
+      "path": "todo-orchestrator/schemas/project-plan-v2.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6960fe16086e25b899b5edbf398beb211a17c99b",
+      "bytes": 9244
+    },
+    {
+      "path": "todo-orchestrator/schemas/project-plan-v3.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6696e5a8949917c5c414f07ce804099a2409d0c5",
+      "bytes": 1955
+    },
+    {
+      "path": "todo-orchestrator/schemas/runtime/artifact-ref-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "57d37ced83d7527154465e5f12aba813faa27030",
+      "bytes": 821
+    },
+    {
+      "path": "todo-orchestrator/schemas/runtime/command-spec-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "f269b847cc4ecd0fb378c1b6ff43294608f71616",
+      "bytes": 772
+    },
+    {
+      "path": "todo-orchestrator/schemas/runtime/evidence-summary-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "1773c0194d6aba5602eee31314fb7a3b879ed947",
+      "bytes": 1419
+    },
+    {
+      "path": "todo-orchestrator/schemas/runtime/resource-request-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "076d844ee97ad86fe3d7682770486baff3538f60",
+      "bytes": 1270
+    },
+    {
+      "path": "todo-orchestrator/schemas/runtime/source-identity-v1.schema.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "fb920ff31dac7cfa9bb9520db5d1153af193918f",
+      "bytes": 838
+    },
+    {
+      "path": "todo-orchestrator/scripts/cleanup_todos.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4a2e51c88af3867fbbe1f15dec31691994b048e6",
+      "bytes": 5135
+    },
+    {
+      "path": "todo-orchestrator/scripts/discover_skills_and_refs.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7a34cb1ba864513a919d114c58da5c257a24c947",
+      "bytes": 4856
+    },
+    {
+      "path": "todo-orchestrator/scripts/init_todos.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cc16f05c53eea809b60e060e7d34d41892accfc9",
+      "bytes": 3210
+    },
+    {
+      "path": "todo-orchestrator/scripts/review_staleness.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5b8f8159a9ee9b6c26e7529b9c7bd08ee16394dd",
+      "bytes": 3124
+    },
+    {
+      "path": "todo-orchestrator/scripts/summarize_todos.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6016a49f672e5a185f42a0136c6fbd65be3aa913",
+      "bytes": 4130
+    },
+    {
+      "path": "todo-orchestrator/scripts/todo.py",
+      "mode": "100755",
+      "kind": "blob",
+      "git_blob": "7e3679e10ec4f1062149e9b0a1ee47c3eb8bad39",
+      "bytes": 356
+    },
+    {
+      "path": "todo-orchestrator/scripts/todo_common.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5f40b66f90d7f1f807eb111f9fb75dd20ca6dc93",
+      "bytes": 44622
+    },
+    {
+      "path": "todo-orchestrator/scripts/update_todos.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c166a214a0dec2f97c746ceb18520583750420fc",
+      "bytes": 12309
+    },
+    {
+      "path": "todo-orchestrator/scripts/v2_compat.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "aaad7a01ee360d135cc615a1eec9f35918700d49",
+      "bytes": 811
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/legacy/todo-status.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "b2b92e57f166c7defb49c7477426205deb136a10",
+      "bytes": 286
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/legacy/todos.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6ffc7baa5122f581cecb614130adf5e839490dc6",
+      "bytes": 436
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/legacy/todos/alpha.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8ddcc25910178fe7a962aa58824eccdc93057706",
+      "bytes": 557
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/legacy/todos/beta.md",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c5e3114a5990536b9e46c06d0448d07fce2673b2",
+      "bytes": 127
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/v2/generic-parallel-project.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "80f4c28b2f232b260a46b131c179b590718a4f2d",
+      "bytes": 7569
+    },
+    {
+      "path": "todo-orchestrator/tests/fixtures/workflow/schema-v10.json",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e27da46ef5e519ee6966a0d6ec4f5141bb379cb8",
+      "bytes": 727
+    },
+    {
+      "path": "todo-orchestrator/tests/test_audit_historical_records.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8db155ec2ddeab145321441464abb5a2137a53eb",
+      "bytes": 2810
+    },
+    {
+      "path": "todo-orchestrator/tests/test_background_runtime.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5375c259e8fd50bd060793f875c12c76edac80f5",
+      "bytes": 16116
+    },
+    {
+      "path": "todo-orchestrator/tests/test_child_execution_core.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "706a6da9e682dca7f3cff788e29130b092715ce9",
+      "bytes": 7990
+    },
+    {
+      "path": "todo-orchestrator/tests/test_child_execution_integration.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "bef924985fb940afb7e829e6bdaa3b7307b066cf",
+      "bytes": 9204
+    },
+    {
+      "path": "todo-orchestrator/tests/test_child_execution_v2.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4c43fd82c357618366be9f70e4f7ef4f67c9f38c",
+      "bytes": 7465
+    },
+    {
+      "path": "todo-orchestrator/tests/test_cleanup_script.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "57b2df60c27c22c67ca487e56a2a5099b414560e",
+      "bytes": 12494
+    },
+    {
+      "path": "todo-orchestrator/tests/test_contract_split_cleanup.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6d5fc7d9359b62e9c13de0c9a28fff37a813537b",
+      "bytes": 6437
+    },
+    {
+      "path": "todo-orchestrator/tests/test_contract_split_reactivation_review.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "deec75b1def8182b129c7ecb10420af96c1bfe23",
+      "bytes": 4329
+    },
+    {
+      "path": "todo-orchestrator/tests/test_core4_resource_policy.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "aa310d5ff49308127c78c050573388588468767f",
+      "bytes": 6531
+    },
+    {
+      "path": "todo-orchestrator/tests/test_cuda_gate.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "a81df842b1cfa422681771421d7782697bac9dfc",
+      "bytes": 5249
+    },
+    {
+      "path": "todo-orchestrator/tests/test_discovery_notes.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "fc9d46e5bc0b2b3cc50e9992214f3b508bf28c5d",
+      "bytes": 1706
+    },
+    {
+      "path": "todo-orchestrator/tests/test_force_release.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "d134741d36dec66f66a5914586333a483da05998",
+      "bytes": 23385
+    },
+    {
+      "path": "todo-orchestrator/tests/test_host_coordination.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "250d5cc7f5057c7027a07e777b309dc3d4e6effa",
+      "bytes": 6262
+    },
+    {
+      "path": "todo-orchestrator/tests/test_integrator_interface_authority.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4a01f459c638ed74f38cb03f338170cf8165cee9",
+      "bytes": 3441
+    },
+    {
+      "path": "todo-orchestrator/tests/test_live_claim_override.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cbd7b1cf0d33d9242701480a32056bf1d06cc997",
+      "bytes": 12925
+    },
+    {
+      "path": "todo-orchestrator/tests/test_package_metadata.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7e533d75257e74f9ea02cdc432473051a3b1dc79",
+      "bytes": 1055
+    },
+    {
+      "path": "todo-orchestrator/tests/test_plan_execution_contracts.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cdf15cdf420fc2a5cf3add71bdb922c83b472c97",
+      "bytes": 1354
+    },
+    {
+      "path": "todo-orchestrator/tests/test_read_only_schema_compatibility.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e2d0a5ab6ab0f8535d0051395e4bac288a985a59",
+      "bytes": 9643
+    },
+    {
+      "path": "todo-orchestrator/tests/test_read_port.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "516e8b7bc88dd757017cd943298ffd8888bbd0a1",
+      "bytes": 4664
+    },
+    {
+      "path": "todo-orchestrator/tests/test_release_runtime.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "2657108ce08540b5dc2a5843c756e85f1f360c34",
+      "bytes": 2074
+    },
+    {
+      "path": "todo-orchestrator/tests/test_resume_logic.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e67d9543f62507b5fc056f969c5ce994d1ab8a3b",
+      "bytes": 3715
+    },
+    {
+      "path": "todo-orchestrator/tests/test_review_staleness_script.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "36f2168ff4e21c6ac1d969ce4459e8b081376050",
+      "bytes": 2194
+    },
+    {
+      "path": "todo-orchestrator/tests/test_runtime_facade.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "24e2331afa2060e9e2565f3800930558d63ec31e",
+      "bytes": 13240
+    },
+    {
+      "path": "todo-orchestrator/tests/test_runtime_identity.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ec8e347a0c7137e22ca48be93cf979b06b11010d",
+      "bytes": 3014
+    },
+    {
+      "path": "todo-orchestrator/tests/test_semantic_history.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5e34ba177feb23be7e479fe395286e85f6818434",
+      "bytes": 4362
+    },
+    {
+      "path": "todo-orchestrator/tests/test_semantic_state.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "0227b88ed4af8b0b842924d30c9c1f33fef9fe06",
+      "bytes": 7359
+    },
+    {
+      "path": "todo-orchestrator/tests/test_status_updates.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cd1859ed7296e4eec0242c8352bcf28a15321d37",
+      "bytes": 1749
+    },
+    {
+      "path": "todo-orchestrator/tests/test_terminal_checkpoint_finalization.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "545cff539fb1bb34cf3b86050340fa698e3044f1",
+      "bytes": 11475
+    },
+    {
+      "path": "todo-orchestrator/tests/test_todo_parsing.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4021a094d5ce5c3f6cb37405c221d456606ae683",
+      "bytes": 5352
+    },
+    {
+      "path": "todo-orchestrator/tests/test_update_script.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cb206467bf65b81f64d0031fd876579dcd32b258",
+      "bytes": 2679
+    },
+    {
+      "path": "todo-orchestrator/tests/test_v2_concurrency.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4ac9fe1c819c129c72140979c316adc0f2384d54",
+      "bytes": 4921
+    },
+    {
+      "path": "todo-orchestrator/tests/test_v2_foundation.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "2df90a0c828f7a1bb0cc1fc8a9cbf8f7ddede4cf",
+      "bytes": 4940
+    },
+    {
+      "path": "todo-orchestrator/tests/test_v2_graph_coordination.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7f9441887bd27dd8e61dcf6b77c708d004d96060",
+      "bytes": 8607
+    },
+    {
+      "path": "todo-orchestrator/tests/test_v2_recovery_migration_context.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "247d8649d518c7c8914f84ffa0b9672c32b70fcd",
+      "bytes": 5561
+    },
+    {
+      "path": "todo-orchestrator/tests/test_v2_resources_gates.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c4550d2162e13567f0532cef889d4c8d1157bc35",
+      "bytes": 6512
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_completion_provenance.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "51a7abe9b6b88b8235a113435677ae4085159444",
+      "bytes": 2491
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_context_fragments.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "db78ec234c12c31453d7d1d24365016453e9b934",
+      "bytes": 12727
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_dogfood.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cc3359536d9fb0b670555c958280e654c6823c6e",
+      "bytes": 12359
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_evidence_inspection.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "30ed7ac7d014f497ed676605bdef8c28f8d1e58b",
+      "bytes": 5059
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_foundation.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "724e46b0f6ef25efb2c7720bad1e44e0e08596d6",
+      "bytes": 12652
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_front_door.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4ceedd29c9d48a2e6c752f24c064a5d9c7f6df45",
+      "bytes": 14923
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_integration.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "10d8e98057401c4671a0f1ac00f50675a3a06e4a",
+      "bytes": 10589
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_isolated_claims.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7e189f09e042d91dd51ef9998eb888fa5ea0b935",
+      "bytes": 9162
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_lane_resume.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ba8c06315734395469136b3571f9aebcf738c0b8",
+      "bytes": 9589
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_messages_rendezvous.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "691ed90184881e13a2c45e827f97e3cb34fc3079",
+      "bytes": 22443
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_plan_snapshot.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "11b8884698da06975c90309b5aa56e09a630e2d1",
+      "bytes": 14699
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_protocol_mcp.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "b6f83b5b837967440dc4dcadef9ed1cf119a104d",
+      "bytes": 23781
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_recovery.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "f3c1846ae21119a2fe3150827fa656c5cd1ded10",
+      "bytes": 33828
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_runs_lanes.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c4c538293cf9b4eb6c02c1e45a4b2536df44356d",
+      "bytes": 18992
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_runtime_safety.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5e03d50a72ffd4a6b1b3e051031a3ce44d3d1a6f",
+      "bytes": 1382
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_semantic_read.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "24d93637dbf0bbd214070184cb465639c2539335",
+      "bytes": 11065
+    },
+    {
+      "path": "todo-orchestrator/tests/test_workflow_workspaces.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cd6a3dc151e1a541f99caf1989a15f6df58019d2",
+      "bytes": 73120
+    },
+    {
+      "path": "todo-orchestrator/tests/v2_helpers.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ded953c682fec3bfc1aca37c80c2a5855a2089a0",
+      "bytes": 3158
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ef873050def7597140bff0a60926945036cdfd8c",
+      "bytes": 313
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/audit.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "723b1b7e43e8800919e21d98a67e903f810ed5a6",
+      "bytes": 8664
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e6c0b5dc5da08f6408a464f95fb52ecc4337ffdd",
+      "bytes": 307
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/artifacts.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "79c4d649b72ce1cdb6d586ebf747565e66b0fc63",
+      "bytes": 976
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/host.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "603cdd56c404973dd10e8e72943d4147555a4cd8",
+      "bytes": 23852
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/models.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "52933b93c38fd319297c0d07a01debc942aa4e2b",
+      "bytes": 898
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/resources.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6c3326546df9467583c6d75d0c614cb10dbcfd9b",
+      "bytes": 3757
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/runner.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "145775e811a833cabf5a16db8d6b20dc4cb07a48",
+      "bytes": 5353
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/scheduler.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "2152b72885b5efe49f90d3d51c90feac8b88a551",
+      "bytes": 2081
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/store.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "41f26c9a5d3302bb3427c17afb329751dd991758",
+      "bytes": 32491
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/wake.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7adc7a6b673ed7fb8d102a6748ff17a60aa54ce0",
+      "bytes": 3553
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/background/worker.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e7d7f64d57e1ce0bbce05ddc82c9686f996fccc4",
+      "bytes": 6648
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/barriers.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "f4ae1896e1b1ae6a1ea30fd4b0592cc5aeebb70a",
+      "bytes": 859
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/checkpoints.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "871942909b5fe3f18b3a1c3fc7beefa21d371cbb",
+      "bytes": 3017
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/child_execution.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "b089f08ffe09956c14910f8c520f54ea0d7e9672",
+      "bytes": 22099
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/claims.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e61e98f38586f4cd19a77b89873df490b3ec0ad0",
+      "bytes": 36313
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/cli.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "271f4df322454bb1001f7d12f8f35fd3c0364f77",
+      "bytes": 1973
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4dd44fd1afaad431ba573789d750c25464185715",
+      "bytes": 520
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/child_execution.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "0905a47be9a9311955c45f646383fec7fc5ca4e5",
+      "bytes": 7729
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/coordination.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c91be8e3e2ebeb9266a5063bdeba280a0438fd66",
+      "bytes": 16783
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/core.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6af06cdc29421ec78171f847a1e2296c6f53445e",
+      "bytes": 749
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/migration.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "2a0eddf66a460b16c80ee29881da31d1b683ee3b",
+      "bytes": 631
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/plan_commands.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "bc64ac145b76c7a36ec9ee173d0f26093a7fa238",
+      "bytes": 1687
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/semantic.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "153f6508239e36fada7f43a36e2a32240e75f3d0",
+      "bytes": 2314
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/commands/work.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "a821fe207dae7c85e180f67d7fdb212987f0a12d",
+      "bytes": 3794
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/completion.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "42aa4b88dff7e3723dbeff7399e1bd90ff0750a0",
+      "bytes": 13730
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/config.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "45d547030039688a8318e7e683ce1147ac97484f",
+      "bytes": 4129
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/context.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "56ab68def6d24ea880466507d094857a0c2a289c",
+      "bytes": 8134
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/cuda_gate.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c4c8fd510962a5f253538b4a0816b47d927df77d",
+      "bytes": 3606
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/db.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "0e8040c378107c0ae71d087880204c473f1dee0c",
+      "bytes": 8378
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/events.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c1cc4478bd0304ffccb69b578288bddb965956a2",
+      "bytes": 1645
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/evidence.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "39dfbb53f887c1e4c594c58d34af1c52c2e9d141",
+      "bytes": 2251
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/front_door.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "9e9c272a8206a6f2b7cd78178215db8043f3c85a",
+      "bytes": 2594
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/gates.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "a335ae49c2cf9a5a9c4cb866095b4ca5a584c3b6",
+      "bytes": 24989
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/git_state.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "06306915d35210970ccda15fbf431ef6e97eee71",
+      "bytes": 3861
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/graph.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e14d8f01a8f72f355760751b4b945953f54858cb",
+      "bytes": 9485
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/interfaces.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "cc408120134e659e97c566f544b4f632ca176bef",
+      "bytes": 3702
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/legacy.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "9f3f452d2dc6a1a608870a43924dabeef489a82f",
+      "bytes": 5084
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/migrations.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "117ca477db7d4340b156d9c2d77b11d9bd185a4b",
+      "bytes": 26186
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/models.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "78900e626dc61ab965ebc92ca71ebcb2b0848c43",
+      "bytes": 1585
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/ownership.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "75d6e54fa0a92f1b80f3ae1f2398e094b6054aa6",
+      "bytes": 14325
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/plan.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8e3c21eb440d26be85c31dbac60785991c98d464",
+      "bytes": 46092
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/projections.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e37e034ee7a5b60cb5cc2ab50ab80b6f328aa11c",
+      "bytes": 13231
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/read_port.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "05cf85a90cb9bfccdf2dae56e0b157f083722b11",
+      "bytes": 9494
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/readiness.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "a9a17d7f39ef2c10546d78aeebb7d0ccf8a4be24",
+      "bytes": 5671
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/reporting.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7242e462dd77175fc332ca72aff6f51c058034ee",
+      "bytes": 7692
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/resources.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "05a771a962cb963a00df2f9e988baeeaba5b297c",
+      "bytes": 7522
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "70d8a29186cec65dc7d3d89e055eb3433e9894a4",
+      "bytes": 938
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/contracts.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "32d50fbab3a8e25074959ddbf3012e9de6081370",
+      "bytes": 8700
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/facade.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5bd89ca40b5f9290d26576830edf1a088b3be342",
+      "bytes": 14572
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/resources.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "e6bd05eee78a8bc4485838eeef6c55ed3d961cf8",
+      "bytes": 1517
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/source.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "77592fa557e2f65c3af80d23de68b9901e808285",
+      "bytes": 2736
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime/topology.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ba3bd0884bb24911a4e46bf6df28d8f741ea1db5",
+      "bytes": 7182
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/runtime_identity.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "34ae00b445ff582b8c514e4b1e6b0a5b16ff4468",
+      "bytes": 11093
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ea5ba805ee12741e4847b1ad99565af157c0be2d",
+      "bytes": 2569
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/anchors.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6fb35130c0f780a3ff556dacda9b854dc8078e37",
+      "bytes": 5848
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/history.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "20140f93832e73121a04ae660bfc3c3e5c268685",
+      "bytes": 6235
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/lifecycle.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "29f1bd2a4aeebee5450daddda90547382cf585c2",
+      "bytes": 4580
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/read_port.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "3b39b7ac13e079d7e60a68e381ff854fcb305750",
+      "bytes": 415
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/state.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "8dac2d103fe6d591fe13d8431a12f42c2fabe79e",
+      "bytes": 13841
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/semantic/workflow.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "5d447d503aff860af7d7dd6b12e73f143ca281d1",
+      "bytes": 17134
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/service.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4f9e38e987030afa81ba1dd7aae7bd3daf8b2231",
+      "bytes": 44843
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/sessions.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "395bb0678f7c6909c2879c6bf54337bf48cca710",
+      "bytes": 2645
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "7ace75c71f2b232de7a07eae9ca34f9c8b71aae2",
+      "bytes": 324
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/adapters/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "6121c6168d97ba1c7ea58cc7babe8058f66bc843",
+      "bytes": 249
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/adapters/_process.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "d404cf794e015e93ad64979cb20ea95895d77856",
+      "bytes": 2047
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/adapters/ctxpp.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "43efdcf0f66865890406de55451873636ceba48f",
+      "bytes": 724
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/adapters/cuda.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "677dcaf3b102bf01bde278491cda54b14e536b8e",
+      "bytes": 889
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/adapters/local_worker.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "000e823074329f269ad8b2c6b34cf80ff02eda6f",
+      "bytes": 1314
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/admin.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "9331719deccd9d2701cd2cb7ef362db878c7ad74",
+      "bytes": 2192
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/capabilities.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "4bf07eb0b877380baf077425b76049a0272eb877",
+      "bytes": 20950
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/context_fragments.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "359764336c2b0b9250fb46a03945687358e0fc28",
+      "bytes": 24344
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/foundation.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "fd2c49319a83606f6599ec2fea175b23cdd5fe76",
+      "bytes": 7679
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/lanes.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "0e7566a46ce3b15ed1b57f0c50b710650b1c7d49",
+      "bytes": 34944
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/mcp/__init__.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ac80fd2ec894fcc5f8e9abdbc6103ce4295c6507",
+      "bytes": 160
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/mcp/server.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "dca17b42873b791679769a8532e9b6516d4d0916",
+      "bytes": 7015
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/messages.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ecaafb1a078e3c82f91fb6dffe027886c5a0bcc3",
+      "bytes": 23597
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/protocol.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "f7a50ca991bc0232f9454180de5a878601e54359",
+      "bytes": 17346
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/recovery.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "c1e9b27a4945c4fe327090212d57a76d25eab6a9",
+      "bytes": 34474
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/rendezvous.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "ecc10f58123f1adba0d585c757c3168b1e8168e0",
+      "bytes": 24496
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/roles.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "02a551996a8012a3b1cfeaf302306523b2f23f14",
+      "bytes": 3849
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/runs.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "dc70f813707c3c940f47958d4b6b2d8759fd4aef",
+      "bytes": 6734
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/service.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "16e3d282949dc4302963044eb40b6c7f30ccc1b4",
+      "bytes": 63395
+    },
+    {
+      "path": "todo-orchestrator/todo_orchestrator/workflow/workspaces.py",
+      "mode": "100644",
+      "kind": "blob",
+      "git_blob": "b95a3ec37c383cc082143033e56d97232c63d5eb",
+      "bytes": 106857
+    }
+  ],
+  "package_identity": {
+    "distribution": "todo-orchestrator",
+    "python_package": "todo_orchestrator",
+    "console_entry_points": []
+  },
+  "consumer_audit": {
+    "roots": [
+      "cuda",
+      "local-coding-worker",
+      "cpp-context-compiler"
+    ],
+    "match_expression": "todo_orchestrator|todo-orchestrator",
+    "exact_paths": [
+      "cpp-context-compiler/references/context-packets.md",
+      "cpp-context-compiler/schemas/context-packet-v1.schema.json",
+      "cpp-context-compiler/scripts/ctxpp_packet.py",
+      "cuda/references/controller-background-contract.md",
+      "cuda/scripts/cuda_controller.py",
+      "cuda/tests/test_controller.py",
+      "cuda/tests/test_core4_interlock.py",
+      "cuda/tests/test_core4_topology.py",
+      "cuda/tests/test_performance_facts.py",
+      "local-coding-worker/evals/host_bakeoff.py",
+      "local-coding-worker/evals/tasks/core4-host-tasks.json",
+      "local-coding-worker/local_worker/acceptance.py",
+      "local-coding-worker/local_worker/canonical_runtime.py",
+      "local-coding-worker/local_worker/controller.py",
+      "local-coding-worker/local_worker/production_checks.py",
+      "local-coding-worker/local_worker/supervisor.py",
+      "local-coding-worker/local_worker/verification.py",
+      "local-coding-worker/local_worker/workspace.py",
+      "local-coding-worker/schemas/worker-result-v1.schema.json",
+      "local-coding-worker/scripts/worker_core.py",
+      "local-coding-worker/tests/test_canonical_runtime.py",
+      "local-coding-worker/tests/test_core4_integration.py",
+      "local-coding-worker/tests/test_resource_policy.py",
+      "local-coding-worker/tests/test_writable_work.py"
+    ],
+    "risk": "Unknown external consumers may use dynamic imports, generated code, out-of-tree deployments, or private downstream repositories; retain compatibility until separately qualified."
+  },
+  "live_authority_exported": false
+}
