@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T17:52:43Z",
+  "generated_at": "2026-09-12T18:21:14Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 839,
+  "project_revision": 854,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -8832,6 +8832,156 @@
         "revision": 839,
         "seq": 839,
         "timestamp": "2026-09-12T17:52:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"lane_id\": \"SK-WF2-L-V\", \"mode\": \"isolated_merge\", \"run_id\": \"SK-WF2-RUN-V1\"}",
+        "revision": 840,
+        "seq": 840,
+        "timestamp": "2026-09-12T18:12:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"lane_id\": \"SK-WF2-L-V\", \"mode\": \"isolated_merge\", \"run_id\": \"SK-WF2-RUN-V1\"}",
+        "revision": 841,
+        "seq": 841,
+        "timestamp": "2026-09-12T18:12:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-L-V",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-WF2-L-V\", \"run_id\": \"SK-WF2-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"SK-WF2-V01\"}",
+        "revision": 842,
+        "seq": 842,
+        "timestamp": "2026-09-12T18:12:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-V01-G\"}",
+        "revision": 843,
+        "seq": 843,
+        "timestamp": "2026-09-12T18:19:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"69e38a89-170b-439e-9119-274ef01974be\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 844,
+        "seq": 844,
+        "timestamp": "2026-09-12T18:19:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-V01-G\"}",
+        "revision": 845,
+        "seq": 845,
+        "timestamp": "2026-09-12T18:20:08Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"5f5bd60f-10e2-42cd-87cd-7dfa8849087a\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 846,
+        "seq": 846,
+        "timestamp": "2026-09-12T18:20:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-V01-G\"}",
+        "revision": 847,
+        "seq": 847,
+        "timestamp": "2026-09-12T18:20:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"a25e533a-1f23-40bd-b209-560138cb9ff2\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 848,
+        "seq": 848,
+        "timestamp": "2026-09-12T18:20:24Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-V01-G\"}",
+        "revision": 849,
+        "seq": 849,
+        "timestamp": "2026-09-12T18:20:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"651ef529-d82e-423e-8b81-76a7ed8b18da\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 850,
+        "seq": 850,
+        "timestamp": "2026-09-12T18:20:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-V01-G\"}",
+        "revision": 851,
+        "seq": 851,
+        "timestamp": "2026-09-12T18:20:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"e416b585-e686-4cf9-9cd1-18178ede1871\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 852,
+        "seq": 852,
+        "timestamp": "2026-09-12T18:20:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-V01",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 853, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 853,
+        "seq": 853,
+        "timestamp": "2026-09-12T18:20:51Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-L-I",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-WF2-L-I\", \"run_id\": \"SK-WF2-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"SK-WF2-I10\"}",
+        "revision": 854,
+        "seq": 854,
+        "timestamp": "2026-09-12T18:21:14Z"
       }
     ],
     "evidence": [
@@ -9827,6 +9977,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-12T18:20:09Z",
+        "gate_id": "SK-WF2-V01-G",
+        "id": "5f5bd60f-10e2-42cd-87cd-7dfa8849087a",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 845, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/5f5bd60f-10e2-42cd-87cd-7dfa8849087a",
+        "revision": 846,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-30T14:46:05Z",
         "gate_id": "PCU-SK-20-LOCAL",
         "id": "5fe6e251-1880-4888-b964-0f198052c6a6",
@@ -9866,6 +10029,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-12T18:20:50Z",
+        "gate_id": "SK-WF2-V01-G",
+        "id": "651ef529-d82e-423e-8b81-76a7ed8b18da",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 849, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/651ef529-d82e-423e-8b81-76a7ed8b18da",
+        "revision": 850,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-27T13:19:55Z",
         "gate_id": "WFU-26-SEMANTIC",
         "id": "6678f697-6efc-43bb-b3a6-9d1e124692a5",
@@ -9874,6 +10050,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/6678f697-6efc-43bb-b3a6-9d1e124692a5",
         "revision": 217,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-12T18:19:53Z",
+        "gate_id": "SK-WF2-V01-G",
+        "id": "69e38a89-170b-439e-9119-274ef01974be",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 843, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/69e38a89-170b-439e-9119-274ef01974be",
+        "revision": 844,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -10472,6 +10661,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/a0c4cbfd-34af-4547-9924-0bd061b00f57",
         "revision": 729,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-12T18:20:24Z",
+        "gate_id": "SK-WF2-V01-G",
+        "id": "a25e533a-1f23-40bd-b209-560138cb9ff2",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 2, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 847, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/a25e533a-1f23-40bd-b209-560138cb9ff2",
+        "revision": 848,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -11082,6 +11284,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-c\", \"import json,pathlib; d=json.loads(pathlib.Path('.git/coding-workflow-mcp/cwm-10-two-worker-smoke.json').read_text()); assert d['ok'] and d['delegated']==2 and d['model']['model_executions']==2 and d['model']['unique_slots']==2 and d['model']['unique_servers']==2 and d['model']['backend_calls']==[1,1]\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4bc2c59ee15a3eaae93c5c058e908028eb683e7c70fb74c004571bf9addc0bc7\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-c\", \"import json,pathlib; d=json.loads(pathlib.Path('.git/coding-workflow-mcp/cwm-10-two-worker-smoke.json').read_text()); assert d['ok'] and d['delegated']==2 and d['model']['model_executions']==2 and d['model']['unique_slots']==2 and d['model']['unique_servers']==2 and d['model']['backend_calls']==[1,1]\"]}, \"diff_fingerprint\": \"73162ed13fbaecf55c22348a3740d5b521a035e72f8f0ca7285311f77d87ad7b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\", \"todos/cwm-10.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 117}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e378fee1-f4fa-4b3a-9294-529cd5812ec0",
         "revision": 118,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-12T18:20:51Z",
+        "gate_id": "SK-WF2-V01-G",
+        "id": "e416b585-e686-4cf9-9cd1-18178ede1871",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 851, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e416b585-e686-4cf9-9cd1-18178ede1871",
+        "revision": 852,
         "status": "passed"
       },
       {
@@ -12312,14 +12527,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"input_paths\": [\"planning/workflow-foundation-v2\", \"tests/wf2_validation\", \"docs/workflow_foundation_v2/validation\", \"tests/wf2_acceptance/v\"], \"timeout\": 1800}",
         "id": "SK-WF2-V01-G",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686",
+        "last_run_at": "2026-09-12T18:20:51Z",
         "required": 1,
-        "revision": 797,
-        "status": "pending",
+        "revision": 852,
+        "status": "passed",
         "task_id": "SK-WF2-V01",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -12875,6 +13090,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/tests/test_handles.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-08-HANDLES\", \"last_run_at\": \"2026-08-25T10:53:52Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-08-TOOLS\", \"last_run_at\": \"2026-08-25T10:53:54Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-08-DIFF\", \"last_run_at\": \"2026-08-25T10:53:52Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 2047 +++++++++++++++++++-\\n integrations/coding-workflow-mcp/README.md         |    8 +\\n .../coding_workflow_mcp/backend.py                 |   68 +\\n .../coding_workflow_mcp/handles.py                 |   70 +\\n .../coding_workflow_mcp/server.py                  |    6 +-\\n .../coding-workflow-mcp/tests/test_handles.py      |   19 +\\n .../coding-workflow-mcp/tests/test_tools.py        |   87 +\\n todo-status.md                                     |   11 +-\\n todos.md                                           |   11 +-\\n 9 files changed, 2221 insertions(+), 106 deletions(-)\", \"git_head\": \"2ac23b1947e253abe89605155f8850b63be25bb7\", \"interfaces\": [], \"note\": \"Implemented durable explicit-task workflow recovery: validate stored facade-owned claim through todo, rotate to a fresh opaque handle, rebuild bounded context, and finish without duplicate continue; 26 facade tests and installer protocol smoke pass.\", \"resources\": [], \"task_id\": \"CWM-08\"}",
         "revision": 88,
         "task_id": "CWM-08"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-12T18:20:51Z",
+        "id": "5418f2c1-71e0-44ee-a474-6a032bb150e0",
+        "kind": "complete",
+        "note": "Independent donor mapping validation and review completed with required gate evidence.",
+        "payload_json": "{\"authority_commit\": \"7d25eb99c7d4285333ec70c92405dc206a96bd3c\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\", \"completion_gates\": [{\"evidence_id\": \"e416b585-e686-4cf9-9cd1-18178ede1871\", \"evidence_revision\": 852, \"id\": \"SK-WF2-V01-G\", \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}], \"completion_revision\": 853, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-WF2-V01-G\", \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"last_run_at\": \"2026-09-12T18:20:51Z\", \"revision\": 852, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Independent donor mapping validation and review completed with required gate evidence.\", \"producer_commit\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\", \"producer_root\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\", \"resources\": [], \"task_id\": \"SK-WF2-V01\"}",
+        "revision": 853,
+        "task_id": "SK-WF2-V01"
       },
       {
         "claim_id": null,
@@ -16916,6 +17141,19 @@
         "task_id": "SK-WF2-A03",
         "valid": 1,
         "validation_git_head": "4abe1286c3f1c5ee9ea431c27179894daa726403"
+      },
+      {
+        "completion_git_head": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
+        "completion_revision": 853,
+        "evidence_id": "e416b585-e686-4cf9-9cd1-18178ede1871",
+        "evidence_revision": 852,
+        "gate_id": "SK-WF2-V01-G",
+        "input_fingerprint": "dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686",
+        "provenance_json": "{\"claim_id\": \"8050ef63-2662-4096-b079-a13f21e0d57e\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"dd117e2f64accc5f4cd0895ece711967a063374febb9b2fce86f134e981d8686\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-V01\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/validation\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/v\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_validation\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"db44e3b26cbe50eeffc9b3392e0b566d0666fcb7\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb\", \"started_revision\": 851, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/e416b585-e686-4cf9-9cd1-18178ede1871\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-WF2-V01",
+        "valid": 1,
+        "validation_git_head": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7"
       },
       {
         "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
@@ -21602,12 +21840,12 @@
         "priority": 500,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 854,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Publish the donor baseline and test inventory",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-12T18:21:14Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21711,9 +21949,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
+        "completion_git_head": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
+        "completion_revision": 853,
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-V01",
         "kind": "task",
@@ -21725,14 +21963,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 853,
+        "status": "done",
         "tags_json": "[]",
         "title": "Review donor mapping and parity evidence independently",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-12T18:20:51Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -24559,13 +24797,13 @@
         "task_id": "SK-WF2-D04"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-09-12T18:21:14Z",
         "completed_at": null,
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 854,
+        "state": "active",
         "task_id": "SK-WF2-I10"
       },
       {
@@ -24609,13 +24847,13 @@
         "task_id": "SK-WF2-I90"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-12T18:12:32Z",
+        "completed_at": "2026-09-12T18:20:51Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-V",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 853,
+        "state": "completed",
         "task_id": "SK-WF2-V01"
       },
       {
@@ -25173,11 +25411,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-I",
         "parent_lane_id": "SK-WF2-L-COORD",
-        "revision": 797,
+        "revision": 854,
         "role": "integrator",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "ready",
-        "updated_at": "2026-09-12T16:36:32Z",
+        "state": "active",
+        "updated_at": "2026-09-12T18:21:14Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -25185,11 +25423,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-V",
         "parent_lane_id": "SK-WF2-L-COORD",
-        "revision": 797,
+        "revision": 853,
         "role": "specialist",
         "run_id": "SK-WF2-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-12T16:36:32Z",
+        "updated_at": "2026-09-12T18:20:51Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -25916,6 +26154,25 @@
         "state": "integrated",
         "updated_at": "2026-08-30T14:46:06Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination"
+      },
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
+        "branch": "codex/sk-wf2-l-v",
+        "cleanup_eligible": 0,
+        "created_at": "2026-09-12T18:12:08Z",
+        "diff_hash": null,
+        "id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
+        "integration_task_id": "SK-WF2-I10",
+        "lane_id": "SK-WF2-L-V",
+        "merge_result_json": "{}",
+        "mode": "isolated_merge",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "SK-WF2-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-09-12T18:12:08Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v"
       },
       {
         "artifact_kind": "commit",
