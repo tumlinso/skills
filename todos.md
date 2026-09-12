@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `830`
+Project revision: `839`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: planned | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
 - `SK-WF2-COORD` | kind: task | status: in_progress | parent: SK-WF2-0000 | objective: Hold a claimable ordinary coordinator seat and direct first-class lanes under the single strategic controller. Revalidate source, claims, receipts and resource limits. Continue coordinating while leaves run; the completion gate requires final local integration, not a claim-time dependency.
 - `SK-WF2-A01` | kind: task | status: done | parent: SK-WF2-0000 | objective: Capture all todo_orchestrator modules, tests, scripts, supported imports, package entry points and runtime sidecars at the reviewed Skills commit. Audit CUDA, local-worker and ctxpp imports by exact paths.
 - `SK-WF2-A02` | kind: task | status: done | parent: SK-WF2-0000 | objective: Retain old package and test identities outside the new runtime path. Produce sanitized versioned fixtures from supported exports or disposable sample projects; never copy secrets or active capability tokens.
-- `SK-WF2-A03` | kind: task | status: in_progress | parent: SK-WF2-0000 | objective: Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.
+- `SK-WF2-A03` | kind: task | status: done | parent: SK-WF2-0000 | objective: Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.
 - `SK-WF2-C01` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Create a small stable query facade over existing query.sqlite/manifest, supporting exact symbol ID, qualified name, canonical range and typed graph edges. No scanning or publication is permitted by this operation.
 - `SK-WF2-C02` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Replace sibling sys.path injection with an independently implemented/versioned identity contract or a genuinely small shared contract dependency. Record algorithm/version/domain and which files/configurations are covered.
 - `SK-WF2-C03` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Validate nested task/context/trust/identity objects, not only top-level keys. Preserve whole canonical targets, explicit omissions and honest sufficiency when budget is too small or semantic relationships incomplete.

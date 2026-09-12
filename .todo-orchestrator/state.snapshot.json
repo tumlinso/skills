@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T17:49:01Z",
+  "generated_at": "2026-09-12T17:52:43Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 830,
+  "project_revision": 839,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -8742,6 +8742,96 @@
         "revision": 830,
         "seq": 830,
         "timestamp": "2026-09-12T17:49:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-A03-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-A03-G\"}",
+        "revision": 831,
+        "seq": 831,
+        "timestamp": "2026-09-12T17:49:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-A03-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"367fb0f8-d2ba-479e-9948-b3811f3c24ba\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 832,
+        "seq": 832,
+        "timestamp": "2026-09-12T17:49:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5",
+        "entity_type": "workflow_patch_artifact",
+        "event_type": "workflow_patch_artifact_published",
+        "payload_json": "{\"content_hash\": \"008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5\", \"kind\": \"commit\", \"task_id\": \"SK-WF2-A03\", \"workspace_id\": \"2628ed1d-0535-46cf-8518-3a530683e452\"}",
+        "revision": 833,
+        "seq": 833,
+        "timestamp": "2026-09-12T17:49:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "7f7c6bdd-8206-4ed4-bf86-9199e4d84e4b",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_reserved",
+        "payload_json": "{\"base_commit\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"lane_id\": \"SK-WF2-L-I\", \"mode\": \"exclusive\", \"run_id\": \"SK-WF2-RUN-V1\"}",
+        "revision": 834,
+        "seq": 834,
+        "timestamp": "2026-09-12T17:52:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "7f7c6bdd-8206-4ed4-bf86-9199e4d84e4b",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_workspace_created",
+        "payload_json": "{\"base_commit\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"lane_id\": \"SK-WF2-L-I\", \"mode\": \"exclusive\", \"run_id\": \"SK-WF2-RUN-V1\"}",
+        "revision": 835,
+        "seq": 835,
+        "timestamp": "2026-09-12T17:52:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-A03-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-A03-G\"}",
+        "revision": 836,
+        "seq": 836,
+        "timestamp": "2026-09-12T17:52:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-A03-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"af9da00b-790f-490c-adb2-f28055758988\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 837,
+        "seq": 837,
+        "timestamp": "2026-09-12T17:52:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cc075c88-bffc-40e2-84bb-488e7653eeab",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_artifact_queued",
+        "payload_json": "{\"artifact_id\": \"f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5\", \"integration_task_id\": \"SK-WF2-I10\", \"integrator_lane_id\": \"SK-WF2-L-I\"}",
+        "revision": 838,
+        "seq": 838,
+        "timestamp": "2026-09-12T17:52:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-A03",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 839, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 839,
+        "seq": 839,
+        "timestamp": "2026-09-12T17:52:43Z"
       }
     ],
     "evidence": [
@@ -9224,6 +9314,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_installer.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"ec0ed01a7d63acde4405c65d74fd8158786527a4686b73920c2acf3af10b58c3\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_installer.py\", \"-v\"]}, \"diff_fingerprint\": \"5ea59eadca78e39c2879099c83e9fc6c5e3607afcf65a4fd6e82715a4ce60a9b\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py\", \"integrations/coding-workflow-mcp/scripts/install.py\", \"integrations/coding-workflow-mcp/tests/test_installer.py\", \"todo-status.md\", \"todos.md\", \"todos/wfu-00.md\", \"todos/wfu-01.md\", \"todos/wfu-02.md\", \"todos/wfu-10.md\", \"todos/wfu-11.md\", \"todos/wfu-12.md\", \"todos/wfu-13.md\", \"todos/wfu-14.md\", \"todos/wfu-15.md\", \"todos/wfu-16.md\", \"todos/wfu-20.md\", \"todos/wfu-21.md\", \"todos/wfu-22.md\", \"todos/wfu-23.md\", \"todos/wfu-24.md\", \"todos/wfu-25.md\", \"todos/wfu-26.md\", \"todos/wfu-27.md\", \"todos/wfu-28.md\", \"todos/wfu-29.md\", \"todos/wfu-30.md\", \"todos/wfu-31.md\", \"workflow-unification-v3.plan.json\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py\", \"sha256\": \"0311e0a2605666f41df98b31ad8eccfdac81de986270c34bfbdddfb7fb4f7fc0\"}, {\"path\": \"integrations/coding-workflow-mcp/scripts/install.py\", \"sha256\": \"da4214ea7eb91b3ddabbc5c89f5d176eadfd0793e19abf6509b7b939106ae4a1\"}, {\"path\": \"integrations/coding-workflow-mcp/tests/test_installer.py\", \"sha256\": \"9efbf95aa415a5fb76c7fb065e6c66bbe7d8e9598f628b38d8a74b9db78c7a0e\"}], \"interfaces\": [], \"recorded_git_head\": \"0a1c97c734bc2418077493c980e9fa45e3780dbc\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 244}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/32475d5f-6daa-4d8f-a71f-391a30a82c6e",
         "revision": 245,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-12T17:49:26Z",
+        "gate_id": "SK-WF2-A03-G",
+        "id": "367fb0f8-d2ba-479e-9948-b3811f3c24ba",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/baseline\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/a\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5\", \"started_revision\": 831, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/367fb0f8-d2ba-479e-9948-b3811f3c24ba",
+        "revision": 832,
         "status": "passed"
       },
       {
@@ -10433,6 +10536,19 @@
         "metadata_json": "{\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_recovery_override.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9f3f7f02b0d9f1019af8c5c0893ad17d0ed50cba1da910b919be1b453015cfc3\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/.local/share/coding-workflow-mcp/venv/bin/python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-p\", \"test_recovery_override.py\", \"-v\"]}, \"diff_fingerprint\": \"4178e8c640fe947f1ca4927c091a46580481a73b9243e4dbd29f445cf5a9d53a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/handles.py\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/server.py\", \"integrations/coding-workflow-mcp/scripts/recovery_admin.py\", \"integrations/coding-workflow-mcp/tests/test_parallel_agents.py\", \"integrations/coding-workflow-mcp/tests/test_recovery_override.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"todo-orchestrator/SKILL.md\", \"todo-orchestrator/references/cli-reference.md\", \"todo-orchestrator/tests/test_child_execution_v2.py\", \"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/commands/coordination.py\", \"todo-orchestrator/todo_orchestrator/commands/work.py\", \"todo-orchestrator/todo_orchestrator/migrations.py\", \"todo-orchestrator/todo_orchestrator/projections.py\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-status.md\", \"todos.md\", \"todos/cwm-00.md\", \"todos/cwm-01.md\", \"todos/cwm-02.md\", \"todos/cwm-03.md\", \"todos/cwm-04.md\", \"todos/cwm-05.md\", \"todos/cwm-06.md\", \"todos/cwm-07.md\", \"todos/cwm-08.md\", \"todos/cwm-09.md\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"b58490043616b35c68a94afc6d78542f0d25b850\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 104}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/af895b83-a1f2-4141-9e59-edf416f2864f",
         "revision": 105,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-09-12T17:52:43Z",
+        "gate_id": "SK-WF2-A03-G",
+        "id": "af9da00b-790f-490c-adb2-f28055758988",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/baseline\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/a\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5\", \"started_revision\": 836, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/af9da00b-790f-490c-adb2-f28055758988",
+        "revision": 837,
         "status": "passed"
       },
       {
@@ -11988,14 +12104,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"cwd\": \".\", \"input_paths\": [\"planning/workflow-foundation-v2\", \"docs/workflow_foundation_v2/baseline\", \"tests/wf2_acceptance/a\"], \"timeout\": 1800}",
         "id": "SK-WF2-A03-G",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e",
+        "last_run_at": "2026-09-12T17:52:43Z",
         "required": 1,
-        "revision": 797,
-        "status": "pending",
+        "revision": 837,
+        "status": "passed",
         "task_id": "SK-WF2-A03",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -13049,6 +13165,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-12-RUNTIME\", \"input_fingerprint\": \"e3f290708e70250e8803788e4806c78819130cd3172aa0be7304994abc9883dc\", \"last_run_at\": \"2026-08-30T13:12:39Z\", \"revision\": 320, \"status\": \"failed\", \"valid\": 0}, {\"id\": \"PCU-SK-12-TODO-RUNTIME\", \"input_fingerprint\": \"df977da041c7347f4851877566005d354afb1979eab051d49752bb3b93549a02\", \"last_run_at\": \"2026-08-30T13:12:45Z\", \"revision\": 322, \"status\": \"failed\", \"valid\": 0}, {\"id\": \"PCU-SK-12-LOCAL-RUNTIME\", \"input_fingerprint\": \"2acf65befefdbd2880224ee4b3b4454df5df561cd569b65c666b9c4bc04a9c7f\", \"last_run_at\": \"2026-08-30T13:12:38Z\", \"revision\": 318, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 375 ++++++++++++++++++++++++++++-----\\n todo-status.md                         |   6 +-\\n todos.md                               |   4 +-\\n todos/pcu-sk-10.md                     |   8 +-\\n todos/pcu-sk-12.md                     |   4 +-\\n 5 files changed, 336 insertions(+), 61 deletions(-)\", \"git_head\": \"94aef9424595e5d082570af66a1b194d199901b6\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-12\"}",
         "revision": 326,
         "task_id": "PCU-SK-12"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-12T17:52:43Z",
+        "id": "a4be06cc-bf80-4326-9a45-6b05a257dcef",
+        "kind": "complete",
+        "note": "Accepted independent A03 review; destination preprovisioned; gate executed with verified bindings.",
+        "payload_json": "{\"authority_commit\": \"6537178d4e16fff9850a419d4b2f9e80b775bade\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\", \"completion_gates\": [{\"evidence_id\": \"af9da00b-790f-490c-adb2-f28055758988\", \"evidence_revision\": 837, \"id\": \"SK-WF2-A03-G\", \"input_fingerprint\": \"120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\"}], \"completion_revision\": 839, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-WF2-A03-G\", \"input_fingerprint\": \"120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e\", \"last_run_at\": \"2026-09-12T17:52:43Z\", \"revision\": 837, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Accepted independent A03 review; destination preprovisioned; gate executed with verified bindings.\", \"producer_commit\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\", \"producer_root\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a\", \"resources\": [], \"task_id\": \"SK-WF2-A03\"}",
+        "revision": 839,
+        "task_id": "SK-WF2-A03"
       },
       {
         "claim_id": null,
@@ -16777,6 +16903,19 @@
         "task_id": "SK-WF2-A02",
         "valid": 1,
         "validation_git_head": "87d5772cad9f70d2943c43eb7e710b8aad4f7130"
+      },
+      {
+        "completion_git_head": "4abe1286c3f1c5ee9ea431c27179894daa726403",
+        "completion_revision": 839,
+        "evidence_id": "af9da00b-790f-490c-adb2-f28055758988",
+        "evidence_revision": 837,
+        "gate_id": "SK-WF2-A03-G",
+        "input_fingerprint": "120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e",
+        "provenance_json": "{\"claim_id\": \"7d720108-208d-4e09-b86d-00bf3770243e\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"120e6b71326f0a02b7750e800fe9643a307719c0c9fd55ca2ba66f76be30f91e\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-A03\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"docs/workflow_foundation_v2/baseline\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/a\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"4abe1286c3f1c5ee9ea431c27179894daa726403\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5\", \"started_revision\": 836, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/af9da00b-790f-490c-adb2-f28055758988\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-WF2-A03",
+        "valid": 1,
+        "validation_git_head": "4abe1286c3f1c5ee9ea431c27179894daa726403"
       },
       {
         "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
@@ -21172,9 +21311,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "4abe1286c3f1c5ee9ea431c27179894daa726403",
+        "completion_git_head": "4abe1286c3f1c5ee9ea431c27179894daa726403",
+        "completion_revision": 839,
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-A03",
         "kind": "task",
@@ -21186,14 +21325,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 829,
-        "status": "in_progress",
+        "revision": 839,
+        "status": "done",
         "tags_json": "[]",
         "title": "Map independent ctxpp and host execution contracts",
-        "updated_at": "2026-09-12T17:44:06Z",
-        "version": 2
+        "updated_at": "2026-09-12T17:52:43Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -24037,6 +24176,19 @@
       },
       {
         "conflict_json": "{}",
+        "created_at": "2026-09-12T17:52:43Z",
+        "id": "cc075c88-bffc-40e2-84bb-488e7653eeab",
+        "integration_task_id": "SK-WF2-I10",
+        "integrator_lane_id": "SK-WF2-L-I",
+        "merge_result_json": "{}",
+        "patch_artifact_id": "f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5",
+        "position": 0,
+        "run_id": "SK-WF2-RUN-V1",
+        "state": "queued",
+        "updated_at": "2026-09-12T17:52:43Z"
+      },
+      {
+        "conflict_json": "{}",
         "created_at": "2026-08-30T16:03:43Z",
         "id": "d1340296-e3a3-4fe6-91f2-87d5d004c573",
         "integration_task_id": "PCU-SK-24",
@@ -24288,12 +24440,12 @@
       },
       {
         "activated_at": "2026-09-12T17:44:06Z",
-        "completed_at": null,
+        "completed_at": "2026-09-12T17:52:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-A",
         "position": 2,
-        "revision": 829,
-        "state": "active",
+        "revision": 839,
+        "state": "completed",
         "task_id": "SK-WF2-A03"
       },
       {
@@ -24973,11 +25125,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-A",
         "parent_lane_id": "SK-WF2-L-COORD",
-        "revision": 829,
+        "revision": 839,
         "role": "implementer",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T17:44:06Z",
+        "state": "closed",
+        "updated_at": "2026-09-12T17:52:43Z",
         "workspace_mode": "isolated_merge"
       },
       {
@@ -25387,6 +25539,17 @@
         "workspace_id": "01d61529-0907-4f61-82ee-060de86aa104"
       },
       {
+        "artifact_ref": "4abe1286c3f1c5ee9ea431c27179894daa726403",
+        "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
+        "content_hash": "008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5",
+        "created_at": "2026-09-12T17:49:26Z",
+        "id": "f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5",
+        "kind": "commit",
+        "state": "queued",
+        "task_id": "SK-WF2-A03",
+        "workspace_id": "2628ed1d-0535-46cf-8518-3a530683e452"
+      },
+      {
         "artifact_ref": "21de9bd51acc328a6fec23236893925cfd84a7e6",
         "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
         "content_hash": "f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553",
@@ -25755,13 +25918,13 @@
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination"
       },
       {
-        "artifact_kind": null,
-        "artifact_ref": null,
+        "artifact_kind": "commit",
+        "artifact_ref": "4abe1286c3f1c5ee9ea431c27179894daa726403",
         "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
         "branch": "codex/sk-wf2-l-a",
         "cleanup_eligible": 0,
         "created_at": "2026-09-12T17:17:26Z",
-        "diff_hash": null,
+        "diff_hash": "008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5",
         "id": "2628ed1d-0535-46cf-8518-3a530683e452",
         "integration_task_id": "SK-WF2-I10",
         "lane_id": "SK-WF2-L-A",
@@ -25769,8 +25932,8 @@
         "mode": "isolated_merge",
         "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T17:17:27Z",
+        "state": "queued",
+        "updated_at": "2026-09-12T17:52:43Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a"
       },
       {
@@ -25829,6 +25992,25 @@
         "state": "integrated",
         "updated_at": "2026-08-30T14:42:03Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-12"
+      },
+      {
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
+        "branch": "codex/sk-wf2-l-i",
+        "cleanup_eligible": 0,
+        "created_at": "2026-09-12T17:52:31Z",
+        "diff_hash": null,
+        "id": "7f7c6bdd-8206-4ed4-bf86-9199e4d84e4b",
+        "integration_task_id": "SK-WF2-I10",
+        "lane_id": "SK-WF2-L-I",
+        "merge_result_json": "{}",
+        "mode": "exclusive",
+        "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
+        "run_id": "SK-WF2-RUN-V1",
+        "state": "active",
+        "updated_at": "2026-09-12T17:52:31Z",
+        "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i"
       },
       {
         "artifact_kind": "commit",
