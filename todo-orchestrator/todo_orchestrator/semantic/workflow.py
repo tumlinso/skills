@@ -277,7 +277,9 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
     recovery_needed.extend(
         {"kind": "workspace", "id": row["id"], "reason": row["state"]}
         for row in conn.execute(
-            "SELECT id,state FROM workflow_workspaces WHERE state IN ('conflict','apply_failed','finalization_failed','provisioning_failed')"
+            "SELECT id,state FROM workflow_workspaces WHERE state IN "
+            "('conflict','applying','apply_failed','applied_pending_wave','finalizing',"
+            "'finalization_failed','provisioning_failed')"
         )
     )
     recovery_needed.extend(
@@ -325,7 +327,8 @@ def workflow_state(conn, project: dict[str, object]) -> dict[str, object]:
         {"kind": "integration", "id": row["id"], "reason": row["state"]}
         for row in conn.execute(
             "SELECT id,state FROM workflow_integration_queue "
-            "WHERE state IN ('conflict','apply_failed','finalization_failed') ORDER BY id"
+            "WHERE state IN ('conflict','applying','apply_failed','applied_pending_wave',"
+            "'finalizing','finalization_failed') ORDER BY id"
         )
     )
     recovery_needed = sorted(

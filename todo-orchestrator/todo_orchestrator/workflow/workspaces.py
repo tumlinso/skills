@@ -1598,7 +1598,18 @@ class WorkspaceService:
                     )
                     if _sha256(frozen) != source_identity:
                         raise TodoError("integration_frozen_commit_changed", "Frozen integration commit no longer matches gated source")
-                merge_result = {"state": target_state, "gates": authoritative, "integrated_artifact": integrated_artifact, "source_identity": source_identity}
+                # Retain immutable apply provenance even when a failed gate
+                # leaves the source preserved for explicit owner adoption into
+                # a later declared batch wave.
+                merge_result = {
+                    "state": target_state,
+                    "gates": authoritative,
+                    "integrated_artifact": integrated_artifact,
+                    "source_identity": source_identity,
+                    "apply_revision": apply_revision,
+                    "pre_apply_head": applied.get("pre_apply_head"),
+                    "destination_worktree": destination_path,
+                }
                 conn.execute(
                     "UPDATE workflow_integration_queue SET state=?,merge_result_json=?,updated_at=? WHERE id=?",
                     (target_state, _json(merge_result), now, queue_id),
@@ -1910,6 +1921,542 @@ class WorkspaceService:
             event_type="workflow_contract_split_integration_recorded", payload=preview, operation=operation,
         )
         return {**result, "revision": revision}
+
+    # A wave is deliberately stored in the immutable queue receipts rather than a
+    # new table.  That keeps existing databases compatible while making the
+    # member list part of the audited integration contract.
+    def declare_integration_wave(
+        self, *, queue_ids: Sequence[str], actor_session_id: str | None = None
+    ) -> dict[str, object]:
+        """Freeze the complete ordered member set for one integration task.
+
+        No artifact may be added after this point: application and finalization
+        re-check that the declared members are the entire live nonterminal set.
+        A first member already in ``gate_failed`` is permitted only so the owner
+        can explicitly adopt it with :meth:`adopt_gate_failed_wave_member`.
+        """
+        supplied = [str(item) for item in queue_ids]
+        if not supplied or len(set(supplied)) != len(supplied):
+            raise TodoError("integration_wave_members_invalid", "A wave requires unique queue members")
+        wave_id = str(uuid.uuid4())
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            placeholders = ",".join("?" for _ in supplied)
+            rows = conn.execute(
+                f"SELECT q.*,a.base_commit,d.worktree_path,d.state AS destination_state "
+                f"FROM workflow_integration_queue q JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                f"JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                f"WHERE q.id IN ({placeholders}) ORDER BY q.position", supplied,
+            ).fetchall()
+            if len(rows) != len(supplied):
+                raise TodoError("integration_wave_member_missing", "A declared queue member does not exist")
+            first = rows[0]
+            scope = (first["run_id"], first["integration_task_id"], first["integrator_lane_id"], first["base_commit"])
+            if any((row["run_id"], row["integration_task_id"], row["integrator_lane_id"], row["base_commit"]) != scope for row in rows):
+                raise TodoError("integration_wave_scope_mismatch", "Wave members must share one run, task, lane, and base")
+            member_ids = [str(row["id"]) for row in rows]
+            if set(member_ids) != set(supplied):
+                raise TodoError("integration_wave_members_invalid", "Wave members changed while being ordered")
+            live = conn.execute(
+                "SELECT id,state FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? "
+                "AND state NOT IN ('integrated','rejected') ORDER BY position",
+                scope[:2],
+            ).fetchall()
+            if [str(row["id"]) for row in live] != member_ids:
+                raise TodoError("integration_wave_members_incomplete", "A wave must declare every live member in queue order")
+            allowed = {"queued", "gate_failed"}
+            if any(row["state"] not in allowed for row in rows):
+                raise TodoError("integration_wave_member_state", "Only queued members or the first preserved gate failure can be declared")
+            failed = [row for row in rows if row["state"] == "gate_failed"]
+            if failed and (len(failed) != 1 or failed[0]["id"] != rows[0]["id"]):
+                raise TodoError("integration_wave_adoption_required", "Only the first preserved gate failure may join a wave")
+            if any(json.loads(row["merge_result_json"] or "{}").get("wave_id") for row in rows):
+                raise TodoError("integration_wave_already_declared", "A queue member already belongs to an immutable wave")
+            payload = {"wave_id": wave_id, "wave_members": member_ids, "wave_base_commit": scope[3],
+                       "wave_declared_revision": revision}
+            for row in rows:
+                merged = json.loads(row["merge_result_json"] or "{}")
+                merged.update(payload)
+                conn.execute("UPDATE workflow_integration_queue SET merge_result_json=?,updated_at=? WHERE id=?",
+                             (_json(merged), utc_now(), row["id"]))
+            return {"wave_id": wave_id, "queue_ids": member_ids, "run_id": scope[0],
+                    "integration_task_id": scope[1], "integrator_lane_id": scope[2], "base_commit": scope[3],
+                    "adoption_required": bool(failed)}
+
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave",
+                                          entity_id=wave_id, event_type="workflow_integration_wave_declared",
+                                          payload={"queue_ids": supplied}, operation=operation)
+        result["revision"] = revision
+        return result
+
+    def declare_and_adopt_integration_wave(
+        self,
+        *,
+        queue_ids: Sequence[str],
+        legacy_provenance_reason: str | None = None,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Atomically declare a wave and adopt its optional first gate failure.
+
+        This is the root-facing API.  It avoids a stranded immutable wave by
+        doing all Git-read provenance checks before one database mutation that
+        writes both declaration and adoption receipts.
+        """
+        supplied = [str(item) for item in queue_ids]
+        if not supplied or len(set(supplied)) != len(supplied):
+            raise TodoError("integration_wave_members_invalid", "A wave requires unique queue members")
+        with self.db.read() as conn:
+            placeholders = ",".join("?" for _ in supplied)
+            rows = conn.execute(
+                f"SELECT q.*,a.kind,a.artifact_ref,a.content_hash,a.base_commit,d.worktree_path,d.base_commit AS destination_base "
+                f"FROM workflow_integration_queue q JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                f"JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+                f"WHERE q.id IN ({placeholders}) ORDER BY q.position", supplied,
+            ).fetchall()
+        if len(rows) != len(supplied):
+            raise TodoError("integration_wave_member_missing", "A declared queue member does not exist")
+        if len({str(row["base_commit"]) for row in rows}) != 1:
+            raise TodoError("integration_wave_scope_mismatch", "Wave members must share the exact artifact base")
+        if any(json.loads(row["merge_result_json"] or "{}").get("wave_id") for row in rows):
+            raise TodoError("integration_wave_already_declared", "A queue member already belongs to an immutable wave")
+        failed = [row for row in rows if row["state"] == "gate_failed"]
+        legacy = False
+        if failed:
+            if len(failed) != 1 or failed[0]["id"] != rows[0]["id"]:
+                raise TodoError("integration_wave_adoption_required", "Only the first preserved gate failure may join a wave")
+            row = failed[0]
+            applied = json.loads(row["merge_result_json"] or "{}")
+            destination = Path(str(row["worktree_path"]))
+            destination_path = str(destination.resolve())
+            source_identity, pre_apply = str(applied.get("source_identity") or ""), str(applied.get("pre_apply_head") or "")
+            legacy = not pre_apply or applied.get("destination_worktree") != destination_path
+            if legacy and not (legacy_provenance_reason and legacy_provenance_reason.strip()):
+                raise TodoError("integration_apply_provenance_missing", "Legacy gate failure requires an explicit root-owned adoption reason")
+            if (not source_identity or row["destination_base"] != row["base_commit"] or
+                    (not legacy and pre_apply != row["base_commit"]) or row["kind"] != "commit"):
+                raise TodoError("integration_apply_provenance_missing", "Gate failure lacks auditable first-apply provenance")
+            if self._source_identity(destination, str(row["base_commit"])) != source_identity:
+                raise TodoError("integration_source_changed", "Preserved gate-failed source changed before adoption")
+            artifact = self._commit(destination, str(row["artifact_ref"]))
+            diff = self._git_ok(destination, ["diff", "--binary", str(row["base_commit"]), artifact], code="artifact_diff_failed")
+            if _sha256(diff) != row["content_hash"]:
+                raise TodoError("artifact_content_changed", "Adopted artifact no longer matches its immutable hash")
+        wave_id = str(uuid.uuid4())
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            placeholders = ",".join("?" for _ in supplied)
+            current = conn.execute(f"SELECT * FROM workflow_integration_queue WHERE id IN ({placeholders}) ORDER BY position", supplied).fetchall()
+            if (len(current) != len(supplied) or [str(row["id"]) for row in current] != [str(row["id"]) for row in rows] or
+                    any(json.loads(row["merge_result_json"] or "{}").get("wave_id") for row in current)):
+                raise TodoError("integration_wave_changed", "Wave members changed during adoption")
+            first = current[0]
+            scope = (first["run_id"], first["integration_task_id"], first["integrator_lane_id"])
+            if any((row["run_id"], row["integration_task_id"], row["integrator_lane_id"]) != scope for row in current):
+                raise TodoError("integration_wave_scope_mismatch", "Wave members must share one run, task, and lane")
+            members = [str(row["id"]) for row in current]
+            live = conn.execute("SELECT id FROM workflow_integration_queue WHERE run_id=? AND integration_task_id=? AND state NOT IN ('integrated','rejected') ORDER BY position", scope[:2]).fetchall()
+            if [str(row["id"]) for row in live] != members or any(row["state"] not in {"queued", "gate_failed"} for row in current):
+                raise TodoError("integration_wave_members_incomplete", "Wave membership or state changed before declaration")
+            payload = {"wave_id": wave_id, "wave_members": members, "wave_base_commit": rows[0]["base_commit"], "wave_declared_revision": revision}
+            for queue in current:
+                merged = json.loads(queue["merge_result_json"] or "{}"); merged.update(payload)
+                if queue["id"] == rows[0]["id"] and failed:
+                    source = str(json.loads(queue["merge_result_json"] or "{}").get("source_identity"))
+                    merged.update({"wave_adopted_revision": revision, "wave_cumulative_source_identity": source})
+                    if legacy:
+                        merged.update({"legacy_provenance_adopted_revision": revision, "legacy_provenance_adoption_reason": legacy_provenance_reason.strip()})
+                    conn.execute("UPDATE workflow_integration_queue SET state='applied_pending_wave',merge_result_json=?,updated_at=? WHERE id=?", (_json(merged), utc_now(), queue["id"]))
+                else:
+                    conn.execute("UPDATE workflow_integration_queue SET merge_result_json=?,updated_at=? WHERE id=?", (_json(merged), utc_now(), queue["id"]))
+            if failed:
+                conn.execute("UPDATE workflow_workspaces SET state='applied_pending_wave',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), scope[0], scope[2]))
+            return {"wave_id": wave_id, "queue_ids": members, "run_id": scope[0], "integration_task_id": scope[1], "integrator_lane_id": scope[2], "base_commit": rows[0]["base_commit"], "adopted": bool(failed), "legacy_provenance_adopted": legacy}
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                                          event_type="workflow_integration_wave_declared_and_adopted", payload={"queue_ids": supplied, "legacy_provenance_adoption_reason": legacy_provenance_reason if legacy else None}, operation=operation)
+        result["revision"] = revision
+        return result
+
+    def adopt_gate_failed_wave_member(
+        self,
+        *,
+        queue_id: str,
+        legacy_provenance_reason: str | None = None,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Audit-adopt a preserved first apply into its declared wave; never mutates Git."""
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT q.*,a.kind,a.artifact_ref,a.content_hash,a.base_commit,d.worktree_path,d.base_commit AS destination_base "
+                "FROM workflow_integration_queue q JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id WHERE q.id=?", (queue_id,)
+            ).fetchone()
+        if row is None or row["state"] != "gate_failed":
+            raise TodoError("integration_gate_failure_required", "Only a preserved gate failure can be adopted")
+        applied = json.loads(row["merge_result_json"] or "{}")
+        wave_id, members = str(applied.get("wave_id") or ""), applied.get("wave_members")
+        if not wave_id or not isinstance(members, list) or not members or members[0] != queue_id:
+            raise TodoError("integration_wave_adoption_invalid", "Gate failure is not the first member of a declared wave")
+        destination = Path(str(row["worktree_path"]))
+        destination_path = str(destination.resolve())
+        source_identity = str(applied.get("source_identity") or "")
+        pre_apply_head = str(applied.get("pre_apply_head") or "")
+        legacy = not pre_apply_head or applied.get("destination_worktree") != destination_path
+        if legacy and not (legacy_provenance_reason and legacy_provenance_reason.strip()):
+            raise TodoError(
+                "integration_apply_provenance_missing",
+                "Legacy gate failure requires an explicit root-owned adoption reason",
+            )
+        if (not source_identity or row["destination_base"] != row["base_commit"] or
+                (not legacy and pre_apply_head != row["base_commit"])):
+            raise TodoError("integration_apply_provenance_missing", "Gate failure lacks auditable first-apply provenance")
+        if self._source_identity(destination, str(row["base_commit"])) != source_identity:
+            raise TodoError("integration_source_changed", "Preserved gate-failed source changed before adoption")
+        if row["kind"] != "commit":
+            raise TodoError("integration_wave_adoption_artifact_invalid", "Only immutable commit artifacts can be adopted")
+        artifact = self._commit(destination, str(row["artifact_ref"]))
+        artifact_diff = self._git_ok(destination, ["diff", "--binary", str(row["base_commit"]), artifact], code="artifact_diff_failed")
+        if _sha256(artifact_diff) != row["content_hash"]:
+            raise TodoError("artifact_content_changed", "Adopted artifact no longer matches its immutable hash")
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute("SELECT state,merge_result_json FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
+            if current is None or current["state"] != "gate_failed":
+                raise TodoError("integration_state_changed", "Gate failure changed during adoption")
+            merged = json.loads(current["merge_result_json"] or "{}")
+            if merged.get("wave_id") != wave_id or merged.get("wave_members") != members:
+                raise TodoError("integration_wave_changed", "Declared wave changed before adoption")
+            merged.update({"wave_adopted_revision": revision, "wave_cumulative_source_identity": source_identity})
+            if legacy:
+                # This deliberately records an owner attestation rather than
+                # backfilling absent historical facts.  The checks above bind
+                # current source, destination/base and immutable artifact.
+                merged.update({
+                    "legacy_provenance_adopted_revision": revision,
+                    "legacy_provenance_adoption_reason": legacy_provenance_reason.strip(),
+                })
+            conn.execute("UPDATE workflow_integration_queue SET state='applied_pending_wave',merge_result_json=?,updated_at=? WHERE id=?",
+                         (_json(merged), utc_now(), queue_id))
+            conn.execute("UPDATE workflow_workspaces SET state='applied_pending_wave',updated_at=? WHERE run_id=? AND lane_id=?",
+                         (utc_now(), row["run_id"], row["integrator_lane_id"]))
+            return {"queue_id": queue_id, "wave_id": wave_id, "state": "applied_pending_wave", "source_identity": source_identity,
+                    "legacy_provenance_adopted": legacy}
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave",
+                                          entity_id=wave_id, event_type="workflow_integration_wave_member_adopted",
+                                          payload={"queue_id": queue_id, "source_identity": source_identity,
+                                                   "legacy_provenance_adopted": legacy,
+                                                   "legacy_provenance_adoption_reason": legacy_provenance_reason if legacy else None}, operation=operation)
+        result["revision"] = revision
+        return result
+
+    def _declared_wave(self, conn: Any, integration_task_id: str, wave_id: str) -> list[Any]:
+        rows = conn.execute(
+            "SELECT q.*,a.workspace_id,a.kind,a.artifact_ref,a.content_hash,a.base_commit,d.id AS destination_workspace_id,d.worktree_path,d.base_commit AS destination_base "
+            "FROM workflow_integration_queue q JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+            "JOIN workflow_workspaces d ON d.run_id=q.run_id AND d.lane_id=q.integrator_lane_id "
+            "WHERE q.integration_task_id=? ORDER BY q.position", (integration_task_id,)
+        ).fetchall()
+        wave = [row for row in rows if json.loads(row["merge_result_json"] or "{}").get("wave_id") == wave_id]
+        if not wave:
+            raise TodoError("integration_wave_missing", "Declared integration wave does not exist")
+        metadata = json.loads(wave[0]["merge_result_json"] or "{}")
+        members = metadata.get("wave_members")
+        if (not isinstance(members, list) or [str(row["id"]) for row in wave] != members or
+                any(json.loads(row["merge_result_json"] or "{}").get("wave_members") != members for row in wave)):
+            raise TodoError("integration_wave_changed", "Declared wave membership is inconsistent")
+        scope = (wave[0]["run_id"], wave[0]["integrator_lane_id"], wave[0]["base_commit"])
+        if any((row["run_id"], row["integrator_lane_id"], row["base_commit"]) != scope for row in wave):
+            raise TodoError("integration_wave_scope_mismatch", "Declared wave scope changed")
+        live = [row for row in rows if row["state"] not in {"integrated", "rejected"}]
+        if [str(row["id"]) for row in live] != members:
+            raise TodoError("integration_wave_members_changed", "A late or missing integration member invalidated the wave")
+        return wave
+
+    def apply_declared_integration_wave(self, *, integration_task_id: str, wave_id: str,
+                                        actor_session_id: str | None = None) -> dict[str, object]:
+        """Apply every remaining declared member in order, retaining one cumulative source."""
+        with self.db.read() as conn:
+            rows = self._declared_wave(conn, integration_task_id, wave_id)
+            destination = Path(str(rows[0]["worktree_path"]))
+            base = str(rows[0]["base_commit"])
+            applied_rows = [row for row in rows if row["state"] == "applied_pending_wave"]
+            pending = [row for row in rows if row["state"] == "queued"]
+            if any(row["state"] not in {"queued", "applied_pending_wave"} for row in rows):
+                raise TodoError("integration_wave_member_state", "Wave contains a member that cannot be applied")
+            if applied_rows:
+                current_identity = self._source_identity(destination, base)
+                expected = json.loads(applied_rows[-1]["merge_result_json"] or "{}").get("wave_cumulative_source_identity")
+                if current_identity != expected:
+                    raise TodoError("integration_source_changed", "Preserved wave source changed before continued apply")
+            elif material_dirty_paths(destination):
+                raise TodoError("integration_workspace_dirty", "Destination has dirty changes; all files are preserved")
+        for row in pending:
+            def reserve(conn: Any, revision: int, queue_id=str(row["id"])) -> None:
+                fresh = self._declared_wave(conn, integration_task_id, wave_id)
+                current = next((item for item in fresh if item["id"] == queue_id), None)
+                if current is None or current["state"] != "queued":
+                    raise TodoError("integration_state_changed", "Wave member changed during application")
+                conn.execute("UPDATE workflow_integration_queue SET state='applying',updated_at=? WHERE id=?", (utc_now(), queue_id))
+                conn.execute("UPDATE workflow_workspaces SET state='applying',updated_at=? WHERE run_id=? AND lane_id=?",
+                             (utc_now(), current["run_id"], current["integrator_lane_id"]))
+            self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                           event_type="workflow_integration_wave_member_reserved", payload={"queue_id": row["id"]}, operation=reserve)
+            try:
+                artifact = self._commit(destination, str(row["artifact_ref"]))
+                diff = self._git_ok(destination, ["diff", "--binary", base, artifact], code="artifact_diff_failed")
+                if _sha256(diff) != row["content_hash"]:
+                    raise TodoError("artifact_content_changed", "Commit artifact no longer matches its immutable hash")
+                material = self._git_ok(destination, integration_diff_args(base, artifact), code="artifact_material_diff_failed")
+                result = self._git_input(destination, ["apply", "--index", "--3way", "--allow-empty", "-"], material)
+                if result.returncode != 0:
+                    raise TodoError("integration_wave_apply_conflict", "Wave apply conflicted; destination is preserved")
+                identity = self._source_identity(destination, base)
+            except Exception as exc:
+                failure_code = exc.code if isinstance(exc, TodoError) else "integration_wave_apply_exception"
+                self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                               event_type="workflow_integration_wave_apply_failed", payload={"queue_id": row["id"], "code": failure_code, "preserved": True},
+                               operation=lambda conn, revision, q=str(row["id"]): (
+                                   conn.execute("UPDATE workflow_integration_queue SET state='apply_failed',conflict_json=?,updated_at=? WHERE id=? AND state='applying'", (_json({"code": failure_code, "preserved": True}), utc_now(), q)),
+                                   conn.execute("UPDATE workflow_workspaces SET state='apply_failed',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), row["run_id"], row["integrator_lane_id"]))))
+                raise
+            def applied(conn: Any, revision: int, queue_id=str(row["id"]), source_identity=identity) -> None:
+                current = conn.execute("SELECT state,merge_result_json FROM workflow_integration_queue WHERE id=?", (queue_id,)).fetchone()
+                if current is None or current["state"] != "applying":
+                    raise TodoError("integration_state_changed", "Wave member changed after Git apply")
+                merged = json.loads(current["merge_result_json"] or "{}")
+                merged.update({"apply_revision": revision, "pre_apply_head": base, "destination_worktree": str(destination.resolve()),
+                               "wave_cumulative_source_identity": source_identity})
+                conn.execute("UPDATE workflow_integration_queue SET state='applied_pending_wave',merge_result_json=?,updated_at=? WHERE id=?",
+                             (_json(merged), utc_now(), queue_id))
+                conn.execute("UPDATE workflow_workspaces SET state='applied_pending_wave',merge_result_json=?,updated_at=? WHERE run_id=? AND lane_id=?",
+                             (_json(merged), utc_now(), row["run_id"], row["integrator_lane_id"]))
+            self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                           event_type="workflow_integration_wave_member_applied", payload={"queue_id": row["id"], "source_identity": identity}, operation=applied)
+        identity = self._source_identity(destination, base)
+        return {"wave_id": wave_id, "integration_task_id": integration_task_id, "queue_ids": [str(row["id"]) for row in rows],
+                "state": "applied_pending_wave", "source_identity": identity}
+
+    def retry_declared_integration_wave_apply(
+        self, *, integration_task_id: str, wave_id: str, actor_session_id: str | None = None
+    ) -> dict[str, object]:
+        """Requeue one clean failed wave apply without restoring or changing Git.
+
+        A conflict or any other mutation residue remains preserved and must be
+        handled by explicit recovery; this retry only covers a refusal whose
+        destination still equals the last accepted cumulative source.
+        """
+        with self.db.read() as conn:
+            rows = self._declared_wave(conn, integration_task_id, wave_id)
+            failed = [row for row in rows if row["state"] == "apply_failed"]
+            if len(failed) != 1 or any(row["state"] not in {"applied_pending_wave", "apply_failed", "queued"} for row in rows):
+                raise TodoError("integration_wave_apply_failure_required", "Wave must contain exactly one retryable apply failure")
+            failed_row = failed[0]
+            if any(row["state"] == "queued" and row["position"] < failed_row["position"] for row in rows):
+                raise TodoError("integration_wave_order", "An earlier wave member has not been applied")
+            destination, base = Path(str(failed_row["worktree_path"])), str(failed_row["base_commit"])
+            expected = self._source_identity(destination, base)
+            applied = [row for row in rows if row["state"] == "applied_pending_wave"]
+            expected_prior = json.loads(applied[-1]["merge_result_json"] or "{}").get("wave_cumulative_source_identity") if applied else expected
+            if material_dirty_paths(destination) or self._source_identity(destination, base) != expected_prior:
+                raise TodoError("integration_wave_apply_retry_unsafe", "Preserved destination is not a clean prior wave source")
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            fresh = self._declared_wave(conn, integration_task_id, wave_id)
+            current = next((row for row in fresh if row["id"] == failed_row["id"]), None)
+            if current is None or current["state"] != "apply_failed":
+                raise TodoError("integration_state_changed", "Wave apply failure changed during retry")
+            conn.execute("UPDATE workflow_integration_queue SET state='queued',conflict_json='{}',updated_at=? WHERE id=?", (utc_now(), failed_row["id"]))
+            conn.execute("UPDATE workflow_workspaces SET state=?,updated_at=? WHERE run_id=? AND lane_id=?",
+                         ("applied_pending_wave" if applied else "active", utc_now(), failed_row["run_id"], failed_row["integrator_lane_id"]))
+            return {"wave_id": wave_id, "queue_id": failed_row["id"], "state": "queued", "source_identity": expected_prior}
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                                          event_type="workflow_integration_wave_apply_retried", payload={"queue_id": failed_row["id"]}, operation=operation)
+        result["revision"] = revision
+        return result
+
+    def record_integration_wave_gates(self, *, integration_task_id: str, wave_id: str,
+                                       gate_results: Sequence[dict[str, object]], actor_session_id: str | None = None) -> dict[str, object]:
+        """Bind one gate run to the cumulative wave source and finalize all members atomically."""
+        if not gate_results:
+            raise TodoError("post_merge_gates_required", "At least one post-merge gate result is required")
+        with self.db.read() as conn:
+            rows = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "applied_pending_wave" for row in rows):
+                raise TodoError("integration_wave_not_applied", "Every declared wave member must be applied before gates")
+            destination, base = Path(str(rows[0]["worktree_path"])), str(rows[0]["base_commit"])
+            identity = self._source_identity(destination, base)
+            last_apply_revision = max(
+                int(json.loads(row["merge_result_json"] or "{}").get("apply_revision") or
+                    json.loads(row["merge_result_json"] or "{}").get("wave_adopted_revision") or 0)
+                for row in rows
+            )
+            required = {row[0] for row in conn.execute("SELECT id FROM gates WHERE task_id=? AND required=1", (integration_task_id,))}
+            supplied = {str(item.get("gate_id", "")) for item in gate_results}
+            if not required or supplied != required:
+                raise TodoError("integration_gate_coverage_incomplete", "All and only required integration-task gates must be supplied")
+            authoritative: list[dict[str, object]] = []
+            for supplied_gate in gate_results:
+                gate_id, evidence_id = str(supplied_gate.get("gate_id", "")), str(supplied_gate.get("evidence_id", ""))
+                record = conn.execute("SELECT g.status,g.valid,g.input_fingerprint,e.status,e.revision,e.metadata_json FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?", (gate_id, evidence_id)).fetchone()
+                metadata = json.loads(record["metadata_json"] or "{}") if record else {}
+                if (not record or record["status"] != "passed" or not record["valid"] or record[3] != "passed" or
+                        metadata.get("input_fingerprint") != record["input_fingerprint"] or metadata.get("workspace_path") != str(destination.resolve()) or
+                        metadata.get("source_identity") != identity or int(metadata.get("started_revision", -1)) < last_apply_revision):
+                    raise TodoError("integration_gate_workspace_mismatch", "Gate evidence does not bind the cumulative wave source")
+                authoritative.append({"gate_id": gate_id, "evidence_id": evidence_id, "status": record["status"], "valid": bool(record["valid"]), "evidence_revision": int(record["revision"]), "input_fingerprint": record["input_fingerprint"]})
+        def reserve(conn: Any, revision: int) -> None:
+            fresh = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "applied_pending_wave" for row in fresh):
+                raise TodoError("integration_state_changed", "Wave changed before finalization")
+            placeholders = ",".join("?" for _ in fresh)
+            conn.execute("UPDATE workflow_integration_queue SET state='finalizing',updated_at=? WHERE id IN (%s)" % placeholders, [utc_now(), *[row["id"] for row in fresh]])
+            conn.execute("UPDATE workflow_workspaces SET state='finalizing',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), rows[0]["run_id"], rows[0]["integrator_lane_id"]))
+        self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                       event_type="workflow_integration_wave_finalization_reserved", payload={"source_identity": identity, "gate_count": len(authoritative), "last_apply_revision": last_apply_revision}, operation=reserve)
+        try:
+            content = self._source_diff(destination, base, code="integration_final_diff_failed")
+            if _sha256(content) != identity:
+                raise TodoError("integration_source_changed", "Final artifact does not match gated wave source")
+            artifact_path = self.managed_root / "artifacts" / f"integration-{identity}.patch"
+            _write_immutable(artifact_path, content)
+            frozen = self._freeze_integration_commit(destination, base_commit=base, queue_id=wave_id, source_identity=identity)
+            self._advance_integration_head(destination, frozen)
+        except Exception:
+            self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                           event_type="workflow_integration_wave_finalization_failed", payload={"preserved": True},
+                           operation=lambda conn, revision: (
+                               conn.execute("UPDATE workflow_integration_queue SET state='finalization_failed',updated_at=? WHERE integration_task_id=? AND state='finalizing'", (utc_now(), integration_task_id)),
+                               conn.execute("UPDATE workflow_workspaces SET state='finalization_failed',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), rows[0]["run_id"], rows[0]["integrator_lane_id"]))))
+            raise
+        def finalize(conn: Any, revision: int) -> dict[str, object]:
+            fresh = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "finalizing" for row in fresh):
+                raise TodoError("integration_not_finalizing", "Wave finalization reservation was lost")
+            for gate in authoritative:
+                current = conn.execute(
+                    "SELECT g.status,g.valid,g.input_fingerprint,e.status,e.metadata_json,e.revision "
+                    "FROM gates g JOIN evidence e ON e.gate_id=g.id WHERE g.id=? AND e.id=?",
+                    (gate["gate_id"], gate["evidence_id"]),
+                ).fetchone()
+                metadata = json.loads(current["metadata_json"] or "{}") if current else {}
+                if (
+                    not current
+                    or current["status"] != gate["status"]
+                    or bool(current["valid"]) != gate["valid"]
+                    or current["status"] != current[3]
+                    or int(current["revision"]) != gate["evidence_revision"]
+                    or metadata.get("input_fingerprint") != current["input_fingerprint"]
+                    or int(metadata.get("started_revision", -1)) < last_apply_revision
+                    or metadata.get("workspace_path") != str(destination.resolve())
+                    or metadata.get("source_identity") != identity
+                ):
+                    raise TodoError(
+                        "integration_gate_provenance_stale",
+                        "Integration-wave gate provenance changed before finalization",
+                    )
+            if self._source_identity(destination, base) != identity:
+                raise TodoError("integration_source_changed", "Destination source changed before authoritative wave finalization")
+            frozen_diff = self._git_ok(
+                destination,
+                integration_diff_args(base, frozen),
+                code="integration_frozen_commit_missing",
+            )
+            if _sha256(frozen_diff) != identity:
+                raise TodoError("integration_frozen_commit_changed", "Frozen integration-wave commit no longer matches gated source")
+            result = {"state": "integrated", "wave_id": wave_id, "wave_members": [str(row["id"]) for row in fresh],
+                      "gates": authoritative, "source_identity": identity,
+                      "integrated_artifact": {"kind": "commit", "ref": frozen, "patch_ref": str(artifact_path), "content_hash": identity}}
+            for row in fresh:
+                conn.execute("UPDATE workflow_integration_queue SET state='integrated',merge_result_json=?,updated_at=? WHERE id=?", (_json(result), utc_now(), row["id"]))
+                conn.execute("UPDATE workflow_patch_artifacts SET state='integrated' WHERE id=?", (row["patch_artifact_id"],))
+                conn.execute("UPDATE workflow_workspaces SET state='integrated',merge_result_json=?,updated_at=? WHERE id=?", (_json(result), utc_now(), row["workspace_id"]))
+            conn.execute("UPDATE workflow_workspaces SET state='integrated',artifact_kind='commit',artifact_ref=?,diff_hash=?,merge_result_json=?,updated_at=? WHERE run_id=? AND lane_id=?", (frozen, identity, _json(result), utc_now(), fresh[0]["run_id"], fresh[0]["integrator_lane_id"]))
+            return {"wave_id": wave_id, "queue_ids": result["wave_members"], "state": "integrated", "gates": authoritative, "integrated_artifact": result["integrated_artifact"]}
+        try:
+            result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                                              event_type="workflow_integration_wave_gates_recorded", payload={"source_identity": identity, "gate_count": len(authoritative)}, operation=finalize)
+        except Exception:
+            # Git may already hold the frozen commit.  Never strand a semantic
+            # ``finalizing`` reservation: retain that Git state and make the
+            # database retry path explicit and auditable.
+            self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                           event_type="workflow_integration_wave_finalization_failed", payload={"preserved": True, "after_frozen_head": True},
+                           operation=lambda conn, revision: (
+                               conn.execute("UPDATE workflow_integration_queue SET state='finalization_failed',updated_at=? WHERE integration_task_id=? AND state='finalizing'", (utc_now(), integration_task_id)),
+                               conn.execute("UPDATE workflow_workspaces SET state='finalization_failed',updated_at=? WHERE run_id=? AND lane_id=? AND state='finalizing'", (utc_now(), rows[0]["run_id"], rows[0]["integrator_lane_id"]))))
+            raise
+        result["revision"] = revision
+        return result
+
+    def retry_declared_integration_wave_finalization(
+        self, *, integration_task_id: str, wave_id: str, actor_session_id: str | None = None
+    ) -> dict[str, object]:
+        """Return a preserved failed wave finalization to its gated apply state.
+
+        This operation is database-only. It verifies the destination still
+        represents the exact cumulative source; a subsequent fresh gate call
+        performs any Git freezing work.
+        """
+        with self.db.read() as conn:
+            rows = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "finalization_failed" for row in rows):
+                raise TodoError("integration_wave_finalization_failure_required", "All wave members must be in preserved finalization failure")
+            destination, base = Path(str(rows[0]["worktree_path"])), str(rows[0]["base_commit"])
+            source_identity = self._source_identity(destination, base)
+            expected = json.loads(rows[-1]["merge_result_json"] or "{}").get("wave_cumulative_source_identity")
+            if source_identity != expected:
+                raise TodoError("integration_source_changed", "Finalization-failed wave source changed before retry")
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            fresh = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "finalization_failed" for row in fresh):
+                raise TodoError("integration_state_changed", "Wave finalization failure changed during retry")
+            conn.execute("UPDATE workflow_integration_queue SET state='applied_pending_wave',updated_at=? WHERE integration_task_id=? AND state='finalization_failed'", (utc_now(), integration_task_id))
+            conn.execute("UPDATE workflow_workspaces SET state='applied_pending_wave',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), rows[0]["run_id"], rows[0]["integrator_lane_id"]))
+            return {"wave_id": wave_id, "state": "applied_pending_wave", "source_identity": source_identity}
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                                          event_type="workflow_integration_wave_finalization_retried", payload={"source_identity": source_identity}, operation=operation)
+        result["revision"] = revision
+        return result
+
+    def recover_interrupted_integration_wave_finalization(
+        self,
+        *,
+        integration_task_id: str,
+        wave_id: str,
+        reason: str,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Owner recovery for a process death after wave finalization reservation.
+
+        It deliberately performs no Git operation.  The destination may still
+        be staged at the pre-freeze source or already have its frozen HEAD; in
+        either case the material source must exactly match the recorded wave.
+        """
+        if not reason.strip():
+            raise TodoError("integration_wave_recovery_reason_required", "Interrupted finalization recovery requires a reason")
+        with self.db.read() as conn:
+            rows = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "finalizing" for row in rows):
+                raise TodoError("integration_wave_not_finalizing", "All wave members must be finalizing for interruption recovery")
+            destination, base = Path(str(rows[0]["worktree_path"])), str(rows[0]["base_commit"])
+            recorded = json.loads(rows[-1]["merge_result_json"] or "{}").get("wave_cumulative_source_identity")
+            if not recorded or self._source_identity(destination, base) != recorded:
+                raise TodoError("integration_source_changed", "Interrupted finalization source differs from its recorded cumulative wave")
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            fresh = self._declared_wave(conn, integration_task_id, wave_id)
+            if any(row["state"] != "finalizing" for row in fresh):
+                raise TodoError("integration_state_changed", "Wave finalization changed during interruption recovery")
+            for row in fresh:
+                merged = json.loads(row["merge_result_json"] or "{}")
+                merged.update({"interrupted_finalization_recovered_revision": revision,
+                               "interrupted_finalization_recovery_reason": reason.strip()})
+                conn.execute("UPDATE workflow_integration_queue SET state='finalization_failed',merge_result_json=?,updated_at=? WHERE id=?",
+                             (_json(merged), utc_now(), row["id"]))
+            conn.execute("UPDATE workflow_workspaces SET state='finalization_failed',updated_at=? WHERE run_id=? AND lane_id=? AND state='finalizing'",
+                         (utc_now(), fresh[0]["run_id"], fresh[0]["integrator_lane_id"]))
+            return {"wave_id": wave_id, "state": "finalization_failed", "queue_ids": [str(row["id"]) for row in fresh],
+                    "source_identity": recorded, "reason": reason.strip()}
+        result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
+                                          event_type="workflow_integration_wave_interruption_recovered", payload={"reason": reason.strip(), "source_identity": recorded}, operation=operation)
+        result["revision"] = revision
+        return result
 
     def mark_cleanup_eligible(self, *, workspace_id: str, actor_session_id: str | None = None) -> dict[str, object]:
         with self.db.read() as conn:

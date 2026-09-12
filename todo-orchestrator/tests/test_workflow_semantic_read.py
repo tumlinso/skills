@@ -185,6 +185,41 @@ class WorkflowSemanticReadTests(unittest.TestCase):
         self.assertIn("claim", kinds)
         self.assertIn("session", kinds)
 
+    def test_batch_wave_checkpoints_and_inflight_mutations_are_recovery_visible(self) -> None:
+        def seed(conn, revision):
+            now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+            for workspace_id, lane_id, state in (("W-APPLIED", "A-LANE", "applied_pending_wave"), ("W-APPLYING", "B-LANE", "applying"), ("W-FINALIZING", "ROOT-LANE", "finalizing")):
+                conn.execute(
+                    "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) "
+                    "VALUES(?, 'repo', 'RUN', ?, 'isolated_merge', 'base', ?, ?, ?)",
+                    (workspace_id, lane_id, state, now, now),
+                )
+            for position, (queue_id, state) in enumerate((("Q-APPLIED", "applied_pending_wave"), ("Q-APPLYING", "applying"), ("Q-FINALIZING", "finalizing")), start=1):
+                conn.execute(
+                    "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
+                    "VALUES(?, 'W-APPLIED', 'A', 'patch', ?, 'hash', 'base', ?, 'queued')",
+                    ("P-" + queue_id, queue_id + ".patch", now),
+                )
+                conn.execute(
+                    "INSERT INTO workflow_integration_queue(id,run_id,patch_artifact_id,integration_task_id,integrator_lane_id,position,state,conflict_json,created_at,updated_at) "
+                    "VALUES(?, 'RUN', ?, 'ROOT', 'ROOT-LANE', ?, ?, '{}', ?, ?)",
+                    (queue_id, "P-" + queue_id, position, state, now, now),
+                )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="test", entity_id="batch-wave",
+            event_type="test.batch_wave_recovery", payload={}, operation=seed,
+        )
+        needed = self.read()["recovery_needed"]
+        self.assertEqual(
+            {item["id"] for item in needed if item["kind"] == "workspace"},
+            {"W-APPLIED", "W-APPLYING", "W-FINALIZING"},
+        )
+        self.assertEqual(
+            {item["id"] for item in needed if item["kind"] == "integration"},
+            {"Q-APPLIED", "Q-APPLYING", "Q-FINALIZING"},
+        )
+
     def test_recovery_needed_excludes_terminal_history_and_inert_records(self) -> None:
         def historical_records(conn, revision):
             now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")

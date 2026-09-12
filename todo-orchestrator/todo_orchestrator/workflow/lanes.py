@@ -345,7 +345,11 @@ def dispatch_claim_in_transaction(
         dispatchable_states = {"active", "artifact_ready", "queued"}
         if lane["role"] in {"integrator", "validator"}:
             dispatchable_states.update({
-                "apply_failed", "conflict", "awaiting_gates", "gate_failed", "finalization_failed", "integrated",
+                # A declared wave is an intentional root-owned checkpoint.  It
+                # is safe to resume its lane for observation/handoff, but never
+                # to resume an in-flight apply/finalization transaction.
+                "apply_failed", "conflict", "awaiting_gates", "gate_failed",
+                "applied_pending_wave", "finalization_failed", "integrated",
             })
         if workspace["state"] not in dispatchable_states:
             raise TodoError("workflow_workspace_inactive", "Workspace is not in a dispatchable state")
@@ -536,7 +540,8 @@ def wait_graph(conn: sqlite3.Connection, run_id: str) -> dict[str, object]:
             _add_edge(edges, f"task:{rendezvous['join_task_id']}", f"lane:{participant['lane_id']}", f"rendezvous:{rendezvous['id']}")
     for row in conn.execute(
         "SELECT q.integration_task_id,a.task_id FROM workflow_integration_queue q "
-        "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id WHERE q.run_id=? AND q.state IN ('queued','conflict')",
+        "JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id WHERE q.run_id=? "
+        "AND q.state NOT IN ('integrated','rejected')",
         (run_id,),
     ):
         _add_edge(edges, f"task:{row['integration_task_id']}", f"task:{row['task_id']}", "integration_wait")

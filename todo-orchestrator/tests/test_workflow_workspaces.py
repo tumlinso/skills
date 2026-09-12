@@ -171,6 +171,159 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.db.mutate(actor_session_id=None, entity_type="gate", entity_id="POST", event_type="test_gate", payload={}, operation=operation)
         return evidence_id
 
+    def wave_gate_evidence(self, *, source_identity: str, status: str = "passed") -> str:
+        """Authoritative evidence fixture for the one cumulative wave source."""
+        evidence_id = f"WAVE-{status}-{self.db.revision()}"
+        fingerprint = f"fingerprint-{evidence_id}"
+        with self.db.read() as conn:
+            destination = conn.execute(
+                "SELECT worktree_path FROM workflow_workspaces WHERE lane_id='INTEGRATOR'"
+            ).fetchone()
+        metadata = json.dumps({
+            "input_fingerprint": fingerprint,
+            "started_revision": self.db.revision(),
+            "workspace_path": str(Path(destination["worktree_path"]).resolve()),
+            "source_identity": source_identity,
+        }, sort_keys=True)
+        def operation(conn, revision):
+            conn.execute("UPDATE gates SET status=?,valid=?,input_fingerprint=?,revision=? WHERE id='POST'",
+                         (status, int(status == "passed"), fingerprint, revision))
+            conn.execute("INSERT INTO evidence(id,gate_id,kind,status,metadata_json,created_at,revision) VALUES(?,'POST','gate',?,?,?,?)",
+                         (evidence_id, status, metadata, utc_now(), revision))
+        self.db.mutate(actor_session_id=None, entity_type="gate", entity_id="POST", event_type="wave_gate", payload={}, operation=operation)
+        return evidence_id
+
+    def test_declared_batch_wave_applies_and_finalizes_members_atomically(self) -> None:
+        destination = self.create_destination()
+        first, second = self.create_producer(), self.create_producer(lane="PRODUCER2")
+        first_commit = self.producer_commit(first, "alpha first\nbeta\ngamma\n")
+        second_commit = self.producer_commit(second, "alpha\nbeta\ngamma second\n")
+        first_artifact = self.service.publish_artifact(workspace_id=str(first["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=first_commit)
+        second_artifact = self.service.publish_artifact(workspace_id=str(second["workspace_id"]), task_id="IMPL2", kind="commit", artifact_ref=second_commit)
+        q1 = self.service.enqueue_artifact(artifact_id=str(first_artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        q2 = self.service.enqueue_artifact(artifact_id=str(second_artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        wave = self.service.declare_integration_wave(queue_ids=[str(q1["queue_id"]), str(q2["queue_id"])])
+        applied = self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        with self.db.read() as conn:
+            states = [row[0] for row in conn.execute("SELECT state FROM workflow_integration_queue ORDER BY position")]
+        self.assertEqual(states, ["applied_pending_wave", "applied_pending_wave"])
+        accepted = self.service.record_integration_wave_gates(
+            integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]),
+            gate_results=[{"gate_id": "POST", "evidence_id": self.wave_gate_evidence(source_identity=str(applied["source_identity"]))}],
+        )
+        self.assertEqual(accepted["state"], "integrated")
+        self.assertEqual(len(accepted["queue_ids"]), 2)
+        self.assertEqual(git(Path(str(destination["worktree_path"])), "status", "--porcelain=v1"), "")
+
+    def test_wave_rejects_late_member_and_audits_gate_failure_adoption(self) -> None:
+        self.create_destination()
+        first, second = self.create_producer(), self.create_producer(lane="PRODUCER2")
+        first_commit = self.producer_commit(first, "alpha first\nbeta\ngamma\n")
+        second_commit = self.producer_commit(second, "alpha\nbeta\ngamma second\n")
+        a1 = self.service.publish_artifact(workspace_id=str(first["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=first_commit)
+        a2 = self.service.publish_artifact(workspace_id=str(second["workspace_id"]), task_id="IMPL2", kind="commit", artifact_ref=second_commit)
+        q1 = self.service.enqueue_artifact(artifact_id=str(a1["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        q2 = self.service.enqueue_artifact(artifact_id=str(a2["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        self.service.apply_next(queue_id=str(q1["queue_id"]))
+        self.service.record_post_merge_gates(queue_id=str(q1["queue_id"]), gate_results=[{"gate_id": "POST", "evidence_id": self.gate_evidence("failed")}])
+        # Simulate the pre-WF2 receipt shape: source identity existed but the
+        # old finalizer discarded pre-apply/destination provenance.  The root
+        # must attest it in the same transaction as declaration/adoption.
+        def legacy_receipt(conn, revision):
+            row = conn.execute("SELECT merge_result_json FROM workflow_integration_queue WHERE id=?", (q1["queue_id"],)).fetchone()
+            data = json.loads(row[0]); data.pop("pre_apply_head", None); data.pop("destination_worktree", None)
+            conn.execute("UPDATE workflow_integration_queue SET merge_result_json=? WHERE id=?", (json.dumps(data), q1["queue_id"]))
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="legacy_receipt", payload={}, operation=legacy_receipt)
+        self.assert_code("integration_apply_provenance_missing", lambda: self.service.declare_and_adopt_integration_wave(queue_ids=[str(q1["queue_id"]), str(q2["queue_id"])]))
+        wave = self.service.declare_and_adopt_integration_wave(
+            queue_ids=[str(q1["queue_id"]), str(q2["queue_id"])], legacy_provenance_reason="root audited legacy I00 receipt",
+        )
+        self.assertTrue(wave["legacy_provenance_adopted"])
+        # A newly injected nonmember invalidates the immutable declaration.
+        def late(conn, revision):
+            conn.execute("UPDATE workflow_integration_queue SET state='queued' WHERE id=?", (q2["queue_id"],))
+            conn.execute("INSERT INTO workflow_integration_queue(id,run_id,integration_task_id,integrator_lane_id,patch_artifact_id,position,state,conflict_json,merge_result_json,created_at,updated_at) VALUES('LATE','RUN','INTEGRATE','INTEGRATOR',?,2,'queued','{}','{}',?,?)", (a2["artifact_id"], utc_now(), utc_now()))
+        # Unique artifact forbids a real late row; simulate the immutable-set
+        # check by changing the declared member list instead.
+        def tamper(conn, revision):
+            row = conn.execute("SELECT merge_result_json FROM workflow_integration_queue WHERE id=?", (q2["queue_id"],)).fetchone()
+            data = json.loads(row[0]); data["wave_members"] = [str(q1["queue_id"])]
+            conn.execute("UPDATE workflow_integration_queue SET merge_result_json=? WHERE id=?", (json.dumps(data), q2["queue_id"]))
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="wave_tamper", payload={}, operation=tamper)
+        self.assert_code("integration_wave_changed", lambda: self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"])))
+
+    def test_wave_finalization_failure_retries_without_git_rewrite(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha batch\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        queued = self.service.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        wave = self.service.declare_and_adopt_integration_wave(queue_ids=[str(queued["queue_id"])])
+        applied = self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        before = git(Path(str(destination["worktree_path"])), "rev-parse", "HEAD")
+        def fail_finalization(conn, revision):
+            conn.execute("UPDATE workflow_integration_queue SET state='finalization_failed' WHERE id=?", (queued["queue_id"],))
+            conn.execute("UPDATE workflow_workspaces SET state='finalization_failed' WHERE lane_id='INTEGRATOR'")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="wave_finalization_failed", payload={}, operation=fail_finalization)
+        retried = self.service.retry_declared_integration_wave_finalization(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        self.assertEqual(retried["source_identity"], applied["source_identity"])
+        self.assertEqual(git(Path(str(destination["worktree_path"])), "rev-parse", "HEAD"), before)
+
+    def test_clean_wave_apply_failure_can_retry_without_git_recovery(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha retry\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        queued = self.service.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        wave = self.service.declare_and_adopt_integration_wave(queue_ids=[str(queued["queue_id"])])
+        def fail_apply(conn, revision):
+            conn.execute("UPDATE workflow_integration_queue SET state='apply_failed',conflict_json=? WHERE id=?", (json.dumps({"code": "integration_workspace_dirty", "preserved": True}), queued["queue_id"]))
+            conn.execute("UPDATE workflow_workspaces SET state='apply_failed' WHERE lane_id='INTEGRATOR'")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="wave_apply_failed", payload={}, operation=fail_apply)
+        retry = self.service.retry_declared_integration_wave_apply(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        self.assertEqual(retry["state"], "queued")
+        applied = self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        self.assertEqual(applied["state"], "applied_pending_wave")
+
+    def test_interrupted_wave_finalization_recovery_preserves_pre_and_post_freeze_source(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha recovery\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        queued = self.service.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        wave = self.service.declare_and_adopt_integration_wave(queue_ids=[str(queued["queue_id"])])
+        applied = self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        target = Path(str(destination["worktree_path"]))
+        def finalizing(conn, revision):
+            conn.execute("UPDATE workflow_integration_queue SET state='finalizing' WHERE id=?", (queued["queue_id"],))
+            conn.execute("UPDATE workflow_workspaces SET state='finalizing' WHERE lane_id='INTEGRATOR'")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="crash_pre_freeze", payload={}, operation=finalizing)
+        recovered = self.service.recover_interrupted_integration_wave_finalization(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]), reason="root pre-freeze crash")
+        self.assertEqual(recovered["state"], "finalization_failed")
+        self.assert_code("integration_wave_not_finalizing", lambda: self.service.recover_interrupted_integration_wave_finalization(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]), reason="repeat"))
+        # A frozen HEAD carries the identical material source and is recoverable
+        # without any Git rewrite.
+        frozen = self.service._freeze_integration_commit(target, base_commit=self.base, queue_id=str(wave["wave_id"]), source_identity=str(applied["source_identity"]))
+        self.service._advance_integration_head(target, frozen)
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="crash_post_freeze", payload={}, operation=finalizing)
+        recovered = self.service.recover_interrupted_integration_wave_finalization(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]), reason="root post-freeze crash")
+        self.assertEqual(recovered["source_identity"], applied["source_identity"])
+
+    def test_interrupted_wave_recovery_rejects_changed_source(self) -> None:
+        destination = self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "alpha changed\nbeta\ngamma\n")
+        artifact = self.service.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit)
+        queued = self.service.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE")
+        wave = self.service.declare_and_adopt_integration_wave(queue_ids=[str(queued["queue_id"])])
+        self.service.apply_declared_integration_wave(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]))
+        def finalizing(conn, revision):
+            conn.execute("UPDATE workflow_integration_queue SET state='finalizing' WHERE id=?", (queued["queue_id"],))
+            conn.execute("UPDATE workflow_workspaces SET state='finalizing' WHERE lane_id='INTEGRATOR'")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="RUN", event_type="crash_source_changed", payload={}, operation=finalizing)
+        (Path(str(destination["worktree_path"])) / "shared.txt").write_text("untrusted mutation\n", encoding="utf-8")
+        self.assert_code("integration_source_changed", lambda: self.service.recover_interrupted_integration_wave_finalization(integration_task_id="INTEGRATE", wave_id=str(wave["wave_id"]), reason="must preserve mutation"))
+
     def test_modes_materialize_only_managed_first_class_workspaces(self) -> None:
         destination = self.create_destination()
         self.assertTrue(Path(str(destination["worktree_path"])).is_dir())

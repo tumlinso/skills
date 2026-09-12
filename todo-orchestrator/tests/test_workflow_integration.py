@@ -143,6 +143,58 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         self.assertEqual(resumed["status"], "resumed")
         self.assertNotEqual(resumed["workflow_handle"], claimed["workflow_handle"])
 
+    def test_declared_integration_wave_refuses_legacy_serial_gate_lifecycle(self):
+        self.repo.close()
+        self.repo = V2Repo()
+        plan = base_plan([safe_task("ROOT", "coord"), safe_task("I", "integration")])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "ROOT", "charter": {"objective": "wave refusal"},
+            "lanes": [
+                {"id": "ROOT-LANE", "role": "coordinator", "tasks": ["ROOT"]},
+                {"id": "I-LANE", "parent_lane_id": "ROOT-LANE", "role": "integrator", "tasks": ["I"],
+                 "workspace": {"mode": "read_shared"}},
+            ],
+        }]
+        self.repo.apply(plan)
+
+        def seed(conn, revision):
+            now = "2026-09-12T00:00:00Z"
+            conn.execute(
+                "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) "
+                "VALUES('I-WORKSPACE','repo','RUN','I-LANE','read_shared','base','applied_pending_wave',?,?)",
+                (now, now),
+            )
+            conn.execute(
+                "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) "
+                "VALUES('P-WORKSPACE','repo','RUN','ROOT-LANE','isolated_merge','base','queued',?,?)",
+                (now, now),
+            )
+            conn.execute(
+                "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,base_commit,created_at,state) "
+                "VALUES('PATCH','P-WORKSPACE','ROOT','commit','deadbeef','hash','base',?,'queued')",
+                (now,),
+            )
+            conn.execute(
+                "INSERT INTO workflow_integration_queue(id,run_id,patch_artifact_id,integration_task_id,integrator_lane_id,position,state,merge_result_json,conflict_json,created_at,updated_at) "
+                "VALUES('QUEUE','RUN','PATCH','I','I-LANE',1,'applied_pending_wave','{\"wave_id\":\"WAVE\",\"wave_members\":[\"QUEUE\"]}','{}',?,?)",
+                (now, now),
+            )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="WAVE",
+            event_type="fixture.declared_wave", payload={}, operation=seed,
+        )
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="I")
+        self.assertEqual(claimed["status"], "claimed")
+        with self.assertRaises(TodoError) as denied:
+            self.protocol.coordinate_task(
+                workflow_handle=claimed["workflow_handle"], action="run_gates", payload={"required": True},
+            )
+        self.assertEqual(denied.exception.code, "integration_wave_root_lifecycle_required")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_integration_queue WHERE id='QUEUE'").fetchone()[0], "applied_pending_wave")
+
     def test_child_candidate_is_parent_mediated_and_never_completes_parent(self):
         claimed = self.protocol.next_task(repo_root=str(self.repo.root))
         delegated = self.protocol.delegate_task(

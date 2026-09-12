@@ -137,7 +137,8 @@ class WorkflowKernel:
         allowed_states = {"active", "artifact_ready", "queued"}
         if lineage.role in {"integrator", "validator"}:
             allowed_states.update({
-                "apply_failed", "conflict", "awaiting_gates", "gate_failed", "finalization_failed", "integrated",
+                "apply_failed", "conflict", "awaiting_gates", "gate_failed",
+                "applied_pending_wave", "finalization_failed", "integrated",
             })
         if workspace["state"] not in allowed_states:
             raise TodoError("workflow_workspace_inactive", "The dispatch workspace is not active")
@@ -412,7 +413,8 @@ class WorkflowKernel:
                     if workspace_id is None and resumed["role"] in {"integrator", "validator"}:
                         recoverable = conn.execute(
                             "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
-                            "AND state IN ('active','artifact_ready','queued','conflict','awaiting_gates','gate_failed','integrated') "
+                            "AND state IN ('active','artifact_ready','queued','apply_failed','conflict','awaiting_gates',"
+                            "'gate_failed','applied_pending_wave','finalization_failed','integrated') "
                             "ORDER BY id LIMIT 1",
                             (resumed["run_id"], resumed["lane_id"]),
                         ).fetchone()
@@ -478,7 +480,9 @@ class WorkflowKernel:
             workspace = conn.execute(
                 "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=? "
                 "AND (state IN ('active','artifact_ready','queued') OR "
-                "(?='integrator' AND state IN ('conflict','awaiting_gates','gate_failed','integrated'))) "
+                "(? IN ('integrator','validator') AND state IN "
+                "('apply_failed','conflict','awaiting_gates','gate_failed','applied_pending_wave',"
+                "'finalization_failed','integrated'))) "
                 "ORDER BY id LIMIT 1",
                 (selected_run, str(selected["lane_id"]), str(selected["role"])),
             ).fetchone()
@@ -670,6 +674,30 @@ class WorkflowKernel:
                     root, str(service.project["project_uuid"])
                 ),
             )
+
+            # A declared batch wave replaces the legacy serial integration
+            # loop.  Its apply, gate binding, and finalization are privileged
+            # root-owned lifecycle operations; letting this compatibility path
+            # take even its first queue entry would split one sealed wave.
+            if lineage.role in {"integrator", "validator"}:
+                with service.db.read() as conn:
+                    wave_rows = conn.execute(
+                        "SELECT id,merge_result_json FROM workflow_integration_queue "
+                        "WHERE run_id=? AND integrator_lane_id=? AND integration_task_id=? "
+                        "AND state NOT IN ('integrated','rejected') ORDER BY position",
+                        (lineage.run_id, lineage.lane_id, lineage.task_id),
+                    ).fetchall()
+                declared_waves = sorted({
+                    str(metadata.get("wave_id"))
+                    for row in wave_rows
+                    for metadata in [json.loads(row["merge_result_json"] or "{}")]
+                    if metadata.get("wave_id")
+                })
+                if declared_waves:
+                    raise TodoError(
+                        "integration_wave_root_lifecycle_required",
+                        "A declared integration wave requires root-owned apply, gate, and finalization lifecycle",
+                    )
 
             # Integration is an integrator-only specialization of the existing
             # run_gates action.  The model never receives a WorkspaceService

@@ -90,6 +90,53 @@ class WorkflowRunsLanesTests(unittest.TestCase):
                 with self.repo.service.db.read() as conn:
                     self.assertEqual("exclusive", conn.execute("SELECT workspace_mode FROM workflow_lanes WHERE id='A'").fetchone()[0])
 
+    def test_integrator_batch_checkpoint_is_dispatchable_but_inflight_apply_is_not(self) -> None:
+        def seed(state: str) -> None:
+            self.repo.service.db.mutate(
+                actor_session_id=None, entity_type="fixture", entity_id="B-WORKSPACE",
+                event_type="fixture.integration_workspace",
+                payload={"state": state},
+                operation=lambda conn, revision: conn.execute(
+                    "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) "
+                    "VALUES('B-WORKSPACE','repo','RUN','B','exclusive','base',?,?,?)",
+                    (state, "now", "now"),
+                ),
+            )
+
+        seed("applied_pending_wave")
+        session_id, claim_id = self._claim("T-B1")
+        dispatched, _ = self.repo.service.db.mutate(
+            actor_session_id=session_id, entity_type="fixture", entity_id="T-B1",
+            event_type="fixture.batch_checkpoint_dispatch",
+            payload={}, operation=lambda conn, revision: dispatch_claim_in_transaction(
+                conn, revision, run_id="RUN", lane_id="B", session_id=session_id,
+                claim_id=claim_id, context_version=1, workspace_id="B-WORKSPACE",
+            ),
+        )
+        self.assertEqual(dispatched["status"], "claimed")
+
+    def test_integrator_inflight_batch_apply_is_not_dispatchable(self) -> None:
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="B-WORKSPACE",
+            event_type="fixture.integration_workspace",
+            payload={"state": "applying"},
+            operation=lambda conn, revision: conn.execute(
+                "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,state,created_at,updated_at) "
+                "VALUES('B-WORKSPACE','repo','RUN','B','exclusive','base','applying','now','now')"
+            ),
+        )
+        session_id, claim_id = self._claim("T-B1")
+        with self.assertRaises(TodoError) as denied:
+            self.repo.service.db.mutate(
+                actor_session_id=session_id, entity_type="fixture", entity_id="T-B1",
+                event_type="fixture.inflight_batch_dispatch",
+                payload={}, operation=lambda conn, revision: dispatch_claim_in_transaction(
+                    conn, revision, run_id="RUN", lane_id="B", session_id=session_id,
+                    claim_id=claim_id, context_version=1, workspace_id="B-WORKSPACE",
+                ),
+            )
+        self.assertEqual(denied.exception.code, "workflow_workspace_inactive")
+
     def test_workspace_mode_revision_does_not_change_run_or_creation_contract(self) -> None:
         with self.assertRaises(TodoError) as denied:
             self.lanes.create(run_id="RUN", lane_id="A", parent_lane_id="ROOT", role="implementer", workspace_mode="isolated_merge")
