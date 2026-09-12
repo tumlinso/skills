@@ -933,6 +933,133 @@ class WorkspaceService:
         result["revision"] = revision
         return result
 
+    def publish_completed_wave(
+        self,
+        *,
+        workspace_id: str,
+        task_id: str,
+        artifact_ref: str,
+        integrator_lane_id: str,
+        integration_task_id: str,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Atomically publish and queue one completed serial producer wave."""
+        with self.db.read() as conn:
+            workspace = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE id=?", (workspace_id,),
+            ).fetchone()
+            if workspace is None or workspace["mode"] != "isolated_merge":
+                raise TodoError("workspace_artifact_forbidden", "An isolated producer workspace is required")
+            root = self._managed_path(Path(str(workspace["worktree_path"])))
+            base = str(workspace["base_commit"])
+        status = self._git(root, ["status", "--porcelain=v1", "-z"])
+        if status.returncode != 0 or status.stdout:
+            raise TodoError("workspace_uncommitted_changes", "Producer wave publication requires a clean workspace")
+        resolved = self._commit(root, artifact_ref)
+        if resolved != self._commit(root, "HEAD"):
+            raise TodoError("artifact_workspace_head_mismatch", "Commit artifact must be the workspace HEAD")
+        if self._git(root, ["merge-base", "--is-ancestor", base, resolved]).returncode:
+            raise TodoError("artifact_base_mismatch", "Commit artifact is not based on the workspace base")
+        content = self._git_ok(root, ["diff", "--binary", base, resolved], code="artifact_diff_failed")
+        digest = _sha256(content)
+        artifact_id, queue_id, now = str(uuid.uuid4()), str(uuid.uuid4()), utc_now()
+
+        def operation(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE id=?", (workspace_id,),
+            ).fetchone()
+            if current is None or current["state"] != "active" or current["base_commit"] != base:
+                raise TodoError("workspace_artifact_state", "Producer wave changed before publication")
+            terminal = conn.execute(
+                "SELECT 1 FROM workflow_lane_tasks lt JOIN tasks t ON t.id=lt.task_id "
+                "WHERE lt.lane_id=? AND lt.task_id=? AND lt.state='completed' AND t.status='done'",
+                (current["lane_id"], task_id),
+            ).fetchone()
+            if terminal is None:
+                raise TodoError("workspace_wave_task_not_terminal", "Producer wave task is not terminal")
+            if current["integration_task_id"] != integration_task_id:
+                raise TodoError("integration_task_mismatch", "Producer wave integration target changed")
+            if conn.execute(
+                "SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=? AND task_id=? "
+                "AND state NOT IN ('integrated','rejected','superseded')",
+                (workspace_id, task_id),
+            ).fetchone():
+                raise TodoError("workspace_wave_artifact_exists", "Producer wave already has a live artifact")
+            lane = self._lane(conn, current["run_id"], integrator_lane_id)
+            if lane["role"] not in {"integrator", "validator"}:
+                raise TodoError("integrator_role_required", "Integration queue requires an integrator lane")
+            destination = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE run_id=? AND lane_id=?",
+                (current["run_id"], integrator_lane_id),
+            ).fetchone()
+            if destination is None or destination["mode"] != "exclusive":
+                raise TodoError("exclusive_integration_workspace_required", "Integrator destination is unavailable")
+            if destination["repository_identity"] != current["repository_identity"]:
+                raise TodoError("integration_repository_mismatch", "Producer and destination repositories differ")
+            next_owned = conn.execute(
+                "SELECT task_id FROM workflow_lane_tasks WHERE lane_id=? AND state='queued' "
+                "ORDER BY position LIMIT 1", (integrator_lane_id,),
+            ).fetchone()
+            if next_owned is None or next_owned["task_id"] != integration_task_id:
+                raise TodoError("integration_task_owner_mismatch", "Integration task is not the next owned task")
+            if destination["state"] == "integrated" and destination["integration_task_id"] != integration_task_id:
+                unfinished = conn.execute(
+                    "SELECT 1 FROM workflow_integration_queue WHERE run_id=? AND integrator_lane_id=? "
+                    "AND integration_task_id=? AND state NOT IN ('integrated','rejected') LIMIT 1",
+                    (current["run_id"], integrator_lane_id, integration_task_id),
+                ).fetchone()
+                target = self._managed_path(Path(str(destination["worktree_path"])))
+                target_status = self._git(target, ["status", "--porcelain=v1", "-z"])
+                target_head = self._git(target, ["rev-parse", "--verify", "HEAD^{commit}"], text=True)
+                if (unfinished is not None or target_status.returncode != 0 or target_status.stdout or
+                        target_head.returncode != 0 or target_head.stdout.strip() != base):
+                    raise TodoError("integration_stale_base", "Integrator destination cannot advance safely")
+                conn.execute(
+                    "UPDATE workflow_workspaces SET base_commit=?,integration_task_id=?,state='active',"
+                    "artifact_kind=NULL,artifact_ref=NULL,diff_hash=NULL,merge_result_json='{}',updated_at=? WHERE id=?",
+                    (base, integration_task_id, now, destination["id"]),
+                )
+                destination = conn.execute(
+                    "SELECT * FROM workflow_workspaces WHERE id=?", (destination["id"],),
+                ).fetchone()
+            if destination["base_commit"] != base or destination["integration_task_id"] != integration_task_id:
+                raise TodoError("integration_stale_base", "Producer and destination wave contracts differ")
+            position = conn.execute(
+                "SELECT COALESCE(MAX(position),-1)+1 FROM workflow_integration_queue "
+                "WHERE run_id=? AND integration_task_id=?",
+                (current["run_id"], integration_task_id),
+            ).fetchone()[0]
+            conn.execute(
+                "INSERT INTO workflow_patch_artifacts(id,workspace_id,task_id,kind,artifact_ref,content_hash,"
+                "base_commit,created_at,state) VALUES(?,?,?,?,?,?,?,?, 'queued')",
+                (artifact_id, workspace_id, task_id, "commit", resolved, digest, base, now),
+            )
+            conn.execute(
+                "INSERT INTO workflow_integration_queue(id,run_id,integration_task_id,integrator_lane_id,"
+                "patch_artifact_id,position,state,conflict_json,merge_result_json,created_at,updated_at) "
+                "VALUES(?,?,?,?,?,?, 'queued','{}','{}',?,?)",
+                (queue_id, current["run_id"], integration_task_id, integrator_lane_id,
+                 artifact_id, position, now, now),
+            )
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='queued',artifact_kind='commit',artifact_ref=?,"
+                "diff_hash=?,updated_at=? WHERE id=?", (resolved, digest, now, workspace_id),
+            )
+            return {"artifact_id": artifact_id, "queue_id": queue_id, "position": position,
+                    "run_id": current["run_id"], "artifact_ref": resolved, "diff_hash": digest}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_integration_queue",
+            entity_id=queue_id,
+            event_type="workflow_producer_wave_published",
+            payload={"workspace_id": workspace_id, "task_id": task_id,
+                     "integration_task_id": integration_task_id},
+            operation=operation,
+        )
+        result["revision"] = revision
+        return result
+
     def apply_next(self, *, queue_id: str, actor_session_id: str | None = None) -> dict[str, object]:
         def reserve(conn: Any, revision: int) -> dict[str, object]:
             row = conn.execute(

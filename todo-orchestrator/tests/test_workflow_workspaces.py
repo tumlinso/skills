@@ -611,6 +611,63 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(queued["position"], 0)
         self.assertEqual(self.service.apply_next(queue_id=str(queued["queue_id"]))["state"], "awaiting_gates")
 
+    def test_completed_wave_publication_is_atomic_and_terminal(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        source = Path(str(producer["worktree_path"]))
+        commit = self.producer_commit(producer, "alpha wave\nbeta\ngamma\n")
+        def terminal(conn, revision):
+            now = utc_now()
+            conn.execute("UPDATE tasks SET status='done' WHERE id='IMPL'")
+            conn.execute("UPDATE workflow_lane_tasks SET state='completed' WHERE task_id='IMPL'")
+            conn.execute("INSERT INTO tasks(id,kind,title,status,created_at,updated_at,revision) "
+                         "VALUES('IMPL_NEXT','workstream','next','planned',?,?,?)", (now, now, revision))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                         "VALUES('PRODUCER',1,'IMPL_NEXT','queued',?,?)", (now, revision))
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="IMPL",
+                       event_type="task_completed", payload={}, operation=terminal)
+        before = self.db.revision()
+        result = self.service.publish_completed_wave(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", artifact_ref=commit,
+            integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        )
+        self.assertEqual(result["revision"], before + 1)
+        with self.db.read() as conn:
+            self.assertEqual(conn.execute(
+                "SELECT state FROM workflow_patch_artifacts WHERE id=?", (result["artifact_id"],)
+            ).fetchone()[0], "queued")
+            self.assertEqual(conn.execute(
+                "SELECT state FROM workflow_integration_queue WHERE id=?", (result["queue_id"],)
+            ).fetchone()[0], "queued")
+        self.assertEqual(git(source, "status", "--porcelain"), "")
+
+    def test_completed_wave_rejects_dirty_or_missing_destination_without_partial_artifact(self) -> None:
+        producer = self.create_producer()
+        source = Path(str(producer["worktree_path"]))
+        commit = self.producer_commit(producer, "alpha wave\nbeta\ngamma\n")
+        def terminal(conn, revision):
+            conn.execute("UPDATE tasks SET status='done' WHERE id='IMPL'")
+            conn.execute("UPDATE workflow_lane_tasks SET state='completed' WHERE task_id='IMPL'")
+        self.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="IMPL",
+                       event_type="task_completed", payload={}, operation=terminal)
+        (source / "dirty.txt").write_text("preserve\n", encoding="utf-8")
+        self.assert_code("workspace_uncommitted_changes", lambda: self.service.publish_completed_wave(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", artifact_ref=commit,
+            integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        ))
+        (source / "dirty.txt").unlink()
+        before = self.db.revision()
+        self.assert_code("exclusive_integration_workspace_required", lambda: self.service.publish_completed_wave(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", artifact_ref=commit,
+            integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        ))
+        self.assertEqual(self.db.revision(), before)
+        with self.db.read() as conn:
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM workflow_patch_artifacts WHERE workspace_id=?",
+                (producer["workspace_id"],),
+            ).fetchone()[0], 0)
+
     def test_unintegrated_producer_cannot_advance_wave(self) -> None:
         producer = self.create_producer()
         self.assert_code("workspace_wave_not_integrated", lambda: self.service.advance_producer_wave(
