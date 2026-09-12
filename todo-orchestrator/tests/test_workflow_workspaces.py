@@ -215,6 +215,48 @@ class WorkflowWorkspaceTests(unittest.TestCase):
         self.assertEqual(len(accepted["queue_ids"]), 2)
         self.assertEqual(git(Path(str(destination["worktree_path"])), "status", "--porcelain=v1"), "")
 
+    def test_root_wave_receipt_preserves_verified_inherited_base(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "inherited base consumer\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        )
+        inherited = {
+            "task_id": "PREVIOUS-INTEGRATE", "completion_commit": self.base,
+            "content_hash": "previous-wave-hash", "workspace_id": "PREVIOUS-DESTINATION",
+        }
+        wave = self.service.declare_and_adopt_integration_wave(
+            queue_ids=[str(queued["queue_id"])], inherited_base=inherited,
+        )
+        self.assertEqual(wave["inherited_base"], inherited)
+        with self.db.read() as conn:
+            receipt = json.loads(conn.execute(
+                "SELECT merge_result_json FROM workflow_integration_queue WHERE id=?", (queued["queue_id"],)
+            ).fetchone()[0])
+        self.assertEqual(receipt["inherited_base"], inherited)
+
+    def test_root_wave_rejects_inherited_base_that_does_not_match_artifact_base(self) -> None:
+        self.create_destination()
+        producer = self.create_producer()
+        commit = self.producer_commit(producer, "wrong inherited base\n")
+        artifact = self.service.publish_artifact(
+            workspace_id=str(producer["workspace_id"]), task_id="IMPL", kind="commit", artifact_ref=commit,
+        )
+        queued = self.service.enqueue_artifact(
+            artifact_id=str(artifact["artifact_id"]), integrator_lane_id="INTEGRATOR", integration_task_id="INTEGRATE",
+        )
+        self.assert_code("integration_inherited_base_mismatch", lambda: self.service.declare_and_adopt_integration_wave(
+            queue_ids=[str(queued["queue_id"])],
+            inherited_base={
+                "task_id": "PREVIOUS-INTEGRATE", "completion_commit": "not-the-producer-base",
+                "content_hash": "previous-wave-hash", "workspace_id": "PREVIOUS-DESTINATION",
+            },
+        ))
+
     def test_wave_rejects_late_member_and_audits_gate_failure_adoption(self) -> None:
         self.create_destination()
         first, second = self.create_producer(), self.create_producer(lane="PRODUCER2")

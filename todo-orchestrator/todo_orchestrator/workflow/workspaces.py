@@ -1994,6 +1994,7 @@ class WorkspaceService:
         *,
         queue_ids: Sequence[str],
         legacy_provenance_reason: str | None = None,
+        inherited_base: dict[str, str] | None = None,
         actor_session_id: str | None = None,
     ) -> dict[str, object]:
         """Atomically declare a wave and adopt its optional first gate failure.
@@ -2005,6 +2006,15 @@ class WorkspaceService:
         supplied = [str(item) for item in queue_ids]
         if not supplied or len(set(supplied)) != len(supplied):
             raise TodoError("integration_wave_members_invalid", "A wave requires unique queue members")
+        inherited_receipt: dict[str, str] | None = None
+        if inherited_base is not None:
+            required_receipt_fields = {"task_id", "completion_commit", "content_hash", "workspace_id"}
+            if set(inherited_base) != required_receipt_fields or any(
+                not isinstance(inherited_base[field], str) or not inherited_base[field]
+                for field in required_receipt_fields
+            ):
+                raise TodoError("integration_inherited_base_invalid", "Inherited integration base receipt is incomplete")
+            inherited_receipt = {field: inherited_base[field] for field in sorted(required_receipt_fields)}
         with self.db.read() as conn:
             placeholders = ",".join("?" for _ in supplied)
             rows = conn.execute(
@@ -2017,6 +2027,10 @@ class WorkspaceService:
             raise TodoError("integration_wave_member_missing", "A declared queue member does not exist")
         if len({str(row["base_commit"]) for row in rows}) != 1:
             raise TodoError("integration_wave_scope_mismatch", "Wave members must share the exact artifact base")
+        if inherited_receipt is not None and {
+            str(row["base_commit"]) for row in rows
+        } != {inherited_receipt["completion_commit"]}:
+            raise TodoError("integration_inherited_base_mismatch", "Wave artifacts do not inherit the accepted completion base")
         if any(json.loads(row["merge_result_json"] or "{}").get("wave_id") for row in rows):
             raise TodoError("integration_wave_already_declared", "A queue member already belongs to an immutable wave")
         failed = [row for row in rows if row["state"] == "gate_failed"]
@@ -2057,6 +2071,8 @@ class WorkspaceService:
             if [str(row["id"]) for row in live] != members or any(row["state"] not in {"queued", "gate_failed"} for row in current):
                 raise TodoError("integration_wave_members_incomplete", "Wave membership or state changed before declaration")
             payload = {"wave_id": wave_id, "wave_members": members, "wave_base_commit": rows[0]["base_commit"], "wave_declared_revision": revision}
+            if inherited_receipt is not None:
+                payload["inherited_base"] = inherited_receipt
             for queue in current:
                 merged = json.loads(queue["merge_result_json"] or "{}"); merged.update(payload)
                 if queue["id"] == rows[0]["id"] and failed:
@@ -2069,7 +2085,7 @@ class WorkspaceService:
                     conn.execute("UPDATE workflow_integration_queue SET merge_result_json=?,updated_at=? WHERE id=?", (_json(merged), utc_now(), queue["id"]))
             if failed:
                 conn.execute("UPDATE workflow_workspaces SET state='applied_pending_wave',updated_at=? WHERE run_id=? AND lane_id=?", (utc_now(), scope[0], scope[2]))
-            return {"wave_id": wave_id, "queue_ids": members, "run_id": scope[0], "integration_task_id": scope[1], "integrator_lane_id": scope[2], "base_commit": rows[0]["base_commit"], "adopted": bool(failed), "legacy_provenance_adopted": legacy}
+            return {"wave_id": wave_id, "queue_ids": members, "run_id": scope[0], "integration_task_id": scope[1], "integrator_lane_id": scope[2], "base_commit": rows[0]["base_commit"], "inherited_base": inherited_receipt, "adopted": bool(failed), "legacy_provenance_adopted": legacy}
         result, revision = self.db.mutate(actor_session_id=actor_session_id, entity_type="workflow_integration_wave", entity_id=wave_id,
                                           event_type="workflow_integration_wave_declared_and_adopted", payload={"queue_ids": supplied, "legacy_provenance_adoption_reason": legacy_provenance_reason if legacy else None}, operation=operation)
         result["revision"] = revision
@@ -2165,6 +2181,14 @@ class WorkspaceService:
         scope = (wave[0]["run_id"], wave[0]["integrator_lane_id"], wave[0]["base_commit"])
         if any((row["run_id"], row["integrator_lane_id"], row["base_commit"]) != scope for row in wave):
             raise TodoError("integration_wave_scope_mismatch", "Declared wave scope changed")
+        inherited = metadata.get("inherited_base")
+        if inherited is not None:
+            if (
+                not isinstance(inherited, dict)
+                or str(inherited.get("completion_commit") or "") != str(scope[2])
+                or any(json.loads(row["merge_result_json"] or "{}").get("inherited_base") != inherited for row in wave)
+            ):
+                raise TodoError("integration_inherited_base_changed", "Inherited integration base receipt is inconsistent")
         live = [row for row in rows if row["state"] not in {"integrated", "rejected"}]
         if [str(row["id"]) for row in live] != members:
             raise TodoError("integration_wave_members_changed", "A late or missing integration member invalidated the wave")
