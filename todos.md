@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `855`
+Project revision: `867`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: planned | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -22,7 +22,7 @@ Project revision: `855`
 - `SK-WF2-D02` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Rewire host coordinator access without creating a second host resource authority. Verify CPU/RAM/GPU request semantics, preemption, quiescence, PID incarnation and release on failures.
 - `SK-WF2-D03` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Verify bounded child scope, candidate vs accepted result, nonblocking collection and parent-only completion after rewiring. Distinguish first-class Codex workers from local execution children.
 - `SK-WF2-D04` | kind: task | status: planned | parent: SK-WF2-0000 | objective: Execute representative CUDA-controller orchestration and local-worker contract tests on isolated fixtures; run actual hardware tests only where declared and available. Record hardware-unavailable as blocked for those assertions.
-- `SK-WF2-I10` | kind: integration_task | status: in_progress | parent: SK-WF2-0000 | objective: Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.
+- `SK-WF2-I10` | kind: integration_task | status: done | parent: SK-WF2-0000 | objective: Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.
 - `SK-WF2-I20` | kind: integration_task | status: planned | parent: SK-WF2-0000 | objective: Integrate C05/V02 and publish WF2-CTXPP for the PC adapter. Keep independent CLI/config/state and separate refresh/rewrite authority.
 - `SK-WF2-I40` | kind: integration_task | status: planned | parent: SK-WF2-0000 | objective: Integrate W/D changes with the exact recipient candidate. Check root registration/docs so only Project Control is the normal workflow product.
 - `SK-WF2-I60` | kind: integration_task | status: planned | parent: SK-WF2-0000 | objective: Integrate independent V03 checks and publish WF2-CONSUMERS. This milestone precedes actual PC deployment and does not wait for PC final closure.

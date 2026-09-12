@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T18:27:58Z",
+  "generated_at": "2026-09-12T19:25:54Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 855,
+  "project_revision": 867,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -373,10 +373,10 @@
       {
         "id": "SK-WF2-I10-CP",
         "metadata_json": "{}",
-        "reached_at": null,
-        "revision": 797,
+        "reached_at": "2026-09-12T19:25:54Z",
+        "revision": 867,
         "revoked_at": null,
-        "state": "pending",
+        "state": "reached",
         "task_id": "SK-WF2-I10",
         "title": "Publish the donor baseline and test inventory"
       },
@@ -8992,6 +8992,126 @@
         "revision": 855,
         "seq": 855,
         "timestamp": "2026-09-12T18:27:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "a401dd14-1dfe-4c69-aad5-ea332d7fdbe3",
+        "entity_type": "workflow_integration_queue",
+        "event_type": "workflow_producer_wave_published",
+        "payload_json": "{\"integration_task_id\": \"SK-WF2-I10\", \"task_id\": \"SK-WF2-V01\", \"workspace_id\": \"1f9c3366-c0cd-46df-adb9-c04ce6c9acd5\"}",
+        "revision": 856,
+        "seq": 856,
+        "timestamp": "2026-09-12T18:36:38Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-L-I",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-WF2-L-I\", \"run_id\": \"SK-WF2-RUN-V1\", \"status\": \"claimed\", \"task_id\": \"SK-WF2-I10\"}",
+        "revision": 857,
+        "seq": 857,
+        "timestamp": "2026-09-12T18:37:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_declared_and_adopted",
+        "payload_json": "{\"legacy_provenance_adoption_reason\": null, \"queue_ids\": [\"cc075c88-bffc-40e2-84bb-488e7653eeab\", \"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
+        "revision": 858,
+        "seq": 858,
+        "timestamp": "2026-09-12T19:17:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_member_reserved",
+        "payload_json": "{\"queue_id\": \"cc075c88-bffc-40e2-84bb-488e7653eeab\"}",
+        "revision": 859,
+        "seq": 859,
+        "timestamp": "2026-09-12T19:17:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_member_applied",
+        "payload_json": "{\"queue_id\": \"cc075c88-bffc-40e2-84bb-488e7653eeab\", \"source_identity\": \"008c65648abf9345608d87cd7cb4d6490a86d08405f3d5e287724bc37eeec3a5\"}",
+        "revision": 860,
+        "seq": 860,
+        "timestamp": "2026-09-12T19:17:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_member_reserved",
+        "payload_json": "{\"queue_id\": \"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"}",
+        "revision": 861,
+        "seq": 861,
+        "timestamp": "2026-09-12T19:17:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_member_applied",
+        "payload_json": "{\"queue_id\": \"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\", \"source_identity\": \"b9fc85e3233b2db9ab8ad4b07e46602c8a3cdba465c85a76e8fff6a28bb4c43b\"}",
+        "revision": 862,
+        "seq": 862,
+        "timestamp": "2026-09-12T19:17:09Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-I10-G",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2-I10-G\"}",
+        "revision": 863,
+        "seq": 863,
+        "timestamp": "2026-09-12T19:24:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-I10-G",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"d78f9138-3c7a-4be3-9961-78ee246328c1\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 864,
+        "seq": 864,
+        "timestamp": "2026-09-12T19:24:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_finalization_reserved",
+        "payload_json": "{\"gate_count\": 1, \"last_apply_revision\": 862, \"source_identity\": \"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\"}",
+        "revision": 865,
+        "seq": 865,
+        "timestamp": "2026-09-12T19:24:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "cae8d62a-aee2-4b64-82b2-7c803d2fad29",
+        "entity_type": "workflow_integration_wave",
+        "event_type": "workflow_integration_wave_gates_recorded",
+        "payload_json": "{\"gate_count\": 1, \"source_identity\": \"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\"}",
+        "revision": 866,
+        "seq": 866,
+        "timestamp": "2026-09-12T19:24:31Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-I10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 867, \"disposition\": \"implemented\", \"reached_checkpoints\": [\"SK-WF2-I10-CP\"]}",
+        "revision": 867,
+        "seq": 867,
+        "timestamp": "2026-09-12T19:25:54Z"
       }
     ],
     "evidence": [
@@ -11196,6 +11316,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-12T19:24:31Z",
+        "gate_id": "SK-WF2-I10-G",
+        "id": "d78f9138-3c7a-4be3-9961-78ee246328c1",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-I10\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-I10\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"AGENTS.md\", \"sha256\": \"085ab5c2e74a8a36869a4c27015f9d707422343b7f08fcccce296fd3b97211f3\"}, {\"path\": \"README.md\", \"sha256\": \"missing\"}, {\"path\": \"docs/workflow_foundation_v2/integration\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"pyproject.toml\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/i\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"0e141b9c5e3f51f3775d99f43ca9e1169149cefd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\", \"started_revision\": 863, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i\"}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/d78f9138-3c7a-4be3-9961-78ee246328c1",
+        "revision": 864,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-24T21:03:22Z",
         "gate_id": "CWM-06-TESTS",
         "id": "d7d4b3df-6441-44b5-914c-930b09d1ccbb",
@@ -12472,14 +12605,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-I10\"], \"cwd\": \".\", \"input_paths\": [\"planning/workflow-foundation-v2\", \"pyproject.toml\", \"README.md\", \"AGENTS.md\", \"docs/workflow_foundation_v2/integration\", \"tests/wf2_acceptance/i\"], \"timeout\": 1800}",
         "id": "SK-WF2-I10-G",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735",
+        "last_run_at": "2026-09-12T19:24:31Z",
         "required": 1,
-        "revision": 797,
-        "status": "pending",
+        "revision": 864,
+        "status": "passed",
         "task_id": "SK-WF2-I10",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -12860,6 +12993,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"unification/pcu-v1/evidence/read-port-remediation/pcu-sk-40.json\"], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-40-REMEDIATION\", \"input_fingerprint\": \"570e7c56da06d61434ee1333994dcb5ca2c113330266aead11f7e8990095f696\", \"last_run_at\": \"2026-08-30T17:15:48Z\", \"revision\": 775, \"status\": \"failed\", \"valid\": 0}, {\"id\": \"PCU-SK-40-DIFF\", \"input_fingerprint\": \"79db190ee0a08e64acf271a9c774708a9f46fa975dff8796ffc44ed1c407eca3\", \"last_run_at\": \"2026-08-30T17:15:48Z\", \"revision\": 773, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 108 +++++++++++++++++++++++++++++----\\n todo-status.md                         |   2 +-\\n todos.md                               |   2 +-\\n 3 files changed, 99 insertions(+), 13 deletions(-)\", \"git_head\": \"96c9635c2f403aa85b98af2c7dc72b5f90e4cc46\", \"interfaces\": [], \"note\": \"Validated release pin and candidate 15/20 schema contracts, preserved rollback inventory, and recorded sanitized failed-gate evidence.\", \"resources\": [], \"task_id\": \"PCU-SK-40\"}",
         "revision": 777,
         "task_id": "PCU-SK-40"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-12T19:25:54Z",
+        "id": "0a61f7c0-fa1f-4c1d-9694-b920c0fe991b",
+        "kind": "complete",
+        "note": "Root finalized accepted SK-WF2-I10 donor integration milestone.",
+        "payload_json": "{\"authority_commit\": \"b442d058bd2c667c45a04a92f9fa7c2bdf6e3bc2\", \"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"SK-WF2-I10-CP\", \"reached_at\": \"2026-09-12T19:25:54Z\", \"state\": \"reached\"}], \"completion_commit\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"completion_gates\": [{\"evidence_id\": \"d78f9138-3c7a-4be3-9961-78ee246328c1\", \"evidence_revision\": 864, \"id\": \"SK-WF2-I10-G\", \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"0e141b9c5e3f51f3775d99f43ca9e1169149cefd\"}], \"completion_revision\": 867, \"finalized_checkpoints\": [\"SK-WF2-I10-CP\"], \"gates\": [{\"id\": \"SK-WF2-I10-G\", \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"last_run_at\": \"2026-09-12T19:24:31Z\", \"revision\": 864, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Root finalized accepted SK-WF2-I10 donor integration milestone.\", \"producer_commit\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"producer_root\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i\", \"resources\": [], \"task_id\": \"SK-WF2-I10\"}",
+        "revision": 867,
+        "task_id": "SK-WF2-I10"
       },
       {
         "claim_id": null,
@@ -17161,6 +17304,19 @@
         "task_id": "SK-WF2-A03",
         "valid": 1,
         "validation_git_head": "4abe1286c3f1c5ee9ea431c27179894daa726403"
+      },
+      {
+        "completion_git_head": "b5644fda3e3a18b19492b397c706288abd97487a",
+        "completion_revision": 867,
+        "evidence_id": "d78f9138-3c7a-4be3-9961-78ee246328c1",
+        "evidence_revision": 864,
+        "gate_id": "SK-WF2-I10-G",
+        "input_fingerprint": "977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735",
+        "provenance_json": "{\"claim_id\": \"cccecf3f-324f-472f-b1fe-4f7d4f9e54a7\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-I10\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"inputs\": {\"command_contract\": {\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-I10\"], \"cwd\": \".\", \"timeout\": 1800}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [{\"path\": \"AGENTS.md\", \"sha256\": \"085ab5c2e74a8a36869a4c27015f9d707422343b7f08fcccce296fd3b97211f3\"}, {\"path\": \"README.md\", \"sha256\": \"missing\"}, {\"path\": \"docs/workflow_foundation_v2/integration\", \"sha256\": \"missing\"}, {\"path\": \"planning/workflow-foundation-v2\", \"sha256\": \"missing\"}, {\"path\": \"pyproject.toml\", \"sha256\": \"missing\"}, {\"path\": \"tests/wf2_acceptance/i\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"0e141b9c5e3f51f3775d99f43ca9e1169149cefd\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\", \"started_revision\": 863, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i\"}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/d78f9138-3c7a-4be3-9961-78ee246328c1\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-WF2-I10",
+        "valid": 1,
+        "validation_git_head": "0e141b9c5e3f51f3775d99f43ca9e1169149cefd"
       },
       {
         "completion_git_head": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
@@ -21844,9 +22000,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "b5644fda3e3a18b19492b397c706288abd97487a",
+        "completion_git_head": "b5644fda3e3a18b19492b397c706288abd97487a",
+        "completion_revision": 867,
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-I10",
         "kind": "integration_task",
@@ -21858,14 +22014,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 854,
-        "status": "in_progress",
+        "revision": 867,
+        "status": "done",
         "tags_json": "[]",
         "title": "Publish the donor baseline and test inventory",
-        "updated_at": "2026-09-12T18:27:58Z",
-        "version": 3
+        "updated_at": "2026-09-12T19:25:54Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -24421,6 +24577,19 @@
       },
       {
         "conflict_json": "{}",
+        "created_at": "2026-09-12T18:36:38Z",
+        "id": "a401dd14-1dfe-4c69-aad5-ea332d7fdbe3",
+        "integration_task_id": "SK-WF2-I10",
+        "integrator_lane_id": "SK-WF2-L-I",
+        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
+        "patch_artifact_id": "0f09dfc5-1fce-4bb6-a2e3-8a8739f2962f",
+        "position": 1,
+        "run_id": "SK-WF2-RUN-V1",
+        "state": "integrated",
+        "updated_at": "2026-09-12T19:24:31Z"
+      },
+      {
+        "conflict_json": "{}",
         "created_at": "2026-08-30T12:58:01Z",
         "id": "b8715a89-b321-413a-bccc-09b6d9f8cf1a",
         "integration_task_id": "PCU-SK-20",
@@ -24438,12 +24607,12 @@
         "id": "cc075c88-bffc-40e2-84bb-488e7653eeab",
         "integration_task_id": "SK-WF2-I10",
         "integrator_lane_id": "SK-WF2-L-I",
-        "merge_result_json": "{}",
+        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
         "patch_artifact_id": "f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5",
         "position": 0,
         "run_id": "SK-WF2-RUN-V1",
-        "state": "queued",
-        "updated_at": "2026-09-12T17:52:43Z"
+        "state": "integrated",
+        "updated_at": "2026-09-12T19:24:31Z"
       },
       {
         "conflict_json": "{}",
@@ -24817,13 +24986,13 @@
         "task_id": "SK-WF2-D04"
       },
       {
-        "activated_at": null,
-        "completed_at": null,
+        "activated_at": "2026-09-12T18:37:55Z",
+        "completed_at": "2026-09-12T19:25:54Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 0,
-        "revision": 855,
-        "state": "queued",
+        "revision": 867,
+        "state": "completed",
         "task_id": "SK-WF2-I10"
       },
       {
@@ -25431,11 +25600,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-I",
         "parent_lane_id": "SK-WF2-L-COORD",
-        "revision": 855,
+        "revision": 867,
         "role": "integrator",
         "run_id": "SK-WF2-RUN-V1",
         "state": "ready",
-        "updated_at": "2026-09-12T18:27:58Z",
+        "updated_at": "2026-09-12T19:25:54Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -25654,6 +25823,17 @@
     ],
     "workflow_patch_artifacts": [
       {
+        "artifact_ref": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
+        "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
+        "content_hash": "fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb",
+        "created_at": "2026-09-12T18:36:38Z",
+        "id": "0f09dfc5-1fce-4bb6-a2e3-8a8739f2962f",
+        "kind": "commit",
+        "state": "integrated",
+        "task_id": "SK-WF2-V01",
+        "workspace_id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5"
+      },
+      {
         "artifact_ref": "a8c642da7de4df6eee954b6bac08430a146a6d63",
         "base_commit": "e7a6845cdc276a36f7024f7a25521b184ea35f8d",
         "content_hash": "e3abb09852f3b0951c43cb427c1ab24bbe879036f5f5e521c173b0e20d64bca0",
@@ -25803,7 +25983,7 @@
         "created_at": "2026-09-12T17:49:26Z",
         "id": "f5456da0-7bed-4e78-b0b7-a99ef3eaa5d5",
         "kind": "commit",
-        "state": "queued",
+        "state": "integrated",
         "task_id": "SK-WF2-A03",
         "workspace_id": "2628ed1d-0535-46cf-8518-3a530683e452"
       },
@@ -26176,22 +26356,22 @@
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination"
       },
       {
-        "artifact_kind": null,
-        "artifact_ref": null,
+        "artifact_kind": "commit",
+        "artifact_ref": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
         "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
         "branch": "codex/sk-wf2-l-v",
         "cleanup_eligible": 0,
         "created_at": "2026-09-12T18:12:08Z",
-        "diff_hash": null,
+        "diff_hash": "fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb",
         "id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
         "integration_task_id": "SK-WF2-I10",
         "lane_id": "SK-WF2-L-V",
-        "merge_result_json": "{}",
+        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
         "mode": "isolated_merge",
         "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T18:12:08Z",
+        "state": "integrated",
+        "updated_at": "2026-09-12T19:24:31Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v"
       },
       {
@@ -26205,12 +26385,12 @@
         "id": "2628ed1d-0535-46cf-8518-3a530683e452",
         "integration_task_id": "SK-WF2-I10",
         "lane_id": "SK-WF2-L-A",
-        "merge_result_json": "{}",
+        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
         "mode": "isolated_merge",
         "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "queued",
-        "updated_at": "2026-09-12T17:52:43Z",
+        "state": "integrated",
+        "updated_at": "2026-09-12T19:24:31Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-a"
       },
       {
@@ -26271,22 +26451,22 @@
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-12"
       },
       {
-        "artifact_kind": null,
-        "artifact_ref": null,
+        "artifact_kind": "commit",
+        "artifact_ref": "b5644fda3e3a18b19492b397c706288abd97487a",
         "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
         "branch": "codex/sk-wf2-l-i",
         "cleanup_eligible": 0,
         "created_at": "2026-09-12T17:52:31Z",
-        "diff_hash": null,
+        "diff_hash": "7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687",
         "id": "7f7c6bdd-8206-4ed4-bf86-9199e4d84e4b",
         "integration_task_id": "SK-WF2-I10",
         "lane_id": "SK-WF2-L-I",
-        "merge_result_json": "{}",
+        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
         "mode": "exclusive",
         "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T17:52:31Z",
+        "state": "integrated",
+        "updated_at": "2026-09-12T19:24:31Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i"
       },
       {
