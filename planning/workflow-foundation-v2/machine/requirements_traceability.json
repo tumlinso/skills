@@ -1,0 +1,634 @@
+{
+  "requirements": [
+    {
+      "id": "SK-WF2-COORD-A01",
+      "requirement": "The final local integration task and its checkpoint are successfully complete",
+      "task_id": "SK-WF2-COORD",
+      "gate_id": "SK-WF2-COORD-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-COORD-A02",
+      "requirement": "Every required producer/consumer receipt is current and unresolved blockers are recorded",
+      "task_id": "SK-WF2-COORD",
+      "gate_id": "SK-WF2-COORD-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-COORD-A03",
+      "requirement": "Owned work and explicit limitations are handed off before the aggregate epic closes",
+      "task_id": "SK-WF2-COORD",
+      "gate_id": "SK-WF2-COORD-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-0000-A01",
+      "requirement": "Every local child is successfully terminal",
+      "task_id": "SK-WF2-0000",
+      "gate_id": "SK-WF2-0000-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-0000-A02",
+      "requirement": "The final local milestone remains qualified and integrated",
+      "task_id": "SK-WF2-0000",
+      "gate_id": "SK-WF2-0000-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-0000-A03",
+      "requirement": "The paired program release identity and limitations are explicitly reported",
+      "task_id": "SK-WF2-0000",
+      "gate_id": "SK-WF2-0000-G",
+      "evidence_kind": "closure"
+    },
+    {
+      "id": "SK-WF2-A01-A01",
+      "requirement": "Complete source/test inventory hashes are available",
+      "task_id": "SK-WF2-A01",
+      "gate_id": "SK-WF2-A01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A01-A02",
+      "requirement": "Unknown external consumers are recorded as compatibility risks",
+      "task_id": "SK-WF2-A01",
+      "gate_id": "SK-WF2-A01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A01-A03",
+      "requirement": "No live Todo data is included in export",
+      "task_id": "SK-WF2-A01",
+      "gate_id": "SK-WF2-A01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A02-A01",
+      "requirement": "Baseline inventory counts and required tests are reproducible",
+      "task_id": "SK-WF2-A02",
+      "gate_id": "SK-WF2-A02-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A02-A02",
+      "requirement": "No real Cellerator/GlassHelix database is modified",
+      "task_id": "SK-WF2-A02",
+      "gate_id": "SK-WF2-A02-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A02-A03",
+      "requirement": "Old deployment and source remain recoverable",
+      "task_id": "SK-WF2-A02",
+      "gate_id": "SK-WF2-A02-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A03-A01",
+      "requirement": "Ctxpp standalone contract does not require a workflow DB",
+      "task_id": "SK-WF2-A03",
+      "gate_id": "SK-WF2-A03-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A03-A02",
+      "requirement": "Read-only query and expensive refresh are separate capabilities",
+      "task_id": "SK-WF2-A03",
+      "gate_id": "SK-WF2-A03-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-A03-A03",
+      "requirement": "CPU/RAM reservation scope is not misrepresented as host-wide",
+      "task_id": "SK-WF2-A03",
+      "gate_id": "SK-WF2-A03-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-X01-A01",
+      "requirement": "Qualified old/new source and tests are identified",
+      "task_id": "SK-WF2-X01",
+      "gate_id": "SK-WF2-X01-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X01-A02",
+      "requirement": "No semantic refactor begins before parity",
+      "task_id": "SK-WF2-X01",
+      "gate_id": "SK-WF2-X01-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X01-A03",
+      "requirement": "Receipt uses the actual PC UUID",
+      "task_id": "SK-WF2-X01",
+      "gate_id": "SK-WF2-X01-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X02-A01",
+      "requirement": "Candidate supported APIs are source/hash qualified",
+      "task_id": "SK-WF2-X02",
+      "gate_id": "SK-WF2-X02-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X02-A02",
+      "requirement": "No implicit sys.path fallback reintroduces the donor kernel",
+      "task_id": "SK-WF2-X02",
+      "gate_id": "SK-WF2-X02-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X02-A03",
+      "requirement": "Installed old runtime is still unchanged",
+      "task_id": "SK-WF2-X02",
+      "gate_id": "SK-WF2-X02-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X03-A01",
+      "requirement": "Fresh HTTP/stdio release identity is recorded",
+      "task_id": "SK-WF2-X03",
+      "gate_id": "SK-WF2-X03-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X03-A02",
+      "requirement": "Older writers are fenced or quiesced",
+      "task_id": "SK-WF2-X03",
+      "gate_id": "SK-WF2-X03-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-X03-A03",
+      "requirement": "Rehearsal-only evidence cannot satisfy this import",
+      "task_id": "SK-WF2-X03",
+      "gate_id": "SK-WF2-X03-G",
+      "evidence_kind": "cross_receipt"
+    },
+    {
+      "id": "SK-WF2-C01-A01",
+      "requirement": "Missing/stale index gives explicit unavailable/partial status",
+      "task_id": "SK-WF2-C01",
+      "gate_id": "SK-WF2-C01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C01-A02",
+      "requirement": "Queries work without Todo or Project Control installed",
+      "task_id": "SK-WF2-C01",
+      "gate_id": "SK-WF2-C01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C01-A03",
+      "requirement": "JSONL fallback is bounded and declared",
+      "task_id": "SK-WF2-C01",
+      "gate_id": "SK-WF2-C01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C02-A01",
+      "requirement": "Standalone and integrated identities have explicit comparability rules",
+      "task_id": "SK-WF2-C02",
+      "gate_id": "SK-WF2-C02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C02-A02",
+      "requirement": "Fallback source identity satisfies packet-v2 schema",
+      "task_id": "SK-WF2-C02",
+      "gate_id": "SK-WF2-C02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C02-A03",
+      "requirement": "Changing an unrelated file vs relevant dependency has documented freshness effects",
+      "task_id": "SK-WF2-C02",
+      "gate_id": "SK-WF2-C02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C03-A01",
+      "requirement": "Malformed nested identities/trust are rejected",
+      "task_id": "SK-WF2-C03",
+      "gate_id": "SK-WF2-C03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C03-A02",
+      "requirement": "Required canonical target is not silently truncated",
+      "task_id": "SK-WF2-C03",
+      "gate_id": "SK-WF2-C03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C03-A03",
+      "requirement": "Trust never calls lexical evidence semantic proof",
+      "task_id": "SK-WF2-C03",
+      "gate_id": "SK-WF2-C03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C04-A01",
+      "requirement": "Read-only readers cannot mutate the index",
+      "task_id": "SK-WF2-C04",
+      "gate_id": "SK-WF2-C04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C04-A02",
+      "requirement": "Interrupted publication produces explicit mismatch, not stale-current data",
+      "task_id": "SK-WF2-C04",
+      "gate_id": "SK-WF2-C04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C04-A03",
+      "requirement": "Concurrent expensive invocations respect the declared coordination domain",
+      "task_id": "SK-WF2-C04",
+      "gate_id": "SK-WF2-C04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C05-A01",
+      "requirement": "Real packet/query output validates against the contract",
+      "task_id": "SK-WF2-C05",
+      "gate_id": "SK-WF2-C05-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C05-A02",
+      "requirement": "No installed Todo dependency remains",
+      "task_id": "SK-WF2-C05",
+      "gate_id": "SK-WF2-C05-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-C05-A03",
+      "requirement": "Source transform operations retain separate explicit authority and proof gates",
+      "task_id": "SK-WF2-C05",
+      "gate_id": "SK-WF2-C05-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W01-A01",
+      "requirement": "Forwarded old/new symbols share one implementation",
+      "task_id": "SK-WF2-W01",
+      "gate_id": "SK-WF2-W01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W01-A02",
+      "requirement": "No fallback executes a second workflow kernel",
+      "task_id": "SK-WF2-W01",
+      "gate_id": "SK-WF2-W01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W01-A03",
+      "requirement": "Unsupported legacy paths report a clear migration error",
+      "task_id": "SK-WF2-W01",
+      "gate_id": "SK-WF2-W01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W02-A01",
+      "requirement": "One authoritative DB/revision remains visible",
+      "task_id": "SK-WF2-W02",
+      "gate_id": "SK-WF2-W02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W02-A02",
+      "requirement": "Historical commands cannot bypass canonical write policy",
+      "task_id": "SK-WF2-W02",
+      "gate_id": "SK-WF2-W02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W02-A03",
+      "requirement": "Cross-package import cycles and import-order class identity bugs are rejected",
+      "task_id": "SK-WF2-W02",
+      "gate_id": "SK-WF2-W02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W03-A01",
+      "requirement": "Skills contains only declared forwarding compatibility for Todo",
+      "task_id": "SK-WF2-W03",
+      "gate_id": "SK-WF2-W03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W03-A02",
+      "requirement": "Old baseline remains reproducible outside production",
+      "task_id": "SK-WF2-W03",
+      "gate_id": "SK-WF2-W03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W03-A03",
+      "requirement": "No installation still requires sibling Todo discovery for the new product",
+      "task_id": "SK-WF2-W03",
+      "gate_id": "SK-WF2-W03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-W04-A01",
+      "requirement": "Compatibility is temporary and has measurable exit criteria",
+      "task_id": "SK-WF2-W04",
+      "gate_id": "SK-WF2-W04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-W04-A02",
+      "requirement": "No active deployment is silently broken",
+      "task_id": "SK-WF2-W04",
+      "gate_id": "SK-WF2-W04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-W04-A03",
+      "requirement": "State directory migration is explicitly deferred",
+      "task_id": "SK-WF2-W04",
+      "gate_id": "SK-WF2-W04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-D01-A01",
+      "requirement": "Every inventoried consumer has a replacement mapping",
+      "task_id": "SK-WF2-D01",
+      "gate_id": "SK-WF2-D01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D01-A02",
+      "requirement": "No private sqlite/table dependency is introduced",
+      "task_id": "SK-WF2-D01",
+      "gate_id": "SK-WF2-D01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D01-A03",
+      "requirement": "Real candidate import tests pass",
+      "task_id": "SK-WF2-D01",
+      "gate_id": "SK-WF2-D01-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D02-A01",
+      "requirement": "Existing lease arbitration remains singular",
+      "task_id": "SK-WF2-D02",
+      "gate_id": "SK-WF2-D02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D02-A02",
+      "requirement": "Standalone engine behavior is explicitly supported or bounded",
+      "task_id": "SK-WF2-D02",
+      "gate_id": "SK-WF2-D02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D02-A03",
+      "requirement": "No helper resource request grants workflow permissions",
+      "task_id": "SK-WF2-D02",
+      "gate_id": "SK-WF2-D02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D03-A01",
+      "requirement": "Child cannot publish parent completion or impersonate a lane",
+      "task_id": "SK-WF2-D03",
+      "gate_id": "SK-WF2-D03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D03-A02",
+      "requirement": "Unavailable local worker returns control without polling loops",
+      "task_id": "SK-WF2-D03",
+      "gate_id": "SK-WF2-D03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D03-A03",
+      "requirement": "Failed candidate retains logs/evidence without source loss",
+      "task_id": "SK-WF2-D03",
+      "gate_id": "SK-WF2-D03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D04-A01",
+      "requirement": "Mocked lease tests are not reported as actual GPU execution",
+      "task_id": "SK-WF2-D04",
+      "gate_id": "SK-WF2-D04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D04-A02",
+      "requirement": "Consumer inventory coverage is complete",
+      "task_id": "SK-WF2-D04",
+      "gate_id": "SK-WF2-D04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-D04-A03",
+      "requirement": "Current source/build/runtime identities accompany test results",
+      "task_id": "SK-WF2-D04",
+      "gate_id": "SK-WF2-D04-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V01-A01",
+      "requirement": "No module disappears without an explicit disposition",
+      "task_id": "SK-WF2-V01",
+      "gate_id": "SK-WF2-V01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-V01-A02",
+      "requirement": "No authority tokens or runtime DB enter the package",
+      "task_id": "SK-WF2-V01",
+      "gate_id": "SK-WF2-V01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-V01-A03",
+      "requirement": "Donor map supports independent reproduction",
+      "task_id": "SK-WF2-V01",
+      "gate_id": "SK-WF2-V01-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-V02-A01",
+      "requirement": "Standalone operation never imports project_control or todo_orchestrator",
+      "task_id": "SK-WF2-V02",
+      "gate_id": "SK-WF2-V02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V02-A02",
+      "requirement": "All mandatory schema/trust cases execute with zero skips",
+      "task_id": "SK-WF2-V02",
+      "gate_id": "SK-WF2-V02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V02-A03",
+      "requirement": "Read query leaves canonical source and .ctxpp bytes unchanged",
+      "task_id": "SK-WF2-V02",
+      "gate_id": "SK-WF2-V02-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V03-A01",
+      "requirement": "One implementation services old and new calls",
+      "task_id": "SK-WF2-V03",
+      "gate_id": "SK-WF2-V03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V03-A02",
+      "requirement": "Mixed unsafe versions fail closed",
+      "task_id": "SK-WF2-V03",
+      "gate_id": "SK-WF2-V03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V03-A03",
+      "requirement": "No skipped mandatory consumer scenario",
+      "task_id": "SK-WF2-V03",
+      "gate_id": "SK-WF2-V03-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-V04-A01",
+      "requirement": "Actual deployed identity matches accepted candidate",
+      "task_id": "SK-WF2-V04",
+      "gate_id": "SK-WF2-V04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-V04-A02",
+      "requirement": "Real existing project UUIDs are preserved",
+      "task_id": "SK-WF2-V04",
+      "gate_id": "SK-WF2-V04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-V04-A03",
+      "requirement": "Known limitations remain explicit",
+      "task_id": "SK-WF2-V04",
+      "gate_id": "SK-WF2-V04-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I10-A01",
+      "requirement": "Donor inventory is complete and reproducible",
+      "task_id": "SK-WF2-I10",
+      "gate_id": "SK-WF2-I10-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I10-A02",
+      "requirement": "Producer completion is visible in the Skills authority",
+      "task_id": "SK-WF2-I10",
+      "gate_id": "SK-WF2-I10-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I10-A03",
+      "requirement": "Receipt does not contain a self-referential commit hash",
+      "task_id": "SK-WF2-I10",
+      "gate_id": "SK-WF2-I10-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I20-A01",
+      "requirement": "Standalone qualified query/packet contract is installed in candidate",
+      "task_id": "SK-WF2-I20",
+      "gate_id": "SK-WF2-I20-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I20-A02",
+      "requirement": "No kernel code has moved into ctxpp",
+      "task_id": "SK-WF2-I20",
+      "gate_id": "SK-WF2-I20-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I20-A03",
+      "requirement": "Receipt includes actual fixture execution",
+      "task_id": "SK-WF2-I20",
+      "gate_id": "SK-WF2-I20-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I40-A01",
+      "requirement": "Alias compatibility is not a second live product",
+      "task_id": "SK-WF2-I40",
+      "gate_id": "SK-WF2-I40-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I40-A02",
+      "requirement": "No donor private imports remain in maintained consumers",
+      "task_id": "SK-WF2-I40",
+      "gate_id": "SK-WF2-I40-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I40-A03",
+      "requirement": "New runtime contracts match the PC receipt",
+      "task_id": "SK-WF2-I40",
+      "gate_id": "SK-WF2-I40-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I60-A01",
+      "requirement": "All required shim/ctxpp/consumer tests pass",
+      "task_id": "SK-WF2-I60",
+      "gate_id": "SK-WF2-I60-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I60-A02",
+      "requirement": "Candidate source pair and build identities are fixed",
+      "task_id": "SK-WF2-I60",
+      "gate_id": "SK-WF2-I60-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I60-A03",
+      "requirement": "Actual deployment remains a separate milestone",
+      "task_id": "SK-WF2-I60",
+      "gate_id": "SK-WF2-I60-G",
+      "evidence_kind": "tests"
+    },
+    {
+      "id": "SK-WF2-I90-A01",
+      "requirement": "All Skills-owned work is integrated and qualified",
+      "task_id": "SK-WF2-I90",
+      "gate_id": "SK-WF2-I90-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I90-A02",
+      "requirement": "No unrelated worktree or older program is cleaned",
+      "task_id": "SK-WF2-I90",
+      "gate_id": "SK-WF2-I90-G",
+      "evidence_kind": "governance"
+    },
+    {
+      "id": "SK-WF2-I90-A03",
+      "requirement": "Final receipt enables PC closure without waiting on its final epic",
+      "task_id": "SK-WF2-I90",
+      "gate_id": "SK-WF2-I90-G",
+      "evidence_kind": "governance"
+    }
+  ]
+}

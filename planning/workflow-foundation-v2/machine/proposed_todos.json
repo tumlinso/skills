@@ -1,0 +1,3333 @@
+{
+  "format": "wf2-authored-catalog",
+  "schema_version": 1,
+  "program_id": "WF2-20260912-v1",
+  "authority_to_apply": false,
+  "project": "SK",
+  "workspace": "skills",
+  "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "native_plan_file": "skills-workflow-foundation-v2.todo-plan.json",
+  "root_task": "SK-WF2-0000",
+  "coordinator_task": "SK-WF2-COORD",
+  "final_task": "SK-WF2-I90",
+  "native_header": {
+    "schema_version": 3,
+    "project": {
+      "name": "Workflow Foundation v2 — skills"
+    },
+    "interfaces": [
+      {
+        "id": "SK-WF2-IF-CTXPP",
+        "owner_task_id": "SK-WF2-C05",
+        "state": "draft",
+        "version": "1",
+        "contract_paths": [
+          "cpp-context-compiler/references/query-contract-v1.md"
+        ]
+      }
+    ],
+    "barriers": [
+      {
+        "id": "SK-WF2-I10-B",
+        "title": "Publish the donor baseline and test inventory milestone",
+        "mode": "all",
+        "requirements": [
+          {
+            "type": "checkpoint",
+            "id": "SK-WF2-I10-CP"
+          }
+        ]
+      },
+      {
+        "id": "SK-WF2-I20-B",
+        "title": "Integrate and publish the standalone ctxpp contract milestone",
+        "mode": "all",
+        "requirements": [
+          {
+            "type": "checkpoint",
+            "id": "SK-WF2-I20-CP"
+          }
+        ]
+      },
+      {
+        "id": "SK-WF2-I40-B",
+        "title": "Integrate forwarding shims and engine consumers milestone",
+        "mode": "all",
+        "requirements": [
+          {
+            "type": "checkpoint",
+            "id": "SK-WF2-I40-CP"
+          }
+        ]
+      },
+      {
+        "id": "SK-WF2-I60-B",
+        "title": "Publish consumer-ready paired release acceptance milestone",
+        "mode": "all",
+        "requirements": [
+          {
+            "type": "checkpoint",
+            "id": "SK-WF2-I60-CP"
+          }
+        ]
+      },
+      {
+        "id": "SK-WF2-I90-B",
+        "title": "Close Skills work after qualified deployment milestone",
+        "mode": "all",
+        "requirements": [
+          {
+            "type": "checkpoint",
+            "id": "SK-WF2-I90-CP"
+          }
+        ]
+      }
+    ],
+    "locks": [
+      {
+        "name": "SK-WF2-COORDINATOR-SEAT",
+        "capacity": 1
+      }
+    ],
+    "invariants": [
+      {
+        "id": "SK-WF2-INV-SINGLE-AUTHORITY",
+        "rule": "Workflow transactions, claims, scheduling, capabilities, completion and recovery have one implementation in workflow_core. Observers and adapters never write its tables.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-PARITY-FIRST",
+        "rule": "Import and qualify the donor unchanged before introducing new semantics. Preserve the old executable and state-format baseline for differential checks.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-CTXPP-SEPARATE",
+        "rule": "cpp-context-compiler remains standalone. Project Control consumes a versioned pure read contract; no implicit refresh, rewrite or reverse workflow-product dependency.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-NO-STATE-RELOCATION",
+        "rule": "Keep existing .todo-orchestrator paths, UUIDs and durable history during this program. Do not initialize replacement authorities.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-EXTERNAL-AUTHORITY",
+        "rule": "Git/source, engine observations, executor state and host resources remain distinct authorities. Receipts identify evidence rather than manufacture truth.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+        "rule": "Initial native v3 inputs contain only supported fields. Profiles remain sidecars until strict support is qualified; old reapplication must not erase profiles.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-COST-NOT-PERMISSION",
+        "rule": "Difficulty/risk/context are task requirements, not scheduling priority, authorization or model names. Record actual executor facts separately.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-PRESERVE-WORK",
+        "rule": "Do not reset, force-push, automatically delete unknown work, or clean unrelated worktrees. Integrate and qualify owned commits before cleanup.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+        "rule": "Missing tests, empty inventories, skips, stale records, fabricated done flags and rehearse-only deployments cannot qualify implementation.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-STAGED-CUTOVER",
+        "rule": "Do not mutate the deployed runtime running this epic until a qualified candidate, writer fencing, backups and tested rollback/migrate-forward exist.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-TOKEN-COVERAGE",
+        "rule": "Budget the full response, preserve mandatory identity/coverage/security warnings and provide exact expansion routes. Smaller output is not license to hide contradictory evidence.",
+        "severity": "error",
+        "scope": {}
+      },
+      {
+        "id": "SK-WF2-INV-SEPARATE-PERMISSIONS",
+        "rule": "Package extraction, native import, controller launch, external configuration changes and actual deployment are distinct actions. This artifact performs none automatically.",
+        "severity": "error",
+        "scope": {}
+      }
+    ],
+    "runs": [
+      {
+        "id": "SK-WF2-RUN-V1",
+        "root_task_id": "SK-WF2-0000",
+        "charter": {
+          "objective": "Absorb Todo into Project Control; preserve independent ctxpp; establish strict profiles and token-efficient verified orchestration.",
+          "boundaries": [
+            "Inert manual bootstrap; import does not dispatch",
+            "Separate PC and Skills authorities",
+            "Do not initialize a Codex authority",
+            "Parity before semantic changes",
+            "Keep live release frozen until qualified cutover"
+          ],
+          "invariants": [
+            "SK-WF2-INV-SINGLE-AUTHORITY",
+            "SK-WF2-INV-PARITY-FIRST",
+            "SK-WF2-INV-CTXPP-SEPARATE",
+            "SK-WF2-INV-NO-STATE-RELOCATION",
+            "SK-WF2-INV-EXTERNAL-AUTHORITY",
+            "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+            "SK-WF2-INV-COST-NOT-PERMISSION",
+            "SK-WF2-INV-PRESERVE-WORK",
+            "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+            "SK-WF2-INV-STAGED-CUTOVER",
+            "SK-WF2-INV-TOKEN-COVERAGE",
+            "SK-WF2-INV-SEPARATE-PERMISSIONS"
+          ],
+          "acceptance_conditions": [
+            "All task gates pass honestly",
+            "Real paired cutover is independently qualified",
+            "Prior state and unknown work are preserved"
+          ]
+        },
+        "lanes": [
+          {
+            "id": "SK-WF2-L-COORD",
+            "role": "coordinator",
+            "tasks": [
+              "SK-WF2-COORD",
+              "SK-WF2-0000"
+            ],
+            "workspace": {
+              "mode": "read_shared"
+            }
+          },
+          {
+            "id": "SK-WF2-L-A",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "implementer",
+            "tasks": [
+              "SK-WF2-A01",
+              "SK-WF2-A02",
+              "SK-WF2-A03"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-X",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "specialist",
+            "tasks": [
+              "SK-WF2-X01",
+              "SK-WF2-X02",
+              "SK-WF2-X03"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-C",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "implementer",
+            "tasks": [
+              "SK-WF2-C01",
+              "SK-WF2-C02",
+              "SK-WF2-C03",
+              "SK-WF2-C04",
+              "SK-WF2-C05"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-W",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "implementer",
+            "tasks": [
+              "SK-WF2-W01",
+              "SK-WF2-W02",
+              "SK-WF2-W03",
+              "SK-WF2-W04"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-D",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "implementer",
+            "tasks": [
+              "SK-WF2-D01",
+              "SK-WF2-D02",
+              "SK-WF2-D03",
+              "SK-WF2-D04"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-V",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "specialist",
+            "tasks": [
+              "SK-WF2-V01",
+              "SK-WF2-V02",
+              "SK-WF2-V03",
+              "SK-WF2-V04"
+            ],
+            "workspace": {
+              "mode": "isolated_merge"
+            }
+          },
+          {
+            "id": "SK-WF2-L-I",
+            "parent_lane_id": "SK-WF2-L-COORD",
+            "role": "integrator",
+            "tasks": [
+              "SK-WF2-I10",
+              "SK-WF2-I20",
+              "SK-WF2-I40",
+              "SK-WF2-I60",
+              "SK-WF2-I90"
+            ],
+            "workspace": {
+              "mode": "exclusive"
+            }
+          }
+        ],
+        "rendezvous": []
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "SK-WF2-COORD",
+      "project": "SK",
+      "stream": "COORD",
+      "title": "Coordinate the accepted program; close only after final local integration",
+      "mechanism": "Hold a claimable ordinary coordinator seat and direct first-class lanes under the single strategic controller. Revalidate source, claims, receipts and resource limits. Continue coordinating while leaves run; the completion gate requires final local integration, not a claim-time dependency.",
+      "acceptance": [
+        "The final local integration task and its checkpoint are successfully complete",
+        "Every required producer/consumer receipt is current and unresolved blockers are recorded",
+        "Owned work and explicit limitations are handed off before the aggregate epic closes"
+      ],
+      "depends": [],
+      "evidence_kind": "closure",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-COORD",
+        "kind": "task",
+        "title": "Coordinate the accepted program; close only after final local integration",
+        "objective": "Hold a claimable ordinary coordinator seat and direct first-class lanes under the single strategic controller. Revalidate source, claims, receipts and resource limits. Continue coordinating while leaves run; the completion gate requires final local integration, not a claim-time dependency.",
+        "status": "planned",
+        "priority": 900,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-coord.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "claim_locks": [
+          "SK-WF2-COORDINATOR-SEAT"
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-COORD-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-COORD"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "hard",
+        "risk": "critical",
+        "work_type": "architecture",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-0000",
+      "project": "SK",
+      "stream": "COORD",
+      "title": "Workflow Foundation v2 — skills aggregate",
+      "mechanism": "Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.",
+      "acceptance": [
+        "Every local child is successfully terminal",
+        "The final local milestone remains qualified and integrated",
+        "The paired program release identity and limitations are explicitly reported"
+      ],
+      "depends": [],
+      "evidence_kind": "closure",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-0000",
+        "kind": "epic",
+        "title": "Workflow Foundation v2 — skills aggregate",
+        "objective": "Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.",
+        "status": "planned",
+        "priority": 900,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "scope": {
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "gates": [
+          {
+            "id": "SK-WF2-0000-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-0000"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "routine",
+        "risk": "high",
+        "work_type": "review",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-A01",
+      "project": "SK",
+      "stream": "A",
+      "title": "Inventory Todo donor source and public consumers",
+      "mechanism": "Capture all todo_orchestrator modules, tests, scripts, supported imports, package entry points and runtime sidecars at the reviewed Skills commit. Audit CUDA, local-worker and ctxpp imports by exact paths.",
+      "acceptance": [
+        "Complete source/test inventory hashes are available",
+        "Unknown external consumers are recorded as compatibility risks",
+        "No live Todo data is included in export"
+      ],
+      "depends": [],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-A01",
+        "kind": "task",
+        "title": "Inventory Todo donor source and public consumers",
+        "objective": "Capture all todo_orchestrator modules, tests, scripts, supported imports, package entry points and runtime sidecars at the reviewed Skills commit. Audit CUDA, local-worker and ctxpp imports by exact paths.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/baseline",
+            "tests/wf2_acceptance/a"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "gates": [
+          {
+            "id": "SK-WF2-A01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-A01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/baseline",
+              "tests/wf2_acceptance/a"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "deep"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/baseline",
+          "tests/wf2_acceptance/a"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-A02",
+      "project": "SK",
+      "stream": "A",
+      "title": "Freeze donor fixtures and preserve deployment recovery",
+      "mechanism": "Retain old package and test identities outside the new runtime path. Produce sanitized versioned fixtures from supported exports or disposable sample projects; never copy secrets or active capability tokens.",
+      "acceptance": [
+        "Baseline inventory counts and required tests are reproducible",
+        "No real Cellerator/GlassHelix database is modified",
+        "Old deployment and source remain recoverable"
+      ],
+      "depends": [
+        "SK-WF2-A01"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-A02",
+        "kind": "task",
+        "title": "Freeze donor fixtures and preserve deployment recovery",
+        "objective": "Retain old package and test identities outside the new runtime path. Produce sanitized versioned fixtures from supported exports or disposable sample projects; never copy secrets or active capability tokens.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/baseline",
+            "tests/wf2_acceptance/a"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-A01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-A02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-A02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/baseline",
+              "tests/wf2_acceptance/a"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/baseline",
+          "tests/wf2_acceptance/a"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-A03",
+      "project": "SK",
+      "stream": "A",
+      "title": "Map independent ctxpp and host execution contracts",
+      "mechanism": "Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.",
+      "acceptance": [
+        "Ctxpp standalone contract does not require a workflow DB",
+        "Read-only query and expensive refresh are separate capabilities",
+        "CPU/RAM reservation scope is not misrepresented as host-wide"
+      ],
+      "depends": [
+        "SK-WF2-A02"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-A03",
+        "kind": "task",
+        "title": "Map independent ctxpp and host execution contracts",
+        "objective": "Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/baseline",
+            "tests/wf2_acceptance/a"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-A02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-A03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-A03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/baseline",
+              "tests/wf2_acceptance/a"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "deep"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/baseline",
+          "tests/wf2_acceptance/a"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-X01",
+      "project": "SK",
+      "stream": "X",
+      "title": "Import Project Control parity approval",
+      "mechanism": "Verify WF2-PARITY and fresh PC-WF2-I10 completion before changing consumers or deleting donor implementation.",
+      "acceptance": [
+        "Qualified old/new source and tests are identified",
+        "No semantic refactor begins before parity",
+        "Receipt uses the actual PC UUID"
+      ],
+      "depends": [
+        "SK-WF2-A03"
+      ],
+      "evidence_kind": "cross_receipt",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-X01",
+        "kind": "task",
+        "title": "Import Project Control parity approval",
+        "objective": "Verify WF2-PARITY and fresh PC-WF2-I10 completion before changing consumers or deleting donor implementation.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/imports",
+            "tests/wf2_acceptance/x"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-A03"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-X01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-X01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/imports",
+              "tests/wf2_acceptance/x"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "inspection",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/imports",
+          "tests/wf2_acceptance/x"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-X02",
+      "project": "SK",
+      "stream": "X",
+      "title": "Import the supported new runtime interface",
+      "mechanism": "Verify WF2-RUNTIME from PC-WF2-I20 and available candidate facade before rewiring CUDA/local-worker callers.",
+      "acceptance": [
+        "Candidate supported APIs are source/hash qualified",
+        "No implicit sys.path fallback reintroduces the donor kernel",
+        "Installed old runtime is still unchanged"
+      ],
+      "depends": [
+        "SK-WF2-X01"
+      ],
+      "evidence_kind": "cross_receipt",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-X02",
+        "kind": "task",
+        "title": "Import the supported new runtime interface",
+        "objective": "Verify WF2-RUNTIME from PC-WF2-I20 and available candidate facade before rewiring CUDA/local-worker callers.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/imports",
+            "tests/wf2_acceptance/x"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-X01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-X02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-X02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/imports",
+              "tests/wf2_acceptance/x"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "inspection",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/imports",
+          "tests/wf2_acceptance/x"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-X03",
+      "project": "SK",
+      "stream": "X",
+      "title": "Import actual deployment qualification",
+      "mechanism": "Verify WF2-DEPLOYED from PC-WF2-I50 after candidate acceptance and actual release promotion.",
+      "acceptance": [
+        "Fresh HTTP/stdio release identity is recorded",
+        "Older writers are fenced or quiesced",
+        "Rehearsal-only evidence cannot satisfy this import"
+      ],
+      "depends": [
+        "SK-WF2-I60"
+      ],
+      "evidence_kind": "cross_receipt",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-X03",
+        "kind": "task",
+        "title": "Import actual deployment qualification",
+        "objective": "Verify WF2-DEPLOYED from PC-WF2-I50 after candidate acceptance and actual release promotion.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "docs/workflow_foundation_v2/imports",
+            "tests/wf2_acceptance/x"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I60"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-X03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-X03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "docs/workflow_foundation_v2/imports",
+              "tests/wf2_acceptance/x"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "inspection",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "docs/workflow_foundation_v2/imports",
+          "tests/wf2_acceptance/x"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-C01",
+      "project": "SK",
+      "stream": "C",
+      "title": "Expose read-only indexed ctxpp queries",
+      "mechanism": "Create a small stable query facade over existing query.sqlite/manifest, supporting exact symbol ID, qualified name, canonical range and typed graph edges. No scanning or publication is permitted by this operation.",
+      "acceptance": [
+        "Missing/stale index gives explicit unavailable/partial status",
+        "Queries work without Todo or Project Control installed",
+        "JSONL fallback is bounded and declared"
+      ],
+      "depends": [
+        "SK-WF2-X01"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-C01",
+        "kind": "task",
+        "title": "Expose read-only indexed ctxpp queries",
+        "objective": "Create a small stable query facade over existing query.sqlite/manifest, supporting exact symbol ID, qualified name, canonical range and typed graph edges. No scanning or publication is permitted by this operation.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cpp-context-compiler/scripts",
+            "cpp-context-compiler/schemas",
+            "cpp-context-compiler/references",
+            "cpp-context-compiler/tests",
+            "tests/wf2_acceptance/c"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-X01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-C01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-C01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cpp-context-compiler/scripts",
+              "cpp-context-compiler/schemas",
+              "cpp-context-compiler/references",
+              "cpp-context-compiler/tests",
+              "tests/wf2_acceptance/c"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "deep"
+      },
+      "source_scope": {
+        "write": [
+          "cpp-context-compiler/scripts",
+          "cpp-context-compiler/schemas",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests",
+          "tests/wf2_acceptance/c"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-C02",
+      "project": "SK",
+      "stream": "C",
+      "title": "Remove opportunistic Todo imports from source identity",
+      "mechanism": "Replace sibling sys.path injection with an independently implemented/versioned identity contract or a genuinely small shared contract dependency. Record algorithm/version/domain and which files/configurations are covered.",
+      "acceptance": [
+        "Standalone and integrated identities have explicit comparability rules",
+        "Fallback source identity satisfies packet-v2 schema",
+        "Changing an unrelated file vs relevant dependency has documented freshness effects"
+      ],
+      "depends": [
+        "SK-WF2-C01"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-C02",
+        "kind": "task",
+        "title": "Remove opportunistic Todo imports from source identity",
+        "objective": "Replace sibling sys.path injection with an independently implemented/versioned identity contract or a genuinely small shared contract dependency. Record algorithm/version/domain and which files/configurations are covered.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cpp-context-compiler/scripts",
+            "cpp-context-compiler/schemas",
+            "cpp-context-compiler/references",
+            "cpp-context-compiler/tests",
+            "tests/wf2_acceptance/c"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-C02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-C02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cpp-context-compiler/scripts",
+              "cpp-context-compiler/schemas",
+              "cpp-context-compiler/references",
+              "cpp-context-compiler/tests",
+              "tests/wf2_acceptance/c"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "hard",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cpp-context-compiler/scripts",
+          "cpp-context-compiler/schemas",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests",
+          "tests/wf2_acceptance/c"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-C03",
+      "project": "SK",
+      "stream": "C",
+      "title": "Strengthen packet schemas and trust accounting",
+      "mechanism": "Validate nested task/context/trust/identity objects, not only top-level keys. Preserve whole canonical targets, explicit omissions and honest sufficiency when budget is too small or semantic relationships incomplete.",
+      "acceptance": [
+        "Malformed nested identities/trust are rejected",
+        "Required canonical target is not silently truncated",
+        "Trust never calls lexical evidence semantic proof"
+      ],
+      "depends": [
+        "SK-WF2-C02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-C03",
+        "kind": "task",
+        "title": "Strengthen packet schemas and trust accounting",
+        "objective": "Validate nested task/context/trust/identity objects, not only top-level keys. Preserve whole canonical targets, explicit omissions and honest sufficiency when budget is too small or semantic relationships incomplete.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cpp-context-compiler/scripts",
+            "cpp-context-compiler/schemas",
+            "cpp-context-compiler/references",
+            "cpp-context-compiler/tests",
+            "tests/wf2_acceptance/c"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-C03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-C03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cpp-context-compiler/scripts",
+              "cpp-context-compiler/schemas",
+              "cpp-context-compiler/references",
+              "cpp-context-compiler/tests",
+              "tests/wf2_acceptance/c"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cpp-context-compiler/scripts",
+          "cpp-context-compiler/schemas",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests",
+          "tests/wf2_acceptance/c"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-C04",
+      "project": "SK",
+      "stream": "C",
+      "title": "Harden query publication and resource bounds",
+      "mechanism": "Test manifest/query-generation consistency under readers and publication. Document invocation-local CPU/RAM reservations; consume optional host admission without coupling standalone queries to workflow ownership.",
+      "acceptance": [
+        "Read-only readers cannot mutate the index",
+        "Interrupted publication produces explicit mismatch, not stale-current data",
+        "Concurrent expensive invocations respect the declared coordination domain"
+      ],
+      "depends": [
+        "SK-WF2-C03"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-C04",
+        "kind": "task",
+        "title": "Harden query publication and resource bounds",
+        "objective": "Test manifest/query-generation consistency under readers and publication. Document invocation-local CPU/RAM reservations; consume optional host admission without coupling standalone queries to workflow ownership.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c04.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cpp-context-compiler/scripts",
+            "cpp-context-compiler/schemas",
+            "cpp-context-compiler/references",
+            "cpp-context-compiler/tests",
+            "tests/wf2_acceptance/c"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C03"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-C04-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-C04"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cpp-context-compiler/scripts",
+              "cpp-context-compiler/schemas",
+              "cpp-context-compiler/references",
+              "cpp-context-compiler/tests",
+              "tests/wf2_acceptance/c"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "hard",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cpp-context-compiler/scripts",
+          "cpp-context-compiler/schemas",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests",
+          "tests/wf2_acceptance/c"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-C05",
+      "project": "SK",
+      "stream": "C",
+      "title": "Qualify independent consumers and publish the ctxpp API",
+      "mechanism": "Run standalone C++ fixture and Project Control adapter contract tests with semantic and lexical fallback scenarios. Preserve optional LibTooling limitations as explicit, not claims of a production-equivalent backend.",
+      "acceptance": [
+        "Real packet/query output validates against the contract",
+        "No installed Todo dependency remains",
+        "Source transform operations retain separate explicit authority and proof gates"
+      ],
+      "depends": [
+        "SK-WF2-C04"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-C05",
+        "kind": "task",
+        "title": "Qualify independent consumers and publish the ctxpp API",
+        "objective": "Run standalone C++ fixture and Project Control adapter contract tests with semantic and lexical fallback scenarios. Preserve optional LibTooling limitations as explicit, not claims of a production-equivalent backend.",
+        "status": "planned",
+        "priority": 800,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c05.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cpp-context-compiler/scripts",
+            "cpp-context-compiler/schemas",
+            "cpp-context-compiler/references",
+            "cpp-context-compiler/tests",
+            "tests/wf2_acceptance/c"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C04"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-C05-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-C05"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cpp-context-compiler/scripts",
+              "cpp-context-compiler/schemas",
+              "cpp-context-compiler/references",
+              "cpp-context-compiler/tests",
+              "tests/wf2_acceptance/c"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "testing",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cpp-context-compiler/scripts",
+          "cpp-context-compiler/schemas",
+          "cpp-context-compiler/references",
+          "cpp-context-compiler/tests",
+          "tests/wf2_acceptance/c"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-W01",
+      "project": "SK",
+      "stream": "W",
+      "title": "Construct forwarding-only legacy entry points",
+      "mechanism": "After importing the supported new runtime, replace candidate old entry points with explicit forwards for documented imports, CLI and workflow protocol. Preserve old release outside the candidate for rollback/differential use.",
+      "acceptance": [
+        "Forwarded old/new symbols share one implementation",
+        "No fallback executes a second workflow kernel",
+        "Unsupported legacy paths report a clear migration error"
+      ],
+      "depends": [
+        "SK-WF2-X02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-W01",
+        "kind": "task",
+        "title": "Construct forwarding-only legacy entry points",
+        "objective": "After importing the supported new runtime, replace candidate old entry points with explicit forwards for documented imports, CLI and workflow protocol. Preserve old release outside the candidate for rollback/differential use.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "todo-orchestrator",
+            "integrations/coding-workflow-mcp",
+            "tests/wf2_acceptance/w"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-X02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-W01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-W01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "todo-orchestrator",
+              "integrations/coding-workflow-mcp",
+              "tests/wf2_acceptance/w"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "deep"
+      },
+      "source_scope": {
+        "write": [
+          "todo-orchestrator",
+          "integrations/coding-workflow-mcp",
+          "tests/wf2_acceptance/w"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-W02",
+      "project": "SK",
+      "stream": "W",
+      "title": "Qualify legacy import and command behavior",
+      "mechanism": "Test historical todo scripts, coding-workflow alias and runtime facades against the new installed product in isolated processes. Verify documented deprecation output and error codes without duplicate live MCP registration.",
+      "acceptance": [
+        "One authoritative DB/revision remains visible",
+        "Historical commands cannot bypass canonical write policy",
+        "Cross-package import cycles and import-order class identity bugs are rejected"
+      ],
+      "depends": [
+        "SK-WF2-W01"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-W02",
+        "kind": "task",
+        "title": "Qualify legacy import and command behavior",
+        "objective": "Test historical todo scripts, coding-workflow alias and runtime facades against the new installed product in isolated processes. Verify documented deprecation output and error codes without duplicate live MCP registration.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "todo-orchestrator",
+            "integrations/coding-workflow-mcp",
+            "tests/wf2_acceptance/w"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-W01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-W02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-W02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "todo-orchestrator",
+              "integrations/coding-workflow-mcp",
+              "tests/wf2_acceptance/w"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "testing",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "todo-orchestrator",
+          "integrations/coding-workflow-mcp",
+          "tests/wf2_acceptance/w"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-W03",
+      "project": "SK",
+      "stream": "W",
+      "title": "Remove the maintained duplicate kernel from the new path",
+      "mechanism": "Retire copied implementation only after parity and legacy conformance. Keep immutable historical source via Git/tags/artifacts; update packaging so the released shim depends on the accepted PC artifact, never an unpinned mutable checkout.",
+      "acceptance": [
+        "Skills contains only declared forwarding compatibility for Todo",
+        "Old baseline remains reproducible outside production",
+        "No installation still requires sibling Todo discovery for the new product"
+      ],
+      "depends": [
+        "SK-WF2-W02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-W03",
+        "kind": "task",
+        "title": "Remove the maintained duplicate kernel from the new path",
+        "objective": "Retire copied implementation only after parity and legacy conformance. Keep immutable historical source via Git/tags/artifacts; update packaging so the released shim depends on the accepted PC artifact, never an unpinned mutable checkout.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "todo-orchestrator",
+            "integrations/coding-workflow-mcp",
+            "tests/wf2_acceptance/w"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-W02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-W03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-W03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "todo-orchestrator",
+              "integrations/coding-workflow-mcp",
+              "tests/wf2_acceptance/w"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "integration",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "todo-orchestrator",
+          "integrations/coding-workflow-mcp",
+          "tests/wf2_acceptance/w"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-W04",
+      "project": "SK",
+      "stream": "W",
+      "title": "Publish support-window and final removal criteria",
+      "mechanism": "Document supported legacy calls, compatibility tests, expiry criteria and later optional total shim removal. Do not force removal of externally used entry points without an inventory.",
+      "acceptance": [
+        "Compatibility is temporary and has measurable exit criteria",
+        "No active deployment is silently broken",
+        "State directory migration is explicitly deferred"
+      ],
+      "depends": [
+        "SK-WF2-W03"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-W04",
+        "kind": "task",
+        "title": "Publish support-window and final removal criteria",
+        "objective": "Document supported legacy calls, compatibility tests, expiry criteria and later optional total shim removal. Do not force removal of externally used entry points without an inventory.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w04.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "todo-orchestrator",
+            "integrations/coding-workflow-mcp",
+            "tests/wf2_acceptance/w"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-W03"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-W04-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-W04"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "todo-orchestrator",
+              "integrations/coding-workflow-mcp",
+              "tests/wf2_acceptance/w"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "todo-orchestrator",
+          "integrations/coding-workflow-mcp",
+          "tests/wf2_acceptance/w"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-D01",
+      "project": "SK",
+      "stream": "D",
+      "title": "Route source and artifact consumers through supported contracts",
+      "mechanism": "Update enumerated CUDA/local-worker imports to the qualified facade or independent source contract. Keep command, source, artifact and evidence schemas stable unless explicitly versioned.",
+      "acceptance": [
+        "Every inventoried consumer has a replacement mapping",
+        "No private sqlite/table dependency is introduced",
+        "Real candidate import tests pass"
+      ],
+      "depends": [
+        "SK-WF2-X02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-D01",
+        "kind": "task",
+        "title": "Route source and artifact consumers through supported contracts",
+        "objective": "Update enumerated CUDA/local-worker imports to the qualified facade or independent source contract. Keep command, source, artifact and evidence schemas stable unless explicitly versioned.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cuda/scripts",
+            "cuda/tests",
+            "local-coding-worker/local_worker",
+            "local-coding-worker/scripts",
+            "local-coding-worker/tests",
+            "tests/wf2_acceptance/d"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-X02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-D01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-D01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cuda/scripts",
+              "cuda/tests",
+              "local-coding-worker/local_worker",
+              "local-coding-worker/scripts",
+              "local-coding-worker/tests",
+              "tests/wf2_acceptance/d"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "cuda/scripts",
+          "cuda/tests",
+          "local-coding-worker/local_worker",
+          "local-coding-worker/scripts",
+          "local-coding-worker/tests",
+          "tests/wf2_acceptance/d"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-D02",
+      "project": "SK",
+      "stream": "D",
+      "title": "Preserve host-wide admission and lease behavior",
+      "mechanism": "Rewire host coordinator access without creating a second host resource authority. Verify CPU/RAM/GPU request semantics, preemption, quiescence, PID incarnation and release on failures.",
+      "acceptance": [
+        "Existing lease arbitration remains singular",
+        "Standalone engine behavior is explicitly supported or bounded",
+        "No helper resource request grants workflow permissions"
+      ],
+      "depends": [
+        "SK-WF2-D01"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-D02",
+        "kind": "task",
+        "title": "Preserve host-wide admission and lease behavior",
+        "objective": "Rewire host coordinator access without creating a second host resource authority. Verify CPU/RAM/GPU request semantics, preemption, quiescence, PID incarnation and release on failures.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cuda/scripts",
+            "cuda/tests",
+            "local-coding-worker/local_worker",
+            "local-coding-worker/scripts",
+            "local-coding-worker/tests",
+            "tests/wf2_acceptance/d"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-D01"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-D02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-D02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cuda/scripts",
+              "cuda/tests",
+              "local-coding-worker/local_worker",
+              "local-coding-worker/scripts",
+              "local-coding-worker/tests",
+              "tests/wf2_acceptance/d"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "hard",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cuda/scripts",
+          "cuda/tests",
+          "local-coding-worker/local_worker",
+          "local-coding-worker/scripts",
+          "local-coding-worker/tests",
+          "tests/wf2_acceptance/d"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-D03",
+      "project": "SK",
+      "stream": "D",
+      "title": "Preserve subordinate worker acceptance semantics",
+      "mechanism": "Verify bounded child scope, candidate vs accepted result, nonblocking collection and parent-only completion after rewiring. Distinguish first-class Codex workers from local execution children.",
+      "acceptance": [
+        "Child cannot publish parent completion or impersonate a lane",
+        "Unavailable local worker returns control without polling loops",
+        "Failed candidate retains logs/evidence without source loss"
+      ],
+      "depends": [
+        "SK-WF2-D02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-D03",
+        "kind": "task",
+        "title": "Preserve subordinate worker acceptance semantics",
+        "objective": "Verify bounded child scope, candidate vs accepted result, nonblocking collection and parent-only completion after rewiring. Distinguish first-class Codex workers from local execution children.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cuda/scripts",
+            "cuda/tests",
+            "local-coding-worker/local_worker",
+            "local-coding-worker/scripts",
+            "local-coding-worker/tests",
+            "tests/wf2_acceptance/d"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-D02"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-D03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-D03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cuda/scripts",
+              "cuda/tests",
+              "local-coding-worker/local_worker",
+              "local-coding-worker/scripts",
+              "local-coding-worker/tests",
+              "tests/wf2_acceptance/d"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "hard",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cuda/scripts",
+          "cuda/tests",
+          "local-coding-worker/local_worker",
+          "local-coding-worker/scripts",
+          "local-coding-worker/tests",
+          "tests/wf2_acceptance/d"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-D04",
+      "project": "SK",
+      "stream": "D",
+      "title": "Qualify consumers and resource failure paths",
+      "mechanism": "Execute representative CUDA-controller orchestration and local-worker contract tests on isolated fixtures; run actual hardware tests only where declared and available. Record hardware-unavailable as blocked for those assertions.",
+      "acceptance": [
+        "Mocked lease tests are not reported as actual GPU execution",
+        "Consumer inventory coverage is complete",
+        "Current source/build/runtime identities accompany test results"
+      ],
+      "depends": [
+        "SK-WF2-D03"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-D04",
+        "kind": "task",
+        "title": "Qualify consumers and resource failure paths",
+        "objective": "Execute representative CUDA-controller orchestration and local-worker contract tests on isolated fixtures; run actual hardware tests only where declared and available. Record hardware-unavailable as blocked for those assertions.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d04.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "cuda/scripts",
+            "cuda/tests",
+            "local-coding-worker/local_worker",
+            "local-coding-worker/scripts",
+            "local-coding-worker/tests",
+            "tests/wf2_acceptance/d"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-D03"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-D04-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-D04"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "cuda/scripts",
+              "cuda/tests",
+              "local-coding-worker/local_worker",
+              "local-coding-worker/scripts",
+              "local-coding-worker/tests",
+              "tests/wf2_acceptance/d"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "testing",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "cuda/scripts",
+          "cuda/tests",
+          "local-coding-worker/local_worker",
+          "local-coding-worker/scripts",
+          "local-coding-worker/tests",
+          "tests/wf2_acceptance/d"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-V01",
+      "project": "SK",
+      "stream": "V",
+      "title": "Review donor mapping and parity evidence independently",
+      "mechanism": "Check module/test inventory, sensitive-state exclusions, baseline release retention and replacement paths against the actual donor tree.",
+      "acceptance": [
+        "No module disappears without an explicit disposition",
+        "No authority tokens or runtime DB enter the package",
+        "Donor map supports independent reproduction"
+      ],
+      "depends": [
+        "SK-WF2-A03"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-V01",
+        "kind": "task",
+        "title": "Review donor mapping and parity evidence independently",
+        "objective": "Check module/test inventory, sensitive-state exclusions, baseline release retention and replacement paths against the actual donor tree.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v01.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "tests/wf2_validation",
+            "docs/workflow_foundation_v2/validation",
+            "tests/wf2_acceptance/v"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-A03"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-V01-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-V01"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "tests/wf2_validation",
+              "docs/workflow_foundation_v2/validation",
+              "tests/wf2_acceptance/v"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "review",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "tests/wf2_validation",
+          "docs/workflow_foundation_v2/validation",
+          "tests/wf2_acceptance/v"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-V02",
+      "project": "SK",
+      "stream": "V",
+      "title": "Test ctxpp with no workflow products installed",
+      "mechanism": "Install/run the bounded query/packet contract in a clean isolated environment with a real C++ fixture. Include stale manifest, missing index, unsupported backend, tiny budget and changed source cases.",
+      "acceptance": [
+        "Standalone operation never imports project_control or todo_orchestrator",
+        "All mandatory schema/trust cases execute with zero skips",
+        "Read query leaves canonical source and .ctxpp bytes unchanged"
+      ],
+      "depends": [
+        "SK-WF2-C05"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-V02",
+        "kind": "task",
+        "title": "Test ctxpp with no workflow products installed",
+        "objective": "Install/run the bounded query/packet contract in a clean isolated environment with a real C++ fixture. Include stale manifest, missing index, unsupported backend, tiny budget and changed source cases.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v02.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "tests/wf2_validation",
+            "docs/workflow_foundation_v2/validation",
+            "tests/wf2_acceptance/v"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C05"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-V02-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-V02"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "tests/wf2_validation",
+              "docs/workflow_foundation_v2/validation",
+              "tests/wf2_acceptance/v"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "testing",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "tests/wf2_validation",
+          "docs/workflow_foundation_v2/validation",
+          "tests/wf2_acceptance/v"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-V03",
+      "project": "SK",
+      "stream": "V",
+      "title": "Test forwarding shims and real consumer boundaries",
+      "mechanism": "Independently exercise W/D candidate from both historical entry points and new supported APIs, including process crashes and incompatible runtime identity.",
+      "acceptance": [
+        "One implementation services old and new calls",
+        "Mixed unsafe versions fail closed",
+        "No skipped mandatory consumer scenario"
+      ],
+      "depends": [
+        "SK-WF2-W04",
+        "SK-WF2-D04"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-V03",
+        "kind": "task",
+        "title": "Test forwarding shims and real consumer boundaries",
+        "objective": "Independently exercise W/D candidate from both historical entry points and new supported APIs, including process crashes and incompatible runtime identity.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v03.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "tests/wf2_validation",
+            "docs/workflow_foundation_v2/validation",
+            "tests/wf2_acceptance/v"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-W04"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-D04"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-V03-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-V03"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "tests/wf2_validation",
+              "docs/workflow_foundation_v2/validation",
+              "tests/wf2_acceptance/v"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "critical",
+        "work_type": "testing",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "tests/wf2_validation",
+          "docs/workflow_foundation_v2/validation",
+          "tests/wf2_acceptance/v"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-V04",
+      "project": "SK",
+      "stream": "V",
+      "title": "Verify final migration after the release switch",
+      "mechanism": "After actual deployed receipt, run bounded read/import smoke with new release and observe old-entry compatibility without mutating unrelated authorities. Verify retained rollback and source closure.",
+      "acceptance": [
+        "Actual deployed identity matches accepted candidate",
+        "Real existing project UUIDs are preserved",
+        "Known limitations remain explicit"
+      ],
+      "depends": [
+        "SK-WF2-X03",
+        "SK-WF2-I60"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-V04",
+        "kind": "task",
+        "title": "Verify final migration after the release switch",
+        "objective": "After actual deployed receipt, run bounded read/import smoke with new release and observe old-entry compatibility without mutating unrelated authorities. Verify retained rollback and source closure.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v04.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "tests/wf2_validation",
+            "docs/workflow_foundation_v2/validation",
+            "tests/wf2_acceptance/v"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-X03"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I60"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-V04-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-V04"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "tests/wf2_validation",
+              "docs/workflow_foundation_v2/validation",
+              "tests/wf2_acceptance/v"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "review",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "tests/wf2_validation",
+          "docs/workflow_foundation_v2/validation",
+          "tests/wf2_acceptance/v"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-I10",
+      "project": "SK",
+      "stream": "I",
+      "title": "Publish the donor baseline and test inventory",
+      "mechanism": "Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.",
+      "acceptance": [
+        "Donor inventory is complete and reproducible",
+        "Producer completion is visible in the Skills authority",
+        "Receipt does not contain a self-referential commit hash"
+      ],
+      "depends": [
+        "SK-WF2-A03",
+        "SK-WF2-V01"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-I10",
+        "kind": "integration_task",
+        "title": "Publish the donor baseline and test inventory",
+        "objective": "Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i10.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "pyproject.toml",
+            "README.md",
+            "AGENTS.md",
+            "docs/workflow_foundation_v2/integration",
+            "tests/wf2_acceptance/i"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-A03"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-V01"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "SK-WF2-I10-CP",
+            "title": "Publish the donor baseline and test inventory"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-I10-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-I10"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "pyproject.toml",
+              "README.md",
+              "AGENTS.md",
+              "docs/workflow_foundation_v2/integration",
+              "tests/wf2_acceptance/i"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "pyproject.toml",
+          "README.md",
+          "AGENTS.md",
+          "docs/workflow_foundation_v2/integration",
+          "tests/wf2_acceptance/i"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-I20",
+      "project": "SK",
+      "stream": "I",
+      "title": "Integrate and publish the standalone ctxpp contract",
+      "mechanism": "Integrate C05/V02 and publish WF2-CTXPP for the PC adapter. Keep independent CLI/config/state and separate refresh/rewrite authority.",
+      "acceptance": [
+        "Standalone qualified query/packet contract is installed in candidate",
+        "No kernel code has moved into ctxpp",
+        "Receipt includes actual fixture execution"
+      ],
+      "depends": [
+        "SK-WF2-I10",
+        "SK-WF2-C05",
+        "SK-WF2-V02"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-I20",
+        "kind": "integration_task",
+        "title": "Integrate and publish the standalone ctxpp contract",
+        "objective": "Integrate C05/V02 and publish WF2-CTXPP for the PC adapter. Keep independent CLI/config/state and separate refresh/rewrite authority.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i20.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "pyproject.toml",
+            "README.md",
+            "AGENTS.md",
+            "docs/workflow_foundation_v2/integration",
+            "tests/wf2_acceptance/i"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I10"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-C05"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-V02"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "SK-WF2-I20-CP",
+            "title": "Integrate and publish the standalone ctxpp contract"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-I20-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-I20"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "pyproject.toml",
+              "README.md",
+              "AGENTS.md",
+              "docs/workflow_foundation_v2/integration",
+              "tests/wf2_acceptance/i"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "integration",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "pyproject.toml",
+          "README.md",
+          "AGENTS.md",
+          "docs/workflow_foundation_v2/integration",
+          "tests/wf2_acceptance/i"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-I40",
+      "project": "SK",
+      "stream": "I",
+      "title": "Integrate forwarding shims and engine consumers",
+      "mechanism": "Integrate W/D changes with the exact recipient candidate. Check root registration/docs so only Project Control is the normal workflow product.",
+      "acceptance": [
+        "Alias compatibility is not a second live product",
+        "No donor private imports remain in maintained consumers",
+        "New runtime contracts match the PC receipt"
+      ],
+      "depends": [
+        "SK-WF2-I20",
+        "SK-WF2-W04",
+        "SK-WF2-D04"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-I40",
+        "kind": "integration_task",
+        "title": "Integrate forwarding shims and engine consumers",
+        "objective": "Integrate W/D changes with the exact recipient candidate. Check root registration/docs so only Project Control is the normal workflow product.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i40.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "pyproject.toml",
+            "README.md",
+            "AGENTS.md",
+            "docs/workflow_foundation_v2/integration",
+            "tests/wf2_acceptance/i"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I20"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-W04"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-D04"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "SK-WF2-I40-CP",
+            "title": "Integrate forwarding shims and engine consumers"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-I40-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-I40"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "pyproject.toml",
+              "README.md",
+              "AGENTS.md",
+              "docs/workflow_foundation_v2/integration",
+              "tests/wf2_acceptance/i"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "integration",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "pyproject.toml",
+          "README.md",
+          "AGENTS.md",
+          "docs/workflow_foundation_v2/integration",
+          "tests/wf2_acceptance/i"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-I60",
+      "project": "SK",
+      "stream": "I",
+      "title": "Publish consumer-ready paired release acceptance",
+      "mechanism": "Integrate independent V03 checks and publish WF2-CONSUMERS. This milestone precedes actual PC deployment and does not wait for PC final closure.",
+      "acceptance": [
+        "All required shim/ctxpp/consumer tests pass",
+        "Candidate source pair and build identities are fixed",
+        "Actual deployment remains a separate milestone"
+      ],
+      "depends": [
+        "SK-WF2-I40",
+        "SK-WF2-V03"
+      ],
+      "evidence_kind": "tests",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-I60",
+        "kind": "integration_task",
+        "title": "Publish consumer-ready paired release acceptance",
+        "objective": "Integrate independent V03 checks and publish WF2-CONSUMERS. This milestone precedes actual PC deployment and does not wait for PC final closure.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i60.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "pyproject.toml",
+            "README.md",
+            "AGENTS.md",
+            "docs/workflow_foundation_v2/integration",
+            "tests/wf2_acceptance/i"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I40"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-V03"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "SK-WF2-I60-CP",
+            "title": "Publish consumer-ready paired release acceptance"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-I60-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-I60"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "pyproject.toml",
+              "README.md",
+              "AGENTS.md",
+              "docs/workflow_foundation_v2/integration",
+              "tests/wf2_acceptance/i"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "integration",
+        "context_depth": "focused"
+      },
+      "source_scope": {
+        "write": [
+          "pyproject.toml",
+          "README.md",
+          "AGENTS.md",
+          "docs/workflow_foundation_v2/integration",
+          "tests/wf2_acceptance/i"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    },
+    {
+      "id": "SK-WF2-I90",
+      "project": "SK",
+      "stream": "I",
+      "title": "Close Skills work after qualified deployment",
+      "mechanism": "After V04, verify final main integration, published compatibility obligations and retained historical baseline. Publish WF2-SK-FINAL; COORD and root epic close afterward.",
+      "acceptance": [
+        "All Skills-owned work is integrated and qualified",
+        "No unrelated worktree or older program is cleaned",
+        "Final receipt enables PC closure without waiting on its final epic"
+      ],
+      "depends": [
+        "SK-WF2-I60",
+        "SK-WF2-V04"
+      ],
+      "evidence_kind": "governance",
+      "extra_read": [],
+      "native": {
+        "id": "SK-WF2-I90",
+        "kind": "integration_task",
+        "title": "Close Skills work after qualified deployment",
+        "objective": "After V04, verify final main integration, published compatibility obligations and retained historical baseline. Publish WF2-SK-FINAL; COORD and root epic close afterward.",
+        "status": "planned",
+        "priority": 500,
+        "parallel_policy": "parallel_safe",
+        "next_action": "Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i90.md; verify live prerequisites and evidence before work.",
+        "notes": "WF2 authored task; work_profile is inert in machine/work_profiles.json until native support is qualified. Source evidence and stop line are in the package.",
+        "parent_id": "SK-WF2-0000",
+        "scope": {
+          "exclusive_paths": [
+            "pyproject.toml",
+            "README.md",
+            "AGENTS.md",
+            "docs/workflow_foundation_v2/integration",
+            "tests/wf2_acceptance/i"
+          ],
+          "read_paths": [
+            "planning/workflow-foundation-v2"
+          ]
+        },
+        "depends_on": [
+          {
+            "type": "task",
+            "task_id": "SK-WF2-I60"
+          },
+          {
+            "type": "task",
+            "task_id": "SK-WF2-V04"
+          }
+        ],
+        "checkpoints": [
+          {
+            "id": "SK-WF2-I90-CP",
+            "title": "Close Skills work after qualified deployment"
+          }
+        ],
+        "gates": [
+          {
+            "id": "SK-WF2-I90-G",
+            "type": "command",
+            "argv": [
+              "python3",
+              "-B",
+              "planning/workflow-foundation-v2/scripts/run_gate.py",
+              "--task",
+              "SK-WF2-I90"
+            ],
+            "cwd": ".",
+            "timeout": 1800,
+            "required": true,
+            "input_paths": [
+              "planning/workflow-foundation-v2",
+              "pyproject.toml",
+              "README.md",
+              "AGENTS.md",
+              "docs/workflow_foundation_v2/integration",
+              "tests/wf2_acceptance/i"
+            ]
+          }
+        ],
+        "invariants": [
+          "SK-WF2-INV-SINGLE-AUTHORITY",
+          "SK-WF2-INV-PARITY-FIRST",
+          "SK-WF2-INV-CTXPP-SEPARATE",
+          "SK-WF2-INV-NO-STATE-RELOCATION",
+          "SK-WF2-INV-EXTERNAL-AUTHORITY",
+          "SK-WF2-INV-NO-SILENT-SCHEMA-LOSS",
+          "SK-WF2-INV-COST-NOT-PERMISSION",
+          "SK-WF2-INV-PRESERVE-WORK",
+          "SK-WF2-INV-EVIDENCE-NOT-CHECKBOX",
+          "SK-WF2-INV-STAGED-CUTOVER",
+          "SK-WF2-INV-TOKEN-COVERAGE",
+          "SK-WF2-INV-SEPARATE-PERMISSIONS"
+        ]
+      },
+      "work_profile": {
+        "difficulty": "complex",
+        "risk": "high",
+        "work_type": "implementation",
+        "context_depth": "cross_project"
+      },
+      "source_scope": {
+        "write": [
+          "pyproject.toml",
+          "README.md",
+          "AGENTS.md",
+          "docs/workflow_foundation_v2/integration",
+          "tests/wf2_acceptance/i"
+        ],
+        "read": [
+          "planning/workflow-foundation-v2"
+        ]
+      }
+    }
+  ]
+}

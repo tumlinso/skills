@@ -1,0 +1,63 @@
+{
+  "phases": [
+    {
+      "integration_task": "SK-WF2-I10",
+      "required_tasks": [
+        "SK-WF2-A03",
+        "SK-WF2-V01"
+      ],
+      "destination_mode": "exclusive",
+      "source_base": "captured and registered at runtime, not guessed",
+      "preprovision_before": "completion of the first producer assigned to this phase",
+      "automatic_provisioning": false
+    },
+    {
+      "integration_task": "SK-WF2-I20",
+      "required_tasks": [
+        "SK-WF2-I10",
+        "SK-WF2-C05",
+        "SK-WF2-V02"
+      ],
+      "destination_mode": "exclusive",
+      "source_base": "captured and registered at runtime, not guessed",
+      "preprovision_before": "completion of the first producer assigned to this phase",
+      "automatic_provisioning": false
+    },
+    {
+      "integration_task": "SK-WF2-I40",
+      "required_tasks": [
+        "SK-WF2-I20",
+        "SK-WF2-W04",
+        "SK-WF2-D04"
+      ],
+      "destination_mode": "exclusive",
+      "source_base": "captured and registered at runtime, not guessed",
+      "preprovision_before": "completion of the first producer assigned to this phase",
+      "automatic_provisioning": false
+    },
+    {
+      "integration_task": "SK-WF2-I60",
+      "required_tasks": [
+        "SK-WF2-I40",
+        "SK-WF2-V03"
+      ],
+      "destination_mode": "exclusive",
+      "source_base": "captured and registered at runtime, not guessed",
+      "preprovision_before": "completion of the first producer assigned to this phase",
+      "automatic_provisioning": false
+    },
+    {
+      "integration_task": "SK-WF2-I90",
+      "required_tasks": [
+        "SK-WF2-I60",
+        "SK-WF2-V04"
+      ],
+      "destination_mode": "exclusive",
+      "source_base": "captured and registered at runtime, not guessed",
+      "preprovision_before": "completion of the first producer assigned to this phase",
+      "automatic_provisioning": false
+    }
+  ],
+  "native_workspace_policy": "Initial lanes declare mode only. Runtime preparation chooses managed workspace binding and exact bases using observed supported APIs.",
+  "avoid_completion_deadlock": "Do not require producer done merely to provision its integration destination. A mismatch requires authoritative safe rebind, not deletion or a metadata lie."
+}

@@ -1,0 +1,111 @@
+[
+  {
+    "id": "SK-WF2-L-COORD",
+    "role": "coordinator",
+    "tasks": [
+      "SK-WF2-COORD",
+      "SK-WF2-0000"
+    ],
+    "workspace": {
+      "mode": "read_shared"
+    }
+  },
+  {
+    "id": "SK-WF2-L-A",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "implementer",
+    "tasks": [
+      "SK-WF2-A01",
+      "SK-WF2-A02",
+      "SK-WF2-A03"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-X",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "specialist",
+    "tasks": [
+      "SK-WF2-X01",
+      "SK-WF2-X02",
+      "SK-WF2-X03"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-C",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "implementer",
+    "tasks": [
+      "SK-WF2-C01",
+      "SK-WF2-C02",
+      "SK-WF2-C03",
+      "SK-WF2-C04",
+      "SK-WF2-C05"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-W",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "implementer",
+    "tasks": [
+      "SK-WF2-W01",
+      "SK-WF2-W02",
+      "SK-WF2-W03",
+      "SK-WF2-W04"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-D",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "implementer",
+    "tasks": [
+      "SK-WF2-D01",
+      "SK-WF2-D02",
+      "SK-WF2-D03",
+      "SK-WF2-D04"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-V",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "specialist",
+    "tasks": [
+      "SK-WF2-V01",
+      "SK-WF2-V02",
+      "SK-WF2-V03",
+      "SK-WF2-V04"
+    ],
+    "workspace": {
+      "mode": "isolated_merge"
+    }
+  },
+  {
+    "id": "SK-WF2-L-I",
+    "parent_lane_id": "SK-WF2-L-COORD",
+    "role": "integrator",
+    "tasks": [
+      "SK-WF2-I10",
+      "SK-WF2-I20",
+      "SK-WF2-I40",
+      "SK-WF2-I60",
+      "SK-WF2-I90"
+    ],
+    "workspace": {
+      "mode": "exclusive"
+    }
+  }
+]

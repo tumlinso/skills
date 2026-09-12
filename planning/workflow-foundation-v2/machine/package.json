@@ -1,0 +1,16 @@
+{
+  "program_id": "WF2-20260912-v1",
+  "workspace": "skills",
+  "repository": "skills",
+  "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "baseline_commit": "3652874793401944e3cde30a3134aeb5615316ba",
+  "baseline_revision": 796,
+  "package_path": "planning/workflow-foundation-v2",
+  "run_id": "SK-WF2-RUN-V1",
+  "root_task_id": "SK-WF2-0000",
+  "coordinator_task_id": "SK-WF2-COORD",
+  "coordinator_lane_id": "SK-WF2-L-COORD",
+  "native_plan_file": "skills-workflow-foundation-v2.todo-plan.json",
+  "prefix": "SK-WF2",
+  "authority_to_apply": false
+}

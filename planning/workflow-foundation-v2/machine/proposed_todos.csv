@@ -1,0 +1,31 @@
+id,stream,title,difficulty,risk,work_type,context_depth
+SK-WF2-COORD,COORD,Coordinate the accepted program; close only after final local integration,hard,critical,architecture,cross_project
+SK-WF2-0000,COORD,Workflow Foundation v2 — skills aggregate,routine,high,review,focused
+SK-WF2-A01,A,Inventory Todo donor source and public consumers,complex,high,implementation,deep
+SK-WF2-A02,A,Freeze donor fixtures and preserve deployment recovery,complex,high,implementation,focused
+SK-WF2-A03,A,Map independent ctxpp and host execution contracts,complex,high,implementation,deep
+SK-WF2-X01,X,Import Project Control parity approval,complex,high,inspection,cross_project
+SK-WF2-X02,X,Import the supported new runtime interface,complex,high,inspection,cross_project
+SK-WF2-X03,X,Import actual deployment qualification,complex,high,inspection,cross_project
+SK-WF2-C01,C,Expose read-only indexed ctxpp queries,complex,high,implementation,deep
+SK-WF2-C02,C,Remove opportunistic Todo imports from source identity,hard,high,implementation,focused
+SK-WF2-C03,C,Strengthen packet schemas and trust accounting,complex,high,implementation,focused
+SK-WF2-C04,C,Harden query publication and resource bounds,hard,high,implementation,focused
+SK-WF2-C05,C,Qualify independent consumers and publish the ctxpp API,complex,high,testing,focused
+SK-WF2-W01,W,Construct forwarding-only legacy entry points,complex,high,implementation,deep
+SK-WF2-W02,W,Qualify legacy import and command behavior,complex,high,testing,focused
+SK-WF2-W03,W,Remove the maintained duplicate kernel from the new path,complex,high,integration,focused
+SK-WF2-W04,W,Publish support-window and final removal criteria,complex,high,implementation,focused
+SK-WF2-D01,D,Route source and artifact consumers through supported contracts,complex,high,implementation,cross_project
+SK-WF2-D02,D,Preserve host-wide admission and lease behavior,hard,high,implementation,focused
+SK-WF2-D03,D,Preserve subordinate worker acceptance semantics,hard,high,implementation,focused
+SK-WF2-D04,D,Qualify consumers and resource failure paths,complex,high,testing,focused
+SK-WF2-V01,V,Review donor mapping and parity evidence independently,complex,high,review,focused
+SK-WF2-V02,V,Test ctxpp with no workflow products installed,complex,high,testing,focused
+SK-WF2-V03,V,Test forwarding shims and real consumer boundaries,complex,critical,testing,focused
+SK-WF2-V04,V,Verify final migration after the release switch,complex,high,review,cross_project
+SK-WF2-I10,I,Publish the donor baseline and test inventory,complex,high,implementation,focused
+SK-WF2-I20,I,Integrate and publish the standalone ctxpp contract,complex,high,integration,focused
+SK-WF2-I40,I,Integrate forwarding shims and engine consumers,complex,high,integration,focused
+SK-WF2-I60,I,Publish consumer-ready paired release acceptance,complex,high,integration,focused
+SK-WF2-I90,I,Close Skills work after qualified deployment,complex,high,implementation,cross_project

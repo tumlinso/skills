@@ -1,0 +1,57 @@
+[
+  {
+    "id": "SK-WF2-I10-B",
+    "title": "Publish the donor baseline and test inventory milestone",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "SK-WF2-I10-CP"
+      }
+    ]
+  },
+  {
+    "id": "SK-WF2-I20-B",
+    "title": "Integrate and publish the standalone ctxpp contract milestone",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "SK-WF2-I20-CP"
+      }
+    ]
+  },
+  {
+    "id": "SK-WF2-I40-B",
+    "title": "Integrate forwarding shims and engine consumers milestone",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "SK-WF2-I40-CP"
+      }
+    ]
+  },
+  {
+    "id": "SK-WF2-I60-B",
+    "title": "Publish consumer-ready paired release acceptance milestone",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "SK-WF2-I60-CP"
+      }
+    ]
+  },
+  {
+    "id": "SK-WF2-I90-B",
+    "title": "Close Skills work after qualified deployment milestone",
+    "mode": "all",
+    "requirements": [
+      {
+        "type": "checkpoint",
+        "id": "SK-WF2-I90-CP"
+      }
+    ]
+  }
+]

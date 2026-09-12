@@ -1,0 +1,10 @@
+{
+  "tasks": 30,
+  "implementation_and_review_records": 28,
+  "lanes": 8,
+  "milestone_checkpoints": 5,
+  "interfaces": 1,
+  "native_schema": 3,
+  "work_profile_native_yet": false,
+  "native_plan_sha256": "e5e4243c1e85f6c15da4475749e7bcb3c6e6399e15a6581862117dbdd80c7f26"
+}

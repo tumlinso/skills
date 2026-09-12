@@ -1,0 +1,751 @@
+{
+  "SK-WF2-COORD": {
+    "assertions": [
+      "The final local integration task and its checkpoint are successfully complete",
+      "Every required producer/consumer receipt is current and unresolved blockers are recorded",
+      "Owned work and explicit limitations are handed off before the aggregate epic closes"
+    ],
+    "assertion_ids": [
+      "SK-WF2-COORD-A01",
+      "SK-WF2-COORD-A02",
+      "SK-WF2-COORD-A03"
+    ],
+    "kind": "closure",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-COORD.json",
+    "requires_independent_review": false,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false,
+    "required_terminal_tasks": [
+      "SK-WF2-I90"
+    ],
+    "independent_review_source": "SK-WF2-I90"
+  },
+  "SK-WF2-0000": {
+    "assertions": [
+      "Every local child is successfully terminal",
+      "The final local milestone remains qualified and integrated",
+      "The paired program release identity and limitations are explicitly reported"
+    ],
+    "assertion_ids": [
+      "SK-WF2-0000-A01",
+      "SK-WF2-0000-A02",
+      "SK-WF2-0000-A03"
+    ],
+    "kind": "closure",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-0000.json",
+    "requires_independent_review": false,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false,
+    "required_terminal_tasks": [
+      "SK-WF2-COORD",
+      "SK-WF2-A01",
+      "SK-WF2-A02",
+      "SK-WF2-A03",
+      "SK-WF2-X01",
+      "SK-WF2-X02",
+      "SK-WF2-X03",
+      "SK-WF2-C01",
+      "SK-WF2-C02",
+      "SK-WF2-C03",
+      "SK-WF2-C04",
+      "SK-WF2-C05",
+      "SK-WF2-W01",
+      "SK-WF2-W02",
+      "SK-WF2-W03",
+      "SK-WF2-W04",
+      "SK-WF2-D01",
+      "SK-WF2-D02",
+      "SK-WF2-D03",
+      "SK-WF2-D04",
+      "SK-WF2-V01",
+      "SK-WF2-V02",
+      "SK-WF2-V03",
+      "SK-WF2-V04",
+      "SK-WF2-I10",
+      "SK-WF2-I20",
+      "SK-WF2-I40",
+      "SK-WF2-I60",
+      "SK-WF2-I90"
+    ],
+    "independent_review_source": "SK-WF2-I90"
+  },
+  "SK-WF2-A01": {
+    "assertions": [
+      "Complete source/test inventory hashes are available",
+      "Unknown external consumers are recorded as compatibility risks",
+      "No live Todo data is included in export"
+    ],
+    "assertion_ids": [
+      "SK-WF2-A01-A01",
+      "SK-WF2-A01-A02",
+      "SK-WF2-A01-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-A01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-A02": {
+    "assertions": [
+      "Baseline inventory counts and required tests are reproducible",
+      "No real Cellerator/GlassHelix database is modified",
+      "Old deployment and source remain recoverable"
+    ],
+    "assertion_ids": [
+      "SK-WF2-A02-A01",
+      "SK-WF2-A02-A02",
+      "SK-WF2-A02-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-A02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-A03": {
+    "assertions": [
+      "Ctxpp standalone contract does not require a workflow DB",
+      "Read-only query and expensive refresh are separate capabilities",
+      "CPU/RAM reservation scope is not misrepresented as host-wide"
+    ],
+    "assertion_ids": [
+      "SK-WF2-A03-A01",
+      "SK-WF2-A03-A02",
+      "SK-WF2-A03-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-A03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-X01": {
+    "assertions": [
+      "Qualified old/new source and tests are identified",
+      "No semantic refactor begins before parity",
+      "Receipt uses the actual PC UUID"
+    ],
+    "assertion_ids": [
+      "SK-WF2-X01-A01",
+      "SK-WF2-X01-A02",
+      "SK-WF2-X01-A03"
+    ],
+    "kind": "cross_receipt",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-X01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false,
+    "external_edge": "WF2-PARITY"
+  },
+  "SK-WF2-X02": {
+    "assertions": [
+      "Candidate supported APIs are source/hash qualified",
+      "No implicit sys.path fallback reintroduces the donor kernel",
+      "Installed old runtime is still unchanged"
+    ],
+    "assertion_ids": [
+      "SK-WF2-X02-A01",
+      "SK-WF2-X02-A02",
+      "SK-WF2-X02-A03"
+    ],
+    "kind": "cross_receipt",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-X02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false,
+    "external_edge": "WF2-RUNTIME"
+  },
+  "SK-WF2-X03": {
+    "assertions": [
+      "Fresh HTTP/stdio release identity is recorded",
+      "Older writers are fenced or quiesced",
+      "Rehearsal-only evidence cannot satisfy this import"
+    ],
+    "assertion_ids": [
+      "SK-WF2-X03-A01",
+      "SK-WF2-X03-A02",
+      "SK-WF2-X03-A03"
+    ],
+    "kind": "cross_receipt",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-X03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false,
+    "external_edge": "WF2-DEPLOYED"
+  },
+  "SK-WF2-C01": {
+    "assertions": [
+      "Missing/stale index gives explicit unavailable/partial status",
+      "Queries work without Todo or Project Control installed",
+      "JSONL fallback is bounded and declared"
+    ],
+    "assertion_ids": [
+      "SK-WF2-C01-A01",
+      "SK-WF2-C01-A02",
+      "SK-WF2-C01-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/c/test_sk_wf2_c01.py",
+        "test_names": [
+          "WF2Acceptance.test_missing_stale_index_gives_explicit_unavailable_partial_status",
+          "WF2Acceptance.test_queries_work_without_todo_or_project_control_installed",
+          "WF2Acceptance.test_jsonl_fallback_is_bounded_and_declared"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-C01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-C02": {
+    "assertions": [
+      "Standalone and integrated identities have explicit comparability rules",
+      "Fallback source identity satisfies packet-v2 schema",
+      "Changing an unrelated file vs relevant dependency has documented freshness effects"
+    ],
+    "assertion_ids": [
+      "SK-WF2-C02-A01",
+      "SK-WF2-C02-A02",
+      "SK-WF2-C02-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/c/test_sk_wf2_c02.py",
+        "test_names": [
+          "WF2Acceptance.test_standalone_and_integrated_identities_have_explicit_comparability_rules",
+          "WF2Acceptance.test_fallback_source_identity_satisfies_packet_v2_schema",
+          "WF2Acceptance.test_changing_an_unrelated_file_vs_relevant_dependency_has_documented_freshness_effects"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-C02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-C03": {
+    "assertions": [
+      "Malformed nested identities/trust are rejected",
+      "Required canonical target is not silently truncated",
+      "Trust never calls lexical evidence semantic proof"
+    ],
+    "assertion_ids": [
+      "SK-WF2-C03-A01",
+      "SK-WF2-C03-A02",
+      "SK-WF2-C03-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/c/test_sk_wf2_c03.py",
+        "test_names": [
+          "WF2Acceptance.test_malformed_nested_identities_trust_are_rejected",
+          "WF2Acceptance.test_required_canonical_target_is_not_silently_truncated",
+          "WF2Acceptance.test_trust_never_calls_lexical_evidence_semantic_proof"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-C03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-C04": {
+    "assertions": [
+      "Read-only readers cannot mutate the index",
+      "Interrupted publication produces explicit mismatch, not stale-current data",
+      "Concurrent expensive invocations respect the declared coordination domain"
+    ],
+    "assertion_ids": [
+      "SK-WF2-C04-A01",
+      "SK-WF2-C04-A02",
+      "SK-WF2-C04-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/c/test_sk_wf2_c04.py",
+        "test_names": [
+          "WF2Acceptance.test_read_only_readers_cannot_mutate_the_index",
+          "WF2Acceptance.test_interrupted_publication_produces_explicit_mismatch_not_stale_current_data",
+          "WF2Acceptance.test_concurrent_expensive_invocations_respect_the_declared_coordination_domain"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-C04.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-C05": {
+    "assertions": [
+      "Real packet/query output validates against the contract",
+      "No installed Todo dependency remains",
+      "Source transform operations retain separate explicit authority and proof gates"
+    ],
+    "assertion_ids": [
+      "SK-WF2-C05-A01",
+      "SK-WF2-C05-A02",
+      "SK-WF2-C05-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/c/test_sk_wf2_c05.py",
+        "test_names": [
+          "WF2Acceptance.test_real_packet_query_output_validates_against_the_contract",
+          "WF2Acceptance.test_no_installed_todo_dependency_remains",
+          "WF2Acceptance.test_source_transform_operations_retain_separate_explicit_authority_and_proof_gates"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-C05.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-W01": {
+    "assertions": [
+      "Forwarded old/new symbols share one implementation",
+      "No fallback executes a second workflow kernel",
+      "Unsupported legacy paths report a clear migration error"
+    ],
+    "assertion_ids": [
+      "SK-WF2-W01-A01",
+      "SK-WF2-W01-A02",
+      "SK-WF2-W01-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/w/test_sk_wf2_w01.py",
+        "test_names": [
+          "WF2Acceptance.test_forwarded_old_new_symbols_share_one_implementation",
+          "WF2Acceptance.test_no_fallback_executes_a_second_workflow_kernel",
+          "WF2Acceptance.test_unsupported_legacy_paths_report_a_clear_migration_error"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-W01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-W02": {
+    "assertions": [
+      "One authoritative DB/revision remains visible",
+      "Historical commands cannot bypass canonical write policy",
+      "Cross-package import cycles and import-order class identity bugs are rejected"
+    ],
+    "assertion_ids": [
+      "SK-WF2-W02-A01",
+      "SK-WF2-W02-A02",
+      "SK-WF2-W02-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/w/test_sk_wf2_w02.py",
+        "test_names": [
+          "WF2Acceptance.test_one_authoritative_db_revision_remains_visible",
+          "WF2Acceptance.test_historical_commands_cannot_bypass_canonical_write_policy",
+          "WF2Acceptance.test_cross_package_import_cycles_and_import_order_class_identity_bugs_are_rejected"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-W02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-W03": {
+    "assertions": [
+      "Skills contains only declared forwarding compatibility for Todo",
+      "Old baseline remains reproducible outside production",
+      "No installation still requires sibling Todo discovery for the new product"
+    ],
+    "assertion_ids": [
+      "SK-WF2-W03-A01",
+      "SK-WF2-W03-A02",
+      "SK-WF2-W03-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/w/test_sk_wf2_w03.py",
+        "test_names": [
+          "WF2Acceptance.test_skills_contains_only_declared_forwarding_compatibility_for_todo",
+          "WF2Acceptance.test_old_baseline_remains_reproducible_outside_production",
+          "WF2Acceptance.test_no_installation_still_requires_sibling_todo_discovery_for_the_new_product"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-W03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-W04": {
+    "assertions": [
+      "Compatibility is temporary and has measurable exit criteria",
+      "No active deployment is silently broken",
+      "State directory migration is explicitly deferred"
+    ],
+    "assertion_ids": [
+      "SK-WF2-W04-A01",
+      "SK-WF2-W04-A02",
+      "SK-WF2-W04-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-W04.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-D01": {
+    "assertions": [
+      "Every inventoried consumer has a replacement mapping",
+      "No private sqlite/table dependency is introduced",
+      "Real candidate import tests pass"
+    ],
+    "assertion_ids": [
+      "SK-WF2-D01-A01",
+      "SK-WF2-D01-A02",
+      "SK-WF2-D01-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/d/test_sk_wf2_d01.py",
+        "test_names": [
+          "WF2Acceptance.test_every_inventoried_consumer_has_a_replacement_mapping",
+          "WF2Acceptance.test_no_private_sqlite_table_dependency_is_introduced",
+          "WF2Acceptance.test_real_candidate_import_tests_pass"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-D01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-D02": {
+    "assertions": [
+      "Existing lease arbitration remains singular",
+      "Standalone engine behavior is explicitly supported or bounded",
+      "No helper resource request grants workflow permissions"
+    ],
+    "assertion_ids": [
+      "SK-WF2-D02-A01",
+      "SK-WF2-D02-A02",
+      "SK-WF2-D02-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/d/test_sk_wf2_d02.py",
+        "test_names": [
+          "WF2Acceptance.test_existing_lease_arbitration_remains_singular",
+          "WF2Acceptance.test_standalone_engine_behavior_is_explicitly_supported_or_bounded",
+          "WF2Acceptance.test_no_helper_resource_request_grants_workflow_permissions"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-D02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-D03": {
+    "assertions": [
+      "Child cannot publish parent completion or impersonate a lane",
+      "Unavailable local worker returns control without polling loops",
+      "Failed candidate retains logs/evidence without source loss"
+    ],
+    "assertion_ids": [
+      "SK-WF2-D03-A01",
+      "SK-WF2-D03-A02",
+      "SK-WF2-D03-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/d/test_sk_wf2_d03.py",
+        "test_names": [
+          "WF2Acceptance.test_child_cannot_publish_parent_completion_or_impersonate_a_lane",
+          "WF2Acceptance.test_unavailable_local_worker_returns_control_without_polling_loops",
+          "WF2Acceptance.test_failed_candidate_retains_logs_evidence_without_source_loss"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-D03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-D04": {
+    "assertions": [
+      "Mocked lease tests are not reported as actual GPU execution",
+      "Consumer inventory coverage is complete",
+      "Current source/build/runtime identities accompany test results"
+    ],
+    "assertion_ids": [
+      "SK-WF2-D04-A01",
+      "SK-WF2-D04-A02",
+      "SK-WF2-D04-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/d/test_sk_wf2_d04.py",
+        "test_names": [
+          "WF2Acceptance.test_mocked_lease_tests_are_not_reported_as_actual_gpu_execution",
+          "WF2Acceptance.test_consumer_inventory_coverage_is_complete",
+          "WF2Acceptance.test_current_source_build_runtime_identities_accompany_test_results"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-D04.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-V01": {
+    "assertions": [
+      "No module disappears without an explicit disposition",
+      "No authority tokens or runtime DB enter the package",
+      "Donor map supports independent reproduction"
+    ],
+    "assertion_ids": [
+      "SK-WF2-V01-A01",
+      "SK-WF2-V01-A02",
+      "SK-WF2-V01-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-V01.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-V02": {
+    "assertions": [
+      "Standalone operation never imports project_control or todo_orchestrator",
+      "All mandatory schema/trust cases execute with zero skips",
+      "Read query leaves canonical source and .ctxpp bytes unchanged"
+    ],
+    "assertion_ids": [
+      "SK-WF2-V02-A01",
+      "SK-WF2-V02-A02",
+      "SK-WF2-V02-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/v/test_sk_wf2_v02.py",
+        "test_names": [
+          "WF2Acceptance.test_standalone_operation_never_imports_project_control_or_todo_orchestrator",
+          "WF2Acceptance.test_all_mandatory_schema_trust_cases_execute_with_zero_skips",
+          "WF2Acceptance.test_read_query_leaves_canonical_source_and_ctxpp_bytes_unchanged"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-V02.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-V03": {
+    "assertions": [
+      "One implementation services old and new calls",
+      "Mixed unsafe versions fail closed",
+      "No skipped mandatory consumer scenario"
+    ],
+    "assertion_ids": [
+      "SK-WF2-V03-A01",
+      "SK-WF2-V03-A02",
+      "SK-WF2-V03-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/v/test_sk_wf2_v03.py",
+        "test_names": [
+          "WF2Acceptance.test_one_implementation_services_old_and_new_calls",
+          "WF2Acceptance.test_mixed_unsafe_versions_fail_closed",
+          "WF2Acceptance.test_no_skipped_mandatory_consumer_scenario"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-V03.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-V04": {
+    "assertions": [
+      "Actual deployed identity matches accepted candidate",
+      "Real existing project UUIDs are preserved",
+      "Known limitations remain explicit"
+    ],
+    "assertion_ids": [
+      "SK-WF2-V04-A01",
+      "SK-WF2-V04-A02",
+      "SK-WF2-V04-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-V04.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-I10": {
+    "assertions": [
+      "Donor inventory is complete and reproducible",
+      "Producer completion is visible in the Skills authority",
+      "Receipt does not contain a self-referential commit hash"
+    ],
+    "assertion_ids": [
+      "SK-WF2-I10-A01",
+      "SK-WF2-I10-A02",
+      "SK-WF2-I10-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-I10.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-I20": {
+    "assertions": [
+      "Standalone qualified query/packet contract is installed in candidate",
+      "No kernel code has moved into ctxpp",
+      "Receipt includes actual fixture execution"
+    ],
+    "assertion_ids": [
+      "SK-WF2-I20-A01",
+      "SK-WF2-I20-A02",
+      "SK-WF2-I20-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/i/test_sk_wf2_i20.py",
+        "test_names": [
+          "WF2Acceptance.test_standalone_qualified_query_packet_contract_is_installed_in_candidate",
+          "WF2Acceptance.test_no_kernel_code_has_moved_into_ctxpp",
+          "WF2Acceptance.test_receipt_includes_actual_fixture_execution"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-I20.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-I40": {
+    "assertions": [
+      "Alias compatibility is not a second live product",
+      "No donor private imports remain in maintained consumers",
+      "New runtime contracts match the PC receipt"
+    ],
+    "assertion_ids": [
+      "SK-WF2-I40-A01",
+      "SK-WF2-I40-A02",
+      "SK-WF2-I40-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/i/test_sk_wf2_i40.py",
+        "test_names": [
+          "WF2Acceptance.test_alias_compatibility_is_not_a_second_live_product",
+          "WF2Acceptance.test_no_donor_private_imports_remain_in_maintained_consumers",
+          "WF2Acceptance.test_new_runtime_contracts_match_the_pc_receipt"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-I40.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-I60": {
+    "assertions": [
+      "All required shim/ctxpp/consumer tests pass",
+      "Candidate source pair and build identities are fixed",
+      "Actual deployment remains a separate milestone"
+    ],
+    "assertion_ids": [
+      "SK-WF2-I60-A01",
+      "SK-WF2-I60-A02",
+      "SK-WF2-I60-A03"
+    ],
+    "kind": "tests",
+    "tests": [
+      {
+        "path": "tests/wf2_acceptance/i/test_sk_wf2_i60.py",
+        "test_names": [
+          "WF2Acceptance.test_all_required_shim_ctxpp_consumer_tests_pass",
+          "WF2Acceptance.test_candidate_source_pair_and_build_identities_are_fixed",
+          "WF2Acceptance.test_actual_deployment_remains_a_separate_milestone"
+        ],
+        "status": "to_be_implemented_not_a_shipped_pass"
+      }
+    ],
+    "review_record": "reviews/SK-WF2-I60.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  },
+  "SK-WF2-I90": {
+    "assertions": [
+      "All Skills-owned work is integrated and qualified",
+      "No unrelated worktree or older program is cleaned",
+      "Final receipt enables PC closure without waiting on its final epic"
+    ],
+    "assertion_ids": [
+      "SK-WF2-I90-A01",
+      "SK-WF2-I90-A02",
+      "SK-WF2-I90-A03"
+    ],
+    "kind": "governance",
+    "tests": [],
+    "review_record": "reviews/SK-WF2-I90.json",
+    "requires_independent_review": true,
+    "source_under_test": "committed_dispatch_worktree",
+    "full_program_acceptance": false
+  }
+}

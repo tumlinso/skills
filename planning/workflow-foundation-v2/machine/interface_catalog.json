@@ -1,0 +1,11 @@
+[
+  {
+    "id": "SK-WF2-IF-CTXPP",
+    "owner_task_id": "SK-WF2-C05",
+    "state": "draft",
+    "version": "1",
+    "contract_paths": [
+      "cpp-context-compiler/references/query-contract-v1.md"
+    ]
+  }
+]

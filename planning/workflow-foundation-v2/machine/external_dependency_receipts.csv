@@ -1,0 +1,4 @@
+edge_id,producer_project,producer_task,producer_checkpoint,consumer_task,receipt_kind
+WF2-PARITY,project-control,PC-WF2-I10,PC-WF2-I10-CP,SK-WF2-X01,qualified_capability
+WF2-RUNTIME,project-control,PC-WF2-I20,PC-WF2-I20-CP,SK-WF2-X02,qualified_capability
+WF2-DEPLOYED,project-control,PC-WF2-I50,PC-WF2-I50-CP,SK-WF2-X03,governance

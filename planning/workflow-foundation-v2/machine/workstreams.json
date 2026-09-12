@@ -1,0 +1,133 @@
+[
+  {
+    "id": "A",
+    "title": "Donor and independent-consumer baseline",
+    "paths": [
+      "docs/workflow_foundation_v2/baseline",
+      "tests/wf2_acceptance/a"
+    ],
+    "role": "implementer",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-A01",
+      "SK-WF2-A02",
+      "SK-WF2-A03"
+    ],
+    "lane_id": "SK-WF2-L-A"
+  },
+  {
+    "id": "X",
+    "title": "Recipient milestone imports",
+    "paths": [
+      "docs/workflow_foundation_v2/imports",
+      "tests/wf2_acceptance/x"
+    ],
+    "role": "specialist",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-X01",
+      "SK-WF2-X02",
+      "SK-WF2-X03"
+    ],
+    "lane_id": "SK-WF2-L-X"
+  },
+  {
+    "id": "C",
+    "title": "Standalone cpp-context-compiler query contract",
+    "paths": [
+      "cpp-context-compiler/scripts",
+      "cpp-context-compiler/schemas",
+      "cpp-context-compiler/references",
+      "cpp-context-compiler/tests",
+      "tests/wf2_acceptance/c"
+    ],
+    "role": "implementer",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-C01",
+      "SK-WF2-C02",
+      "SK-WF2-C03",
+      "SK-WF2-C04",
+      "SK-WF2-C05"
+    ],
+    "lane_id": "SK-WF2-L-C"
+  },
+  {
+    "id": "W",
+    "title": "Thin legacy compatibility package",
+    "paths": [
+      "todo-orchestrator",
+      "integrations/coding-workflow-mcp",
+      "tests/wf2_acceptance/w"
+    ],
+    "role": "implementer",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-W01",
+      "SK-WF2-W02",
+      "SK-WF2-W03",
+      "SK-WF2-W04"
+    ],
+    "lane_id": "SK-WF2-L-W"
+  },
+  {
+    "id": "D",
+    "title": "CUDA and local-worker facade rewiring",
+    "paths": [
+      "cuda/scripts",
+      "cuda/tests",
+      "local-coding-worker/local_worker",
+      "local-coding-worker/scripts",
+      "local-coding-worker/tests",
+      "tests/wf2_acceptance/d"
+    ],
+    "role": "implementer",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-D01",
+      "SK-WF2-D02",
+      "SK-WF2-D03",
+      "SK-WF2-D04"
+    ],
+    "lane_id": "SK-WF2-L-D"
+  },
+  {
+    "id": "V",
+    "title": "Independent standalone and compatibility review",
+    "paths": [
+      "tests/wf2_validation",
+      "docs/workflow_foundation_v2/validation",
+      "tests/wf2_acceptance/v"
+    ],
+    "role": "specialist",
+    "workspace_mode": "isolated_merge",
+    "task_ids": [
+      "SK-WF2-V01",
+      "SK-WF2-V02",
+      "SK-WF2-V03",
+      "SK-WF2-V04"
+    ],
+    "lane_id": "SK-WF2-L-V"
+  },
+  {
+    "id": "I",
+    "title": "Donor, engine, and release integration",
+    "paths": [
+      "pyproject.toml",
+      "README.md",
+      "AGENTS.md",
+      "docs/workflow_foundation_v2/integration",
+      "tests/wf2_acceptance/i"
+    ],
+    "role": "integrator",
+    "workspace_mode": "exclusive",
+    "task_ids": [
+      "SK-WF2-I10",
+      "SK-WF2-I20",
+      "SK-WF2-I40",
+      "SK-WF2-I60",
+      "SK-WF2-I90"
+    ],
+    "lane_id": "SK-WF2-L-I"
+  }
+]

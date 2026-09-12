@@ -1,0 +1,685 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>13. Complete task catalog</title><style>
+:root{--ink:#18293d;--muted:#56667a;--blue:#174e8c;--light:#eef4fa;--line:#cbd6e1;--amber:#704600;--paper:#fff;--bg:#f6f8fb}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:16px;line-height:1.55}main{max-width:1140px;margin:auto;padding:40px 24px 70px}header{padding:18px 0 25px;border-bottom:2px solid var(--blue)}h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:12px 0 16px;letter-spacing:-.035em}h2{font-size:1.65rem;margin:34px 0 16px;line-height:1.25}h3{font-size:1.15rem;line-height:1.35}p{max-width:86ch}a{color:var(--blue);text-underline-offset:3px}a:hover{color:#082b56}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{font-size:.88em;background:var(--light);padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}pre{overflow:auto;background:#edf1f6;border:1px solid var(--line);padding:16px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}pre code{background:none;padding:0}.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.13em;color:var(--muted);font-weight:700}.note{border-left:5px solid var(--amber);padding:16px 20px;background:#fff4df;margin:22px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0}.stat{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px}.stat strong{display:block;font-size:2rem;color:var(--blue);line-height:1.15}.stat span{color:var(--muted);font-size:.86rem}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:22px}.card h3{margin-top:0}.badge{display:inline-block;font-size:.77rem;border:1px solid var(--line);border-radius:20px;padding:3px 10px;margin:3px 5px 3px 0;color:var(--muted);background:var(--light)}.controls{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line);padding:15px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}input,select{font:inherit;border:1px solid #889db3;border-radius:6px;background:var(--paper);padding:10px 12px;max-width:100%}input{flex:1;min-width:220px}select{max-width:270px}.task{margin:12px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px}.task summary{cursor:pointer;padding:16px 18px;font-weight:600;list-style-position:outside;margin-left:18px}.task summary small{display:block;font-weight:400;color:var(--muted);margin-top:7px}.task section{padding:0 24px 22px}.task h4{margin-bottom:8px}.task ol{padding-left:24px}.task li{padding:5px 0}.count{font-size:.88rem;color:var(--muted)}.links{display:flex;gap:16px;flex-wrap:wrap;margin:20px 0}table{width:100%;border-collapse:collapse;background:var(--paper);font-size:.91rem}td,th{padding:12px;border:1px solid var(--line);text-align:left;vertical-align:top}th{background:var(--light)}.tablewrap{overflow:auto}footer{margin-top:45px;border-top:1px solid var(--line);padding-top:15px;color:var(--muted);font-size:.82rem}.doc{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:28px;margin-top:24px}.doc h1{font-size:2rem}.doc ul,.doc ol{padding-left:25px}.sr-only{position:absolute;left:-10000px}@media(max-width:700px){main{padding:22px 16px}.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.doc{padding:18px}h1{font-size:2.4rem}}@media print{.controls{position:static}details section{display:block}body{background:white}main{max-width:none}.note{break-inside:avoid}}
+</style></head><body><main><nav class="links"><a href="index.html">← Package index</a><a href="13_COMPLETE_TASK_CATALOG.md">Markdown source</a></nav><article class="doc"><h1>13. Complete task catalog</h1>
+<p>This reading copy is generated from the authored catalog; current execution state lives only in the native authority.</p>
+<h1>SK-WF2-COORD — Coordinate the accepted program; close only after final local integration</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>coordinator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;hard&quot;, &quot;risk&quot;: &quot;critical&quot;, &quot;work_type&quot;: &quot;architecture&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Hold a claimable ordinary coordinator seat and direct first-class lanes under the single strategic controller. Revalidate source, claims, receipts and resource limits. Continue coordinating while leaves run; the completion gate requires final local integration, not a claim-time dependency.</p>
+<h2>Inputs and ordering</h2>
+<p>No task prerequisite. Revalidate source and authority before claiming. This is a terminal obligation, not a claim-time wait: SK-WF2-I90.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: none; coordination only.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-COORD-A01:</strong> The final local integration task and its checkpoint are successfully complete.</li>
+<li><strong>SK-WF2-COORD-A02:</strong> Every required producer/consumer receipt is current and unresolved blockers are recorded.</li>
+<li><strong>SK-WF2-COORD-A03:</strong> Owned work and explicit limitations are handed off before the aggregate epic closes.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-COORD-G</code> invokes the delivered runner. Evidence kind is <code>closure</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-0000 — Workflow Foundation v2 — skills aggregate</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>coordinator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;routine&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;review&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.</p>
+<h2>Inputs and ordering</h2>
+<p>No task prerequisite. Revalidate source and authority before claiming. This is a terminal obligation, not a claim-time wait: SK-WF2-COORD, SK-WF2-A01, SK-WF2-A02, SK-WF2-A03, SK-WF2-X01, SK-WF2-X02, SK-WF2-X03, SK-WF2-C01, SK-WF2-C02, SK-WF2-C03, SK-WF2-C04, SK-WF2-C05, SK-WF2-W01, SK-WF2-W02, SK-WF2-W03, SK-WF2-W04, SK-WF2-D01, SK-WF2-D02, SK-WF2-D03, SK-WF2-D04, SK-WF2-V01, SK-WF2-V02, SK-WF2-V03, SK-WF2-V04, SK-WF2-I10, SK-WF2-I20, SK-WF2-I40, SK-WF2-I60, SK-WF2-I90.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: none; coordination only.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-0000-A01:</strong> Every local child is successfully terminal.</li>
+<li><strong>SK-WF2-0000-A02:</strong> The final local milestone remains qualified and integrated.</li>
+<li><strong>SK-WF2-0000-A03:</strong> The paired program release identity and limitations are explicitly reported.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-0000-G</code> invokes the delivered runner. Evidence kind is <code>closure</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-A01 — Inventory Todo donor source and public consumers</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;deep&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Capture all todo_orchestrator modules, tests, scripts, supported imports, package entry points and runtime sidecars at the reviewed Skills commit. Audit CUDA, local-worker and ctxpp imports by exact paths.</p>
+<h2>Inputs and ordering</h2>
+<p>No task prerequisite. Revalidate source and authority before claiming.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/baseline</code>, <code>tests/wf2_acceptance/a</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-A01-A01:</strong> Complete source/test inventory hashes are available.</li>
+<li><strong>SK-WF2-A01-A02:</strong> Unknown external consumers are recorded as compatibility risks.</li>
+<li><strong>SK-WF2-A01-A03:</strong> No live Todo data is included in export.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-A01-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-A02 — Freeze donor fixtures and preserve deployment recovery</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Retain old package and test identities outside the new runtime path. Produce sanitized versioned fixtures from supported exports or disposable sample projects; never copy secrets or active capability tokens.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-A01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/baseline</code>, <code>tests/wf2_acceptance/a</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-A02-A01:</strong> Baseline inventory counts and required tests are reproducible.</li>
+<li><strong>SK-WF2-A02-A02:</strong> No real Cellerator/GlassHelix database is modified.</li>
+<li><strong>SK-WF2-A02-A03:</strong> Old deployment and source remain recoverable.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-A02-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-A03 — Map independent ctxpp and host execution contracts</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;deep&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-A02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/baseline</code>, <code>tests/wf2_acceptance/a</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-A03-A01:</strong> Ctxpp standalone contract does not require a workflow DB.</li>
+<li><strong>SK-WF2-A03-A02:</strong> Read-only query and expensive refresh are separate capabilities.</li>
+<li><strong>SK-WF2-A03-A03:</strong> CPU/RAM reservation scope is not misrepresented as host-wide.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-A03-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-X01 — Import Project Control parity approval</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;inspection&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Verify WF2-PARITY and fresh PC-WF2-I10 completion before changing consumers or deleting donor implementation.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-A03</code>. External receipt edge: <code>WF2-PARITY</code>; verify fresh producer authority, not an asserted done flag.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/imports</code>, <code>tests/wf2_acceptance/x</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-X01-A01:</strong> Qualified old/new source and tests are identified.</li>
+<li><strong>SK-WF2-X01-A02:</strong> No semantic refactor begins before parity.</li>
+<li><strong>SK-WF2-X01-A03:</strong> Receipt uses the actual PC UUID.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-X01-G</code> invokes the delivered runner. Evidence kind is <code>cross_receipt</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-X02 — Import the supported new runtime interface</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;inspection&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Verify WF2-RUNTIME from PC-WF2-I20 and available candidate facade before rewiring CUDA/local-worker callers.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-X01</code>. External receipt edge: <code>WF2-RUNTIME</code>; verify fresh producer authority, not an asserted done flag.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/imports</code>, <code>tests/wf2_acceptance/x</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-X02-A01:</strong> Candidate supported APIs are source/hash qualified.</li>
+<li><strong>SK-WF2-X02-A02:</strong> No implicit sys.path fallback reintroduces the donor kernel.</li>
+<li><strong>SK-WF2-X02-A03:</strong> Installed old runtime is still unchanged.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-X02-G</code> invokes the delivered runner. Evidence kind is <code>cross_receipt</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-X03 — Import actual deployment qualification</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;inspection&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Verify WF2-DEPLOYED from PC-WF2-I50 after candidate acceptance and actual release promotion.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-I60</code>. External receipt edge: <code>WF2-DEPLOYED</code>; verify fresh producer authority, not an asserted done flag.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>docs/workflow_foundation_v2/imports</code>, <code>tests/wf2_acceptance/x</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-X03-A01:</strong> Fresh HTTP/stdio release identity is recorded.</li>
+<li><strong>SK-WF2-X03-A02:</strong> Older writers are fenced or quiesced.</li>
+<li><strong>SK-WF2-X03-A03:</strong> Rehearsal-only evidence cannot satisfy this import.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-X03-G</code> invokes the delivered runner. Evidence kind is <code>cross_receipt</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-C01 — Expose read-only indexed ctxpp queries</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;deep&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Create a small stable query facade over existing query.sqlite/manifest, supporting exact symbol ID, qualified name, canonical range and typed graph edges. No scanning or publication is permitted by this operation.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-X01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cpp-context-compiler/scripts</code>, <code>cpp-context-compiler/schemas</code>, <code>cpp-context-compiler/references</code>, <code>cpp-context-compiler/tests</code>, <code>tests/wf2_acceptance/c</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-C01-A01:</strong> Missing/stale index gives explicit unavailable/partial status.</li>
+<li><strong>SK-WF2-C01-A02:</strong> Queries work without Todo or Project Control installed.</li>
+<li><strong>SK-WF2-C01-A03:</strong> JSONL fallback is bounded and declared.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-C01-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/c/test_sk_wf2_c01.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_missing_stale_index_gives_explicit_unavailable_partial_status     WF2Acceptance.test_queries_work_without_todo_or_project_control_installed     WF2Acceptance.test_jsonl_fallback_is_bounded_and_declared</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-C02 — Remove opportunistic Todo imports from source identity</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;hard&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Replace sibling sys.path injection with an independently implemented/versioned identity contract or a genuinely small shared contract dependency. Record algorithm/version/domain and which files/configurations are covered.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-C01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cpp-context-compiler/scripts</code>, <code>cpp-context-compiler/schemas</code>, <code>cpp-context-compiler/references</code>, <code>cpp-context-compiler/tests</code>, <code>tests/wf2_acceptance/c</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-C02-A01:</strong> Standalone and integrated identities have explicit comparability rules.</li>
+<li><strong>SK-WF2-C02-A02:</strong> Fallback source identity satisfies packet-v2 schema.</li>
+<li><strong>SK-WF2-C02-A03:</strong> Changing an unrelated file vs relevant dependency has documented freshness effects.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-C02-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/c/test_sk_wf2_c02.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_standalone_and_integrated_identities_have_explicit_comparability_rules     WF2Acceptance.test_fallback_source_identity_satisfies_packet_v2_schema     WF2Acceptance.test_changing_an_unrelated_file_vs_relevant_dependency_has_documented_freshness_effects</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-C03 — Strengthen packet schemas and trust accounting</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Validate nested task/context/trust/identity objects, not only top-level keys. Preserve whole canonical targets, explicit omissions and honest sufficiency when budget is too small or semantic relationships incomplete.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-C02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cpp-context-compiler/scripts</code>, <code>cpp-context-compiler/schemas</code>, <code>cpp-context-compiler/references</code>, <code>cpp-context-compiler/tests</code>, <code>tests/wf2_acceptance/c</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-C03-A01:</strong> Malformed nested identities/trust are rejected.</li>
+<li><strong>SK-WF2-C03-A02:</strong> Required canonical target is not silently truncated.</li>
+<li><strong>SK-WF2-C03-A03:</strong> Trust never calls lexical evidence semantic proof.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-C03-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/c/test_sk_wf2_c03.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_malformed_nested_identities_trust_are_rejected     WF2Acceptance.test_required_canonical_target_is_not_silently_truncated     WF2Acceptance.test_trust_never_calls_lexical_evidence_semantic_proof</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-C04 — Harden query publication and resource bounds</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;hard&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Test manifest/query-generation consistency under readers and publication. Document invocation-local CPU/RAM reservations; consume optional host admission without coupling standalone queries to workflow ownership.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-C03</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cpp-context-compiler/scripts</code>, <code>cpp-context-compiler/schemas</code>, <code>cpp-context-compiler/references</code>, <code>cpp-context-compiler/tests</code>, <code>tests/wf2_acceptance/c</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-C04-A01:</strong> Read-only readers cannot mutate the index.</li>
+<li><strong>SK-WF2-C04-A02:</strong> Interrupted publication produces explicit mismatch, not stale-current data.</li>
+<li><strong>SK-WF2-C04-A03:</strong> Concurrent expensive invocations respect the declared coordination domain.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-C04-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/c/test_sk_wf2_c04.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_read_only_readers_cannot_mutate_the_index     WF2Acceptance.test_interrupted_publication_produces_explicit_mismatch_not_stale_current_data     WF2Acceptance.test_concurrent_expensive_invocations_respect_the_declared_coordination_domain</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-C05 — Qualify independent consumers and publish the ctxpp API</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;testing&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Run standalone C++ fixture and Project Control adapter contract tests with semantic and lexical fallback scenarios. Preserve optional LibTooling limitations as explicit, not claims of a production-equivalent backend.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-C04</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cpp-context-compiler/scripts</code>, <code>cpp-context-compiler/schemas</code>, <code>cpp-context-compiler/references</code>, <code>cpp-context-compiler/tests</code>, <code>tests/wf2_acceptance/c</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-C05-A01:</strong> Real packet/query output validates against the contract.</li>
+<li><strong>SK-WF2-C05-A02:</strong> No installed Todo dependency remains.</li>
+<li><strong>SK-WF2-C05-A03:</strong> Source transform operations retain separate explicit authority and proof gates.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-C05-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/c/test_sk_wf2_c05.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_real_packet_query_output_validates_against_the_contract     WF2Acceptance.test_no_installed_todo_dependency_remains     WF2Acceptance.test_source_transform_operations_retain_separate_explicit_authority_and_proof_gates</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-W01 — Construct forwarding-only legacy entry points</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;deep&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>After importing the supported new runtime, replace candidate old entry points with explicit forwards for documented imports, CLI and workflow protocol. Preserve old release outside the candidate for rollback/differential use.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-X02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>todo-orchestrator</code>, <code>integrations/coding-workflow-mcp</code>, <code>tests/wf2_acceptance/w</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-W01-A01:</strong> Forwarded old/new symbols share one implementation.</li>
+<li><strong>SK-WF2-W01-A02:</strong> No fallback executes a second workflow kernel.</li>
+<li><strong>SK-WF2-W01-A03:</strong> Unsupported legacy paths report a clear migration error.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-W01-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/w/test_sk_wf2_w01.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_forwarded_old_new_symbols_share_one_implementation     WF2Acceptance.test_no_fallback_executes_a_second_workflow_kernel     WF2Acceptance.test_unsupported_legacy_paths_report_a_clear_migration_error</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-W02 — Qualify legacy import and command behavior</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;testing&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Test historical todo scripts, coding-workflow alias and runtime facades against the new installed product in isolated processes. Verify documented deprecation output and error codes without duplicate live MCP registration.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-W01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>todo-orchestrator</code>, <code>integrations/coding-workflow-mcp</code>, <code>tests/wf2_acceptance/w</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-W02-A01:</strong> One authoritative DB/revision remains visible.</li>
+<li><strong>SK-WF2-W02-A02:</strong> Historical commands cannot bypass canonical write policy.</li>
+<li><strong>SK-WF2-W02-A03:</strong> Cross-package import cycles and import-order class identity bugs are rejected.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-W02-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/w/test_sk_wf2_w02.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_one_authoritative_db_revision_remains_visible     WF2Acceptance.test_historical_commands_cannot_bypass_canonical_write_policy     WF2Acceptance.test_cross_package_import_cycles_and_import_order_class_identity_bugs_are_rejected</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-W03 — Remove the maintained duplicate kernel from the new path</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;integration&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Retire copied implementation only after parity and legacy conformance. Keep immutable historical source via Git/tags/artifacts; update packaging so the released shim depends on the accepted PC artifact, never an unpinned mutable checkout.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-W02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>todo-orchestrator</code>, <code>integrations/coding-workflow-mcp</code>, <code>tests/wf2_acceptance/w</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-W03-A01:</strong> Skills contains only declared forwarding compatibility for Todo.</li>
+<li><strong>SK-WF2-W03-A02:</strong> Old baseline remains reproducible outside production.</li>
+<li><strong>SK-WF2-W03-A03:</strong> No installation still requires sibling Todo discovery for the new product.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-W03-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/w/test_sk_wf2_w03.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_skills_contains_only_declared_forwarding_compatibility_for_todo     WF2Acceptance.test_old_baseline_remains_reproducible_outside_production     WF2Acceptance.test_no_installation_still_requires_sibling_todo_discovery_for_the_new_product</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-W04 — Publish support-window and final removal criteria</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Document supported legacy calls, compatibility tests, expiry criteria and later optional total shim removal. Do not force removal of externally used entry points without an inventory.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-W03</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>todo-orchestrator</code>, <code>integrations/coding-workflow-mcp</code>, <code>tests/wf2_acceptance/w</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-W04-A01:</strong> Compatibility is temporary and has measurable exit criteria.</li>
+<li><strong>SK-WF2-W04-A02:</strong> No active deployment is silently broken.</li>
+<li><strong>SK-WF2-W04-A03:</strong> State directory migration is explicitly deferred.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-W04-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-D01 — Route source and artifact consumers through supported contracts</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Update enumerated CUDA/local-worker imports to the qualified facade or independent source contract. Keep command, source, artifact and evidence schemas stable unless explicitly versioned.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-X02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cuda/scripts</code>, <code>cuda/tests</code>, <code>local-coding-worker/local_worker</code>, <code>local-coding-worker/scripts</code>, <code>local-coding-worker/tests</code>, <code>tests/wf2_acceptance/d</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-D01-A01:</strong> Every inventoried consumer has a replacement mapping.</li>
+<li><strong>SK-WF2-D01-A02:</strong> No private sqlite/table dependency is introduced.</li>
+<li><strong>SK-WF2-D01-A03:</strong> Real candidate import tests pass.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-D01-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/d/test_sk_wf2_d01.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_every_inventoried_consumer_has_a_replacement_mapping     WF2Acceptance.test_no_private_sqlite_table_dependency_is_introduced     WF2Acceptance.test_real_candidate_import_tests_pass</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-D02 — Preserve host-wide admission and lease behavior</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;hard&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Rewire host coordinator access without creating a second host resource authority. Verify CPU/RAM/GPU request semantics, preemption, quiescence, PID incarnation and release on failures.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-D01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cuda/scripts</code>, <code>cuda/tests</code>, <code>local-coding-worker/local_worker</code>, <code>local-coding-worker/scripts</code>, <code>local-coding-worker/tests</code>, <code>tests/wf2_acceptance/d</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-D02-A01:</strong> Existing lease arbitration remains singular.</li>
+<li><strong>SK-WF2-D02-A02:</strong> Standalone engine behavior is explicitly supported or bounded.</li>
+<li><strong>SK-WF2-D02-A03:</strong> No helper resource request grants workflow permissions.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-D02-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/d/test_sk_wf2_d02.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_existing_lease_arbitration_remains_singular     WF2Acceptance.test_standalone_engine_behavior_is_explicitly_supported_or_bounded     WF2Acceptance.test_no_helper_resource_request_grants_workflow_permissions</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-D03 — Preserve subordinate worker acceptance semantics</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;hard&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Verify bounded child scope, candidate vs accepted result, nonblocking collection and parent-only completion after rewiring. Distinguish first-class Codex workers from local execution children.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-D02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cuda/scripts</code>, <code>cuda/tests</code>, <code>local-coding-worker/local_worker</code>, <code>local-coding-worker/scripts</code>, <code>local-coding-worker/tests</code>, <code>tests/wf2_acceptance/d</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-D03-A01:</strong> Child cannot publish parent completion or impersonate a lane.</li>
+<li><strong>SK-WF2-D03-A02:</strong> Unavailable local worker returns control without polling loops.</li>
+<li><strong>SK-WF2-D03-A03:</strong> Failed candidate retains logs/evidence without source loss.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-D03-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/d/test_sk_wf2_d03.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_child_cannot_publish_parent_completion_or_impersonate_a_lane     WF2Acceptance.test_unavailable_local_worker_returns_control_without_polling_loops     WF2Acceptance.test_failed_candidate_retains_logs_evidence_without_source_loss</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-D04 — Qualify consumers and resource failure paths</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>implementer</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;testing&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Execute representative CUDA-controller orchestration and local-worker contract tests on isolated fixtures; run actual hardware tests only where declared and available. Record hardware-unavailable as blocked for those assertions.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-D03</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>cuda/scripts</code>, <code>cuda/tests</code>, <code>local-coding-worker/local_worker</code>, <code>local-coding-worker/scripts</code>, <code>local-coding-worker/tests</code>, <code>tests/wf2_acceptance/d</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-D04-A01:</strong> Mocked lease tests are not reported as actual GPU execution.</li>
+<li><strong>SK-WF2-D04-A02:</strong> Consumer inventory coverage is complete.</li>
+<li><strong>SK-WF2-D04-A03:</strong> Current source/build/runtime identities accompany test results.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-D04-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/d/test_sk_wf2_d04.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_mocked_lease_tests_are_not_reported_as_actual_gpu_execution     WF2Acceptance.test_consumer_inventory_coverage_is_complete     WF2Acceptance.test_current_source_build_runtime_identities_accompany_test_results</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-V01 — Review donor mapping and parity evidence independently</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;review&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Check module/test inventory, sensitive-state exclusions, baseline release retention and replacement paths against the actual donor tree.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-A03</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>tests/wf2_validation</code>, <code>docs/workflow_foundation_v2/validation</code>, <code>tests/wf2_acceptance/v</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-V01-A01:</strong> No module disappears without an explicit disposition.</li>
+<li><strong>SK-WF2-V01-A02:</strong> No authority tokens or runtime DB enter the package.</li>
+<li><strong>SK-WF2-V01-A03:</strong> Donor map supports independent reproduction.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-V01-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-V02 — Test ctxpp with no workflow products installed</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;testing&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Install/run the bounded query/packet contract in a clean isolated environment with a real C++ fixture. Include stale manifest, missing index, unsupported backend, tiny budget and changed source cases.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-C05</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>tests/wf2_validation</code>, <code>docs/workflow_foundation_v2/validation</code>, <code>tests/wf2_acceptance/v</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-V02-A01:</strong> Standalone operation never imports project_control or todo_orchestrator.</li>
+<li><strong>SK-WF2-V02-A02:</strong> All mandatory schema/trust cases execute with zero skips.</li>
+<li><strong>SK-WF2-V02-A03:</strong> Read query leaves canonical source and .ctxpp bytes unchanged.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-V02-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/v/test_sk_wf2_v02.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_standalone_operation_never_imports_project_control_or_todo_orchestrator     WF2Acceptance.test_all_mandatory_schema_trust_cases_execute_with_zero_skips     WF2Acceptance.test_read_query_leaves_canonical_source_and_ctxpp_bytes_unchanged</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-V03 — Test forwarding shims and real consumer boundaries</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;critical&quot;, &quot;work_type&quot;: &quot;testing&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Independently exercise W/D candidate from both historical entry points and new supported APIs, including process crashes and incompatible runtime identity.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-W04</code>, <code>SK-WF2-D04</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>tests/wf2_validation</code>, <code>docs/workflow_foundation_v2/validation</code>, <code>tests/wf2_acceptance/v</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-V03-A01:</strong> One implementation services old and new calls.</li>
+<li><strong>SK-WF2-V03-A02:</strong> Mixed unsafe versions fail closed.</li>
+<li><strong>SK-WF2-V03-A03:</strong> No skipped mandatory consumer scenario.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-V03-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/v/test_sk_wf2_v03.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_one_implementation_services_old_and_new_calls     WF2Acceptance.test_mixed_unsafe_versions_fail_closed     WF2Acceptance.test_no_skipped_mandatory_consumer_scenario</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-V04 — Verify final migration after the release switch</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>specialist</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;review&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>After actual deployed receipt, run bounded read/import smoke with new release and observe old-entry compatibility without mutating unrelated authorities. Verify retained rollback and source closure.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-X03</code>, <code>SK-WF2-I60</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>tests/wf2_validation</code>, <code>docs/workflow_foundation_v2/validation</code>, <code>tests/wf2_acceptance/v</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-V04-A01:</strong> Actual deployed identity matches accepted candidate.</li>
+<li><strong>SK-WF2-V04-A02:</strong> Real existing project UUIDs are preserved.</li>
+<li><strong>SK-WF2-V04-A03:</strong> Known limitations remain explicit.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-V04-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-I10 — Publish the donor baseline and test inventory</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>integrator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-A03</code>, <code>SK-WF2-V01</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>pyproject.toml</code>, <code>README.md</code>, <code>AGENTS.md</code>, <code>docs/workflow_foundation_v2/integration</code>, <code>tests/wf2_acceptance/i</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-I10-A01:</strong> Donor inventory is complete and reproducible.</li>
+<li><strong>SK-WF2-I10-A02:</strong> Producer completion is visible in the Skills authority.</li>
+<li><strong>SK-WF2-I10-A03:</strong> Receipt does not contain a self-referential commit hash.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-I10-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-I20 — Integrate and publish the standalone ctxpp contract</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>integrator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;integration&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Integrate C05/V02 and publish WF2-CTXPP for the PC adapter. Keep independent CLI/config/state and separate refresh/rewrite authority.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-I10</code>, <code>SK-WF2-C05</code>, <code>SK-WF2-V02</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>pyproject.toml</code>, <code>README.md</code>, <code>AGENTS.md</code>, <code>docs/workflow_foundation_v2/integration</code>, <code>tests/wf2_acceptance/i</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-I20-A01:</strong> Standalone qualified query/packet contract is installed in candidate.</li>
+<li><strong>SK-WF2-I20-A02:</strong> No kernel code has moved into ctxpp.</li>
+<li><strong>SK-WF2-I20-A03:</strong> Receipt includes actual fixture execution.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-I20-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/i/test_sk_wf2_i20.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_standalone_qualified_query_packet_contract_is_installed_in_candidate     WF2Acceptance.test_no_kernel_code_has_moved_into_ctxpp     WF2Acceptance.test_receipt_includes_actual_fixture_execution</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-I40 — Integrate forwarding shims and engine consumers</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>integrator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;integration&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Integrate W/D changes with the exact recipient candidate. Check root registration/docs so only Project Control is the normal workflow product.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-I20</code>, <code>SK-WF2-W04</code>, <code>SK-WF2-D04</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>pyproject.toml</code>, <code>README.md</code>, <code>AGENTS.md</code>, <code>docs/workflow_foundation_v2/integration</code>, <code>tests/wf2_acceptance/i</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-I40-A01:</strong> Alias compatibility is not a second live product.</li>
+<li><strong>SK-WF2-I40-A02:</strong> No donor private imports remain in maintained consumers.</li>
+<li><strong>SK-WF2-I40-A03:</strong> New runtime contracts match the PC receipt.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-I40-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/i/test_sk_wf2_i40.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_alias_compatibility_is_not_a_second_live_product     WF2Acceptance.test_no_donor_private_imports_remain_in_maintained_consumers     WF2Acceptance.test_new_runtime_contracts_match_the_pc_receipt</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-I60 — Publish consumer-ready paired release acceptance</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>integrator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;focused&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;integration&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>Integrate independent V03 checks and publish WF2-CONSUMERS. This milestone precedes actual PC deployment and does not wait for PC final closure.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-I40</code>, <code>SK-WF2-V03</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>pyproject.toml</code>, <code>README.md</code>, <code>AGENTS.md</code>, <code>docs/workflow_foundation_v2/integration</code>, <code>tests/wf2_acceptance/i</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-I60-A01:</strong> All required shim/ctxpp/consumer tests pass.</li>
+<li><strong>SK-WF2-I60-A02:</strong> Candidate source pair and build identities are fixed.</li>
+<li><strong>SK-WF2-I60-A03:</strong> Actual deployment remains a separate milestone.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-I60-G</code> invokes the delivered runner. Evidence kind is <code>tests</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Implement the acceptance file <code>tests/wf2_acceptance/i/test_sk_wf2_i60.py</code> and the exact cases:</p>
+<p>    WF2Acceptance.test_all_required_shim_ctxpp_consumer_tests_pass     WF2Acceptance.test_candidate_source_pair_and_build_identities_are_fixed     WF2Acceptance.test_actual_deployment_remains_a_separate_milestone</p>
+<p>These are proposed test names, not existing tests or empty stubs. They must execute meaningful assertions against real code and include the corresponding negative controls. Additional existing regression suites are required by the task mechanism and review record. Zero tests, skipped cases and expected-failure substitutions fail qualification.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p>
+<h1>SK-WF2-I90 — Close Skills work after qualified deployment</h1>
+<p><strong>Status: proposed, not implemented.</strong> Native role: <code>integrator</code>. Profile: <code>{&quot;context_depth&quot;: &quot;cross_project&quot;, &quot;difficulty&quot;: &quot;complex&quot;, &quot;risk&quot;: &quot;high&quot;, &quot;work_type&quot;: &quot;implementation&quot;}</code>.</p>
+<h2>Purpose and mechanism</h2>
+<p>After V04, verify final main integration, published compatibility obligations and retained historical baseline. Publish WF2-SK-FINAL; COORD and root epic close afterward.</p>
+<h2>Inputs and ordering</h2>
+<p>Prerequisites: <code>SK-WF2-I60</code>, <code>SK-WF2-V04</code>.</p>
+<p>Preceding tasks in the same lane also impose serial order. A producer being done is insufficient if its qualified source is absent from this worktree. See <code>09_PARALLELISM_AND_INTEGRATION.md</code>.</p>
+<h2>Source ownership</h2>
+<p>Write scope: <code>pyproject.toml</code>, <code>README.md</code>, <code>AGENTS.md</code>, <code>docs/workflow_foundation_v2/integration</code>, <code>tests/wf2_acceptance/i</code>.</p>
+<p>Read the sealed package and exact source ledger references. New source/test paths in this plan are <strong>proposed</strong>, not claims that files already exist. Source scope changes require the actual authoritative workflow; never bypass a denied operation with direct SQL.</p>
+<h2>Acceptance</h2>
+<ol>
+<li><strong>SK-WF2-I90-A01:</strong> All Skills-owned work is integrated and qualified.</li>
+<li><strong>SK-WF2-I90-A02:</strong> No unrelated worktree or older program is cleaned.</li>
+<li><strong>SK-WF2-I90-A03:</strong> Final receipt enables PC closure without waiting on its final epic.</li>
+</ol>
+<h2>Evidence and completion</h2>
+<p>Gate <code>SK-WF2-I90-G</code> invokes the delivered runner. Evidence kind is <code>governance</code>. No acceptance record is shipped as passed. The runner reads an explicit external <code>WF2_BINDINGS</code> file.</p>
+<p>Commit source under test, run the gate, and place review/evidence outside repository roots. Each assertion must cite hashed evidence. An independent reviewer checks the substance; JSON shape alone does not prove correctness. Publish owned interfaces before completion where required. Preserve negative results and report external blockers honestly.</p>
+<h2>Delegation and autonomy</h2>
+<p>After the user launches the controller, execute within this task and the accepted scope without asking for every engineering choice. Prefer the configured inexpensive worker; request a bounded read-only researcher for deep archaeology and a capable independent reviewer for consequential claims. Keep model settings outside task semantics. Do not load the full catalog into every worker; use this sheet, its producers and relevant source only. See <code>07_CODEX_AGENT_ROUTING.md</code> and the lane handoff.</p></article><footer>WF2-20260912-v1 · Offline, self-contained review · No external scripts, fonts or network requests · Planning artifacts, not a running program</footer></main></body></html>
