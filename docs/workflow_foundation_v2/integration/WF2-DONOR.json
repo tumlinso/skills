@@ -1,0 +1,32 @@
+{
+  "format": "wf2-donor-receipt-v1",
+  "milestone": "WF2-DONOR",
+  "authority": {
+    "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+    "run_id": "SK-WF2-RUN-V1"
+  },
+  "producers": [
+    {"task_id": "SK-WF2-A03", "state": "completed", "observed_revision": 839},
+    {"task_id": "SK-WF2-V01", "state": "completed", "observed_revision": 854}
+  ],
+  "inventory": {
+    "path": "docs/workflow_foundation_v2/baseline/todo_orchestrator_inventory.json",
+    "sha256": "dfad675ac76a61e7764aed0a8aea248908c7656988ad0289158ff2f7958d9c52"
+  },
+  "validation": [
+    {
+      "path": "docs/workflow_foundation_v2/validation/V01_DONOR_MAPPING.md",
+      "sha256": "e769b3a9293d518e8631909caeeda1e76f663a7baeed7200ce6460c706100953"
+    },
+    {
+      "path": "tests/wf2_validation/test_v01_donor_mapping.py",
+      "sha256": "af545bb91f3c4d41d0f4c8f4aa253e56cf049721cf1e48b1cbe105abf1028920"
+    }
+  ],
+  "preservation": {
+    "maintained_donor_removed": false,
+    "authority_relocated": false,
+    "production_cutover_performed": false
+  },
+  "source_identity_policy": "The receipt is content-addressed externally after creation and never embeds its own Git or file digest."
+}
