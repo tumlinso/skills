@@ -24,6 +24,7 @@ from ..claims import _live_override_blockers, sweep_expired
 from ..completion import recover_terminal_checkpoints, terminal_finalization_report
 from ..config import utc_now
 from ..git_state import scope_manifest
+from ..graph import evaluate_dependencies
 from ..models import ExitCode, TodoError
 from ..ownership import release_claim_locks, scopes_for
 from ..resources import local_process_alive
@@ -158,7 +159,16 @@ class RecoveryEngine:
         if scopes_for(conn, task_id, 'exclusive'):
             refuse("writable_scope")
         claim = conn.execute("SELECT * FROM claims WHERE id=?", (row['claim_id'],)).fetchone()
+        # A stale coordinator may still retain only its own lease.  That lease
+        # is bookkeeping for this exact claim, not evidence of a writable
+        # worker, and is released in the same recovery transaction below.
+        own_active_locks = list(conn.execute(
+            "SELECT id FROM lock_leases WHERE claim_id=? AND state='active'",
+            (row['claim_id'],),
+        ))
         for activity in _live_override_blockers(conn, self.repo_root, claim):
+            if activity == "active_auxiliary_lock" and own_active_locks:
+                continue
             refuse(activity)
         dirty, _ = self._claim_dirty(conn, row)
         if dirty:
@@ -169,10 +179,17 @@ class RecoveryEngine:
                         "('authorized','running','recovery_required','ready_for_acceptance','succeeded')", (task_id,)).fetchone():
             refuse("child_operation")
         # Retain the existing owner's global mutable-process safety boundary.
-        for table in ('gates', 'lock_leases', 'resource_leases'):
+        # The selected stale coordinator's own lock is deliberately excluded:
+        # it is revoked atomically with that coordinator lineage.
+        for table in ('gates', 'resource_leases'):
             column, state = ('status', 'running') if table == 'gates' else ('state', 'active')
             if conn.execute(f"SELECT 1 FROM {table} WHERE {column}=?", (state,)).fetchone():
                 refuse("active_" + table)
+        if conn.execute(
+            "SELECT 1 FROM lock_leases WHERE state='active' AND (claim_id IS NULL OR claim_id!=?)",
+            (row['claim_id'],),
+        ).fetchone():
+            refuse("active_lock_leases")
         workspaces = [dict(w) for w in conn.execute(
             "SELECT * FROM workflow_workspaces WHERE lane_id=? OR id=?", (row['lane_id'], row['workspace_id']))]
         for workspace in workspaces:
@@ -227,10 +244,22 @@ class RecoveryEngine:
                 "WHERE t.status IN ('blocked','attention_required') "
                 "AND lt.state='queued' AND l.state='attention_required' "
                 "AND NOT EXISTS(SELECT 1 FROM claims c WHERE c.task_id=t.id AND c.state IN ('active','orphaned'))"
+                "AND NOT EXISTS(SELECT 1 FROM workflow_dispatches d JOIN claims c ON c.id=d.claim_id "
+                "               WHERE c.task_id=t.id AND d.state='active') "
                 + (" AND t.id=?" if task_id else "")
                 + " ORDER BY t.id,l.id"
             )
             for blocked in (dict(row) for row in conn.execute(blocked_query, args)):
+                dependencies_satisfied, dependencies = evaluate_dependencies(conn, str(blocked["task_id"]))
+                if not dependencies_satisfied:
+                    blockers.append({
+                        "kind": "blocked_task_dependency",
+                        "task_id": blocked["task_id"],
+                        "lane_id": blocked["lane_id"],
+                        "state": "external_dependency_unresolved",
+                        "dependencies": dependencies,
+                    })
+                    continue
                 workspace_path = blocked.get("worktree_path")
                 dirty = False
                 if workspace_path:
@@ -343,11 +372,21 @@ class RecoveryEngine:
                 blockers.append({"kind": "gate", "id": gate["id"], "task_id": gate["task_id"], "state": gate["status"]})
 
             lock_query = (
-                "SELECT l.*,c.task_id FROM lock_leases l LEFT JOIN claims c ON c.id=l.claim_id "
+                "SELECT l.*,c.task_id,wl.role AS lane_role,wl.workspace_mode AS lane_workspace_mode "
+                "FROM lock_leases l LEFT JOIN claims c ON c.id=l.claim_id "
+                "LEFT JOIN workflow_dispatches wd ON wd.claim_id=c.id AND wd.state='active' "
+                "LEFT JOIN workflow_lanes wl ON wl.id=wd.lane_id "
                 "WHERE l.state='active' ORDER BY l.id"
             )
             recovering_claim_ids = {str(item["id"]) for item in actions if item["kind"] == "release_claim"}
             for lease in (dict(row) for row in conn.execute(lock_query)):
+                # A read-shared coordinator seat cannot mutate this task's
+                # workspace.  Its independent lease must not prevent an
+                # owner from requeueing this task after its dependency clears.
+                if (task_id and str(lease.get("task_id") or "") != task_id
+                        and lease.get("lane_role") == "coordinator"
+                        and lease.get("lane_workspace_mode") == "read_shared"):
+                    continue
                 if str(lease.get("claim_id")) in recovering_claim_ids:
                     continue
                 state = self._process_state(lease)
@@ -479,6 +518,12 @@ class RecoveryEngine:
                         expired = sweep_expired(conn, self.repo_root, claim_id=str(action["claim_id"]))
                         if len(expired) != 1 or expired[0]["state"] != "released_clean":
                             raise TodoError("recovery_plan_stale", "Selected coordinator did not expire cleanly", ExitCode.CONTENTION)
+                    release_claim_locks(conn, str(action["claim_id"]))
+                    conn.execute(
+                        "UPDATE claims SET state='recovered_released',released_at=? "
+                        "WHERE id=? AND state IN ('active','expired_clean')",
+                        (now, action["claim_id"]),
+                    )
                     conn.execute("UPDATE workflow_dispatches SET state='recovered',released_at=?,revision=? WHERE id=?", (now, revision, action["id"]))
                     conn.execute("UPDATE workflow_lane_tasks SET state='queued',activated_at=NULL,revision=? WHERE lane_id=? AND task_id=?", (revision, action["lane_id"], action["task_id"]))
                     conn.execute("UPDATE workflow_lanes SET state='ready',updated_at=?,revision=? WHERE id=?", (now, revision, action["lane_id"]))

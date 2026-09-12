@@ -80,7 +80,7 @@ class WorkflowRecoveryTests(unittest.TestCase):
                 )
         self.mutate(seed)
 
-    def seed_expired_coordinator(self):
+    def seed_expired_coordinator(self, *, own_lock: bool = False):
         from todo_orchestrator.git_state import scope_manifest
         self.seed_dispatch(pid=os.getpid(), capability=True)
         def seed(conn, revision):
@@ -91,6 +91,13 @@ class WorkflowRecoveryTests(unittest.TestCase):
             conn.execute("UPDATE tasks SET status='planned' WHERE id='A'")
             conn.execute("UPDATE workflow_capabilities SET role='coordinator' WHERE id='CAP'")
             conn.execute("UPDATE lock_leases SET state='released' WHERE claim_id=?", (self.claim_id,))
+            if own_lock:
+                conn.execute("INSERT INTO named_locks(name,capacity,metadata_json) VALUES('coordinator-seat',1,'{}')")
+                conn.execute(
+                    "INSERT INTO lock_leases(id,lock_name,claim_id,session_id,token_hash,state,acquired_at,heartbeat_at,expires_at) "
+                    "VALUES('COORD-LOCK','coordinator-seat',? ,?,'coordinator-lock','active','now','now','2999-01-01T00:00:00Z')",
+                    (self.claim_id, self.session_id),
+                )
         self.mutate(seed)
 
     def test_expired_readonly_coordinator_requeues_atomically_with_live_process(self):
@@ -101,12 +108,50 @@ class WorkflowRecoveryTests(unittest.TestCase):
         self.assertEqual([a['kind'] for a in plan['actions']], ['requeue_expired_coordinator'])
         engine.execute(plan, 'recover expired read-only seat')
         with self.repo.service.db.read() as conn:
-            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'expired_clean')
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'recovered_released')
             self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], 'recovered')
             self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0], 'queued')
             self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], 'revoked')
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_recovery_audit").fetchone()[0], 1)
         self.assertEqual(engine.inspect('A')['status'], 'already_recovered')
+
+    def test_unobservable_coordinator_recovers_its_own_live_lock_atomically(self):
+        self.seed_expired_coordinator(own_lock=True)
+        engine = self.engine(lambda *args: None)
+        plan = engine.inspect('A')
+        self.assertEqual(plan['blockers'], [])
+        engine.execute(plan, 'owner confirmed stale coordinator recovery')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'recovered_released')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], 'revoked')
+            self.assertEqual(conn.execute("SELECT state FROM lock_leases WHERE id='COORD-LOCK'").fetchone()[0], 'released')
+
+    def test_blocked_task_requeues_only_after_its_declared_dependency_is_resolved(self):
+        other = V2Repo()
+        try:
+            other.apply(base_plan([
+                safe_task('UPSTREAM', 'src/upstream'),
+                safe_task('BLOCKED', 'src/blocked', depends_on=[{'type': 'task', 'task_id': 'UPSTREAM'}]),
+            ]))
+
+            def seed(conn, revision):
+                conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','BLOCKED','now','now',?)", (revision,))
+                conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','attention_required','now','now',?)", (revision,))
+                conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('LANE',0,'BLOCKED','queued','now',?)", (revision,))
+                conn.execute("UPDATE tasks SET status='blocked',attention_reason='external prerequisite pending' WHERE id='BLOCKED'")
+
+            other.service.db.mutate(actor_session_id=None, entity_type='fixture', entity_id='BLOCKED', event_type='fixture', payload={}, operation=seed)
+            engine = RecoveryEngine(other.service.db, other.root, str(other.service.project['project_uuid']), process_probe=lambda *_: False)
+            plan = engine.inspect('BLOCKED')
+            self.assertEqual(plan['status'], 'refused')
+            self.assertEqual(plan['blockers'][0]['state'], 'external_dependency_unresolved')
+            other.service.db.mutate(
+                actor_session_id=None, entity_type='fixture', entity_id='UPSTREAM', event_type='fixture', payload={},
+                operation=lambda conn, revision: conn.execute("UPDATE tasks SET status='done',result='implemented' WHERE id='UPSTREAM'"),
+            )
+            self.assertEqual([action['kind'] for action in engine.inspect('BLOCKED')['actions']], ['requeue_blocked_task'])
+        finally:
+            other.close()
 
     def test_expired_coordinator_revokes_retired_family_preserves_other_claim(self):
         other = self.repo.service.continue_work(task_id='T')
@@ -191,7 +236,7 @@ class WorkflowRecoveryTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'active')
         engine.execute(plan, 'selected unswept read-only coordinator')
         with self.repo.service.db.read() as conn:
-            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'expired_clean')
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (self.claim_id,)).fetchone()[0], 'recovered_released')
             self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE task_id='A'").fetchone()[0], 'queued')
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], 'planned')
             self.assertEqual(conn.execute("SELECT state FROM workflow_capabilities WHERE id='CAP'").fetchone()[0], 'revoked')

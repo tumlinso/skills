@@ -19,7 +19,7 @@ class WorkflowLaneResumeTests(unittest.TestCase):
         self.repo = V2Repo()
         (self.repo.root / "src" / "a").mkdir(parents=True)
         (self.repo.root / "src" / "a" / "unit.txt").write_text("base\n", encoding="utf-8")
-        self.repo.apply(base_plan([safe_task("A", "src/a")]))
+        self.repo.apply(base_plan([safe_task("A", "src/a"), safe_task("T", "src/t")]))
         self.locator_temp = tempfile.TemporaryDirectory()
         self.locator = WorkflowCapabilityLocator(Path(self.locator_temp.name))
         self.protocol = WorkflowProtocol(WorkflowKernel(locator=self.locator), self.locator)
@@ -120,6 +120,27 @@ class WorkflowLaneResumeTests(unittest.TestCase):
         self.assertEqual(self.lane_state(), ("ready", "queued"))
         resumed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
         self.assertEqual(resumed["status"], "claimed")
+
+    def test_task_local_requeue_ignores_unrelated_read_shared_coordinator_lock(self) -> None:
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        self.protocol.finish_task(
+            workflow_handle=claimed["workflow_handle"], action="block",
+            disposition="failed", reason="external dependency pending", note="blocked",
+        )
+        coordinator = self.repo.service.continue_work(task_id="T")
+
+        def seed(conn, revision):
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('COORD-RUN','T','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,workspace_mode,state,created_at,updated_at,revision) VALUES('COORD-LANE','COORD-RUN','coordinator','read_shared','active','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,context_version,heartbeat_at,created_at,revision) VALUES('COORD-D','COORD-LANE',?,?,1,'2999-01-01T00:00:00Z','now',?)", (coordinator['session']['agent_id'], coordinator['claim']['claim_id'], revision))
+            conn.execute("INSERT INTO named_locks(name,capacity,metadata_json) VALUES('coordinator-seat',1,'{}')")
+            conn.execute("INSERT INTO lock_leases(id,lock_name,claim_id,session_id,token_hash,state,acquired_at,heartbeat_at,expires_at) VALUES('COORD-L','coordinator-seat',?,?, 'lock','active','now','now','2999-01-01T00:00:00Z')", (coordinator['claim']['claim_id'], coordinator['session']['agent_id']))
+
+        self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="coordinator", event_type="fixture", payload={}, operation=seed)
+        engine = RecoveryEngine(self.repo.service.db, self.repo.root, str(self.repo.service.project["project_uuid"]), process_probe=lambda *_: None)
+        plan = engine.inspect("A")
+        self.assertEqual(plan["blockers"], [])
+        self.assertEqual([item["kind"] for item in plan["actions"]], ["requeue_blocked_task"])
 
     def test_clean_owner_recovery_requeues_and_next_task_reissues_capability(self) -> None:
         claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
