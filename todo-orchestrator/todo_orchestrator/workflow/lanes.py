@@ -335,7 +335,17 @@ def dispatch_claim_in_transaction(
     if active_lane:
         raise TodoError("workflow_lane_already_dispatched", f"Lane {lane_id} already has an active dispatch")
     if lane["workspace_mode"] in {"isolated_merge", "contract_split"} and not workspace_id:
-        raise TodoError("workflow_workspace_required", "Lane contract requires an assigned managed workspace")
+        raise TodoError(
+            "workflow_workspace_required",
+            "Lane contract requires an assigned managed workspace",
+            details={
+                "run_id": run_id,
+                "lane_id": lane_id,
+                "task_id": claim["task_id"],
+                "workspace_mode": lane["workspace_mode"],
+                "root_action": "prepare_run_workspaces",
+            },
+        )
     if workspace_id:
         workspace = conn.execute("SELECT * FROM workflow_workspaces WHERE id=?", (workspace_id,)).fetchone()
         if not workspace or workspace["run_id"] != run_id or workspace["lane_id"] != lane_id:

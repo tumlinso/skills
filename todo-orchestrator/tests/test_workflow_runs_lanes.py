@@ -309,6 +309,8 @@ class WorkflowRunsLanesTests(unittest.TestCase):
         with self.assertRaises(TodoError) as caught:
             self.lanes.dispatch(run_id="RUN", session_id=session_id, claim_id=claim_id, context_version=1)
         self.assertEqual(caught.exception.code, "workflow_workspace_required")
+        self.assertEqual(caught.exception.details["root_action"], "prepare_run_workspaces")
+        self.assertEqual(caught.exception.details["lane_id"], "A")
 
     def test_stale_dispatch_is_attention_not_silent_reassignment(self) -> None:
         session_id, claim_id = self._claim("T-A1")

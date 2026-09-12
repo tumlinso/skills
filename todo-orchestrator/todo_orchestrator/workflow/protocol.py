@@ -35,6 +35,7 @@ STATUSES = frozenset({
     "idle",
     "blocked",
     "attention_required",
+    "root_preparation_required",
     "context_stale",
     "recovery_needed",
     "fallback_authorized",

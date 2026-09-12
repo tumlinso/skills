@@ -94,6 +94,42 @@ class WorkflowFrontDoorTests(unittest.TestCase):
         finally:
             locator_dir.cleanup()
 
+    def test_managed_lane_returns_root_workspace_preparation_action(self) -> None:
+        self.migrate_identity()
+        self.repo.service.db.mutate(
+            actor_session_id=None,
+            entity_type="fixture",
+            entity_id="compat-v2-main",
+            event_type="fixture.workspace_contract",
+            payload={},
+            operation=lambda conn, revision: conn.execute(
+                "UPDATE workflow_lanes SET workspace_mode='isolated_merge',revision=? "
+                "WHERE id='compat-v2-main'",
+                (revision,),
+            ),
+        )
+        locator_dir = tempfile.TemporaryDirectory()
+        try:
+            locator = WorkflowCapabilityLocator(Path(locator_dir.name))
+            protocol = WorkflowProtocol(WorkflowKernel(locator=locator), locator)
+            result = protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        finally:
+            locator_dir.cleanup()
+        self.assertEqual(result["status"], "root_preparation_required")
+        self.assertEqual(result["warnings"], ["workflow_workspace_required"])
+        self.assertEqual(result["root_action"], {
+            "operation": "prepare_run_workspaces",
+            "authority": "root_only",
+            "run_id": "compat-v2",
+            "lane_id": "compat-v2-main",
+            "task_id": "A",
+            "workspace_mode": "isolated_merge",
+        })
+        self.assertEqual(result["allowed_actions"], [])
+        with self.repo.service.db.read() as conn:
+            self.assertIsNone(conn.execute("SELECT 1 FROM claims WHERE state='active'").fetchone())
+            self.assertIsNone(conn.execute("SELECT 1 FROM workflow_dispatches WHERE state='active'").fetchone())
+
     def test_legacy_front_door_alias_remains_accepted_during_migration(self) -> None:
         self.migrate_identity("coding-workflow")
         with self.assertRaises(TodoError) as caught:

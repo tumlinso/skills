@@ -510,6 +510,21 @@ class WorkflowKernel:
         except TodoError as exc:
             if exc.code in {"no_actionable_work", "workflow_run_missing"}:
                 return {"status": "idle", "warnings": [exc.code], "recommended_next_call": "next_task"}
+            if exc.code == "workflow_workspace_required":
+                details = dict(exc.details) if isinstance(exc.details, Mapping) else {}
+                return {
+                    "status": "root_preparation_required",
+                    "warnings": [exc.code],
+                    "root_action": {
+                        "operation": "prepare_run_workspaces",
+                        "authority": "root_only",
+                        "run_id": details.get("run_id"),
+                        "lane_id": details.get("lane_id"),
+                        "task_id": details.get("task_id"),
+                        "workspace_mode": details.get("workspace_mode"),
+                    },
+                    "recommended_next_call": "root_prepare_workspaces",
+                }
             raise
         handle = str(result["workflow_handle"])
         self.locator.register(handle, service.paths.repo_root)
