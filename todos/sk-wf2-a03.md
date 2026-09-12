@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-A03: Map independent ctxpp and host execution contracts
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `829`; current project revision is in `todo-status.md`.
 
 ## Objective
 Describe ctxpp read/query/refresh/rewrite operations and host runtime facade consumers. Record which source identities are content hashes versus metadata and which schedulers are local versus host-wide.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `claimed`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 

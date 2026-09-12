@@ -3,14 +3,14 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `799`
+Project revision: `830`
 
 ## Workstreams
 - `SK-WF2-0000` | status: planned | execution: inactive | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
 - `SK-WF2-COORD` | status: in_progress | execution: claimed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-coord.md; verify live prerequisites and evidence before work.
-- `SK-WF2-A01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-A02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-A03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-A01` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a01.md; verify live prerequisites and evidence before work.
+- `SK-WF2-A02` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-A03` | status: in_progress | execution: claimed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a03.md; verify live prerequisites and evidence before work.
 - `SK-WF2-C01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c01.md; verify live prerequisites and evidence before work.
 - `SK-WF2-C02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c02.md; verify live prerequisites and evidence before work.
 - `SK-WF2-C03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c03.md; verify live prerequisites and evidence before work.
