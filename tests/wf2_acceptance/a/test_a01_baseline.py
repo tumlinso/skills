@@ -11,6 +11,7 @@ REPO = Path(__file__).resolve().parents[3]
 INVENTORY = REPO / "docs/workflow_foundation_v2/baseline/todo_orchestrator_inventory.json"
 FIXTURE = REPO / "docs/workflow_foundation_v2/baseline/disposable_fixture_v1.json"
 RECOVERY = REPO / "docs/workflow_foundation_v2/baseline/RECOVERY.md"
+CTXPP_HOST = REPO / "docs/workflow_foundation_v2/baseline/CTXPP_AND_HOST_CONTRACT.md"
 BASELINE = "3652874793401944e3cde30a3134aeb5615316ba"
 
 
@@ -63,6 +64,17 @@ class TodoDonorInventoryTest(unittest.TestCase):
         self.assertNotIn("glasshelix", encoded)
         self.assertIn(BASELINE, RECOVERY.read_text(encoding="utf-8"))
         subprocess.check_call(["git", "cat-file", "-e", f"{BASELINE}^{{commit}}"], cwd=REPO)
+
+    def test_ctxpp_and_host_contract_separates_capabilities_and_scope(self) -> None:
+        contract = CTXPP_HOST.read_text(encoding="utf-8").lower()
+        for phrase in ("standalone", "fallback", "read/query", "refresh and rewrite", "advisory", "nor represents an os- or cluster-wide reservation"):
+            self.assertIn(phrase, contract)
+        packet = (REPO / "cpp-context-compiler/scripts/ctxpp_packet.py").read_text(encoding="utf-8")
+        self.assertIn("except (ImportError, OSError, RuntimeError, ValueError)", packet)
+        self.assertIn("file_hashes", packet)
+        host = (REPO / "todo-orchestrator/todo_orchestrator/background/host.py").read_text(encoding="utf-8")
+        self.assertIn("Lazy host-global authority for physical resources", host)
+        self.assertIn("ram_limit", host)
 
 
 if __name__ == "__main__":
