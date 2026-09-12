@@ -691,6 +691,39 @@ def plan_diff(conn: sqlite3.Connection, data: dict[str, Any]) -> dict[str, objec
     }
 
 
+def apply_selective_replan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, revision: int) -> dict[str, object]:
+    """Atomically replace only idle planned queue entries; never broad-reapply a plan."""
+    if data.get("format") != "selective-replan-v1" or not isinstance(data.get("replacements"), list):
+        raise TodoError("invalid_selective_replan", "Expected selective-replan-v1 replacements")
+    selected = {str(x.get("task_id")) for x in data["replacements"] if isinstance(x, dict) and x.get("task_id")}
+    if not selected or len(selected) != len(data["replacements"]):
+        raise TodoError("invalid_selective_replan", "Replacement task IDs must be present and unique")
+    for old in selected:
+        task = conn.execute("SELECT status FROM tasks WHERE id=?", (old,)).fetchone()
+        queue = conn.execute("SELECT lane_id,state FROM workflow_lane_tasks WHERE task_id=?", (old,)).fetchone()
+        if not task or task["status"] != "planned" or not queue or queue["state"] != "queued":
+            raise TodoError("selective_replan_task_not_idle", f"Task is not planned and queued: {old}")
+        if conn.execute("SELECT 1 FROM claims WHERE task_id=? AND state='active'", (old,)).fetchone():
+            raise TodoError("selective_replan_live_claim", f"Task has a live claim: {old}")
+        if conn.execute("SELECT 1 FROM workflow_patch_artifacts WHERE task_id=? AND state NOT IN ('discarded','integrated')", (old,)).fetchone() or conn.execute("SELECT 1 FROM workflow_integration_queue q JOIN workflow_lane_tasks lt ON lt.lane_id=q.integrator_lane_id WHERE lt.task_id=? AND q.state NOT IN ('integrated','discarded')", (old,)).fetchone():
+            raise TodoError("selective_replan_artifact_bound", f"Task has artifact or integration state: {old}")
+    replacements = {str(x["task_id"]): dict(x["replacement"]) for x in data["replacements"]}
+    new_ids = [str(v.get("id")) for v in replacements.values()]
+    if any(not value for value in new_ids) or len(new_ids) != len(set(new_ids)) or any(conn.execute("SELECT 1 FROM tasks WHERE id=?", (value,)).fetchone() for value in new_ids):
+        raise TodoError("selective_replan_replacement_identity", "Replacement IDs must be new and unique")
+    for old, replacement in replacements.items():
+        replacement.setdefault("parent_id", conn.execute("SELECT parent_id FROM tasks WHERE id=?", (old,)).fetchone()[0])
+        replacement.setdefault("status", "planned")
+    # Reuse canonical task/detail writer only for new records; old records retain all details/history.
+    apply_plan(conn, {"schema_version": 3, "project": {}, "tasks": list(replacements.values())}, repo_root, revision)
+    for old, replacement in replacements.items():
+        new = str(replacement["id"])
+        conn.execute("UPDATE tasks SET status='superseded',result='superseded',updated_at=?,revision=? WHERE id=?", (utc_now(), revision, old))
+        conn.execute("UPDATE workflow_lane_tasks SET task_id=?,revision=? WHERE task_id=?", (new, revision, old))
+        conn.execute("UPDATE task_dependencies SET prerequisite_task_id=? WHERE prerequisite_task_id=? AND task_id NOT IN ({})".format(",".join("?" * len(selected))), (new, old, *selected))
+    return {"superseded": sorted(selected), "replacements": sorted(new_ids)}
+
+
 def scaffold(shape: str) -> dict[str, object]:
     base: dict[str, object] = {"schema_version": SCHEMA_VERSION, "project": {"name": "Project"}, "invariants": [], "decisions": [], "locks": [], "interfaces": [], "barriers": [], "resource_classes": [], "tasks": []}
     if shape == "fanout":

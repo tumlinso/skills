@@ -52,7 +52,7 @@ from .interfaces import status as interface_status
 from .legacy import apply_markdown_import, inspect_markdown
 from .models import ExitCode, TodoError
 from .ownership import acquire_named_locks, guard_paths, release_lock, scopes_for
-from .plan import apply_plan, load_plan, plan_diff, scaffold, validate_plan
+from .plan import apply_plan, apply_selective_replan, load_plan, plan_diff, scaffold, validate_plan
 from .projections import build_snapshot, refresh_projections, restore_snapshot, write_snapshot
 from .readiness import explain_task, ready_tasks
 from .reporting import git_diffstat, no_work_frontier, project_status
@@ -298,6 +298,14 @@ class Service:
             operation=lambda conn, revision: apply_plan(conn, data, self.paths.repo_root, revision),
             full_projection=True,
         )
+        return {**result, "project_revision": revision, "projection": projection}
+
+    def selective_replan(self, data: dict[str, object], expected_revision: int) -> dict[str, object]:
+        def operation(conn, revision):
+            if revision - 1 != expected_revision:
+                raise TodoError("proposal_stale", "Todo revision changed before selective replan")
+            return apply_selective_replan(conn, data, self.paths.repo_root, revision)
+        result, revision, projection = self.mutate(actor=None, entity_type="project", entity_id=str(self.project["project_uuid"]), event_type="plan.selective_replanned", payload={"format": data.get("format")}, operation=operation, full_projection=True)
         return {**result, "project_revision": revision, "projection": projection}
 
     def pulse(self, claim_token: str) -> dict[str, object]:
