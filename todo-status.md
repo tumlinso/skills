@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `854`
+Project revision: `855`
 
 ## Workstreams
 - `SK-WF2-0000` | status: planned | execution: inactive | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -22,7 +22,7 @@ Project revision: `854`
 - `SK-WF2-D02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d02.md; verify live prerequisites and evidence before work.
 - `SK-WF2-D03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d03.md; verify live prerequisites and evidence before work.
 - `SK-WF2-D04` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d04.md; verify live prerequisites and evidence before work.
-- `SK-WF2-I10` | status: in_progress | execution: claimed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i10.md; verify live prerequisites and evidence before work.
+- `SK-WF2-I10` | status: in_progress | execution: idle | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i10.md; verify live prerequisites and evidence before work.
 - `SK-WF2-I20` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i20.md; verify live prerequisites and evidence before work.
 - `SK-WF2-I40` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i40.md; verify live prerequisites and evidence before work.
 - `SK-WF2-I60` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i60.md; verify live prerequisites and evidence before work.

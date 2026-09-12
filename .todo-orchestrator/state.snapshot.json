@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T18:21:14Z",
+  "generated_at": "2026-09-12T18:27:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 854,
+  "project_revision": 855,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -8982,6 +8982,16 @@
         "revision": 854,
         "seq": 854,
         "timestamp": "2026-09-12T18:21:14Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-I10",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": null}",
+        "revision": 855,
+        "seq": 855,
+        "timestamp": "2026-09-12T18:27:58Z"
       }
     ],
     "evidence": [
@@ -13030,6 +13040,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"788b8a2c801cc01dd766afa334e06185da7ba21e\", \"completion_gates\": [], \"completion_revision\": 168, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 506 ++++++++++++++++++++++++++-------\\n todo-status.md                         |  15 +-\\n todos.md                               |  15 +-\\n todos/wfu-10.md                        |   8 +-\\n todos/wfu-11.md                        |   6 +-\\n todos/wfu-12.md                        |   8 +-\\n todos/wfu-13.md                        |   6 +-\\n todos/wfu-14.md                        |   6 +-\\n 8 files changed, 437 insertions(+), 133 deletions(-)\", \"git_head\": \"788b8a2c801cc01dd766afa334e06185da7ba21e\", \"interfaces\": [], \"note\": \"Commit 788b8a2. Recovery suite 13/13; preserved recovery/child/completion suites 26/26; full todo suite 146/147 with only recorded pre-existing semantic-state failure.\", \"resources\": [], \"task_id\": \"WFU-14\"}",
         "revision": 168,
         "task_id": "WFU-14"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-12T18:27:58Z",
+        "id": "41daf1cb-2fdf-46a1-97fd-4636cc82dfc9",
+        "kind": "handoff",
+        "note": "waiting for root wave-boundary artifact publication",
+        "payload_json": "{\"authority_commit\": \"3c2b17928de76c8f0d5658c5d62ada141ed1af9c\", \"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"SK-WF2-I10-CP\", \"reached_at\": null, \"state\": \"pending\"}], \"gates\": [{\"id\": \"SK-WF2-I10-G\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 797, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \"\", \"git_head\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"waiting for root wave-boundary artifact publication\", \"producer_commit\": \"07fa81cdd82c15162234b035950d47c85d0ca675\", \"producer_root\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i\", \"resources\": [], \"task_id\": \"SK-WF2-I10\"}",
+        "revision": 855,
+        "task_id": "SK-WF2-I10"
       },
       {
         "claim_id": null,
@@ -21844,8 +21864,8 @@
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Publish the donor baseline and test inventory",
-        "updated_at": "2026-09-12T18:21:14Z",
-        "version": 2
+        "updated_at": "2026-09-12T18:27:58Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -24797,13 +24817,13 @@
         "task_id": "SK-WF2-D04"
       },
       {
-        "activated_at": "2026-09-12T18:21:14Z",
+        "activated_at": null,
         "completed_at": null,
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 0,
-        "revision": 854,
-        "state": "active",
+        "revision": 855,
+        "state": "queued",
         "task_id": "SK-WF2-I10"
       },
       {
@@ -25411,11 +25431,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-I",
         "parent_lane_id": "SK-WF2-L-COORD",
-        "revision": 854,
+        "revision": 855,
         "role": "integrator",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T18:21:14Z",
+        "state": "ready",
+        "updated_at": "2026-09-12T18:27:58Z",
         "workspace_mode": "exclusive"
       },
       {

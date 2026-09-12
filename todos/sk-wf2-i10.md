@@ -1,14 +1,16 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-I10: Publish the donor baseline and test inventory
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `854`; current project revision is in `todo-status.md`.
 
 ## Objective
 Integrate A/V01 records and publish WF2-DONOR with full source/test dependency identity. No maintained donor code is removed in this milestone.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `in_progress`
+- Execution: `idle`
 - Parallel policy: `parallel_safe`
 - Result: `-`
 
