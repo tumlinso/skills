@@ -114,6 +114,10 @@ class WorkflowRunsLanesTests(unittest.TestCase):
     def test_lane_tree_and_server_side_role_enforcement(self) -> None:
         self.assertIn("fork", allowed_actions("coordinator"))
         self.assertNotIn("fork", allowed_actions("implementer"))
+        for role in ("coordinator", "implementer", "validator", "integrator", "specialist"):
+            with self.subTest(role=role):
+                self.assertIn("run_gates", allowed_actions(role))
+                require_role_action(role, "run_gates")
         with self.assertRaisesRegex(TodoError, "cannot perform") as denied:
             require_role_action("implementer", "fork")
         self.assertEqual("workflow_role_forbidden", denied.exception.code)
