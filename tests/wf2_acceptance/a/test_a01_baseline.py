@@ -9,6 +9,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 INVENTORY = REPO / "docs/workflow_foundation_v2/baseline/todo_orchestrator_inventory.json"
+FIXTURE = REPO / "docs/workflow_foundation_v2/baseline/disposable_fixture_v1.json"
+RECOVERY = REPO / "docs/workflow_foundation_v2/baseline/RECOVERY.md"
 BASELINE = "3652874793401944e3cde30a3134aeb5615316ba"
 
 
@@ -47,6 +49,20 @@ class TodoDonorInventoryTest(unittest.TestCase):
         self.assertNotIn("state.snapshot", encoded)
         self.assertNotIn("capability_handle", encoded)
         self.assertEqual(self.data["live_authority_exported"], False)
+
+    def test_disposable_fixture_is_sanitized_and_source_is_recoverable(self) -> None:
+        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        self.assertEqual(fixture["format"], "wf2-disposable-todo-fixture-v1")
+        self.assertFalse(fixture["provenance"]["live_authority_exported"])
+        self.assertEqual(fixture["provenance"]["real_project_databases_touched"], [])
+        self.assertFalse(fixture["redaction"]["contains_live_data"])
+        encoded = json.dumps(fixture["project"], sort_keys=True).lower()
+        for forbidden in fixture["redaction"]["forbidden_fields"]:
+            self.assertNotIn('"' + forbidden + '"', encoded)
+        self.assertNotIn("cellerator", encoded)
+        self.assertNotIn("glasshelix", encoded)
+        self.assertIn(BASELINE, RECOVERY.read_text(encoding="utf-8"))
+        subprocess.check_call(["git", "cat-file", "-e", f"{BASELINE}^{{commit}}"], cwd=REPO)
 
 
 if __name__ == "__main__":
