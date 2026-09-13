@@ -278,27 +278,23 @@ class ServicePoolTests(unittest.TestCase):
         backend.test_topology = topology
         return backend, runtime, service
 
-    def test_x_mode_rejects_admission_before_idle_reuse_or_resource_activity(self):
-        backend, runtime, service = self.backend()
+    def test_x_mode_admits_idle_service_with_existing_reservation_safety(self):
+        backend, runtime, service = self.backend(maximum=1)
         endpoint = backend.warm()
         backend.release(endpoint["service_lease_id"])
-        before = (len(backend._admissions), runtime.host.discoveries,
-                  runtime.host.priority_changes, service.starts, dict(runtime.host.owners))
         backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
-        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE.*retryable=false"):
-            backend.admit()
-        after = (len(backend._admissions), runtime.host.discoveries,
-                 runtime.host.priority_changes, service.starts, dict(runtime.host.owners))
-        self.assertEqual(after, before)
+        admission = backend.admit()
+        self.assertEqual(admission["status"], "admitted")
         self.assertEqual(backend.status()["slots"][0]["state"], "idle")
+        backend.cancel_admission(admission["admission_id"])
         backend.close()
 
-    def test_topology_change_does_not_disturb_active_work_but_blocks_next_admission(self):
-        backend, runtime, service = self.backend()
+    def test_topology_change_does_not_disturb_active_work_and_respects_capacity(self):
+        backend, runtime, service = self.backend(maximum=1)
         endpoint = backend.warm()
         owners = dict(runtime.host.owners)
         backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
-        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE"):
+        with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
             backend.admit()
         self.assertEqual(dict(runtime.host.owners), owners)
         self.assertTrue(service.handles)
@@ -316,15 +312,14 @@ class ServicePoolTests(unittest.TestCase):
         backend.release(endpoint["service_lease_id"])
         backend.close()
 
-    def test_direct_warm_fails_closed_before_reuse_or_start(self):
+    def test_direct_warm_reuses_x_mode_slot_with_reservation_checks(self):
         backend, runtime, service = self.backend()
         endpoint = backend.warm()
         backend.release(endpoint["service_lease_id"])
-        before = (service.starts, runtime.host.discoveries, runtime.host.priority_changes)
         backend.test_topology["value"] = SimpleNamespace(mode="x_mode", status="available")
-        with self.assertRaisesRegex(SupervisorError, "HOST_INTERLOCK_X_MODE"):
-            backend.warm()
-        self.assertEqual((service.starts, runtime.host.discoveries, runtime.host.priority_changes), before)
+        reused = backend.warm()
+        self.assertTrue(reused["reused"])
+        backend.release(reused["service_lease_id"])
         backend.close()
 
         backend, runtime, service = self.backend()

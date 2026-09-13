@@ -115,9 +115,7 @@ def _launch_delegate(
         admission = supervisor.request("admit")
     except SupervisorError as error:
         message = str(error)
-        if "HOST_INTERLOCK_X_MODE" in message:
-            reason = "host_interlock_x_mode"
-        elif "HOST_TOPOLOGY_UNAVAILABLE" in message:
+        if "HOST_TOPOLOGY_UNAVAILABLE" in message:
             reason = "host_topology_unavailable"
         elif "HOST_TOPOLOGY_UNSUPPORTED" in message:
             reason = "host_topology_unsupported"

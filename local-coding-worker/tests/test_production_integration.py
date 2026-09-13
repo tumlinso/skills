@@ -166,30 +166,6 @@ class ProductionIntegrationGuardTests(unittest.TestCase):
             })
             self.assertFalse((Path(temporary) / "delegations").exists())
 
-    def test_x_mode_admission_returns_bounded_fallback_without_launch(self) -> None:
-        module = _cli_module()
-        class Controller:
-            def request_from_claim(self, repo, claim_token, *, mode, target, objective=None):
-                return {"mode": "writable", "target": "kernel", "execution": {"backend": "real"}}
-            def prepare_delegation(self, request):
-                return dict(request, context_packet={"format": "prepared-fixture"})
-        class Supervisor:
-            def request(self, operation, **parameters):
-                raise module.SupervisorError("HOST_INTERLOCK_X_MODE: retryable=false")
-        with tempfile.TemporaryDirectory() as temporary, \
-                mock.patch.object(module, "runtime_root", return_value=Path(temporary)), \
-                mock.patch.object(module.subprocess, "Popen", side_effect=AssertionError("must not launch")):
-            result = module._launch_delegate(
-                Path.cwd(), "toc_secret", "writable", None,
-                controller=Controller(), supervisor=Supervisor(),
-            )
-            self.assertEqual(result, {
-                "status": "local_unavailable", "reason": "host_interlock_x_mode",
-                "fallback": "continue_frontier", "retry_recommended": False,
-                "child_created": False, "scope_locked": False,
-            })
-            self.assertFalse((Path(temporary) / "delegations").exists())
-
     def test_unproven_ctxpp_target_is_not_eligible_before_admission_or_launch(self) -> None:
         module = _cli_module()
         class Controller:

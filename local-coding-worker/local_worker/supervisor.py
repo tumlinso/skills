@@ -151,6 +151,7 @@ class ProductionBackend:
         self._admissions: dict[str, _Admission] = {}
         self._preempted_leases: set[str] = set()
         self._start_lock = threading.Lock()
+        self._analysis_lock = threading.Lock()
         self.draining = False
         self.ttl = float(policy.get("hot_idle_seconds", 900))
         self.admission_ttl = 60.0
@@ -213,10 +214,12 @@ class ProductionBackend:
 
     def _enforce_host_topology(self) -> None:
         topology = self._classify_host_topology()
-        if topology.mode == "normal":
+        # A connected four-GPU component is a scheduling fact, not a reason to
+        # prohibit local inference.  reserve_service/compound_gpu_bundles
+        # retains the actual interference-domain exclusion and preemption
+        # checks below; only absent or unsupported topology remains unsafe.
+        if topology.mode in {"normal", "x_mode"}:
             return
-        if topology.mode == "x_mode":
-            raise SupervisorError("HOST_INTERLOCK_X_MODE: retryable=false")
         reason = ("HOST_TOPOLOGY_UNAVAILABLE" if topology.status == "unavailable"
                   else "HOST_TOPOLOGY_UNSUPPORTED")
         raise SupervisorError(f"{reason}: retryable=false")
@@ -458,6 +461,57 @@ class ProductionBackend:
         self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
         return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                 "clients": len(self._leases), "idle_ttl_seconds": self.ttl}
+
+    def analyze_observer_packet(self, packet: dict[str, Any]) -> dict[str, Any]:
+        """Summarize an already-authorized immutable observer packet.
+
+        The service never receives a repository path, workflow handle, or
+        callable tool.  A busy or unavailable model deterministically returns
+        a compact fallback; callers keep the authoritative envelope.
+        """
+        try:
+            encoded = json.dumps(packet, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+            if not isinstance(packet, dict) or len(encoded.encode("utf-8")) > 64 * 1024:
+                raise SupervisorError("observer_packet_invalid_or_too_large")
+            identity = packet.get("source_identity")
+            evidence = packet.get("evidence")
+            if not isinstance(identity, dict) or not isinstance(evidence, list):
+                raise SupervisorError("observer_packet_requires_identity_and_evidence")
+            refs = {str(item["id"]) for item in evidence if isinstance(item, dict) and isinstance(item.get("id"), str)}
+            if len(refs) != len(evidence) or len(refs) > 64:
+                raise SupervisorError("observer_packet_evidence_refs_invalid")
+            if not self._analysis_lock.acquire(blocking=False):
+                raise SupervisorError("observer_provider_busy")
+            try:
+                admission = self.admit()
+                lease: dict[str, Any] | None = None
+                try:
+                    lease = self.warm(str(admission["admission_id"]))
+                    slot = self._slots[str(lease["slot_id"])]
+                    prompt = (
+                        "Return JSON only: {summary:string,evidence_ids:string[],uncertainty:string}. "
+                        "Summarize only the supplied immutable evidence. Do not claim authority, propose actions, "
+                        "or cite IDs not in the packet.\nPACKET=" + encoded
+                    )
+                    raw = self.service.run("llama", slot.handle, {"messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": 360, "timeout_seconds": 45})
+                    value = json.loads(str(raw.get("text", "")))
+                    cited = value.get("evidence_ids") if isinstance(value, dict) else None
+                    if not isinstance(value, dict) or not isinstance(value.get("summary"), str) or not isinstance(cited, list) or not {str(item) for item in cited} <= refs:
+                        raise SupervisorError("observer_provider_malformed_output")
+                    return {"status": "available", "authoritative": False, "summary": value["summary"][:2000],
+                        "evidence_ids": [str(item) for item in cited], "uncertainty": str(value.get("uncertainty", "model output is non-authoritative"))[:500],
+                        "source_identity": identity, "provider": "llama-server"}
+                finally:
+                    if lease is not None:
+                        self.release(str(lease["service_lease_id"]))
+                    else:
+                        self.cancel_admission(str(admission["admission_id"]))
+            finally:
+                self._analysis_lock.release()
+        except (SupervisorError, AdapterError, json.JSONDecodeError) as error:
+            return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
+                    "reason": str(error)[:500], "fallback": "authoritative_compact_envelope"}
 
     def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]:
         if service_lease_id in self._preempted_leases:

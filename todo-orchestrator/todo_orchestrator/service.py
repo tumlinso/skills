@@ -57,6 +57,7 @@ from .projections import build_snapshot, refresh_projections, restore_snapshot, 
 from .readiness import explain_task, ready_tasks
 from .reporting import git_diffstat, no_work_frontier, project_status
 from .resources import acquire_resource, discover_nvidia, list_resources, release_resource, upsert_inventory
+from .retirement import prior_retirement_receipt, retirement_request_hash, retire_run_batch_in_transaction
 from .sessions import authenticate_claim, authenticate_session, create_session
 
 
@@ -269,6 +270,34 @@ class Service:
         with self.db.read() as conn:
             revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
             return {"project_revision": revision, "tasks": ready_tasks(conn)}
+
+    def retire_run_batch(self, request: dict[str, object]) -> dict[str, object]:
+        """Root-owned, exact replacement of a quiescent workflow run.
+
+        This intentionally has no claim/session argument: the Project Control
+        root/admin facade is the authority boundary.  The kernel still rejects
+        stale, foreign, live, or partially specified requests transactionally.
+        """
+        request_hash = retirement_request_hash(request)
+        with self.db.read() as conn:
+            prior = prior_retirement_receipt(conn, request_hash)
+        if prior is not None:
+            return {**prior, "project_revision": self.db.revision(), "projection": None}
+        result, revision, projection = self.mutate(
+            actor=None,
+            entity_type="workflow_run",
+            entity_id=lambda value: value.get("source_run_id"),
+            event_type="workflow.run.retired",
+            payload=lambda value: {"request_hash": value.get("request_hash"), "receipt": value},
+            operation=lambda conn, rev: retire_run_batch_in_transaction(
+                conn, rev, project=self.project, request=request
+            ),
+            full_projection=True,
+            canonical_workflow=True,
+        )
+        # An idempotent retry makes no logical change.  Avoid presenting the
+        # wrapper transaction's revision as a second retirement receipt.
+        return {**result, "project_revision": revision, "projection": projection}
 
     def explain(self, task_id: str) -> dict[str, object]:
         with self.db.read() as conn:
