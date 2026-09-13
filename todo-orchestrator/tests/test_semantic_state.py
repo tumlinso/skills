@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import subprocess
 import unittest
@@ -118,11 +117,12 @@ class SemanticStateTests(unittest.TestCase):
         ).stdout
         with self.repo.service.db.read() as conn:
             before_revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
-            before_hash = hashlib.sha256(conn.serialize()).hexdigest()
+            from todo_orchestrator.authority import logical_authority_fingerprint
+            before_hash = logical_authority_fingerprint(conn)
         data = self._state("--current-only")
         with self.repo.service.db.read() as conn:
             after_revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
-            after_hash = hashlib.sha256(conn.serialize()).hexdigest()
+            after_hash = logical_authority_fingerprint(conn)
         after_git = subprocess.run(
             ["git", "-C", str(self.repo.root), "status", "--porcelain=v1", "--untracked-files=all"],
             capture_output=True, text=True, check=True,

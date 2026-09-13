@@ -15,6 +15,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from .config import utc_now
+from .authority import logical_authority_fingerprint
 from .models import ExitCode, TodoError
 
 
@@ -39,7 +40,7 @@ def _task_digest(row: sqlite3.Row) -> str:
 
 
 def _fingerprint(conn: sqlite3.Connection) -> str:
-    return hashlib.sha256(conn.serialize()).hexdigest()
+    return logical_authority_fingerprint(conn)
 
 
 def _require_text(request: Mapping[str, Any], name: str) -> str:

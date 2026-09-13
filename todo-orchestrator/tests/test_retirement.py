@@ -7,6 +7,7 @@ import unittest
 from v2_helpers import V2Repo, base_plan, safe_task
 
 from todo_orchestrator.models import TodoError
+from todo_orchestrator.authority import logical_authority_fingerprint
 
 
 class RetirementTests(unittest.TestCase):
@@ -26,7 +27,7 @@ class RetirementTests(unittest.TestCase):
     def request(self):
         with self.repo.service.db.read() as conn:
             row = conn.execute("SELECT * FROM tasks WHERE id='OLD'").fetchone()
-            fingerprint = hashlib.sha256(conn.serialize()).hexdigest()
+            fingerprint = logical_authority_fingerprint(conn)
         return {
             "source_run_id": "OLD-RUN", "successor_run_id": "NEW-RUN",
             "expected_project_uuid": self.repo.service.project["project_uuid"],
@@ -37,6 +38,9 @@ class RetirementTests(unittest.TestCase):
         }
 
     def test_exact_retirement_preserves_unrelated_history_and_is_idempotent(self):
+        # A prepare can be repeated from separate read connections without a
+        # WAL/page-layout false conflict, then the exact request applies.
+        self.assertEqual(self.request()["expected_fingerprint"], self.request()["expected_fingerprint"])
         request = self.request()
         result = self.repo.service.retire_run_batch(request)
         self.assertEqual(result["status"], "retired")
@@ -48,6 +52,16 @@ class RetirementTests(unittest.TestCase):
         revision = self.repo.service.db.revision()
         repeat = self.repo.service.retire_run_batch(request)
         self.assertEqual((repeat["status"], repeat["changed"], self.repo.service.db.revision()), ("already_retired", False, revision))
+
+    def test_semantic_change_after_prepare_is_rejected(self):
+        request = self.request()
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="KEEP", event_type="fixture.changed", payload={},
+            operation=lambda conn, revision: conn.execute("UPDATE tasks SET notes='changed',revision=? WHERE id='KEEP'", (revision,)),
+        )
+        with self.assertRaises(TodoError) as stale:
+            self.repo.service.retire_run_batch(request)
+        self.assertEqual(stale.exception.code, "retirement_authority_stale")
 
     def test_active_claim_and_external_consumer_are_rejected_without_partial_change(self):
         claim = self.repo.service.continue_work(task_id="OLD")

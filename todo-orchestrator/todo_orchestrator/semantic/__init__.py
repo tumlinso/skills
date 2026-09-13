@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 
+from ..authority import logical_authority_fingerprint
 from ..config import project_paths, read_project
 from ..db import Database
 from ..models import ExitCode, TodoError
@@ -34,8 +34,8 @@ class SemanticReader:
 
     @staticmethod
     def _fingerprint(conn) -> str:
-        """Fingerprint the transaction's logical SQLite image, including WAL data."""
-        return hashlib.sha256(conn.serialize()).hexdigest()
+        """Fingerprint logical authority, not SQLite/WAL page layout."""
+        return logical_authority_fingerprint(conn)
 
     def state(self, **filters) -> dict[str, object]:
         with self.db.read() as conn:
