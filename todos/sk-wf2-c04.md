@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-C04: Harden query publication and resource bounds
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `878`; current project revision is in `todo-status.md`.
 
 ## Objective
 Test manifest/query-generation consistency under readers and publication. Document invocation-local CPU/RAM reservations; consume optional host admission without coupling standalone queries to workflow ownership.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c04.md; verify live prerequisites and evidence before work.

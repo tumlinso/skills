@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-D04: Qualify consumers and resource failure paths
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `878`; current project revision is in `todo-status.md`.
 
 ## Objective
 Execute representative CUDA-controller orchestration and local-worker contract tests on isolated fixtures; run actual hardware tests only where declared and available. Record hardware-unavailable as blocked for those assertions.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d04.md; verify live prerequisites and evidence before work.

@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-X03: Import actual deployment qualification
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `878`; current project revision is in `todo-status.md`.
 
 ## Objective
 Verify WF2-DEPLOYED from PC-WF2-I50 after candidate acceptance and actual release promotion.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x03.md; verify live prerequisites and evidence before work.

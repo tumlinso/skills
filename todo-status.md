@@ -3,41 +3,41 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `867`
+Project revision: `878`
 
 ## Workstreams
-- `SK-WF2-0000` | status: planned | execution: inactive | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
-- `SK-WF2-COORD` | status: in_progress | execution: claimed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-coord.md; verify live prerequisites and evidence before work.
+- `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
+- `SK-WF2-COORD` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-coord.md; verify live prerequisites and evidence before work.
 - `SK-WF2-A01` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a01.md; verify live prerequisites and evidence before work.
 - `SK-WF2-A02` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a02.md; verify live prerequisites and evidence before work.
 - `SK-WF2-A03` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-a03.md; verify live prerequisites and evidence before work.
-- `SK-WF2-C01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-C02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-C03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c03.md; verify live prerequisites and evidence before work.
-- `SK-WF2-C04` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c04.md; verify live prerequisites and evidence before work.
-- `SK-WF2-C05` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c05.md; verify live prerequisites and evidence before work.
+- `SK-WF2-C01` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c01.md; verify live prerequisites and evidence before work.
+- `SK-WF2-C02` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-C03` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-C04` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c04.md; verify live prerequisites and evidence before work.
+- `SK-WF2-C05` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-c05.md; verify live prerequisites and evidence before work.
 - `PCU-SK-00` | status: done | execution: closed | next: Capture exact Skills authority, old registration, runtime identity, unrelated work, downstream sentinel, and rollback conditions.
 - `PCU-SK-40` | status: blocked | execution: blocked_dependency | next: Consume the ordinary forward Project Control remediation commit, rebuild the candidate, atomically update the existing project-control service and sole Codex registration, and prove all registered Todo authorities including the Cellerator sentinel through observer-only reads.
-- `SK-WF2-D01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-D02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-D03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d03.md; verify live prerequisites and evidence before work.
-- `SK-WF2-D04` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d04.md; verify live prerequisites and evidence before work.
+- `SK-WF2-D01` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d01.md; verify live prerequisites and evidence before work.
+- `SK-WF2-D02` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-D03` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-D04` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-d04.md; verify live prerequisites and evidence before work.
 - `SK-WF2-I10` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i10.md; verify live prerequisites and evidence before work.
-- `SK-WF2-I20` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i20.md; verify live prerequisites and evidence before work.
-- `SK-WF2-I40` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i40.md; verify live prerequisites and evidence before work.
-- `SK-WF2-I60` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i60.md; verify live prerequisites and evidence before work.
-- `SK-WF2-I90` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i90.md; verify live prerequisites and evidence before work.
+- `SK-WF2-I20` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i20.md; verify live prerequisites and evidence before work.
+- `SK-WF2-I40` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i40.md; verify live prerequisites and evidence before work.
+- `SK-WF2-I60` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i60.md; verify live prerequisites and evidence before work.
+- `SK-WF2-I90` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-i90.md; verify live prerequisites and evidence before work.
 - `SK-WF2-V01` | status: done | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-V02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-V03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v03.md; verify live prerequisites and evidence before work.
-- `SK-WF2-V04` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v04.md; verify live prerequisites and evidence before work.
-- `SK-WF2-W01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-W02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-W03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w03.md; verify live prerequisites and evidence before work.
-- `SK-WF2-W04` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w04.md; verify live prerequisites and evidence before work.
-- `SK-WF2-X01` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x01.md; verify live prerequisites and evidence before work.
-- `SK-WF2-X02` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x02.md; verify live prerequisites and evidence before work.
-- `SK-WF2-X03` | status: planned | execution: ready | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-V02` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-V03` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-V04` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v04.md; verify live prerequisites and evidence before work.
+- `SK-WF2-W01` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w01.md; verify live prerequisites and evidence before work.
+- `SK-WF2-W02` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-W03` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w03.md; verify live prerequisites and evidence before work.
+- `SK-WF2-W04` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-w04.md; verify live prerequisites and evidence before work.
+- `SK-WF2-X01` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x01.md; verify live prerequisites and evidence before work.
+- `SK-WF2-X02` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x02.md; verify live prerequisites and evidence before work.
+- `SK-WF2-X03` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-x03.md; verify live prerequisites and evidence before work.
 - `PCU-SK-01` | status: done | execution: closed | next: Freeze the Todo read port, front door, runtime identity, shim, and submodule contracts.
 - `PCU-SK-41` | status: done | execution: closed | next: Consume the validated Project Control capability-remediation release, repin the existing submodule, rebuild and atomically cut over the candidate, and prove the complete Cellerator sentinel solely through observer reads.
 - `PCU-SK-10` | status: done | execution: closed | next: Expose normalized read operations through a fail-closed in-process facade and prove no revision, snapshot, Git, or database-byte mutation.
@@ -90,4 +90,6 @@ Project revision: `867`
 - `WFU-31` | status: done | execution: closed | next: After the release rendezvous and renewed quiescence check, integrate the validated branch, atomically install and register the canonical package and shim, verify exact six-tool discovery and disposable workflow/recovery/project-control smokes, roll back on failure, finalize documentation, and leave every repository clean.
 - `CWM-05` | status: done | execution: closed | next: Integrate the user's latest local-worker repair, validate todo/ctxpp/local-worker/CUDA adapters, run one real read-only MCP delegation, one bounded writable delegation, and preserve immediate local-unavailable fallback.
 - `CWM-06` | status: done | execution: closed | next: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
+- `SK-WF2A-0000` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
+- `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 <!-- todo-orchestrator:v2-managed:end -->

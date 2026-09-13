@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-V03: Test forwarding shims and real consumer boundaries
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `878`; current project revision is in `todo-status.md`.
 
 ## Objective
 Independently exercise W/D candidate from both historical entry points and new supported APIs, including process crashes and incompatible runtime identity.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v03.md; verify live prerequisites and evidence before work.

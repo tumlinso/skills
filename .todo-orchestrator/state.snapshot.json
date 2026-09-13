@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-12T19:25:54Z",
+  "generated_at": "2026-09-13T11:31:43Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 867,
+  "project_revision": 878,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -441,7 +441,16 @@
         "title": "Additive normalized workflow semantic read frozen"
       }
     ],
-    "decisions": [],
+    "decisions": [
+      {
+        "allowed_json": "[\"pending\", \"accepted\"]",
+        "id": "SK-WF2A-PC-CANDIDATE",
+        "revision": 877,
+        "title": "Root verified PC CORE candidate; SHIP need not be complete",
+        "updated_at": "2026-09-13T11:06:29Z",
+        "value_json": "\"pending\""
+      }
+    ],
     "events": [
       {
         "actor_session_id": null,
@@ -9112,6 +9121,116 @@
         "revision": 867,
         "seq": 867,
         "timestamp": "2026-09-12T19:25:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
+        "entity_type": "workflow_workspace",
+        "event_type": "workflow_producer_wave_advanced",
+        "payload_json": "{\"base_commit\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"integration_task_id\": \"SK-WF2-I20\", \"reason\": \"Advance validation lane onto accepted I10 base\"}",
+        "revision": 868,
+        "seq": 868,
+        "timestamp": "2026-09-12T19:28:28Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"e161981591a21aadd72b8ae295ba672649679d601d7be94ab64cdb5e81e01543\", \"source\": \"project-control\"}",
+        "revision": 869,
+        "seq": 869,
+        "timestamp": "2026-09-13T10:42:05Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-COORD",
+        "entity_type": "workflow_recovery",
+        "event_type": "workflow_recovery.completed",
+        "payload_json": "{\"audit_id\": \"ac2aecdc-6b71-45ad-8aeb-eea2c8a358ea\", \"reason\": \"WF2 Fast Amendment START: release stale superseded coordinator ownership\", \"task_id\": \"SK-WF2-COORD\"}",
+        "revision": 870,
+        "seq": 870,
+        "timestamp": "2026-09-13T10:45:18Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2A-PC-CANDIDATE",
+        "entity_type": "decision",
+        "event_type": "decision.set",
+        "payload_json": "{\"value\": \"accepted\"}",
+        "revision": 871,
+        "seq": 871,
+        "timestamp": "2026-09-13T10:57:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2A-L-ROOT",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-WF2A-L-ROOT\", \"run_id\": \"SK-WF2A-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-WF2A-ENGINES\"}",
+        "revision": 872,
+        "seq": 872,
+        "timestamp": "2026-09-13T10:58:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/wf2-preflight-evidence/wf2a-receipts-20260913-S31sf2/sk-engines-accepted.todo-plan.json\"}",
+        "revision": 873,
+        "seq": 873,
+        "timestamp": "2026-09-13T11:05:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2A-ENGINES-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-WF2A-ENGINES-ACCEPT\"}",
+        "revision": 874,
+        "seq": 874,
+        "timestamp": "2026-09-13T11:05:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2A-ENGINES-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"cab45b70-0478-4af6-a34f-72db7fe5cf7e\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 875,
+        "seq": 875,
+        "timestamp": "2026-09-13T11:05:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2A-ENGINES",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 876, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 876,
+        "seq": 876,
+        "timestamp": "2026-09-13T11:05:47Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/wf2-preflight-evidence/wf2a-receipts-20260913-S31sf2/sk-engines-accepted.todo-plan.json\"}",
+        "revision": 877,
+        "seq": 877,
+        "timestamp": "2026-09-13T11:06:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-WF2-RUN-V1",
+        "entity_type": "workflow_run",
+        "event_type": "workflow.run.retired",
+        "payload_json": "{\"receipt\": {\"changed\": true, \"changed_task_ids\": [\"SK-WF2-0000\", \"SK-WF2-C01\", \"SK-WF2-C02\", \"SK-WF2-C03\", \"SK-WF2-C04\", \"SK-WF2-C05\", \"SK-WF2-COORD\", \"SK-WF2-D01\", \"SK-WF2-D02\", \"SK-WF2-D03\", \"SK-WF2-D04\", \"SK-WF2-I20\", \"SK-WF2-I40\", \"SK-WF2-I60\", \"SK-WF2-I90\", \"SK-WF2-V02\", \"SK-WF2-V03\", \"SK-WF2-V04\", \"SK-WF2-W01\", \"SK-WF2-W02\", \"SK-WF2-W03\", \"SK-WF2-W04\", \"SK-WF2-X01\", \"SK-WF2-X02\", \"SK-WF2-X03\"], \"post_revision\": 878, \"pre_revision\": 877, \"preserved_task_ids\": [], \"reason\": \"WF2 Fast Amendment canonical retirement of exact unfinished original WF2 records after replacement qualification; preserve all terminal history and evidence.\", \"request_hash\": \"c7c5bff0c3c3307d5ec2fd6b59f7f8855d520c8bf35b842ec096654241840675\", \"source_run_id\": \"SK-WF2-RUN-V1\", \"status\": \"retired\", \"successor_run_id\": \"SK-WF2A-RUN-1\"}, \"request_hash\": \"c7c5bff0c3c3307d5ec2fd6b59f7f8855d520c8bf35b842ec096654241840675\"}",
+        "revision": 878,
+        "seq": 878,
+        "timestamp": "2026-09-13T11:31:43Z"
       }
     ],
     "evidence": [
@@ -11199,6 +11318,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-09-13T11:05:47Z",
+        "gate_id": "SK-WF2A-ENGINES-ACCEPT",
+        "id": "cab45b70-0478-4af6-a34f-72db7fe5cf7e",
+        "kind": "manual",
+        "metadata_json": "{\"accepted\": true, \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"inputs\": {\"command_contract\": {\"accepted\": true}, \"diff_fingerprint\": \"ed3c7b3221a848eb94549450344627401192c7f9d1a61294442de738be0aa19a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/sk-wf2-0000.md\", \"todos/sk-wf2-c01.md\", \"todos/sk-wf2-c02.md\", \"todos/sk-wf2-c03.md\", \"todos/sk-wf2-c04.md\", \"todos/sk-wf2-c05.md\", \"todos/sk-wf2-coord.md\", \"todos/sk-wf2-d01.md\", \"todos/sk-wf2-d02.md\", \"todos/sk-wf2-d03.md\", \"todos/sk-wf2-d04.md\", \"todos/sk-wf2-i20.md\", \"todos/sk-wf2-i40.md\", \"todos/sk-wf2-i60.md\", \"todos/sk-wf2-i90.md\", \"todos/sk-wf2-v02.md\", \"todos/sk-wf2-v03.md\", \"todos/sk-wf2-v04.md\", \"todos/sk-wf2-w01.md\", \"todos/sk-wf2-w02.md\", \"todos/sk-wf2-w03.md\", \"todos/sk-wf2-w04.md\", \"todos/sk-wf2-x01.md\", \"todos/sk-wf2-x02.md\", \"todos/sk-wf2-x03.md\", \"todos/sk-wf2a-0000.md\", \"todos/sk-wf2a-engines.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\"}, \"locks\": [], \"note\": \"Root acceptance binds candidate 494e5a012ac8d68d9c48741ea0fdbf9afd4436e0, 26 passing targeted retirement/supervisor/production tests, clean source diff, and a successful real cached llama-server observer-analysis smoke on the connected four-GPU topology. The response was explicitly non-authoritative and evidence-linked; resources were released.\", \"resources\": [], \"started_revision\": 874}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/cab45b70-0478-4af6-a34f-72db7fe5cf7e",
+        "revision": 875,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-30T13:28:18Z",
         "gate_id": "PCU-SK-20-DIFF",
         "id": "cadc8a3d-52b6-470c-b255-a58fc0e7a0e1",
@@ -12811,6 +12943,19 @@
       },
       {
         "checkpoint_id": null,
+        "config_json": "{\"accepted\": true, \"description\": \"Root records one evidence-bound acceptance for the complete outcome. Reuse actual targeted test output; this is not permission to skip testing or manufacture a pass.\", \"note\": \"Root acceptance binds candidate 494e5a012ac8d68d9c48741ea0fdbf9afd4436e0, 26 passing targeted retirement/supervisor/production tests, clean source diff, and a successful real cached llama-server observer-analysis smoke on the connected four-GPU topology. The response was explicitly non-authoritative and evidence-linked; resources were released.\"}",
+        "id": "SK-WF2A-ENGINES-ACCEPT",
+        "input_fingerprint": "9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad",
+        "last_run_at": "2026-09-13T11:05:47Z",
+        "required": 1,
+        "revision": 877,
+        "status": "passed",
+        "task_id": "SK-WF2A-ENGINES",
+        "type": "manual",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
         "config_json": "{\"argv\": [\"git\", \"diff\", \"--check\"], \"input_paths\": [\"workflow-unification/evidence/preflight.json\", \"workflow-unification/rollback.md\", \"workflow-unification-v3.plan.json\"]}",
         "id": "WFU-00-DIFF",
         "input_fingerprint": "1c606b9514cdd48a038dbb0e1a25b965e2a5873735bdebf9167d87ad180f8b82",
@@ -13706,6 +13851,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-09-13T11:05:47Z",
+        "id": "e734efef-971e-46be-8ddc-92d24ef72306",
+        "kind": "complete",
+        "note": "",
+        "payload_json": "{\"authority_commit\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\", \"completion_gates\": [{\"evidence_id\": \"cab45b70-0478-4af6-a34f-72db7fe5cf7e\", \"evidence_revision\": 875, \"id\": \"SK-WF2A-ENGINES-ACCEPT\", \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\"}], \"completion_revision\": 876, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-WF2A-ENGINES-ACCEPT\", \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"last_run_at\": \"2026-09-13T11:05:47Z\", \"revision\": 875, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 467 +++++++++++++++++++++++++++++++--\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n todos/sk-wf2-0000.md                   |   2 +\\n todos/sk-wf2-c01.md                    |   2 +\\n todos/sk-wf2-c02.md                    |   2 +\\n todos/sk-wf2-c03.md                    |   2 +\\n todos/sk-wf2-c04.md                    |   2 +\\n todos/sk-wf2-c05.md                    |   2 +\\n todos/sk-wf2-coord.md                  |   4 +-\\n todos/sk-wf2-d01.md                    |   2 +\\n todos/sk-wf2-d02.md                    |   2 +\\n todos/sk-wf2-d03.md                    |   2 +\\n todos/sk-wf2-d04.md                    |   2 +\\n todos/sk-wf2-i20.md                    |   2 +\\n todos/sk-wf2-i40.md                    |   2 +\\n todos/sk-wf2-i60.md                    |   2 +\\n todos/sk-wf2-i90.md                    |   2 +\\n todos/sk-wf2-v02.md                    |   2 +\\n todos/sk-wf2-v03.md                    |   2 +\\n todos/sk-wf2-v04.md                    |   2 +\\n todos/sk-wf2-w01.md                    |   2 +\\n todos/sk-wf2-w02.md                    |   2 +\\n todos/sk-wf2-w03.md                    |   2 +\\n todos/sk-wf2-w04.md                    |   2 +\\n todos/sk-wf2-x01.md                    |   2 +\\n todos/sk-wf2-x02.md                    |   2 +\\n todos/sk-wf2-x03.md                    |   2 +\\n 28 files changed, 506 insertions(+), 25 deletions(-)\", \"git_head\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"\", \"producer_commit\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-WF2A-ENGINES\"}",
+        "revision": 876,
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-27T10:50:50Z",
         "id": "e889b9b9-343c-40d0-a541-8b731f152524",
         "kind": "complete",
@@ -14128,6 +14283,48 @@
         "enforcement": null,
         "id": "SK-WF2-INV-TOKEN-COVERAGE",
         "rule": "Budget the full response, preserve mandatory identity/coverage/security warnings and provide exact expansion routes. Smaller output is not license to hide contradictory evidence.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-FAST-ADAPTIVE",
+        "rule": "Optimize end-to-end usage and elapsed work, not task counts or process compliance. Decompose internally; select approaches using current evidence. No default parallel heads.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-PRESERVE-EVIDENCE",
+        "rule": "Preserve historical semantic records, identifiers, outcomes, evidence and source. Do not rewrite completed work or invalidate unrelated project epics.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-READ-BOUNDARY",
+        "rule": "Observer remains project/workflow/source read-only. Optional local analysis receives immutable packets without tools; app-private bounded compute is not mutation authority.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-SEPARATE-ENGINES",
+        "rule": "Keep ctxpp and CUDA independent. Do not absorb the writable local-worker controller. Remove topology-shape prohibition without removing resource conflict or preemption safety.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-SINGLE-AUTHORITY",
+        "rule": "Only the canonical Project Control workflow kernel performs workflow transactions. Root owns privileged lifecycle; workers produce bounded implementation and evidence.",
+        "scope_json": "{}",
+        "severity": "error"
+      },
+      {
+        "enforcement": null,
+        "id": "SK-WF2A-INV-TRUTH",
+        "rule": "Never report unrun tests, unobserved executor identities, unintegrated commits, deferred optional features or heuristic summaries as verified authoritative success.",
         "scope_json": "{}",
         "severity": "error"
       },
@@ -16042,6 +16239,61 @@
       },
       {
         "mode": "exclusive",
+        "path": "AGENTS.md",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "coding-workflow",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler/scripts",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler/tests",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/scripts",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/tests",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/workflow_foundation_v2",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/wf2a_consumers",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "mode": "exclusive",
         "path": ".todo-orchestrator/state.snapshot.json",
         "task_id": "WFU-00"
       },
@@ -17332,6 +17584,19 @@
         "validation_git_head": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7"
       },
       {
+        "completion_git_head": "494e5a012ac8d68d9c48741ea0fdbf9afd4436e0",
+        "completion_revision": 876,
+        "evidence_id": "cab45b70-0478-4af6-a34f-72db7fe5cf7e",
+        "evidence_revision": 875,
+        "gate_id": "SK-WF2A-ENGINES-ACCEPT",
+        "input_fingerprint": "9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad",
+        "provenance_json": "{\"claim_id\": \"adadb9a3-923b-48ad-9d01-69879ef7d241\", \"evidence_content_hash\": null, \"evidence_kind\": \"manual\", \"evidence_metadata\": {\"accepted\": true, \"input_fingerprint\": \"9dd5a551caae39afa344636b733c4c8f71e50df3295ab42960b3503b587b05ad\", \"inputs\": {\"command_contract\": {\"accepted\": true}, \"diff_fingerprint\": \"ed3c7b3221a848eb94549450344627401192c7f9d1a61294442de738be0aa19a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"todo-status.md\", \"todos.md\", \"todos/sk-wf2-0000.md\", \"todos/sk-wf2-c01.md\", \"todos/sk-wf2-c02.md\", \"todos/sk-wf2-c03.md\", \"todos/sk-wf2-c04.md\", \"todos/sk-wf2-c05.md\", \"todos/sk-wf2-coord.md\", \"todos/sk-wf2-d01.md\", \"todos/sk-wf2-d02.md\", \"todos/sk-wf2-d03.md\", \"todos/sk-wf2-d04.md\", \"todos/sk-wf2-i20.md\", \"todos/sk-wf2-i40.md\", \"todos/sk-wf2-i60.md\", \"todos/sk-wf2-i90.md\", \"todos/sk-wf2-v02.md\", \"todos/sk-wf2-v03.md\", \"todos/sk-wf2-v04.md\", \"todos/sk-wf2-w01.md\", \"todos/sk-wf2-w02.md\", \"todos/sk-wf2-w03.md\", \"todos/sk-wf2-w04.md\", \"todos/sk-wf2-x01.md\", \"todos/sk-wf2-x02.md\", \"todos/sk-wf2-x03.md\", \"todos/sk-wf2a-0000.md\", \"todos/sk-wf2a-engines.md\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"494e5a012ac8d68d9c48741ea0fdbf9afd4436e0\"}, \"locks\": [], \"note\": \"Root acceptance binds candidate 494e5a012ac8d68d9c48741ea0fdbf9afd4436e0, 26 passing targeted retirement/supervisor/production tests, clean source diff, and a successful real cached llama-server observer-analysis smoke on the connected four-GPU topology. The response was explicitly non-authoritative and evidence-linked; resources were released.\", \"resources\": [], \"started_revision\": 874}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/cab45b70-0478-4af6-a34f-72db7fe5cf7e\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-WF2A-ENGINES",
+        "valid": 1,
+        "validation_git_head": "494e5a012ac8d68d9c48741ea0fdbf9afd4436e0"
+      },
+      {
         "completion_git_head": "dbca6e65a84830b77f5cd01d74b7df18b536c0d4",
         "completion_revision": 139,
         "evidence_id": "f3da80bb-4977-4396-998e-3a86b12e7d37",
@@ -18531,6 +18796,28 @@
         "prerequisite_task_id": "SK-WF2-I60",
         "task_id": "SK-WF2-X03",
         "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 892,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-WF2A-ENGINES",
+        "task_id": "SK-WF2A-0000",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{\"operator\": \"equals\", \"value\": \"accepted\"}",
+        "decision_id": "SK-WF2A-PC-CANDIDATE",
+        "id": 893,
+        "interface_id": null,
+        "prerequisite_task_id": null,
+        "task_id": "SK-WF2A-ENGINES",
+        "type": "decision"
       }
     ],
     "task_invariants": [
@@ -20383,6 +20670,54 @@
         "task_id": "SK-WF2-X03"
       },
       {
+        "invariant_id": "SK-WF2A-INV-FAST-ADAPTIVE",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-PRESERVE-EVIDENCE",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-READ-BOUNDARY",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-SEPARATE-ENGINES",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-SINGLE-AUTHORITY",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-TRUTH",
+        "task_id": "SK-WF2A-0000"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-FAST-ADAPTIVE",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-PRESERVE-EVIDENCE",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-READ-BOUNDARY",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-SEPARATE-ENGINES",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-SINGLE-AUTHORITY",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "invariant_id": "SK-WF2A-INV-TRUTH",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
         "invariant_id": "WFU-PRESERVE-WORK",
         "task_id": "WFU-00"
       },
@@ -21664,14 +21999,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 900,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Workflow Foundation v2 \u2014 skills aggregate",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21764,14 +22099,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Expose read-only indexed ctxpp queries",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21789,14 +22124,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Remove opportunistic Todo imports from source identity",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21814,14 +22149,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Strengthen packet schemas and trust accounting",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21839,14 +22174,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Harden query publication and resource bounds",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21864,14 +22199,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 800,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Qualify independent consumers and publish the ctxpp API",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21889,14 +22224,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 900,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 798,
-        "status": "in_progress",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Coordinate the accepted program; close only after final local integration",
-        "updated_at": "2026-09-12T17:04:29Z",
-        "version": 2
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -21914,14 +22249,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Route source and artifact consumers through supported contracts",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21939,14 +22274,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Preserve host-wide admission and lease behavior",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21964,14 +22299,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Preserve subordinate worker acceptance semantics",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -21989,14 +22324,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Qualify consumers and resource failure paths",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22039,14 +22374,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Integrate and publish the standalone ctxpp contract",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22064,14 +22399,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Integrate forwarding shims and engine consumers",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22089,14 +22424,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Publish consumer-ready paired release acceptance",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22114,14 +22449,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Close Skills work after qualified deployment",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22164,14 +22499,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Test ctxpp with no workflow products installed",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22189,14 +22524,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Test forwarding shims and real consumer boundaries",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22214,14 +22549,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Verify final migration after the release switch",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22239,14 +22574,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Construct forwarding-only legacy entry points",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22264,14 +22599,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Qualify legacy import and command behavior",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22289,14 +22624,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Remove the maintained duplicate kernel from the new path",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22314,14 +22649,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Publish support-window and final removal criteria",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22339,14 +22674,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Import Project Control parity approval",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22364,14 +22699,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Import the supported new runtime interface",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -22389,14 +22724,64 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-WF2-0000",
         "priority": 500,
-        "result": null,
+        "result": "superseded",
         "result_policy_json": "{}",
-        "revision": 797,
-        "status": "planned",
+        "revision": 878,
+        "status": "superseded",
         "tags_json": "[]",
         "title": "Import actual deployment qualification",
-        "updated_at": "2026-09-12T16:36:32Z",
-        "version": 1
+        "updated_at": "2026-09-13T11:31:43Z",
+        "version": 2
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-09-13T10:42:05Z",
+        "id": "SK-WF2A-0000",
+        "kind": "epic",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.",
+        "notes": "Authoritative planning directives: planning/wf2-fast-amendment/AMENDMENT.md and matching proposed-todos sheet. Work profile is a checked sidecar until native support exists.",
+        "objective": "Roll up ENGINES acceptance, preserving independent ctxpp/CUDA behavior and legacy semantic evidence. No separate donor parity campaign.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 50,
+        "result": null,
+        "result_policy_json": "{}",
+        "revision": 877,
+        "status": "done",
+        "tags_json": "[\"wf2-fast-amendment\", \"outcome-oriented\"]",
+        "title": "Standalone engines compatible with unified Project Control",
+        "updated_at": "2026-09-13T11:06:29Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "494e5a012ac8d68d9c48741ea0fdbf9afd4436e0",
+        "completion_git_head": "494e5a012ac8d68d9c48741ea0fdbf9afd4436e0",
+        "completion_revision": 876,
+        "created_at": "2026-09-13T10:42:05Z",
+        "id": "SK-WF2A-ENGINES",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.",
+        "notes": "Authoritative planning directives: planning/wf2-fast-amendment/AMENDMENT.md and matching proposed-todos sheet. Work profile is a checked sidecar until native support exists.",
+        "objective": "Against a pinned Project Control CORE candidate, rewire only needed Todo-runtime consumers and CLI guidance to the unified core. Keep ctxpp standalone; remove the X-mode shape rejection while retaining reservations/preemption. Support the optional tool-less local-analysis path only by cheap reuse. Return one candidate-bound compatibility receipt.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": null,
+        "priority": 50,
+        "result": "implemented",
+        "result_policy_json": "{}",
+        "revision": 877,
+        "status": "done",
+        "tags_json": "[\"wf2-fast-amendment\", \"outcome-oriented\"]",
+        "title": "Adapt necessary consumers and retire obsolete runtime coupling",
+        "updated_at": "2026-09-13T11:06:29Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -24151,6 +24536,70 @@
         "version": 1
       },
       {
+        "content_hash": "31b5348f2d5fd492143cf1050fcf56ce1fed5a5df3aff3335669c605c4121c2b",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-WF2A-ENGINES\",\"SK-WF2A-0000\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-09-13T10:42:05Z",
+        "creation_revision": 869,
+        "id": "SK-WF2A-RUN-1:lane_brief:SK-WF2A-L-ROOT:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-WF2A-L-ROOT",
+        "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\"}",
+        "run_id": "SK-WF2A-RUN-1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "b6ad7b871aaf8ac60e05e2b101ed4f829bc385a8634a375fb7014e1fe051e6da",
+        "content_json": "{\"acceptance_conditions\":[\"Unified workflow/CLI and usable historical reads.\",\"Working conditional branches and economical MCP documentation/results.\",\"Bounded combined qualification and reversible cutover with old WF2 retirement recorded.\"],\"boundaries\":[\"This charter supersedes future execution requirements of old WF2, not its historical evidence.\",\"Root alone owns workspace/claim/gate/completion/recovery/integration authority.\",\"Do not dispatch old WF2 or unrelated project tasks.\",\"Default to no parallel heads and at most two useful implementation children; one is sufficient when cheaper.\",\"Local analysis is a bounded secondary option, not a dependency of core release.\"],\"glossary\":{\"task\":\"Durable outcome, not a script of agent steps\",\"worker\":\"Ephemeral implementation or investigation; not privileged workflow owner\"},\"invariants\":[\"Single workflow implementation; deterministic historical ledger readability; preserve source and completed evidence.\",\"No direct SQLite editing by scripts or agents outside the kernel.\",\"No default extra reviews, model bake-offs, fleet setup or exhaustive donor parity.\"],\"objective\":\"Deliver a fast, low-overhead adaptive Project Control for real Cellerator/GlassHelix development.\"}",
+        "created_at": "2026-09-13T10:42:05Z",
+        "creation_revision": 869,
+        "id": "SK-WF2A-RUN-1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"SK-WF2A-RUN-1\"}",
+        "run_id": "SK-WF2A-RUN-1",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "d9c57f944997e6a15ed29be1a604bb685d38dea574a37211d0d8a06def1ada3c",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.\",\"objective\":\"Roll up ENGINES acceptance, preserving independent ctxpp/CUDA behavior and legacy semantic evidence. No separate donor parity campaign.\",\"scope\":{\"exclusive_paths\":[]},\"tests\":[]}",
+        "created_at": "2026-09-13T10:42:05Z",
+        "creation_revision": 869,
+        "id": "SK-WF2A-RUN-1:task_brief:SK-WF2A-L-ROOT:SK-WF2A-0000:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-WF2A-L-ROOT",
+        "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\",\"task_id\":\"SK-WF2A-0000\"}",
+        "run_id": "SK-WF2A-RUN-1",
+        "superseded_by": null,
+        "task_id": "SK-WF2A-0000",
+        "version": 1
+      },
+      {
+        "content_hash": "4b0388d25447738e3252f2f7529e704d4e71d2035414f172f75c3501d0c584a6",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-WF2A-ENGINES-ACCEPT\"],\"next_action\":\"Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.\",\"objective\":\"Against a pinned Project Control CORE candidate, rewire only needed Todo-runtime consumers and CLI guidance to the unified core. Keep ctxpp standalone; remove the X-mode shape rejection while retaining reservations/preemption. Support the optional tool-less local-analysis path only by cheap reuse. Return one candidate-bound compatibility receipt.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator\",\"local-coding-worker\",\"cuda/scripts\",\"cuda/tests\",\"cpp-context-compiler/scripts\",\"cpp-context-compiler/tests\",\"integrations\",\"coding-workflow\",\"tests/wf2a_consumers\",\"docs/workflow_foundation_v2\",\"AGENTS.md\"]},\"tests\":[\"SK-WF2A-ENGINES-ACCEPT\"]}",
+        "created_at": "2026-09-13T10:42:05Z",
+        "creation_revision": 869,
+        "id": "SK-WF2A-RUN-1:task_brief:SK-WF2A-L-ROOT:SK-WF2A-ENGINES:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-WF2A-L-ROOT",
+        "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\",\"task_id\":\"SK-WF2A-ENGINES\"}",
+        "run_id": "SK-WF2A-RUN-1",
+        "superseded_by": null,
+        "task_id": "SK-WF2A-ENGINES",
+        "version": 1
+      },
+      {
         "content_hash": "f9b52262d4cb21d538cbfe05d3a2d31ec6adff97088c57f4c9e5ca2f992431c8",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"WFU-00\",\"WFU-01\",\"WFU-02\",\"WFU-10\",\"WFU-11\",\"WFU-12\",\"WFU-13\",\"WFU-14\",\"WFU-15\",\"WFU-16\",\"WFU-20\",\"WFU-21\",\"WFU-22\",\"WFU-23\",\"WFU-24\",\"WFU-25\",\"WFU-26\",\"WFU-27\",\"WFU-28\",\"WFU-29\",\"WFU-30\",\"WFU-31\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-08-27T14:03:52Z",
@@ -24877,112 +25326,112 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-C",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-C01"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-C",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-C02"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-C",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-C03"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-C",
         "position": 3,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-C04"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-C",
         "position": 4,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-C05"
       },
       {
-        "activated_at": "2026-09-12T17:04:29Z",
-        "completed_at": null,
+        "activated_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-COORD",
         "position": 0,
-        "revision": 798,
-        "state": "active",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-COORD"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-COORD",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-0000"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-D",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-D01"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-D",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-D02"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-D",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-D03"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-D",
         "position": 3,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-D04"
       },
       {
@@ -24997,42 +25446,42 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-I20"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-I40"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 3,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-I60"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-I",
         "position": 4,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-I90"
       },
       {
@@ -25047,103 +25496,123 @@
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-V",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-V02"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-V",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-V03"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-V",
         "position": 3,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-V04"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-W",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-W01"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-W",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-W02"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-W",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-W03"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-W",
         "position": 3,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-W04"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-X",
         "position": 0,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-X01"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-X",
         "position": 1,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-X02"
       },
       {
         "activated_at": null,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "enqueued_at": "2026-09-12T16:36:32Z",
         "lane_id": "SK-WF2-L-X",
         "position": 2,
-        "revision": 797,
-        "state": "queued",
+        "revision": 878,
+        "state": "skipped",
         "task_id": "SK-WF2-X03"
+      },
+      {
+        "activated_at": "2026-09-13T10:58:35Z",
+        "completed_at": "2026-09-13T11:05:47Z",
+        "enqueued_at": "2026-09-13T10:42:05Z",
+        "lane_id": "SK-WF2A-L-ROOT",
+        "position": 0,
+        "revision": 877,
+        "state": "completed",
+        "task_id": "SK-WF2A-ENGINES"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-09-13T10:42:05Z",
+        "lane_id": "SK-WF2A-L-ROOT",
+        "position": 1,
+        "revision": 877,
+        "state": "completed",
+        "task_id": "SK-WF2A-0000"
       },
       {
         "activated_at": null,
@@ -25576,11 +26045,11 @@
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-L-COORD",
         "parent_lane_id": null,
-        "revision": 798,
+        "revision": 870,
         "role": "coordinator",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "active",
-        "updated_at": "2026-09-12T17:04:29Z",
+        "state": "ready",
+        "updated_at": "2026-09-13T10:45:18Z",
         "workspace_mode": "read_shared"
       },
       {
@@ -25642,6 +26111,18 @@
         "state": "ready",
         "updated_at": "2026-09-12T16:36:32Z",
         "workspace_mode": "isolated_merge"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-09-13T10:42:05Z",
+        "id": "SK-WF2A-L-ROOT",
+        "parent_lane_id": null,
+        "revision": 877,
+        "role": "integrator",
+        "run_id": "SK-WF2A-RUN-1",
+        "state": "ready",
+        "updated_at": "2026-09-13T11:06:29Z",
+        "workspace_mode": "exclusive"
       },
       {
         "context_cursor": 0,
@@ -26001,6 +26482,20 @@
     ],
     "workflow_recovery_audit": [
       {
+        "actor_identity": "root_retirement",
+        "completed_at": "2026-09-13T11:31:43Z",
+        "created_at": "2026-09-13T11:31:43Z",
+        "id": "1bc401e6e5944b7389313e331c4ff9cf",
+        "lane_id": null,
+        "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "proposed_plan_json": "{\"dispositions\":{\"SK-WF2-0000\":\"superseded\",\"SK-WF2-C01\":\"superseded\",\"SK-WF2-C02\":\"superseded\",\"SK-WF2-C03\":\"superseded\",\"SK-WF2-C04\":\"superseded\",\"SK-WF2-C05\":\"superseded\",\"SK-WF2-COORD\":\"superseded\",\"SK-WF2-D01\":\"superseded\",\"SK-WF2-D02\":\"superseded\",\"SK-WF2-D03\":\"superseded\",\"SK-WF2-D04\":\"superseded\",\"SK-WF2-I20\":\"superseded\",\"SK-WF2-I40\":\"superseded\",\"SK-WF2-I60\":\"superseded\",\"SK-WF2-I90\":\"superseded\",\"SK-WF2-V02\":\"superseded\",\"SK-WF2-V03\":\"superseded\",\"SK-WF2-V04\":\"superseded\",\"SK-WF2-W01\":\"superseded\",\"SK-WF2-W02\":\"superseded\",\"SK-WF2-W03\":\"superseded\",\"SK-WF2-W04\":\"superseded\",\"SK-WF2-X01\":\"superseded\",\"SK-WF2-X02\":\"superseded\",\"SK-WF2-X03\":\"superseded\"},\"expected_fingerprint\":\"289f4f821a7f76cc46ea34115878c6f56cf35bd5a30b9d63a5a0ed5f904c99c8\",\"expected_project_uuid\":\"460468fe-ee72-4a64-a565-87cfec640d0c\",\"expected_revision\":877,\"expected_tasks\":{\"SK-WF2-0000\":{\"revision\":797,\"row_digest\":\"6ee82a17cc5bf5a7e80617cd079570185ee4ff56393a126b6fb7659a54136d23\",\"status\":\"planned\",\"version\":1},\"SK-WF2-C01\":{\"revision\":797,\"row_digest\":\"c5b54099b0f6602cc37ceeb996c29712133422b0c7e324006a3f55fe13adf04f\",\"status\":\"planned\",\"version\":1},\"SK-WF2-C02\":{\"revision\":797,\"row_digest\":\"b7dc218c89223b735d6ca26bf78e92dc69ddaa76e19dd97f34793b721dce3620\",\"status\":\"planned\",\"version\":1},\"SK-WF2-C03\":{\"revision\":797,\"row_digest\":\"5de3b9ae9133f53eeabe55adc290e63ac84f8d04d53c4c08dd9a2501a411e76e\",\"status\":\"planned\",\"version\":1},\"SK-WF2-C04\":{\"revision\":797,\"row_digest\":\"a3aed9680a4ed76af39307950b6868defa2457af3340baa67c206ac5b2c07d16\",\"status\":\"planned\",\"version\":1},\"SK-WF2-C05\":{\"revision\":797,\"row_digest\":\"eebcee8576e6c0c2669a8b722d78d865acff79cc5097ea74456bfe560841de30\",\"status\":\"planned\",\"version\":1},\"SK-WF2-COORD\":{\"revision\":798,\"row_digest\":\"fc2a0207d70b4fb5f2e8fa3fd77bcfd791c4bef564128f5ad6de65181fa0abe5\",\"status\":\"planned\",\"version\":2},\"SK-WF2-D01\":{\"revision\":797,\"row_digest\":\"34163bc0c2570442969a66ab628306f57969a02da3ea3ee9522e75d71e58722b\",\"status\":\"planned\",\"version\":1},\"SK-WF2-D02\":{\"revision\":797,\"row_digest\":\"62b3c0ecdb5ef9bc76aa9be5643e1637b1cc3e81305caaedad6c0fe1a9f19e45\",\"status\":\"planned\",\"version\":1},\"SK-WF2-D03\":{\"revision\":797,\"row_digest\":\"3abb4219ebfa9accdf7a260523fe9e470cec4936f11a6f58fe39600842793aad\",\"status\":\"planned\",\"version\":1},\"SK-WF2-D04\":{\"revision\":797,\"row_digest\":\"9487b0556ea7c02f3abaf8bb3225ab06ba1df4ebdb2df88bc5cbadd55dc9dc16\",\"status\":\"planned\",\"version\":1},\"SK-WF2-I20\":{\"revision\":797,\"row_digest\":\"a5c5373639b780f9d09d1e578081b2af0a0841add4971d76a42afc776ca576aa\",\"status\":\"planned\",\"version\":1},\"SK-WF2-I40\":{\"revision\":797,\"row_digest\":\"9c5a3e3f8d6871a9b97e198e7815f9ef84933f062e3481e19a8432d8ec978f1a\",\"status\":\"planned\",\"version\":1},\"SK-WF2-I60\":{\"revision\":797,\"row_digest\":\"6554b916008e16778c030a62c5446842b429e744397791fc3bfe77ea3778dca2\",\"status\":\"planned\",\"version\":1},\"SK-WF2-I90\":{\"revision\":797,\"row_digest\":\"165a70a4a00dc1eefd481f5a9b3b75f675f9545377de6eb0ad659ec7783458cd\",\"status\":\"planned\",\"version\":1},\"SK-WF2-V02\":{\"revision\":797,\"row_digest\":\"abfdcdf96ffe0fee697bda8522696b7083af80061dfd49cac841b956a59ac888\",\"status\":\"planned\",\"version\":1},\"SK-WF2-V03\":{\"revision\":797,\"row_digest\":\"33343347523ecc9a0d7d7d63588e572743d15cd4f2c833fd43564e4225d32e90\",\"status\":\"planned\",\"version\":1},\"SK-WF2-V04\":{\"revision\":797,\"row_digest\":\"14709fa71f2695b5efa4f725aab0413529aa62de92a18276a45ad396d0d8952c\",\"status\":\"planned\",\"version\":1},\"SK-WF2-W01\":{\"revision\":797,\"row_digest\":\"d158d0bfce72570eb49930beaee5389042aa6b34e69caa2c343ab7f9deee4c13\",\"status\":\"planned\",\"version\":1},\"SK-WF2-W02\":{\"revision\":797,\"row_digest\":\"6b47d25472d0228a6440c787517aa204b2066448c4243e40f9bfffc525b30215\",\"status\":\"planned\",\"version\":1},\"SK-WF2-W03\":{\"revision\":797,\"row_digest\":\"0e127e14b10c93f7b6c8d1366b2b7b8263666dbb35f4b842731e3007912d5ec2\",\"status\":\"planned\",\"version\":1},\"SK-WF2-W04\":{\"revision\":797,\"row_digest\":\"b23ef453e74fa19f3423e0bafac500aa8c596f68773bd702c1d3acf5c18502a1\",\"status\":\"planned\",\"version\":1},\"SK-WF2-X01\":{\"revision\":797,\"row_digest\":\"892a335f433326ae1ce3e742a58b74a536c3779e7d68471fdea282873686035e\",\"status\":\"planned\",\"version\":1},\"SK-WF2-X02\":{\"revision\":797,\"row_digest\":\"c8c33da7ac54c83fe55b9178dbf9c522780c2c594e5a79f8c8237a8828b296e4\",\"status\":\"planned\",\"version\":1},\"SK-WF2-X03\":{\"revision\":797,\"row_digest\":\"6f279ea2bb1ad971a675f963f6e2deb41d8a3f4955fc5814185233f00e2c6d53\",\"status\":\"planned\",\"version\":1}},\"reason\":\"WF2 Fast Amendment canonical retirement of exact unfinished original WF2 records after replacement qualification; preserve all terminal history and evidence.\",\"source_run_id\":\"SK-WF2-RUN-V1\",\"successor_run_id\":\"SK-WF2A-RUN-1\"}",
+        "reason": "WF2 Fast Amendment canonical retirement of exact unfinished original WF2 records after replacement qualification; preserve all terminal history and evidence.",
+        "result_json": "{\"changed\":true,\"changed_task_ids\":[\"SK-WF2-0000\",\"SK-WF2-C01\",\"SK-WF2-C02\",\"SK-WF2-C03\",\"SK-WF2-C04\",\"SK-WF2-C05\",\"SK-WF2-COORD\",\"SK-WF2-D01\",\"SK-WF2-D02\",\"SK-WF2-D03\",\"SK-WF2-D04\",\"SK-WF2-I20\",\"SK-WF2-I40\",\"SK-WF2-I60\",\"SK-WF2-I90\",\"SK-WF2-V02\",\"SK-WF2-V03\",\"SK-WF2-V04\",\"SK-WF2-W01\",\"SK-WF2-W02\",\"SK-WF2-W03\",\"SK-WF2-W04\",\"SK-WF2-X01\",\"SK-WF2-X02\",\"SK-WF2-X03\"],\"post_revision\":878,\"pre_revision\":877,\"preserved_task_ids\":[],\"reason\":\"WF2 Fast Amendment canonical retirement of exact unfinished original WF2 records after replacement qualification; preserve all terminal history and evidence.\",\"source_run_id\":\"SK-WF2-RUN-V1\",\"status\":\"retired\",\"successor_run_id\":\"SK-WF2A-RUN-1\"}",
+        "revision": 878,
+        "run_id": "SK-WF2-RUN-V1",
+        "task_id": null
+      },
+      {
         "actor_identity": "interactive-owner",
         "completed_at": "2026-08-30T15:14:48Z",
         "created_at": "2026-08-30T15:14:48Z",
@@ -26013,6 +26508,20 @@
         "revision": 658,
         "run_id": null,
         "task_id": "PCU-SK-22"
+      },
+      {
+        "actor_identity": "interactive-owner",
+        "completed_at": "2026-09-13T10:45:18Z",
+        "created_at": "2026-09-13T10:45:18Z",
+        "id": "ac2aecdc-6b71-45ad-8aeb-eea2c8a358ea",
+        "lane_id": null,
+        "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "proposed_plan_json": "{\"actions\":[{\"claim_id\":\"5125f932-268a-4ce5-ac03-15f070be53d7\",\"claim_transition\":{\"expires_at\":\"2026-09-12T19:05:22Z\",\"from\":\"active\",\"to\":\"expired_clean\"},\"id\":\"b45cb723-5c9c-4796-932c-c6adc7994c33\",\"kind\":\"expire_and_requeue_coordinator\",\"lane_id\":\"SK-WF2-L-COORD\",\"task_id\":\"SK-WF2-COORD\"}],\"authority_revision\":869,\"file_policy\":\"preserve_all_no_repository_mutation\",\"project_uuid\":\"460468fe-ee72-4a64-a565-87cfec640d0c\",\"status\":\"recovery_needed\",\"task_id\":\"SK-WF2-COORD\",\"warnings\":[]}",
+        "reason": "WF2 Fast Amendment START: release stale superseded coordinator ownership",
+        "result_json": "{\"actions_applied\":1,\"details\":[{\"id\":\"b45cb723-5c9c-4796-932c-c6adc7994c33\",\"kind\":\"expire_and_requeue_coordinator\",\"task_id\":\"SK-WF2-COORD\"}],\"dirty_tasks\":[],\"files_mutated\":false,\"project_uuid\":\"460468fe-ee72-4a64-a565-87cfec640d0c\",\"resume\":\"next_task\",\"status\":\"recovered\",\"task_id\":\"SK-WF2-COORD\"}",
+        "revision": 870,
+        "run_id": null,
+        "task_id": "SK-WF2-COORD"
       },
       {
         "actor_identity": "interactive-owner",
@@ -26283,6 +26792,16 @@
         "version": 1
       },
       {
+        "content_hash": "b6ad7b871aaf8ac60e05e2b101ed4f829bc385a8634a375fb7014e1fe051e6da",
+        "content_json": "{\"acceptance_conditions\":[\"Unified workflow/CLI and usable historical reads.\",\"Working conditional branches and economical MCP documentation/results.\",\"Bounded combined qualification and reversible cutover with old WF2 retirement recorded.\"],\"boundaries\":[\"This charter supersedes future execution requirements of old WF2, not its historical evidence.\",\"Root alone owns workspace/claim/gate/completion/recovery/integration authority.\",\"Do not dispatch old WF2 or unrelated project tasks.\",\"Default to no parallel heads and at most two useful implementation children; one is sufficient when cheaper.\",\"Local analysis is a bounded secondary option, not a dependency of core release.\"],\"glossary\":{\"task\":\"Durable outcome, not a script of agent steps\",\"worker\":\"Ephemeral implementation or investigation; not privileged workflow owner\"},\"invariants\":[\"Single workflow implementation; deterministic historical ledger readability; preserve source and completed evidence.\",\"No direct SQLite editing by scripts or agents outside the kernel.\",\"No default extra reviews, model bake-offs, fleet setup or exhaustive donor parity.\"],\"objective\":\"Deliver a fast, low-overhead adaptive Project Control for real Cellerator/GlassHelix development.\"}",
+        "created_at": "2026-09-13T10:42:05Z",
+        "creation_revision": 869,
+        "run_id": "SK-WF2A-RUN-1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "e737a3d0c80261286cbd1831d904a48c46fdcdf59ae1410928208093590121a1",
         "content_json": "{\"acceptance_conditions\":[],\"boundaries\":[\"Compatibility run normalized from plan schema v2\"],\"glossary\":{\"lane\":\"single serial compatibility lane\"},\"invariants\":[],\"objective\":\"Workflow Unification v3\"}",
         "created_at": "2026-08-27T14:03:52Z",
@@ -26316,13 +26835,23 @@
       },
       {
         "active_charter_version": 1,
-        "completed_at": null,
+        "completed_at": "2026-09-13T11:31:43Z",
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-RUN-V1",
-        "revision": 797,
+        "revision": 878,
         "root_task_id": "SK-WF2-0000",
+        "status": "cancelled",
+        "updated_at": "2026-09-13T11:31:43Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-09-13T10:42:05Z",
+        "id": "SK-WF2A-RUN-1",
+        "revision": 869,
+        "root_task_id": "SK-WF2A-0000",
         "status": "active",
-        "updated_at": "2026-09-12T16:36:32Z"
+        "updated_at": "2026-09-13T10:42:05Z"
       },
       {
         "active_charter_version": 1,
@@ -26356,22 +26885,22 @@
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination"
       },
       {
-        "artifact_kind": "commit",
-        "artifact_ref": "db44e3b26cbe50eeffc9b3392e0b566d0666fcb7",
-        "base_commit": "07fa81cdd82c15162234b035950d47c85d0ca675",
+        "artifact_kind": null,
+        "artifact_ref": null,
+        "base_commit": "b5644fda3e3a18b19492b397c706288abd97487a",
         "branch": "codex/sk-wf2-l-v",
         "cleanup_eligible": 0,
         "created_at": "2026-09-12T18:12:08Z",
-        "diff_hash": "fea993f45b3cfcc96e62510735b782e8fbbe4a0bff326c4b52a7950cbaf45feb",
+        "diff_hash": null,
         "id": "1f9c3366-c0cd-46df-adb9-c04ce6c9acd5",
-        "integration_task_id": "SK-WF2-I10",
+        "integration_task_id": "SK-WF2-I20",
         "lane_id": "SK-WF2-L-V",
-        "merge_result_json": "{\"gates\":[{\"evidence_id\":\"d78f9138-3c7a-4be3-9961-78ee246328c1\",\"evidence_revision\":864,\"gate_id\":\"SK-WF2-I10-G\",\"input_fingerprint\":\"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\",\"status\":\"passed\",\"valid\":true}],\"integrated_artifact\":{\"content_hash\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"kind\":\"commit\",\"patch_ref\":\"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/artifacts/integration-7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687.patch\",\"ref\":\"b5644fda3e3a18b19492b397c706288abd97487a\"},\"source_identity\":\"7c3fbaaee73645d58db8a7c220cbd9a2ec6bdd86f8c680007b4698c6f1a6b687\",\"state\":\"integrated\",\"wave_id\":\"cae8d62a-aee2-4b64-82b2-7c803d2fad29\",\"wave_members\":[\"cc075c88-bffc-40e2-84bb-488e7653eeab\",\"a401dd14-1dfe-4c69-aad5-ea332d7fdbe3\"]}",
+        "merge_result_json": "{}",
         "mode": "isolated_merge",
         "repository_identity": "4aa9533ca18a1b1acc93bd32b95d42cd3ef60772da973b9af57ecc542b402fd9",
         "run_id": "SK-WF2-RUN-V1",
-        "state": "integrated",
-        "updated_at": "2026-09-12T19:24:31Z",
+        "state": "active",
+        "updated_at": "2026-09-12T19:28:28Z",
         "worktree_path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-v"
       },
       {

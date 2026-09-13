@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-WF2-V02: Test ctxpp with no workflow products installed
 
-Task revision: `797`; current project revision is in `todo-status.md`.
+Task revision: `878`; current project revision is in `todo-status.md`.
 
 ## Objective
 Install/run the bounded query/packet contract in a clean isolated environment with a real C++ fixture. Include stale manifest, missing index, unsupported backend, tiny budget and changed source cases.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `superseded`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `superseded`
 
 ## Next Action
 Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-v02.md; verify live prerequisites and evidence before work.
