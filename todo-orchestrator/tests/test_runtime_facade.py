@@ -210,6 +210,20 @@ class RuntimeFacadeTests(unittest.TestCase):
         self.assertEqual(drained, [owner_id])
         self.assertTrue(self.facade.host.wait_for_quiescence(bundles[0]["resource_ids"], timeout_seconds=0.1))
 
+    def test_discovery_refresh_retires_stale_accelerator_ids(self) -> None:
+        self.facade.host.upsert([
+            {"id": "accelerator:synthetic", "kind": "accelerator", "tags": {"nvlink_domain": "ghost"}},
+        ])
+        live = [
+            {"id": "accelerator:GPU-live", "kind": "accelerator", "tags": {"nvlink_domain": "live"}},
+        ]
+        with mock.patch("todo_orchestrator.runtime.facade.discover_gpu_topology", return_value=live):
+            self.assertEqual(self.facade.host.discover_gpus(), live)
+        resources = {item["id"]: item for item in self.facade.host.list(kind="accelerator")}
+        self.assertFalse(resources["accelerator:synthetic"]["enabled"])
+        self.assertTrue(resources["accelerator:GPU-live"]["enabled"])
+        self.assertEqual(self.facade.host.compound_gpu_bundles(1)[0]["resource_ids"], ["accelerator:GPU-live"])
+
     def test_two_nvlink_pairs_share_pcie_roots_but_reserve_concurrently(self) -> None:
         self.facade.host.upsert([
             {"id": "accelerator:GPU-0", "kind": "accelerator", "tags": {"nvlink_domain": "0-2", "pcie_root": "root-0"}},

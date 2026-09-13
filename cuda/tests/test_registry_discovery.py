@@ -87,6 +87,7 @@ class RegistryDiscoveryTests(unittest.TestCase):
                 def result(self, _): return {"summary": {"provenance": {"source": {"commit": "abc"}}, "resource_samples": {"quiescence": {"state": "quiescent"}}}, "artifacts": [{"id": "artifact-1", "path": "/private/nope", "content_hash": "a" * 64, "kind": "stdout", "complete": True}]}
             class Host:
                 def upsert(self, _): pass
+                def replace(self, _kind, _resources): pass
                 def compound_gpu_bundles(self, _): return [{"resource_ids": ["accelerator:GPU-A"]}]
                 def conflicts(self, _): return []
             class Runtime:

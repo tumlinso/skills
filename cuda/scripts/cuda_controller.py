@@ -1219,7 +1219,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
     store.upsert_resources(facts)
-    runtime.host.upsert(facts)
+    runtime.host.replace("accelerator", facts)
     resources = spec.get("resources", {})
     requested = [str(item) for item in resources.get("gpu_uuids", [])] if isinstance(resources, dict) else []
     count = int(resources.get("gpus", 1)) if isinstance(resources, dict) else 1
@@ -1393,7 +1393,7 @@ def registered_foreground_probe(*, project_root: str | Path, campaign_id: str,
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
     store.upsert_resources(facts)
-    runtime.host.upsert(facts)
+    runtime.host.replace("accelerator", facts)
     resources = dict(spec["resources"])
     requested = [str(item) for item in resources.get("gpu_uuids", [])]
     count = int(resources["gpus"])
@@ -1582,7 +1582,7 @@ def arm_background(spec: dict[str, object]) -> dict[str, object]:
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
     store.upsert_resources(facts)
-    runtime_facade.host.upsert(facts)
+    runtime_facade.host.replace("accelerator", facts)
     store.set_meta("cuda-machine-facts", {"gpus": devices, "tools": {name: tool_version(name) for name in ("nvcc", "nsys", "ncu")}})
     runtime = dict(spec.get("_runtime", {}))
     provisional = str(spec.get("watch_id") or hashlib.sha256(json.dumps({"root": str(project), "watch": spec.get("watch", {})}, sort_keys=True).encode()).hexdigest()[:24])

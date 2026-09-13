@@ -134,6 +134,28 @@ class HostCoordinator:
         finally:
             connection.close()
 
+    def replace_resources(self, kind: str, resources: list[dict[str, object]]) -> None:
+        """Atomically refresh one discovered resource kind and retire stale IDs."""
+        connection = self._tx()
+        try:
+            now = time.time()
+            connection.execute("UPDATE host_resources SET enabled=0,updated_at=? WHERE kind=?", (now, kind))
+            for item in resources:
+                item_kind = str(item.get("kind", kind))
+                if item_kind != kind:
+                    raise ValueError("replacement resources must share one kind")
+                connection.execute(
+                    "INSERT INTO host_resources(id,kind,tags_json,enabled,updated_at) VALUES(?,?,?,?,?) "
+                    "ON CONFLICT(id) DO UPDATE SET kind=excluded.kind,tags_json=excluded.tags_json,enabled=excluded.enabled,updated_at=excluded.updated_at",
+                    (str(item["id"]), kind, canonical_json(item.get("tags", {})), int(item.get("enabled", True)), now),
+                )
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+
     def _sweep_locked(self, connection: sqlite3.Connection, stale_seconds: float = 30.0) -> None:
         cutoff = time.time() - stale_seconds
         for owner in connection.execute("SELECT * FROM host_owners WHERE state IN ('active','intent') AND heartbeat_at<?", (cutoff,)).fetchall():

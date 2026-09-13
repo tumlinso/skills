@@ -185,6 +185,21 @@ class HostResourceFacade:
             normalized.append({"id": item["id"], "kind": kind, "tags": tags, "enabled": bool(item.get("enabled", True))})
         self._coordinator.upsert_resources(normalized)
 
+    def replace(self, kind: str, resources: list[dict[str, object]]) -> None:
+        """Replace one runtime-discovered resource kind without retaining ghosts."""
+        if not isinstance(kind, str) or not kind:
+            raise ContractError("host resource kind must be non-empty")
+        normalized = []
+        for item in resources:
+            if not isinstance(item, dict) or not isinstance(item.get("id"), str) or not item["id"]:
+                raise ContractError("host resources require a non-empty id")
+            item_kind = item.get("kind", kind)
+            tags = item.get("tags", {})
+            if item_kind != kind or not isinstance(tags, dict):
+                raise ContractError("replacement resources must share one kind and valid tags")
+            normalized.append({"id": item["id"], "kind": kind, "tags": tags, "enabled": bool(item.get("enabled", True))})
+        self._coordinator.replace_resources(kind, normalized)
+
     def list(self, *, kind: str | None = None) -> list[dict[str, object]]:
         try:
             connection = self._coordinator.connect(readonly=True)
@@ -280,7 +295,7 @@ class HostResourceFacade:
 
     def discover_gpus(self) -> list[dict[str, object]]:
         resources = discover_gpu_topology()
-        self.upsert(resources)
+        self.replace("accelerator", resources)
         return resources
 
     def compound_gpu_bundles(self, count: int) -> list[dict[str, object]]:

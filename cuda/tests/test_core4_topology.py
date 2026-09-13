@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import sys
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SKILLS = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(SKILLS / "todo-orchestrator"))
@@ -24,7 +26,8 @@ class Core4TopologyTests(unittest.TestCase):
         self.assertEqual((tags["memory_free_mib"], tags["utilization_percent"]), ("15000", "2"))
 
     def test_bundle_order_prefers_numa_local_then_capacity_without_indices(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
+        with tempfile.TemporaryDirectory() as temporary, tempfile.TemporaryDirectory() as host_runtime, \
+             mock.patch.dict(os.environ, {"TODO_BACKGROUND_HOST_RUNTIME_DIR": host_runtime}):
             facade = RuntimeFacade(temporary)
             facade.host.upsert([
                 {"id": "accelerator:GPU-a", "tags": {"nvlink_domain": "island-a", "pcie_root": "r0", "numa_node": "0", "memory_free_mib": "12000", "utilization_percent": "2"}},
