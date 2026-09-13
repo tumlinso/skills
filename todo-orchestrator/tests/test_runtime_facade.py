@@ -222,7 +222,8 @@ class RuntimeFacadeTests(unittest.TestCase):
         resources = {item["id"]: item for item in self.facade.host.list(kind="accelerator")}
         self.assertFalse(resources["accelerator:synthetic"]["enabled"])
         self.assertTrue(resources["accelerator:GPU-live"]["enabled"])
-        self.assertEqual(self.facade.host.compound_gpu_bundles(1)[0]["resource_ids"], ["accelerator:GPU-live"])
+        bundles = self.facade.host.compound_gpu_bundles(1)
+        self.assertEqual([item["resource_ids"] for item in bundles], [["accelerator:GPU-live"]])
 
     def test_two_nvlink_pairs_share_pcie_roots_but_reserve_concurrently(self) -> None:
         self.facade.host.upsert([

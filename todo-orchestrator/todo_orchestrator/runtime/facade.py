@@ -301,7 +301,7 @@ class HostResourceFacade:
     def compound_gpu_bundles(self, count: int) -> list[dict[str, object]]:
         if count < 1:
             raise ContractError("GPU bundle count must be positive")
-        devices = self.list(kind="accelerator")
+        devices = [item for item in self.list(kind="accelerator") if item["enabled"]]
         groups: dict[str, list[dict[str, object]]] = {}
         for device in devices:
             domain = str(device["tags"].get("nvlink_domain", device["id"]))
