@@ -31,7 +31,9 @@ class SupervisorError(RuntimeError):
     pass
 
 
-def runtime_root() -> Path:
+def runtime_root(service_state_root: str | Path | None = None) -> Path:
+    if service_state_root is not None:
+        return Path(service_state_root).expanduser().resolve() / "runtime"
     override = os.environ.get("CORE4_SUPERVISOR_RUNTIME_DIR")
     if override:
         return Path(override).expanduser().resolve()
@@ -40,7 +42,9 @@ def runtime_root() -> Path:
             (Path("/tmp") / f"core4-local-worker-{os.getuid()}"))
 
 
-def state_root() -> Path:
+def state_root(service_state_root: str | Path | None = None) -> Path:
+    if service_state_root is not None:
+        return Path(service_state_root).expanduser().resolve() / "state"
     override = os.environ.get("CORE4_SUPERVISOR_STATE_DIR")
     if override:
         return Path(override).expanduser().resolve()
@@ -114,18 +118,31 @@ class _Admission:
 
 
 class ProductionBackend:
-    """Own a bounded, demand-driven pool of isolated llama model services."""
+    """Own a bounded, demand-driven pool of isolated llama model services.
 
-    def __init__(self, repo_root: str | Path, *, profile: dict[str, Any] | None = None,
+    Observer callers supply ``service_state_root`` for writable sidecars;
+    their observed repository stays inside the immutable evidence packet.
+    """
+
+    def __init__(self, repo_root: str | Path, *, service_state_root: str | Path | None = None,
+                 profile: dict[str, Any] | None = None,
                  cache: Any = None, runtime: Any = None, adapter: Any = None,
                  service: Any = None, topology_classifier: Any = None):
         self.repo_root = Path(repo_root).resolve()
+        self.service_state_root = (Path(service_state_root).expanduser().resolve()
+                                   if service_state_root is not None else None)
+        if self.service_state_root is not None:
+            _private_directory(self.service_state_root)
         skill_root = Path(__file__).resolve().parents[1]
         self.profile = profile or tomllib.loads(
             (skill_root / "config/production-profile.toml").read_text(encoding="utf-8")
         )
         storage = self.profile["storage"]
-        self.cache = cache or ModelCache(storage["cache_root"], storage["canonical_root"])
+        self.cache = cache or ModelCache(
+            storage["cache_root"], storage["canonical_root"],
+            lease_root=(self.service_state_root / "model-leases"
+                        if self.service_state_root is not None else None),
+        )
         if runtime is None:
             self.runtime_identity, self.runtime_context = bind_canonical_runtime(self.repo_root)
             from todo_orchestrator.runtime import RuntimeFacade, classify_local_worker_host_topology
@@ -155,6 +172,9 @@ class ProductionBackend:
         self.draining = False
         self.ttl = float(policy.get("hot_idle_seconds", 900))
         self.admission_ttl = 60.0
+
+    def _state_root(self) -> Path:
+        return state_root(self.service_state_root)
 
     def _candidate(self, candidate_id: str) -> dict[str, Any]:
         candidate = next((item for item in self.profile.get("candidates", []) if item.get("id") == candidate_id), None)
@@ -396,7 +416,7 @@ class ProductionBackend:
             "kv_cache_type_k": server.get("kv_cache_type_k"), "kv_cache_type_v": server.get("kv_cache_type_v"),
             "numa_policy": server.get("numa_policy"), "cpu_threads": server.get("cpu_threads"),
             "port": port, "startup_timeout_seconds": float(server["startup_timeout_seconds"]),
-            "idle_ttl_seconds": self.ttl, "log_path": str(state_root() / f"llama-server-{slot_id}.log"),
+            "idle_ttl_seconds": self.ttl, "log_path": str(self._state_root() / f"llama-server-{slot_id}.log"),
         }
         key_values = {
             "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
@@ -407,7 +427,7 @@ class ProductionBackend:
             "gpu_layers": service_profile["gpu_layers"], "numa_policy": service_profile["numa_policy"],
             "cpu_threads": service_profile["cpu_threads"],
         }
-        _private_directory(state_root())
+        _private_directory(self._state_root())
         log = Path(service_profile["log_path"])
         if log.exists() and log.stat().st_size > 4 * 1024 * 1024:
             rotated = log.with_suffix(".log.1")

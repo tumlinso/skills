@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 import subprocess
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from v2_helpers import ROOT, V2Repo, base_plan, safe_task
 
@@ -97,6 +99,21 @@ class TodoReadPortTests(unittest.TestCase):
         malformed = self.port.invoke("changes", repo_root=self.repo.root, arguments=("--claim-token", "secret"))
         self.assertEqual(denied["code"], "read_port_operation_denied")
         self.assertEqual(malformed["code"], "read_port_invalid_arguments")
+        self.assertEqual(self._authority(), before)
+
+    def test_sqlite_open_failure_is_bounded_without_path_leakage(self) -> None:
+        before = self._authority()
+        with patch.object(
+            TodoReadPort,
+            "_dispatch",
+            side_effect=sqlite3.OperationalError("unable to open database file /private/authority.sqlite3"),
+        ):
+            payload = self.port.invoke("status", repo_root=self.repo.root)
+        self.assertFalse(payload["ok"])
+        self.assertEqual(payload["code"], "database_open_failed")
+        self.assertEqual(payload["error"]["message"], "Todo SQLite read failed")
+        self.assertEqual(payload["error"]["details"], {"kind": "sqlite_operational"})
+        self.assertNotIn("/private", str(payload))
         self.assertEqual(self._authority(), before)
 
 

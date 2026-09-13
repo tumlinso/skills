@@ -84,6 +84,17 @@ class ModelCacheTests(unittest.TestCase):
                 self.cache.remove("candidate-b", digest)
         self.assertTrue(self.cache.remove("candidate-b", digest)["removed"])
 
+    def test_external_lease_root_preserves_read_only_payload_cache(self) -> None:
+        self.cache.install("candidate-a")
+        leases = self.root / "writable-service-state" / "leases"
+        cache = ModelCache(self.cache_root, self.cold, lease_root=leases)
+        with cache.lease("candidate-a", self.digest, "service-1"):
+            self.assertTrue(list(leases.rglob("service-1.json")))
+            self.assertFalse((self.cache_root / ".leases").exists())
+            with self.assertRaisesRegex(ModelCacheError, "leased"):
+                cache.remove("candidate-a", self.digest)
+        self.assertTrue(cache.remove("candidate-a", self.digest)["removed"])
+
     def test_install_reports_exact_space_deficit_with_margin(self) -> None:
         usage = shutil._ntuple_diskusage(total=1000, used=999, free=1)
         with mock.patch("local_worker.model_cache.shutil.disk_usage", return_value=usage):

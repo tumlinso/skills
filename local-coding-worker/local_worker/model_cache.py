@@ -51,11 +51,16 @@ def _atomic_json(path: Path, value: object) -> None:
 
 
 class ModelCache:
-    def __init__(self, cache_root: str | Path, cold_root: str | Path):
+    def __init__(self, cache_root: str | Path, cold_root: str | Path,
+                 *, lease_root: str | Path | None = None):
         self.root = Path(cache_root).expanduser().resolve()
         self.cold_root = Path(cold_root).expanduser().resolve()
+        self.lease_root = (Path(lease_root).expanduser().resolve()
+                           if lease_root is not None else self.root / ".leases")
         if self.root == self.cold_root or self.root in self.cold_root.parents or self.cold_root in self.root.parents:
             raise ModelCacheError("cache and cold roots must not overlap")
+        if self.lease_root == self.root or self.lease_root == self.cold_root:
+            raise ModelCacheError("lease root must be distinct from model roots")
 
     @contextlib.contextmanager
     def _locked(self) -> Iterator[None]:
@@ -234,7 +239,7 @@ class ModelCache:
             active = self.active()
             if active and active.get("candidate_id") == candidate_id and active.get("payload_sha256") == payload_sha256:
                 raise ModelCacheError("refusing to remove the active payload")
-            lease_dir = self.root / ".leases" / candidate_id / payload_sha256
+            lease_dir = self.lease_root / candidate_id / payload_sha256
             if lease_dir.is_dir() and any(lease_dir.iterdir()):
                 raise ModelCacheError("refusing to remove a leased payload")
             if directory.exists():
@@ -244,7 +249,7 @@ class ModelCache:
     @contextlib.contextmanager
     def lease(self, candidate_id: str, payload_sha256: str, owner_id: str) -> Iterator[Path]:
         result = self.verify(candidate_id, payload_sha256, full=False)
-        marker = self.root / ".leases" / candidate_id / payload_sha256 / f"{owner_id}.json"
+        marker = self.lease_root / candidate_id / payload_sha256 / f"{owner_id}.json"
         _atomic_json(marker, {"owner_id": owner_id, "payload_sha256": payload_sha256})
         try:
             yield Path(str(result["payload_path"]))

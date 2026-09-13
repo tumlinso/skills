@@ -8,6 +8,7 @@ and every database-backed call opens the authority in SQLite read-only mode.
 from __future__ import annotations
 
 import hashlib
+import sqlite3
 from pathlib import Path
 from typing import Callable, Mapping, Sequence
 
@@ -133,6 +134,21 @@ class TodoReadPort:
                 ok=False,
                 code=exc.code,
                 error={"message": exc.message, "details": exc.details},
+            )
+        except sqlite3.OperationalError as exc:
+            # Keep the public port diagnostic useful without leaking an
+            # authority path from SQLite's exception text.  Project Control
+            # maps these stable codes into its component diagnostics.
+            message = str(exc).lower()
+            code = (
+                "database_open_failed"
+                if "unable to open database file" in message
+                else "database_read_failed"
+            )
+            return envelope(
+                ok=False,
+                code=code,
+                error={"message": "Todo SQLite read failed", "details": {"kind": "sqlite_operational"}},
             )
         except Exception as exc:
             return envelope(

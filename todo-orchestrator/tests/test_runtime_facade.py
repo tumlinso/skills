@@ -210,6 +210,73 @@ class RuntimeFacadeTests(unittest.TestCase):
         self.assertEqual(drained, [owner_id])
         self.assertTrue(self.facade.host.wait_for_quiescence(bundles[0]["resource_ids"], timeout_seconds=0.1))
 
+    def test_two_nvlink_pairs_share_pcie_roots_but_reserve_concurrently(self) -> None:
+        self.facade.host.upsert([
+            {"id": "accelerator:GPU-0", "kind": "accelerator", "tags": {"nvlink_domain": "0-2", "pcie_root": "root-0"}},
+            {"id": "accelerator:GPU-1", "kind": "accelerator", "tags": {"nvlink_domain": "1-3", "pcie_root": "root-0"}},
+            {"id": "accelerator:GPU-2", "kind": "accelerator", "tags": {"nvlink_domain": "0-2", "pcie_root": "root-1"}},
+            {"id": "accelerator:GPU-3", "kind": "accelerator", "tags": {"nvlink_domain": "1-3", "pcie_root": "root-1"}},
+        ])
+        bundles = self.facade.host.compound_gpu_bundles(2)
+        self.assertEqual(
+            {tuple(item["resource_ids"]) for item in bundles},
+            {("accelerator:GPU-0", "accelerator:GPU-2"), ("accelerator:GPU-1", "accelerator:GPU-3")},
+        )
+        first, second = bundles
+        self.assertTrue(all(not item.startswith("interference:pcie:") for item in first["exclusive_resources"]))
+        left = self.facade.host.reserve_service(
+            project_root=self.root, service_id="pair-left",
+            resource_request={"schema_version": 1, "ids": first["resource_ids"], "exclusive_resources": first["exclusive_resources"]},
+        )
+        right = self.facade.host.reserve_service(
+            project_root=self.root, service_id="pair-right",
+            resource_request={"schema_version": 1, "ids": second["resource_ids"], "exclusive_resources": second["exclusive_resources"]},
+        )
+        self.assertIsNotNone(left)
+        self.assertIsNotNone(right)
+        self.assertIsNone(self.facade.host.reserve_service(
+            project_root=self.root, service_id="pair-overlap",
+            resource_request={"schema_version": 1, "ids": first["resource_ids"], "exclusive_resources": first["exclusive_resources"]},
+        ))
+
+    def test_singleton_disjoint_gpus_on_same_pcie_root_coexist(self) -> None:
+        self.facade.host.upsert([
+            {"id": "accelerator:GPU-a", "kind": "accelerator", "tags": {"nvlink_domain": "synthetic-a", "pcie_root": "root-0"}},
+            {"id": "accelerator:GPU-b", "kind": "accelerator", "tags": {"nvlink_domain": "synthetic-b", "pcie_root": "root-0"}},
+        ])
+        bundles = self.facade.host.compound_gpu_bundles(1)
+        self.assertTrue(all(
+            not resource.startswith("interference:pcie:")
+            for bundle in bundles for resource in bundle["exclusive_resources"]
+        ))
+        first, second = bundles
+        left = self.facade.host.reserve_service(
+            project_root=self.root, service_id="singleton-left",
+            resource_request={"schema_version": 1, "ids": first["resource_ids"], "exclusive_resources": first["exclusive_resources"]},
+        )
+        self.assertIsNotNone(left)
+        self.assertIsNotNone(self.facade.host.reserve_service(
+            project_root=self.root, service_id="singleton-right",
+            resource_request={"schema_version": 1, "ids": second["resource_ids"], "exclusive_resources": second["exclusive_resources"]},
+        ))
+
+    def test_disjoint_gpus_in_same_nvlink_domain_conflict(self) -> None:
+        self.facade.host.upsert([
+            {"id": "accelerator:GPU-a", "kind": "accelerator", "tags": {"nvlink_domain": "shared", "pcie_root": "root-0"}},
+            {"id": "accelerator:GPU-b", "kind": "accelerator", "tags": {"nvlink_domain": "shared", "pcie_root": "root-1"}},
+        ])
+        bundles = self.facade.host.compound_gpu_bundles(1)
+        first, second = bundles
+        left = self.facade.host.reserve_service(
+            project_root=self.root, service_id="shared-left",
+            resource_request={"schema_version": 1, "ids": first["resource_ids"], "exclusive_resources": first["exclusive_resources"]},
+        )
+        self.assertIsNotNone(left)
+        self.assertIsNone(self.facade.host.reserve_service(
+            project_root=self.root, service_id="shared-right",
+            resource_request={"schema_version": 1, "ids": second["resource_ids"], "exclusive_resources": second["exclusive_resources"]},
+        ))
+
     def test_topology_discovery_derives_islands_from_runtime_output(self) -> None:
         outputs = iter([
             "0, GPU-a, 00000000:07:00.0\n1, GPU-b, 00000000:08:00.0\n2, GPU-c, 00000000:80:00.0\n",

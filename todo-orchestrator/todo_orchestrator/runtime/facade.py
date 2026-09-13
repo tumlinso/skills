@@ -297,13 +297,13 @@ class HostResourceFacade:
         bundles = []
         for combo in candidates:
             ids = sorted(str(item["id"]) for item in combo)
-            exclusive = sorted({
+            # GPU IDs provide exact ownership and NVLink domains protect a
+            # shared fabric.  PCIe-root topology is informative only: it is
+            # not an interference domain for bundle reservations.
+            exclusive = {
                 f"interference:nvlink:{item['tags']['nvlink_domain']}"
                 for item in combo if item["tags"].get("nvlink_domain")
-            } | {
-                f"interference:pcie:{item['tags']['pcie_root']}"
-                for item in combo if item["tags"].get("pcie_root")
-            })
+            }
             numa_nodes = {str(item["tags"].get("numa_node", "unknown")) for item in combo}
             local_numa = len(numa_nodes) == 1 and "unknown" not in numa_nodes
             free_memory = sum(
@@ -316,7 +316,7 @@ class HostResourceFacade:
             )
             if not self.conflicts([*ids, *exclusive]):
                 bundles.append({
-                    "resource_ids": ids, "exclusive_resources": exclusive,
+                    "resource_ids": ids, "exclusive_resources": sorted(exclusive),
                     "selection": {"numa_local": local_numa, "numa_nodes": sorted(numa_nodes),
                                   "memory_free_mib": free_memory, "utilization_percent_sum": utilization},
                 })

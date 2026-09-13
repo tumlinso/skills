@@ -14,7 +14,7 @@ SKILL = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(SKILL))
 
-from local_worker.supervisor import ProductionBackend, SupervisorClient, SupervisorError, SupervisorServer
+from local_worker.supervisor import ProductionBackend, SupervisorClient, SupervisorError, SupervisorServer, runtime_root
 
 
 class FakeBackend:
@@ -268,6 +268,27 @@ class _PoolBackend(ProductionBackend):
 
 
 class ServicePoolTests(unittest.TestCase):
+    def test_backend_creates_its_private_runtime_namespace(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            namespace = Path(temporary) / "app" / "observer-analysis"
+            _PoolBackend("/read-only-observed-repository", service_state_root=namespace,
+                         profile=_profile(maximum=1), cache=_Cache(),
+                         runtime=_Runtime(), adapter=_Adapter(), service=_Service(),
+                         topology_classifier=lambda: SimpleNamespace(mode="x_mode", status="available"))
+            self.assertTrue(namespace.is_dir())
+            self.assertEqual(namespace.stat().st_mode & 0o777, 0o700)
+
+    def test_observer_service_state_owns_logs_and_model_leases(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            namespace = Path(temporary) / "observer-service"
+            backend = _PoolBackend("/read-only-observed-repository", service_state_root=namespace,
+                                   profile=_profile(maximum=1), cache=_Cache(), runtime=_Runtime(),
+                                   adapter=_Adapter(), service=_Service(),
+                                   topology_classifier=lambda: SimpleNamespace(mode="x_mode", status="available"))
+            self.assertEqual(backend._state_root(), namespace / "state")
+            self.assertEqual(backend.service_state_root, namespace)
+            self.assertEqual(runtime_root(namespace), namespace / "runtime")
+
     def backend(self, *, islands=2, maximum=2, ttl=900, service=None):
         runtime = _Runtime(islands=islands)
         service = service or _Service()
@@ -345,6 +366,15 @@ class ServicePoolTests(unittest.TestCase):
         with self.assertRaisesRegex(SupervisorError, "resource_unavailable.*retryable"):
             backend.warm()
         self.assertEqual(service.starts, 2)
+        backend.close()
+
+    def test_two_concurrent_services_reserve_the_two_disjoint_nvlink_pairs(self):
+        backend, _, _ = self.backend()
+        first, second = backend.warm(), backend.warm()
+        self.assertEqual(
+            {frozenset(first["gpu_uuids"]), frozenset(second["gpu_uuids"])},
+            {frozenset({"GPU-a", "GPU-b"}), frozenset({"GPU-c", "GPU-d"})},
+        )
         backend.close()
 
     def test_admission_reserves_capacity_before_model_or_service_start(self):
