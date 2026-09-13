@@ -489,7 +489,8 @@ class ServicePoolTests(unittest.TestCase):
         result = backend.run_observer_turn(request)
         self.assertEqual(result, {"status": "available", "authoritative": False,
                                   "text": '{"action":"answer"}',
-                                  "usage": {"completion_tokens": 7}, "provider": "llama-server"})
+                                  "usage": {"completion_tokens": 7}, "provider": "llama-server",
+                                  "warm_model_reused": False})
         self.assertEqual(service.requests[0][2], {"messages": request["messages"],
                                                    "max_tokens": 256, "timeout_seconds": 20.0})
         self.assertEqual(backend.status()["active_leases"], 0)

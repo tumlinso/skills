@@ -583,7 +583,7 @@ class ProductionBackend:
                     usage = raw.get("usage")
                     return {"status": "available", "authoritative": False,
                             "text": raw["text"], "usage": usage if isinstance(usage, dict) else {},
-                            "provider": "llama-server"}
+                            "provider": "llama-server", "warm_model_reused": bool(lease.get("reused"))}
                 finally:
                     if lease is not None:
                         self.release(str(lease["service_lease_id"]))
