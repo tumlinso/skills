@@ -14,7 +14,7 @@ SKILL = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(SKILL))
 
-from local_worker.supervisor import ProductionBackend, SupervisorClient, SupervisorError, SupervisorServer, runtime_root
+from local_worker.supervisor import AdapterError, ProductionBackend, SupervisorClient, SupervisorError, SupervisorServer, runtime_root
 
 
 class FakeBackend:
@@ -220,7 +220,7 @@ class _Adapter:
 
 
 class _Service:
-    def __init__(self, *, fail_start=0, delay=0.0):
+    def __init__(self, *, fail_start=0, delay=0.0, fail_run=False):
         self.handles = {}
         self.starts = 0
         self.fail_start = fail_start
@@ -228,6 +228,8 @@ class _Service:
         self.loading = 0
         self.maximum_loading = 0
         self.lock = threading.Lock()
+        self.fail_run = fail_run
+        self.requests = []
 
     def start(self, name, context):
         with self.lock:
@@ -245,6 +247,11 @@ class _Service:
             with self.lock: self.loading -= 1
 
     def health(self, name, handle): return {"healthy": self.handles.get(handle, False)}
+    def run(self, name, handle, request):
+        self.requests.append((name, handle, request))
+        if self.fail_run:
+            raise AdapterError("fixture run failure")
+        return {"text": '{"action":"answer"}', "usage": {"completion_tokens": 7}}
     def drain(self, name, handle): return {"draining": True}
     def evict(self, name, handle): self.handles[handle] = False; return {"evicted": True}
 
@@ -459,6 +466,62 @@ class ServicePoolTests(unittest.TestCase):
             backend.warm()
         backend.release(first["service_lease_id"])
         self.assertTrue(backend.warm()["reused"])
+        backend.close()
+
+    def test_observer_turn_rejects_non_text_protocol_fields_before_admission(self):
+        backend, runtime, service = self.backend()
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+            {"role": "system", "content": "investigate"},
+        ], "max_tokens": 128, "timeout_seconds": 30, "tools": []}
+        result = backend.run_observer_turn(request)
+        self.assertEqual(result["status"], "unavailable")
+        self.assertEqual(result["reason"], "investigator_turn_invalid_request")
+        self.assertEqual((service.starts, runtime.host.owners), (0, {}))
+        backend.close()
+
+    def test_observer_turn_forwards_only_text_messages_and_releases_lease(self):
+        backend, _, service = self.backend()
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+            {"role": "system", "content": "system prompt"},
+            {"role": "user", "content": "evidence E-1"},
+            {"role": "assistant", "content": "{\"action\":\"search_source\"}"},
+        ], "max_tokens": 256, "timeout_seconds": 20}
+        result = backend.run_observer_turn(request)
+        self.assertEqual(result, {"status": "available", "authoritative": False,
+                                  "text": '{"action":"answer"}',
+                                  "usage": {"completion_tokens": 7}, "provider": "llama-server"})
+        self.assertEqual(service.requests[0][2], {"messages": request["messages"],
+                                                   "max_tokens": 256, "timeout_seconds": 20.0})
+        self.assertEqual(backend.status()["active_leases"], 0)
+        backend.close()
+
+    def test_observer_turn_cancels_admission_and_releases_on_errors(self):
+        backend, runtime, service = self.backend(service=_Service(fail_run=True))
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+            {"role": "user", "content": "question"},
+        ], "max_tokens": 128, "timeout_seconds": 15}
+        failed_run = backend.run_observer_turn(request)
+        self.assertEqual((failed_run["status"], backend.status()["active_leases"]), ("unavailable", 0))
+        self.assertEqual(backend.status()["active_admissions"], 0)
+        owners_before_warm_failure = dict(runtime.host.owners)
+        with mock.patch.object(backend, "warm", side_effect=SupervisorError("fixture warm failure")):
+            failed_warm = backend.run_observer_turn(request)
+        self.assertEqual(failed_warm["status"], "unavailable")
+        self.assertEqual(backend.status()["active_admissions"], 0)
+        self.assertEqual(runtime.host.owners, owners_before_warm_failure)
+        backend.close()
+
+    def test_observer_turn_busy_returns_unavailable_without_admission(self):
+        backend, runtime, service = self.backend()
+        backend._analysis_lock.acquire()
+        try:
+            result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+                {"role": "user", "content": "question"},
+            ], "max_tokens": 64, "timeout_seconds": 10})
+        finally:
+            backend._analysis_lock.release()
+        self.assertEqual((result["status"], result["reason"]), ("unavailable", "observer_provider_busy"))
+        self.assertEqual((service.starts, runtime.host.owners), (0, {}))
         backend.close()
 
 

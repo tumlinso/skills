@@ -533,6 +533,68 @@ class ProductionBackend:
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
                     "reason": str(error)[:500], "fallback": "authoritative_compact_envelope"}
 
+    def run_observer_turn(self, request: dict[str, Any]) -> dict[str, Any]:
+        """Run one broker-authorized investigator turn against the local model.
+
+        This is deliberately a text-only transport.  Project Control owns the
+        investigation loop and turns any model read request into bounded,
+        evidence-labelled text before it reaches this method.
+        """
+        try:
+            if not isinstance(request, dict):
+                raise SupervisorError("investigator_turn_invalid_request")
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds"}
+            if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/1":
+                raise SupervisorError("investigator_turn_invalid_request")
+            messages = request.get("messages")
+            max_tokens = request.get("max_tokens")
+            timeout_seconds = request.get("timeout_seconds")
+            if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
+                    isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
+                    not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
+                    not isinstance(timeout_seconds, (int, float)) or
+                    not 1 <= float(timeout_seconds) <= 90):
+                raise SupervisorError("investigator_turn_invalid_request")
+            normalized: list[dict[str, str]] = []
+            for message in messages:
+                if (not isinstance(message, dict) or set(message) != {"role", "content"} or
+                        message.get("role") not in {"system", "user", "assistant"} or
+                        not isinstance(message.get("content"), str)):
+                    raise SupervisorError("investigator_turn_invalid_messages")
+                normalized.append({"role": message["role"], "content": message["content"]})
+            encoded = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
+            if len(encoded.encode("utf-8")) > 96 * 1024:
+                raise SupervisorError("investigator_turn_messages_too_large")
+            if not self._analysis_lock.acquire(blocking=False):
+                raise SupervisorError("observer_provider_busy")
+            try:
+                admission = self.admit()
+                lease: dict[str, Any] | None = None
+                try:
+                    lease = self.warm(str(admission["admission_id"]))
+                    slot = self._slots[str(lease["slot_id"])]
+                    raw = self.service.run("llama", slot.handle, {
+                        "messages": normalized,
+                        "max_tokens": max_tokens,
+                        "timeout_seconds": float(timeout_seconds),
+                    })
+                    if not isinstance(raw, dict) or not isinstance(raw.get("text"), str):
+                        raise SupervisorError("investigator_provider_malformed_output")
+                    usage = raw.get("usage")
+                    return {"status": "available", "authoritative": False,
+                            "text": raw["text"], "usage": usage if isinstance(usage, dict) else {},
+                            "provider": "llama-server"}
+                finally:
+                    if lease is not None:
+                        self.release(str(lease["service_lease_id"]))
+                    else:
+                        self.cancel_admission(str(admission["admission_id"]))
+            finally:
+                self._analysis_lock.release()
+        except (SupervisorError, AdapterError) as error:
+            return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
+                    "reason": str(error)[:500], "fallback": "project_control_read_broker"}
+
     def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]:
         if service_lease_id in self._preempted_leases:
             self._preempted_leases.discard(service_lease_id)
