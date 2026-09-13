@@ -43,7 +43,7 @@ from todo_orchestrator.runtime import RuntimeFacade  # noqa: E402
 
 from cuda_guidance import retrieve  # noqa: E402
 from cuda_discovery import discover_campaigns  # noqa: E402
-from cuda_registry import load_registry  # noqa: E402
+from cuda_registry import RegistryError, campaign_probe_spec, load_registry  # noqa: E402
 from cuda_baselines import (  # noqa: E402
     adaptive_correctness_target,
     comparison_percent,
@@ -1211,7 +1211,10 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
         if not binary.is_relative_to(project) or not binary.is_file():
             raise ValueError("binary_paths must identify existing project files")
         binaries.append({"path": str(binary), "sha256": file_digest(binary)})
-    store = BackgroundStore(project)
+    # Registered observer probes may place transient output in an app-private
+    # sidecar.  Ordinary controller calls preserve the project-local default.
+    storage_root = Path(str(spec.get("_storage_root", project))).resolve()
+    store = BackgroundStore(storage_root)
     runtime = RuntimeFacade(project, store=store)
     devices = probe_gpus(dynamic=True)
     facts = resource_facts(devices)
@@ -1239,9 +1242,11 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     host_owner = None
     intent = None
     try:
+        # Default priority_class="clean_cuda_foreground" remains the direct
+        # controller contract; registered probes override it conservatively.
         reservation = runtime.host.begin_foreground(
             project_root=project, resource_request={"schema_version": 1, **host_request}, pid=os.getpid(),
-            priority_class="clean_cuda_foreground",
+            priority_class=str(spec.get("_priority_class", "clean_cuda_foreground")),
         )
         host_owner = str(reservation["owner_id"])
         host_resources = [str(item) for item in reservation["resource_ids"]]
@@ -1351,6 +1356,222 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
             pass
 
 
+def _probe_storage_root(project: Path) -> Path:
+    """Return an app-private, never-worktree performance-probe state root."""
+    configured = os.environ.get("PROJECT_CONTROL_PERFORMANCE_PROBE_STATE_DIR")
+    base = Path(configured).expanduser() if configured else (
+        Path(os.environ.get("XDG_STATE_HOME", str(Path.home() / ".local" / "state"))) / "project-control" / "performance-probes"
+    )
+    root = (base / hashlib.sha256(str(project).encode()).hexdigest()[:16]).resolve()
+    root.mkdir(parents=True, exist_ok=True, mode=0o700)
+    try:
+        root.chmod(0o700)
+    except OSError:
+        pass
+    return root
+
+
+def registered_foreground_probe(*, project_root: str | Path, campaign_id: str,
+                                mode: str = "benchmark", parameters: object | None = None,
+                                rebuild: bool = False) -> dict[str, object]:
+    """Run one registered, already-built CUDA measurement with a free GPU bundle.
+
+    This is intentionally a narrow adapter: the registry determines command,
+    inputs, resource contract, and optional build; callers contribute only
+    typed declared parameters and the supported measurement mode.
+    """
+    project = git_root(Path(project_root))
+    registry_path = project / "cuda-benchmarks.json"
+    registry = load_registry(registry_path)
+    if git_root(Path(str(registry["project_root"]))) != project:
+        raise ValueError("registered probe registry project_root does not match requested project_root")
+    spec = campaign_probe_spec(registry, campaign_id, mode=mode, parameters=parameters, rebuild=rebuild)
+    started = time.monotonic()
+    storage_root = _probe_storage_root(project)
+    store = BackgroundStore(storage_root)
+    runtime = RuntimeFacade(project, store=store)
+    devices = probe_gpus(dynamic=True)
+    facts = resource_facts(devices)
+    store.upsert_resources(facts)
+    runtime.host.upsert(facts)
+    resources = dict(spec["resources"])
+    requested = [str(item) for item in resources.get("gpu_uuids", [])]
+    count = int(resources["gpus"])
+    architecture = resources.get("architecture")
+    if not requested:
+        candidates = runtime.host.compound_gpu_bundles(count)
+        for candidate in candidates:
+            resource_ids = [str(item) for item in candidate["resource_ids"]]
+            selected = [item for item in facts if str(item["id"]) in set(resource_ids)]
+            if len(selected) != count:
+                continue
+            if architecture and any(item["tags"].get("architecture") != architecture for item in selected):
+                continue
+            requested = [item.removeprefix("accelerator:") for item in resource_ids]
+            break
+    if len(requested) != count:
+        return {"ok": False, "code": "probe_resource_unavailable", "campaign_id": campaign_id,
+                "mode": mode, "reason": "no conflict-free registered accelerator bundle"}
+    selected_facts = [item for item in facts if str(item["id"]).removeprefix("accelerator:") in set(requested)]
+    if len(selected_facts) != count or (architecture and any(item["tags"].get("architecture") != architecture for item in selected_facts)):
+        return {"ok": False, "code": "probe_resource_unavailable", "campaign_id": campaign_id,
+                "mode": mode, "reason": "registered accelerator selection is unavailable"}
+    protected = [f"accelerator:{item}" for item in requested]
+    protected.extend(f"interference:nvlink:{item['tags']['nvlink_domain']}" for item in selected_facts if item["tags"].get("nvlink_domain"))
+    if runtime.host.conflicts(protected):
+        return {"ok": False, "code": "probe_resource_unavailable", "campaign_id": campaign_id,
+                "mode": mode, "reason": "registered accelerator bundle is occupied"}
+    missing_binaries = [path for path in spec["binary_paths"] if not (project / str(path)).is_file()]
+    if missing_binaries and not rebuild:
+        return {"ok": False, "code": "probe_binary_unavailable", "campaign_id": campaign_id,
+                "mode": mode, "missing_binaries": missing_binaries}
+    resources["gpu_uuids"] = requested
+    resources["gpus"] = count
+    # Make profile isolation explicit: NVLink pair ownership is protected, but
+    # PCIe-root exclusion is only used if the campaign explicitly asks for it.
+    resources["isolate_pcie_root"] = bool(resources.get("isolate_pcie_root", False))
+    resources["isolate_nvlink_domain"] = True
+    spec["resources"] = resources
+    spec["_storage_root"] = str(storage_root)
+    # A probe must never evict a resident observer.  The free-bundle precheck
+    # handles normal placement; this conservative priority handles races.
+    spec["_priority_class"] = "idle_model_residency"
+    spec["preempt_grace_seconds"] = 0
+    result = foreground_run(spec)
+    evidence = store.result(str(result["evidence_id"])) if result.get("evidence_id") else None
+    summary = evidence.get("summary", {}) if isinstance(evidence, dict) and isinstance(evidence.get("summary"), dict) else {}
+    provenance_value = summary.get("provenance") if isinstance(summary.get("provenance"), dict) else {}
+    source_value = provenance_value.get("source") if isinstance(provenance_value.get("source"), dict) else {}
+    binary_value = provenance_value.get("binary") if isinstance(provenance_value.get("binary"), dict) else {}
+    raw_statistics = (summary.get("benchmark") or {}).get("statistics") if isinstance(summary.get("benchmark"), dict) else None
+    statistics = None
+    if isinstance(raw_statistics, dict):
+        values = raw_statistics.get("values") if isinstance(raw_statistics.get("values"), list) else []
+        statistics = {
+            key: raw_statistics[key]
+            for key in ("median", "mad", "confidence_interval_approx_95")
+            if key in raw_statistics
+        }
+        statistics["samples"] = len(values)
+    raw_inputs = provenance_value.get("inputs") if isinstance(provenance_value.get("inputs"), list) else []
+    input_hashes = {
+        str(item.get("path")): item.get("sha256")
+        for item in raw_inputs if isinstance(item, dict) and item.get("path")
+    }
+    normalized_campaign = next(item for item in registry["campaigns"] if item["id"] == campaign_id)
+    input_identity = []
+    for name, declaration in normalized_campaign["parameters"].items():
+        if declaration["type"] != "dataset":
+            continue
+        reference = spec["effective_parameters"].get(name)
+        relative = declaration["values"].get(reference)
+        absolute = str((project / relative).resolve()) if relative else ""
+        input_identity.append({
+            "parameter": name, "source": declaration["source"], "reference": reference,
+            "sha256": input_hashes.get(absolute),
+        })
+    raw_quiescence = (summary.get("resource_samples") or {}).get("quiescence") if isinstance(summary.get("resource_samples"), dict) else None
+    quiescence = None
+    if isinstance(raw_quiescence, dict):
+        quiescence = {
+            "status": raw_quiescence.get("state", "unknown"),
+            "contaminated": not bool(raw_quiescence.get("uncontaminated", False)),
+        }
+    safe_artifacts = [
+        {key: artifact.get(key) for key in ("id", "content_hash", "kind", "complete")}
+        for artifact in (evidence or {}).get("artifacts", []) if isinstance(artifact, dict)
+    ]
+    profiler_summary = None
+    if mode in {"nsys", "ncu"} and result.get("lease_receipt"):
+        summary_path = Path(str(result["lease_receipt"])).parent / mode / "run" / "summary.json"
+        try:
+            if summary_path.is_relative_to(storage_root) and summary_path.stat().st_size <= 64 * 1024:
+                parsed = json.loads(summary_path.read_text(encoding="utf-8"))
+                if isinstance(parsed, dict):
+                    allowed = {
+                        "tool", "status", "trace_valid", "steady_state_timing_valid",
+                        "needs_rerun_for_timing", "counter_valid", "timing_valid",
+                        "needs_more_data", "measurement_scope", "reasons",
+                        "bottleneck_hints", "recommended_route", "recommended_route_reason",
+                        "top_kernels", "hot_kernel", "api_signals", "next_step",
+                    }
+                    profiler_summary = {key: parsed[key] for key in parsed if key in allowed}
+                    digest = file_digest(summary_path)
+                    safe_artifacts.append({"id": digest[:24], "content_hash": digest,
+                                           "kind": "profiler_summary", "complete": True})
+        except (OSError, json.JSONDecodeError):
+            profiler_summary = None
+    placement_rows = [{"uuid": item["id"].removeprefix("accelerator:"),
+                       "index": item["tags"].get("physical_index"),
+                       "architecture": item["tags"].get("architecture"),
+                       "nvlink_domain": item["tags"].get("nvlink_domain"),
+                       "numa_node": item["tags"].get("numa_node"),
+                       "pcie_bus_id": item["tags"].get("pcie_bus_id")}
+                      for item in selected_facts]
+    compact = {
+        "effective_parameters": spec["effective_parameters"],
+        "registry": {"path": str(registry_path), "sha256": file_digest(registry_path), "campaign_id": campaign_id},
+        "placement": {
+            "gpu_uuids": [item["uuid"] for item in placement_rows],
+            "gpu_indices": [item["index"] for item in placement_rows],
+            "nvlink_domains": sorted({str(item["nvlink_domain"]) for item in placement_rows if item["nvlink_domain"]}),
+            "interference_domains": sorted({f"nvlink:{item['nvlink_domain']}" for item in placement_rows if item["nvlink_domain"]}),
+            "topology": placement_rows,
+        },
+        "source": {key: source_value[key] for key in ("commit", "fingerprint", "dirty", "patch_hash") if key in source_value},
+        "binary": {"name": Path(str(binary_value.get("path", ""))).name or None,
+                   "sha256": binary_value.get("sha256")},
+        "inputs": input_identity,
+        "statistics": statistics,
+        "baseline": summary.get("baseline"), "comparable": summary.get("comparable"),
+        "profiler_summary": (profiler_summary or
+                             ({"tool": mode, "status": "unparsed",
+                               "returncode": (summary.get("record") or {}).get("returncode"),
+                               "artifact_ids": [item.get("id") for item in safe_artifacts if item.get("id")]}
+                              if mode in {"nsys", "ncu"} else None)),
+        "quiescence": quiescence,
+        "artifacts": safe_artifacts,
+        "elapsed_ms": round((time.monotonic() - started) * 1000),
+    }
+    result.update({"campaign_id": campaign_id, "mode": mode,
+                   "effective_parameters": spec["effective_parameters"],
+                   "rebuild": rebuild, "registered": True, "probe": compact})
+    return result
+
+
+def probe_request(value: object) -> dict[str, object]:
+    """Validate the intentionally tiny stdin contract exposed to Project Control."""
+    if not isinstance(value, dict):
+        raise ValueError("probe spec must be an object")
+    allowed = {"schema_version", "project_root", "campaign", "mode", "parameters", "rebuild"}
+    unknown = sorted(set(value) - allowed)
+    if unknown:
+        raise ValueError(f"probe spec has unknown fields: {', '.join(unknown)}")
+    if value.get("schema_version") != 1:
+        raise ValueError("probe spec schema_version must be 1")
+    project_root = value.get("project_root")
+    campaign = value.get("campaign")
+    mode = value.get("mode", "benchmark")
+    parameters = value.get("parameters", {})
+    rebuild = value.get("rebuild", False)
+    if not isinstance(project_root, str) or not project_root:
+        raise ValueError("probe spec project_root must be a non-empty string")
+    if not isinstance(campaign, str) or not campaign:
+        raise ValueError("probe spec campaign must be a non-empty string")
+    if mode not in {"benchmark", "nsys", "ncu"}:
+        raise ValueError("probe spec mode must be benchmark, nsys, or ncu")
+    if not isinstance(parameters, dict):
+        raise ValueError("probe spec parameters must be an object")
+    if not isinstance(rebuild, bool):
+        raise ValueError("probe spec rebuild must be boolean")
+    try:
+        return registered_foreground_probe(project_root=project_root, campaign_id=campaign, mode=mode,
+                                           parameters=parameters, rebuild=rebuild)
+    except (RegistryError, ValueError) as exc:
+        return {"ok": False, "status": "invalid_request", "code": "probe_invalid_request",
+                "reason": str(exc)[:500], "campaign_id": campaign, "mode": mode}
+
+
 def arm_background(spec: dict[str, object]) -> dict[str, object]:
     validate_watch_spec(spec)
     project = git_root(Path(str(spec["project_root"])))
@@ -1445,6 +1666,7 @@ def parser() -> argparse.ArgumentParser:
     for name in ("pause", "resume", "stop"):
         item = background_sub.add_parser(name); item.add_argument("--project", required=True); item.add_argument("--json", action="store_true")
     execute = sub.add_parser("run"); execute.add_argument("--spec", required=True); execute.add_argument("--json", action="store_true")
+    probe = sub.add_parser("probe"); probe.add_argument("--spec", required=True); probe.add_argument("--json", action="store_true")
     ev = sub.add_parser("evidence"); ev.add_argument("id"); ev.add_argument("--project", default="."); ev.add_argument("--focus", default=""); ev.add_argument("--json", action="store_true")
     guide = sub.add_parser("guide"); guide.add_argument("--query", required=True); guide.add_argument("--json", action="store_true")
     sync = sub.add_parser("_sync-watch"); sync.add_argument("--project", required=True); sync.add_argument("--watch-id", required=True)
@@ -1473,6 +1695,8 @@ def main() -> int:
                 payload = control_background(Path(args.project), state)
         elif args.command == "run":
             payload = foreground_run(load_spec(args.spec))
+        elif args.command == "probe":
+            payload = probe_request(load_spec(args.spec))
         elif args.command == "evidence":
             payload = evidence(Path(args.project), args.id, args.focus)
         elif args.command == "guide":

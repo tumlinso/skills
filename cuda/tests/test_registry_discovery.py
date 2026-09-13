@@ -14,7 +14,8 @@ for value in (CUDA_ROOT / "scripts",):
 
 import cuda_controller as controller  # noqa: E402
 from cuda_discovery import discover_campaigns  # noqa: E402
-from cuda_registry import RegistryError, campaign_watch_spec, normalize_registry  # noqa: E402
+from cuda_registry import (RegistryError, campaign_probe_spec, campaign_watch_spec,
+                           normalize_registry)  # noqa: E402
 
 
 def metric(name: str = "latency_ms") -> dict[str, object]:
@@ -68,6 +69,89 @@ def registry(*campaigns: dict[str, object], root: str = "/project") -> dict[str,
 
 
 class RegistryDiscoveryTests(unittest.TestCase):
+    def test_registered_probe_uses_fixed_registry_private_storage_and_free_bundle(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            (root / "build").mkdir()
+            (root / "build" / "probe").write_text("binary", encoding="utf-8")
+            item = campaign("probe", paths=["src/probe.cu"])
+            item["binary_paths"] = ["build/probe"]
+            item["build"] = None
+            (root / "cuda-benchmarks.json").write_text(json.dumps(registry(item, root=str(root))), encoding="utf-8")
+            facts = [{"id": "accelerator:GPU-A", "kind": "accelerator", "tags": {
+                "architecture": "volta", "physical_index": 1, "nvlink_domain": "pair-b", "pcie_bus_id": "0000:02:00.0",
+            }}]
+            class Store:
+                def __init__(self, location): self.paths = type("Paths", (), {"artifacts": Path(location) / "artifacts"})()
+                def upsert_resources(self, _): pass
+                def result(self, _): return {"summary": {"provenance": {"source": {"commit": "abc"}}, "resource_samples": {"quiescence": {"state": "quiescent"}}}, "artifacts": [{"id": "artifact-1", "path": "/private/nope", "content_hash": "a" * 64, "kind": "stdout", "complete": True}]}
+            class Host:
+                def upsert(self, _): pass
+                def compound_gpu_bundles(self, _): return [{"resource_ids": ["accelerator:GPU-A"]}]
+                def conflicts(self, _): return []
+            class Runtime:
+                def __init__(self, *_args, **_kwargs): self.host = Host()
+            captured = {}
+            def foreground(spec):
+                captured.update(spec)
+                return {"ok": True, "evidence_id": "evidence-1"}
+            with mock.patch.object(controller, "git_root", side_effect=lambda value: Path(value).resolve()), \
+                 mock.patch.object(controller, "BackgroundStore", Store), \
+                 mock.patch.object(controller, "RuntimeFacade", Runtime), \
+                 mock.patch.object(controller, "probe_gpus", return_value=[]), \
+                 mock.patch.object(controller, "resource_facts", return_value=facts), \
+                 mock.patch.object(controller, "foreground_run", side_effect=foreground), \
+                 mock.patch.dict("os.environ", {"PROJECT_CONTROL_PERFORMANCE_PROBE_STATE_DIR": str(root / "private")}, clear=False):
+                result = controller.registered_foreground_probe(project_root=root, campaign_id="probe")
+            self.assertTrue(result["registered"])
+            self.assertEqual(captured["argv"], ["./build/probe", "--json"])
+            self.assertEqual(captured["_priority_class"], "idle_model_residency")
+            self.assertEqual(captured["preempt_grace_seconds"], 0)
+            self.assertTrue(str(captured["_storage_root"]).startswith(str(root / "private")))
+            self.assertEqual(result["probe"]["placement"]["gpu_uuids"], ["GPU-A"])
+            self.assertEqual(result["probe"]["placement"]["nvlink_domains"], ["pair-b"])
+            self.assertNotIn("path", result["probe"]["artifacts"][0])
+
+    def test_probe_compiles_only_declared_typed_parameters_and_registered_binary(self) -> None:
+        value = campaign("probe", paths=["src/probe.cu"])
+        value.update({
+            "binary_paths": ["build/probe-{parameter:size}"],
+            "parameters": {
+                "size": {"type": "integer", "minimum": 1, "maximum": 64, "default": 8},
+                "tier": {"type": "enum", "values": {"small": "small", "large": "large"}, "default": "small"},
+                "dataset": {"type": "dataset", "source": "fixture", "default": "tiny"},
+            },
+            "datasets": {"fixture": {"root": "data", "entries": {"tiny": "tiny.bin"}}},
+        })
+        value["benchmark"]["argv"] = ["./build/probe-{parameter:size}", "--tier={parameter:tier}", "--data={parameter:dataset}"]
+        normalized = normalize_registry(registry(value))
+        probe = campaign_probe_spec(normalized, "probe", mode="benchmark", parameters={"size": 16})
+        self.assertEqual(probe["argv"], ["./build/probe-16", "--tier=small", "--data=data/tiny.bin"])
+        self.assertEqual(probe["binary_paths"], ["build/probe-16"])
+        self.assertEqual(probe["inputs"], ["data/tiny.bin"])
+        self.assertFalse("benchmark" in probe)
+        with self.assertRaisesRegex(RegistryError, "undeclared"):
+            campaign_probe_spec(normalized, "probe", mode="benchmark", parameters={"other": 1})
+        with self.assertRaisesRegex(RegistryError, "registered dataset"):
+            broken = registry(campaign("broken", paths=["a.cu"]))
+            broken["campaigns"][0]["parameters"] = {"data": {"type": "dataset", "source": "missing"}}
+            normalize_registry(broken)
+
+    def test_probe_requires_registered_binary_and_rebuild_is_opt_in(self) -> None:
+        normalized = normalize_registry(registry(campaign("missing-binary", paths=["a.cu"])))
+        with self.assertRaisesRegex(RegistryError, "binary_paths"):
+            campaign_probe_spec(normalized, "missing-binary", mode="benchmark")
+        value = campaign("built", paths=["a.cu"])
+        value["binary_paths"] = ["build/built"]
+        value["build"] = None
+        normalized = normalize_registry(registry(value))
+        with self.assertRaisesRegex(RegistryError, "no registered build"):
+            campaign_probe_spec(normalized, "built", mode="benchmark", rebuild=True)
+
+    def test_probe_stdin_contract_rejects_arbitrary_fields(self) -> None:
+        with self.assertRaisesRegex(ValueError, "unknown fields"):
+            controller.probe_request({"schema_version": 1, "project_root": "/project", "campaign": "x", "argv": ["sh"]})
+
     def test_deterministic_correctness_defaults_to_one_cheap_run(self) -> None:
         value = registry(campaign("deterministic-default", paths=["src/check.cu"]))
         value["campaigns"][0]["correctness"] = {

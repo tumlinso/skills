@@ -80,6 +80,28 @@
         "max_deep_profiles_per_revision": {"type": "integer", "minimum": 0, "default": 2}
       }
     },
+    "parameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {"enum": ["integer", "number", "enum", "dataset"]},
+        "default": {},
+        "minimum": {"type": "number"},
+        "maximum": {"type": "number"},
+        "values": {"type": "object", "additionalProperties": {"type": "string", "minLength": 1}},
+        "source": {"type": "string", "minLength": 1}
+      }
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "entries"],
+      "properties": {
+        "root": {"type": "string", "minLength": 1},
+        "entries": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}
+      }
+    },
     "campaign": {
       "type": "object",
       "additionalProperties": false,
@@ -97,7 +119,10 @@
         "benchmark": {"$ref": "#/$defs/benchmark"},
         "metric": {"$ref": "metric-v1.schema.json"},
         "resources": {"$ref": "#/$defs/resources"},
-        "policy": {"$ref": "#/$defs/policy"}
+        "policy": {"$ref": "#/$defs/policy"},
+        "binary_paths": {"$ref": "#/$defs/strings"},
+        "parameters": {"type": "object", "additionalProperties": {"$ref": "#/$defs/parameter"}},
+        "datasets": {"type": "object", "additionalProperties": {"$ref": "#/$defs/dataset"}}
       },
       "anyOf": [
         {"properties": {"targets": {"minItems": 1}}},

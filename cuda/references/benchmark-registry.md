@@ -27,6 +27,7 @@ Never encode assumed GPU pairs.
       "task_ids": [],
       "task_prefixes": ["CUDA-"],
       "build": {"argv": ["cmake", "--build", "build", "--target", "attentionBench"]},
+      "binary_paths": ["build/attentionBench"],
       "correctness": {"argv": ["ctest", "--test-dir", "build", "-R", "attention"], "repetitions": 3},
       "benchmark": {"argv": ["./build/attentionBench", "--json"], "warmups": 1, "repetitions": 5},
       "metric": {
@@ -40,10 +41,29 @@ Never encode assumed GPU pairs.
         "target": null
       },
       "resources": {"gpu_count": 1, "architecture": "volta"},
+      "parameters": {
+        "size": {"type": "integer", "minimum": 1, "maximum": 1048576, "default": 4096},
+        "tier": {"type": "enum", "values": {"small": "small", "large": "large"}, "default": "small"}
+      },
       "policy": {"initial_characterization": false}
     }
   ]
 }
+```
+
+Registered observer probes may substitute only `{parameter:name}` in the
+already-registered `build`, `correctness`, `benchmark`, and `binary_paths`
+argv components.  Parameter declarations are bounded `integer`, finite
+`number`, `enum`, or symbolic `dataset` values.  A dataset parameter names a
+registry-owned dataset source and entry; callers never supply a filesystem
+path.  The probe interface resolves only `project_root/cuda-benchmarks.json`,
+runs no build unless `rebuild:true`, and writes all transient output below its
+app-private state root:
+
+```bash
+python cuda/scripts/cuda_controller.py probe --spec - --json <<'JSON'
+{"schema_version":1,"project_root":"/project","campaign":"fused-attention-sm70", "mode":"benchmark","parameters":{"size":8192},"rebuild":false}
+JSON
 ```
 
 Validate without creating watches or jobs:
