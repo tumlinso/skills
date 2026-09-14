@@ -62,6 +62,7 @@ class LlamaCppServerTests(unittest.TestCase):
             handle = adapter.start({"model_path": str(model), "port": 18080, "service_profile": profile})
             process = factory.processes[0]
             self.assertEqual(process.kwargs["env"]["CUDA_VISIBLE_DEVICES"], "GPU-a,GPU-b")
+            self.assertEqual(process.kwargs["env"]["GGML_CUDA_P2P"], "1")
             self.assertTrue(process.kwargs["start_new_session"])
             self.assertEqual(process.argv[process.argv.index("--tensor-split") + 1], "1,2")
             self.assertIn("--fit", process.argv)
@@ -72,8 +73,16 @@ class LlamaCppServerTests(unittest.TestCase):
             self.assertEqual(metadata["message"]["content_characters"], 9)
             self.assertEqual(metadata["message"]["tool_calls"]["type"], "array")
             self.assertEqual(metadata["message"]["reasoning_content"]["type"], "string")
+            wide_profile = {**profile, "allocated_gpu_uuids": ["GPU-a", "GPU-b", "GPU-c", "GPU-d"],
+                            "port": 18081, "log_path": str(root / "wide.log")}
+            wide_handle = adapter.start({"model_path": str(model), "port": 18081,
+                                         "service_profile": wide_profile})
+            self.assertEqual(factory.processes[1].kwargs["env"]["CUDA_VISIBLE_DEVICES"],
+                             "GPU-a,GPU-b,GPU-c,GPU-d")
+            self.assertEqual(factory.processes[1].kwargs["env"]["GGML_CUDA_P2P"], "1")
             with mock.patch("os.killpg", side_effect=ProcessLookupError):
                 adapter.evict(handle)
+                adapter.evict(wide_handle)
             self.assertTrue(log.exists())
             self.assertTrue(adapter.quiescent(handle))
 

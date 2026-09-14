@@ -199,9 +199,30 @@ class ProductionBackend:
     def _resolved_parallelism(self, compute_profile: str, parallelism: str) -> str:
         if parallelism not in {"default", "layer", "tensor"}:
             raise SupervisorError("parallelism_invalid")
-        if parallelism != "default" and compute_profile != "wide":
-            raise SupervisorError("parallelism_override_requires_wide")
         return str(self.profile["server"].get("split_mode", "layer")) if parallelism == "default" else parallelism
+
+    def _topology_order(self, resource_ids: list[str], gpu_count: int) -> tuple[list[str], dict[str, Any]]:
+        resources = {str(item["id"]): item for item in self.runtime.host.list(kind="accelerator")}
+        groups: dict[str, list[tuple[int, str]]] = {}
+        for resource_id in resource_ids:
+            resource = resources.get(str(resource_id))
+            tags = resource.get("tags", {}) if isinstance(resource, dict) else {}
+            domain = tags.get("nvlink_domain") if isinstance(tags, dict) else None
+            if not domain:
+                raise SupervisorError("runtime GPU NVLink topology metadata is unavailable")
+            raw_index = str(tags.get("index", ""))
+            index = int(raw_index) if raw_index.isdigit() else 1 << 30
+            groups.setdefault(str(domain), []).append((index, str(resource_id)))
+        ordered_groups = sorted((sorted(group) for group in groups.values()), key=lambda group: group[0])
+        sizes = [len(group) for group in ordered_groups]
+        if gpu_count == 2 and sizes != [2]:
+            raise SupervisorError("narrow model requires one runtime-discovered NVLink pair")
+        if gpu_count == 4 and sizes != [2, 2]:
+            raise SupervisorError("wide model requires two runtime-discovered NVLink pairs")
+        return ([resource_id for group in ordered_groups for _, resource_id in group], {
+            "gpu_count": gpu_count, "nvlink_island_count": len(sizes),
+            "nvlink_island_sizes": sizes, "pair_adjacent": all(size == 2 for size in sizes),
+        })
 
     def _slot_matches_profile(self, slot: _ServiceSlot, compute_profile: str, parallelism: str) -> bool:
         selected = self._model_for_profile(compute_profile)
@@ -312,11 +333,12 @@ class ProductionBackend:
         bundles = self.runtime.host.compound_gpu_bundles(gpu_count)
         reservation = None
         for candidate_bundle in bundles:
+            ordered_ids, _ = self._topology_order(list(candidate_bundle["resource_ids"]), gpu_count)
             reservation = self.runtime.host.reserve_service(
                 project_root=self.repo_root, service_id=f"core4-local-admission-{admission_id}",
                 priority_class="active_local_delegation",
                 resource_request={"schema_version": 1, "kind": "accelerator",
-                                  "ids": candidate_bundle["resource_ids"],
+                                  "ids": ordered_ids,
                                   "exclusive_resources": candidate_bundle["exclusive_resources"]},
                 pid=os.getpid(),
             )
@@ -325,7 +347,8 @@ class ProductionBackend:
         if reservation is None:
             raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=false")
         owner_id = str(reservation["owner_id"])
-        gpu_uuids = tuple(str(item).removeprefix("accelerator:") for item in reservation["resource_ids"])
+        ordered_ids, _ = self._topology_order(list(reservation["resource_ids"]), gpu_count)
+        gpu_uuids = tuple(str(item).removeprefix("accelerator:") for item in ordered_ids)
         self._admissions[admission_id] = _Admission(
             admission_id=admission_id, expires_at=time.monotonic() + self.admission_ttl,
             slot_id=None, owner_id=owner_id, gpu_uuids=gpu_uuids,
@@ -425,11 +448,12 @@ class ProductionBackend:
                 raise SupervisorError("no runtime-discovered GPU bundle is available")
             reservation = None
             for candidate_bundle in bundles:
+                ordered_ids, _ = self._topology_order(list(candidate_bundle["resource_ids"]), gpu_count)
                 reservation = self.runtime.host.reserve_service(
                     project_root=self.repo_root, service_id=f"core4-local-model-{slot_id}",
                     priority_class="active_local_delegation",
                     resource_request={"schema_version": 1, "kind": "accelerator",
-                                      "ids": candidate_bundle["resource_ids"],
+                                      "ids": ordered_ids,
                                       "exclusive_resources": candidate_bundle["exclusive_resources"]},
                     pid=os.getpid(),
                 )
@@ -438,10 +462,13 @@ class ProductionBackend:
             if reservation is None:
                 raise SupervisorError("resource_unavailable: no disjoint runtime-discovered GPU island is available; retryable=true")
             owner_id = str(reservation["owner_id"])
-            gpu_uuids = [str(item).removeprefix("accelerator:") for item in reservation["resource_ids"]]
+            ordered_ids, _ = self._topology_order(list(reservation["resource_ids"]), gpu_count)
+            gpu_uuids = [str(item).removeprefix("accelerator:") for item in ordered_ids]
         else:
             owner_id = admission.owner_id
             gpu_uuids = list(admission.gpu_uuids)
+        _, topology_order = self._topology_order(
+            [f"accelerator:{item}" for item in gpu_uuids], gpu_count)
         server = self.profile["server"]
         port = self._free_port(int(server["base_port"]))
         binary = str(server["binary"])
@@ -449,6 +476,7 @@ class ProductionBackend:
         service_profile = {
             "format": "CORE4-MODEL-SERVICE/2", "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
+            "p2p_enabled": True, "topology_order": topology_order,
             "allocated_gpu_uuids": gpu_uuids, "context_size": int(self.profile["experiment"]["initial_context"]),
             "gpu_layers": int(server.get("gpu_layers", 999)), "split_mode": resolved_parallelism,
             "tensor_split": server.get("tensor_split"), "main_gpu": server.get("main_gpu"),
@@ -460,6 +488,7 @@ class ProductionBackend:
         key_values = {
             "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
+            "p2p_enabled": True, "topology_order": topology_order,
             "binary": str(Path(binary).resolve()), "binary_version": version, "gpu_uuids": gpu_uuids,
             "context_size": service_profile["context_size"], "split_mode": service_profile["split_mode"],
             "tensor_split": service_profile["tensor_split"], "main_gpu": service_profile["main_gpu"],
@@ -486,6 +515,7 @@ class ProductionBackend:
                 "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
                 "compute_profile": compute_profile,
                 "parallelism": resolved_parallelism,
+                "p2p_enabled": True, "topology_order": topology_order,
                 "server_pid": server_info["pid"], "owner_id": owner_id, "gpu_uuids": gpu_uuids,
                 "compatibility_key": self._compatibility(key_values),
             }
@@ -635,6 +665,8 @@ class ProductionBackend:
                             "provider": "llama-server", "warm_model_reused": bool(lease.get("reused")),
                             "model_id": lease.get("model_id"), "compute_profile": lease.get("compute_profile"),
                             "parallelism": lease.get("parallelism"),
+                            "p2p_enabled": lease.get("p2p_enabled"),
+                            "topology_order": lease.get("topology_order"),
                             "compatibility_key": lease.get("compatibility_key")}
                 finally:
                     if lease is not None:

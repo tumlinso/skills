@@ -132,6 +132,7 @@ class LlamaCppServerAdapter:
         log_path.parent.mkdir(parents=True, exist_ok=True)
         log_stream = open(log_path, "a", encoding="utf-8")
         environment = os.environ.copy()
+        environment["GGML_CUDA_P2P"] = "1"
         gpu_uuids = profile.get("allocated_gpu_uuids") or context.get("allocated_gpu_uuids")
         if gpu_uuids:
             environment["CUDA_VISIBLE_DEVICES"] = ",".join(str(item) for item in gpu_uuids)

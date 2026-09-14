@@ -23,9 +23,10 @@ Qwen3-Coder-30B-A3B Q4_K_M candidate on one two-GPU island and `wide`
 topology-derived four-GPU bundle. Slots are reusable only when both candidate
 identity and compute profile match. Switching profiles evicts and reloads an
 idle incompatible slot; an actively leased/generating slot is never evicted.
-Observer-only wide investigations may explicitly override llama.cpp split mode
-with `layer` or `tensor` for diagnostics. The resolved split participates
-in compatibility, so an idle mismatch reloads; narrow rejects explicit overrides.
+Observer investigations may explicitly override llama.cpp split mode with
+`layer` or `tensor` for diagnostics on either profile. The resolved split
+participates in compatibility, so an idle mismatch reloads. All llama services
+enable CUDA P2P and preserve runtime-discovered NVLink-pair adjacency.
 
 Ordinary use performs quick READY, schema, size, immutable-path, GGUF-header,
 inode, and mtime checks. Install, explicit `verify --full`, and metadata change

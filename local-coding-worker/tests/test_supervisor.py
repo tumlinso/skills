@@ -197,9 +197,17 @@ class _Host:
         self.priority_changes = 0
 
     def discover_gpus(self): self.discoveries += 1; return []
+    def list(self, kind=None):
+        return [
+            {"id": "accelerator:GPU-a", "tags": {"index": "0", "nvlink_domain": "pair-a"}},
+            {"id": "accelerator:GPU-b", "tags": {"index": "2", "nvlink_domain": "pair-a"}},
+            {"id": "accelerator:GPU-c", "tags": {"index": "1", "nvlink_domain": "pair-b"}},
+            {"id": "accelerator:GPU-d", "tags": {"index": "3", "nvlink_domain": "pair-b"}},
+        ][:2 if len(self.bundles) == 1 else 4]
     def compound_gpu_bundles(self, count):
         if count == 4 and len(self.bundles) == 2:
-            return [{"resource_ids": [item for bundle in self.bundles for item in bundle["resource_ids"]],
+            return [{"resource_ids": ["accelerator:GPU-a", "accelerator:GPU-c",
+                                      "accelerator:GPU-b", "accelerator:GPU-d"],
                      "exclusive_resources": [item for bundle in self.bundles for item in bundle["exclusive_resources"]]}]
         return list(self.bundles)
     def reserve_service(self, **kwargs):
@@ -402,12 +410,20 @@ class ServicePoolTests(unittest.TestCase):
         backend, _, service = self.backend()
         narrow = backend.warm(compute_profile="narrow")
         self.assertEqual((narrow["model_id"], narrow["compute_profile"], len(narrow["gpu_uuids"])), ("fixture", "narrow", 2))
+        self.assertEqual(narrow["gpu_uuids"], ["GPU-a", "GPU-b"])
+        self.assertTrue(narrow["p2p_enabled"])
+        self.assertEqual(narrow["topology_order"]["nvlink_island_sizes"], [2])
         backend.release(narrow["service_lease_id"])
         reused = backend.warm(compute_profile="narrow")
         self.assertTrue(reused["reused"])
         backend.release(reused["service_lease_id"])
         wide = backend.warm(compute_profile="wide")
         self.assertEqual((wide["model_id"], wide["compute_profile"], len(wide["gpu_uuids"])), ("fixture-next", "wide", 4))
+        self.assertEqual(wide["gpu_uuids"], ["GPU-a", "GPU-b", "GPU-c", "GPU-d"])
+        self.assertTrue(wide["p2p_enabled"])
+        self.assertTrue(wide["topology_order"]["pair_adjacent"])
+        self.assertEqual(service.contexts[-1]["service_profile"]["allocated_gpu_uuids"],
+                         ["GPU-a", "GPU-b", "GPU-c", "GPU-d"])
         self.assertFalse(wide["reused"])
         self.assertEqual(service.starts, 2)
         backend.close()
@@ -435,10 +451,14 @@ class ServicePoolTests(unittest.TestCase):
                          ("tensor", False, 2, "tensor"))
         backend.close()
 
-    def test_explicit_parallelism_rejects_narrow(self):
-        backend, _, _ = self.backend()
-        with self.assertRaisesRegex(SupervisorError, "parallelism_override_requires_wide"):
-            backend.warm(compute_profile="narrow", parallelism="tensor")
+    def test_explicit_parallelism_accepts_narrow_layer_and_tensor(self):
+        backend, _, service = self.backend()
+        layer = backend.warm(compute_profile="narrow", parallelism="layer")
+        self.assertEqual(layer["parallelism"], "layer")
+        backend.release(layer["service_lease_id"])
+        tensor = backend.warm(compute_profile="narrow", parallelism="tensor")
+        self.assertEqual((tensor["parallelism"], tensor["reused"], service.starts),
+                         ("tensor", False, 2))
         backend.close()
 
     def test_row_parallelism_is_not_exposed(self):
@@ -465,6 +485,8 @@ class ServicePoolTests(unittest.TestCase):
         self.assertEqual((result["status"], result["model_id"], result["compute_profile"]),
                          ("available", "fixture-next", "wide"))
         self.assertEqual(result["parallelism"], "layer")
+        self.assertTrue(result["p2p_enabled"])
+        self.assertEqual(result["topology_order"]["nvlink_island_sizes"], [2, 2])
         self.assertEqual(len(backend.status()["slots"][0]["gpu_uuids"]), 4)
         backend.close()
 
@@ -577,6 +599,9 @@ class ServicePoolTests(unittest.TestCase):
                               "provider": "llama-server",
                               "warm_model_reused": False, "model_id": "fixture",
                               "compute_profile": "narrow", "parallelism": "layer",
+                              "p2p_enabled": True,
+                              "topology_order": {"gpu_count": 2, "nvlink_island_count": 1,
+                                                 "nvlink_island_sizes": [2], "pair_adjacent": True},
                               "compatibility_key": result["compatibility_key"]})
         self.assertEqual(service.requests[0][2], {"messages": request["messages"],
                                                    "max_tokens": 256, "timeout_seconds": 20.0})
