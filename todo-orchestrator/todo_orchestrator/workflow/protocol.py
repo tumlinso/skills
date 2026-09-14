@@ -43,6 +43,7 @@ STATUSES = frozenset({
 INSPECTION_KINDS = frozenset({
     "task", "source", "evidence", "run", "lane", "decision", "messages",
     "rendezvous", "workspace", "integration",
+    "context_fragment",
 })
 FINISH_ACTIONS = frozenset({"complete", "handoff", "block", "release"})
 
@@ -125,6 +126,10 @@ _ACTION_SCHEMAS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
     "publish_interface": (
         frozenset({"interface_id", "version", "content_hash"}),
         frozenset({"interface_id", "version", "content_hash", "evidence"}),
+    ),
+    "publish_context": (
+        frozenset({"content", "anchors", "series_key"}),
+        frozenset({"content", "anchors", "series_key", "classification", "source_identity", "invalidate_fragment_ids"}),
     ),
     "run_gates": (frozenset(), frozenset({"required"})),
     "request_integration": (

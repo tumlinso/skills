@@ -57,6 +57,20 @@ class WorkflowPlanSnapshotTests(unittest.TestCase):
             self.assertEqual(2, conn.execute("SELECT COUNT(*) FROM workflow_context_fragments WHERE lane_id='I' AND kind='lane_brief'").fetchone()[0])
             self.assertEqual(("A", "queued"), tuple(conn.execute("SELECT task_id,state FROM workflow_lane_tasks WHERE lane_id='I'").fetchone()))
 
+    def test_generated_briefs_preserve_architectural_intent_without_procedural_rewrite(self):
+        plan = base_plan([safe_task("A", "src/a")])
+        plan["schema_version"] = 3
+        plan["tasks"][0].update({"motivation": "avoid repeated archaeology", "rationale": "root retains judgment", "delegated_choices": ["local decomposition"], "references": ["design/intent.md"]})
+        plan["runs"] = [{"id": "RUN", "root_task_id": "A", "charter": {"objective": "bounded"}, "lanes": [
+            {"id": "ROOT", "role": "coordinator", "tasks": [], "motivation": "integrate intent", "uncertainties": ["source shape may differ"]},
+            {"id": "I", "parent_lane_id": "ROOT", "role": "integrator", "tasks": ["A"], "desired_end_state": "durable outcome", "delegated_choices": ["implementation details"]},
+        ]}]
+        self.repo.apply(plan)
+        with self.repo.service.db.read() as conn:
+            brief = json.loads(conn.execute("SELECT content_json FROM workflow_context_fragments WHERE kind='task_brief' AND task_id='A'").fetchone()[0])
+        self.assertEqual(brief["motivation"], "avoid repeated archaeology")
+        self.assertEqual(brief["delegated_choices"], ["local decomposition"])
+
     def test_v3_mode_update_refuses_closed_or_active_lane_and_rolls_back(self):
         _, updated = self._workspace_plan()
         for state in ("closed", "cancelled", "active", "active_lane"):

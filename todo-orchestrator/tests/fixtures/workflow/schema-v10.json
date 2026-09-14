@@ -1,5 +1,5 @@
 {
-  "database_migration_version": 10,
+  "database_migration_version": 11,
   "project_schema_version": 2,
   "required_tables": [
     "workflow_capabilities",

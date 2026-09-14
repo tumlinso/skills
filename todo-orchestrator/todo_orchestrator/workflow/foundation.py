@@ -41,10 +41,10 @@ CHILD_RESULT_KINDS = frozenset({
 })
 COORDINATION_ACTIONS = frozenset({
     "sync", "fork", "message", "answer", "arrive", "publish_interface",
-    "run_gates", "request_integration", "accept_child", "reject_child",
+    "publish_context", "run_gates", "request_integration", "accept_child", "reject_child",
 })
 RUN_LEVEL_ACTIONS = frozenset({
-    "fork", "message", "answer", "arrive", "publish_interface", "request_integration",
+    "fork", "message", "answer", "arrive", "publish_interface", "publish_context", "request_integration",
 })
 WORKSPACE_MODES = frozenset({"exclusive", "read_shared", "isolated_merge", "contract_split"})
 

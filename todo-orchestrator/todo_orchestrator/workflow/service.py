@@ -34,7 +34,10 @@ from .capabilities import (
     child_operations,
     default_first_class_operations,
 )
-from .context_fragments import ContextFragmentStore, compose_child_packet
+from .context_fragments import (
+    ContextFragmentStore, FragmentOwner, compose_child_packet,
+    validate_context_note_publication_scope,
+)
 from .foundation import CapabilityLineage, CHILD_RESULT_KINDS, content_hash, require_bounded_payload
 from .lanes import (
     advance_lane_in_transaction,
@@ -588,6 +591,24 @@ class WorkflowKernel:
                     "SELECT * FROM workflow_integration_queue WHERE run_id=? ORDER BY integration_task_id,position",
                     (lineage.run_id,),
                 )]}
+            elif kind == "context_fragment":
+                if not target:
+                    raise TodoError("context_fragment_target_required", "Context fragment inspection requires a fragment id")
+                store = ContextFragmentStore(service.db)
+                fragment = store.get(target)
+                if fragment.kind == "context_note":
+                    visible = {item.id for item in store._relevant_notes(
+                        run_id=str(lineage.run_id), lane_id=str(lineage.lane_id), task_id=lineage.task_id,
+                    )}
+                    if not fragment.active or fragment.id not in visible:
+                        raise TodoError("context_fragment_forbidden", "Context note is outside current virtual scope")
+                elif (
+                    fragment.owner.run_id != lineage.run_id
+                    or (fragment.owner.lane_id is not None and fragment.owner.lane_id != lineage.lane_id)
+                    or (fragment.owner.task_id is not None and fragment.owner.task_id != lineage.task_id)
+                ):
+                    raise TodoError("context_fragment_forbidden", "Context fragment is outside current workflow lineage")
+                payload = store.expand(target, budget_bytes=budget_bytes)
             elif kind == "source":
                 payload = {}
             else:
@@ -617,6 +638,27 @@ class WorkflowKernel:
                 capability_class="first_class", run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
                 actor_session_id=lineage.session_id,
             )
+        if action == "publish_context":
+            note_content: dict[str, Any] = {
+                "content": dict(payload["content"]),
+                "anchors": list(payload["anchors"]),
+            }
+            for key in ("classification", "source_identity"):
+                if key in payload:
+                    note_content[key] = payload[key]
+            fragment, revision = ContextFragmentStore(service.db).publish(
+                actor_session_id=lineage.session_id,
+                owner=FragmentOwner(str(lineage.run_id), str(lineage.lane_id), str(lineage.task_id)),
+                kind="context_note",
+                series_key=str(payload["series_key"]),
+                content=note_content,
+                invalidate_fragment_ids=list(payload.get("invalidate_fragment_ids", [])),
+                scope_validator=lambda conn: validate_context_note_publication_scope(
+                    conn, role=str(lineage.role), run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
+                    task_id=lineage.task_id, content=note_content,
+                ),
+            )
+            return {"context_note": fragment.reference(), "content": fragment.content, "project_revision": revision}
         if action == "message":
             return MessageService(service.db).publish(
                 capability_class="first_class", run_id=str(lineage.run_id), author_lane_id=str(lineage.lane_id),

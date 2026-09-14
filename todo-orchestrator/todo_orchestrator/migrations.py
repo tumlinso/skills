@@ -556,10 +556,44 @@ CREATE TABLE IF NOT EXISTS workflow_recovery_audit(
 );
 """
 
+# Context notes share the existing revisioned fragment ledger rather than
+# introducing a second persistent-notes authority.  SQLite cannot add the
+# required check/unique constraints in place, so rebuild this one table while
+# retaining every legacy row and its identifiers/version history.
+MIGRATION_11 = r"""
+DROP INDEX IF EXISTS idx_workflow_fragments_owner;
+ALTER TABLE workflow_context_fragments RENAME TO workflow_context_fragments_legacy;
+CREATE TABLE workflow_context_fragments(
+  id TEXT PRIMARY KEY,
+  run_id TEXT NOT NULL REFERENCES workflow_runs(id) ON DELETE CASCADE,
+  lane_id TEXT REFERENCES workflow_lanes(id) ON DELETE CASCADE,
+  task_id TEXT REFERENCES tasks(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL CHECK(kind IN ('run_charter','lane_brief','task_brief','decision_ledger','delta_inbox','source_packet_ref','context_note')),
+  owner_scope_json TEXT NOT NULL,
+  series_key TEXT NOT NULL DEFAULT '',
+  version INTEGER NOT NULL,
+  content_json TEXT NOT NULL,
+  content_hash TEXT NOT NULL,
+  creation_revision INTEGER NOT NULL,
+  created_at TEXT NOT NULL,
+  invalidated_at TEXT,
+  invalidation_revision INTEGER,
+  superseded_by TEXT REFERENCES workflow_context_fragments(id),
+  UNIQUE(run_id,lane_id,task_id,kind,series_key,version),
+  UNIQUE(run_id,lane_id,task_id,kind,series_key,content_hash)
+);
+INSERT INTO workflow_context_fragments(id,run_id,lane_id,task_id,kind,owner_scope_json,series_key,version,content_json,content_hash,creation_revision,created_at,invalidated_at,invalidation_revision,superseded_by)
+  SELECT id,run_id,lane_id,task_id,kind,owner_scope_json,'',version,content_json,content_hash,creation_revision,created_at,invalidated_at,invalidation_revision,superseded_by
+  FROM workflow_context_fragments_legacy;
+DROP TABLE workflow_context_fragments_legacy;
+CREATE INDEX IF NOT EXISTS idx_workflow_fragments_owner
+  ON workflow_context_fragments(run_id,lane_id,task_id,kind,series_key,version);
+"""
+
 MIGRATIONS = {
   1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
   5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7, 8: MIGRATION_8,
-  9: MIGRATION_9, 10: MIGRATION_10,
+  9: MIGRATION_9, 10: MIGRATION_10, 11: MIGRATION_11,
 }
 
 DATABASE_MIGRATION_VERSION = max(MIGRATIONS)

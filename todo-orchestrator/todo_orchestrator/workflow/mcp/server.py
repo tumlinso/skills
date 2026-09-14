@@ -115,7 +115,7 @@ def create_server(
         workflow_handle: str,
         action: Literal[
             "sync", "fork", "message", "answer", "arrive", "publish_interface",
-            "run_gates", "request_integration", "accept_child", "reject_child",
+            "publish_context", "run_gates", "request_integration", "accept_child", "reject_child",
         ],
         payload: dict[str, object] | None = None,
     ) -> dict[str, object]:

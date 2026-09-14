@@ -609,6 +609,7 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                             if lane_id in item.get("participants", [])
                         ],
                         "workspace_mode": str(dict(lane.get("workspace", {})).get("mode", "exclusive")),
+                        **{key: lane[key] for key in ("motivation", "desired_end_state", "conceptual_end_state", "rationale", "uncertainties", "risks", "delegated_choices", "delegated_judgment", "references") if key in lane},
                     },
                 })
             for task_id in lane.get("tasks", []):
@@ -629,6 +630,7 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                     task_brief["consumes_interfaces"] = [
                         dict(interface) for interface in task["consumes_interfaces"]
                     ]
+                task_brief.update({key: task[key] for key in ("motivation", "desired_end_state", "conceptual_end_state", "rationale", "uncertainties", "risks", "delegated_choices", "delegated_judgment", "references") if key in task})
                 declared_fragments.append({
                     "kind": "task_brief", "lane_id": lane_id, "task_id": task_id,
                     "content": task_brief,

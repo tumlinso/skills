@@ -61,7 +61,7 @@ class WorkflowMigrationTests(unittest.TestCase):
                 self.assertEqual(migrated.execute("SELECT objective FROM tasks WHERE id='LEGACY'").fetchone()[0], "kept")
                 self.assertEqual(migrated.execute("SELECT state FROM claims WHERE id='C'").fetchone()[0], "active")
                 self.assertEqual(migrated.execute("SELECT objective FROM child_executions WHERE id='CHILD'").fetchone()[0], "bounded")
-                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 10)
+                self.assertEqual(migrated.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 11)
                 self.assertEqual(migrated.execute("SELECT value FROM meta WHERE key='schema_version'").fetchone()[0], "2")
 
     def test_migration_failure_rolls_back_all_pending_versions(self) -> None:
@@ -73,12 +73,12 @@ class WorkflowMigrationTests(unittest.TestCase):
                 conn.commit()
             finally:
                 conn.close()
-            MIGRATIONS[11] = "CREATE TABLE should_rollback(id INTEGER); INVALID SQL"
+            MIGRATIONS[12] = "CREATE TABLE should_rollback(id INTEGER); INVALID SQL"
             try:
                 with self.assertRaises(sqlite3.OperationalError):
                     Database(path).initialize({"project_uuid": "project", "project_name": "rollback"})
             finally:
-                del MIGRATIONS[11]
+                del MIGRATIONS[12]
             check = sqlite3.connect(path)
             try:
                 self.assertEqual(check.execute("SELECT MAX(version) FROM schema_migrations").fetchone()[0], 9)
@@ -145,7 +145,7 @@ class WorkflowFoundationContractTests(unittest.TestCase):
         contract = schema_contract()
         self.assertEqual(DATABASE_MIGRATION_VERSION, fixture["database_migration_version"])
         self.assertEqual(PROJECT_SCHEMA_VERSION, fixture["project_schema_version"])
-        self.assertEqual(contract["database_migration_version"], 10)
+        self.assertEqual(contract["database_migration_version"], 11)
         self.assertEqual(contract["project_schema_version"], 2)
         with self.repo.service.db.read() as conn:
             tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}

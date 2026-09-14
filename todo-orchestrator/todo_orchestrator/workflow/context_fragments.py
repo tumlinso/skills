@@ -12,10 +12,11 @@ filtering a first-class capsule after the fact.
 from __future__ import annotations
 
 import json
+import re
 import uuid
 from dataclasses import dataclass
 from pathlib import PurePosixPath
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 from ..config import utc_now
 from ..models import TodoError
@@ -39,7 +40,12 @@ FRAGMENT_KINDS = frozenset({
     "decision_ledger",
     "delta_inbox",
     "source_packet_ref",
+    "context_note",
 })
+
+_NOTE_ANCHOR_KINDS = frozenset({"project", "repository", "path", "symbol", "task", "run", "lane", "interface", "decision"})
+_NOTE_CLASSIFICATIONS = frozenset({"finding", "caveat", "implementation_insight"})
+_SERIES_KEY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\Z")
 
 # These names identify values that must remain behind the workflow boundary.
 # Packet *references* are allowed; packet bodies and process output are not.
@@ -184,6 +190,8 @@ class FragmentOwner:
             raise TodoError("invalid_fragment_owner", f"{kind} requires a lane owner")
         if kind == "task_brief" and not self.task_id:
             raise TodoError("invalid_fragment_owner", "task brief requires a task owner")
+        if kind == "context_note" and (not self.lane_id or not self.task_id):
+            raise TodoError("invalid_fragment_owner", "context notes require active lane and task provenance")
 
     def as_json(self) -> dict[str, str]:
         result = {"run_id": self.run_id}
@@ -199,6 +207,7 @@ class ContextFragment:
     id: str
     owner: FragmentOwner
     kind: str
+    series_key: str
     version: int
     content: dict[str, Any]
     content_hash: str
@@ -212,7 +221,7 @@ class ContextFragment:
         return self.invalidated_at is None and self.superseded_by is None
 
     def reference(self) -> dict[str, Any]:
-        return {
+        result = {
             "fragment_id": self.id,
             "kind": self.kind,
             "owner_scope": self.owner.as_json(),
@@ -221,6 +230,10 @@ class ContextFragment:
             "creation_revision": self.creation_revision,
             "invalidated": not self.active,
         }
+        if self.kind == "context_note":
+            result["authority"] = "non_authoritative"
+            result["series_key"] = self.series_key
+        return result
 
 
 def _fragment_from_row(row: Any) -> ContextFragment:
@@ -232,6 +245,7 @@ def _fragment_from_row(row: Any) -> ContextFragment:
             task_id=row["task_id"],
         ),
         kind=str(row["kind"]),
+        series_key=str(row["series_key"]),
         version=int(row["version"]),
         content=json.loads(row["content_json"]),
         content_hash=str(row["content_hash"]),
@@ -262,7 +276,9 @@ class ContextFragmentStore:
         owner: FragmentOwner,
         kind: str,
         content: Mapping[str, Any],
+        series_key: str = "",
         invalidate_fragment_ids: Sequence[str] = (),
+        scope_validator: Callable[[Any], None] | None = None,
     ) -> tuple[ContextFragment, int]:
         if kind not in FRAGMENT_KINDS:
             raise TodoError("invalid_fragment_kind", f"Unknown context fragment kind: {kind}")
@@ -271,31 +287,60 @@ class ContextFragmentStore:
         _reject_secrets(normalized)
         if kind == "source_packet_ref":
             normalized = {"references": _validate_source_references(normalized.get("references", []))}
+        if kind == "context_note":
+            if not _SERIES_KEY.fullmatch(series_key):
+                raise TodoError("invalid_context_note_series", "Context note series_key must be a bounded stable token")
+            normalized = _normalize_note_content(normalized)
+        elif series_key:
+            raise TodoError("invalid_fragment_series", "series_key is only valid for context notes")
         digest = content_hash(normalized)
         fragment_id = str(uuid.uuid4())
         invalidations = tuple(dict.fromkeys(invalidate_fragment_ids))
 
         def operation(conn: Any, revision: int) -> ContextFragment:
             _validate_owner_binding(conn, owner)
+            if scope_validator is not None:
+                scope_validator(conn)
             clause, args = _owner_sql(owner)
-            existing = conn.execute(
-                f"SELECT * FROM workflow_context_fragments WHERE {clause} AND kind=? AND content_hash=?",
-                [*args, kind, digest],
-            ).fetchone()
+            if kind == "context_note":
+                existing = conn.execute(
+                    "SELECT * FROM workflow_context_fragments WHERE kind='context_note' AND series_key=? AND content_hash=?",
+                    (series_key, digest),
+                ).fetchone()
+            else:
+                existing = conn.execute(
+                    f"SELECT * FROM workflow_context_fragments WHERE {clause} AND kind=? AND series_key=? AND content_hash=?",
+                    [*args, kind, series_key, digest],
+                ).fetchone()
             if existing is not None:
                 return _fragment_from_row(existing)
 
-            prior = conn.execute(
-                f"SELECT * FROM workflow_context_fragments WHERE {clause} AND kind=? "
-                "ORDER BY version DESC LIMIT 1",
-                [*args, kind],
-            ).fetchone()
+            if kind == "context_note":
+                # Origin is provenance, not a note's lifetime.  A stable note
+                # series remains one evolving finding across later runs.
+                prior = conn.execute(
+                    "SELECT * FROM workflow_context_fragments WHERE kind='context_note' AND series_key=? "
+                    "ORDER BY version DESC LIMIT 1", (series_key,),
+                ).fetchone()
+                if prior is not None and str(prior["run_id"]) != owner.run_id:
+                    prior_content = json.loads(prior["content_json"])
+                    if prior_content.get("anchors") != normalized.get("anchors"):
+                        raise TodoError(
+                            "context_note_series_conflict",
+                            "Cross-run context note series must retain its normalized anchors",
+                        )
+            else:
+                prior = conn.execute(
+                    f"SELECT * FROM workflow_context_fragments WHERE {clause} AND kind=? AND series_key=? "
+                    "ORDER BY version DESC LIMIT 1",
+                    [*args, kind, series_key],
+                ).fetchone()
             version = int(prior["version"]) + 1 if prior is not None else 1
             now = utc_now()
             conn.execute(
                 "INSERT INTO workflow_context_fragments("
-                "id,run_id,lane_id,task_id,kind,owner_scope_json,version,content_json,content_hash,"
-                "creation_revision,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                "id,run_id,lane_id,task_id,kind,owner_scope_json,series_key,version,content_json,content_hash,"
+                "creation_revision,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                 (
                     fragment_id,
                     owner.run_id,
@@ -303,6 +348,7 @@ class ContextFragmentStore:
                     owner.task_id,
                     kind,
                     canonical_json(owner.as_json()),
+                    series_key,
                     version,
                     canonical_json(normalized),
                     digest,
@@ -318,9 +364,12 @@ class ContextFragmentStore:
                 )
             for target_id in invalidations:
                 target = conn.execute(
-                    "SELECT run_id FROM workflow_context_fragments WHERE id=?", (target_id,)
+                    "SELECT run_id,kind,series_key FROM workflow_context_fragments WHERE id=?", (target_id,)
                 ).fetchone()
-                if target is None or target["run_id"] != owner.run_id:
+                if target is None or (
+                    target["run_id"] != owner.run_id
+                    and (target["kind"] != "context_note" or target["series_key"] != series_key)
+                ):
                     raise TodoError(
                         "invalid_fragment_invalidation",
                         "Only an existing fragment in the same run may be invalidated",
@@ -340,6 +389,7 @@ class ContextFragmentStore:
             event_type="workflow_context_fragment_published",
             payload=lambda fragment: {
                 "kind": fragment.kind,
+                "series_key": fragment.series_key,
                 "version": fragment.version,
                 "content_hash": fragment.content_hash,
                 "invalidated_fragment_ids": list(invalidations),
@@ -411,7 +461,7 @@ class ContextFragmentStore:
         with self.db.read() as conn:
             rows = conn.execute(
                 "SELECT * FROM workflow_context_fragments WHERE run_id=? AND invalidated_at IS NULL "
-                "AND superseded_by IS NULL AND (lane_id IS NULL OR lane_id=?) "
+                "AND superseded_by IS NULL AND kind <> 'context_note' AND (lane_id IS NULL OR lane_id=?) "
                 "AND (task_id IS NULL OR task_id=?) ORDER BY kind,version",
                 (run_id, lane_id, task_id),
             ).fetchall()
@@ -431,10 +481,47 @@ class ContextFragmentStore:
         if known_manifest is not None and len(known_manifest) > 256:
             raise TodoError("context_manifest_too_large", "Known fragment manifest is limited to 256 entries")
         fragments = self.active_for(run_id=run_id, lane_id=lane_id, task_id=task_id)
+        notes = self._relevant_notes(run_id=run_id, lane_id=lane_id, task_id=task_id)
         by_kind: dict[str, list[ContextFragment]] = {}
         for fragment in fragments:
             by_kind.setdefault(fragment.kind, []).append(fragment)
         manifest = [fragment.reference() for fragment in fragments]
+        selected_notes: list[ContextFragment] = []
+        omitted_notes: list[ContextFragment] = []
+        # Reserve a stable aggregate route while selecting note references;
+        # arbitrary relevant-note counts must not crowd out workflow context.
+        reserve = {
+            "fragment_id": "context-notes:omitted",
+            "kind": "context_note_aggregate", "version": 1,
+            "content_hash": "0" * 64, "invalidated": False,
+            "retrieve_via": {"tool": "coordination_view", "detail": "expanded", "max_items": 1000},
+            "select_kind": "context_note",
+        }
+        manifest_probe = list(manifest)
+        for note in notes:
+            if len(selected_notes) >= 12:
+                omitted_notes.append(note)
+                continue
+            trial = [*manifest_probe, note.reference(), reserve]
+            try:
+                require_bounded_payload({"fragment_manifest": trial}, limit=budget_bytes, code="context_capsule_too_large")
+            except TodoError:
+                omitted_notes.append(note)
+            else:
+                selected_notes.append(note)
+                manifest_probe.append(note.reference())
+        manifest = manifest_probe
+        if omitted_notes:
+            aggregate_hash = content_hash([
+                {"fragment_id": note.id, "content_hash": note.content_hash, "version": note.version}
+                for note in omitted_notes
+            ])
+            manifest.append({
+                "fragment_id": "context-notes:omitted", "kind": "context_note_aggregate", "version": 1,
+                "content_hash": aggregate_hash, "invalidated": False,
+                "retrieve_via": {"tool": "coordination_view", "detail": "expanded", "max_items": 1000},
+                "select_kind": "context_note",
+            })
         known = known_manifest or {}
         changed = [] if known_manifest is None else [
             reference
@@ -442,15 +529,21 @@ class ContextFragmentStore:
             if not _known_reference_matches(known.get(reference["fragment_id"]), reference)
         ]
         active_ids = {str(reference["fragment_id"]) for reference in manifest}
-        missing_known_ids = [str(fragment_id) for fragment_id in known if str(fragment_id) not in active_ids]
+        missing_known_ids = [
+            str(fragment_id) for fragment_id in known
+            if str(fragment_id) not in active_ids and str(fragment_id) != "context-notes:omitted"
+        ]
         if missing_known_ids:
             placeholders = ",".join("?" for _ in missing_known_ids)
             with self.db.read() as conn:
                 rows = conn.execute(
-                    f"SELECT * FROM workflow_context_fragments WHERE run_id=? AND id IN ({placeholders})",
+                    f"SELECT * FROM workflow_context_fragments WHERE (run_id=? OR kind='context_note') AND id IN ({placeholders})",
                     [run_id, *missing_known_ids],
                 ).fetchall()
-            changed.extend(_fragment_from_row(row).reference() for row in rows)
+            changed.extend(
+                _fragment_from_row(row).reference() for row in rows
+                if str(row["kind"]) != "context_note"
+            )
         changed.sort(key=lambda item: (str(item["kind"]), int(item["version"]), str(item["fragment_id"])))
 
         def latest(kind: str) -> ContextFragment | None:
@@ -467,13 +560,55 @@ class ContextFragmentStore:
             "run_id": run_id,
             "lane_id": lane_id,
             "task_id": task_id,
-            "run_summary": _compact_content(charter, ("objective", "boundaries", "invariants", "acceptance_conditions", "glossary")),
-            "lane_brief": _compact_content(lane, ("role", "authority", "ordered_tasks", "interfaces", "rendezvous", "workspace_mode")),
-            "task_brief": _compact_content(task, ("objective", "next_action", "scope", "completion_contract", "tests", "gates", "consumes_interfaces", "forbidden_mutations")),
+            "run_summary": _compact_content(charter, ("objective", "motivation", "desired_end_state", "conceptual_end_state", "boundaries", "invariants", "acceptance_conditions", "rationale", "uncertainties", "risks", "delegated_judgment", "references", "glossary")),
+            "lane_brief": _compact_content(lane, ("role", "authority", "ordered_tasks", "interfaces", "rendezvous", "workspace_mode", "motivation", "desired_end_state", "rationale", "risks", "delegated_judgment", "references")),
+            "task_brief": _compact_content(task, ("objective", "next_action", "scope", "completion_contract", "tests", "gates", "consumes_interfaces", "forbidden_mutations", "motivation", "desired_end_state", "conceptual_end_state", "rationale", "uncertainties", "risks", "delegated_choices", "delegated_judgment", "references")),
             "unread_delta": _compact_content(delta, ("cursor", "messages", "state_changes", "fragment_changes", "interface_invalidations", "rendezvous_changes")),
             "fragment_manifest": manifest,
             "changed_fragments": changed,
         }
+        if selected_notes or omitted_notes:
+            compact_notes: list[dict[str, Any]] = []
+            omitted = 0
+            for note in selected_notes:
+                candidate = _compact_note(note)
+                trial = {**result, "context_notes": [*compact_notes, candidate]}
+                try:
+                    require_bounded_payload(trial, limit=budget_bytes, code="context_capsule_too_large")
+                except TodoError:
+                    omitted += 1
+                else:
+                    compact_notes.append(candidate)
+            if compact_notes:
+                result["context_notes"] = compact_notes
+            if omitted or omitted_notes:
+                omitted += len(omitted_notes)
+                result["context_notes_omitted"] = {
+                    "count": omitted,
+                    "retrieve_via": {"tool": "coordination_view", "detail": "expanded", "max_items": 1000},
+                    "select_kind": "context_note",
+                }
+                # The marker itself consumes bytes.  Preserve every note's
+                # manifest reference, but evict compact bodies until the
+                # complete capsule (including its expansion route) fits.
+                while True:
+                    try:
+                        require_bounded_payload(result, limit=budget_bytes, code="context_capsule_too_large")
+                        break
+                    except TodoError:
+                        if not compact_notes:
+                            break
+                        compact_notes.pop()
+                        omitted += 1
+                        result["context_notes_omitted"] = {
+                            "count": omitted,
+                            "retrieve_via": {"tool": "coordination_view", "detail": "expanded", "max_items": 1000},
+                            "select_kind": "context_note",
+                        }
+                        if compact_notes:
+                            result["context_notes"] = compact_notes
+                        else:
+                            result.pop("context_notes", None)
         try:
             require_bounded_payload(result, limit=budget_bytes, code="context_capsule_too_large")
         except TodoError:
@@ -484,6 +619,32 @@ class ContextFragmentStore:
             require_bounded_payload(result, limit=budget_bytes, code="context_capsule_too_large")
         return result
 
+    def _relevant_notes(self, *, run_id: str, lane_id: str, task_id: str) -> list[ContextFragment]:
+        """Find virtual-anchor notes without making unrelated notes stale."""
+        with self.db.read() as conn:
+            rows = conn.execute(
+                "SELECT * FROM workflow_context_fragments WHERE kind='context_note' "
+                "AND invalidated_at IS NULL AND superseded_by IS NULL ORDER BY version,id",
+            ).fetchall()
+            scopes = [str(row["path"]) for row in conn.execute(
+                "SELECT path FROM ownership_scopes WHERE task_id=?", (task_id,)
+            )]
+            interface_ids = {str(row["interface_id"]) for row in conn.execute(
+                "SELECT interface_id FROM interface_consumers WHERE task_id=? UNION "
+                "SELECT id FROM interfaces WHERE owner_task_id=? UNION "
+                "SELECT interface_id FROM task_dependencies WHERE task_id=? AND interface_id IS NOT NULL",
+                (task_id, task_id, task_id),
+            )}
+            decision_ids = {str(row["decision_id"]) for row in conn.execute(
+                "SELECT decision_id FROM task_dependencies WHERE task_id=? AND decision_id IS NOT NULL", (task_id,)
+            )}
+        result: list[ContextFragment] = []
+        for row in rows:
+            fragment = _fragment_from_row(row)
+            if _note_relevant(fragment.content.get("anchors", []), run_id, lane_id, task_id, scopes, interface_ids, decision_ids):
+                result.append(fragment)
+        return result
+
 
 def _compact_content(fragment: ContextFragment | None, keys: Iterable[str]) -> dict[str, Any]:
     if fragment is None:
@@ -491,6 +652,134 @@ def _compact_content(fragment: ContextFragment | None, keys: Iterable[str]) -> d
     result = {key: fragment.content[key] for key in keys if key in fragment.content}
     result["fragment_id"] = fragment.id
     result["version"] = fragment.version
+    return result
+
+
+def _normalize_note_content(content: Mapping[str, Any]) -> dict[str, Any]:
+    if not isinstance(content, Mapping) or not content:
+        raise TodoError("invalid_context_note", "Context note content must be a non-empty mapping")
+    anchors = content.get("anchors")
+    if isinstance(anchors, (str, bytes, Mapping)) or not isinstance(anchors, Sequence) or not anchors or len(anchors) > 32:
+        raise TodoError("invalid_context_note_anchors", "Context notes require a bounded anchor sequence")
+    normalized_anchors: list[dict[str, str]] = []
+    for anchor in anchors:
+        if not isinstance(anchor, Mapping) or set(anchor) != {"kind", "value"}:
+            raise TodoError("invalid_context_note_anchor", "Each context anchor requires kind and value")
+        kind, value = str(anchor["kind"]), str(anchor["value"]).strip()
+        if kind not in _NOTE_ANCHOR_KINDS or not value or len(value) > 512:
+            raise TodoError("invalid_context_note_anchor", "Context anchor kind or value is invalid")
+        if kind == "path":
+            path = PurePosixPath(value)
+            if path.is_absolute() or ".." in path.parts or not path.parts or str(path) == ".":
+                raise TodoError("invalid_context_note_anchor", "Context path anchors must be repository-relative")
+            value = str(path)
+        normalized_anchors.append({"kind": kind, "value": value})
+    classification = content.get("classification")
+    if classification is not None and str(classification) not in _NOTE_CLASSIFICATIONS:
+        raise TodoError("invalid_context_note_classification", "Context note classification is unsupported")
+    source_identity = content.get("source_identity")
+    if source_identity is not None:
+        if not isinstance(source_identity, Mapping):
+            raise TodoError("invalid_context_note_source_identity", "source_identity must be a bounded mapping")
+        _reject_secrets(source_identity, path="source_identity")
+        require_bounded_payload(dict(source_identity), limit=2048, code="context_note_source_identity_too_large")
+    body = content.get("content")
+    if not isinstance(body, Mapping) or not body:
+        raise TodoError("invalid_context_note", "Context notes require a non-empty content mapping")
+    _reject_secrets(body, path="context_note")
+    require_bounded_payload(dict(body), limit=4096, code="context_note_too_large")
+    result: dict[str, Any] = {
+        "authority": "non_authoritative",
+        "anchors": sorted({(item["kind"], item["value"]) for item in normalized_anchors}),
+        "content": dict(body),
+    }
+    result["anchors"] = [{"kind": kind, "value": value} for kind, value in result["anchors"]]
+    if classification is not None:
+        result["classification"] = str(classification)
+    if source_identity is not None:
+        result["source_identity"] = dict(source_identity)
+    require_bounded_payload(result, limit=4096, code="context_note_too_large")
+    return result
+
+
+def _paths_intersect(left: str, right: str) -> bool:
+    a, b = PurePosixPath(left), PurePosixPath(right)
+    return a == b or a in b.parents or b in a.parents
+
+
+def _note_relevant(anchors: object, run_id: str, lane_id: str, task_id: str, scopes: Sequence[str], interface_ids: set[str], decision_ids: set[str]) -> bool:
+    if not isinstance(anchors, Sequence):
+        return False
+    for anchor in anchors:
+        if not isinstance(anchor, Mapping):
+            continue
+        kind, value = anchor.get("kind"), str(anchor.get("value", ""))
+        if kind in {"project", "repository"}:
+            return True
+        if kind == "run" and value == run_id:
+            return True
+        if kind == "lane" and value == lane_id:
+            return True
+        if kind == "task" and value == task_id:
+            return True
+        if kind == "path" and any(_paths_intersect(value, scope) for scope in scopes):
+            return True
+        if kind == "interface" and value in interface_ids:
+            return True
+        if kind == "decision" and value in decision_ids:
+            return True
+    return False
+
+
+def validate_context_note_publication_scope(
+    conn: Any, *, role: str, run_id: str, lane_id: str, task_id: str, content: Mapping[str, Any]
+) -> None:
+    """Enforce the narrower integrator authority before any note mutation."""
+    if role == "coordinator":
+        return
+    if role != "integrator":
+        raise TodoError("workflow_context_scope_forbidden", "Role cannot publish workflow context")
+    normalized = _normalize_note_content(content)
+    scopes = [str(row["path"]) for row in conn.execute(
+        "SELECT path FROM ownership_scopes WHERE task_id=?", (task_id,)
+    )]
+    interface_ids = {str(row["interface_id"]) for row in conn.execute(
+        "SELECT interface_id FROM interface_consumers WHERE task_id=? UNION "
+        "SELECT id FROM interfaces WHERE owner_task_id=? UNION "
+        "SELECT interface_id FROM task_dependencies WHERE task_id=? AND interface_id IS NOT NULL",
+        (task_id, task_id, task_id),
+    )}
+    decision_ids = {str(row["decision_id"]) for row in conn.execute(
+        "SELECT decision_id FROM task_dependencies WHERE task_id=? AND decision_id IS NOT NULL", (task_id,)
+    )}
+    anchors = normalized["anchors"]
+    matching_path = False
+    for anchor in anchors:
+        kind, value = anchor["kind"], anchor["value"]
+        allowed = (
+            (kind == "run" and value == run_id)
+            or (kind == "lane" and value == lane_id)
+            or (kind == "task" and value == task_id)
+            or (kind == "path" and any(_paths_intersect(value, scope) for scope in scopes))
+            or (kind == "interface" and value in interface_ids)
+            or (kind == "decision" and value in decision_ids)
+        )
+        if kind == "path" and allowed:
+            matching_path = True
+        if kind in {"project", "repository"} or not allowed and kind != "symbol":
+            raise TodoError("workflow_context_scope_forbidden", "Context anchor exceeds integrator task scope")
+    if any(anchor["kind"] == "symbol" for anchor in anchors) and not matching_path:
+        raise TodoError("workflow_context_scope_forbidden", "Integrator symbol notes require an owned path anchor")
+
+
+def _compact_note(fragment: ContextFragment) -> dict[str, Any]:
+    content = fragment.content
+    result = fragment.reference()
+    result.update({"anchors": content.get("anchors", []), "content": content.get("content", {})})
+    if "classification" in content:
+        result["classification"] = content["classification"]
+    if "source_identity" in content:
+        result["source_identity"] = content["source_identity"]
     return result
 
 

@@ -143,6 +143,71 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         self.assertEqual(resumed["status"], "resumed")
         self.assertNotEqual(resumed["workflow_handle"], claimed["workflow_handle"])
 
+    def test_authorized_context_publication_is_atomic_and_implementer_is_denied(self):
+        self.repo.close()
+        self.repo = V2Repo()
+        plan = base_plan([safe_task("COORD", "coord"), safe_task("IMPL", "src/impl")])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "COORD", "charter": {"objective": "context publication"},
+            "lanes": [
+                {"id": "COORD-L", "role": "coordinator", "tasks": ["COORD"]},
+                {"id": "IMPL-L", "parent_lane_id": "COORD-L", "role": "implementer", "tasks": ["IMPL"]},
+            ],
+        }]
+        self.repo.apply(plan)
+        coordinator = self.protocol.next_task(repo_root=str(self.repo.root), task_id="COORD")
+        published = self.protocol.coordinate_task(
+            workflow_handle=coordinator["workflow_handle"], action="publish_context",
+            payload={
+                "series_key": "layout-finding",
+                "content": {"summary": "alignment is observable"},
+                "anchors": [{"kind": "path", "value": "src"}, {"kind": "task", "value": "COORD"}],
+                "classification": "finding",
+                "source_identity": {"commit": "fixture-base"},
+            },
+        )
+        note = published["context_note"]
+        self.assertEqual(note["authority"], "non_authoritative")
+        expanded = self.protocol.inspect_task(
+            workflow_handle=coordinator["workflow_handle"], kind="context_fragment",
+            target=note["fragment_id"], budget_bytes=2048,
+        )
+        self.assertEqual(expanded["content"]["source_identity"]["commit"], "fixture-base")
+        revised = self.protocol.coordinate_task(
+            workflow_handle=coordinator["workflow_handle"], action="publish_context",
+            payload={
+                "series_key": "layout-finding", "content": {"summary": "revised alignment"},
+                "anchors": [{"kind": "path", "value": "src"}, {"kind": "task", "value": "COORD"}],
+                "invalidate_fragment_ids": [note["fragment_id"]],
+            },
+        )
+        with self.repo.service.db.read() as conn:
+            prior = conn.execute("SELECT invalidated_at,superseded_by FROM workflow_context_fragments WHERE id=?", (note["fragment_id"],)).fetchone()
+        self.assertIsNotNone(prior["invalidated_at"])
+        self.assertEqual(prior["superseded_by"], revised["context_note"]["fragment_id"])
+        implementer_locator = WorkflowCapabilityLocator(Path(self.locator_temp.name) / "implementer")
+        implementer_protocol = WorkflowProtocol(WorkflowKernel(locator=implementer_locator), implementer_locator)
+        with patch.dict(os.environ, {"CODEX_THREAD_ID": "context-note-implementer"}):
+            implementer = implementer_protocol.next_task(repo_root=str(self.repo.root), task_id="IMPL")
+        visible_note = implementer_protocol.inspect_task(
+            workflow_handle=implementer["workflow_handle"], kind="context_fragment",
+            target=revised["context_note"]["fragment_id"], budget_bytes=2048,
+        )
+        self.assertEqual(visible_note["fragment"]["fragment_id"], revised["context_note"]["fragment_id"])
+        with self.assertRaises(TodoError) as private_fragment:
+            implementer_protocol.inspect_task(
+                workflow_handle=implementer["workflow_handle"], kind="context_fragment",
+                target=coordinator["context"]["task_brief"]["fragment_id"], budget_bytes=2048,
+            )
+        self.assertEqual(private_fragment.exception.code, "context_fragment_forbidden")
+        with self.assertRaises(TodoError) as denied:
+            implementer_protocol.coordinate_task(
+                workflow_handle=implementer["workflow_handle"], action="publish_context",
+                payload={"series_key": "nope", "content": {"summary": "no authority"}, "anchors": [{"kind": "task", "value": "IMPL"}]},
+            )
+        self.assertEqual(denied.exception.code, "capability_operation_forbidden")
+
     def test_declared_integration_wave_refuses_legacy_serial_gate_lifecycle(self):
         self.repo.close()
         self.repo = V2Repo()
