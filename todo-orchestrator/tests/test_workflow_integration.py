@@ -208,6 +208,74 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
             )
         self.assertEqual(denied.exception.code, "capability_operation_forbidden")
 
+    def test_publish_context_cannot_invalidate_generated_or_unrelated_notes(self):
+        self.repo.close()
+        self.repo = V2Repo()
+        plan = base_plan([safe_task("COORD", "coord"), safe_task("INTEGRATE", "src/owned")])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "COORD", "charter": {"objective": "context authority"},
+            "lanes": [
+                {"id": "COORD-L", "role": "coordinator", "tasks": ["COORD"]},
+                {"id": "INT-L", "parent_lane_id": "COORD-L", "role": "integrator", "tasks": ["INTEGRATE"]},
+            ],
+        }]
+        self.repo.apply(plan)
+        coordinator = self.protocol.next_task(repo_root=str(self.repo.root), task_id="COORD")
+        generated_id = coordinator["context"]["task_brief"]["fragment_id"]
+        revision = self.repo.service.db.revision()
+        with self.assertRaises(TodoError) as generated_denied:
+            self.protocol.coordinate_task(
+                workflow_handle=coordinator["workflow_handle"], action="publish_context",
+                payload={
+                    "series_key": "attempted-generated-retirement",
+                    "content": {"summary": "must not retire a generated brief"},
+                    "anchors": [{"kind": "task", "value": "COORD"}],
+                    "invalidate_fragment_ids": [generated_id],
+                },
+            )
+        self.assertEqual(generated_denied.exception.code, "workflow_context_invalidation_forbidden")
+        self.assertEqual(self.repo.service.db.revision(), revision)
+        with self.repo.service.db.read() as conn:
+            self.assertIsNone(conn.execute(
+                "SELECT invalidated_at FROM workflow_context_fragments WHERE id=?", (generated_id,)
+            ).fetchone()["invalidated_at"])
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM workflow_context_fragments WHERE kind='context_note'"
+            ).fetchone()[0], 0)
+
+        unrelated = self.protocol.coordinate_task(
+            workflow_handle=coordinator["workflow_handle"], action="publish_context",
+            payload={
+                "series_key": "docs-finding", "content": {"summary": "docs only"},
+                "anchors": [{"kind": "path", "value": "docs"}],
+            },
+        )["context_note"]
+        integrator_locator = WorkflowCapabilityLocator(Path(self.locator_temp.name) / "integrator")
+        integrator_protocol = WorkflowProtocol(WorkflowKernel(locator=integrator_locator), integrator_locator)
+        with patch.dict(os.environ, {"CODEX_THREAD_ID": "context-note-integrator"}):
+            integrator = integrator_protocol.next_task(repo_root=str(self.repo.root), task_id="INTEGRATE")
+        revision = self.repo.service.db.revision()
+        with self.assertRaises(TodoError) as unrelated_denied:
+            integrator_protocol.coordinate_task(
+                workflow_handle=integrator["workflow_handle"], action="publish_context",
+                payload={
+                    "series_key": "owned-finding", "content": {"summary": "owned only"},
+                    "anchors": [{"kind": "path", "value": "src/owned"}],
+                    "invalidate_fragment_ids": [unrelated["fragment_id"]],
+                },
+            )
+        self.assertEqual(unrelated_denied.exception.code, "workflow_context_scope_forbidden")
+        self.assertEqual(self.repo.service.db.revision(), revision)
+        with self.repo.service.db.read() as conn:
+            row = conn.execute(
+                "SELECT invalidated_at FROM workflow_context_fragments WHERE id=?", (unrelated["fragment_id"],)
+            ).fetchone()
+            self.assertIsNone(row["invalidated_at"])
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM workflow_context_fragments WHERE kind='context_note'"
+            ).fetchone()[0], 1)
+
     def test_declared_integration_wave_refuses_legacy_serial_gate_lifecycle(self):
         self.repo.close()
         self.repo = V2Repo()

@@ -36,7 +36,7 @@ from .capabilities import (
 )
 from .context_fragments import (
     ContextFragmentStore, FragmentOwner, compose_child_packet,
-    validate_context_note_publication_scope,
+    validate_context_note_invalidation_scope, validate_context_note_publication_scope,
 )
 from .foundation import CapabilityLineage, CHILD_RESULT_KINDS, content_hash, require_bounded_payload
 from .lanes import (
@@ -656,6 +656,10 @@ class WorkflowKernel:
                 scope_validator=lambda conn: validate_context_note_publication_scope(
                     conn, role=str(lineage.role), run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
                     task_id=lineage.task_id, content=note_content,
+                ),
+                invalidation_validator=lambda conn, target: validate_context_note_invalidation_scope(
+                    conn, role=str(lineage.role), run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
+                    task_id=str(lineage.task_id), target=target,
                 ),
             )
             return {"context_note": fragment.reference(), "content": fragment.content, "project_revision": revision}

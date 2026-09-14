@@ -279,6 +279,7 @@ class ContextFragmentStore:
         series_key: str = "",
         invalidate_fragment_ids: Sequence[str] = (),
         scope_validator: Callable[[Any], None] | None = None,
+        invalidation_validator: Callable[[Any, "ContextFragment"], None] | None = None,
     ) -> tuple[ContextFragment, int]:
         if kind not in FRAGMENT_KINDS:
             raise TodoError("invalid_fragment_kind", f"Unknown context fragment kind: {kind}")
@@ -301,6 +302,26 @@ class ContextFragmentStore:
             _validate_owner_binding(conn, owner)
             if scope_validator is not None:
                 scope_validator(conn)
+            # Validate every explicit target before checking idempotence or
+            # changing a fragment.  A duplicate publication must not become an
+            # authorization-free way to submit an invalid invalidation list.
+            targets: list[ContextFragment] = []
+            for target_id in invalidations:
+                target_row = conn.execute(
+                    "SELECT * FROM workflow_context_fragments WHERE id=?", (target_id,)
+                ).fetchone()
+                if target_row is None or (
+                    target_row["run_id"] != owner.run_id
+                    and (target_row["kind"] != "context_note" or target_row["series_key"] != series_key)
+                ):
+                    raise TodoError(
+                        "invalid_fragment_invalidation",
+                        "Only an existing fragment in the same run may be invalidated",
+                    )
+                target = _fragment_from_row(target_row)
+                if invalidation_validator is not None:
+                    invalidation_validator(conn, target)
+                targets.append(target)
             clause, args = _owner_sql(owner)
             if kind == "context_note":
                 existing = conn.execute(
@@ -362,22 +383,11 @@ class ContextFragmentStore:
                     "WHERE id=?",
                     (now, revision, fragment_id, prior["id"]),
                 )
-            for target_id in invalidations:
-                target = conn.execute(
-                    "SELECT run_id,kind,series_key FROM workflow_context_fragments WHERE id=?", (target_id,)
-                ).fetchone()
-                if target is None or (
-                    target["run_id"] != owner.run_id
-                    and (target["kind"] != "context_note" or target["series_key"] != series_key)
-                ):
-                    raise TodoError(
-                        "invalid_fragment_invalidation",
-                        "Only an existing fragment in the same run may be invalidated",
-                    )
+            for target in targets:
                 conn.execute(
                     "UPDATE workflow_context_fragments SET invalidated_at=COALESCE(invalidated_at,?),"
                     "invalidation_revision=COALESCE(invalidation_revision,?) WHERE id=?",
-                    (now, revision, target_id),
+                    (now, revision, target.id),
                 )
             row = conn.execute("SELECT * FROM workflow_context_fragments WHERE id=?", (fragment_id,)).fetchone()
             return _fragment_from_row(row)
@@ -770,6 +780,27 @@ def validate_context_note_publication_scope(
             raise TodoError("workflow_context_scope_forbidden", "Context anchor exceeds integrator task scope")
     if any(anchor["kind"] == "symbol" for anchor in anchors) and not matching_path:
         raise TodoError("workflow_context_scope_forbidden", "Integrator symbol notes require an owned path anchor")
+
+
+def validate_context_note_invalidation_scope(
+    conn: Any, *, role: str, run_id: str, lane_id: str, task_id: str, target: ContextFragment,
+) -> None:
+    """Authorize explicit note invalidation with the same scope rules as publication.
+
+    ``publish_context`` is deliberately unable to invalidate generated execution
+    context.  Coordinators may curate any context note; integrators may only
+    retire notes whose anchors they could themselves publish.
+    """
+    if target.kind != "context_note":
+        raise TodoError(
+            "workflow_context_invalidation_forbidden",
+            "publish_context may invalidate context_note fragments only",
+        )
+    if role == "coordinator":
+        return
+    validate_context_note_publication_scope(
+        conn, role=role, run_id=run_id, lane_id=lane_id, task_id=task_id, content=target.content,
+    )
 
 
 def _compact_note(fragment: ContextFragment) -> dict[str, Any]:
