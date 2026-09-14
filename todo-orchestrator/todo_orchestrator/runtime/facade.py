@@ -301,6 +301,10 @@ class HostResourceFacade:
     def compound_gpu_bundles(self, count: int) -> list[dict[str, object]]:
         if count < 1:
             raise ContractError("GPU bundle count must be positive")
+        # Discovery is a read-like operation, but its conflict filter must not
+        # be poisoned by dead owners left by a crashed sidecar.  Reservation
+        # still repeats this sweep inside its own transaction before claiming.
+        self._coordinator.sweep_stale()
         devices = [item for item in self.list(kind="accelerator") if item["enabled"]]
         groups: dict[str, list[dict[str, object]]] = {}
         for device in devices:
@@ -339,6 +343,13 @@ class HostResourceFacade:
             not item["selection"]["numa_local"], -int(item["selection"]["memory_free_mib"]),
             int(item["selection"]["utilization_percent_sum"]), item["resource_ids"],
         ))
+
+    def reconcile_current_service_owners(self, *, project_root: str | Path,
+                                         pid: int, live_owner_ids: Iterable[str]) -> list[str]:
+        return self._coordinator.reconcile_current_service_owners(
+            project_root=project_root, pid=pid,
+            live_owner_ids={str(item) for item in live_owner_ids},
+        )
 
     def heartbeat(self, owner_id: str, *, pid: int | None = None) -> None:
         self._coordinator.heartbeat(owner_id, pid)

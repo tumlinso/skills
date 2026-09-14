@@ -168,6 +168,58 @@ class HostCoordinator:
             (time.time(),),
         )
 
+    def sweep_stale(self, *, stale_seconds: float = 30.0) -> int:
+        """Release dead, expired owners before read-side resource selection.
+
+        Reservation remains rechecked transactionally by ``reserve_*``.  This
+        public sweep exists because bundle discovery otherwise filters ghosts
+        before it can reach that transactional recheck.
+        """
+        connection = self._tx()
+        try:
+            before = connection.execute(
+                "SELECT COUNT(*) FROM host_owners WHERE state IN ('active','intent')"
+            ).fetchone()[0]
+            self._sweep_locked(connection, stale_seconds=stale_seconds)
+            after = connection.execute(
+                "SELECT COUNT(*) FROM host_owners WHERE state IN ('active','intent')"
+            ).fetchone()[0]
+            connection.commit()
+            return int(before) - int(after)
+        finally:
+            connection.close()
+
+    def reconcile_current_service_owners(self, *, project_root: str | Path,
+                                         pid: int, live_owner_ids: set[str]) -> list[str]:
+        """Release only orphaned CORE4 service reservations of this process.
+
+        A supervisor can lose in-memory slot state after an exceptional local
+        failure while its parent remains alive.  Scope this narrowly to the
+        current process identity, project, and CORE4 service namespace so no
+        other process or active known slot can be disturbed.
+        """
+        process_start = _process_start(pid)
+        if process_start is None:
+            return []
+        connection = self._tx()
+        try:
+            rows = connection.execute(
+                "SELECT id FROM host_owners WHERE owner_kind='service' "
+                "AND project_root=? AND pid=? AND process_start=? "
+                "AND service_id LIKE 'core4-local-%' AND state IN ('active','intent')",
+                (str(Path(project_root).resolve()), pid, process_start),
+            ).fetchall()
+            released: list[str] = []
+            for row in rows:
+                owner_id = str(row["id"])
+                if owner_id not in live_owner_ids:
+                    self._release_locked(connection, owner_id, "orphaned")
+                    released.append(owner_id)
+            connection.commit()
+            return released
+        finally:
+            connection.close()
+
     @staticmethod
     def _request_ids(request: dict[str, object]) -> list[str]:
         return [str(item) for item in request.get("ids", [])]

@@ -195,6 +195,7 @@ class _Host:
         self.serial = 0
         self.discoveries = 0
         self.priority_changes = 0
+        self.reconciliations = []
 
     def discover_gpus(self): self.discoveries += 1; return []
     def list(self, kind=None):
@@ -223,6 +224,9 @@ class _Host:
         self.priority_changes += 1
         return owner_id in self.owners
     def heartbeat(self, owner_id, pid=None): return None
+    def reconcile_current_service_owners(self, **kwargs):
+        self.reconciliations.append(kwargs)
+        return []
     def preempt_requested(self, owner_id): return owner_id in self.preemptions
     def release(self, owner_id): self.owners.pop(owner_id, None)
 
@@ -405,6 +409,18 @@ class ServicePoolTests(unittest.TestCase):
         with self.assertRaisesRegex(SupervisorError, "resource_unavailable.*retryable"):
             backend.warm()
         self.assertEqual(service.starts, 2)
+        backend.close()
+
+    def test_admission_reconciles_only_unrepresented_owners_before_idle_reuse(self):
+        backend, runtime, service = self.backend(maximum=1)
+        first = backend.warm()
+        backend.release(first["service_lease_id"])
+        admission = backend.admit(compute_profile="narrow", parallelism="layer")
+        self.assertEqual(service.starts, 1)
+        self.assertEqual(runtime.host.reconciliations[-1]["live_owner_ids"], {"owner-1"})
+        reused = backend.warm(admission["admission_id"])
+        self.assertTrue(reused["reused"])
+        backend.release(reused["service_lease_id"])
         backend.close()
 
     def test_two_concurrent_services_reserve_the_two_disjoint_nvlink_pairs(self):

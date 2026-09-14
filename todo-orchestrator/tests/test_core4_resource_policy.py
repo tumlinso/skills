@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from todo_orchestrator.background.host import HostCoordinator
+from todo_orchestrator.runtime.facade import HostResourceFacade
 from todo_orchestrator.runtime.resources import PRIORITY_CLASSES, priority_value
 
 
@@ -126,6 +127,42 @@ class Core4ResourcePolicyTests(unittest.TestCase):
         recovered = self.background("recovered", {"ids": ["accelerator:runtime-a"]})
         self.assertIsNotNone(recovered)
         self.assertEqual(self.host.owner(stale[0])["state"], "stale")
+
+    def test_bundle_discovery_sweeps_dead_ghost_before_conflict_filter(self) -> None:
+        stale = self.service("stale", "accelerator:runtime-a", "idle_model_residency")
+        connection = self.host.connect()
+        try:
+            connection.execute(
+                "UPDATE host_owners SET pid=?,process_start=?,heartbeat_at=? WHERE id=?",
+                (999_999_999, "gone", time.time() - 60, stale[0]),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+        bundles = HostResourceFacade(self.host).compound_gpu_bundles(1)
+        self.assertIn("accelerator:runtime-a", [item for bundle in bundles for item in bundle["resource_ids"]])
+        self.assertEqual(self.host.owner(stale[0])["state"], "stale")
+
+    def test_current_process_service_reconciliation_preserves_known_owner_only(self) -> None:
+        owned = self.service("core4-local-model-known", "accelerator:runtime-a", "active_local_delegation")
+        orphan = self.service("core4-local-model-orphan", "accelerator:runtime-b", "active_local_delegation")
+        other = self.service("core4-local-model-other-process", "accelerator:runtime-c", "active_local_delegation")
+        connection = self.host.connect()
+        try:
+            connection.execute(
+                "UPDATE host_owners SET pid=?,process_start=? WHERE id=?",
+                (999_999_999, "other-process", other[0]),
+            )
+            connection.commit()
+        finally:
+            connection.close()
+        released = self.host.reconcile_current_service_owners(
+            project_root=self.project, pid=os.getpid(), live_owner_ids={owned[0]},
+        )
+        self.assertEqual(released, [orphan[0]])
+        self.assertEqual(self.host.owner(owned[0])["state"], "active")
+        self.assertEqual(self.host.owner(orphan[0])["state"], "orphaned")
+        self.assertEqual(self.host.owner(other[0])["state"], "active")
 
 
 if __name__ == "__main__":

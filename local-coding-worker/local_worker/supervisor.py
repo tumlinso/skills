@@ -187,6 +187,16 @@ class ProductionBackend:
         self.ttl = float(policy.get("hot_idle_seconds", 900))
         self.admission_ttl = 60.0
 
+    def _reconcile_host_owners(self) -> list[str]:
+        """Discard only this process's unrepresented CORE4 reservations."""
+        reconcile = getattr(self.runtime.host, "reconcile_current_service_owners", None)
+        if not callable(reconcile):
+            return []
+        known = {slot.owner_id for slot in self._slots.values()}
+        known.update(admission.owner_id for admission in self._admissions.values())
+        return list(reconcile(project_root=self.repo_root, pid=os.getpid(),
+                              live_owner_ids=known))
+
     def _state_root(self) -> Path:
         return state_root(self.service_state_root)
 
@@ -310,6 +320,7 @@ class ProductionBackend:
             raise SupervisorError("compute_profile_invalid")
         resolved_parallelism = self._resolved_parallelism(compute_profile, parallelism)
         self._enforce_host_topology()
+        self._reconcile_host_owners()
         if self.draining:
             raise SupervisorError("resource_unavailable: model service is draining; retryable=false")
         if len(self._leases) + len(self._admissions) >= self.max_slots:
