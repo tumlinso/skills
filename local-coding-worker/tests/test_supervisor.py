@@ -429,16 +429,22 @@ class ServicePoolTests(unittest.TestCase):
         self.assertEqual((layer["parallelism"], service.contexts[-1]["service_profile"]["split_mode"]),
                          ("layer", "layer"))
         backend.release(layer["service_lease_id"])
-        row = backend.warm(compute_profile="wide", parallelism="row")
-        self.assertEqual((row["parallelism"], row["reused"], service.starts,
+        tensor = backend.warm(compute_profile="wide", parallelism="tensor")
+        self.assertEqual((tensor["parallelism"], tensor["reused"], service.starts,
                           service.contexts[-1]["service_profile"]["split_mode"]),
-                         ("row", False, 2, "row"))
+                         ("tensor", False, 2, "tensor"))
         backend.close()
 
     def test_explicit_parallelism_rejects_narrow(self):
         backend, _, _ = self.backend()
         with self.assertRaisesRegex(SupervisorError, "parallelism_override_requires_wide"):
             backend.warm(compute_profile="narrow", parallelism="tensor")
+        backend.close()
+
+    def test_row_parallelism_is_not_exposed(self):
+        backend, _, _ = self.backend()
+        with self.assertRaisesRegex(SupervisorError, "parallelism_invalid"):
+            backend.warm(compute_profile="wide", parallelism="row")
         backend.close()
 
     def test_wide_never_evicts_an_active_incompatible_slot(self):

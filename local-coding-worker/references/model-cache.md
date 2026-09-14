@@ -24,7 +24,7 @@ topology-derived four-GPU bundle. Slots are reusable only when both candidate
 identity and compute profile match. Switching profiles evicts and reloads an
 idle incompatible slot; an actively leased/generating slot is never evicted.
 Observer-only wide investigations may explicitly override llama.cpp split mode
-with `layer`, `row`, or `tensor` for diagnostics. The resolved split participates
+with `layer` or `tensor` for diagnostics. The resolved split participates
 in compatibility, so an idle mismatch reloads; narrow rejects explicit overrides.
 
 Ordinary use performs quick READY, schema, size, immutable-path, GGUF-header,

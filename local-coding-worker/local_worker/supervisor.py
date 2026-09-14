@@ -197,7 +197,7 @@ class ProductionBackend:
         return {"candidate_id": candidate_id, "payload_sha256": installed[0]["payload_sha256"]}
 
     def _resolved_parallelism(self, compute_profile: str, parallelism: str) -> str:
-        if parallelism not in {"default", "layer", "row", "tensor"}:
+        if parallelism not in {"default", "layer", "tensor"}:
             raise SupervisorError("parallelism_invalid")
         if parallelism != "default" and compute_profile != "wide":
             raise SupervisorError("parallelism_override_requires_wide")
@@ -600,7 +600,7 @@ class ProductionBackend:
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
                     not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
-                    parallelism not in {"default", "layer", "row", "tensor"}):
+                    parallelism not in {"default", "layer", "tensor"}):
                 raise SupervisorError("investigator_turn_invalid_request")
             self._resolved_parallelism(str(compute_profile), str(parallelism))
             normalized: list[dict[str, str]] = []
