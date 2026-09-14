@@ -104,6 +104,7 @@ class _ServiceSlot:
     gpu_uuids: tuple[str, ...]
     compatibility_key: str
     compute_profile: str = "narrow"
+    parallelism: str = "layer"
     service_lease_id: str | None = None
     state: str = "idle"
     idle_since: float | None = None
@@ -117,6 +118,7 @@ class _Admission:
     owner_id: str
     gpu_uuids: tuple[str, ...]
     compute_profile: str = "narrow"
+    parallelism: str = "layer"
 
 
 class ProductionBackend:
@@ -194,9 +196,17 @@ class ProductionBackend:
             raise SupervisorError(f"configured model is not installed uniquely: {candidate_id}")
         return {"candidate_id": candidate_id, "payload_sha256": installed[0]["payload_sha256"]}
 
-    def _slot_matches_profile(self, slot: _ServiceSlot, compute_profile: str) -> bool:
+    def _resolved_parallelism(self, compute_profile: str, parallelism: str) -> str:
+        if parallelism not in {"default", "layer", "row", "tensor"}:
+            raise SupervisorError("parallelism_invalid")
+        if parallelism != "default" and compute_profile != "wide":
+            raise SupervisorError("parallelism_override_requires_wide")
+        return str(self.profile["server"].get("split_mode", "layer")) if parallelism == "default" else parallelism
+
+    def _slot_matches_profile(self, slot: _ServiceSlot, compute_profile: str, parallelism: str) -> bool:
         selected = self._model_for_profile(compute_profile)
         return (slot.compute_profile == compute_profile and
+                slot.parallelism == parallelism and
                 slot.endpoint_descriptor.get("model_id") == selected["candidate_id"])
 
     def _version(self, binary: str) -> str:
@@ -261,10 +271,11 @@ class ProductionBackend:
                   else "HOST_TOPOLOGY_UNSUPPORTED")
         raise SupervisorError(f"{reason}: retryable=false")
 
-    def admit(self, compute_profile: str = "narrow") -> dict[str, Any]:
+    def admit(self, compute_profile: str = "narrow", parallelism: str = "default") -> dict[str, Any]:
         """Atomically reserve a real GPU island without starting a model."""
         if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
+        resolved_parallelism = self._resolved_parallelism(compute_profile, parallelism)
         self._enforce_host_topology()
         if self.draining:
             raise SupervisorError("resource_unavailable: model service is draining; retryable=false")
@@ -275,7 +286,7 @@ class ProductionBackend:
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
             if slot.slot_id in bound_slots or slot.service_lease_id is not None:
                 continue
-            if not self._slot_matches_profile(slot, compute_profile):
+            if not self._slot_matches_profile(slot, compute_profile, resolved_parallelism):
                 self._evict_slot(slot.slot_id)
                 continue
             if not self._healthy(slot):
@@ -288,6 +299,7 @@ class ProductionBackend:
                 admission_id=admission_id, expires_at=time.monotonic() + self.admission_ttl,
                 slot_id=slot.slot_id, owner_id=slot.owner_id, gpu_uuids=slot.gpu_uuids,
                 compute_profile=compute_profile,
+                parallelism=resolved_parallelism,
             )
             self._admissions[admission_id] = admission
             return {"status": "admitted", "admission_id": admission_id,
@@ -318,6 +330,7 @@ class ProductionBackend:
             admission_id=admission_id, expires_at=time.monotonic() + self.admission_ttl,
             slot_id=None, owner_id=owner_id, gpu_uuids=gpu_uuids,
             compute_profile=compute_profile,
+            parallelism=resolved_parallelism,
         )
         return {
             "status": "admitted", "admission_id": admission_id,
@@ -356,9 +369,10 @@ class ProductionBackend:
             "service_lease_id": lease_id, "reused": reused,
         }
 
-    def warm(self, admission_id: str | None = None, compute_profile: str = "narrow") -> dict[str, Any]:
+    def warm(self, admission_id: str | None = None, compute_profile: str = "narrow", parallelism: str = "default") -> dict[str, Any]:
         if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
+        resolved_parallelism = self._resolved_parallelism(compute_profile, parallelism)
         if admission_id is None:
             self._enforce_host_topology()
         if self.draining:
@@ -376,13 +390,14 @@ class ProductionBackend:
                     self._release_admission(admission)
                     raise SupervisorError("resource_unavailable: admitted model slot is no longer usable; retryable=false")
                 return self._lease(slot, reused=True)
-            return self._start_slot(admission=admission, compute_profile=admission.compute_profile)
+            return self._start_slot(admission=admission, compute_profile=admission.compute_profile,
+                                    resolved_parallelism=admission.parallelism)
         bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-            if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile) and self._healthy(slot):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile, resolved_parallelism) and self._healthy(slot):
                 return self._lease(slot, reused=True)
         for slot in list(self._slots.values()):
-            if slot.slot_id not in bound_slots and slot.service_lease_id is None and (not self._slot_matches_profile(slot, compute_profile) or not self._healthy(slot)):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and (not self._slot_matches_profile(slot, compute_profile, resolved_parallelism) or not self._healthy(slot)):
                 self._evict_slot(slot.slot_id)
         if len(self._slots) >= self.max_slots:
             raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
@@ -390,13 +405,14 @@ class ProductionBackend:
             # A prior request may have populated an idle slot while this caller waited.
             bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
             for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-                if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile) and self._healthy(slot):
+                if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile, resolved_parallelism) and self._healthy(slot):
                     return self._lease(slot, reused=True)
             if len(self._slots) >= self.max_slots:
                 raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
-            return self._start_slot(compute_profile=compute_profile)
+            return self._start_slot(compute_profile=compute_profile, resolved_parallelism=resolved_parallelism)
 
-    def _start_slot(self, admission: _Admission | None = None, compute_profile: str = "narrow") -> dict[str, Any]:
+    def _start_slot(self, *, compute_profile: str, resolved_parallelism: str,
+                    admission: _Admission | None = None) -> dict[str, Any]:
         active = self._model_for_profile(compute_profile)
         self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         candidate = self._candidate(str(active["candidate_id"]))
@@ -434,7 +450,7 @@ class ProductionBackend:
             "format": "CORE4-MODEL-SERVICE/2", "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
             "allocated_gpu_uuids": gpu_uuids, "context_size": int(self.profile["experiment"]["initial_context"]),
-            "gpu_layers": int(server.get("gpu_layers", 999)), "split_mode": str(server.get("split_mode", "layer")),
+            "gpu_layers": int(server.get("gpu_layers", 999)), "split_mode": resolved_parallelism,
             "tensor_split": server.get("tensor_split"), "main_gpu": server.get("main_gpu"),
             "kv_cache_type_k": server.get("kv_cache_type_k"), "kv_cache_type_v": server.get("kv_cache_type_v"),
             "numa_policy": server.get("numa_policy"), "cpu_threads": server.get("cpu_threads"),
@@ -469,6 +485,7 @@ class ProductionBackend:
                 "format": "CORE4-MODEL-ENDPOINT/1", "base_url": server_info["base_url"] + "/v1",
                 "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
                 "compute_profile": compute_profile,
+                "parallelism": resolved_parallelism,
                 "server_pid": server_info["pid"], "owner_id": owner_id, "gpu_uuids": gpu_uuids,
                 "compatibility_key": self._compatibility(key_values),
             }
@@ -477,6 +494,7 @@ class ProductionBackend:
                 owner_id=owner_id, cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids),
                 compatibility_key=str(descriptor["compatibility_key"]),
                 compute_profile=compute_profile,
+                parallelism=resolved_parallelism,
             )
             self._slots[slot_id] = slot
             return self._lease(slot, reused=False)
@@ -569,19 +587,22 @@ class ProductionBackend:
         try:
             if not isinstance(request, dict):
                 raise SupervisorError("investigator_turn_invalid_request")
-            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile"}
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism"}
             if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/2":
                 raise SupervisorError("investigator_turn_invalid_request")
             messages = request.get("messages")
             max_tokens = request.get("max_tokens")
             timeout_seconds = request.get("timeout_seconds")
             compute_profile = request.get("compute_profile", "wide")
+            parallelism = request.get("parallelism", "default")
             if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
-                    not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"}):
+                    not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
+                    parallelism not in {"default", "layer", "row", "tensor"}):
                 raise SupervisorError("investigator_turn_invalid_request")
+            self._resolved_parallelism(str(compute_profile), str(parallelism))
             normalized: list[dict[str, str]] = []
             for message in messages:
                 if (not isinstance(message, dict) or set(message) != {"role", "content"} or
@@ -595,7 +616,7 @@ class ProductionBackend:
             if not self._analysis_lock.acquire(blocking=False):
                 raise SupervisorError("observer_provider_busy")
             try:
-                admission = self.admit(str(compute_profile))
+                admission = self.admit(str(compute_profile), str(parallelism))
                 lease: dict[str, Any] | None = None
                 try:
                     lease = self.warm(str(admission["admission_id"]))
@@ -612,6 +633,7 @@ class ProductionBackend:
                             "text": raw["text"], "usage": usage if isinstance(usage, dict) else {},
                             "provider": "llama-server", "warm_model_reused": bool(lease.get("reused")),
                             "model_id": lease.get("model_id"), "compute_profile": lease.get("compute_profile"),
+                            "parallelism": lease.get("parallelism"),
                             "compatibility_key": lease.get("compatibility_key")}
                 finally:
                     if lease is not None:

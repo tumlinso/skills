@@ -240,8 +240,10 @@ class _Service:
         self.lock = threading.Lock()
         self.fail_run = fail_run
         self.requests = []
+        self.contexts = []
 
     def start(self, name, context):
+        self.contexts.append(context)
         with self.lock:
             self.loading += 1
             self.maximum_loading = max(self.maximum_loading, self.loading)
@@ -421,6 +423,24 @@ class ServicePoolTests(unittest.TestCase):
                          ("fixture", False, 2))
         backend.close()
 
+    def test_wide_parallelism_override_participates_in_idle_compatibility(self):
+        backend, _, service = self.backend()
+        layer = backend.warm(compute_profile="wide", parallelism="layer")
+        self.assertEqual((layer["parallelism"], service.contexts[-1]["service_profile"]["split_mode"]),
+                         ("layer", "layer"))
+        backend.release(layer["service_lease_id"])
+        row = backend.warm(compute_profile="wide", parallelism="row")
+        self.assertEqual((row["parallelism"], row["reused"], service.starts,
+                          service.contexts[-1]["service_profile"]["split_mode"]),
+                         ("row", False, 2, "row"))
+        backend.close()
+
+    def test_explicit_parallelism_rejects_narrow(self):
+        backend, _, _ = self.backend()
+        with self.assertRaisesRegex(SupervisorError, "parallelism_override_requires_wide"):
+            backend.warm(compute_profile="narrow", parallelism="tensor")
+        backend.close()
+
     def test_wide_never_evicts_an_active_incompatible_slot(self):
         backend, runtime, service = self.backend()
         active = backend.warm(compute_profile="narrow")
@@ -438,6 +458,7 @@ class ServicePoolTests(unittest.TestCase):
         ], "max_tokens": 128, "timeout_seconds": 10})
         self.assertEqual((result["status"], result["model_id"], result["compute_profile"]),
                          ("available", "fixture-next", "wide"))
+        self.assertEqual(result["parallelism"], "layer")
         self.assertEqual(len(backend.status()["slots"][0]["gpu_uuids"]), 4)
         backend.close()
 
@@ -546,9 +567,10 @@ class ServicePoolTests(unittest.TestCase):
         result = backend.run_observer_turn(request)
         self.assertEqual(result, {"status": "available", "authoritative": False,
                                   "text": '{"action":"answer"}',
-                                  "usage": {"completion_tokens": 7}, "provider": "llama-server",
-                                  "warm_model_reused": False, "model_id": "fixture",
-                                  "compute_profile": "narrow", "compatibility_key": result["compatibility_key"]})
+                              "usage": {"completion_tokens": 7}, "provider": "llama-server",
+                              "warm_model_reused": False, "model_id": "fixture",
+                              "compute_profile": "narrow", "parallelism": "layer",
+                              "compatibility_key": result["compatibility_key"]})
         self.assertEqual(service.requests[0][2], {"messages": request["messages"],
                                                    "max_tokens": 256, "timeout_seconds": 20.0})
         self.assertEqual(backend.status()["active_leases"], 0)
