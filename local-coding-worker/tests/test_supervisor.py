@@ -171,6 +171,12 @@ class _Cache:
     def verify(self, candidate_id, sha256, full=False):
         return {"ready": True}
 
+    def list(self):
+        return [
+            {"candidate_id": "fixture", "payload_sha256": "a" * 64, "ready": True},
+            {"candidate_id": "fixture-next", "payload_sha256": "b" * 64, "ready": True},
+        ]
+
     @contextmanager
     def lease(self, candidate_id, sha256, owner_id):
         yield Path("/models/fixture.gguf")
@@ -267,7 +273,9 @@ def _profile(*, maximum=2, ttl=900):
                    "gpu_layers": 999, "split_mode": "layer"},
         "experiment": {"initial_context": 32768},
         "deployment_policy": {"max_real_workers": maximum, "hot_idle_seconds": ttl},
-        "candidates": [{"id": "fixture", "profile": "one-island"}],
+        "compute_profiles": {"narrow": "fixture", "wide": "fixture-next"},
+        "candidates": [{"id": "fixture", "profile": "one-island"},
+                       {"id": "fixture-next", "profile": "all-gpu-single-wide"}],
     }
 
 
@@ -390,21 +398,32 @@ class ServicePoolTests(unittest.TestCase):
 
     def test_compute_profiles_use_compatible_two_or_four_gpu_slots(self):
         backend, _, service = self.backend()
-        default = backend.warm(compute_profile="default")
-        self.assertEqual((default["compute_profile"], len(default["gpu_uuids"])), ("default", 2))
-        backend.release(default["service_lease_id"])
-        reused = backend.warm(compute_profile="default")
+        narrow = backend.warm(compute_profile="narrow")
+        self.assertEqual((narrow["model_id"], narrow["compute_profile"], len(narrow["gpu_uuids"])), ("fixture", "narrow", 2))
+        backend.release(narrow["service_lease_id"])
+        reused = backend.warm(compute_profile="narrow")
         self.assertTrue(reused["reused"])
         backend.release(reused["service_lease_id"])
         wide = backend.warm(compute_profile="wide")
-        self.assertEqual((wide["compute_profile"], len(wide["gpu_uuids"])), ("wide", 4))
+        self.assertEqual((wide["model_id"], wide["compute_profile"], len(wide["gpu_uuids"])), ("fixture-next", "wide", 4))
         self.assertFalse(wide["reused"])
         self.assertEqual(service.starts, 2)
         backend.close()
 
+    def test_profile_candidate_change_reloads_idle_slot(self):
+        backend, _, service = self.backend()
+        first = backend.warm(compute_profile="wide")
+        self.assertEqual(first["model_id"], "fixture-next")
+        backend.release(first["service_lease_id"])
+        backend.profile["compute_profiles"]["wide"] = "fixture"
+        reloaded = backend.warm(compute_profile="wide")
+        self.assertEqual((reloaded["model_id"], reloaded["reused"], service.starts),
+                         ("fixture", False, 2))
+        backend.close()
+
     def test_wide_never_evicts_an_active_incompatible_slot(self):
         backend, runtime, service = self.backend()
-        active = backend.warm(compute_profile="default")
+        active = backend.warm(compute_profile="narrow")
         with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
             backend.admit("wide")
         self.assertEqual(service.starts, 1)
@@ -412,13 +431,13 @@ class ServicePoolTests(unittest.TestCase):
         self.assertIn(active["owner_id"], runtime.host.owners)
         backend.close()
 
-    def test_observer_turn_reports_wide_profile_metadata(self):
+    def test_observer_turn_defaults_to_wide_profile_metadata(self):
         backend, _, service = self.backend()
         result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
             {"role": "system", "content": "investigate"}, {"role": "user", "content": "question"},
-        ], "max_tokens": 128, "timeout_seconds": 10, "compute_profile": "wide"})
+        ], "max_tokens": 128, "timeout_seconds": 10})
         self.assertEqual((result["status"], result["model_id"], result["compute_profile"]),
-                         ("available", "fixture", "wide"))
+                         ("available", "fixture-next", "wide"))
         self.assertEqual(len(backend.status()["slots"][0]["gpu_uuids"]), 4)
         backend.close()
 
@@ -523,13 +542,13 @@ class ServicePoolTests(unittest.TestCase):
             {"role": "system", "content": "system prompt"},
             {"role": "user", "content": "evidence E-1"},
             {"role": "assistant", "content": "{\"action\":\"search_source\"}"},
-        ], "max_tokens": 256, "timeout_seconds": 20}
+        ], "max_tokens": 256, "timeout_seconds": 20, "compute_profile": "narrow"}
         result = backend.run_observer_turn(request)
         self.assertEqual(result, {"status": "available", "authoritative": False,
                                   "text": '{"action":"answer"}',
                                   "usage": {"completion_tokens": 7}, "provider": "llama-server",
                                   "warm_model_reused": False, "model_id": "fixture",
-                                  "compute_profile": "default", "compatibility_key": result["compatibility_key"]})
+                                  "compute_profile": "narrow", "compatibility_key": result["compatibility_key"]})
         self.assertEqual(service.requests[0][2], {"messages": request["messages"],
                                                    "max_tokens": 256, "timeout_seconds": 20.0})
         self.assertEqual(backend.status()["active_leases"], 0)

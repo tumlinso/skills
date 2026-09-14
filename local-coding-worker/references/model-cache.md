@@ -17,6 +17,13 @@ and free-space margin, copies into a same-filesystem partial directory, hashes
 the copied payload, fsyncs durable files, and atomically renames it. Models are
 not deleted after tasks.
 
+The production profile maps `narrow` statically to the cached
+Qwen3-Coder-30B-A3B Q4_K_M candidate on one two-GPU island and `wide`
+(the observer default) to the cached Qwen3-Coder-Next Q4_K_M candidate on the
+topology-derived four-GPU bundle. Slots are reusable only when both candidate
+identity and compute profile match. Switching profiles evicts and reloads an
+idle incompatible slot; an actively leased/generating slot is never evicted.
+
 Ordinary use performs quick READY, schema, size, immutable-path, GGUF-header,
 inode, and mtime checks. Install, explicit `verify --full`, and metadata change
 perform full SHA-256 verification. The active-profile pointer is atomic and

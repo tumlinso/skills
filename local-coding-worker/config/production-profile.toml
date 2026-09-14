@@ -48,6 +48,10 @@ worker_layout = "one-per-runtime-discovered-island"
 needs_codex_is_success = true
 reason = "Measured 32K Q4 services passed the dual-island memory, isolation, hot-reuse, oversubscription, and selective/global preemption guards; allocation remains demand-driven with one active task per runtime-discovered island."
 
+[compute_profiles]
+narrow = "qwen3-coder-30b-a3b-instruct-q4-k-m"
+wide = "qwen3-coder-next-q4-k-m"
+
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
 family = "qwen3-coder-30b-a3b-instruct"

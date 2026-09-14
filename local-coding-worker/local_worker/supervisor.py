@@ -103,7 +103,7 @@ class _ServiceSlot:
     cache_lease: Any
     gpu_uuids: tuple[str, ...]
     compatibility_key: str
-    compute_profile: str = "default"
+    compute_profile: str = "narrow"
     service_lease_id: str | None = None
     state: str = "idle"
     idle_since: float | None = None
@@ -116,7 +116,7 @@ class _Admission:
     slot_id: str | None
     owner_id: str
     gpu_uuids: tuple[str, ...]
-    compute_profile: str = "default"
+    compute_profile: str = "narrow"
 
 
 class ProductionBackend:
@@ -184,6 +184,21 @@ class ProductionBackend:
             raise SupervisorError(f"active model is absent from production profile: {candidate_id}")
         return candidate
 
+    def _model_for_profile(self, compute_profile: str) -> dict[str, Any]:
+        candidate_id = self.profile.get("compute_profiles", {}).get(compute_profile)
+        if not isinstance(candidate_id, str):
+            raise SupervisorError(f"compute profile is not configured: {compute_profile}")
+        installed = [item for item in self.cache.list()
+                     if item.get("candidate_id") == candidate_id and item.get("ready") is True]
+        if len(installed) != 1:
+            raise SupervisorError(f"configured model is not installed uniquely: {candidate_id}")
+        return {"candidate_id": candidate_id, "payload_sha256": installed[0]["payload_sha256"]}
+
+    def _slot_matches_profile(self, slot: _ServiceSlot, compute_profile: str) -> bool:
+        selected = self._model_for_profile(compute_profile)
+        return (slot.compute_profile == compute_profile and
+                slot.endpoint_descriptor.get("model_id") == selected["candidate_id"])
+
     def _version(self, binary: str) -> str:
         result = subprocess.run([binary, "--version"], capture_output=True, text=True, timeout=30, check=False)
         return (result.stdout + result.stderr)[-8000:]
@@ -246,9 +261,9 @@ class ProductionBackend:
                   else "HOST_TOPOLOGY_UNSUPPORTED")
         raise SupervisorError(f"{reason}: retryable=false")
 
-    def admit(self, compute_profile: str = "default") -> dict[str, Any]:
+    def admit(self, compute_profile: str = "narrow") -> dict[str, Any]:
         """Atomically reserve a real GPU island without starting a model."""
-        if compute_profile not in {"default", "wide"}:
+        if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
         self._enforce_host_topology()
         if self.draining:
@@ -260,7 +275,7 @@ class ProductionBackend:
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
             if slot.slot_id in bound_slots or slot.service_lease_id is not None:
                 continue
-            if slot.compute_profile != compute_profile:
+            if not self._slot_matches_profile(slot, compute_profile):
                 self._evict_slot(slot.slot_id)
                 continue
             if not self._healthy(slot):
@@ -278,9 +293,7 @@ class ProductionBackend:
             return {"status": "admitted", "admission_id": admission_id,
                     "capacity": self.max_slots, "active_admissions": len(self._admissions)}
 
-        active = self.cache.active()
-        if not active:
-            raise SupervisorError("local model is not installed")
+        active = self._model_for_profile(compute_profile)
         candidate = self._candidate(str(active["candidate_id"]))
         gpu_count = 4 if compute_profile == "wide" else (2 if candidate.get("profile") == "one-island" else 4)
         self.runtime.host.discover_gpus()
@@ -343,8 +356,8 @@ class ProductionBackend:
             "service_lease_id": lease_id, "reused": reused,
         }
 
-    def warm(self, admission_id: str | None = None, compute_profile: str = "default") -> dict[str, Any]:
-        if compute_profile not in {"default", "wide"}:
+    def warm(self, admission_id: str | None = None, compute_profile: str = "narrow") -> dict[str, Any]:
+        if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
         if admission_id is None:
             self._enforce_host_topology()
@@ -366,10 +379,10 @@ class ProductionBackend:
             return self._start_slot(admission=admission, compute_profile=admission.compute_profile)
         bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-            if slot.slot_id not in bound_slots and slot.service_lease_id is None and slot.compute_profile == compute_profile and self._healthy(slot):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile) and self._healthy(slot):
                 return self._lease(slot, reused=True)
         for slot in list(self._slots.values()):
-            if slot.slot_id not in bound_slots and slot.service_lease_id is None and (slot.compute_profile != compute_profile or not self._healthy(slot)):
+            if slot.slot_id not in bound_slots and slot.service_lease_id is None and (not self._slot_matches_profile(slot, compute_profile) or not self._healthy(slot)):
                 self._evict_slot(slot.slot_id)
         if len(self._slots) >= self.max_slots:
             raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
@@ -377,16 +390,14 @@ class ProductionBackend:
             # A prior request may have populated an idle slot while this caller waited.
             bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
             for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
-                if slot.slot_id not in bound_slots and slot.service_lease_id is None and slot.compute_profile == compute_profile and self._healthy(slot):
+                if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile) and self._healthy(slot):
                     return self._lease(slot, reused=True)
             if len(self._slots) >= self.max_slots:
                 raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
             return self._start_slot(compute_profile=compute_profile)
 
-    def _start_slot(self, admission: _Admission | None = None, compute_profile: str = "default") -> dict[str, Any]:
-        active = self.cache.active()
-        if not active:
-            raise SupervisorError("persistent active model cache is missing")
+    def _start_slot(self, admission: _Admission | None = None, compute_profile: str = "narrow") -> dict[str, Any]:
+        active = self._model_for_profile(compute_profile)
         self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         candidate = self._candidate(str(active["candidate_id"]))
         gpu_count = 4 if compute_profile == "wide" else (2 if candidate.get("profile") == "one-island" else 4)
@@ -564,12 +575,12 @@ class ProductionBackend:
             messages = request.get("messages")
             max_tokens = request.get("max_tokens")
             timeout_seconds = request.get("timeout_seconds")
-            compute_profile = request.get("compute_profile", "default")
+            compute_profile = request.get("compute_profile", "wide")
             if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
-                    not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"default", "wide"}):
+                    not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"}):
                 raise SupervisorError("investigator_turn_invalid_request")
             normalized: list[dict[str, str]] = []
             for message in messages:
