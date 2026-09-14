@@ -238,7 +238,7 @@ class _Adapter:
 
 
 class _Service:
-    def __init__(self, *, fail_start=0, delay=0.0, fail_run=False):
+    def __init__(self, *, fail_start=0, delay=0.0, fail_run=False, run_delay=0.0):
         self.handles = {}
         self.starts = 0
         self.fail_start = fail_start
@@ -247,6 +247,9 @@ class _Service:
         self.maximum_loading = 0
         self.lock = threading.Lock()
         self.fail_run = fail_run
+        self.run_delay = run_delay
+        self.running = 0
+        self.maximum_running = 0
         self.requests = []
         self.contexts = []
 
@@ -271,7 +274,14 @@ class _Service:
         self.requests.append((name, handle, request))
         if self.fail_run:
             raise AdapterError("fixture run failure")
-        return {"text": '{"action":"answer"}', "usage": {"completion_tokens": 7}}
+        with self.lock:
+            self.running += 1
+            self.maximum_running = max(self.maximum_running, self.running)
+        try:
+            if self.run_delay: time.sleep(self.run_delay)
+            return {"text": '{"action":"answer"}', "usage": {"completion_tokens": 7}}
+        finally:
+            with self.lock: self.running -= 1
     def drain(self, name, handle): return {"draining": True}
     def evict(self, name, handle): self.handles[handle] = False; return {"evicted": True}
 
@@ -626,15 +636,62 @@ class ServicePoolTests(unittest.TestCase):
 
     def test_observer_turn_busy_returns_unavailable_without_admission(self):
         backend, runtime, service = self.backend()
-        backend._analysis_lock.acquire()
+        backend._analysis_capacity.acquire()
+        backend._analysis_capacity.acquire()
         try:
             result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
                 {"role": "user", "content": "question"},
             ], "max_tokens": 64, "timeout_seconds": 10})
         finally:
-            backend._analysis_lock.release()
+            backend._analysis_capacity.release()
+            backend._analysis_capacity.release()
         self.assertEqual((result["status"], result["reason"]), ("unavailable", "observer_provider_busy"))
         self.assertEqual((service.starts, runtime.host.owners), (0, {}))
+        backend.close()
+
+    def test_two_preopened_narrow_sessions_generate_concurrently_and_return_idle(self):
+        service = _Service(run_delay=0.05)
+        backend, runtime, _ = self.backend(service=service)
+        opened = backend.open_observer_sessions(2, compute_profile="narrow", parallelism="layer")
+        sessions = opened["session_ids"]
+        slots = backend.status()["slots"]
+        self.assertEqual({tuple(slot["gpu_uuids"]) for slot in slots},
+                         {("GPU-a", "GPU-b"), ("GPU-c", "GPU-d")})
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "question"}], "max_tokens": 64,
+            "timeout_seconds": 10, "compute_profile": "narrow", "parallelism": "layer"}
+        results = []
+        threads = [threading.Thread(target=lambda session=session: results.append(
+            backend.run_observer_turn({**request, "session_id": session}))) for session in sessions]
+        for thread in threads: thread.start()
+        for thread in threads: thread.join()
+        self.assertEqual((len(results), service.maximum_running, service.starts), (2, 2, 2))
+        self.assertTrue(all(item["status"] == "available" for item in results))
+        for session in sessions: backend.close_observer_session(session)
+        self.assertEqual((backend.status()["active_leases"],
+                          [slot["state"] for slot in backend.status()["slots"]]), (0, ["idle", "idle"]))
+        reused = backend.warm(compute_profile="narrow", parallelism="layer")
+        self.assertTrue(reused["reused"])
+        backend.release(reused["service_lease_id"])
+        backend.close()
+
+    def test_one_preopened_narrow_session_is_reusable_for_serial_branches(self):
+        backend, _, service = self.backend()
+        first = backend.open_observer_sessions(
+            1, compute_profile="narrow", parallelism="layer")["session_ids"][0]
+        backend.close_observer_session(first)
+        second = backend.open_observer_sessions(
+            1, compute_profile="narrow", parallelism="layer")["session_ids"][0]
+        self.assertEqual(service.starts, 1)
+        backend.close_observer_session(second)
+        backend.close()
+
+    def test_parallel_open_fails_if_second_nvlink_island_is_unavailable(self):
+        backend, runtime, service = self.backend(islands=1, maximum=2)
+        with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
+            backend.open_observer_sessions(2, compute_profile="narrow", parallelism="layer")
+        self.assertEqual((service.starts, runtime.host.owners,
+                          backend.status()["active_admissions"]), (0, {}, 0))
         backend.close()
 
 

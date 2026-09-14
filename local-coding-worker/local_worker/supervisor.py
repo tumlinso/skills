@@ -15,6 +15,7 @@ import time
 import tomllib
 import uuid
 from dataclasses import dataclass
+from functools import wraps
 from pathlib import Path
 from typing import Any, Protocol
 from urllib import error as urllib_error
@@ -29,6 +30,14 @@ from .canonical_runtime import subprocess_environment, validate as validate_cano
 
 class SupervisorError(RuntimeError):
     pass
+
+
+def _pool_synchronized(method):
+    @wraps(method)
+    def synchronized(self, *args, **kwargs):
+        with self._pool_lock:
+            return method(self, *args, **kwargs)
+    return synchronized
 
 
 def runtime_root(service_state_root: str | Path | None = None) -> Path:
@@ -171,8 +180,9 @@ class ProductionBackend:
         self._leases: dict[str, str] = {}
         self._admissions: dict[str, _Admission] = {}
         self._preempted_leases: set[str] = set()
+        self._pool_lock = threading.RLock()
         self._start_lock = threading.Lock()
-        self._analysis_lock = threading.Lock()
+        self._analysis_capacity = threading.BoundedSemaphore(2)
         self.draining = False
         self.ttl = float(policy.get("hot_idle_seconds", 900))
         self.admission_ttl = 60.0
@@ -259,6 +269,7 @@ class ProductionBackend:
         payload = json.dumps(values, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
+    @_pool_synchronized
     def status(self) -> dict[str, Any]:
         if self.runtime_identity is not None:
             validate_canonical_runtime(self.runtime_identity)
@@ -292,6 +303,7 @@ class ProductionBackend:
                   else "HOST_TOPOLOGY_UNSUPPORTED")
         raise SupervisorError(f"{reason}: retryable=false")
 
+    @_pool_synchronized
     def admit(self, compute_profile: str = "narrow", parallelism: str = "default") -> dict[str, Any]:
         """Atomically reserve a real GPU island without starting a model."""
         if compute_profile not in {"narrow", "wide"}:
@@ -368,6 +380,7 @@ class ProductionBackend:
         if slot is not None and slot.service_lease_id is None:
             self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
 
+    @_pool_synchronized
     def cancel_admission(self, admission_id: str) -> dict[str, Any]:
         admission = self._admissions.pop(admission_id, None)
         if admission is None:
@@ -392,6 +405,7 @@ class ProductionBackend:
             "service_lease_id": lease_id, "reused": reused,
         }
 
+    @_pool_synchronized
     def warm(self, admission_id: str | None = None, compute_profile: str = "narrow", parallelism: str = "default") -> dict[str, Any]:
         if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
@@ -538,6 +552,7 @@ class ProductionBackend:
                 self.runtime.host.release(owner_id)
             raise
 
+    @_pool_synchronized
     def release(self, service_lease_id: str | None = None) -> dict[str, Any]:
         if service_lease_id is None:
             if len(self._leases) != 1:
@@ -555,6 +570,33 @@ class ProductionBackend:
         self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
         return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                 "clients": len(self._leases), "idle_ttl_seconds": self.ttl}
+
+    @_pool_synchronized
+    def open_observer_sessions(self, count: int, *, compute_profile: str,
+                               parallelism: str) -> dict[str, Any]:
+        if count not in {1, 2} or compute_profile != "narrow":
+            raise SupervisorError("observer_sessions_require_one_or_two_narrow_sessions")
+        admissions: list[str] = []
+        leases: list[dict[str, Any]] = []
+        try:
+            # Reserve both disjoint islands before either model is started.
+            for _ in range(count):
+                admissions.append(str(self.admit(compute_profile, parallelism)["admission_id"]))
+            for admission_id in list(admissions):
+                leases.append(self.warm(admission_id))
+                admissions.remove(admission_id)
+        except Exception:
+            for lease in leases:
+                self.release(str(lease["service_lease_id"]))
+            for admission_id in admissions:
+                if admission_id in self._admissions:
+                    self.cancel_admission(admission_id)
+            raise
+        return {"status": "available", "session_ids": [str(item["service_lease_id"]) for item in leases],
+                "topology": [item.get("topology_order", {}) for item in leases]}
+
+    def close_observer_session(self, session_id: str) -> dict[str, Any]:
+        return self.release(session_id)
 
     def analyze_observer_packet(self, packet: dict[str, Any]) -> dict[str, Any]:
         """Summarize an already-authorized immutable observer packet.
@@ -574,7 +616,7 @@ class ProductionBackend:
             refs = {str(item["id"]) for item in evidence if isinstance(item, dict) and isinstance(item.get("id"), str)}
             if len(refs) != len(evidence) or len(refs) > 64:
                 raise SupervisorError("observer_packet_evidence_refs_invalid")
-            if not self._analysis_lock.acquire(blocking=False):
+            if not self._analysis_capacity.acquire(blocking=False):
                 raise SupervisorError("observer_provider_busy")
             try:
                 admission = self.admit()
@@ -602,7 +644,7 @@ class ProductionBackend:
                     else:
                         self.cancel_admission(str(admission["admission_id"]))
             finally:
-                self._analysis_lock.release()
+                self._analysis_capacity.release()
         except (SupervisorError, AdapterError, json.JSONDecodeError) as error:
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
                     "reason": str(error)[:500], "fallback": "authoritative_compact_envelope"}
@@ -617,7 +659,7 @@ class ProductionBackend:
         try:
             if not isinstance(request, dict):
                 raise SupervisorError("investigator_turn_invalid_request")
-            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism"}
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id"}
             if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/2":
                 raise SupervisorError("investigator_turn_invalid_request")
             messages = request.get("messages")
@@ -625,12 +667,14 @@ class ProductionBackend:
             timeout_seconds = request.get("timeout_seconds")
             compute_profile = request.get("compute_profile", "wide")
             parallelism = request.get("parallelism", "default")
+            session_id = request.get("session_id")
             if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
                     not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
-                    parallelism not in {"default", "layer", "tensor"}):
+                    parallelism not in {"default", "layer", "tensor"} or
+                    (session_id is not None and (not isinstance(session_id, str) or len(session_id) > 128))):
                 raise SupervisorError("investigator_turn_invalid_request")
             self._resolved_parallelism(str(compute_profile), str(parallelism))
             normalized: list[dict[str, str]] = []
@@ -643,14 +687,25 @@ class ProductionBackend:
             encoded = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
             if len(encoded.encode("utf-8")) > 96 * 1024:
                 raise SupervisorError("investigator_turn_messages_too_large")
-            if not self._analysis_lock.acquire(blocking=False):
+            if not self._analysis_capacity.acquire(blocking=False):
                 raise SupervisorError("observer_provider_busy")
             try:
-                admission = self.admit(str(compute_profile), str(parallelism))
+                admission: dict[str, Any] | None = None
                 lease: dict[str, Any] | None = None
                 try:
-                    lease = self.warm(str(admission["admission_id"]))
-                    slot = self._slots[str(lease["slot_id"])]
+                    if session_id is None:
+                        admission = self.admit(str(compute_profile), str(parallelism))
+                        lease = self.warm(str(admission["admission_id"]))
+                    else:
+                        with self._pool_lock:
+                            slot_id = self._leases.get(session_id)
+                            slot = self._slots.get(str(slot_id)) if slot_id is not None else None
+                            if slot is None or slot.service_lease_id != session_id:
+                                raise SupervisorError("observer_session_unavailable")
+                            lease = {**slot.endpoint_descriptor, "slot_id": slot.slot_id,
+                                     "service_lease_id": session_id, "reused": True}
+                    with self._pool_lock:
+                        slot = self._slots[str(lease["slot_id"])]
                     raw = self.service.run("llama", slot.handle, {
                         "messages": normalized,
                         "max_tokens": max_tokens,
@@ -669,16 +724,20 @@ class ProductionBackend:
                             "topology_order": lease.get("topology_order"),
                             "compatibility_key": lease.get("compatibility_key")}
                 finally:
-                    if lease is not None:
+                    if session_id is None and lease is not None:
                         self.release(str(lease["service_lease_id"]))
-                    else:
-                        self.cancel_admission(str(admission["admission_id"]))
+                    elif session_id is None and admission is not None:
+                        admission_id = str(admission["admission_id"])
+                        with self._pool_lock:
+                            if admission_id in self._admissions:
+                                self.cancel_admission(admission_id)
             finally:
-                self._analysis_lock.release()
+                self._analysis_capacity.release()
         except (SupervisorError, AdapterError) as error:
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
                     "reason": str(error)[:500], "fallback": "project_control_read_broker"}
 
+    @_pool_synchronized
     def preemption_status(self, service_lease_id: str | None = None) -> dict[str, Any]:
         if service_lease_id in self._preempted_leases:
             self._preempted_leases.discard(service_lease_id)
@@ -692,6 +751,7 @@ class ProductionBackend:
         return {"preempt_requested": bool(requested), "slot_ids": requested,
                 "draining": self.draining, "clients": len(self._leases)}
 
+    @_pool_synchronized
     def drain(self) -> dict[str, Any]:
         self.draining = True
         for slot in self._slots.values():
@@ -717,6 +777,7 @@ class ProductionBackend:
                 self.runtime.host.release(slot.owner_id)
         return True
 
+    @_pool_synchronized
     def evict(self) -> dict[str, Any]:
         for admission in list(self._admissions.values()):
             self._release_admission(admission)
@@ -726,6 +787,7 @@ class ProductionBackend:
         self.draining = False
         return {"evicted": True, "quiescent": True}
 
+    @_pool_synchronized
     def poll(self) -> None:
         now = time.monotonic()
         for admission_id, admission in list(self._admissions.items()):
