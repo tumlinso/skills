@@ -191,7 +191,11 @@ class _Host:
         self.priority_changes = 0
 
     def discover_gpus(self): self.discoveries += 1; return []
-    def compound_gpu_bundles(self, count): return list(self.bundles)
+    def compound_gpu_bundles(self, count):
+        if count == 4 and len(self.bundles) == 2:
+            return [{"resource_ids": [item for bundle in self.bundles for item in bundle["resource_ids"]],
+                     "exclusive_resources": [item for bundle in self.bundles for item in bundle["exclusive_resources"]]}]
+        return list(self.bundles)
     def reserve_service(self, **kwargs):
         request = kwargs["resource_request"]
         wanted = set([*request["ids"], *request["exclusive_resources"]])
@@ -384,6 +388,40 @@ class ServicePoolTests(unittest.TestCase):
         )
         backend.close()
 
+    def test_compute_profiles_use_compatible_two_or_four_gpu_slots(self):
+        backend, _, service = self.backend()
+        default = backend.warm(compute_profile="default")
+        self.assertEqual((default["compute_profile"], len(default["gpu_uuids"])), ("default", 2))
+        backend.release(default["service_lease_id"])
+        reused = backend.warm(compute_profile="default")
+        self.assertTrue(reused["reused"])
+        backend.release(reused["service_lease_id"])
+        wide = backend.warm(compute_profile="wide")
+        self.assertEqual((wide["compute_profile"], len(wide["gpu_uuids"])), ("wide", 4))
+        self.assertFalse(wide["reused"])
+        self.assertEqual(service.starts, 2)
+        backend.close()
+
+    def test_wide_never_evicts_an_active_incompatible_slot(self):
+        backend, runtime, service = self.backend()
+        active = backend.warm(compute_profile="default")
+        with self.assertRaisesRegex(SupervisorError, "resource_unavailable"):
+            backend.admit("wide")
+        self.assertEqual(service.starts, 1)
+        self.assertEqual(backend.status()["slots"][0]["state"], "active")
+        self.assertIn(active["owner_id"], runtime.host.owners)
+        backend.close()
+
+    def test_observer_turn_reports_wide_profile_metadata(self):
+        backend, _, service = self.backend()
+        result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "system", "content": "investigate"}, {"role": "user", "content": "question"},
+        ], "max_tokens": 128, "timeout_seconds": 10, "compute_profile": "wide"})
+        self.assertEqual((result["status"], result["model_id"], result["compute_profile"]),
+                         ("available", "fixture", "wide"))
+        self.assertEqual(len(backend.status()["slots"][0]["gpu_uuids"]), 4)
+        backend.close()
+
     def test_admission_reserves_capacity_before_model_or_service_start(self):
         backend, runtime, service = self.backend()
         first = backend.admit()
@@ -470,7 +508,7 @@ class ServicePoolTests(unittest.TestCase):
 
     def test_observer_turn_rejects_non_text_protocol_fields_before_admission(self):
         backend, runtime, service = self.backend()
-        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
             {"role": "system", "content": "investigate"},
         ], "max_tokens": 128, "timeout_seconds": 30, "tools": []}
         result = backend.run_observer_turn(request)
@@ -481,7 +519,7 @@ class ServicePoolTests(unittest.TestCase):
 
     def test_observer_turn_forwards_only_text_messages_and_releases_lease(self):
         backend, _, service = self.backend()
-        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
             {"role": "system", "content": "system prompt"},
             {"role": "user", "content": "evidence E-1"},
             {"role": "assistant", "content": "{\"action\":\"search_source\"}"},
@@ -490,7 +528,8 @@ class ServicePoolTests(unittest.TestCase):
         self.assertEqual(result, {"status": "available", "authoritative": False,
                                   "text": '{"action":"answer"}',
                                   "usage": {"completion_tokens": 7}, "provider": "llama-server",
-                                  "warm_model_reused": False})
+                                  "warm_model_reused": False, "model_id": "fixture",
+                                  "compute_profile": "default", "compatibility_key": result["compatibility_key"]})
         self.assertEqual(service.requests[0][2], {"messages": request["messages"],
                                                    "max_tokens": 256, "timeout_seconds": 20.0})
         self.assertEqual(backend.status()["active_leases"], 0)
@@ -498,7 +537,7 @@ class ServicePoolTests(unittest.TestCase):
 
     def test_observer_turn_cancels_admission_and_releases_on_errors(self):
         backend, runtime, service = self.backend(service=_Service(fail_run=True))
-        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
             {"role": "user", "content": "question"},
         ], "max_tokens": 128, "timeout_seconds": 15}
         failed_run = backend.run_observer_turn(request)
@@ -516,7 +555,7 @@ class ServicePoolTests(unittest.TestCase):
         backend, runtime, service = self.backend()
         backend._analysis_lock.acquire()
         try:
-            result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/1", "messages": [
+            result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
                 {"role": "user", "content": "question"},
             ], "max_tokens": 64, "timeout_seconds": 10})
         finally:
