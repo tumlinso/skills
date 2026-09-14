@@ -566,8 +566,9 @@ class ServicePoolTests(unittest.TestCase):
         ], "max_tokens": 256, "timeout_seconds": 20, "compute_profile": "narrow"}
         result = backend.run_observer_turn(request)
         self.assertEqual(result, {"status": "available", "authoritative": False,
-                                  "text": '{"action":"answer"}',
-                              "usage": {"completion_tokens": 7}, "provider": "llama-server",
+                              "text": '{"action":"answer"}',
+                              "usage": {"completion_tokens": 7}, "response_metadata": {},
+                              "provider": "llama-server",
                               "warm_model_reused": False, "model_id": "fixture",
                               "compute_profile": "narrow", "parallelism": "layer",
                               "compatibility_key": result["compatibility_key"]})

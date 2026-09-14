@@ -15,6 +15,26 @@ from typing import Any, Callable
 from ..service import AdapterError
 
 
+def _bounded_shape(value: Any, *, depth: int = 0) -> dict[str, Any]:
+    """Describe non-content response fields without retaining an unbounded body."""
+    if value is None:
+        return {"type": "null"}
+    if isinstance(value, str):
+        return {"type": "string", "characters": len(value), "bytes": len(value.encode("utf-8")),
+                "prefix": value[:256], "suffix": value[-256:] if len(value) > 256 else ""}
+    if isinstance(value, (bool, int, float)):
+        return {"type": type(value).__name__, "value": value}
+    if isinstance(value, list):
+        return {"type": "array", "length": len(value),
+                "items": [] if depth >= 2 else [_bounded_shape(item, depth=depth + 1) for item in value[:2]]}
+    if isinstance(value, dict):
+        keys = sorted(str(key) for key in value)[:16]
+        return {"type": "object", "keys": keys,
+                "fields": {} if depth >= 2 else {
+                    key: _bounded_shape(value[key], depth=depth + 1) for key in keys[:8]}}
+    return {"type": type(value).__name__}
+
+
 def _http_json(method: str, url: str, payload: dict[str, Any] | None, timeout: float) -> tuple[int, dict[str, Any]]:
     data = None if payload is None else json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(url, data=data, method=method, headers={"Content-Type": "application/json"})
@@ -197,9 +217,31 @@ class LlamaCppServerAdapter:
         server["usage"]["completion_tokens"] += int(usage.get("completion_tokens", 0))
         server["usage"]["duration_ms"] += duration
         choices = body.get("choices") or []
-        text = str((choices[0].get("message") or {}).get("content", "")) if choices else ""
+        choice = choices[0] if choices and isinstance(choices[0], dict) else {}
+        message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+        content = message.get("content")
+        text = content if isinstance(content, str) else ""
+        other_keys = sorted(key for key in message if key not in {"content", "tool_calls", "reasoning_content"})[:8]
+        other_fields = {key: _bounded_shape(message[key]) for key in other_keys}
+        response_metadata = {
+            "finish_reason": choice.get("finish_reason"),
+            "message": {
+                "content_present": "content" in message,
+                "content_type": type(content).__name__,
+                "content_characters": len(text),
+                "content_bytes": len(text.encode("utf-8")),
+                "content_prefix": text[:1024],
+                "content_suffix": text[-1024:] if len(text) > 1024 else "",
+                "field_names": sorted(str(key) for key in message)[:24],
+                "tool_calls": _bounded_shape(message.get("tool_calls")) if "tool_calls" in message else {"present": False},
+                "reasoning_content": _bounded_shape(message.get("reasoning_content")) if "reasoning_content" in message else {"present": False},
+                "other_fields": other_fields,
+            },
+            "choice_fields": sorted(str(key) for key in choice)[:16],
+        }
         return {"status": "succeeded", "request_id": request_id, "text": text[:20_000], "usage": usage,
-                "duration_ms": round(duration, 3), "raw_output_omitted_chars": max(len(text) - 20_000, 0)}
+                "duration_ms": round(duration, 3), "raw_output_omitted_chars": max(len(text) - 20_000, 0),
+                "response_metadata": response_metadata}
 
     def cancel(self, handle: str, request_id: str | None = None) -> dict[str, Any]:
         server = self._server(handle)

@@ -631,6 +631,7 @@ class ProductionBackend:
                     usage = raw.get("usage")
                     return {"status": "available", "authoritative": False,
                             "text": raw["text"], "usage": usage if isinstance(usage, dict) else {},
+                            "response_metadata": raw.get("response_metadata", {}),
                             "provider": "llama-server", "warm_model_reused": bool(lease.get("reused")),
                             "model_id": lease.get("model_id"), "compute_profile": lease.get("compute_profile"),
                             "parallelism": lease.get("parallelism"),

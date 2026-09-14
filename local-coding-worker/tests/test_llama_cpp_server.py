@@ -43,8 +43,16 @@ class LlamaCppServerTests(unittest.TestCase):
             log = root / "server.log"
             factory = Factory(); help_calls = []
             def help_runner(*args, **kwargs): help_calls.append(args); return Help()
+            def transport(method, *_args):
+                if method == "POST":
+                    return 200, {"choices": [{"finish_reason": "tool_calls", "message": {
+                        "content": "{not-json", "role": "assistant", "reasoning_content": "plan",
+                        "tool_calls": [{"id": "call-1", "type": "function", "function": {
+                            "name": "search_source", "arguments": "{}"}}]}}],
+                        "usage": {"completion_tokens": 9}}
+                return 200, {"status": "ok"}
             adapter = LlamaCppServerAdapter(str(binary), process_factory=factory,
-                help_runner=help_runner, transport=lambda *args: (200, {"status": "ok"}))
+                help_runner=help_runner, transport=transport)
             profile = {"format": "CORE4-MODEL-SERVICE/2", "model_sha256": "a" * 64,
                 "allocated_gpu_uuids": ["GPU-a", "GPU-b"], "split_mode": "layer",
                 "tensor_split": [1, 2], "main_gpu": 0, "context_size": 16384,
@@ -58,6 +66,12 @@ class LlamaCppServerTests(unittest.TestCase):
             self.assertEqual(process.argv[process.argv.index("--tensor-split") + 1], "1,2")
             self.assertIn("--fit", process.argv)
             self.assertEqual(len(help_calls), 1)
+            result = adapter.run(handle, {"messages": [{"role": "user", "content": "test"}]})
+            metadata = result["response_metadata"]
+            self.assertEqual((result["text"], metadata["finish_reason"]), ("{not-json", "tool_calls"))
+            self.assertEqual(metadata["message"]["content_characters"], 9)
+            self.assertEqual(metadata["message"]["tool_calls"]["type"], "array")
+            self.assertEqual(metadata["message"]["reasoning_content"]["type"], "string")
             with mock.patch("os.killpg", side_effect=ProcessLookupError):
                 adapter.evict(handle)
             self.assertTrue(log.exists())
