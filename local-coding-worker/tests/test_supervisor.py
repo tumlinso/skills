@@ -332,6 +332,35 @@ class ServicePoolTests(unittest.TestCase):
             self.assertEqual(backend.service_state_root, namespace)
             self.assertEqual(runtime_root(namespace), namespace / "runtime")
 
+    def test_observer_status_is_in_memory_and_non_probing(self):
+        backend, runtime, service = self.backend(maximum=1)
+        with mock.patch.object(service, "health", wraps=service.health) as health:
+            initial = backend.observer_status()
+        self.assertEqual(initial, {
+            "format": "CORE4-OBSERVER-STATUS/1", "running": False,
+            "healthy": False, "draining": False, "clients": 0,
+            "active_leases": 0, "active_admissions": 0, "capacity": 1,
+            "slots": [],
+        })
+        health.assert_not_called()
+        self.assertEqual((service.starts, runtime.host.discoveries), (0, 0))
+
+        lease = backend.warm()
+        discovery_count = runtime.host.discoveries
+        with mock.patch.object(service, "health", wraps=service.health) as health:
+            active = backend.observer_status()
+        health.assert_not_called()
+        self.assertEqual(service.starts, 1)
+        self.assertEqual(runtime.host.discoveries, discovery_count)
+        self.assertEqual((active["running"], active["healthy"], active["active_leases"]),
+                         (True, True, 1))
+        self.assertEqual(active["slots"], [{
+            "slot_id": lease["slot_id"], "state": "active", "leased": True,
+            "compute_profile": "narrow", "parallelism": "layer",
+        }])
+        backend.release(lease["service_lease_id"])
+        backend.close()
+
     def backend(self, *, islands=2, maximum=2, ttl=900, service=None):
         runtime = _Runtime(islands=islands)
         service = service or _Service()

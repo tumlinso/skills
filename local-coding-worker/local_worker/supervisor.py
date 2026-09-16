@@ -301,6 +301,38 @@ class ProductionBackend:
             "endpoint": endpoint, "slots": summaries,
         }
 
+    @_pool_synchronized
+    def observer_status(self) -> dict[str, Any]:
+        """Return the in-process observer pool's known state without probing it.
+
+        This is intentionally a memory-only projection for an observer host.
+        In particular, it must stay safe to call while a model generation is in
+        progress: no health HTTP request, runtime/GPU operation, admission, or
+        service start is performed here.
+        """
+        summaries = [
+            {"slot_id": slot.slot_id, "state": slot.state,
+             "leased": slot.service_lease_id is not None,
+             "compute_profile": slot.compute_profile,
+             "parallelism": slot.parallelism}
+            for slot in sorted(self._slots.values(), key=lambda item: item.slot_id)
+        ]
+        running = bool(summaries)
+        draining = self.draining or any(item["state"] == "draining" for item in summaries)
+        return {
+            "format": "CORE4-OBSERVER-STATUS/1",
+            "running": running,
+            # This is deliberately known state, rather than an external probe.
+            "healthy": running and not draining and all(
+                item["state"] in {"idle", "active"} for item in summaries),
+            "draining": draining,
+            "clients": len(self._leases),
+            "active_leases": len(self._leases),
+            "active_admissions": len(self._admissions),
+            "capacity": self.max_slots,
+            "slots": summaries,
+        }
+
     def _enforce_host_topology(self) -> None:
         topology = self._classify_host_topology()
         # A connected four-GPU component is a scheduling fact, not a reason to
