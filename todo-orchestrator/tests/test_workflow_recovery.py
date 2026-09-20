@@ -308,7 +308,11 @@ class WorkflowRecoveryTests(unittest.TestCase):
 
     def test_stopped_first_class_worker_clean_scope_retires_lineage_and_is_idempotent(self) -> None:
         self.seed_dispatch(capability=True)
-        engine = self.engine()
+        engine = RecoveryEngine(
+            self.repo.service.db, self.repo.root, self.project_uuid,
+            process_probe=lambda *_: False, child_process_probe=lambda _: False,
+            actor_identity="test-owner",
+        )
         plan = engine.inspect("A")
         self.assertEqual(plan["status"], "recovery_needed")
         self.assertEqual(plan["blockers"], [])
@@ -392,7 +396,7 @@ class WorkflowRecoveryTests(unittest.TestCase):
                         conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('RUN','A','now','now',?)", (revision,))
                         conn.execute("INSERT INTO workflow_lanes(id,run_id,role,created_at,updated_at,revision) VALUES('LANE','RUN','implementer','now','now',?)", (revision,))
                         conn.execute(
-                            "INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,context_version,heartbeat_at,hostname,pid,created_at,revision) VALUES('D','LANE',?,?,1,'2999-01-01T00:00:00Z','remote',7,'now',?)",
+                            "INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,context_version,heartbeat_at,hostname,pid,created_at,revision) VALUES('D','LANE',?,?,1,'2000-01-01T00:00:00Z','remote',7,'now',?)",
                             (capsule["session"]["agent_id"], capsule["claim"]["claim_id"], revision),
                         )
                     other.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="A", event_type="fixture", payload={}, operation=seed)
@@ -438,7 +442,11 @@ class WorkflowRecoveryTests(unittest.TestCase):
     def test_dead_local_child_is_terminalized_artifacts_preserved_and_parent_resumes(self) -> None:
         self.seed_dispatch()
         self.seed_child(expires_at="2000-01-01T00:00:00Z")
-        engine = self.engine()
+        engine = RecoveryEngine(
+            self.repo.service.db, self.repo.root, self.project_uuid,
+            process_probe=lambda *_: False, child_process_probe=lambda _: False,
+            actor_identity="test-owner",
+        )
         plan = engine.inspect("A")
         child_action = next(item for item in plan["actions"] if item["kind"] == "terminalize_dead_child")
         self.assertEqual(child_action["preserved_candidate_ids"], ["CANDIDATE"])
@@ -517,6 +525,38 @@ class WorkflowRecoveryTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT state FROM lock_leases WHERE id='LOCK'").fetchone()[0], "recovered")
             self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='RESOURCE'").fetchone()[0], "recovered")
+
+    def test_delegated_recovery_refuses_unrelated_stale_resource(self) -> None:
+        self.seed_dispatch()
+        def seed(conn, revision):
+            conn.execute("INSERT INTO resource_classes(id,mode,metadata_json) VALUES('cpu','exclusive','{}')")
+            conn.execute("INSERT INTO resource_instances(id,class_id,capacity,hostname,metadata_json) VALUES('cpu:0','cpu',1,?,'{}')", (socket.gethostname(),))
+            conn.execute("INSERT INTO resource_leases(id,instance_id,session_id,token_hash,state,hostname,pid,acquired_at,heartbeat_at,expires_at) VALUES('OTHER','cpu:0',?,'x','active',?,999999,'now','2000-01-01T00:00:00Z','2000-01-01T00:00:00Z')", (self.session_id, socket.gethostname()))
+        self.mutate(seed)
+        plan = self.engine().inspect('A')
+        self.assertTrue(any(a['kind'] == 'release_resource' and a['task_id'] is None for a in plan['actions']))
+        self.assertFalse(self.engine().delegated_effects_are_exact(plan, 'A'))
+
+    def test_general_recovery_rejects_writer_after_final_inspection(self) -> None:
+        self.seed_dispatch()
+        engine = self.engine()
+        plan = engine.inspect('A')
+        original_inspect = RecoveryEngine.inspect
+        injected = False
+        def raced(instance, task_id):
+            nonlocal injected
+            fresh = original_inspect(instance, task_id)
+            if not injected:
+                injected = True
+                self.mutate(lambda conn, revision: conn.execute("UPDATE tasks SET title=title WHERE id='T'"))
+            return fresh
+        from unittest.mock import patch
+        with patch.object(RecoveryEngine, 'inspect', raced):
+            with self.assertRaises(TodoError) as error:
+                engine.execute(plan, 'race')
+        self.assertEqual(error.exception.code, 'recovery_plan_stale')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='DISPATCH'").fetchone()[0], 'active')
 
     def test_terminal_checkpoint_finalization_is_automatic_and_idempotent(self) -> None:
         token = self.repo.service.continue_work(task_id="T")["claim"]["claim_token"]

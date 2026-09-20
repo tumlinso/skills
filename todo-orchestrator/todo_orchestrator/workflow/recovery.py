@@ -220,6 +220,7 @@ class RecoveryEngine:
         actions: list[dict[str, object]] = []
         blockers: list[dict[str, object]] = []
         warnings: list[dict[str, object]] = []
+        authority_revision: int | None = None
         scope = " AND task_id=?" if task_id else ""
         args = (task_id,) if task_id else ()
 
@@ -229,6 +230,7 @@ class RecoveryEngine:
                 raise TodoError("recovery_project_mismatch", "Recovery project identity does not match the database")
             if task_id and not conn.execute("SELECT 1 FROM tasks WHERE id=?", (task_id,)).fetchone():
                 raise TodoError("task_not_found", f"Unknown task {task_id}")
+            authority_revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
 
             if task_id:
                 expired_plan = self._expired_coordinator_plan(conn, task_id, now)
@@ -296,7 +298,11 @@ class RecoveryEngine:
             blocked_dispatch_claims: set[str] = set()
             for dispatch in dispatches:
                 state = self._process_state(dispatch)
-                if state == "live" or (state == "unavailable" and not _expired(str(dispatch.get("heartbeat_at") or ""), now)):
+                # An unavailable writable dispatcher cannot be made safe by an
+                # old heartbeat.  Only a positively stopped owner may be
+                # retired through the general recovery path.  The narrow
+                # read-shared coordinator exception is handled above.
+                if state != "stopped":
                     blockers.append({"kind": "first_class_dispatch", "id": dispatch["id"], "state": state})
                     blocked_dispatch_claims.add(str(dispatch["claim_id"]))
                 else:
@@ -322,7 +328,7 @@ class RecoveryEngine:
                     }
                     state = self._process_state(process_row)
                     expired = _expired(str(claim.get("expires_at") or ""), now)
-                    if state == "live" or (state == "unavailable" and not expired and claim["state"] == "active"):
+                    if state != "stopped":
                         blockers.append({"kind": "claim_owner", "id": claim["id"], "task_id": claim["task_id"], "state": state})
                         continue
                 dirty, manifest = self._claim_dirty(conn, claim)
@@ -346,7 +352,7 @@ class RecoveryEngine:
                         "kind": "local_child", "id": child["id"], "task_id": child["task_id"],
                         "state": "demonstrably_live",
                     })
-                elif child_process is not False and child.get("attempt_id") and not _expired(str(child.get("attempt_expires_at") or ""), now):
+                elif child_process is not False:
                     blockers.append({
                         "kind": "local_child", "id": child["id"], "task_id": child["task_id"],
                         "state": "live_or_unproven",
@@ -391,10 +397,10 @@ class RecoveryEngine:
                     continue
                 state = self._process_state(lease)
                 expired = _expired(str(lease.get("expires_at") or ""), now)
-                if state == "live" or (state == "unavailable" and not expired):
+                if state != "stopped":
                     blockers.append({"kind": "lock", "id": lease["id"], "lock_name": lease["lock_name"], "state": state})
                 else:
-                    actions.append({"kind": "release_lock", "id": lease["id"], "state": state})
+                    actions.append({"kind": "release_lock", "id": lease["id"], "task_id": lease.get("task_id"), "state": state})
 
             lease_query = (
                 "SELECT r.*,i.class_id FROM resource_leases r JOIN resource_instances i ON i.id=r.instance_id "
@@ -403,12 +409,12 @@ class RecoveryEngine:
             for lease in (dict(row) for row in conn.execute(lease_query)):
                 state = self._process_state(lease)
                 expired = _expired(str(lease.get("expires_at") or ""), now)
-                if state == "live" or (state == "unavailable" and not expired):
+                if state != "stopped":
                     blockers.append({
                         "kind": "resource", "id": lease["id"], "class_id": lease["class_id"], "state": state,
                     })
                 else:
-                    actions.append({"kind": "release_resource", "id": lease["id"], "state": state})
+                    actions.append({"kind": "release_resource", "id": lease["id"], "task_id": lease.get("task_id"), "state": state})
 
             workspace_query = (
                 "SELECT DISTINCT w.* FROM workflow_workspaces w "
@@ -429,7 +435,8 @@ class RecoveryEngine:
                     "kind": "workspace_preserved", "id": workspace["id"], "state": workspace["state"],
                     "worktree_path": workspace.get("worktree_path"), "cleanup_eligible": False,
                 })
-                actions.append({"kind": "quarantine_workspace", "id": workspace["id"], "state": workspace["state"]})
+                actions.append({"kind": "quarantine_workspace", "id": workspace["id"], "workspace_id": workspace["id"],
+                                "task_id": task_id, "state": workspace["state"]})
 
             terminal_query = (
                 "SELECT id FROM tasks WHERE status='done' AND result IN ('implemented','validated','evaluated_not_promoted','no_change_required')"
@@ -474,6 +481,9 @@ class RecoveryEngine:
         plan = {
             "project_uuid": self.project_uuid,
             "task_id": task_id,
+            # This is read from the same snapshot as every recovery fact and
+            # is checked after BEGIN IMMEDIATE, before any recovery write.
+            "authority_revision": authority_revision,
             "status": "refused" if blockers else ("recovery_needed" if actions else "already_recovered"),
             "actions": actions,
             "blockers": blockers,
@@ -483,28 +493,127 @@ class RecoveryEngine:
         require_bounded_payload(plan, limit=FINISH_TASK_BUDGET_BYTES, code="recovery_plan_too_large")
         return plan
 
-    def execute(self, plan: dict[str, object], reason: str) -> dict[str, object]:
+    def delegated_effects_are_exact(self, plan: dict[str, object], task_id: str) -> bool:
+        """Whether a delegated mandate can make only its named clean task safe."""
+        if plan.get("task_id") != task_id or plan.get("blockers"):
+            return False
+        if any(item.get("kind") == "dirty_scope_preserved" for item in plan.get("warnings", []) if isinstance(item, dict)):
+            return False
+        allowed = {
+            "requeue_expired_coordinator", "expire_and_requeue_coordinator", "retire_dispatch", "release_claim", "terminalize_dead_child", "release_resource",
+            "release_lock", "quarantine_workspace", "retire_capability", "requeue_blocked_task",
+            "finalize_terminal_checkpoints",
+        }
+        for action in plan.get("actions", []):
+            if not isinstance(action, dict) or action.get("kind") not in allowed or action.get("task_id") != task_id:
+                return False
+        return True
+
+    def delegated_continuation(self, plan: dict[str, object]) -> dict[str, object] | None:
+        """Derive one signed, exact post-recovery continuation target, if any."""
+        lane_ids = {str(action["lane_id"]) for action in plan.get("actions", [])
+                    if isinstance(action, dict) and action.get("lane_id")}
+        workspace_ids = {str(action["workspace_id"]) for action in plan.get("actions", [])
+                         if isinstance(action, dict) and action.get("workspace_id")}
+        if len(lane_ids) > 1 or len(workspace_ids) > 1:
+            return None
+        with self.database.read() as conn:
+            workspace = None
+            if workspace_ids:
+                workspace = conn.execute(
+                    "SELECT id,run_id,lane_id,base_commit,worktree_path FROM workflow_workspaces WHERE id=?",
+                    (next(iter(workspace_ids)),),
+                ).fetchone()
+            elif lane_ids:
+                workspace = conn.execute(
+                    "SELECT id,run_id,lane_id,base_commit,worktree_path FROM workflow_workspaces WHERE lane_id=?",
+                    (next(iter(lane_ids)),),
+                ).fetchone()
+            if workspace is None and lane_ids:
+                lane = conn.execute("SELECT run_id FROM workflow_lanes WHERE id=?", (next(iter(lane_ids)),)).fetchone()
+                if lane is None:
+                    return None
+                return {"run_id": str(lane["run_id"]), "lane_id": next(iter(lane_ids)), "workspace_id": None,
+                        "expected_base_commit": None, "expected_head": None, "stage": "assess_next_task"}
+        if workspace is None:
+            return None
+        expected_head = None
+        if workspace["worktree_path"]:
+            completed = subprocess.run(["git", "-C", str(workspace["worktree_path"]), "rev-parse", "HEAD"],
+                                       capture_output=True, text=True, check=False)
+            if completed.returncode == 0:
+                expected_head = completed.stdout.strip() or None
+        return {"run_id": str(workspace["run_id"]), "lane_id": str(workspace["lane_id"]),
+                "workspace_id": str(workspace["id"]), "expected_base_commit": str(workspace["base_commit"]),
+                "expected_head": expected_head, "stage": "resume_quarantined_workspace"}
+
+    def recovery_result_for_request(self, request_id: str) -> dict[str, object] | None:
+        """Return the committed canonical result for one stable recovery request."""
+        with self.database.read() as conn:
+            rows = conn.execute(
+                "SELECT id,result_json FROM workflow_recovery_audit "
+                "WHERE proposed_plan_json LIKE ? ORDER BY created_at DESC",
+                (f'%\"recovery_request_id\":\"{request_id}\"%',),
+            ).fetchall()
+        for row in rows:
+            try:
+                result = json.loads(str(row["result_json"]))
+            except (TypeError, json.JSONDecodeError):
+                continue
+            if isinstance(result, dict) and result.get("recovery_request_id") == request_id:
+                return result
+        return None
+
+    def execute(
+        self,
+        plan: dict[str, object],
+        reason: str,
+        *,
+        recovery_request_id: str | None = None,
+        delegated_task_id: str | None = None,
+        recovery_continuation: dict[str, object] | None = None,
+    ) -> dict[str, object]:
         """Execute a fresh, unblocked plan as one revisioned SQLite mutation."""
         reason = reason.strip()
         if not reason:
             raise TodoError("recovery_reason_required", "Owner recovery requires an explicit reason")
+        if recovery_request_id:
+            prior = self.recovery_result_for_request(recovery_request_id)
+            if prior is not None:
+                return prior
         fresh = self.inspect(plan.get("task_id") if isinstance(plan.get("task_id"), str) else None)
         if canonical_json(fresh) != canonical_json(plan):
             raise TodoError("recovery_plan_stale", "Recovery state changed after inspection", ExitCode.CONTENTION, fresh)
         if fresh["blockers"]:
             raise TodoError("recovery_live_work_refused", "Live or unproven mutable work prevents recovery", ExitCode.BLOCKED, fresh)
-        if not fresh["actions"]:
+        if delegated_task_id is not None and not self.delegated_effects_are_exact(fresh, delegated_task_id):
+            raise TodoError("recovery_delegated_effect_out_of_scope", "Delegated recovery can affect only the named clean task", ExitCode.BLOCKED, fresh)
+        if not fresh["actions"] and not recovery_request_id:
             return {"status": "already_recovered", "project_uuid": self.project_uuid, "task_id": fresh["task_id"], "idempotent_noop": True}
 
         safe_reason = _sanitized_reason(reason)
         proposed = {key: fresh[key] for key in ("project_uuid", "task_id", "status", "actions", "warnings", "file_policy")}
         if "authority_revision" in fresh:
             proposed["authority_revision"] = fresh["authority_revision"]
+        if recovery_request_id:
+            proposed["recovery_request_id"] = recovery_request_id
         audit_id = str(uuid.uuid4())
 
         def operation(conn, revision):
+            # `revision` is computed after BEGIN IMMEDIATE.  This makes the
+            # snapshot that authorized recovery and the mutation one atomic
+            # decision, even when an ordinary workflow writer raced preflight.
             if "authority_revision" in fresh and revision != fresh["authority_revision"] + 1:
                 raise TodoError("recovery_plan_stale", "Authority changed before recovery transaction", ExitCode.CONTENTION)
+            if recovery_request_id:
+                existing = conn.execute(
+                    "SELECT result_json FROM workflow_recovery_audit WHERE proposed_plan_json LIKE ? ORDER BY created_at DESC",
+                    (f'%\"recovery_request_id\":\"{recovery_request_id}\"%',),
+                ).fetchone()
+                if existing:
+                    existing_result = json.loads(str(existing["result_json"]))
+                    if isinstance(existing_result, dict) and existing_result.get("recovery_request_id") == recovery_request_id:
+                        return existing_result
             now = utc_now()
             results: list[dict[str, object]] = []
             dirty_tasks: set[str] = set()
@@ -597,6 +706,14 @@ class RecoveryEngine:
                 "actions_applied": len(fresh["actions"]), "dirty_tasks": sorted(dirty_tasks),
                 "resume": "next_task", "files_mutated": False, "details": results,
             }
+            if not fresh["actions"]:
+                result["status"] = "already_recovered"
+                result["idempotent_noop"] = True
+            result.update({"audit_id": audit_id, "project_revision": revision, "idempotent_noop": bool(result.get("idempotent_noop", False))})
+            if recovery_request_id:
+                result["recovery_request_id"] = recovery_request_id
+            if recovery_continuation is not None:
+                result["continuation"] = recovery_continuation
             conn.execute(
                 "INSERT INTO workflow_recovery_audit(id,project_uuid,task_id,reason,proposed_plan_json,result_json,actor_identity,created_at,completed_at,revision) VALUES(?,?,?,?,?,?,?,?,?,?)",
                 (audit_id, self.project_uuid, fresh["task_id"], safe_reason, canonical_json(proposed), canonical_json(result), self.actor_identity, now, now, revision),
@@ -611,6 +728,6 @@ class RecoveryEngine:
             payload={"audit_id": audit_id, "task_id": fresh["task_id"], "reason": safe_reason},
             operation=operation,
         )
-        response = {**result, "audit_id": audit_id, "project_revision": revision, "idempotent_noop": False}
+        response = result
         require_bounded_payload(response, limit=FINISH_TASK_BUDGET_BYTES, code="recovery_result_too_large")
         return response
