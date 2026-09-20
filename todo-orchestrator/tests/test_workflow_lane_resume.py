@@ -42,6 +42,66 @@ class WorkflowLaneResumeTests(unittest.TestCase):
             ).fetchone()[0]
         return lane, task
 
+    def add_duplicate_task_run(self) -> None:
+        def seed(conn, revision):
+            conn.execute(
+                "INSERT INTO workflow_runs(id,root_task_id,status,created_at,updated_at,revision) "
+                "VALUES('RUN-SECOND','T','active','now','now',?)", (revision,)
+            )
+            conn.execute(
+                "INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) "
+                "VALUES('LANE-SECOND','RUN-SECOND','implementer','ready','now','now',?)", (revision,)
+            )
+            conn.execute(
+                "INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) "
+                "VALUES('LANE-SECOND',0,'A','queued','now',?)", (revision,)
+            )
+
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="RUN-SECOND",
+            event_type="fixture.duplicate_task_run", payload={}, operation=seed,
+        )
+
+    def test_task_only_duplicate_active_runs_requires_explicit_focus_without_mutation(self) -> None:
+        self.add_duplicate_task_run()
+        before = self.repo.service.db.revision()
+        result = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        self.assertEqual(result["status"], "run_selection_required")
+        self.assertEqual(result["task_id"], "A")
+        self.assertEqual(result["choices"], [{"run_id": "RUN-SECOND"}, {"run_id": "compat-v2"}])
+        self.assertIsNone(result["recommended_next_call"])
+        self.assertEqual(self.repo.service.db.revision(), before)
+        with self.repo.service.db.read() as conn:
+            self.assertIsNone(conn.execute("SELECT 1 FROM claims WHERE state='active'").fetchone())
+            self.assertIsNone(conn.execute("SELECT 1 FROM workflow_dispatches WHERE state='active'").fetchone())
+
+    def test_explicit_run_focus_claims_its_lane_and_never_resumes_another_run(self) -> None:
+        self.add_duplicate_task_run()
+        first = self.protocol.next_task(
+            repo_root=str(self.repo.root), task_id="A", run_id="RUN-SECOND"
+        )
+        self.assertEqual((first["status"], first["run_id"], first["lane_id"]), ("claimed", "RUN-SECOND", "LANE-SECOND"))
+        second = self.protocol.next_task(repo_root=str(self.repo.root), run_id="compat-v2")
+        self.assertEqual(second["status"], "idle")
+        self.assertEqual(second["warnings"], ["no_actionable_work"])
+
+    def test_unavailable_explicit_focus_does_not_fall_back_to_compatibility_run(self) -> None:
+        before = self.repo.service.db.revision()
+        result = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A", run_id="missing")
+        self.assertEqual(result["status"], "idle")
+        self.assertEqual(result["warnings"], ["run_focus_unavailable"])
+        self.assertEqual(result["run_id"], "missing")
+        self.assertIsNone(result["recommended_next_call"])
+        self.assertEqual(self.repo.service.db.revision(), before)
+        with self.repo.service.db.read() as conn:
+            self.assertIsNone(conn.execute("SELECT 1 FROM claims WHERE state='active'").fetchone())
+            self.assertIsNone(conn.execute("SELECT 1 FROM workflow_dispatches WHERE state='active'").fetchone())
+
+    def test_unambiguous_legacy_task_call_keeps_compatibility_behavior(self) -> None:
+        result = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+        self.assertEqual((result["status"], result["run_id"], result["lane_id"]),
+                         ("claimed", "compat-v2", "compat-v2-main"))
+
     def test_active_resume_renews_same_claim_and_its_leases(self):
         self.protocol.next_task(repo_root=str(self.repo.root), task_id='A')
         soon = (datetime.now(timezone.utc) + timedelta(seconds=45)).isoformat().replace('+00:00', 'Z')

@@ -39,6 +39,7 @@ STATUSES = frozenset({
     "root_preparation_required",
     "context_stale",
     "recovery_needed",
+    "run_selection_required",
     "fallback_authorized",
     "needs_context",
 })
@@ -67,7 +68,7 @@ class WorkflowKernelPort(Protocol):
     semantic mutation.
     """
 
-    def next_task(self, *, repo_root: str, task_id: str | None) -> Mapping[str, Any]: ...
+    def next_task(self, *, repo_root: str, task_id: str | None, run_id: str | None) -> Mapping[str, Any]: ...
     def inspect_task(
         self, capability: AuthorizedCapability, *, kind: str, target: str | None, budget_bytes: int
     ) -> Mapping[str, Any]: ...
@@ -265,8 +266,10 @@ class WorkflowProtocol:
         self.port = port
         self.capabilities = capabilities
 
-    def next_task(self, *, repo_root: str, task_id: str | None = None) -> dict[str, Any]:
-        internal = dict(self.port.next_task(repo_root=repo_root, task_id=task_id))
+    def next_task(
+        self, *, repo_root: str, task_id: str | None = None, run_id: str | None = None
+    ) -> dict[str, Any]:
+        internal = dict(self.port.next_task(repo_root=repo_root, task_id=task_id, run_id=run_id))
         status = str(internal.get("status", "claimed"))
         if status in {"claimed", "resumed", "needs_context"}:
             handle = internal.get("workflow_handle")

@@ -125,8 +125,8 @@ class FakePort:
         self.next_advertised_actions = None
         self.next_status = "claimed"
 
-    def next_task(self, *, repo_root, task_id):
-        self.calls.append(("next_task", repo_root, task_id))
+    def next_task(self, *, repo_root, task_id, run_id=None):
+        self.calls.append(("next_task", repo_root, task_id, run_id))
         handle, _, revision = self.fixture.capabilities.issue_first_class(
             self.fixture.lineage(operations=self.next_operations), actor_session_id="SESSION"
         )

@@ -382,13 +382,81 @@ class WorkflowKernel:
             ).fetchone()
         return row
 
-    def next_task(self, *, repo_root: str, task_id: str | None) -> Mapping[str, Any]:
+    def next_task(
+        self, *, repo_root: str, task_id: str | None, run_id: str | None = None
+    ) -> Mapping[str, Any]:
         service = self._service(repo_root)
         capabilities = WorkflowCapabilityStore(service.db)
         project_uuid = str(service.project["project_uuid"])
         repo_identity = repository_identity(service.paths.repo_root, project_uuid)
 
+        def task_run_ids(conn: Any, requested_task_id: str, session_id: str | None = None) -> set[str]:
+            queued = conn.execute(
+                "SELECT DISTINCT l.run_id FROM workflow_lane_tasks lt "
+                "JOIN workflow_lanes l ON l.id=lt.lane_id "
+                "JOIN workflow_runs r ON r.id=l.run_id "
+                "WHERE lt.task_id=? AND lt.state='queued' AND r.status='active'",
+                (requested_task_id,),
+            )
+            active = ()
+            if session_id is not None:
+                active = conn.execute(
+                    "SELECT DISTINCT l.run_id FROM workflow_dispatches d "
+                    "JOIN workflow_lanes l ON l.id=d.lane_id "
+                    "JOIN workflow_lane_tasks lt ON lt.lane_id=d.lane_id AND lt.state='active' "
+                    "JOIN claims c ON c.id=d.claim_id AND c.state='active' "
+                    "JOIN workflow_runs r ON r.id=l.run_id "
+                    "WHERE d.session_id=? AND d.state='active' AND lt.task_id=? AND r.status='active'",
+                    (session_id, requested_task_id),
+                )
+            return {str(row["run_id"]) for row in (*queued, *active)}
+
+        def selection_required(requested_task_id: str, candidates: set[str]) -> TodoError:
+            return TodoError(
+                "run_selection_required", "Task is eligible in multiple active runs; select run_id",
+                details={
+                    "task_id": requested_task_id,
+                    "choices": [{"run_id": value} for value in sorted(candidates)],
+                },
+            )
+
+        # Resolve task-only run ambiguity before entering the mutation
+        # transaction.  A choice must not manufacture a session, event, or
+        # revision merely to tell the caller which explicit run to select.
+        with service.db.read() as conn:
+            if run_id is not None:
+                active_run = conn.execute(
+                    "SELECT 1 FROM workflow_runs WHERE id=? AND status='active'", (run_id,)
+                ).fetchone()
+                if active_run is None:
+                    return {
+                        "status": "idle", "run_id": run_id,
+                        "warnings": ["run_focus_unavailable"],
+                        "recommended_next_call": None,
+                    }
+            elif task_id is not None:
+                session = self._session(conn, service.paths.repo_root)
+                candidates = task_run_ids(conn, task_id, str(session["id"]) if session else None)
+                if len(candidates) > 1:
+                    return {
+                        "status": "run_selection_required", "task_id": task_id,
+                        "choices": [{"run_id": value} for value in sorted(candidates)],
+                        "recommended_next_call": None,
+                    }
+
         def operation(conn: Any, revision: int) -> dict[str, Any]:
+            # Repeat read preflight under the mutation transaction.  This
+            # closes the interval in which another active run could acquire
+            # the same task and otherwise make ORDER BY pick arbitrarily.
+            if run_id is not None and conn.execute(
+                "SELECT 1 FROM workflow_runs WHERE id=? AND status='active'", (run_id,)
+            ).fetchone() is None:
+                raise TodoError("run_focus_unavailable", "Requested workflow run is not active")
+            if run_id is None and task_id is not None:
+                session = self._session(conn, service.paths.repo_root)
+                candidates = task_run_ids(conn, task_id, str(session["id"]) if session else None)
+                if len(candidates) > 1:
+                    raise selection_required(task_id, candidates)
             sweep_expired(conn, service.paths.repo_root)
             session = self._session(conn, service.paths.repo_root)
             if session:
@@ -397,8 +465,9 @@ class WorkflowKernel:
                     "JOIN workflow_lanes l ON l.id=d.lane_id "
                     "JOIN workflow_lane_tasks lt ON lt.lane_id=d.lane_id AND lt.state='active' "
                     "JOIN claims c ON c.id=d.claim_id AND c.state='active' "
-                    "WHERE d.session_id=? AND d.state='active' ORDER BY d.created_at DESC",
-                    (session["id"],),
+                    "WHERE d.session_id=? AND d.state='active' "
+                    "AND (? IS NULL OR l.run_id=?) ORDER BY d.created_at DESC",
+                    (session["id"], run_id, run_id),
                 ).fetchall()
                 if task_id is None and len(resumed) > 1:
                     raise TodoError("ambiguous_lane_resume", "Multiple active lanes share this session; pass the assigned task_id")
@@ -443,7 +512,10 @@ class WorkflowKernel:
                 )
                 session = conn.execute("SELECT * FROM sessions WHERE id=?", (session_view["agent_id"],)).fetchone()
 
-            runs = conn.execute("SELECT id FROM workflow_runs WHERE status='active' ORDER BY created_at,id").fetchall()
+            runs = conn.execute(
+                "SELECT id FROM workflow_runs WHERE status='active' AND (? IS NULL OR id=?) ORDER BY created_at,id",
+                (run_id, run_id),
+            ).fetchall()
             if not runs:
                 raise TodoError("workflow_run_missing", "No active workflow run is available")
             selected = None
@@ -452,8 +524,9 @@ class WorkflowKernel:
                 row = conn.execute(
                     "SELECT l.run_id,l.id AS lane_id,l.role,lt.task_id FROM workflow_lane_tasks lt "
                     "JOIN workflow_lanes l ON l.id=lt.lane_id JOIN workflow_runs r ON r.id=l.run_id "
-                    "WHERE lt.task_id=? AND lt.state='queued' AND r.status='active' ORDER BY l.run_id,l.id LIMIT 1",
-                    (task_id,),
+                    "WHERE lt.task_id=? AND lt.state='queued' AND r.status='active' "
+                    "AND (? IS NULL OR l.run_id=?) ORDER BY l.run_id,l.id LIMIT 1",
+                    (task_id, run_id, run_id),
                 ).fetchone()
                 if row:
                     selected = dict(row)
@@ -504,6 +577,17 @@ class WorkflowKernel:
                 operation=operation,
             )
         except TodoError as exc:
+            if exc.code == "run_selection_required":
+                details = dict(exc.details) if isinstance(exc.details, Mapping) else {}
+                return {
+                    "status": "run_selection_required", "task_id": details.get("task_id", task_id),
+                    "choices": details.get("choices", []), "recommended_next_call": None,
+                }
+            if exc.code == "run_focus_unavailable":
+                return {
+                    "status": "idle", "run_id": run_id,
+                    "warnings": [exc.code], "recommended_next_call": None,
+                }
             if exc.code in {"no_actionable_work", "workflow_run_missing"}:
                 return {"status": "idle", "warnings": [exc.code], "recommended_next_call": "next_task"}
             if exc.code == "workflow_workspace_required":

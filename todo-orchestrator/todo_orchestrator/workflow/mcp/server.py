@@ -81,8 +81,10 @@ def create_server(
         annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,
     )
-    def next_task(repo_root: str, task_id: str | None = None) -> dict[str, object]:
-        return invoke("next_task", repo_root=repo_root, task_id=task_id)
+    def next_task(
+        repo_root: str, task_id: str | None = None, run_id: str | None = None
+    ) -> dict[str, object]:
+        return invoke("next_task", repo_root=repo_root, task_id=task_id, run_id=run_id)
 
     @server.tool(
         description="Read one bounded, scope-aware workflow or source context target.",
