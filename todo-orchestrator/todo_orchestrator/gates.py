@@ -27,6 +27,18 @@ from .resources import acquire_resource, release_resource, resource_environment
 from .sessions import authenticate_claim
 
 
+SUPPORTED_GATE_TYPES = frozenset({
+    "command", "benchmark", "json_predicate", "file_exists", "pattern",
+    "task_state", "checkpoint", "interface", "manual",
+})
+_COMMAND_GATE_TYPES = frozenset({"command", "benchmark", "json_predicate"})
+_CUDA_FIELDS = frozenset({
+    "gpus", "gpu_uuids", "cpu_threads", "isolate_pcie_root",
+    "isolate_nvlink_domain", "toolchain", "build_argv", "binary_paths",
+    "quiescence",
+})
+
+
 def validate_gate_spec(
     gate: object,
     repo_root: Path | None,
@@ -41,10 +53,55 @@ def validate_gate_spec(
         return ["gate requires id and type"]
     gate_id = str(gate["id"])
     errors: list[str] = []
-    if gate.get("type") in {"command", "benchmark", "json_predicate"} and (
+    gate_type = gate["type"]
+    if not isinstance(gate_type, str) or gate_type not in SUPPORTED_GATE_TYPES:
+        errors.append(f"gate {gate_id} has unsupported type {gate_type}")
+        return errors
+    if gate_type in _COMMAND_GATE_TYPES and (
         not isinstance(gate.get("argv"), list) or not gate.get("argv")
     ):
         errors.append(f"gate {gate_id} requires a non-empty argv array")
+    if gate_type in {"file_exists", "pattern"} and not isinstance(gate.get("path"), str):
+        errors.append(f"gate {gate_id} requires a path")
+    if gate_type == "pattern":
+        if not isinstance(gate.get("pattern"), str):
+            errors.append(f"gate {gate_id} requires a pattern")
+        else:
+            try:
+                re.compile(gate["pattern"])
+            except re.error:
+                errors.append(f"gate {gate_id} has an invalid pattern")
+    for field, required_type in (
+        ("task_id", "task_state"), ("checkpoint_id", "checkpoint"),
+        ("interface_id", "interface"),
+    ):
+        if gate_type == required_type and not isinstance(gate.get(field), str):
+            errors.append(f"gate {gate_id} requires {field}")
+    if gate_type in {"benchmark", "json_predicate"}:
+        if not isinstance(gate.get("threshold"), (int, float)) or isinstance(gate.get("threshold"), bool):
+            errors.append(f"gate {gate_id} requires a numeric threshold")
+        if gate.get("operator", ">=") not in {">=", ">", "<=", "<", "=="}:
+            errors.append(f"gate {gate_id} has an unsupported operator")
+    if gate.get("metric_file") is not None and not isinstance(gate.get("metric_file"), str):
+        errors.append(f"gate {gate_id} metric_file must be a path string")
+    for field in ("input_paths", "resources", "locks"):
+        if field in gate and not isinstance(gate[field], list):
+            errors.append(f"gate {gate_id} {field} must be an array")
+    cuda = gate.get("cuda")
+    if cuda is not None:
+        if not isinstance(cuda, dict) or set(cuda) - _CUDA_FIELDS:
+            errors.append(f"gate {gate_id} has unsupported CUDA configuration")
+        else:
+            if not isinstance(cuda.get("gpus", 1), int) or isinstance(cuda.get("gpus", 1), bool) or cuda.get("gpus", 1) < 1:
+                errors.append(f"gate {gate_id} requires a positive CUDA GPU count")
+            if "quiescence" in cuda:
+                try:
+                    from .cuda_gate import validate_quiescence
+                    validate_quiescence(cuda["quiescence"])
+                except ValueError as exc:
+                    errors.append(f"gate {gate_id}: {exc}")
+            if gate_type not in _COMMAND_GATE_TYPES or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
+                errors.append(f"gate {gate_id} CUDA execution requires a command, zero expected exit, and controller-owned resources")
     for field in ("cwd", "path", "metric_file"):
         if not gate.get(field):
             continue
@@ -59,7 +116,7 @@ def validate_gate_spec(
                 raise TodoError("gate_path_forbidden", "Gate path intersects a forbidden task scope")
         except Exception:
             errors.append(f"gate {gate_id} {field} has unsafe or unowned repository path")
-    for value in gate.get("input_paths", []):
+    for value in gate.get("input_paths", []) if isinstance(gate.get("input_paths", []), list) else []:
         try:
             path = canonical_relative(repo_root, str(value)) if repo_root else str(value)
             if allowed_paths is not None and not any(path_contains(scope, path) for scope in allowed_paths):
@@ -70,7 +127,7 @@ def validate_gate_spec(
             errors.append(f"gate {gate_id} input has unsafe or unowned repository path")
     if gate.get("checkpoint_id") and known_checkpoint_ids is not None and gate["checkpoint_id"] not in known_checkpoint_ids:
         errors.append(f"gate {gate_id} references unknown checkpoint {gate['checkpoint_id']}")
-    for selector in gate.get("resources", []):
+    for selector in gate.get("resources", []) if isinstance(gate.get("resources", []), list) else []:
         if known_resources is not None and str(selector) not in known_resources and not (str(selector).endswith(":any") and str(selector)[:-4] in known_resources):
             errors.append(f"gate {gate_id} references unknown resource selector {selector}")
     return errors
@@ -352,7 +409,11 @@ def run_gate(
         if not session_id:
             raise TodoError("gate_session_required", "Gate execution requires an active claim")
         fingerprint, inputs = gate_input_fingerprint(conn, gate_root, config, gate_type=str(gate["type"]))
-        reused = _reusable_static_evidence(conn, gate, fingerprint, workspace_base_commit=workspace_base_commit)
+        # A child candidate or explicit acceptance has lineage and durable
+        # acceptance effects.  Do not let static evidence reuse skip either.
+        reused = None if child or accept_child is not None else _reusable_static_evidence(
+            conn, gate, fingerprint, workspace_base_commit=workspace_base_commit,
+        )
         if reused:
             acquired.update(gate=dict(gate), config=config, fingerprint=fingerprint, inputs=inputs, reused=reused)
             return {"gate_id": gate_id, "reused": True, **reused}
