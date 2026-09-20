@@ -41,6 +41,7 @@ class AuthorizedCapability:
     id: str
     lineage: CapabilityLineage
     expires_at: str
+    repository_root: Path | None = None
 
     @property
     def capability_class(self) -> str:
@@ -450,7 +451,13 @@ class WorkflowCapabilityLocator:
         # Imports remain lazy so MCP startup does not open a repository or DB.
         from ..service import Service
 
-        service = Service(repo)
-        return WorkflowCapabilityStore(service.db).resolve(
+        # A locator hint must never initialize or restore an unrelated
+        # authority. Resolution is read-only; the kernel opens only this exact
+        # proven authority after capability validation succeeds.
+        service = Service(repo, read_only=True)
+        capability = WorkflowCapabilityStore(service.db).resolve(
             handle, required_operation=required_operation, expected_class=expected_class
+        )
+        return AuthorizedCapability(
+            capability.id, capability.lineage, capability.expires_at, service.paths.repo_root,
         )

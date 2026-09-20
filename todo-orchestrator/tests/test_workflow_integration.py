@@ -88,6 +88,26 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM evidence WHERE gate_id='A-EXISTS'").fetchone()[0], 1)
 
+    def test_stale_foreign_locator_hint_is_never_opened_by_capability_use(self):
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root))
+        foreign = tempfile.TemporaryDirectory()
+        self.addCleanup(foreign.cleanup)
+        foreign_root = Path(foreign.name).resolve()
+        (self.locator.root / "stale-foreign-hint").write_text(str(foreign_root), encoding="utf-8")
+        opened: list[Path] = []
+        original = self.kernel.service_factory
+
+        def recording(root):
+            opened.append(Path(root).resolve())
+            return original(root)
+
+        self.kernel.service_factory = recording
+        synced = self.protocol.coordinate_task(
+            workflow_handle=claimed["workflow_handle"], action="sync", payload={},
+        )
+        self.assertEqual(synced["status"], "claimed")
+        self.assertNotIn(foreign_root, opened)
+
     def test_bound_static_gate_rechecks_its_implicit_path_and_repeat_binding_is_a_true_noop(self):
         claimed = self.protocol.next_task(repo_root=str(self.repo.root))
         handle = claimed["workflow_handle"]
