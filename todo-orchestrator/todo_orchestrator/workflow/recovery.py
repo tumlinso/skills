@@ -23,7 +23,7 @@ from typing import Callable, Iterator
 from ..claims import _live_override_blockers, sweep_expired
 from ..completion import recover_terminal_checkpoints, terminal_finalization_report
 from ..config import utc_now
-from ..git_state import scope_manifest
+from ..git_state import material_dirty_paths, scope_manifest
 from ..graph import evaluate_dependencies
 from ..models import ExitCode, TodoError
 from ..ownership import release_claim_locks, scopes_for
@@ -386,6 +386,12 @@ class RecoveryEngine:
             )
             recovering_claim_ids = {str(item["id"]) for item in actions if item["kind"] == "release_claim"}
             for lease in (dict(row) for row in conn.execute(lock_query)):
+                # A delegated task recovery cannot release another task's
+                # bookkeeping.  Leave that row for its owning recovery path.
+                if task_id and str(lease.get("task_id") or "") != task_id:
+                    if self._process_state(lease) != "stopped":
+                        blockers.append({"kind": "lock", "id": lease["id"], "lock_name": lease["lock_name"], "state": "foreign_live_or_unproven"})
+                    continue
                 # A read-shared coordinator seat cannot mutate this task's
                 # workspace.  Its independent lease must not prevent an
                 # owner from requeueing this task after its dependency clears.
@@ -407,6 +413,10 @@ class RecoveryEngine:
                 "LEFT JOIN claims c ON c.id=r.claim_id WHERE r.state='active' ORDER BY r.id"
             )
             for lease in (dict(row) for row in conn.execute(lease_query)):
+                if task_id and str(lease.get("task_id") or "") != task_id:
+                    if self._process_state(lease) != "stopped":
+                        blockers.append({"kind": "resource", "id": lease["id"], "class_id": lease["class_id"], "state": "foreign_live_or_unproven"})
+                    continue
                 state = self._process_state(lease)
                 expired = _expired(str(lease.get("expires_at") or ""), now)
                 if state != "stopped":
@@ -498,7 +508,7 @@ class RecoveryEngine:
         if plan.get("task_id") != task_id or plan.get("blockers"):
             return False
         if any(item.get("kind") == "dirty_scope_preserved"
-               or (item.get("kind") == "workspace_preserved" and item.get("state") != "active")
+               or (item.get("kind") == "workspace_preserved" and item.get("state") not in {"active", "quarantined"})
                for item in plan.get("warnings", []) if isinstance(item, dict)):
             return False
         allowed = {
@@ -539,13 +549,18 @@ class RecoveryEngine:
                         "expected_base_commit": None, "expected_head": None, "stage": "assess_next_task"}
         if workspace is None:
             return None
-        if workspace["state"] != "active":
+        if workspace["state"] not in {"active", "quarantined"}:
             return None
         expected_head = None
         if workspace["worktree_path"]:
-            cleanliness = subprocess.run(["git", "-C", str(workspace["worktree_path"]), "status", "--porcelain=v1", "-z"],
-                                         capture_output=True, check=False)
-            if cleanliness.returncode or cleanliness.stdout:
+            # Generated Todo projections are not adopted source work.  Use the
+            # shared material predicate so a clean managed worktree remains
+            # eligible while a Git failure or real source change is refused.
+            try:
+                dirty = material_dirty_paths(Path(str(workspace["worktree_path"])))
+            except (OSError, subprocess.SubprocessError):
+                return None
+            if dirty:
                 return None
             completed = subprocess.run(["git", "-C", str(workspace["worktree_path"]), "rev-parse", "HEAD"],
                                        capture_output=True, text=True, check=False)

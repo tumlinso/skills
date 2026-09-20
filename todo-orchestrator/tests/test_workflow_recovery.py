@@ -526,7 +526,7 @@ class WorkflowRecoveryTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT state FROM lock_leases WHERE id='LOCK'").fetchone()[0], "recovered")
             self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='RESOURCE'").fetchone()[0], "recovered")
 
-    def test_delegated_recovery_refuses_unrelated_stale_resource(self) -> None:
+    def test_delegated_recovery_leaves_unrelated_stale_resource_unchanged(self) -> None:
         self.seed_dispatch()
         def seed(conn, revision):
             conn.execute("INSERT INTO resource_classes(id,mode,metadata_json) VALUES('cpu','exclusive','{}')")
@@ -534,8 +534,11 @@ class WorkflowRecoveryTests(unittest.TestCase):
             conn.execute("INSERT INTO resource_leases(id,instance_id,session_id,token_hash,state,hostname,pid,acquired_at,heartbeat_at,expires_at) VALUES('OTHER','cpu:0',?,'x','active',?,999999,'now','2000-01-01T00:00:00Z','2000-01-01T00:00:00Z')", (self.session_id, socket.gethostname()))
         self.mutate(seed)
         plan = self.engine().inspect('A')
-        self.assertTrue(any(a['kind'] == 'release_resource' and a['task_id'] is None for a in plan['actions']))
-        self.assertFalse(self.engine().delegated_effects_are_exact(plan, 'A'))
+        self.assertFalse(any(a['kind'] == 'release_resource' and a['id'] == 'OTHER' for a in plan['actions']))
+        self.assertTrue(self.engine().delegated_effects_are_exact(plan, 'A'))
+        self.engine().execute(plan, 'target only', delegated_task_id='A')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='OTHER'").fetchone()[0], 'active')
 
     def test_general_recovery_rejects_writer_after_final_inspection(self) -> None:
         self.seed_dispatch()
