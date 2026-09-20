@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `878`
+Project revision: `881`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -81,6 +81,9 @@ Project revision: `878`
 - `CWM-09` | status: done | execution: closed | next: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | status: done | execution: closed | next: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
+- `SK-PCE2-COLLABORATE` | status: planned | execution: ready | next: Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
+- `SK-PCE2-MAINTAIN` | status: planned | execution: ready | next: Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
+- `SK-PCE2-OPERATE` | status: in_progress | execution: idle | next: Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `WFU-30` | status: done | execution: closed | next: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
 - `CWM-01` | status: done | execution: closed | next: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | status: done | execution: closed | next: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
@@ -92,4 +95,5 @@ Project revision: `878`
 - `CWM-06` | status: done | execution: closed | next: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 - `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
+- `SK-PCE2-0000` | status: planned | execution: inactive | next: Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.
 <!-- todo-orchestrator:v2-managed:end -->

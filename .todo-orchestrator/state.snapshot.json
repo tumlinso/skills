@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-13T11:31:43Z",
+  "generated_at": "2026-09-20T15:13:32Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 878,
+  "project_revision": 881,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9231,6 +9231,36 @@
         "revision": 878,
         "seq": 878,
         "timestamp": "2026-09-13T11:31:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"a6ead1b12c99f35c661c543d149c7d3fa7d8056ae1b177d7802aaaa02ba916ee\", \"source\": \"project-control\"}",
+        "revision": 879,
+        "seq": 879,
+        "timestamp": "2026-09-20T13:38:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-L-EXEC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-PCE2-L-EXEC\", \"run_id\": \"SK-PCE2-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 880,
+        "seq": 880,
+        "timestamp": "2026-09-20T14:24:36Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-OPERATE",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": null}",
+        "revision": 881,
+        "seq": 881,
+        "timestamp": "2026-09-20T15:13:32Z"
       }
     ],
     "evidence": [
@@ -13701,6 +13731,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-09-20T15:13:32Z",
+        "id": "a3bad248-9f3f-4b83-9484-259359181d98",
+        "kind": "handoff",
+        "note": "Bounded PCE2 increment committed/pushed. Qualified inactive paired candidate PC f4160ce4e274bbfb82c71d7db8330cf9db3002ac + Skills 9cf3c019d98568fb5e355e972a488cf623f354f7; both real public MCP journeys passed on manifest-bound candidate: ordinary entry/bind/validate/finish and principal-bound maintain/next_task same target. See PC planning/pce2/BOUNDED_CANDIDATE.md and Skills planning/pce2/OPERATE_PROGRESS.md for exact evidence and remaining scope. Full outcome/all-PCE2 acceptance remains open, no deployment/NF1A continuation. Resume from committed evidence; do not repeat unchanged validation.",
+        "payload_json": "{\"authority_commit\": \"9cf3c019d98568fb5e355e972a488cf623f354f7\", \"changed_owned_paths\": [\"planning/pce2/OPERATE_PROGRESS.md\"], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 508 ++++++++++++++++++++++++++++++++-\\n todo-status.md                         |   6 +-\\n todos.md                               |   6 +-\\n 3 files changed, 516 insertions(+), 4 deletions(-)\", \"git_head\": \"9cf3c019d98568fb5e355e972a488cf623f354f7\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Bounded PCE2 increment committed/pushed. Qualified inactive paired candidate PC f4160ce4e274bbfb82c71d7db8330cf9db3002ac + Skills 9cf3c019d98568fb5e355e972a488cf623f354f7; both real public MCP journeys passed on manifest-bound candidate: ordinary entry/bind/validate/finish and principal-bound maintain/next_task same target. See PC planning/pce2/BOUNDED_CANDIDATE.md and Skills planning/pce2/OPERATE_PROGRESS.md for exact evidence and remaining scope. Full outcome/all-PCE2 acceptance remains open, no deployment/NF1A continuation. Resume from committed evidence; do not repeat unchanged validation.\", \"producer_commit\": \"9cf3c019d98568fb5e355e972a488cf623f354f7\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 881,
+        "task_id": "SK-PCE2-OPERATE"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-09-12T17:52:43Z",
         "id": "a4be06cc-bf80-4326-9a45-6b05a257dcef",
         "kind": "complete",
@@ -15536,6 +15576,91 @@
         "mode": "read",
         "path": "unification/pcu-v1/scripts",
         "task_id": "PCU-SK-41"
+      },
+      {
+        "mode": "read",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-0000"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "mode": "read",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/scripts",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/tests",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "read",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "SK-PCE2-OPERATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-OPERATE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-PCE2-OPERATE"
+      },
+      {
+        "mode": "read",
+        "path": "planning/pce2",
+        "task_id": "SK-PCE2-OPERATE"
       },
       {
         "mode": "read",
@@ -18818,6 +18943,28 @@
         "prerequisite_task_id": null,
         "task_id": "SK-WF2A-ENGINES",
         "type": "decision"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 894,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-PCE2-MAINTAIN",
+        "task_id": "SK-PCE2-COLLABORATE",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 895,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-PCE2-OPERATE",
+        "task_id": "SK-PCE2-MAINTAIN",
+        "type": "task"
       }
     ],
     "task_invariants": [
@@ -21988,6 +22135,106 @@
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-0000",
+        "kind": "epic",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.",
+        "notes": "Shared 3,000,000-token ceiling across both repositories/all agents, including relevant PCE1 implementation already spent. Planning/pce2 is the package location, not another runtime authority.",
+        "objective": "Aggregate verified local outcomes only; this is not a coordinator seat or a prerequisite of its children.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 0,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
+        "revision": 879,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "PCE2 skills: usable semantic engineering control",
+        "updated_at": "2026-09-20T13:38:44Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-COLLABORATE",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.",
+        "notes": "Acceptance: planning/pce2/ACCEPTANCE.md. Verify cross-authority producer evidence in machine/cross-authority.json before completion. Bind actual conformance gates; no_change_required requires executed proof. Shared 3M all-agent cap includes prior PCE1 implementation. No fixed delegate/test-pass quotas. NF1A stays paused.",
+        "objective": "Delegate meaningful bounded work with the context and executor it actually needs, and share immutable source deliveries before final qualification without manual provenance reconstruction.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-PCE2-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\"]}",
+        "revision": 879,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Make delegation and dependency delivery useful",
+        "updated_at": "2026-09-20T13:38:44Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-MAINTAIN",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.",
+        "notes": "Acceptance: planning/pce2/ACCEPTANCE.md. Verify cross-authority producer evidence in machine/cross-authority.json before completion. Bind actual conformance gates; no_change_required requires executed proof. Shared 3M all-agent cap includes prior PCE1 implementation. No fixed delegate/test-pass quotas. NF1A stays paused.",
+        "objective": "Provide bounded resume, amend, supersede/retire and applicability-invalidation operations over existing canonical services; grants follow an approved job rather than the target claim or expensive model.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-PCE2-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\"]}",
+        "revision": 879,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Make safe maintenance a delegable semantic operation",
+        "updated_at": "2026-09-20T13:38:44Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-OPERATE",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.",
+        "notes": "Acceptance: planning/pce2/ACCEPTANCE.md. Verify cross-authority producer evidence in machine/cross-authority.json before completion. Bind actual conformance gates; no_change_required requires executed proof. Shared 3M all-agent cap includes prior PCE1 implementation. No fixed delegate/test-pass quotas. NF1A stays paused.",
+        "objective": "Share executable action semantics across policy, context and workflow results; make starting, inspecting, validating and finishing work possible without procedural guesswork.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-PCE2-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\"]}",
+        "revision": 880,
+        "status": "in_progress",
+        "tags_json": "[]",
+        "title": "Make ordinary execution self-explanatory",
+        "updated_at": "2026-09-20T15:13:32Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-09-12T16:36:32Z",
         "id": "SK-WF2-0000",
         "kind": "epic",
@@ -23347,6 +23594,7 @@
         "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-REMEDIATION-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\"}",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23363,6 +23611,7 @@
         "lane_id": "PCU-SK-READ-PORT-RETRY-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-RETRY-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\"}",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23379,6 +23628,7 @@
         "lane_id": null,
         "owner_scope_json": "{\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\"}",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23395,6 +23645,7 @@
         "lane_id": "PCU-SK-READ-PORT-REMEDIATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-REMEDIATION-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\",\"task_id\":\"PCU-SK-40\"}",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-40",
         "version": 1
@@ -23411,6 +23662,7 @@
         "lane_id": "PCU-SK-READ-PORT-RETRY-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-RETRY-LANE\",\"run_id\":\"PCU-SK-READ-PORT-REMEDIATION-V1\",\"task_id\":\"PCU-SK-41\"}",
         "run_id": "PCU-SK-READ-PORT-REMEDIATION-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-41",
         "version": 1
@@ -23427,6 +23679,7 @@
         "lane_id": "PCU-SK-CUTOVER-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23443,6 +23696,7 @@
         "lane_id": "PCU-SK-FOUNDATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23459,6 +23713,7 @@
         "lane_id": "PCU-SK-FRONTDOOR-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-FRONTDOOR-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23475,6 +23730,7 @@
         "lane_id": "PCU-SK-GUIDANCE-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-GUIDANCE-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23491,6 +23747,7 @@
         "lane_id": "PCU-SK-HARNESS-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-HARNESS-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23507,6 +23764,7 @@
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23523,6 +23781,7 @@
         "lane_id": "PCU-SK-MIGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-MIGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23539,6 +23798,7 @@
         "lane_id": "PCU-SK-READ-PORT-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23555,6 +23815,7 @@
         "lane_id": "PCU-SK-RESOLUTION-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RESOLUTION-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23571,6 +23832,7 @@
         "lane_id": "PCU-SK-RESOLUTION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RESOLUTION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23587,6 +23849,7 @@
         "lane_id": "PCU-SK-RUNTIME-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RUNTIME-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23603,6 +23866,7 @@
         "lane_id": "PCU-SK-SHIM-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-SHIM-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23619,6 +23883,7 @@
         "lane_id": "PCU-SK-VALIDATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-VALIDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23635,6 +23900,7 @@
         "lane_id": null,
         "owner_scope_json": "{\"run_id\":\"PCU-SK-RUN-V1\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23651,6 +23917,7 @@
         "lane_id": "PCU-SK-CUTOVER-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-32\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-32",
         "version": 1
@@ -23667,6 +23934,7 @@
         "lane_id": "PCU-SK-CUTOVER-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-CUTOVER-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-33\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-33",
         "version": 1
@@ -23683,6 +23951,7 @@
         "lane_id": "PCU-SK-FOUNDATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-00\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-00",
         "version": 1
@@ -23699,6 +23968,7 @@
         "lane_id": "PCU-SK-FOUNDATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-FOUNDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-01\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-01",
         "version": 1
@@ -23715,6 +23985,7 @@
         "lane_id": "PCU-SK-FRONTDOOR-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-FRONTDOOR-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-11\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-11",
         "version": 1
@@ -23731,6 +24002,7 @@
         "lane_id": "PCU-SK-GUIDANCE-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-GUIDANCE-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-13\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-13",
         "version": 1
@@ -23747,6 +24019,7 @@
         "lane_id": "PCU-SK-HARNESS-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-HARNESS-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-15\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-15",
         "version": 1
@@ -23763,6 +24036,7 @@
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-20\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-20",
         "version": 1
@@ -23779,6 +24053,7 @@
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-21\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-21",
         "version": 1
@@ -23795,6 +24070,7 @@
         "lane_id": "PCU-SK-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-22\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-22",
         "version": 1
@@ -23811,6 +24087,7 @@
         "lane_id": "PCU-SK-MIGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-MIGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-31\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-31",
         "version": 1
@@ -23827,6 +24104,7 @@
         "lane_id": "PCU-SK-READ-PORT-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-READ-PORT-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-10\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-10",
         "version": 1
@@ -23843,6 +24121,7 @@
         "lane_id": "PCU-SK-RESOLUTION-INTEGRATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RESOLUTION-INTEGRATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-24\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-24",
         "version": 1
@@ -23859,6 +24138,7 @@
         "lane_id": "PCU-SK-RESOLUTION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RESOLUTION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-23\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-23",
         "version": 1
@@ -23875,6 +24155,7 @@
         "lane_id": "PCU-SK-RUNTIME-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-RUNTIME-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-12\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-12",
         "version": 1
@@ -23891,6 +24172,7 @@
         "lane_id": "PCU-SK-SHIM-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-SHIM-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-14\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-14",
         "version": 1
@@ -23907,8 +24189,111 @@
         "lane_id": "PCU-SK-VALIDATION-LANE",
         "owner_scope_json": "{\"lane_id\":\"PCU-SK-VALIDATION-LANE\",\"run_id\":\"PCU-SK-RUN-V1\",\"task_id\":\"PCU-SK-30\"}",
         "run_id": "PCU-SK-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "PCU-SK-30",
+        "version": 1
+      },
+      {
+        "content_hash": "a013ce3b8b959d23e5d00d9314ec7bc07e1cb1f1d2016943dd77f6f9b68756d2",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-PCE2-OPERATE\",\"SK-PCE2-MAINTAIN\",\"SK-PCE2-COLLABORATE\",\"SK-PCE2-0000\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:lane_brief:SK-PCE2-L-EXEC:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-PCE2-L-EXEC\",\"run_id\":\"SK-PCE2-RUN-1\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "a15b24e3a32147e02ce1d12f21fc0738dd642451fb2758500583fbb4ac2c9c74",
+        "content_json": "{\"acceptance_conditions\":[\"Current executed evidence for all PCE2 scenarios and supported old calls.\",\"Shared 3M aggregate token ceiling including relevant prior PCE1 work; disclose metering gaps.\"],\"boundaries\":[\"Independent Todo/Git/host authority; preserve source/evidence.\",\"Observer stays nonmutating; trusted scoped grants authorize maintenance, not model labels.\",\"No live Cellerator/GlassHelix writes, deployment activation or NF1A continuation.\"],\"delegated_judgment\":\"Choose APIs, tests, local decomposition, supported concurrency and economical configured agents; no procedural microtasks or fixed delegation/test quotas.\",\"desired_end_state\":\"Six PCE2 outcomes qualified in one paired candidate; donor NF1A paused.\",\"motivation\":\"Reduce avoidable calls, workarounds, repeated gates and root handoffs.\",\"objective\":\"Make engineering execution easy through semantic guidance, automatic routine mechanics and scoped delegable maintenance.\",\"references\":[\"planning/pce2/DESIGN.md\",\"planning/pce2/BOOTSTRAP.md\",\"planning/pce2/machine/outcomes.json\",\"planning/pce2/machine/usage.json\",\"planning/pce2/machine/cross-authority.json\"]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"SK-PCE2-RUN-1\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "0962488429073d2f171264659dd9c46bce6279f47c82b30144e52ee3677ef1a7",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.\",\"objective\":\"Aggregate verified local outcomes only; this is not a coordinator seat or a prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[],\"read_paths\":[\"planning/pce2\"]},\"tests\":[]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:task_brief:SK-PCE2-L-EXEC:SK-PCE2-0000:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-PCE2-L-EXEC\",\"run_id\":\"SK-PCE2-RUN-1\",\"task_id\":\"SK-PCE2-0000\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-PCE2-0000",
+        "version": 1
+      },
+      {
+        "content_hash": "71ac01c19d4a6b3613fde1a0f47dd073f11710db2f26c497916f4532d8059744",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.\",\"objective\":\"Delegate meaningful bounded work with the context and executor it actually needs, and share immutable source deliveries before final qualification without manual provenance reconstruction.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator\",\"local-coding-worker\",\"integrations/coding-workflow-mcp\",\"planning/pce2\"],\"forbidden_paths\":[],\"read_paths\":[\"planning/pce2\"]},\"tests\":[]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:task_brief:SK-PCE2-L-EXEC:SK-PCE2-COLLABORATE:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-PCE2-L-EXEC\",\"run_id\":\"SK-PCE2-RUN-1\",\"task_id\":\"SK-PCE2-COLLABORATE\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-PCE2-COLLABORATE",
+        "version": 1
+      },
+      {
+        "content_hash": "ccfa9ffd8952011eef05ffce7231e60ca60ef7ae5644f9f41dd93fc6ae83fc7c",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.\",\"objective\":\"Provide bounded resume, amend, supersede/retire and applicability-invalidation operations over existing canonical services; grants follow an approved job rather than the target claim or expensive model.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator\",\"cuda/scripts\",\"cuda/tests\",\"local-coding-worker\",\"integrations/coding-workflow-mcp\",\"planning/pce2\"],\"forbidden_paths\":[],\"read_paths\":[\"planning/pce2\"]},\"tests\":[]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:task_brief:SK-PCE2-L-EXEC:SK-PCE2-MAINTAIN:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-PCE2-L-EXEC\",\"run_id\":\"SK-PCE2-RUN-1\",\"task_id\":\"SK-PCE2-MAINTAIN\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-PCE2-MAINTAIN",
+        "version": 1
+      },
+      {
+        "content_hash": "f1db5f0e31c898a2787af84519e7648c5b495c9cbcfc23c8d0bf4ab6a187a51d",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.\",\"objective\":\"Share executable action semantics across policy, context and workflow results; make starting, inspecting, validating and finishing work possible without procedural guesswork.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator\",\"integrations/coding-workflow-mcp\",\"planning/pce2\"],\"forbidden_paths\":[],\"read_paths\":[\"planning/pce2\"]},\"tests\":[]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "id": "SK-PCE2-RUN-1:task_brief:SK-PCE2-L-EXEC:SK-PCE2-OPERATE:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-PCE2-L-EXEC\",\"run_id\":\"SK-PCE2-RUN-1\",\"task_id\":\"SK-PCE2-OPERATE\"}",
+        "run_id": "SK-PCE2-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-PCE2-OPERATE",
         "version": 1
       },
       {
@@ -23923,6 +24308,7 @@
         "lane_id": "SK-WF2-L-A",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-A\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23939,6 +24325,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23955,6 +24342,7 @@
         "lane_id": "SK-WF2-L-COORD",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-COORD\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23971,6 +24359,7 @@
         "lane_id": "SK-WF2-L-D",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-D\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -23987,6 +24376,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24003,6 +24393,7 @@
         "lane_id": "SK-WF2-L-V",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-V\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24019,6 +24410,7 @@
         "lane_id": "SK-WF2-L-W",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-W\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24035,6 +24427,7 @@
         "lane_id": "SK-WF2-L-X",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-X\",\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24051,6 +24444,7 @@
         "lane_id": null,
         "owner_scope_json": "{\"run_id\":\"SK-WF2-RUN-V1\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24067,6 +24461,7 @@
         "lane_id": "SK-WF2-L-A",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-A\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-A01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-A01",
         "version": 1
@@ -24083,6 +24478,7 @@
         "lane_id": "SK-WF2-L-A",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-A\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-A02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-A02",
         "version": 1
@@ -24099,6 +24495,7 @@
         "lane_id": "SK-WF2-L-A",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-A\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-A03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-A03",
         "version": 1
@@ -24115,6 +24512,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-C01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-C01",
         "version": 1
@@ -24131,6 +24529,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-C02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-C02",
         "version": 1
@@ -24147,6 +24546,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-C03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-C03",
         "version": 1
@@ -24163,6 +24563,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-C04\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-C04",
         "version": 1
@@ -24179,6 +24580,7 @@
         "lane_id": "SK-WF2-L-C",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-C\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-C05\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-C05",
         "version": 1
@@ -24195,6 +24597,7 @@
         "lane_id": "SK-WF2-L-COORD",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-COORD\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-0000\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-0000",
         "version": 1
@@ -24211,6 +24614,7 @@
         "lane_id": "SK-WF2-L-COORD",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-COORD\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-COORD\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-COORD",
         "version": 1
@@ -24227,6 +24631,7 @@
         "lane_id": "SK-WF2-L-D",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-D\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-D01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-D01",
         "version": 1
@@ -24243,6 +24648,7 @@
         "lane_id": "SK-WF2-L-D",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-D\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-D02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-D02",
         "version": 1
@@ -24259,6 +24665,7 @@
         "lane_id": "SK-WF2-L-D",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-D\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-D03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-D03",
         "version": 1
@@ -24275,6 +24682,7 @@
         "lane_id": "SK-WF2-L-D",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-D\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-D04\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-D04",
         "version": 1
@@ -24291,6 +24699,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-I10\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-I10",
         "version": 1
@@ -24307,6 +24716,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-I20\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-I20",
         "version": 1
@@ -24323,6 +24733,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-I40\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-I40",
         "version": 1
@@ -24339,6 +24750,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-I60\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-I60",
         "version": 1
@@ -24355,6 +24767,7 @@
         "lane_id": "SK-WF2-L-I",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-I\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-I90\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-I90",
         "version": 1
@@ -24371,6 +24784,7 @@
         "lane_id": "SK-WF2-L-V",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-V\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-V01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-V01",
         "version": 1
@@ -24387,6 +24801,7 @@
         "lane_id": "SK-WF2-L-V",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-V\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-V02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-V02",
         "version": 1
@@ -24403,6 +24818,7 @@
         "lane_id": "SK-WF2-L-V",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-V\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-V03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-V03",
         "version": 1
@@ -24419,6 +24835,7 @@
         "lane_id": "SK-WF2-L-V",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-V\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-V04\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-V04",
         "version": 1
@@ -24435,6 +24852,7 @@
         "lane_id": "SK-WF2-L-W",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-W\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-W01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-W01",
         "version": 1
@@ -24451,6 +24869,7 @@
         "lane_id": "SK-WF2-L-W",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-W\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-W02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-W02",
         "version": 1
@@ -24467,6 +24886,7 @@
         "lane_id": "SK-WF2-L-W",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-W\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-W03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-W03",
         "version": 1
@@ -24483,6 +24903,7 @@
         "lane_id": "SK-WF2-L-W",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-W\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-W04\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-W04",
         "version": 1
@@ -24499,6 +24920,7 @@
         "lane_id": "SK-WF2-L-X",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-X\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-X01\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-X01",
         "version": 1
@@ -24515,6 +24937,7 @@
         "lane_id": "SK-WF2-L-X",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-X\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-X02\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-X02",
         "version": 1
@@ -24531,6 +24954,7 @@
         "lane_id": "SK-WF2-L-X",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2-L-X\",\"run_id\":\"SK-WF2-RUN-V1\",\"task_id\":\"SK-WF2-X03\"}",
         "run_id": "SK-WF2-RUN-V1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2-X03",
         "version": 1
@@ -24547,6 +24971,7 @@
         "lane_id": "SK-WF2A-L-ROOT",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\"}",
         "run_id": "SK-WF2A-RUN-1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24563,6 +24988,7 @@
         "lane_id": null,
         "owner_scope_json": "{\"run_id\":\"SK-WF2A-RUN-1\"}",
         "run_id": "SK-WF2A-RUN-1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24579,6 +25005,7 @@
         "lane_id": "SK-WF2A-L-ROOT",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\",\"task_id\":\"SK-WF2A-0000\"}",
         "run_id": "SK-WF2A-RUN-1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2A-0000",
         "version": 1
@@ -24595,6 +25022,7 @@
         "lane_id": "SK-WF2A-L-ROOT",
         "owner_scope_json": "{\"lane_id\":\"SK-WF2A-L-ROOT\",\"run_id\":\"SK-WF2A-RUN-1\",\"task_id\":\"SK-WF2A-ENGINES\"}",
         "run_id": "SK-WF2A-RUN-1",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "SK-WF2A-ENGINES",
         "version": 1
@@ -24611,6 +25039,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24627,6 +25056,7 @@
         "lane_id": null,
         "owner_scope_json": "{\"run_id\":\"compat-v2\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": null,
         "version": 1
@@ -24643,6 +25073,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-00\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-00",
         "version": 1
@@ -24659,6 +25090,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-01\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-01",
         "version": 1
@@ -24675,6 +25107,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-02\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-02",
         "version": 1
@@ -24691,6 +25124,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-10\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-10",
         "version": 1
@@ -24707,6 +25141,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-11\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-11",
         "version": 1
@@ -24723,6 +25158,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-12\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-12",
         "version": 1
@@ -24739,6 +25175,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-13\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-13",
         "version": 1
@@ -24755,6 +25192,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-14\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-14",
         "version": 1
@@ -24771,6 +25209,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-15\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-15",
         "version": 1
@@ -24787,6 +25226,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-16\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-16",
         "version": 1
@@ -24803,6 +25243,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-20\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-20",
         "version": 1
@@ -24819,6 +25260,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-21\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-21",
         "version": 1
@@ -24835,6 +25277,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-22\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-22",
         "version": 1
@@ -24851,6 +25294,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-23\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-23",
         "version": 1
@@ -24867,6 +25311,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-24\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-24",
         "version": 1
@@ -24883,6 +25328,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-25\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-25",
         "version": 1
@@ -24899,6 +25345,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-26\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-26",
         "version": 1
@@ -24915,6 +25362,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-27\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-27",
         "version": 1
@@ -24931,6 +25379,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-28\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-28",
         "version": 1
@@ -24947,6 +25396,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-29\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-29",
         "version": 1
@@ -24963,6 +25413,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-30\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-30",
         "version": 1
@@ -24979,6 +25430,7 @@
         "lane_id": "compat-v2-main",
         "owner_scope_json": "{\"lane_id\":\"compat-v2-main\",\"run_id\":\"compat-v2\",\"task_id\":\"WFU-31\"}",
         "run_id": "compat-v2",
+        "series_key": "",
         "superseded_by": null,
         "task_id": "WFU-31",
         "version": 1
@@ -25293,6 +25745,46 @@
         "revision": 761,
         "state": "completed",
         "task_id": "PCU-SK-30"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-09-20T13:38:44Z",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "position": 0,
+        "revision": 881,
+        "state": "queued",
+        "task_id": "SK-PCE2-OPERATE"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-09-20T13:38:44Z",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "position": 1,
+        "revision": 879,
+        "state": "queued",
+        "task_id": "SK-PCE2-MAINTAIN"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-09-20T13:38:44Z",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "position": 2,
+        "revision": 879,
+        "state": "queued",
+        "task_id": "SK-PCE2-COLLABORATE"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-09-20T13:38:44Z",
+        "lane_id": "SK-PCE2-L-EXEC",
+        "position": 3,
+        "revision": 879,
+        "state": "queued",
+        "task_id": "SK-PCE2-0000"
       },
       {
         "activated_at": "2026-09-12T17:17:39Z",
@@ -26015,6 +26507,18 @@
         "state": "closed",
         "updated_at": "2026-08-30T16:38:40Z",
         "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-L-EXEC",
+        "parent_lane_id": null,
+        "revision": 881,
+        "role": "implementer",
+        "run_id": "SK-PCE2-RUN-1",
+        "state": "ready",
+        "updated_at": "2026-09-20T15:13:32Z",
+        "workspace_mode": "exclusive"
       },
       {
         "context_cursor": 0,
@@ -26782,6 +27286,16 @@
         "version": 1
       },
       {
+        "content_hash": "a15b24e3a32147e02ce1d12f21fc0738dd642451fb2758500583fbb4ac2c9c74",
+        "content_json": "{\"acceptance_conditions\":[\"Current executed evidence for all PCE2 scenarios and supported old calls.\",\"Shared 3M aggregate token ceiling including relevant prior PCE1 work; disclose metering gaps.\"],\"boundaries\":[\"Independent Todo/Git/host authority; preserve source/evidence.\",\"Observer stays nonmutating; trusted scoped grants authorize maintenance, not model labels.\",\"No live Cellerator/GlassHelix writes, deployment activation or NF1A continuation.\"],\"delegated_judgment\":\"Choose APIs, tests, local decomposition, supported concurrency and economical configured agents; no procedural microtasks or fixed delegation/test quotas.\",\"desired_end_state\":\"Six PCE2 outcomes qualified in one paired candidate; donor NF1A paused.\",\"motivation\":\"Reduce avoidable calls, workarounds, repeated gates and root handoffs.\",\"objective\":\"Make engineering execution easy through semantic guidance, automatic routine mechanics and scoped delegable maintenance.\",\"references\":[\"planning/pce2/DESIGN.md\",\"planning/pce2/BOOTSTRAP.md\",\"planning/pce2/machine/outcomes.json\",\"planning/pce2/machine/usage.json\",\"planning/pce2/machine/cross-authority.json\"]}",
+        "created_at": "2026-09-20T13:38:44Z",
+        "creation_revision": 879,
+        "run_id": "SK-PCE2-RUN-1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "aeaf3601c39ab2b0ca56496f2674b2eb4ee52420e65ef37a244a6a14109bcd7e",
         "content_json": "{\"acceptance_conditions\":[\"All task gates pass honestly\",\"Real paired cutover is independently qualified\",\"Prior state and unknown work are preserved\"],\"boundaries\":[\"Inert manual bootstrap; import does not dispatch\",\"Separate PC and Skills authorities\",\"Do not initialize a Codex authority\",\"Parity before semantic changes\",\"Keep live release frozen until qualified cutover\"],\"invariants\":[\"SK-WF2-INV-SINGLE-AUTHORITY\",\"SK-WF2-INV-PARITY-FIRST\",\"SK-WF2-INV-CTXPP-SEPARATE\",\"SK-WF2-INV-NO-STATE-RELOCATION\",\"SK-WF2-INV-EXTERNAL-AUTHORITY\",\"SK-WF2-INV-NO-SILENT-SCHEMA-LOSS\",\"SK-WF2-INV-COST-NOT-PERMISSION\",\"SK-WF2-INV-PRESERVE-WORK\",\"SK-WF2-INV-EVIDENCE-NOT-CHECKBOX\",\"SK-WF2-INV-STAGED-CUTOVER\",\"SK-WF2-INV-TOKEN-COVERAGE\",\"SK-WF2-INV-SEPARATE-PERMISSIONS\"],\"objective\":\"Absorb Todo into Project Control; preserve independent ctxpp; establish strict profiles and token-efficient verified orchestration.\"}",
         "created_at": "2026-09-12T16:36:32Z",
@@ -26832,6 +27346,16 @@
         "root_task_id": "PCU-SK-00",
         "status": "active",
         "updated_at": "2026-08-30T11:43:03Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-09-20T13:38:44Z",
+        "id": "SK-PCE2-RUN-1",
+        "revision": 879,
+        "root_task_id": "SK-PCE2-0000",
+        "status": "active",
+        "updated_at": "2026-09-20T13:38:44Z"
       },
       {
         "active_charter_version": 1,
