@@ -497,7 +497,9 @@ class RecoveryEngine:
         """Whether a delegated mandate can make only its named clean task safe."""
         if plan.get("task_id") != task_id or plan.get("blockers"):
             return False
-        if any(item.get("kind") == "dirty_scope_preserved" for item in plan.get("warnings", []) if isinstance(item, dict)):
+        if any(item.get("kind") == "dirty_scope_preserved"
+               or (item.get("kind") == "workspace_preserved" and item.get("state") != "active")
+               for item in plan.get("warnings", []) if isinstance(item, dict)):
             return False
         allowed = {
             "requeue_expired_coordinator", "expire_and_requeue_coordinator", "retire_dispatch", "release_claim", "terminalize_dead_child", "release_resource",
@@ -521,12 +523,12 @@ class RecoveryEngine:
             workspace = None
             if workspace_ids:
                 workspace = conn.execute(
-                    "SELECT id,run_id,lane_id,base_commit,worktree_path FROM workflow_workspaces WHERE id=?",
+                    "SELECT id,run_id,lane_id,base_commit,worktree_path,state FROM workflow_workspaces WHERE id=?",
                     (next(iter(workspace_ids)),),
                 ).fetchone()
             elif lane_ids:
                 workspace = conn.execute(
-                    "SELECT id,run_id,lane_id,base_commit,worktree_path FROM workflow_workspaces WHERE lane_id=?",
+                    "SELECT id,run_id,lane_id,base_commit,worktree_path,state FROM workflow_workspaces WHERE lane_id=?",
                     (next(iter(lane_ids)),),
                 ).fetchone()
             if workspace is None and lane_ids:
@@ -537,8 +539,14 @@ class RecoveryEngine:
                         "expected_base_commit": None, "expected_head": None, "stage": "assess_next_task"}
         if workspace is None:
             return None
+        if workspace["state"] != "active":
+            return None
         expected_head = None
         if workspace["worktree_path"]:
+            cleanliness = subprocess.run(["git", "-C", str(workspace["worktree_path"]), "status", "--porcelain=v1", "-z"],
+                                         capture_output=True, check=False)
+            if cleanliness.returncode or cleanliness.stdout:
+                return None
             completed = subprocess.run(["git", "-C", str(workspace["worktree_path"]), "rev-parse", "HEAD"],
                                        capture_output=True, text=True, check=False)
             if completed.returncode == 0:
@@ -606,11 +614,11 @@ class RecoveryEngine:
             if "authority_revision" in fresh and revision != fresh["authority_revision"] + 1:
                 raise TodoError("recovery_plan_stale", "Authority changed before recovery transaction", ExitCode.CONTENTION)
             if recovery_request_id:
-                existing = conn.execute(
+                existing_rows = conn.execute(
                     "SELECT result_json FROM workflow_recovery_audit WHERE proposed_plan_json LIKE ? ORDER BY created_at DESC",
                     (f'%\"recovery_request_id\":\"{recovery_request_id}\"%',),
-                ).fetchone()
-                if existing:
+                ).fetchall()
+                for existing in existing_rows:
                     existing_result = json.loads(str(existing["result_json"]))
                     if isinstance(existing_result, dict) and existing_result.get("recovery_request_id") == recovery_request_id:
                         return existing_result
