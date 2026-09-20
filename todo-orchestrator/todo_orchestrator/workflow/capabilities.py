@@ -458,6 +458,20 @@ class WorkflowCapabilityLocator:
         capability = WorkflowCapabilityStore(service.db).resolve(
             handle, required_operation=required_operation, expected_class=expected_class
         )
+        if capability.lineage.session_id is None:
+            raise TodoError("invalid_workflow_capability", "Capability session provenance is absent")
+        with service.db.read() as conn:
+            session = conn.execute(
+                "SELECT repo_root FROM sessions WHERE id=?", (capability.lineage.session_id,)
+            ).fetchone()
+        if session is None:
+            raise TodoError("invalid_workflow_capability", "Capability session provenance is absent")
+        exact_root = Path(str(session["repo_root"])).resolve()
+        exact_service = Service(exact_root, read_only=True)
+        # Import lazily to avoid the service/capability module cycle at startup.
+        from .service import repository_identity
+        if repository_identity(exact_service.paths.repo_root, str(exact_service.project["project_uuid"])) != capability.lineage.repository_identity:
+            raise TodoError("repository_identity_mismatch", "Capability dispatch repository identity changed")
         return AuthorizedCapability(
-            capability.id, capability.lineage, capability.expires_at, service.paths.repo_root,
+            capability.id, capability.lineage, capability.expires_at, exact_service.paths.repo_root,
         )

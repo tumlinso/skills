@@ -143,6 +143,32 @@ class WorkflowIsolatedClaimTests(unittest.TestCase):
         self.assertEqual(self.protocol.port._resolve_service(first_capability).paths.repo_root, first_root)
         self.assertEqual(self.protocol.port._resolve_service(second_capability).paths.repo_root, second_root)
 
+    def test_shared_worktree_locator_hint_never_opens_the_hint_writable(self) -> None:
+        first_workspace = self.workspace("A-LANE", "isolated_merge")
+        second_workspace = self.workspace("B-LANE", "isolated_merge")
+        self.workspace("INT-LANE", "exclusive")
+        first_root = Path(str(first_workspace["worktree_path"])).resolve()
+        sibling_root = Path(str(second_workspace["worktree_path"])).resolve()
+        for root in (first_root, sibling_root):
+            control = root / ".todo-orchestrator"
+            control.mkdir(exist_ok=True)
+            (control / "project.json").write_text(
+                (self.repo.root / ".todo-orchestrator" / "project.json").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+        claimed = self.claim_from("thread-a", "A", first_root)
+        self.locator.register(str(claimed["workflow_handle"]), sibling_root)
+        capability = self.locator.resolve(str(claimed["workflow_handle"]), required_operation="inspect_task")
+        opened = []
+        original = self.protocol.port.service_factory
+        def recording(root):
+            opened.append(Path(root).resolve())
+            return original(root)
+        self.protocol.port.service_factory = recording
+        self.assertEqual(self.protocol.port._resolve_service(capability).paths.repo_root, first_root)
+        self.assertTrue(opened)
+        self.assertEqual(set(opened), {first_root})
+
     def test_interface_publication_hashes_exact_dispatch_worktree(self) -> None:
         producer = self.workspace("A-LANE", "isolated_merge")
         self.workspace("B-LANE", "isolated_merge")
