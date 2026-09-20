@@ -156,7 +156,7 @@ def retire_run_batch_in_transaction(conn: sqlite3.Connection, revision: int, *, 
         f"SELECT l.run_id,lt.lane_id,lt.position,lt.task_id,lt.state,r.status AS run_status "
         f"FROM workflow_lane_tasks lt JOIN workflow_lanes l ON l.id=lt.lane_id "
         f"JOIN workflow_runs r ON r.id=l.run_id WHERE lt.task_id IN ({placeholders}) "
-        "AND l.run_id<>? AND r.status='active' "
+        "AND l.run_id<>? AND r.status IN ('active','attention_required') "
         "AND lt.state NOT IN ('completed','cancelled','skipped') ORDER BY l.run_id,lt.lane_id,lt.position",
         (*task_ids, source["id"]),
     ).fetchall()

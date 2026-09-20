@@ -113,6 +113,20 @@ class RetirementTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='FOREIGN-LANE'").fetchone()[0], "active")
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='OLD'").fetchone()[0], "planned")
 
+    def test_foreign_attention_run_membership_is_equally_protected(self):
+        def add_attention_member(conn, revision):
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,status,created_at,updated_at,revision) VALUES('FOREIGN-RUN','OLD','attention_required','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('FOREIGN-LANE','FOREIGN-RUN','implementer','attention_required','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('FOREIGN-LANE',0,'OLD','queued','now',?)", (revision,))
+        self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="OLD", event_type="fixture.attention_member", payload={}, operation=add_attention_member)
+
+        with self.assertRaises(TodoError) as blocked:
+            self.repo.service.retire_run_batch(self.request())
+        self.assertEqual(blocked.exception.code, "retirement_foreign_membership")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_lane_tasks WHERE lane_id='FOREIGN-LANE'").fetchone()[0], "queued")
+            self.assertEqual(conn.execute("SELECT status FROM workflow_runs WHERE id='OLD-RUN'").fetchone()[0], "active")
+
     def test_completed_source_history_is_preserved_and_external_interface_consumer_is_concrete(self):
         def history_and_interface_consumer(conn, revision):
             conn.execute("UPDATE tasks SET status='done',result='done',revision=? WHERE id='KEEP'", (revision,))
