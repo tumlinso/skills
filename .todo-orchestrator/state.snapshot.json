@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-20T15:13:32Z",
+  "generated_at": "2026-09-20T17:14:55Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 881,
+  "project_revision": 883,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9261,6 +9261,26 @@
         "revision": 881,
         "seq": 881,
         "timestamp": "2026-09-20T15:13:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-L-EXEC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-PCE2-L-EXEC\", \"run_id\": \"SK-PCE2-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 882,
+        "seq": 882,
+        "timestamp": "2026-09-20T17:04:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-OPERATE",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": null}",
+        "revision": 883,
+        "seq": 883,
+        "timestamp": "2026-09-20T17:14:55Z"
       }
     ],
     "evidence": [
@@ -13648,6 +13668,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"cpp-context-compiler/scripts/ctxpp\", \"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py\", \"integrations/coding-workflow-mcp/tests/test_delegation_preflight.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/integration-contract.md\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/schemas/delegation-spec-v2.schema.json\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-10-PREFLIGHT\", \"last_run_at\": \"2026-08-25T12:02:15Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-MCP\", \"last_run_at\": \"2026-08-25T12:02:09Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-PROTOCOL\", \"last_run_at\": \"2026-08-25T12:02:16Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-DIFF\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-10-LIVE\", \"last_run_at\": \"2026-08-25T12:01:56Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 471 ++++++++++++++++++---\\n cpp-context-compiler/scripts/ctxpp                 |  45 +-\\n integrations/coding-workflow-mcp/README.md         |   9 +\\n .../coding_workflow_mcp/backend.py                 |  72 +++-\\n .../coding-workflow-mcp/tests/test_tools.py        |  36 +-\\n local-coding-worker/local_worker/controller.py     | 225 ++++++++--\\n .../references/integration-contract.md             |   6 +\\n .../references/read-only-contract.md               |   8 +\\n .../schemas/delegation-spec-v2.schema.json         |   3 +-\\n local-coding-worker/scripts/local_worker.py        |  11 +-\\n local-coding-worker/scripts/worker_core.py         |  46 +-\\n .../tests/test_core4_integration.py                |   1 +\\n .../tests/test_production_integration.py           |   6 +\\n todo-status.md                                     |   3 +-\\n todos.md                                           |   3 +-\\n todos/cwm-00.md                                    |   2 +-\\n todos/cwm-01.md                                    |   2 +-\\n todos/cwm-02.md                                    |   2 +-\\n todos/cwm-03.md                                    |   2 +-\\n todos/cwm-04.md                                    |   2 +-\\n todos/cwm-05.md                                    |   2 +-\\n todos/cwm-06.md                                    |   2 +-\\n todos/cwm-07.md                                    |   2 +-\\n todos/cwm-08.md                                    |   2 +-\\n todos/cwm-09.md                                    |   2 +-\\n 25 files changed, 850 insertions(+), 115 deletions(-)\", \"git_head\": \"c4606ebe91bdc0698072529beff12ad1a49ad596\", \"interfaces\": [], \"note\": \"Repaired delegation source preflight before admission; serialized bounded ctxpp initialization, carried and revalidated prepared packets, preserved strict scopes and five tools. Disposable installed-MCP smoke proved two concurrent real read-only model executions on distinct slots/servers. MCP 35/35, ctxpp 59/59, focused worker 28/28; broad worker suite has 3 pre-existing qwen-code --core-tools environment errors outside this change.\", \"resources\": [], \"task_id\": \"CWM-10\"}",
         "revision": 125,
         "task_id": "CWM-10"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-20T17:14:55Z",
+        "id": "90a651b4-fce7-4102-ab28-bc938fb79a14",
+        "kind": "handoff",
+        "note": "Bounded evidence-led improvement implemented and pushed Skills 27c59e9. Optional next_task run_id; task-only active-run ambiguity returns compact choices without mutation; authoritative recheck before mutation; explicit focus constrains resume and claim. Focused lane-resume suite12 and MCP protocol18 passed. Independent factual review found race and test coverage issues corrected under root direction. PC11d5ad5 adds paired adapter/schema, concise direct-read/no-ritual guidance, truthful collect mutation annotation, and durable main-thread reasoning/decision ownership. Remaining assessment planning/pce2/REMAINING_SCOPE.md in PC. Full OPERATE/PCE2 acceptance not declared; NF1A paused. Paired candidate build/activation next under continuing root PC claim.",
+        "payload_json": "{\"authority_commit\": \"27c59e98e053a06fe677afc33554d1e5075d1600\", \"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 32 +++++++++++++++++++++-----------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/sk-pce2-operate.md               |  4 ++--\\n 4 files changed, 26 insertions(+), 16 deletions(-)\", \"git_head\": \"27c59e98e053a06fe677afc33554d1e5075d1600\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Bounded evidence-led improvement implemented and pushed Skills 27c59e9. Optional next_task run_id; task-only active-run ambiguity returns compact choices without mutation; authoritative recheck before mutation; explicit focus constrains resume and claim. Focused lane-resume suite12 and MCP protocol18 passed. Independent factual review found race and test coverage issues corrected under root direction. PC11d5ad5 adds paired adapter/schema, concise direct-read/no-ritual guidance, truthful collect mutation annotation, and durable main-thread reasoning/decision ownership. Remaining assessment planning/pce2/REMAINING_SCOPE.md in PC. Full OPERATE/PCE2 acceptance not declared; NF1A paused. Paired candidate build/activation next under continuing root PC claim.\", \"producer_commit\": \"27c59e98e053a06fe677afc33554d1e5075d1600\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 883,
+        "task_id": "SK-PCE2-OPERATE"
       },
       {
         "claim_id": null,
@@ -22223,12 +22253,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\"]}",
-        "revision": 880,
+        "revision": 882,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Make ordinary execution self-explanatory",
-        "updated_at": "2026-09-20T15:13:32Z",
-        "version": 3
+        "updated_at": "2026-09-20T17:14:55Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -25752,7 +25782,7 @@
         "enqueued_at": "2026-09-20T13:38:44Z",
         "lane_id": "SK-PCE2-L-EXEC",
         "position": 0,
-        "revision": 881,
+        "revision": 883,
         "state": "queued",
         "task_id": "SK-PCE2-OPERATE"
       },
@@ -26513,11 +26543,11 @@
         "created_at": "2026-09-20T13:38:44Z",
         "id": "SK-PCE2-L-EXEC",
         "parent_lane_id": null,
-        "revision": 881,
+        "revision": 883,
         "role": "implementer",
         "run_id": "SK-PCE2-RUN-1",
         "state": "ready",
-        "updated_at": "2026-09-20T15:13:32Z",
+        "updated_at": "2026-09-20T17:14:55Z",
         "workspace_mode": "exclusive"
       },
       {
