@@ -63,6 +63,58 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "done")
             self.assertEqual(conn.execute("SELECT state FROM workflow_lanes WHERE id='compat-v2-main'").fetchone()[0], "closed")
 
+    def test_claim_owned_gate_binding_is_append_only_and_runnable(self):
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root))
+        handle = claimed["workflow_handle"]
+        spec = {"id": "A-EXISTS", "type": "file_exists", "path": "src/a/unit.py", "required": True}
+        bound = self.protocol.coordinate_task(
+            workflow_handle=handle, action="bind_required_gates", payload={"gates": [spec]},
+        )
+        self.assertEqual(bound["bound_gate_ids"], ["A-EXISTS"])
+        repeated = self.protocol.coordinate_task(
+            workflow_handle=handle, action="bind_required_gates", payload={"gates": [spec]},
+        )
+        self.assertEqual(repeated["unchanged_gate_ids"], ["A-EXISTS"])
+        with self.assertRaisesRegex(TodoError, "cannot be replaced"):
+            self.protocol.coordinate_task(
+                workflow_handle=handle, action="bind_required_gates",
+                payload={"gates": [{**spec, "path": "src/a/missing.py"}]},
+            )
+        gates = self.protocol.coordinate_task(workflow_handle=handle, action="run_gates", payload={"required": True})
+        self.assertEqual(gates["status"], "claimed")
+        self.assertEqual(gates["gates"][0]["gate_id"], "A-EXISTS")
+        finished = self.protocol.finish_task(workflow_handle=handle, action="complete", disposition="implemented")
+        self.assertEqual(finished["status"], "idle")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM evidence WHERE gate_id='A-EXISTS'").fetchone()[0], 1)
+
+    def test_bound_static_gate_rechecks_its_implicit_path_and_repeat_binding_is_a_true_noop(self):
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root))
+        handle = claimed["workflow_handle"]
+        spec = {"id": "A-EXISTS", "type": "file_exists", "path": "src/a/unit.py", "required": True}
+        self.protocol.coordinate_task(workflow_handle=handle, action="bind_required_gates", payload={"gates": [spec]})
+        self.protocol.coordinate_task(workflow_handle=handle, action="run_gates", payload={"required": True})
+        self.assertNotIn("gate_inputs_changed", [item["code"] for item in self.repo.service.audit()["discrepancies"]])
+        revision = self.repo.service.db.revision()
+        repeated = self.protocol.coordinate_task(workflow_handle=handle, action="bind_required_gates", payload={"gates": [spec]})
+        self.assertEqual(repeated["unchanged_gate_ids"], ["A-EXISTS"])
+        self.assertEqual(self.repo.service.db.revision(), revision)
+        (self.repo.root / "src" / "a" / "unit.py").unlink()
+        self.assertIn("gate_inputs_changed", [item["code"] for item in self.repo.service.audit()["discrepancies"]])
+        rerun = self.protocol.coordinate_task(workflow_handle=handle, action="run_gates", payload={"required": True})
+        self.assertEqual(rerun["status"], "blocked")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM evidence WHERE gate_id='A-EXISTS'").fetchone()[0], 2)
+
+    def test_live_gate_binding_rejects_broader_or_optional_scope(self):
+        self.repo.apply(base_plan([safe_task("A", "src/a", scope={"exclusive_paths": ["src/a"], "forbidden_paths": ["src/a/private"]})]))
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root))
+        handle = claimed["workflow_handle"]
+        with self.assertRaisesRegex(TodoError, "invalid specifications"):
+            self.protocol.coordinate_task(workflow_handle=handle, action="bind_required_gates", payload={"gates": [{"id": "BROAD", "type": "file_exists", "path": "src", "required": True}]})
+        with self.assertRaisesRegex(TodoError, "required=true"):
+            self.protocol.coordinate_task(workflow_handle=handle, action="bind_required_gates", payload={"gates": [{"id": "OPTIONAL", "type": "file_exists", "path": "src/a/unit.py", "required": False}]})
+
     def test_fresh_claim_receives_repaired_scope_and_consumed_interfaces(self):
         repaired = safe_task(
             "A",

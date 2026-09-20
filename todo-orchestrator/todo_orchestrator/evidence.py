@@ -10,7 +10,9 @@ from pathlib import Path
 from .git_state import dirty_paths, file_hash, git_head
 
 
-def gate_input_fingerprint(conn: sqlite3.Connection, repo_root: Path, config: dict[str, object]) -> tuple[str, dict[str, object]]:
+def gate_input_fingerprint(
+    conn: sqlite3.Connection, repo_root: Path, config: dict[str, object], *, gate_type: str | None = None,
+) -> tuple[str, dict[str, object]]:
     files: list[dict[str, str]] = []
     for value in sorted(str(item) for item in config.get("input_paths", [])):
         path = repo_root / value
@@ -28,7 +30,12 @@ def gate_input_fingerprint(conn: sqlite3.Connection, repo_root: Path, config: di
         )
         if key in config
     }
-    semantic = {"files": files, "interfaces": interfaces, "command_contract": command_contract}
+    static_path = None
+    if gate_type in {"file_exists", "pattern"} and config.get("path"):
+        value = str(config["path"])
+        path = repo_root / value
+        static_path = {"path": value, "sha256": file_hash(path) if path.is_file() else "missing"}
+    semantic = {"files": files, "interfaces": interfaces, "command_contract": command_contract, "static_path": static_path}
     if config.get("track_git_head"):
         semantic["git_head"] = git_head(repo_root)
     current_dirty = dirty_paths(repo_root)

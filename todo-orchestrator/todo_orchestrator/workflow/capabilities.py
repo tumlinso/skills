@@ -387,11 +387,11 @@ def default_first_class_operations(role: str = "implementer") -> frozenset[str]:
     additions = {
         "coordinator": {
             "delegate_task", "coordinate:fork", "coordinate:publish_context",
-            "coordinate:request_integration",
+            "coordinate:request_integration", "coordinate:bind_required_gates",
         },
         "implementer": {
             "delegate_task", "coordinate:publish_interface", "coordinate:request_integration",
-            "coordinate:accept_child", "coordinate:reject_child",
+            "coordinate:accept_child", "coordinate:reject_child", "coordinate:bind_required_gates",
         },
         "validator": set(),
         "integrator": {

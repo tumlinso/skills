@@ -146,6 +146,7 @@ _ACTION_SCHEMAS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
         frozenset({"child_execution_id", "reason"}),
         frozenset({"child_execution_id", "result_id", "reason"}),
     ),
+    "bind_required_gates": (frozenset({"gates"}), frozenset({"gates"})),
 }
 
 

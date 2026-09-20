@@ -42,6 +42,7 @@ CHILD_RESULT_KINDS = frozenset({
 COORDINATION_ACTIONS = frozenset({
     "sync", "fork", "message", "answer", "arrive", "publish_interface",
     "publish_context", "run_gates", "request_integration", "accept_child", "reject_child",
+    "bind_required_gates",
 })
 RUN_LEVEL_ACTIONS = frozenset({
     "fork", "message", "answer", "arrive", "publish_interface", "publish_context", "request_integration",

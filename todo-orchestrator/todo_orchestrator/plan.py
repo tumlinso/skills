@@ -11,6 +11,7 @@ from typing import Any
 from . import PLAN_SCHEMA_VERSION, SCHEMA_VERSION
 from .config import utc_now
 from .cuda_gate import validate_quiescence
+from .gates import validate_gate_spec
 from .git_state import canonical_relative
 from .graph import validate_acyclic
 from .models import TodoError
@@ -219,18 +220,10 @@ def validate_plan(data: dict[str, Any], repo_root: Path | None = None) -> dict[s
                         errors.append(f"gate {gate.get('id')}: {exc}")
                 if gate.get("type") not in {"command", "benchmark", "json_predicate"} or gate.get("expected_exit_code", 0) != 0 or gate.get("resources"):
                     errors.append(f"gate {gate.get('id')} CUDA execution requires a command, zero expected exit, and controller-owned resources")
-            if gate.get("type") in {"command", "benchmark", "json_predicate"} and (not isinstance(gate.get("argv"), list) or not gate.get("argv")):
-                errors.append(f"gate {gate.get('id')} requires a non-empty argv array")
-            if gate.get("checkpoint_id") and gate.get("checkpoint_id") not in known_checkpoints:
-                errors.append(f"gate {gate.get('id')} references unknown checkpoint {gate.get('checkpoint_id')}")
-            for field in ("cwd", "path", "metric_file"):
-                if gate.get(field):
-                    validate_path(gate[field], f"gate {gate.get('id')} {field}", allow_root=field == "cwd")
-            for value in gate.get("input_paths", []):
-                validate_path(value, f"gate {gate.get('id')} input")
-            for selector in gate.get("resources", []):
-                if not selector_known(selector):
-                    errors.append(f"gate {gate.get('id')} references unknown resource selector {selector}")
+            errors.extend(validate_gate_spec(
+                gate, repo_root, known_checkpoint_ids=known_checkpoints,
+                known_resources=known_resource_classes | known_resource_instances,
+            ))
         for request in task.get("resource_requests", []):
             if not selector_known(request.get("selector")):
                 errors.append(f"task {task_id} references unknown resource selector {request.get('selector')}")

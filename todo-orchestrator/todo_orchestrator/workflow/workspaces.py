@@ -1877,7 +1877,7 @@ class WorkspaceService:
                 raise TodoError("contract_gates_required", "Final integration requires recorded executable gates")
             evidence = []
             for gate in gates:
-                fingerprint, _ = gate_input_fingerprint(conn, root, json.loads(gate["config_json"]))
+                fingerprint, _ = gate_input_fingerprint(conn, root, json.loads(gate["config_json"]), gate_type=str(gate["type"]))
                 found = conn.execute(
                     "SELECT id,metadata_json FROM evidence WHERE gate_id=? AND status='passed' ORDER BY revision DESC LIMIT 1",
                     (gate["id"],),

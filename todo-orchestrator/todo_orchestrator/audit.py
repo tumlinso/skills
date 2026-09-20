@@ -62,7 +62,7 @@ def audit_state(conn: sqlite3.Connection, repo_root: Path, snapshot_file: Path) 
         ):
             continue
         config = json.loads(gate["config_json"])
-        current, _ = gate_input_fingerprint(conn, repo_root, config)
+        current, _ = gate_input_fingerprint(conn, repo_root, config, gate_type=str(gate["type"]))
         if current != gate["input_fingerprint"]:
             discrepancies.append({"code": "gate_inputs_changed", "gate_id": gate["id"], "recorded": gate["input_fingerprint"], "current": current})
     for task in conn.execute("SELECT * FROM tasks WHERE status='done' AND kind<>'epic'"):

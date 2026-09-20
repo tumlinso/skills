@@ -19,7 +19,7 @@ from ..child_execution import (
 from ..claims import CANONICAL_WORKFLOW_OWNER, claim_best, release_claim_id, renew_claim_for_session, sweep_expired
 from ..config import utc_now
 from ..evidence import required_gates
-from ..gates import run_gate
+from ..gates import bind_required_gates, run_gate
 from ..interfaces import freeze as freeze_interface
 from ..interfaces import revise as revise_interface
 from ..models import ExitCode, TodoError
@@ -652,6 +652,13 @@ class WorkflowKernel:
                 capability_class="first_class", run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
                 actor_session_id=lineage.session_id,
             )
+        if action == "bind_required_gates":
+            result, revision = bind_required_gates(
+                service.db, service.paths.repo_root, str(lineage.claim_id), list(payload["gates"]),
+                actor_session_id=str(lineage.session_id),
+            )
+            service.refresh({lineage.task_id})
+            return {**result, "project_revision": revision}
         if action == "publish_context":
             note_content: dict[str, Any] = {
                 "content": dict(payload["content"]),

@@ -18,12 +18,122 @@ from .config import utc_now
 from .claims import pulse_claim
 from .evidence import gate_input_fingerprint
 from .git_state import integration_diff_args
+from .git_state import canonical_relative, path_contains, paths_overlap
 from .graph import reevaluate_barriers
 from .models import ExitCode, TodoError
-from .ownership import acquire_named_locks, release_lock
+from .ownership import acquire_named_locks, release_lock, scopes_for
 from .projections import atomic_write_text
 from .resources import acquire_resource, release_resource, resource_environment
 from .sessions import authenticate_claim
+
+
+def validate_gate_spec(
+    gate: object,
+    repo_root: Path | None,
+    *,
+    allowed_paths: list[str] | None = None,
+    forbidden_paths: list[str] | None = None,
+    known_checkpoint_ids: set[str] | None = None,
+    known_resources: set[str] | None = None,
+) -> list[str]:
+    """Validate the plan gate shape before either plan apply or claim binding."""
+    if not isinstance(gate, dict) or not gate.get("id") or not gate.get("type"):
+        return ["gate requires id and type"]
+    gate_id = str(gate["id"])
+    errors: list[str] = []
+    if gate.get("type") in {"command", "benchmark", "json_predicate"} and (
+        not isinstance(gate.get("argv"), list) or not gate.get("argv")
+    ):
+        errors.append(f"gate {gate_id} requires a non-empty argv array")
+    for field in ("cwd", "path", "metric_file"):
+        if not gate.get(field):
+            continue
+        try:
+            path = "." if field == "cwd" and gate[field] == "." else canonical_relative(repo_root, str(gate[field])) if repo_root else str(gate[field])
+            if path == "." and allowed_paths is not None:
+                if not gate.get("input_paths"):
+                    raise TodoError("gate_cwd_unscoped", "Repository-root cwd requires explicit owned input paths")
+            elif allowed_paths is not None and not any(path_contains(scope, path) for scope in allowed_paths):
+                raise TodoError("gate_path_outside_claim", "Gate path is outside the active task scope")
+            if path != "." and forbidden_paths and any(paths_overlap(path, forbidden) for forbidden in forbidden_paths):
+                raise TodoError("gate_path_forbidden", "Gate path intersects a forbidden task scope")
+        except Exception:
+            errors.append(f"gate {gate_id} {field} has unsafe or unowned repository path")
+    for value in gate.get("input_paths", []):
+        try:
+            path = canonical_relative(repo_root, str(value)) if repo_root else str(value)
+            if allowed_paths is not None and not any(path_contains(scope, path) for scope in allowed_paths):
+                raise TodoError("gate_path_outside_claim", "Gate input is outside the active task scope")
+            if forbidden_paths and any(paths_overlap(path, forbidden) for forbidden in forbidden_paths):
+                raise TodoError("gate_path_forbidden", "Gate input intersects a forbidden task scope")
+        except Exception:
+            errors.append(f"gate {gate_id} input has unsafe or unowned repository path")
+    if gate.get("checkpoint_id") and known_checkpoint_ids is not None and gate["checkpoint_id"] not in known_checkpoint_ids:
+        errors.append(f"gate {gate_id} references unknown checkpoint {gate['checkpoint_id']}")
+    for selector in gate.get("resources", []):
+        if known_resources is not None and str(selector) not in known_resources and not (str(selector).endswith(":any") and str(selector)[:-4] in known_resources):
+            errors.append(f"gate {gate_id} references unknown resource selector {selector}")
+    return errors
+
+
+def bind_required_gates(db, repo_root: Path, claim_id: str, gates: list[object], *, actor_session_id: str) -> tuple[dict[str, object], int]:
+    """Append exact task-owned required gates without rewriting a live plan."""
+    def exact_existing(conn) -> dict[str, object] | None:
+        claim = conn.execute("SELECT task_id,state FROM claims WHERE id=?", (claim_id,)).fetchone()
+        if not claim or claim["state"] != "active" or not gates:
+            return None
+        task_id = str(claim["task_id"])
+        unchanged: list[str] = []
+        for gate in gates:
+            if not isinstance(gate, dict) or not gate.get("id") or gate.get("checkpoint_id") or gate.get("required", True) is not True:
+                return None
+            config = {key: value for key, value in gate.items() if key not in {"id", "type", "required", "checkpoint_id"}}
+            existing = conn.execute("SELECT task_id,checkpoint_id,type,config_json,required FROM gates WHERE id=?", (str(gate["id"]),)).fetchone()
+            if not existing or not (str(existing["task_id"]) == task_id and existing["checkpoint_id"] is None and existing["type"] == gate.get("type") and json.loads(existing["config_json"]) == config and bool(existing["required"]) == bool(gate.get("required", True))):
+                return None
+            unchanged.append(str(gate["id"]))
+        return {"task_id": task_id, "bound_gate_ids": [], "unchanged_gate_ids": unchanged}
+
+    with db.read() as conn:
+        unchanged = exact_existing(conn)
+    if unchanged is not None:
+        return unchanged, db.revision()
+
+    def operation(conn, revision):
+        claim = conn.execute("SELECT task_id,state FROM claims WHERE id=?", (claim_id,)).fetchone()
+        if not claim or claim["state"] != "active":
+            raise TodoError("invalid_claim_authority", "Gate binding requires an active claim")
+        task_id = str(claim["task_id"])
+        scopes = [*scopes_for(conn, task_id, "exclusive"), *scopes_for(conn, task_id, "read")]
+        forbidden = scopes_for(conn, task_id, "forbidden")
+        checkpoint_ids = {str(row[0]) for row in conn.execute("SELECT id FROM checkpoints WHERE task_id=?", (task_id,))}
+        resource_ids = {str(row[0]) for row in conn.execute("SELECT id FROM resource_instances UNION SELECT id FROM resource_classes")}
+        ids = [str(item.get("id", "")) for item in gates if isinstance(item, dict)]
+        if not gates or len(ids) != len(gates) or not all(ids) or len(ids) != len(set(ids)):
+            raise TodoError("invalid_gate_binding", "Gate binding requires unique complete gate specifications")
+        if any(not isinstance(gate, dict) or gate.get("required", True) is not True for gate in gates):
+            raise TodoError("invalid_gate_binding", "Live gate binding requires required=true")
+        errors = [error for gate in gates for error in validate_gate_spec(gate, repo_root, allowed_paths=scopes, forbidden_paths=forbidden, known_checkpoint_ids=checkpoint_ids, known_resources=resource_ids)]
+        if errors:
+            raise TodoError("invalid_gate_binding", "Gate binding rejected invalid specifications", details={"errors": errors})
+        bound, unchanged = [], []
+        for gate in gates:
+            assert isinstance(gate, dict)
+            gate_id = str(gate["id"])
+            config = {key: value for key, value in gate.items() if key not in {"id", "type", "required", "checkpoint_id"}}
+            existing = conn.execute("SELECT task_id,checkpoint_id,type,config_json,required FROM gates WHERE id=?", (gate_id,)).fetchone()
+            if existing:
+                same = (str(existing["task_id"]) == task_id and existing["checkpoint_id"] is None and existing["type"] == gate["type"] and json.loads(existing["config_json"]) == config and bool(existing["required"]) == bool(gate.get("required", True)))
+                if not same:
+                    raise TodoError("gate_binding_conflict", "Existing gate cannot be replaced or weakened", details={"gate_id": gate_id})
+                unchanged.append(gate_id)
+                continue
+            if gate.get("checkpoint_id"):
+                raise TodoError("gate_binding_checkpoint_forbidden", "Live claim binding cannot alter checkpoint gates")
+            conn.execute("INSERT INTO gates(id,task_id,checkpoint_id,type,config_json,required,status,valid,revision) VALUES(?,?,?,?,?,?, 'pending',0,?)", (gate_id, task_id, None, gate["type"], json.dumps(config, sort_keys=True), int(gate.get("required", True)), revision))
+            bound.append(gate_id)
+        return {"task_id": task_id, "bound_gate_ids": bound, "unchanged_gate_ids": unchanged}
+    return db.mutate(actor_session_id=actor_session_id, entity_type="gate_binding", entity_id=claim_id, event_type="workflow.gates.bound", payload={"gate_count": len(gates)}, operation=operation)
 
 
 def _child_candidate(conn, gate_id: str, fingerprint: str, target_child_id: str | None = None) -> dict[str, object] | None:
@@ -142,6 +252,34 @@ def _evaluate_static(repo_root: Path, gate_type: str, config: dict[str, object],
     raise TodoError("unsupported_gate_type", f"Gate type {gate_type} is not executable")
 
 
+def _reusable_static_evidence(conn, gate, fingerprint: str, *, workspace_base_commit: str | None) -> dict[str, object] | None:
+    """Reuse only deterministic static evidence with its complete input identity.
+
+    Commands, GPU/resource gates, and manual acceptance deliberately execute
+    again: their runtime observation lacks a complete reusable contract.
+    """
+    if workspace_base_commit is not None or gate["type"] not in {"file_exists", "pattern"}:
+        return None
+    config = json.loads(gate["config_json"])
+    if config.get("cuda") is not None or config.get("resources") or config.get("locks"):
+        return None
+    if not gate["valid"] or gate["status"] != "passed" or gate["input_fingerprint"] != fingerprint:
+        return None
+    row = conn.execute(
+        "SELECT id,status,metadata_json FROM evidence WHERE gate_id=? AND status='passed' ORDER BY revision DESC,id DESC LIMIT 1",
+        (gate["id"],),
+    ).fetchone()
+    if not row:
+        return None
+    try:
+        metadata = json.loads(row["metadata_json"] or "{}")
+    except json.JSONDecodeError:
+        return None
+    if metadata.get("input_fingerprint") != fingerprint:
+        return None
+    return {"evidence_id": str(row["id"]), "status": "passed", "valid": True}
+
+
 def run_gate(
     db, paths, project: dict[str, object], gate_id: str, claim_token: str | None,
     accept_child: str | None = None,
@@ -213,7 +351,11 @@ def run_gate(
         session_id = claim["session_id"] if claim else config.get("session_id")
         if not session_id:
             raise TodoError("gate_session_required", "Gate execution requires an active claim")
-        fingerprint, inputs = gate_input_fingerprint(conn, gate_root, config)
+        fingerprint, inputs = gate_input_fingerprint(conn, gate_root, config, gate_type=str(gate["type"]))
+        reused = _reusable_static_evidence(conn, gate, fingerprint, workspace_base_commit=workspace_base_commit)
+        if reused:
+            acquired.update(gate=dict(gate), config=config, fingerprint=fingerprint, inputs=inputs, reused=reused)
+            return {"gate_id": gate_id, "reused": True, **reused}
         workspace_source_identity = None
         if workspace_base_commit:
             source = subprocess.run(
@@ -292,6 +434,14 @@ def run_gate(
         payload={"gate_id": gate_id},
         operation=acquire,
     )
+    if acquired.get("reused"):
+        return {
+            "gate_id": gate_id,
+            "status": "passed",
+            "valid": True,
+            "evidence_id": acquired["reused"]["evidence_id"],
+            "reused": True,
+        }, acquire_revision
 
     stop = threading.Event()
 
