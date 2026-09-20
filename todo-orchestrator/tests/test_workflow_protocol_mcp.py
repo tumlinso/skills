@@ -25,8 +25,10 @@ from todo_orchestrator.workflow.protocol import (
     FallbackAuthorization,
     TOOL_NAMES,
     WorkflowProtocol,
+    action_policy,
     fallback_authorized,
 )
+from todo_orchestrator.workflow.roles import allowed_actions as role_actions
 
 
 class Fixture:
@@ -119,14 +121,17 @@ class FakePort:
         self.calls = []
         self.parent_completed = False
         self.delegation_fallback = False
+        self.next_operations = None
+        self.next_advertised_actions = None
+        self.next_status = "claimed"
 
     def next_task(self, *, repo_root, task_id):
         self.calls.append(("next_task", repo_root, task_id))
         handle, _, revision = self.fixture.capabilities.issue_first_class(
-            self.fixture.lineage(), actor_session_id="SESSION"
+            self.fixture.lineage(operations=self.next_operations), actor_session_id="SESSION"
         )
-        return {
-            "status": "claimed",
+        result = {
+            "status": self.next_status,
             "run_id": "RUN",
             "lane_id": "LANE",
             "role": "implementer",
@@ -136,6 +141,9 @@ class FakePort:
             "revision": revision,
             "claim_token": "must-not-cross",
         }
+        if self.next_advertised_actions is not None:
+            result["allowed_actions"] = self.next_advertised_actions
+        return result
 
     def inspect_task(self, capability, *, kind, target, budget_bytes):
         self.calls.append(("inspect_task", capability.id, kind, target, budget_bytes))
@@ -312,6 +320,18 @@ class CapabilityTests(unittest.TestCase):
         self.assertIn("coordinate:fork", default_first_class_operations("coordinator"))
         self.assertNotIn("delegate_task", default_first_class_operations("validator"))
 
+    def test_public_action_policy_is_the_role_and_capability_intersection(self) -> None:
+        order = ("inspect_task", "coordinate_task", "delegate_task", "finish_task")
+        for role in ("coordinator", "implementer", "validator", "integrator", "specialist"):
+            policy = action_policy(self.fixture.lineage(role=role))
+            self.assertEqual(policy["tools"], sorted(policy["tools"], key=order.index))
+            for action, schema in policy["coordinate"].items():
+                self.assertIn(action, role_actions(role))
+                self.assertIn(f"coordinate:{action}", default_first_class_operations(role))
+                self.assertEqual(set(schema), {"required", "optional"})
+        self.assertIn("delegate_task", action_policy(self.fixture.lineage(role="coordinator"))["tools"])
+        self.assertNotIn("delegate_task", action_policy(self.fixture.lineage(role="integrator"))["tools"])
+
 
 class ProtocolBoundaryTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -329,8 +349,23 @@ class ProtocolBoundaryTests(unittest.TestCase):
         self.assertEqual(self.claimed["status"], "claimed")
         self.assertEqual((self.claimed["run_id"], self.claimed["lane_id"], self.claimed["role"], self.claimed["task_id"]), ("RUN", "LANE", "implementer", "TASK"))
         self.assertIn("recommended_next_call", self.claimed)
+        self.assertIsNone(self.claimed["recommended_next_call"])
+        self.assertIn("run_gates", self.claimed["action_policy"]["coordinate"])
         self.assertLessEqual(len(encoded), 8 * 1024)
         self.assertNotIn(b"must-not-cross", encoded)
+
+    def test_kernel_advertisement_cannot_broaden_resolved_capability(self) -> None:
+        self.port.next_operations = frozenset({"inspect_task"})
+        self.port.next_advertised_actions = ["inspect_task", "delegate_task", "finish_task"]
+        claimed = self.protocol.next_task(repo_root="/repo")
+        self.assertEqual(claimed["allowed_actions"], ["inspect_task"])
+
+    def test_needs_context_preserves_the_claim_and_inspection_receipt(self) -> None:
+        self.port.next_status = "needs_context"
+        self.port.next_advertised_actions = ["inspect_task"]
+        result = self.protocol.next_task(repo_root="/repo")
+        self.assertEqual(result["status"], "needs_context")
+        self.assertEqual(result["allowed_actions"], ["inspect_task"])
 
     def test_inspect_and_coordinate_are_typed_and_direct(self) -> None:
         handle = self.claimed["workflow_handle"]

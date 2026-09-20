@@ -19,6 +19,7 @@ from .foundation import (
     PROTOCOL_VERSION,
     require_bounded_payload,
 )
+from .roles import allowed_actions as role_actions
 
 
 TOOL_NAMES = (
@@ -39,6 +40,7 @@ STATUSES = frozenset({
     "context_stale",
     "recovery_needed",
     "fallback_authorized",
+    "needs_context",
 })
 INSPECTION_KINDS = frozenset({
     "task", "source", "evidence", "run", "lane", "decision", "messages",
@@ -161,6 +163,33 @@ def _validate_action(action: str, payload: Mapping[str, Any]) -> None:
         )
 
 
+def action_policy(lineage: Any) -> dict[str, Any]:
+    """Return the executable public surface for one authorized lane.
+
+    Capabilities are the grant and roles are the server policy.  Advertising
+    their intersection prevents a model from spending a call discovering a
+    role/capability disagreement.
+    """
+    operations = set(lineage.allowed_operations)
+    role = str(lineage.role or "")
+    role_allowed = set(role_actions(role)) if role else set()
+    coordinate = {
+        action: {"required": sorted(required), "optional": sorted(allowed - required)}
+        for action, (required, allowed) in _ACTION_SCHEMAS.items()
+        if f"coordinate:{action}" in operations and action in role_allowed
+    }
+    tools: list[str] = []
+    if "inspect_task" in operations:
+        tools.append("inspect_task")
+    if coordinate:
+        tools.append("coordinate_task")
+    if "delegate_task" in operations and "delegate_child" in role_allowed:
+        tools.append("delegate_task")
+    if "finish_task" in operations and "finish_task" in role_allowed:
+        tools.append("finish_task")
+    return {"tools": tools, "coordinate": coordinate}
+
+
 def _public(value: object) -> object:
     """Recursively remove internal secrets and unbounded diagnostics."""
     if isinstance(value, Mapping):
@@ -238,7 +267,7 @@ class WorkflowProtocol:
     def next_task(self, *, repo_root: str, task_id: str | None = None) -> dict[str, Any]:
         internal = dict(self.port.next_task(repo_root=repo_root, task_id=task_id))
         status = str(internal.get("status", "claimed"))
-        if status in {"claimed", "resumed"}:
+        if status in {"claimed", "resumed", "needs_context"}:
             handle = internal.get("workflow_handle")
             if not isinstance(handle, str):
                 raise TodoError(
@@ -249,8 +278,19 @@ class WorkflowProtocol:
                 handle, required_operation="inspect_task", expected_class="first_class"
             )
             internal["capability_incarnation"] = authorized.lineage.incarnation
-        allowed = internal.pop("allowed_actions", ["inspect_task", "coordinate_task", "delegate_task", "finish_task"] if status in {"claimed", "resumed"} else [])
-        recommended = internal.pop("recommended_next_call", "inspect_task" if status in {"claimed", "resumed"} else "next_task")
+            policy = action_policy(authorized.lineage)
+            internal["action_policy"] = policy
+            allowed = policy["tools"]
+        else:
+            allowed = []
+        advertised = internal.pop("allowed_actions", None)
+        if advertised is not None:
+            # The kernel may narrow a response (notably needs_context), but it
+            # cannot advertise beyond the independently resolved capability.
+            allowed = [tool for tool in allowed if tool in set(advertised)]
+        # A normal claim carries its work packet; inspection remains available
+        # for deliberate expansion, rather than being an entry ritual.
+        recommended = internal.pop("recommended_next_call", None if status in {"claimed", "resumed"} else "next_task")
         return envelope(status, internal, allowed_actions=allowed, recommended_next_call=recommended)
 
     def inspect_task(
@@ -270,12 +310,14 @@ class WorkflowProtocol:
         )
         internal = dict(self.port.inspect_task(capability, kind=kind, target=target, budget_bytes=budget_bytes))
         _add_identity(internal, capability)
+        policy = action_policy(capability.lineage)
+        internal["action_policy"] = policy
         status = _stable_status(internal, "context_stale" if internal.get("changed_fragments") else "claimed")
         recommended = str(internal.pop("recommended_next_call", "coordinate_task"))
         return envelope(
             status,
             internal,
-            allowed_actions=["inspect_task", "coordinate_task", "delegate_task", "finish_task"],
+            allowed_actions=policy["tools"],
             recommended_next_call=recommended,
             budget_bytes=budget_bytes,
         )
@@ -292,12 +334,14 @@ class WorkflowProtocol:
         )
         internal = dict(self.port.coordinate_task(capability, action=action, payload=body))
         _add_identity(internal, capability)
+        policy = action_policy(capability.lineage)
+        internal["action_policy"] = policy
         status = _stable_status(internal, "claimed")
         recommended = str(internal.pop("recommended_next_call", "finish_task" if action == "run_gates" else "coordinate_task"))
         return envelope(
             status,
             internal,
-            allowed_actions=["inspect_task", "coordinate_task", "delegate_task", "finish_task"],
+            allowed_actions=policy["tools"],
             recommended_next_call=recommended,
             budget_bytes=COORDINATE_TASK_BUDGET_BYTES,
         )

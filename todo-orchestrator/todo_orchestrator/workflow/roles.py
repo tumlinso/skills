@@ -19,7 +19,7 @@ ROLE_ACTIONS: dict[str, frozenset[str]] = {
         "inspect", "sync", "claim_task", "resume_dispatch", "heartbeat",
         "finish_task", "fork", "assign_role", "propose_plan", "create_rendezvous",
         "message", "answer", "publish_decision", "request_integration", "run_gates",
-        "publish_context",
+        "publish_context", "delegate_child",
     }),
     "implementer": frozenset({
         "inspect", "sync", "claim_task", "resume_dispatch", "heartbeat",

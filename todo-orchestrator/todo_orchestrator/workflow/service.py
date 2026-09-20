@@ -531,15 +531,29 @@ class WorkflowKernel:
             raise
         handle = str(result["workflow_handle"])
         self.locator.register(handle, service.paths.repo_root)
-        context = ContextFragmentStore(service.db).compose_first_class(
-            run_id=str(result["run_id"]), lane_id=str(result["lane_id"]), task_id=str(result["task_id"])
-        )
+        try:
+            # Reserve room for the claim, capability, and action policy in the
+            # enclosing public response; the entry envelope is what is bounded.
+            context = ContextFragmentStore(service.db).compose_first_class(
+                run_id=str(result["run_id"]), lane_id=str(result["lane_id"]), task_id=str(result["task_id"]),
+                budget_bytes=6 * 1024,
+            )
+        except TodoError as exc:
+            if exc.code != "context_capsule_too_large":
+                raise
+            return {
+                **result, "project_revision": revision, "status": "needs_context",
+                "context_receipt": {
+                    "run_id": result["run_id"], "lane_id": result["lane_id"], "task_id": result["task_id"],
+                    "retrieve_via": "inspect_task", "reason": exc.code,
+                },
+                "allowed_actions": ["inspect_task"], "recommended_next_call": "inspect_task",
+            }
         return {
             **result,
             "project_revision": revision,
             "context": context,
-            "allowed_actions": ["inspect_task", "coordinate_task", "delegate_task", "finish_task"],
-            "recommended_next_call": "inspect_task",
+            "recommended_next_call": None,
         }
 
     def inspect_task(self, capability: AuthorizedCapability, *, kind: str, target: str | None, budget_bytes: int) -> Mapping[str, Any]:
