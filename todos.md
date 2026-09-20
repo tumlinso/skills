@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `883`
+Project revision: `885`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.

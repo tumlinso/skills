@@ -22,3 +22,17 @@ No outcome was marked complete without its full conformance evidence. The
 run-focus addition passed 12 focused lane-resume tests; it requires explicit
 `run_id` when a task appears in multiple active runs and refuses unavailable
 focus without claiming compatibility work. NF1A remains paused.
+
+## Intermediate review corrections — 2026-09-20
+
+Delivered gate cache/contract fixes, exact task-scoped recovery ownership and
+transactional durable replay, managed continuation, bounded context paging,
+owned child disposition, explicit validation effects, and measured retained-work
+source-to-successor handoffs. Shared implementation is committed as `e213785`,
+with the focused predecessor commits recorded in Project Control
+`planning/pce2/REVIEW_RESPONSE.md`.
+
+Paired candidate `pce2-review-20260920` is activated. Installed public recovery
+and supersession journeys pass, including isolated managed workspaces and
+postcommit/private-receipt failure replay. NF1A/donor repositories remain paused.
+Execution claim handed off at authority revision 885.

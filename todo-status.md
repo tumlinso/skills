@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `883`
+Project revision: `885`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
