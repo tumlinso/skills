@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -8,13 +10,16 @@ from pathlib import Path
 
 from v2_helpers import V2Repo, base_plan, safe_task
 
+from todo_orchestrator.config import utc_now
 from todo_orchestrator.models import TodoError
 from todo_orchestrator.semantic import SemanticReader
 from todo_orchestrator.service import Service
 from todo_orchestrator.workflow.capabilities import WorkflowCapabilityLocator
+from todo_orchestrator.workflow.context_fragments import ContextFragmentStore, FragmentOwner
 from todo_orchestrator.workflow.protocol import WorkflowProtocol
 from todo_orchestrator.workflow.protocol import _validate_action
 from todo_orchestrator.workflow.service import WorkflowKernel
+from todo_orchestrator.workflow.workspaces import WorkspaceService
 
 
 class FakeLocalWorker:
@@ -28,6 +33,11 @@ class FakeLocalWorker:
             "result": {"summary": "bounded finding"},
             "artifacts": [],
         }
+
+
+class UnavailableLocalWorker:
+    def delegate(self, **kwargs):
+        return {"status": "local_unavailable"}
 
 
 class WorkflowKernelIntegrationTests(unittest.TestCase):
@@ -348,6 +358,75 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
                 "SELECT COUNT(*) FROM workflow_context_fragments WHERE kind='context_note'"
             ).fetchone()[0], 1)
 
+    def _queued_integration_fixture(self) -> tuple[dict[str, object], Path, Path]:
+        self.repo.close()
+        self.repo = V2Repo()
+        subprocess.run(["git", "-C", str(self.repo.root), "config", "user.email", "workflow@example.invalid"], check=True)
+        subprocess.run(["git", "-C", str(self.repo.root), "config", "user.name", "Workflow Tests"], check=True)
+        (self.repo.root / "shared.txt").write_text("base\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(self.repo.root), "add", "shared.txt"], check=True)
+        subprocess.run(["git", "-C", str(self.repo.root), "commit", "-qm", "base"], check=True)
+        base = subprocess.check_output(["git", "-C", str(self.repo.root), "rev-parse", "HEAD"], text=True).strip()
+        counter_fd, counter_name = tempfile.mkstemp()
+        os.close(counter_fd)
+        counter = Path(counter_name)
+        counter.write_text("0", encoding="utf-8")
+        self.addCleanup(counter.unlink)
+        plan = base_plan([
+            {"id": "ROOT", "kind": "epic", "title": "root", "objective": "root"},
+            safe_task("P", "shared.txt"),
+            safe_task("INT", "shared.txt", parallel_policy="integration_exclusive", gates=[{
+                "id": "COUNT", "type": "command", "required": True, "cwd": ".", "input_paths": ["shared.txt"],
+                "argv": [sys.executable, "-c", "from pathlib import Path; p=Path(__import__('os').environ['COUNT_FILE']); p.write_text(str(int(p.read_text() or '0') + 1))"],
+                "env": {"COUNT_FILE": str(counter)},
+            }]),
+        ])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "ROOT", "charter": {"objective": "gate scheduling"},
+            "lanes": [
+                {"id": "ROOT-L", "role": "coordinator", "tasks": ["ROOT"]},
+                {"id": "P-L", "parent_lane_id": "ROOT-L", "role": "implementer", "tasks": ["P"], "workspace": {"mode": "isolated_merge"}},
+                {"id": "I-L", "parent_lane_id": "ROOT-L", "role": "integrator", "tasks": ["INT"], "workspace": {"mode": "exclusive"}},
+            ],
+        }]
+        self.repo.apply(plan)
+        managed = tempfile.TemporaryDirectory()
+        self.addCleanup(managed.cleanup)
+        workspaces = WorkspaceService(self.repo.service.db, managed_root=Path(managed.name), repository_identity_resolver=lambda root: "integration-test")
+        producer = workspaces.create_workspace(repository_root=self.repo.root, repository_identity="integration-test", run_id="RUN", lane_id="P-L", mode="isolated_merge", base_commit=base, worktree_path=Path(managed.name) / "producer", branch="producer", integration_task_id="INT")
+        destination = workspaces.create_workspace(repository_root=self.repo.root, repository_identity="integration-test", run_id="RUN", lane_id="I-L", mode="exclusive", base_commit=base, worktree_path=Path(managed.name) / "integrator", branch="integrator", integration_task_id="INT")
+        producer_root = Path(str(producer["worktree_path"]))
+        (producer_root / "shared.txt").write_text("producer change\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(producer_root), "add", "shared.txt"], check=True)
+        subprocess.run(["git", "-C", str(producer_root), "commit", "-qm", "producer"], check=True)
+        head = subprocess.check_output(["git", "-C", str(producer_root), "rev-parse", "HEAD"], text=True).strip()
+        artifact = workspaces.publish_artifact(workspace_id=str(producer["workspace_id"]), task_id="P", kind="commit", artifact_ref=head)
+        workspaces.enqueue_artifact(artifact_id=str(artifact["artifact_id"]), integrator_lane_id="I-L", integration_task_id="INT")
+        claimed = self.protocol.next_task(repo_root=str(self.repo.root), task_id="INT")
+        return claimed, Path(str(destination["worktree_path"])), counter
+
+    def test_combined_integration_validates_command_once_and_rechecks_changed_source(self):
+        claimed, destination, counter = self._queued_integration_fixture()
+        combined = self.protocol.coordinate_task(workflow_handle=str(claimed["workflow_handle"]), action="run_gates", payload={"required": True})
+        self.assertEqual(counter.read_text(), "1")
+        self.assertEqual(combined["validation"]["effect"], "integrate_and_validate")
+        self.assertEqual(combined["validation"]["validated_in_integration_gate_ids"], ["COUNT"])
+        (destination / "shared.txt").write_text("changed after integration\n", encoding="utf-8")
+        validate = self.protocol.coordinate_task(workflow_handle=str(claimed["workflow_handle"]), action="run_gates", payload={"required": True, "effect": "validate"})
+        self.assertEqual(counter.read_text(), "2")
+        self.assertEqual(validate["validation"]["effect"], "validate")
+        self.assertEqual(validate["integration"], [])
+
+    def test_validate_effect_does_not_apply_the_integration_queue(self):
+        claimed, _, counter = self._queued_integration_fixture()
+        validate = self.protocol.coordinate_task(workflow_handle=str(claimed["workflow_handle"]), action="run_gates", payload={"required": True, "effect": "validate"})
+        self.assertEqual(counter.read_text(), "1")
+        self.assertEqual(validate["validation"]["effect"], "validate")
+        self.assertEqual(validate["integration"], [])
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_integration_queue").fetchone()[0], "queued")
+
     def test_declared_integration_wave_refuses_legacy_serial_gate_lifecycle(self):
         self.repo.close()
         self.repo = V2Repo()
@@ -417,6 +496,92 @@ class WorkflowKernelIntegrationTests(unittest.TestCase):
         with self.repo.service.db.read() as conn:
             self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='A'").fetchone()[0], "in_progress")
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM workflow_lanes WHERE id=?", (delegated["child_execution_id"],)).fetchone()[0], 0)
+
+    def test_coordinator_can_dispose_only_its_own_child_and_failure_releases_writable_lease(self):
+        self.repo.close()
+        self.repo = V2Repo()
+        (self.repo.root / "src" / "a").mkdir(parents=True)
+        (self.repo.root / "src" / "a" / "unit.py").write_text("value = 1\n", encoding="utf-8")
+        plan = base_plan([
+            safe_task("A", "src/a", forbidden_mutations=["src/a/private"], references=["docs/task.md"]),
+            safe_task("B", "src/b"),
+        ])
+        plan["schema_version"] = 3
+        plan["runs"] = [{
+            "id": "RUN", "root_task_id": "A",
+            "charter": {"objective": "bounded", "boundaries": ["preserve scope"], "invariants": ["parent decides"]},
+            "lanes": [{"id": "COORD", "role": "coordinator", "tasks": ["A"]}],
+        }]
+        self.repo.apply(plan)
+        store = ContextFragmentStore(self.repo.service.db)
+        store.publish(
+            actor_session_id=None,
+            owner=FragmentOwner("RUN", "COORD", "A"),
+            kind="source_packet_ref",
+            content={"references": [{"packet_id": "receipt-a", "content_hash": "abc", "paths": ["src/a/unit.py"]}]},
+        )
+        coordinator = self.protocol.next_task(repo_root=str(self.repo.root), task_id="A", run_id="RUN")
+        with patch("todo_orchestrator.workflow.service.compose_child_packet", wraps=__import__(
+            "todo_orchestrator.workflow.service", fromlist=["compose_child_packet"]
+        ).compose_child_packet) as packet:
+            delegated = self.protocol.delegate_task(
+                workflow_handle=coordinator["workflow_handle"], delegated_objective="inspect exact unit",
+                mode="writable", source_targets=["src/a/unit.py"],
+            )
+        packet_args = packet.call_args.kwargs
+        self.assertEqual(packet_args["child_authorized_paths"], ["src/a/unit.py"])
+        self.assertEqual(packet_args["source_packet_refs"], [{"packet_id": "receipt-a", "content_hash": "abc", "paths": ["src/a/unit.py"]}])
+        self.assertIn('run boundaries: ["preserve scope"]', packet_args["parent_constraints"])
+        self.assertIn('task references: ["docs/task.md"]', packet_args["parent_constraints"])
+        self.protocol.collect_delegation(delegation_handle=delegated["delegation_handle"])
+        accepted = self.protocol.coordinate_task(
+            workflow_handle=coordinator["workflow_handle"], action="accept_child",
+            payload={"child_execution_id": delegated["child_execution_id"]},
+        )
+        self.assertEqual(accepted["state"], "accepted")
+        rejected_child = self.protocol.delegate_task(
+            workflow_handle=coordinator["workflow_handle"], delegated_objective="inspect exact unit again",
+            mode="writable", source_targets=["src/a/unit.py"],
+        )
+        rejected = self.protocol.coordinate_task(
+            workflow_handle=coordinator["workflow_handle"], action="reject_child",
+            payload={"child_execution_id": rejected_child["child_execution_id"], "reason": "not needed"},
+        )
+        self.assertEqual(rejected["state"], "rejected")
+        now = utc_now()
+        def seed_foreign(conn, revision):
+            conn.execute(
+                "INSERT INTO claims(id,task_id,session_id,token_hash,state,created_at,heartbeat_at,expires_at,baseline_revision) "
+                "VALUES(?,?,?,?,?,?,?,?,?)",
+                ("FOREIGN-CLAIM", "B", conn.execute("SELECT session_id FROM claims WHERE task_id=? AND state='active'", ("A",)).fetchone()[0],
+                 "foreign", "active", now, now, "2099-01-01T00:00:00Z", revision),
+            )
+            conn.execute(
+                "INSERT INTO child_executions(id,parent_claim_id,task_id,objective,state,created_at,access_mode,authorized_scopes_json) "
+                "VALUES(?,?,?,?,?,?,?,?)",
+                ("foreign-child", "FOREIGN-CLAIM", "B", "foreign", "running", now, "read", '["src/b"]'),
+            )
+        self.repo.service.db.mutate(
+            actor_session_id=None, entity_type="fixture", entity_id="foreign-child",
+            event_type="fixture.foreign_child", payload={}, operation=seed_foreign,
+        )
+        with self.assertRaises(TodoError) as foreign:
+            self.protocol.coordinate_task(
+                workflow_handle=coordinator["workflow_handle"], action="reject_child",
+                payload={"child_execution_id": "foreign-child", "reason": "not mine"},
+            )
+        self.assertEqual(foreign.exception.code, "child_parent_mismatch")
+        self.kernel.local_worker_adapter = UnavailableLocalWorker()
+        unavailable = self.protocol.delegate_task(
+            workflow_handle=coordinator["workflow_handle"], delegated_objective="must clean up",
+            mode="writable", source_targets=["src/a/unit.py"],
+        )
+        self.assertEqual(unavailable["operation_status"], "local_unavailable")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM child_scope_leases WHERE state='active'").fetchone()[0], 0)
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM child_executions WHERE parent_claim_id != 'FOREIGN-CLAIM' AND state='rejected'"
+            ).fetchone()[0], 2)
 
     def test_ce_geo_shaped_claim_delegation_preserves_all_read_surfaces(self):
         def assert_observable() -> None:

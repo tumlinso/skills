@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 from pathlib import Path
 
 from v2_helpers import V2Repo  # noqa: F401 - establishes the package test path
@@ -174,6 +176,33 @@ class WorkflowContextFragmentTests(unittest.TestCase):
             self.store.expand(fragment.id, budget_bytes=256)
         with self.assertRaisesRegex(TodoError, "256..65536"):
             self.store.expand(fragment.id, budget_bytes=128)
+
+    def test_large_charter_pages_are_readable_and_cursor_bound(self) -> None:
+        charter = self.publish("run_charter", {"objective": "x" * 14000})
+        target = charter.id
+        pieces: list[str] = []
+        while target is not None:
+            page = self.store.expand_page(target, budget_bytes=1400)
+            self.assertLessEqual(len(canonical_json(page).encode()), 1400)
+            self.assertEqual(page["page"]["encoding"], "canonical_json_utf8")
+            pieces.append(page["page"]["content"])
+            target = page["page"]["next_target"]
+        self.assertEqual("".join(pieces), canonical_json(charter.content))
+
+        cursor = self.store._page_cursor(charter, 0).removeprefix("ctxp:")
+        cursor_data = json.loads(urlsafe_b64decode(cursor + "=" * (-len(cursor) % 4)))
+        cursor_data["content_hash"] = "0" * 64
+        stale = "ctxp:" + urlsafe_b64encode(json.dumps(cursor_data).encode()).decode().rstrip("=")
+        with self.assertRaisesRegex(TodoError, "cursor"):
+            self.store.expand_page(stale, budget_bytes=1400)
+
+    def test_delta_for_returns_only_changed_manifest_entries(self) -> None:
+        lane = self.publish("lane_brief", {"role": "implementer"}, lane_id="lane-1")
+        task = self.publish("task_brief", {"objective": "first"}, lane_id="lane-1", task_id="TASK-1")
+        known = {lane.id: lane.version, task.id: task.version}
+        revised = self.publish("task_brief", {"objective": "second"}, lane_id="lane-1", task_id="TASK-1")
+        delta = self.store.delta_for(run_id="run-1", lane_id="lane-1", task_id="TASK-1", known_manifest=known)
+        self.assertEqual({item["fragment_id"] for item in delta}, {task.id, revised.id})
 
     def test_source_context_is_reference_only_and_secrets_are_rejected(self) -> None:
         fragment = self.publish(

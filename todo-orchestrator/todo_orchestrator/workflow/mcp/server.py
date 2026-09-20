@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import secrets
 from typing import Callable, Literal
 
@@ -11,6 +12,23 @@ from mcp.types import ToolAnnotations
 from ...models import TodoError
 from ..foundation import PROTOCOL_VERSION
 from ..protocol import WorkflowProtocol
+
+
+def _bounded_error_details(details: object, *, budget_bytes: int = 1024) -> object:
+    """Preserve useful typed details without turning an error envelope into a dump."""
+    encoded = lambda value: json.dumps(value, sort_keys=True, separators=(",", ":"), default=str).encode()
+    if len(encoded({"details": details})) <= budget_bytes:
+        return details
+    if isinstance(details, dict):
+        result: dict[str, object] = {}
+        for key in sorted(details):
+            candidate = {**result, str(key): details[key]}
+            if len(encoded({"details": candidate})) > budget_bytes:
+                continue
+            result = candidate
+        result["truncated"] = True
+        return result
+    return {"truncated": True}
 
 
 SERVER_INSTRUCTIONS = (
@@ -53,26 +71,35 @@ def create_server(
     def invoke(method: str, **arguments: object) -> dict[str, object]:
         try:
             return getattr(active_protocol(), method)(**arguments)
-        except TodoError as error:
-            result = {
-                "protocol_version": PROTOCOL_VERSION,
-                "status": "attention_required",
-                "reason": error.code,
-                "allowed_actions": [],
-                "recommended_next_call": "next_task",
-                "warnings": [],
-            }
-            if error.code == "runtime_identity_mismatch" and isinstance(error.details, dict):
-                result["compatibility"] = error.details
-            return result
-        except Exception:
+        except Exception as error:
+            code = getattr(error, "code", None)
+            if isinstance(code, str) and code:
+                result: dict[str, object] = {
+                    "protocol_version": PROTOCOL_VERSION,
+                    "status": "attention_required",
+                    "reason": code,
+                    "allowed_actions": [],
+                    "recommended_next_call": None,
+                    "warnings": [],
+                }
+                details = getattr(error, "details", None)
+                if details is not None:
+                    result["details"] = _bounded_error_details(details)
+                message = getattr(error, "message", None)
+                if isinstance(message, str) and message:
+                    result["message"] = message[:512]
+                if code == "runtime_identity_mismatch" and isinstance(details, dict):
+                    result["compatibility"] = details
+                if code.startswith(("runtime_", "workflow_owner_", "owner_")):
+                    result["required_decision"] = "repair the reported runtime or owner binding before retrying"
+                return result
             return {
                 "protocol_version": PROTOCOL_VERSION,
                 "status": "attention_required",
                 "reason": "unexpected_internal_failure",
                 "diagnostic_id": diagnostic_id(),
                 "allowed_actions": [],
-                "recommended_next_call": "next_task",
+                "recommended_next_call": None,
                 "warnings": [],
             }
 
@@ -95,7 +122,7 @@ def create_server(
         workflow_handle: str,
         kind: Literal[
             "task", "source", "evidence", "run", "lane", "decision", "messages",
-            "rendezvous", "workspace", "integration",
+            "rendezvous", "workspace", "integration", "context_fragment",
         ],
         target: str | None = None,
         budget_bytes: int = 8192,
@@ -117,7 +144,7 @@ def create_server(
         workflow_handle: str,
         action: Literal[
             "sync", "fork", "message", "answer", "arrive", "publish_interface",
-            "publish_context", "run_gates", "request_integration", "accept_child", "reject_child",
+            "publish_context", "run_gates", "bind_required_gates", "request_integration", "accept_child", "reject_child",
         ],
         payload: dict[str, object] | None = None,
     ) -> dict[str, object]:
@@ -134,17 +161,19 @@ def create_server(
         workflow_handle: str,
         delegated_objective: str,
         mode: Literal["auto", "readonly", "writable"] = "auto",
+        source_targets: list[str] | None = None,
     ) -> dict[str, object]:
         return invoke(
             "delegate_task",
             workflow_handle=workflow_handle,
             delegated_objective=delegated_objective,
             mode=mode,
+            source_targets=source_targets,
         )
 
     @server.tool(
         description="Nonblockingly collect a candidate result from one subordinate child.",
-        annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, idempotentHint=True),
+        annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, idempotentHint=False),
         structured_output=True,
     )
     def collect_delegation(delegation_handle: str) -> dict[str, object]:

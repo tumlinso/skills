@@ -76,7 +76,7 @@ class WorkflowKernelPort(Protocol):
         self, capability: AuthorizedCapability, *, action: str, payload: Mapping[str, Any]
     ) -> Mapping[str, Any]: ...
     def delegate_task(
-        self, capability: AuthorizedCapability, *, objective: str, mode: str
+        self, capability: AuthorizedCapability, *, objective: str, mode: str, source_targets: list[str] | None = None,
     ) -> Mapping[str, Any]: ...
     def collect_delegation(self, capability: AuthorizedCapability) -> Mapping[str, Any]: ...
     def finish_task(
@@ -134,7 +134,7 @@ _ACTION_SCHEMAS: dict[str, tuple[frozenset[str], frozenset[str]]] = {
         frozenset({"content", "anchors", "series_key"}),
         frozenset({"content", "anchors", "series_key", "classification", "source_identity", "invalidate_fragment_ids"}),
     ),
-    "run_gates": (frozenset(), frozenset({"required"})),
+    "run_gates": (frozenset(), frozenset({"required", "effect"})),
     "request_integration": (
         frozenset({"artifacts"}),
         frozenset({"artifacts", "integration_task_id", "summary"}),
@@ -162,6 +162,11 @@ def _validate_action(action: str, payload: Mapping[str, Any]) -> None:
             "invalid_coordination_payload",
             "Coordination payload does not match its action schema",
             details={"missing": sorted(missing), "extra": sorted(extra)},
+        )
+    if action == "run_gates" and "effect" in payload and payload["effect"] not in {"validate", "integrate_and_validate"}:
+        raise TodoError(
+            "invalid_coordination_payload",
+            "run_gates effect must be validate or integrate_and_validate",
         )
 
 
@@ -259,6 +264,29 @@ def _add_identity(internal: dict[str, Any], capability: AuthorizedCapability) ->
         internal.setdefault("child_execution_id", lineage.child_execution_id)
 
 
+def _context_receipt(internal: Mapping[str, Any], workflow_handle: str) -> dict[str, Any]:
+    """Turn an entry context reference into one directly callable public step."""
+    raw = internal.get("context_receipt")
+    receipt = dict(raw) if isinstance(raw, Mapping) else {}
+    context = internal.get("context")
+    if "essential_fragments" not in receipt and isinstance(context, Mapping):
+        manifest = context.get("fragment_manifest")
+        if isinstance(manifest, list):
+            receipt["essential_fragments"] = [
+                dict(item) for item in manifest
+                if isinstance(item, Mapping) and item.get("kind") in {"run_charter", "lane_brief", "task_brief"}
+            ][:3]
+    next_call = receipt.get("next_call")
+    if not isinstance(next_call, Mapping):
+        fragments = receipt.get("essential_fragments")
+        target = next((item.get("fragment_id") for item in fragments if isinstance(item, Mapping)), None) if isinstance(fragments, list) else None
+        if isinstance(target, str):
+            next_call = {"kind": "context_fragment", "target": target, "budget_bytes": 4096}
+    if isinstance(next_call, Mapping):
+        receipt["next_call"] = {"workflow_handle": workflow_handle, **dict(next_call)}
+    return receipt
+
+
 class WorkflowProtocol:
     """Capability-enforcing model boundary over one in-process kernel port."""
 
@@ -294,8 +322,32 @@ class WorkflowProtocol:
             allowed = [tool for tool in allowed if tool in set(advertised)]
         # A normal claim carries its work packet; inspection remains available
         # for deliberate expansion, rather than being an entry ritual.
-        recommended = internal.pop("recommended_next_call", None if status in {"claimed", "resumed"} else "next_task")
-        return envelope(status, internal, allowed_actions=allowed, recommended_next_call=recommended)
+        recommended = internal.pop("recommended_next_call", None)
+        if status == "needs_context":
+            internal["context_receipt"] = _context_receipt(internal, str(internal["workflow_handle"]))
+            allowed = [tool for tool in allowed if tool == "inspect_task"]
+            recommended = "inspect_task"
+        try:
+            return envelope(status, internal, allowed_actions=allowed, recommended_next_call=recommended)
+        except TodoError as exc:
+            # The claim/handle was already committed by the kernel.  An outer
+            # identity/action-policy envelope must not make that operation
+            # disappear just because it consumed the remaining response bytes.
+            if exc.code != "workflow_response_too_large" or status not in {"claimed", "resumed", "needs_context"}:
+                raise
+            receipt = _context_receipt(internal, str(internal["workflow_handle"]))
+            return envelope(
+                "needs_context",
+                {
+                    "workflow_handle": internal["workflow_handle"],
+                    "run_id": internal.get("run_id"), "lane_id": internal.get("lane_id"),
+                    "task_id": internal.get("task_id"), "role": internal.get("role"),
+                    "project_revision": internal.get("project_revision"),
+                    "context_receipt": receipt,
+                },
+                allowed_actions=["inspect_task"],
+                recommended_next_call="inspect_task",
+            )
 
     def inspect_task(
         self,
@@ -317,7 +369,7 @@ class WorkflowProtocol:
         policy = action_policy(capability.lineage)
         internal["action_policy"] = policy
         status = _stable_status(internal, "context_stale" if internal.get("changed_fragments") else "claimed")
-        recommended = str(internal.pop("recommended_next_call", "coordinate_task"))
+        recommended = internal.pop("recommended_next_call", None)
         return envelope(
             status,
             internal,
@@ -341,7 +393,7 @@ class WorkflowProtocol:
         policy = action_policy(capability.lineage)
         internal["action_policy"] = policy
         status = _stable_status(internal, "claimed")
-        recommended = str(internal.pop("recommended_next_call", "finish_task" if action == "run_gates" else "coordinate_task"))
+        recommended = internal.pop("recommended_next_call", None)
         return envelope(
             status,
             internal,
@@ -351,14 +403,26 @@ class WorkflowProtocol:
         )
 
     def delegate_task(
-        self, *, workflow_handle: str, delegated_objective: str, mode: str = "auto"
+        self,
+        *,
+        workflow_handle: str,
+        delegated_objective: str,
+        mode: str = "auto",
+        source_targets: list[str] | None = None,
     ) -> dict[str, Any]:
         if mode not in {"auto", "readonly", "writable"}:
             raise TodoError("invalid_delegation_mode", "Delegation mode is not supported")
+        if source_targets is not None and (
+            not isinstance(source_targets, list)
+            or any(not isinstance(target, str) or not target.strip() for target in source_targets)
+        ):
+            raise TodoError("invalid_source_targets", "Source targets must be a list of non-empty paths")
         capability = self.capabilities.resolve(
             workflow_handle, required_operation="delegate_task", expected_class="first_class"
         )
-        internal = dict(self.port.delegate_task(capability, objective=delegated_objective, mode=mode))
+        internal = dict(self.port.delegate_task(
+            capability, objective=delegated_objective, mode=mode, source_targets=source_targets,
+        ))
         _add_identity(internal, capability)
         raw_status = str(internal.get("status", "attention_required"))
         status = _stable_status(internal, "attention_required")

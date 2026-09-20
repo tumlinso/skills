@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import re
 import uuid
+from base64 import urlsafe_b64decode, urlsafe_b64encode
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any, Callable, Iterable, Mapping, Sequence
@@ -467,6 +468,89 @@ class ContextFragmentStore:
         require_bounded_payload(result, limit=budget_bytes, code="context_expansion_too_large")
         return result
 
+    @staticmethod
+    def _page_cursor(fragment: ContextFragment, offset: int) -> str:
+        """Bind a continuation to the exact immutable fragment revision."""
+        value = canonical_json({
+            "fragment_id": fragment.id,
+            "version": fragment.version,
+            "content_hash": fragment.content_hash,
+            "offset_chars": offset,
+        }).encode("utf-8")
+        return "ctxp:" + urlsafe_b64encode(value).decode("ascii").rstrip("=")
+
+    @staticmethod
+    def _parse_page_cursor(target: str) -> tuple[str, int, str, int] | None:
+        if not target.startswith("ctxp:"):
+            return None
+        encoded = target.removeprefix("ctxp:")
+        try:
+            decoded = urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4))
+            value = json.loads(decoded)
+            fragment_id = value["fragment_id"]
+            version = value["version"]
+            content_hash = value["content_hash"]
+            offset = value["offset_chars"]
+        except (KeyError, TypeError, ValueError, json.JSONDecodeError):
+            raise TodoError("invalid_context_page_cursor", "Context page cursor is invalid") from None
+        if not isinstance(fragment_id, str) or not isinstance(content_hash, str) or not isinstance(version, int) or not isinstance(offset, int) or offset < 0:
+            raise TodoError("invalid_context_page_cursor", "Context page cursor is invalid")
+        return fragment_id, version, content_hash, offset
+
+    def expand_page(self, target: str, *, budget_bytes: int) -> dict[str, Any]:
+        """Return one readable canonical-JSON fragment page within the caller's budget.
+
+        A plain fragment id starts at offset zero.  Subsequent opaque cursors
+        bind the id, version, and content hash so a superseded fragment cannot
+        silently change the content being reconstructed.
+        """
+        if budget_bytes < 512 or budget_bytes > 64 * 1024:
+            raise TodoError("invalid_context_budget", "Explicit inspection budget must be 512..65536 bytes")
+        parsed = self._parse_page_cursor(target)
+        fragment_id = parsed[0] if parsed else target
+        fragment = self.get(fragment_id)
+        offset = parsed[3] if parsed else 0
+        if parsed and (fragment.version != parsed[1] or fragment.content_hash != parsed[2]):
+            raise TodoError("stale_context_page_cursor", "Context page cursor no longer identifies the requested fragment revision")
+        text = canonical_json(fragment.content)
+        if offset > len(text):
+            raise TodoError("invalid_context_page_cursor", "Context page cursor offset exceeds fragment content")
+
+        def result_for(end: int) -> dict[str, Any]:
+            next_target = self._page_cursor(fragment, end) if end < len(text) else None
+            return {
+                "fragment": fragment.reference(),
+                "page": {
+                    "encoding": "canonical_json_utf8",
+                    "offset_chars": offset,
+                    "total_chars": len(text),
+                    "total_bytes": len(text.encode("utf-8")),
+                    "content": text[offset:end],
+                    "next_target": next_target,
+                },
+            }
+
+        # Measure the actual JSON envelope, including escaping, rather than
+        # estimating from characters.  Chars avoid splitting a UTF-8 codepoint.
+        low, high, chosen = offset, len(text), offset
+        while low <= high:
+            middle = (low + high) // 2
+            try:
+                require_bounded_payload(result_for(middle), limit=budget_bytes, code="context_page_too_large")
+            except TodoError:
+                high = middle - 1
+            else:
+                chosen = middle
+                low = middle + 1
+        result = result_for(chosen)
+        if chosen == offset and offset < len(text):
+            # Metadata itself fit, but no readable character fits.  This is a
+            # caller-budget error, not a silent empty-page loop.
+            require_bounded_payload(result, limit=budget_bytes, code="context_page_too_large")
+            raise TodoError("context_page_budget_too_small", "Inspection budget cannot carry one context character")
+        require_bounded_payload(result, limit=budget_bytes, code="context_page_too_large")
+        return result
+
     def active_for(self, *, run_id: str, lane_id: str, task_id: str) -> list[ContextFragment]:
         with self.db.read() as conn:
             rows = conn.execute(
@@ -476,6 +560,29 @@ class ContextFragmentStore:
                 (run_id, lane_id, task_id),
             ).fetchall()
         return [_fragment_from_row(row) for row in rows]
+
+    def delta_for(
+        self, *, run_id: str, lane_id: str, task_id: str, known_manifest: Mapping[str, object]
+    ) -> list[dict[str, Any]]:
+        """Return only manifest changes, without composing a potentially large capsule."""
+        if len(known_manifest) > 256:
+            raise TodoError("context_manifest_too_large", "Known fragment manifest is limited to 256 entries")
+        active_fragments = self.active_for(run_id=run_id, lane_id=lane_id, task_id=task_id)
+        current = {fragment.id: fragment.reference() for fragment in active_fragments}
+        changed = [
+            reference for fragment_id, reference in current.items()
+            if not _known_reference_matches(known_manifest.get(fragment_id), reference)
+        ]
+        missing = [fragment_id for fragment_id in known_manifest if str(fragment_id) not in current]
+        if missing:
+            placeholders = ",".join("?" for _ in missing)
+            with self.db.read() as conn:
+                rows = conn.execute(
+                    f"SELECT * FROM workflow_context_fragments WHERE run_id=? AND id IN ({placeholders})",
+                    [run_id, *missing],
+                ).fetchall()
+            changed.extend(_fragment_from_row(row).reference() for row in rows)
+        return sorted(changed, key=lambda item: (str(item["kind"]), int(item["version"]), str(item["fragment_id"])))
 
     def compose_first_class(
         self,
@@ -857,6 +964,7 @@ def compose_child_packet(
     candidate_gates: Sequence[str],
     acceptance_gates: Sequence[str],
     interface_facts: Sequence[Mapping[str, Any]] = (),
+    access: str = "write",
     budget_bytes: int = CHILD_PACKET_BUDGET_BYTES,
 ) -> dict[str, Any]:
     """Build a deliberately impoverished packet for one subordinate child."""
@@ -872,7 +980,9 @@ def compose_child_packet(
     require_child_scope_subset(parent_paths, child_paths)
     parent_minimal = _minimal_scopes(parent_paths)
     child_minimal = _minimal_scopes(child_paths)
-    if parent_minimal == child_minimal:
+    if access not in {"read", "write"}:
+        raise TodoError("invalid_child_packet", "Child packet access mode is invalid")
+    if access == "write" and parent_minimal == child_minimal:
         raise TodoError("child_scope_not_strict", "Child paths must be narrower than parent-authorized paths")
     references = _validate_source_references(source_packet_refs)
     for reference in references:

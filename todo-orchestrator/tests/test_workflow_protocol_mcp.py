@@ -124,6 +124,7 @@ class FakePort:
         self.next_operations = None
         self.next_advertised_actions = None
         self.next_status = "claimed"
+        self.next_context = None
 
     def next_task(self, *, repo_root, task_id, run_id=None):
         self.calls.append(("next_task", repo_root, task_id, run_id))
@@ -143,6 +144,8 @@ class FakePort:
         }
         if self.next_advertised_actions is not None:
             result["allowed_actions"] = self.next_advertised_actions
+        if self.next_context is not None:
+            result["context"] = self.next_context
         return result
 
     def inspect_task(self, capability, *, kind, target, budget_bytes):
@@ -153,8 +156,8 @@ class FakePort:
         self.calls.append(("coordinate_task", action, payload))
         return {"status": "claimed", "run_id": "RUN", "lane_id": "LANE", "role": "implementer", "task_id": "TASK", "action": action}
 
-    def delegate_task(self, capability, *, objective, mode):
-        self.calls.append(("delegate_task", objective, mode))
+    def delegate_task(self, capability, *, objective, mode, source_targets=None):
+        self.calls.append(("delegate_task", objective, mode, source_targets))
         if self.delegation_fallback:
             return {
                 "status": "local_unavailable",
@@ -319,6 +322,8 @@ class CapabilityTests(unittest.TestCase):
         self.assertNotIn("coordinate:fork", default_first_class_operations("implementer"))
         self.assertIn("coordinate:fork", default_first_class_operations("coordinator"))
         self.assertNotIn("delegate_task", default_first_class_operations("validator"))
+        self.assertIn("coordinate:accept_child", default_first_class_operations("coordinator"))
+        self.assertIn("coordinate:reject_child", default_first_class_operations("coordinator"))
 
     def test_public_action_policy_is_the_role_and_capability_intersection(self) -> None:
         order = ("inspect_task", "coordinate_task", "delegate_task", "finish_task")
@@ -330,6 +335,8 @@ class CapabilityTests(unittest.TestCase):
                 self.assertIn(f"coordinate:{action}", default_first_class_operations(role))
                 self.assertEqual(set(schema), {"required", "optional"})
         self.assertIn("delegate_task", action_policy(self.fixture.lineage(role="coordinator"))["tools"])
+        self.assertIn("accept_child", action_policy(self.fixture.lineage(role="coordinator"))["coordinate"])
+        self.assertIn("reject_child", action_policy(self.fixture.lineage(role="coordinator"))["coordinate"])
         self.assertNotIn("delegate_task", action_policy(self.fixture.lineage(role="integrator"))["tools"])
 
 
@@ -366,6 +373,23 @@ class ProtocolBoundaryTests(unittest.TestCase):
         result = self.protocol.next_task(repo_root="/repo")
         self.assertEqual(result["status"], "needs_context")
         self.assertEqual(result["allowed_actions"], ["inspect_task"])
+
+    def test_outer_entry_overflow_retains_claim_with_callable_context_receipt(self) -> None:
+        self.port.next_context = {
+            "fragment_manifest": [{
+                "fragment_id": "CHARTER", "kind": "run_charter", "version": 1,
+                "content_hash": "a" * 64, "invalidated": False,
+            }],
+            "large": "x" * 9000,
+        }
+        result = self.protocol.next_task(repo_root="/repo")
+        self.assertEqual(result["status"], "needs_context")
+        self.assertEqual(result["allowed_actions"], ["inspect_task"])
+        call = result["context_receipt"]["next_call"]
+        self.assertEqual(call["workflow_handle"], result["workflow_handle"])
+        self.assertEqual({key: call[key] for key in ("kind", "target", "budget_bytes")}, {
+            "kind": "context_fragment", "target": "CHARTER", "budget_bytes": 4096,
+        })
 
     def test_inspect_and_coordinate_are_typed_and_direct(self) -> None:
         handle = self.claimed["workflow_handle"]
@@ -483,7 +507,22 @@ class McpAndAdapterTests(unittest.TestCase):
         result = asyncio.run(server._tool_manager.call_tool("next_task", {"repo_root": "/repo"}))
         self.assertEqual(result["reason"], "runtime_identity_mismatch")
         self.assertEqual(result["compatibility"]["project_uuid"], "project-1")
+        self.assertIsNone(result["recommended_next_call"])
         self.assertNotIn("environment", canonical_json(result))
+
+    def test_typed_errors_keep_bounded_details_without_a_generic_retry(self) -> None:
+        class GateError(Exception):
+            code = "invalid_required_gate"
+            message = "gate path is required"
+            details = {"gate_id": "G-1", "missing": ["path"], "raw": "x" * 4000}
+
+        server = create_server(protocol_factory=lambda: (_ for _ in ()).throw(GateError()))
+        result = asyncio.run(server._tool_manager.call_tool("next_task", {"repo_root": "/repo"}))
+        self.assertEqual(result["reason"], "invalid_required_gate")
+        self.assertEqual(result["message"], "gate path is required")
+        self.assertEqual(result["details"]["gate_id"], "G-1")
+        self.assertIsNone(result["recommended_next_call"])
+        self.assertLessEqual(len(canonical_json(result).encode()), 2048)
 
     def test_all_six_mcp_tools_invoke_the_in_process_protocol(self) -> None:
         fixture = Fixture()
@@ -498,17 +537,25 @@ class McpAndAdapterTests(unittest.TestCase):
             self.assertEqual(inspected["protocol_version"], 2)
             coordinated = asyncio.run(server._tool_manager.call_tool(
                 "coordinate_task",
-                {"workflow_handle": handle, "action": "run_gates", "payload": {"required": True}},
+                {"workflow_handle": handle, "action": "bind_required_gates", "payload": {"gates": []}},
             ))
-            self.assertEqual(coordinated["action"], "run_gates")
+            self.assertEqual(coordinated["action"], "bind_required_gates")
+            expanded = asyncio.run(server._tool_manager.call_tool(
+                "inspect_task", {"workflow_handle": handle, "kind": "context_fragment", "target": "CTX-1"},
+            ))
+            self.assertEqual(expanded["protocol_version"], 2)
             delegated = asyncio.run(server._tool_manager.call_tool(
                 "delegate_task",
-                {"workflow_handle": handle, "delegated_objective": "bounded"},
+                {"workflow_handle": handle, "delegated_objective": "bounded", "source_targets": ["src/a.py"]},
             ))
+            self.assertEqual(port.calls[-1], ("delegate_task", "bounded", "auto", ["src/a.py"]))
             collected = asyncio.run(server._tool_manager.call_tool(
                 "collect_delegation", {"delegation_handle": delegated["delegation_handle"]}
             ))
             self.assertFalse(collected["parent_task_completed"])
+            tools = {tool.name: tool for tool in asyncio.run(server.list_tools())}
+            self.assertFalse(tools["collect_delegation"].annotations.readOnlyHint)
+            self.assertFalse(tools["collect_delegation"].annotations.idempotentHint)
             finished = asyncio.run(server._tool_manager.call_tool(
                 "finish_task",
                 {"workflow_handle": handle, "action": "complete", "disposition": "implemented"},

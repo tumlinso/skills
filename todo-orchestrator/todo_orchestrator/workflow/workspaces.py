@@ -319,6 +319,121 @@ class WorkspaceService:
         result["worktree_path"] = str(target) if target else None
         return result
 
+    def resume_quarantined_workspace(
+        self,
+        *,
+        repository_root: Path,
+        repository_identity: str,
+        run_id: str,
+        lane_id: str,
+        workspace_id: str,
+        expected_base_commit: str,
+        expected_head: str,
+        actor_session_id: str | None = None,
+    ) -> dict[str, object]:
+        """Reactivate one proven-clean quarantined managed workspace.
+
+        This deliberately does not reconcile sibling workspaces, alter Git, or
+        accept retained source.  Callers must bind every identity and the
+        observed HEAD in their authority before asking for this narrow resume.
+        """
+        repository_root = repository_root.resolve()
+        if not repository_identity:
+            raise TodoError("repository_identity_required", "Workspace repository identity is required")
+        if self.repository_identity_resolver is None:
+            raise TodoError("repository_identity_resolver_required", "Workspace resume requires an authoritative repository identity resolver")
+        authoritative_identity = self.repository_identity_resolver(repository_root)
+        if repository_identity != authoritative_identity:
+            raise TodoError("repository_identity_mismatch", "Workspace repository identity is not authoritative")
+
+        with self.db.read() as conn:
+            row = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE id=? AND run_id=? AND lane_id=?",
+                (workspace_id, run_id, lane_id),
+            ).fetchone()
+            if row is None:
+                raise TodoError("workspace_resume_target_missing", "Exact quarantined workspace is unavailable")
+            workspace = dict(row)
+            if (workspace["state"] != "quarantined" or workspace["mode"] == "read_shared" or
+                    not workspace["worktree_path"]):
+                raise TodoError("workspace_resume_not_quarantined", "Only a writable quarantined managed workspace can resume")
+            if (workspace["repository_identity"] != repository_identity or
+                    workspace["base_commit"] != expected_base_commit):
+                raise TodoError("workspace_resume_identity_changed", "Workspace identity or base differs from the approved resume")
+            active_owner = conn.execute(
+                "SELECT 1 FROM workflow_dispatches WHERE workspace_id=? AND state='active' "
+                "UNION SELECT 1 FROM claims c JOIN workflow_lane_tasks lt ON lt.task_id=c.task_id "
+                "WHERE lt.lane_id=? AND c.state IN ('active','orphaned') "
+                "UNION SELECT 1 FROM resource_leases r JOIN claims c ON c.id=r.claim_id "
+                "JOIN workflow_lane_tasks lt ON lt.task_id=c.task_id "
+                "WHERE lt.lane_id=? AND r.state='active' "
+                "UNION SELECT 1 FROM child_executions ce JOIN workflow_lane_tasks lt ON lt.task_id=ce.task_id "
+                "WHERE lt.lane_id=? AND ce.state NOT IN ('succeeded','failed','cancelled','rejected') "
+                "UNION SELECT 1 FROM gates g JOIN workflow_lane_tasks lt ON lt.task_id=g.task_id "
+                "WHERE lt.lane_id=? AND g.status='running' "
+                "UNION SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=? "
+                "UNION SELECT 1 FROM workflow_integration_queue q JOIN workflow_patch_artifacts a ON a.id=q.patch_artifact_id "
+                "WHERE a.workspace_id=?",
+                (workspace_id, lane_id, lane_id, lane_id, lane_id, workspace_id, workspace_id),
+            ).fetchone()
+            if active_owner is not None:
+                raise TodoError("workspace_resume_owner_or_artifact_active", "Workspace has active ownership or integration state")
+
+        target = self._managed_path(Path(str(workspace["worktree_path"])))
+        if not target.is_dir():
+            raise TodoError("workspace_missing", "Workspace path is unavailable; no resume state was changed")
+        status = self._git(target, ["status", "--porcelain=v1", "-z", "--untracked-files=all"])
+        if status.returncode != 0:
+            raise TodoError("workspace_cleanliness_unknown", "Git cleanliness could not be verified")
+        if material_dirty_paths(target):
+            raise TodoError("adoption_required", "Retained workspace content requires exact adoption before resume")
+        if self._commit(target, "HEAD") != expected_head:
+            raise TodoError("workspace_resume_head_changed", "Workspace HEAD differs from the approved resume")
+
+        def resume(conn: Any, revision: int) -> dict[str, object]:
+            current = conn.execute(
+                "SELECT * FROM workflow_workspaces WHERE id=? AND run_id=? AND lane_id=?",
+                (workspace_id, run_id, lane_id),
+            ).fetchone()
+            if current is None or current["state"] != "quarantined":
+                raise TodoError("workspace_resume_state_changed", "Workspace state changed during resume")
+            if (current["repository_identity"] != repository_identity or
+                    current["base_commit"] != expected_base_commit):
+                raise TodoError("workspace_resume_identity_changed", "Workspace identity changed during resume")
+            if self._git(target, ["status", "--porcelain=v1", "-z", "--untracked-files=all"]).returncode != 0:
+                raise TodoError("workspace_cleanliness_unknown", "Git cleanliness could not be verified during resume")
+            if material_dirty_paths(target):
+                raise TodoError("adoption_required", "Retained workspace content changed before resume")
+            if self._commit(target, "HEAD") != expected_head:
+                raise TodoError("workspace_resume_head_changed", "Workspace HEAD changed during resume")
+            if conn.execute(
+                "SELECT 1 FROM workflow_dispatches WHERE workspace_id=? AND state='active' "
+                "UNION SELECT 1 FROM claims c JOIN workflow_lane_tasks lt ON lt.task_id=c.task_id "
+                "WHERE lt.lane_id=? AND c.state IN ('active','orphaned') "
+                "UNION SELECT 1 FROM workflow_patch_artifacts WHERE workspace_id=?",
+                (workspace_id, lane_id, workspace_id),
+            ).fetchone() is not None:
+                raise TodoError("workspace_resume_state_changed", "Workspace acquired an owner or artifact during resume")
+            conn.execute(
+                "UPDATE workflow_workspaces SET state='active',cleanup_eligible=0,updated_at=? WHERE id=?",
+                (utc_now(), workspace_id),
+            )
+            return {"workspace_id": workspace_id, "run_id": run_id, "lane_id": lane_id,
+                    "state": "active", "worktree_path": str(target), "base_commit": expected_base_commit,
+                    "head": expected_head}
+
+        result, revision = self.db.mutate(
+            actor_session_id=actor_session_id,
+            entity_type="workflow_workspace",
+            entity_id=workspace_id,
+            event_type="workflow_workspace_quarantine_resumed",
+            payload={"run_id": run_id, "lane_id": lane_id, "base_commit": expected_base_commit,
+                     "head": expected_head},
+            operation=resume,
+        )
+        result["revision"] = revision
+        return result
+
     def reconcile_workspace_base(
         self,
         *,

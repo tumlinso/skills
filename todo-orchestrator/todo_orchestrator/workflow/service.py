@@ -18,13 +18,15 @@ from ..child_execution import (
 )
 from ..claims import CANONICAL_WORKFLOW_OWNER, claim_best, release_claim_id, renew_claim_for_session, sweep_expired
 from ..config import utc_now
-from ..evidence import required_gates
+from ..evidence import gate_input_fingerprint, required_gates
 from ..gates import bind_required_gates, run_gate
+from ..git_state import integration_diff_args
 from ..interfaces import freeze as freeze_interface
 from ..interfaces import revise as revise_interface
 from ..models import ExitCode, TodoError
+from ..git_state import canonical_relative
 from ..ownership import scopes_for
-from ..readiness import explain_task
+from ..readiness import explain_task, ready_tasks
 from ..service import Service
 from ..sessions import create_session
 from .capabilities import (
@@ -68,6 +70,66 @@ def repository_identity(repo_root: Path, project_uuid: str) -> str:
     if not candidate.is_absolute():
         candidate = (repo_root / candidate).resolve()
     return hashlib.sha256(f"{project_uuid}\0{candidate}".encode()).hexdigest()
+
+
+def assess_continuation(
+    conn: Any,
+    *,
+    run_id: str,
+    lane_id: str,
+    task_id: str,
+    workspace_id: str | None,
+) -> dict[str, object]:
+    """Read one exact continuation without creating a session or claim.
+
+    The caller supplies a connection from ``Service(..., read_only=True)``.
+    It deliberately reports an observation, not a reservation: ``next_task``
+    still performs the authoritative claim and dispatch transaction.
+    """
+    revision_row = conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()
+    revision = int(revision_row[0]) if revision_row is not None else None
+    blockers: list[dict[str, object]] = []
+    run = conn.execute("SELECT status FROM workflow_runs WHERE id=?", (run_id,)).fetchone()
+    lane = conn.execute(
+        "SELECT id,run_id,role,workspace_mode,state FROM workflow_lanes WHERE id=? AND run_id=?",
+        (lane_id, run_id),
+    ).fetchone()
+    membership = conn.execute(
+        "SELECT position,state FROM workflow_lane_tasks WHERE lane_id=? AND task_id=?",
+        (lane_id, task_id),
+    ).fetchone()
+    if run is None or run["status"] != "active":
+        blockers.append({"kind": "run", "state": "run_focus_unavailable"})
+    if lane is None:
+        blockers.append({"kind": "lane", "state": "lane_focus_unavailable"})
+    elif membership is None or membership["state"] != "queued":
+        blockers.append({"kind": "lane_task", "state": "task_not_queued"})
+    else:
+        candidate = deterministic_lane_assignment(conn, run_id, role=str(lane["role"]))
+        if candidate is None or candidate.get("lane_id") != lane_id or candidate.get("task_id") != task_id:
+            # The dispatch path accepts only the serial lane head.  Keep this
+            # assessment aligned with that predicate without issuing a claim.
+            blockers.append({"kind": "lane_task", "state": "not_serial_lane_head"})
+    ready = {str(item["task_id"]): item for item in ready_tasks(conn)}.get(task_id)
+    if ready is None:
+        blockers.append({"kind": "task", "state": "not_ready", "assessment": explain_task(conn, task_id)})
+    if lane is not None and lane["workspace_mode"] in {"isolated_merge", "contract_split"}:
+        workspace = conn.execute(
+            "SELECT id,mode,state FROM workflow_workspaces WHERE id=? AND run_id=? AND lane_id=?",
+            (workspace_id, run_id, lane_id),
+        ).fetchone() if workspace_id else None
+        if workspace is None:
+            blockers.append({"kind": "workspace", "state": "workflow_workspace_required"})
+        elif workspace["mode"] != lane["workspace_mode"] or workspace["state"] not in {"active", "artifact_ready", "queued"}:
+            blockers.append({"kind": "workspace", "state": "workflow_workspace_inactive"})
+    observed = {
+        "run_id": run_id, "lane_id": lane_id, "task_id": task_id,
+        "workspace_id": workspace_id, "observed_revision": revision,
+        "status": "ready" if not blockers else "blocked", "blockers": blockers,
+    }
+    if ready is not None:
+        observed["readiness"] = ready["explanation"]
+    return observed
 
 
 class WorkflowKernel:
@@ -608,10 +670,32 @@ class WorkflowKernel:
             raise
         handle = str(result["workflow_handle"])
         self.locator.register(handle, service.paths.repo_root)
+        store = ContextFragmentStore(service.db)
+
+        def context_receipt(reason: str) -> dict[str, Any]:
+            fragments = store.active_for(
+                run_id=str(result["run_id"]), lane_id=str(result["lane_id"]), task_id=str(result["task_id"]),
+            )
+            # The charter, lane, and task briefs carry mandatory constraints.
+            by_kind = {fragment.kind: fragment for fragment in fragments}
+            essential = [
+                by_kind[kind].reference() for kind in ("run_charter", "lane_brief", "task_brief")
+                if kind in by_kind
+            ]
+            target = essential[0]["fragment_id"] if essential else None
+            receipt: dict[str, Any] = {
+                "run_id": result["run_id"], "lane_id": result["lane_id"], "task_id": result["task_id"],
+                "reason": reason, "essential_fragments": essential,
+            }
+            if target:
+                receipt["next_call"] = {
+                    "kind": "context_fragment", "target": target, "budget_bytes": 4096,
+                }
+            return receipt
         try:
             # Reserve room for the claim, capability, and action policy in the
             # enclosing public response; the entry envelope is what is bounded.
-            context = ContextFragmentStore(service.db).compose_first_class(
+            context = store.compose_first_class(
                 run_id=str(result["run_id"]), lane_id=str(result["lane_id"]), task_id=str(result["task_id"]),
                 budget_bytes=6 * 1024,
             )
@@ -620,10 +704,7 @@ class WorkflowKernel:
                 raise
             return {
                 **result, "project_revision": revision, "status": "needs_context",
-                "context_receipt": {
-                    "run_id": result["run_id"], "lane_id": result["lane_id"], "task_id": result["task_id"],
-                    "retrieve_via": "inspect_task", "reason": exc.code,
-                },
+                "context_receipt": context_receipt(exc.code),
                 "allowed_actions": ["inspect_task"], "recommended_next_call": "inspect_task",
             }
         return {
@@ -686,7 +767,8 @@ class WorkflowKernel:
                 if not target:
                     raise TodoError("context_fragment_target_required", "Context fragment inspection requires a fragment id")
                 store = ContextFragmentStore(service.db)
-                fragment = store.get(target)
+                page_cursor = store._parse_page_cursor(target)
+                fragment = store.get(page_cursor[0] if page_cursor else target)
                 if fragment.kind == "context_note":
                     visible = {item.id for item in store._relevant_notes(
                         run_id=str(lineage.run_id), lane_id=str(lineage.lane_id), task_id=lineage.task_id,
@@ -699,7 +781,19 @@ class WorkflowKernel:
                     or (fragment.owner.task_id is not None and fragment.owner.task_id != lineage.task_id)
                 ):
                     raise TodoError("context_fragment_forbidden", "Context fragment is outside current workflow lineage")
-                payload = store.expand(target, budget_bytes=budget_bytes)
+                if page_cursor:
+                    # Protocol identity/policy is added after this kernel call.
+                    # Reserve its fixed bounded envelope before selecting text.
+                    payload = store.expand_page(target, budget_bytes=max(512, budget_bytes - 1536))
+                else:
+                    # Plain fragment ids keep the established expanded-content
+                    # response when it fits.  Paging starts only when needed.
+                    try:
+                        payload = store.expand(target, budget_bytes=budget_bytes)
+                    except TodoError as exc:
+                        if exc.code != "context_expansion_too_large":
+                            raise
+                        payload = store.expand_page(target, budget_bytes=max(512, budget_bytes - 1536))
             elif kind == "source":
                 payload = {}
             else:
@@ -725,10 +819,24 @@ class WorkflowKernel:
         role_action = {"publish_interface": "publish_interface", "request_integration": "request_integration"}.get(action, action)
         require_role_action(str(lineage.role), role_action)
         if action == "sync":
-            return MessageService(service.db).sync(
+            synced = MessageService(service.db).sync(
                 capability_class="first_class", run_id=str(lineage.run_id), lane_id=str(lineage.lane_id),
                 actor_session_id=lineage.session_id,
             )
+            known = payload.get("known_fragments")
+            if known is not None:
+                if not isinstance(known, Mapping):
+                    raise TodoError("invalid_context_manifest", "known_fragments must map fragment ids to known versions")
+                changes = ContextFragmentStore(service.db).delta_for(
+                    run_id=str(lineage.run_id), lane_id=str(lineage.lane_id), task_id=str(lineage.task_id),
+                    known_manifest=known,
+                )
+                synced["context_delta"] = {
+                    "requested_cursor": payload.get("cursor"),
+                    "cursor": synced.get("cursor"),
+                    "changed_fragments": changes,
+                }
+            return synced
         if action == "bind_required_gates":
             result, revision = bind_required_gates(
                 service.db, service.paths.repo_root, str(lineage.claim_id), list(payload["gates"]),
@@ -826,6 +934,18 @@ class WorkflowKernel:
         if action == "run_gates":
             workspace = self._workspace_for_dispatch(service, lineage)
             execution_root, workspace_base = self._gate_workspace(workspace)
+            requested_effect = payload.get("effect")
+            if requested_effect not in {None, "validate", "integrate_and_validate"}:
+                raise TodoError(
+                    "invalid_coordination_payload",
+                    "run_gates effect must be validate or integrate_and_validate",
+                )
+            required = bool(payload.get("required", True))
+            integrate = required and (
+                requested_effect == "integrate_and_validate"
+                or (requested_effect is None and lineage.role in {"integrator", "validator"})
+            )
+            actual_effect = "integrate_and_validate" if integrate else "validate"
             workspaces = WorkspaceService(
                 service.db,
                 managed_root=service.paths.state_dir / "workflow-workspaces",
@@ -838,7 +958,7 @@ class WorkflowKernel:
             # loop.  Its apply, gate binding, and finalization are privileged
             # root-owned lifecycle operations; letting this compatibility path
             # take even its first queue entry would split one sealed wave.
-            if lineage.role in {"integrator", "validator"}:
+            if integrate:
                 with service.db.read() as conn:
                     wave_rows = conn.execute(
                         "SELECT id,merge_result_json FROM workflow_integration_queue "
@@ -864,7 +984,9 @@ class WorkflowKernel:
             # exact run, lane, and task, applies them serially, and finalizes
             # each artifact before considering the next one.
             integration_results: list[dict[str, Any]] = []
-            if lineage.role in {"integrator", "validator"} and payload.get("required", True):
+            finalized_gate_results: dict[str, dict[str, Any]] = {}
+            finalization_proofs: list[dict[str, Any]] = []
+            if integrate:
                 while True:
                     with service.db.read() as conn:
                         queued = conn.execute(
@@ -956,14 +1078,49 @@ class WorkflowKernel:
                                 for item in gate_results
                             ],
                             "integration": integration_results,
+                            "validation": {"effect": actual_effect, "validated_in_integration_gate_ids": []},
                         }
+                    artifact = finalized.get("integrated_artifact") or {}
+                    source_identity = artifact.get("content_hash")
+                    if source_identity:
+                        finalization_proofs.append({
+                            "source_identity": str(source_identity),
+                            "gate_fingerprints": {
+                                str(item["gate_id"]): str(item["input_fingerprint"])
+                                for item in finalized.get("gates", [])
+                            },
+                        })
+                        finalized_gate_results.update({str(item["gate_id"]): item for item in gate_results})
 
             with service.db.read() as conn:
-                gates = required_gates(conn, lineage.task_id) if payload.get("required", True) else [dict(row) for row in conn.execute("SELECT * FROM gates WHERE task_id=?", (lineage.task_id,))]
+                gates = required_gates(conn, lineage.task_id) if required else [dict(row) for row in conn.execute("SELECT * FROM gates WHERE task_id=?", (lineage.task_id,))]
             results = []
+            validated_in_integration_gate_ids: list[str] = []
             for gate in gates:
+                gate_id = str(gate["id"])
+                reusable = False
+                if execution_root is not None and workspace_base is not None and gate_id in finalized_gate_results:
+                    source = subprocess.run(
+                        ["git", "-C", str(execution_root), *integration_diff_args(workspace_base)],
+                        capture_output=True, check=False,
+                    )
+                    if source.returncode == 0:
+                        current_source_identity = hashlib.sha256(source.stdout).hexdigest()
+                        with service.db.read() as conn:
+                            current_fingerprint, _ = gate_input_fingerprint(
+                                conn, execution_root, json.loads(str(gate["config_json"])), gate_type=str(gate["type"]),
+                            )
+                        reusable = any(
+                            proof["source_identity"] == current_source_identity
+                            and proof["gate_fingerprints"].get(gate_id) == current_fingerprint
+                            for proof in finalization_proofs
+                        )
+                if reusable:
+                    results.append(finalized_gate_results[gate_id])
+                    validated_in_integration_gate_ids.append(gate_id)
+                    continue
                 result, revision = run_gate(
-                    service.db, service.paths, service.project, str(gate["id"]), None,
+                    service.db, service.paths, service.project, gate_id, None,
                     authorized_claim_id=lineage.claim_id,
                     execution_root=execution_root,
                     workspace_base_commit=workspace_base,
@@ -977,6 +1134,10 @@ class WorkflowKernel:
                     for item in results
                 ],
                 "integration": integration_results,
+                "validation": {
+                    "effect": actual_effect,
+                    "validated_in_integration_gate_ids": validated_in_integration_gate_ids,
+                },
             }
         if action in {"accept_child", "reject_child"}:
             child_id = str(payload["child_execution_id"])
@@ -1040,23 +1201,71 @@ class WorkflowKernel:
             }
         raise TodoError("invalid_coordination_action", "Coordination action is unsupported")
 
-    def _child_scope(self, service: Service, claim_id: str, *, access: str) -> tuple[list[str], list[str]]:
+    def _child_scope(
+        self,
+        service: Service,
+        claim_id: str,
+        *,
+        access: str,
+        source_targets: list[str] | None,
+    ) -> tuple[list[str], list[str]]:
         with service.db.read() as conn:
             claim = conn.execute("SELECT task_id FROM claims WHERE id=? AND state='active'", (claim_id,)).fetchone()
             if not claim:
                 raise TodoError("invalid_claim_authority", "Parent claim is inactive")
             parents = scopes_for(conn, claim["task_id"], "exclusive" if access == "write" else None)
-        for parent in parents:
-            target = service.paths.repo_root / parent
-            if target.is_dir():
-                files = sorted(path for path in target.rglob("*") if path.is_file() and ".git" not in path.parts)
-                if files:
-                    return parents, [str(files[0].relative_to(service.paths.repo_root))]
-        if len(parents) > 1:
-            return parents, [parents[0]]
-        raise TodoError("child_scope_not_strict", "No strict bounded child scope can be derived")
+        if source_targets is None:
+            if access == "read":
+                return parents, parents
+            raise TodoError("child_scope_not_strict", "Writable delegation requires exact narrower source targets")
+        if not source_targets:
+            raise TodoError("child_scope_not_strict", "Source targets must be non-empty when supplied")
+        child_paths = sorted({canonical_relative(service.paths.repo_root, target) for target in source_targets})
+        if any(not (service.paths.repo_root / target).is_file() for target in child_paths):
+            raise TodoError("child_source_target_invalid", "Source targets must name existing repository files")
+        if any(not any(target == parent or target.startswith(parent.rstrip("/") + "/") for parent in parents) for target in child_paths):
+            raise TodoError("child_scope_violation", "Source targets must remain inside the parent authorized scope")
+        return parents, child_paths
 
-    def delegate_task(self, capability: AuthorizedCapability, *, objective: str, mode: str) -> Mapping[str, Any]:
+    @staticmethod
+    def _child_packet_context(
+        service: Service, lineage: CapabilityLineage, child_paths: list[str], *, access: str,
+    ) -> tuple[list[str], list[Mapping[str, Any]]]:
+        fragments = ContextFragmentStore(service.db).active_for(
+            run_id=str(lineage.run_id), lane_id=str(lineage.lane_id), task_id=str(lineage.task_id),
+        )
+        constraints = ["remain subordinate to the parent claim"]
+        for fragment in fragments:
+            fields = (
+                ("boundaries", "run boundaries"), ("invariants", "run invariants"),
+                ("acceptance_conditions", "run acceptance conditions"),
+            ) if fragment.kind == "run_charter" else (
+                ("completion_contract", "task completion contract"),
+                ("forbidden_mutations", "task forbidden mutations"),
+                ("references", "task references"),
+            ) if fragment.kind == "task_brief" else ()
+            for field, label in fields:
+                value = fragment.content.get(field)
+                if value:
+                    constraints.append(f"{label}: {json.dumps(value, sort_keys=True)}")
+        references: list[Mapping[str, Any]] = []
+        for fragment in fragments:
+            if fragment.kind != "source_packet_ref":
+                continue
+            for reference in fragment.content.get("references", []):
+                paths = reference.get("paths", []) if isinstance(reference, Mapping) else []
+                if paths and all(any(str(path) == scope or str(path).startswith(scope.rstrip("/") + "/") for scope in child_paths) for path in paths):
+                    references.append(reference)
+        return constraints, references
+
+    def delegate_task(
+        self,
+        capability: AuthorizedCapability,
+        *,
+        objective: str,
+        mode: str,
+        source_targets: list[str] | None = None,
+    ) -> Mapping[str, Any]:
         service = self._resolve_service(capability)
         lineage = capability.lineage
         require_role_action(str(lineage.role), "delegate_child")
@@ -1070,7 +1279,9 @@ class WorkflowKernel:
             }
         access = "read" if mode == "readonly" else "write"
         try:
-            parent_paths, child_paths = self._child_scope(service, str(lineage.claim_id), access=access)
+            parent_paths, child_paths = self._child_scope(
+                service, str(lineage.claim_id), access=access, source_targets=source_targets,
+            )
         except TodoError as exc:
             return {
                 "status": "not_eligible", "fallback_authorization": {
@@ -1078,11 +1289,15 @@ class WorkflowKernel:
                     "reason": exc.code, "scope": {"task_id": lineage.task_id}, "access": "read_only",
                 },
             }
+        parent_constraints, source_packet_refs = self._child_packet_context(
+            service, lineage, child_paths, access=access,
+        )
         packet = compose_child_packet(
-            delegated_objective=objective, parent_constraints=["remain subordinate to the parent claim"],
-            parent_authorized_paths=parent_paths, child_authorized_paths=child_paths, source_packet_refs=[],
+            delegated_objective=objective, parent_constraints=parent_constraints,
+            parent_authorized_paths=parent_paths, child_authorized_paths=child_paths, source_packet_refs=source_packet_refs,
             required_output_schema={"kind": sorted(CHILD_RESULT_KINDS), "summary": "bounded"},
             candidate_gates=[], acceptance_gates=[],
+            access=access,
         )
         capabilities = WorkflowCapabilityStore(service.db)
         parent = capability

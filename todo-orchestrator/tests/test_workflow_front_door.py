@@ -14,6 +14,7 @@ from todo_orchestrator.models import TodoError
 from todo_orchestrator.projections import atomic_write_json
 from todo_orchestrator.service import Service
 from todo_orchestrator.workflow.capabilities import WorkflowCapabilityLocator
+from todo_orchestrator.workflow.context_fragments import ContextFragmentStore, FragmentOwner
 from todo_orchestrator.workflow.protocol import WorkflowProtocol
 from todo_orchestrator.workflow.service import WorkflowKernel
 from todo_orchestrator.workflow.service import repository_identity
@@ -91,6 +92,37 @@ class WorkflowFrontDoorTests(unittest.TestCase):
             with self.repo.service.db.read() as conn:
                 claim = conn.execute("SELECT owner_system FROM claims WHERE state='active'").fetchone()
                 self.assertEqual(claim["owner_system"], "project-control")
+        finally:
+            locator_dir.cleanup()
+
+    def test_oversized_charter_has_a_public_paged_retrieval_journey(self) -> None:
+        self.migrate_identity()
+        charter, _ = ContextFragmentStore(self.repo.service.db).publish(
+            actor_session_id=None, owner=FragmentOwner("compat-v2"), kind="run_charter",
+            content={"objective": "required constraint " + "x" * 14000},
+        )
+        locator_dir = tempfile.TemporaryDirectory()
+        try:
+            locator = WorkflowCapabilityLocator(Path(locator_dir.name))
+            protocol = WorkflowProtocol(WorkflowKernel(locator=locator), locator)
+            claimed = protocol.next_task(repo_root=str(self.repo.root), task_id="A")
+            self.assertEqual(claimed["status"], "needs_context")
+            synced = protocol.coordinate_task(
+                workflow_handle=claimed["workflow_handle"], action="sync",
+                payload={"cursor": 0, "known_fragments": {charter.id: 0}},
+            )
+            self.assertEqual(synced["context_delta"]["requested_cursor"], 0)
+            self.assertEqual(synced["context_delta"]["cursor"], synced["cursor"])
+            self.assertIn(charter.id, [item["fragment_id"] for item in synced["context_delta"]["changed_fragments"]])
+            call = claimed["context_receipt"]["next_call"]
+            pages: list[str] = []
+            while call is not None:
+                inspected = protocol.inspect_task(**call)
+                self.assertLessEqual(len(json.dumps(inspected, separators=(",", ":")).encode()), call["budget_bytes"])
+                pages.append(inspected["page"]["content"])
+                next_target = inspected["page"]["next_target"]
+                call = {**call, "target": next_target} if next_target else None
+            self.assertIn("required constraint", "".join(pages))
         finally:
             locator_dir.cleanup()
 
