@@ -389,15 +389,6 @@ class RecoveryEngine:
                 # A delegated task recovery cannot release another task's
                 # bookkeeping.  Leave that row for its owning recovery path.
                 if task_id and str(lease.get("task_id") or "") != task_id:
-                    if self._process_state(lease) != "stopped":
-                        blockers.append({"kind": "lock", "id": lease["id"], "lock_name": lease["lock_name"], "state": "foreign_live_or_unproven"})
-                    continue
-                # A read-shared coordinator seat cannot mutate this task's
-                # workspace.  Its independent lease must not prevent an
-                # owner from requeueing this task after its dependency clears.
-                if (task_id and str(lease.get("task_id") or "") != task_id
-                        and lease.get("lane_role") == "coordinator"
-                        and lease.get("lane_workspace_mode") == "read_shared"):
                     continue
                 if str(lease.get("claim_id")) in recovering_claim_ids:
                     continue
@@ -409,13 +400,11 @@ class RecoveryEngine:
                     actions.append({"kind": "release_lock", "id": lease["id"], "task_id": lease.get("task_id"), "state": state})
 
             lease_query = (
-                "SELECT r.*,i.class_id FROM resource_leases r JOIN resource_instances i ON i.id=r.instance_id "
+                "SELECT r.*,i.class_id,c.task_id AS task_id FROM resource_leases r JOIN resource_instances i ON i.id=r.instance_id "
                 "LEFT JOIN claims c ON c.id=r.claim_id WHERE r.state='active' ORDER BY r.id"
             )
             for lease in (dict(row) for row in conn.execute(lease_query)):
                 if task_id and str(lease.get("task_id") or "") != task_id:
-                    if self._process_state(lease) != "stopped":
-                        blockers.append({"kind": "resource", "id": lease["id"], "class_id": lease["class_id"], "state": "foreign_live_or_unproven"})
                     continue
                 state = self._process_state(lease)
                 expired = _expired(str(lease.get("expires_at") or ""), now)
