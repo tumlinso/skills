@@ -415,14 +415,21 @@ class RecoveryEngine:
                 else:
                     actions.append({"kind": "release_resource", "id": lease["id"], "task_id": lease.get("task_id"), "state": state})
 
+            # A workspace's integration target is its consumer, not its
+            # writer.  A task-scoped recovery may touch a workspace only when
+            # its active dispatch, claim, lane and run all bind that workspace
+            # to the requested producer task.  In particular, do not turn an
+            # integration_task_id relation into authority over a live producer.
             workspace_query = (
                 "SELECT DISTINCT w.* FROM workflow_workspaces w "
-                "LEFT JOIN workflow_dispatches d ON d.workspace_id=w.id "
-                "LEFT JOIN claims c ON c.id=d.claim_id "
+                "JOIN workflow_dispatches d ON d.workspace_id=w.id AND d.state='active' "
+                "JOIN claims c ON c.id=d.claim_id "
+                "JOIN workflow_lanes l ON l.id=d.lane_id AND l.id=w.lane_id AND l.run_id=w.run_id "
+                "JOIN workflow_lane_tasks lt ON lt.lane_id=l.id AND lt.task_id=c.task_id "
                 "WHERE w.state IN ('active','dirty','conflicted')"
-                + (" AND (w.integration_task_id=? OR c.task_id=?)" if task_id else "") + " ORDER BY w.id"
+                + (" AND c.task_id=?" if task_id else "") + " ORDER BY w.id"
             )
-            workspace_args = (task_id, task_id) if task_id else ()
+            workspace_args = (task_id,) if task_id else ()
             for workspace in (dict(row) for row in conn.execute(workspace_query, workspace_args)):
                 if str(workspace["id"]) in resumable_workspace_ids:
                     warnings.append({
@@ -435,7 +442,7 @@ class RecoveryEngine:
                     "worktree_path": workspace.get("worktree_path"), "cleanup_eligible": False,
                 })
                 actions.append({"kind": "quarantine_workspace", "id": workspace["id"], "workspace_id": workspace["id"],
-                                "task_id": task_id, "state": workspace["state"]})
+                                "lane_id": workspace["lane_id"], "task_id": task_id, "state": workspace["state"]})
 
             terminal_query = (
                 "SELECT id FROM tasks WHERE status='done' AND result IN ('implemented','validated','evaluated_not_promoted','no_change_required')"

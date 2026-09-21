@@ -544,6 +544,52 @@ class WorkflowRecoveryTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='OTHER'").fetchone()[0], 'active')
             self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='OWNED'").fetchone()[0], 'recovered')
 
+    def test_task_recovery_does_not_quarantine_live_producer_workspace_for_its_integrator(self) -> None:
+        """An integration consumer relation is never workspace ownership."""
+        producer = self.repo.service.continue_work(task_id='T')
+
+        def seed(conn, revision):
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('INTEGRATOR-RUN','A','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_runs(id,root_task_id,created_at,updated_at,revision) VALUES('PRODUCER-RUN','T','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('INTEGRATOR-LANE','INTEGRATOR-RUN','integrator','active','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lanes(id,run_id,role,state,created_at,updated_at,revision) VALUES('PRODUCER-LANE','PRODUCER-RUN','implementer','active','now','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('INTEGRATOR-LANE',0,'A','active','now',?)", (revision,))
+            conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('PRODUCER-LANE',0,'T','active','now',?)", (revision,))
+            conn.execute(
+                "INSERT INTO workflow_workspaces(id,repository_identity,run_id,lane_id,mode,base_commit,worktree_path,branch,state,integration_task_id,created_at,updated_at) "
+                "VALUES('PRODUCER-WS','repo','PRODUCER-RUN','PRODUCER-LANE','isolated_merge','base',?,'producer','active','A','now','now')",
+                (str(self.repo.root),),
+            )
+            conn.execute(
+                "INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,context_version,heartbeat_at,hostname,pid,created_at,revision) "
+                "VALUES('INTEGRATOR-DISPATCH','INTEGRATOR-LANE',?,?,1,'2000-01-01T00:00:00Z',?,999999,'now',?)",
+                (self.session_id, self.claim_id, socket.gethostname(), revision),
+            )
+            conn.execute(
+                "INSERT INTO workflow_dispatches(id,lane_id,session_id,claim_id,workspace_id,context_version,heartbeat_at,hostname,pid,created_at,revision) "
+                "VALUES('PRODUCER-DISPATCH','PRODUCER-LANE',?,?,?,1,'now',?,?,'now',?)",
+                (producer['session']['agent_id'], producer['claim']['claim_id'], 'PRODUCER-WS', socket.gethostname(), os.getpid(), revision),
+            )
+            conn.execute("INSERT INTO resource_classes(id,mode,metadata_json) VALUES('producer-cpu','exclusive','{}')")
+            conn.execute("INSERT INTO resource_instances(id,class_id,capacity,hostname,metadata_json) VALUES('producer-cpu:0','producer-cpu',1,?,'{}')", (socket.gethostname(),))
+            conn.execute(
+                "INSERT INTO resource_leases(id,instance_id,claim_id,session_id,token_hash,state,hostname,pid,acquired_at,heartbeat_at,expires_at) "
+                "VALUES('PRODUCER-LEASE','producer-cpu:0',?,?,'producer','active',?,?,'now','now','2999-01-01T00:00:00Z')",
+                (producer['claim']['claim_id'], producer['session']['agent_id'], socket.gethostname(), os.getpid()),
+            )
+        self.mutate(seed)
+
+        engine = self.engine(lambda _host, pid, _started: pid == os.getpid())
+        plan = engine.inspect('A')
+        self.assertFalse(any(action.get('workspace_id') == 'PRODUCER-WS' for action in plan['actions']))
+        self.assertTrue(engine.delegated_effects_are_exact(plan, 'A'))
+        engine.execute(plan, 'recover stopped integrator only', delegated_task_id='A')
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT state FROM workflow_workspaces WHERE id='PRODUCER-WS'").fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT state FROM claims WHERE id=?", (producer['claim']['claim_id'],)).fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT state FROM workflow_dispatches WHERE id='PRODUCER-DISPATCH'").fetchone()[0], 'active')
+            self.assertEqual(conn.execute("SELECT state FROM resource_leases WHERE id='PRODUCER-LEASE'").fetchone()[0], 'active')
+
     def test_general_recovery_rejects_writer_after_final_inspection(self) -> None:
         self.seed_dispatch()
         engine = self.engine()
