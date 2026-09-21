@@ -27,8 +27,10 @@ def _dirty_paths(status: bytes) -> list[str]:
         state = entry[:2].decode("ascii", errors="replace")
         path = entry[3:].decode("utf-8", errors="surrogateescape")
         if "R" in state or "C" in state:
+            # Porcelain v1 -z reports the destination first, then the source.
+            # The destination is the retained pathname whose material bytes
+            # must be part of a content-sensitive source identity.
             if index < len(entries) and entries[index]:
-                path = entries[index].decode("utf-8", errors="surrogateescape")
                 index += 1
         paths.append(path)
     return sorted(set(paths))

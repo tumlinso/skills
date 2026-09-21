@@ -95,6 +95,18 @@ class RetirementTests(unittest.TestCase):
             self.repo.service.retire_run_batch(request)
         self.assertEqual(blocked.exception.code, "retirement_external_consumers")
 
+    def test_pending_checkpoint_dependency_of_external_task_refuses_retirement(self):
+        def consumer(conn, revision):
+            conn.execute("INSERT INTO checkpoints(id,task_id,title,state,metadata_json,revision) VALUES('OLD-READY','OLD','ready','pending','{}',?)", (revision,))
+            conn.execute("INSERT INTO task_dependencies(task_id,type,checkpoint_id,condition_json) VALUES('KEEP','checkpoint','OLD-READY','{}')")
+        self.repo.service.db.mutate(actor_session_id=None, entity_type="fixture", entity_id="KEEP", event_type="fixture.checkpoint_consumer", payload={}, operation=consumer)
+        with self.assertRaises(TodoError) as blocked:
+            self.repo.service.retire_run_batch(self.request())
+        self.assertEqual(blocked.exception.code, "retirement_external_consumers")
+        self.assertEqual(blocked.exception.details[0]["kind"], "typed_checkpoint_consumer")
+        with self.repo.service.db.read() as conn:
+            self.assertEqual(conn.execute("SELECT status FROM tasks WHERE id='OLD'").fetchone()[0], "planned")
+
     def test_omitted_unfinished_source_member_refuses_whole_run_cancellation(self):
         def add_source_member(conn, revision):
             conn.execute("INSERT INTO workflow_lane_tasks(lane_id,position,task_id,state,enqueued_at,revision) VALUES('OLD-LANE',1,'KEEP','queued','now',?)", (revision,))

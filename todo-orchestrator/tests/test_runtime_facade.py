@@ -100,6 +100,26 @@ class RuntimeContractTests(unittest.TestCase):
             self.assertEqual(dirty["dirty_paths"], ["source.cpp"])
             self.assertNotEqual(clean["fingerprint"], dirty["fingerprint"])
 
+    def test_source_identity_covers_renamed_destination_content(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "runtime@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "Runtime Test"], cwd=root, check=True)
+            original = root / "old.cpp"
+            original.write_text("".join(f"int value_{index} = {index};\n" for index in range(40)), encoding="utf-8")
+            subprocess.run(["git", "add", "old.cpp"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "baseline"], cwd=root, check=True)
+            renamed = root / "new.cpp"
+            original.rename(renamed)
+            renamed.write_text("".join(f"int value_{index} = {index + (1 if index == 20 else 0)};\n" for index in range(40)), encoding="utf-8")
+            subprocess.run(["git", "add", "-A"], cwd=root, check=True)
+            first = capture_source_identity(root)
+            self.assertEqual(first["dirty_paths"], ["new.cpp"])
+            renamed.write_text("".join(f"int value_{index} = {index + (2 if index == 20 else 0)};\n" for index in range(40)), encoding="utf-8")
+            second = capture_source_identity(root)
+            self.assertNotEqual(first["fingerprint"], second["fingerprint"])
+
 
 class RuntimeFacadeTests(unittest.TestCase):
     def setUp(self) -> None:

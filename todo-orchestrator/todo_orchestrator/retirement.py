@@ -179,6 +179,25 @@ def _validate_preserved_work_handoffs(
             raise TodoError("retirement_preserved_successor_mismatch", "successor lane does not own the exact unfinished handoff task")
         if successor_lane["workspace_mode"] != source["mode"]:
             raise TodoError("retirement_preserved_successor_mismatch", "successor lane workspace contract differs from the preserved source")
+        integration_task_id = str(handoff["successor_task_id"])
+        if source["mode"] == "isolated_merge":
+            integration_candidates = conn.execute(
+                "SELECT l.id AS lane_id,lt.task_id FROM workflow_lanes l "
+                "JOIN workflow_lane_tasks lt ON lt.lane_id=l.id "
+                "WHERE l.run_id=? AND l.role IN ('integrator','validator') "
+                "AND lt.state NOT IN ('completed','cancelled','skipped') "
+                "ORDER BY l.id,lt.position",
+                (successor_run_id,),
+            ).fetchall()
+            if len(integration_candidates) != 1:
+                raise TodoError(
+                    "retirement_preserved_integration_ambiguous",
+                    "preserved isolated work requires exactly one unfinished successor integration destination",
+                    ExitCode.BLOCKED,
+                    {"successor_run_id": successor_run_id,
+                     "candidates": [{"lane_id": str(row["lane_id"]), "task_id": str(row["task_id"])} for row in integration_candidates]},
+                )
+            integration_task_id = str(integration_candidates[0]["task_id"])
         existing = conn.execute(
             "SELECT id FROM workflow_workspaces WHERE run_id=? AND lane_id=?",
             (successor_run_id, handoff["successor_lane_id"]),
@@ -205,7 +224,8 @@ def _validate_preserved_work_handoffs(
             raise TodoError("retirement_preserved_workspace_stale", "preserved source HEAD or material content changed")
         if identity["dirty_paths"] and not handoff["adopt_dirty"]:
             raise TodoError("retirement_preserved_adoption_required", "dirty preserved source requires explicit adopt_dirty approval")
-        accepted.append({**dict(handoff), "source_worktree_path": str(source["worktree_path"]),
+        accepted.append({**dict(handoff), "integration_task_id": integration_task_id,
+                         "source_worktree_path": str(source["worktree_path"]),
                          "source_workspace_mode": str(source["mode"]), "source_branch": source["branch"]})
     return accepted
 
@@ -333,6 +353,30 @@ def retire_run_batch_in_transaction(conn: sqlite3.Connection, revision: int, *, 
          "task_id": str(consumer["task_id"]), "owner_task_id": str(consumer["owner_task_id"])}
         for consumer in interface_consumers
     )
+    typed_consumers = conn.execute(
+        f"SELECT d.task_id,d.type,d.checkpoint_id,d.interface_id,d.barrier_id FROM task_dependencies d "
+        "JOIN tasks t ON t.id=d.task_id "
+        "LEFT JOIN checkpoints c ON d.type='checkpoint' AND c.id=d.checkpoint_id "
+        "LEFT JOIN interfaces i ON d.type='interface' AND i.id=d.interface_id "
+        "LEFT JOIN barrier_requirements br ON d.type='barrier' AND br.barrier_id=d.barrier_id "
+        "LEFT JOIN checkpoints bc ON br.type='checkpoint' AND bc.id=br.entity_id "
+        "LEFT JOIN interfaces bi ON br.type='interface' AND bi.id=br.entity_id "
+        f"WHERE d.task_id NOT IN ({placeholders}) AND t.status NOT IN ('done','superseded','cancelled','stale') AND ("
+        f"(d.type='checkpoint' AND c.task_id IN ({placeholders})) OR "
+        f"(d.type='interface' AND i.owner_task_id IN ({placeholders})) OR "
+        f"(d.type='barrier' AND ((br.type='task' AND br.entity_id IN ({placeholders})) "
+        f"OR (br.type='checkpoint' AND bc.task_id IN ({placeholders})) "
+        f"OR (br.type='interface' AND bi.owner_task_id IN ({placeholders}))))"
+        ")",
+        (*task_ids, *task_ids, *task_ids, *task_ids, *task_ids, *task_ids),
+    ).fetchall()
+    nonterminal.extend(
+        {"kind": f"typed_{consumer['type']}_consumer", "task_id": str(consumer["task_id"]),
+         "checkpoint_id": str(consumer["checkpoint_id"]) if consumer["checkpoint_id"] else "",
+         "interface_id": str(consumer["interface_id"]) if consumer["interface_id"] else "",
+         "barrier_id": str(consumer["barrier_id"]) if consumer["barrier_id"] else ""}
+        for consumer in typed_consumers
+    )
     if nonterminal:
         raise TodoError("retirement_external_consumers", "nonterminal external consumers require an explicit new plan", ExitCode.BLOCKED, nonterminal)
     for task_id in task_ids:
@@ -368,7 +412,7 @@ def retire_run_batch_in_transaction(conn: sqlite3.Connection, revision: int, *, 
             ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (workspace_id, handoff["repository_identity"], successor["id"], handoff["successor_lane_id"],
              handoff["source_workspace_mode"], handoff["expected_base_commit"], handoff["source_worktree_path"],
-             handoff["source_branch"], "active", handoff["successor_task_id"], _json(provenance), 0, now, now),
+             handoff["source_branch"], "active", handoff["integration_task_id"], _json(provenance), 0, now, now),
         )
         successor_workspace_ids.append(workspace_id)
     conn.execute("UPDATE workflow_runs SET status='cancelled',updated_at=?,completed_at=?,revision=? WHERE id=?", (now, now, revision, source["id"]))
