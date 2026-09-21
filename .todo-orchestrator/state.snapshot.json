@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-20T20:16:35Z",
+  "generated_at": "2026-09-21T13:32:04Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 885,
+  "project_revision": 887,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9301,6 +9301,26 @@
         "revision": 885,
         "seq": 885,
         "timestamp": "2026-09-20T20:16:35Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-L-EXEC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-PCE2-L-EXEC\", \"run_id\": \"SK-PCE2-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 886,
+        "seq": 886,
+        "timestamp": "2026-09-21T13:15:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-PCE2-OPERATE",
+        "entity_type": "task",
+        "event_type": "workflow.task.handoff",
+        "payload_json": "{\"reason\": null}",
+        "revision": 887,
+        "seq": 887,
+        "timestamp": "2026-09-21T13:32:04Z"
       }
     ],
     "evidence": [
@@ -13428,6 +13448,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-22-CANDIDATE\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 657, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 6859 ++++++++++++++++++++++++++++----\\n pcu-v1.skills.plan.json                |    8 +-\\n todo-status.md                         |   16 +-\\n todos.md                               |   16 +-\\n todos/pcu-sk-00.md                     |    2 +-\\n todos/pcu-sk-01.md                     |    2 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |    2 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |    2 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    8 +-\\n todos/pcu-sk-21.md                     |    9 +-\\n todos/pcu-sk-22.md                     |   21 +-\\n todos/pcu-sk-30.md                     |    2 +-\\n todos/pcu-sk-31.md                     |    2 +-\\n todos/pcu-sk-32.md                     |    2 +-\\n todos/pcu-sk-33.md                     |    2 +-\\n 19 files changed, 6261 insertions(+), 724 deletions(-)\", \"git_head\": \"94aef9424595e5d082570af66a1b194d199901b6\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-22\"}",
         "revision": 668,
         "task_id": "PCU-SK-22"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-09-21T13:32:04Z",
+        "id": "4a2177d8-40f5-438f-9a22-1c472049a680",
+        "kind": "handoff",
+        "note": "Second review F1-F7 delivered through Skills dfd9da0 and PC 64f4561. Exact recovery ownership, public expired replay, own-lane readiness, renamed-content approval, correct integration target, typed consumers, readonly preparation qualified. Activated pce2-round2-20260921; see PC planning/pce2/SECOND_REVIEW_RESPONSE.md. No donor operations.",
+        "payload_json": "{\"authority_commit\": \"dfd9da0a779fee9ce5bcf1b7cb70ac4425faa70b\", \"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 32 +++++++++++++++++++++-----------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  2 +-\\n todos/sk-pce2-operate.md               |  4 ++--\\n 4 files changed, 26 insertions(+), 16 deletions(-)\", \"git_head\": \"dfd9da0a779fee9ce5bcf1b7cb70ac4425faa70b\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Second review F1-F7 delivered through Skills dfd9da0 and PC 64f4561. Exact recovery ownership, public expired replay, own-lane readiness, renamed-content approval, correct integration target, typed consumers, readonly preparation qualified. Activated pce2-round2-20260921; see PC planning/pce2/SECOND_REVIEW_RESPONSE.md. No donor operations.\", \"producer_commit\": \"dfd9da0a779fee9ce5bcf1b7cb70ac4425faa70b\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-PCE2-OPERATE\"}",
+        "revision": 887,
+        "task_id": "SK-PCE2-OPERATE"
       },
       {
         "claim_id": null,
@@ -22283,12 +22313,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"implemented\", \"validated\", \"no_change_required\"]}",
-        "revision": 884,
+        "revision": 886,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Make ordinary execution self-explanatory",
-        "updated_at": "2026-09-20T20:16:35Z",
-        "version": 7
+        "updated_at": "2026-09-21T13:32:04Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -25812,7 +25842,7 @@
         "enqueued_at": "2026-09-20T13:38:44Z",
         "lane_id": "SK-PCE2-L-EXEC",
         "position": 0,
-        "revision": 885,
+        "revision": 887,
         "state": "queued",
         "task_id": "SK-PCE2-OPERATE"
       },
@@ -26573,11 +26603,11 @@
         "created_at": "2026-09-20T13:38:44Z",
         "id": "SK-PCE2-L-EXEC",
         "parent_lane_id": null,
-        "revision": 885,
+        "revision": 887,
         "role": "implementer",
         "run_id": "SK-PCE2-RUN-1",
         "state": "ready",
-        "updated_at": "2026-09-20T20:16:35Z",
+        "updated_at": "2026-09-21T13:32:04Z",
         "workspace_mode": "exclusive"
       },
       {

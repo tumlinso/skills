@@ -36,3 +36,17 @@ Paired candidate `pce2-review-20260920` is activated. Installed public recovery
 and supersession journeys pass, including isolated managed workspaces and
 postcommit/private-receipt failure replay. NF1A/donor repositories remain paused.
 Execution claim handed off at authority revision 885.
+
+## Second review corrections — 2026-09-21
+
+Delivered second-round F1–F7: renamed-content sensitivity, true recovery
+workspace ownership, correct isolated adoption integration destination,
+canonical-before-expiry public replay, exact-lane readiness, typed external
+consumer protection, and read-only preparation. Skills production commits
+`ab4550b`, `9e43df2`, `dfd9da0`; paired PC source `64f4561`.
+
+Activated `pce2-round2-20260921`. Focused tests and installed public journeys
+pass, including producer publication/integration; existing recovery evidence
+was reused after executable fingerprint equivalence. Full evidence and limits
+are in Project Control `planning/pce2/SECOND_REVIEW_RESPONSE.md`.
+Execution handed off at revision 887; no donor operations.
