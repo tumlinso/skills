@@ -47,6 +47,7 @@ from .lanes import (
     deterministic_lane_assignment,
     dispatch_claim_in_transaction,
     enqueue_tasks_in_transaction,
+    lane_candidates,
 )
 from .messages import MessageService
 from .rendezvous import RendezvousService
@@ -105,10 +106,11 @@ def assess_continuation(
     elif membership is None or membership["state"] != "queued":
         blockers.append({"kind": "lane_task", "state": "task_not_queued"})
     else:
-        candidate = deterministic_lane_assignment(conn, run_id, role=str(lane["role"]))
-        if candidate is None or candidate.get("lane_id") != lane_id or candidate.get("task_id") != task_id:
-            # The dispatch path accepts only the serial lane head.  Keep this
-            # assessment aligned with that predicate without issuing a claim.
+        candidates = lane_candidates(conn, run_id, role=str(lane["role"]))
+        if not any(candidate.get("lane_id") == lane_id and candidate.get("task_id") == task_id for candidate in candidates):
+            # An explicit next_task request selects this lane/task before the
+            # dispatch transaction validates its own serial queue head.  Keep
+            # the read-only assessment aligned without reserving that claim.
             blockers.append({"kind": "lane_task", "state": "not_serial_lane_head"})
     ready = {str(item["task_id"]): item for item in ready_tasks(conn)}.get(task_id)
     if ready is None:
