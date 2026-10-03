@@ -54,6 +54,7 @@ class LlamaCppServerTests(unittest.TestCase):
         invalid_formats = [None, {"type": "json_schema", "schema": schema},
             {"type": "json_object", "schema": {"type": "array"}},
             {"type": "json_object", "schema": {"type": "object", "$ref": "file:///secret"}},
+            {"type": "json_object", "schema": {"type": "object", "allOf": ({"$ref": "file:///secret"},)}},
             {"type": "json_object", "schema": {"type": "object", "description": "x" * 16384}}]
         for value in invalid_formats:
             with self.subTest(response_format=value), self.assertRaises(AdapterError):

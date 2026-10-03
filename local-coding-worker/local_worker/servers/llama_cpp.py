@@ -214,7 +214,8 @@ class LlamaCppServerAdapter:
                 encoded_schema = json.dumps(response_format["schema"], ensure_ascii=False, allow_nan=False)
                 if len(encoded_schema.encode("utf-8")) > 16 * 1024:
                     raise ValueError("schema too large")
-                pending = [response_format["schema"]]
+                decoded_schema = json.loads(encoded_schema)
+                pending = [decoded_schema]
                 while pending:
                     node = pending.pop()
                     if isinstance(node, dict):
@@ -225,7 +226,7 @@ class LlamaCppServerAdapter:
                         pending.extend(node)
             except (TypeError, ValueError, RecursionError):
                 raise AdapterError("llama.cpp response_format schema invalid or exceeds bound") from None
-            payload["response_format"] = {"type": "json_object", "schema": json.loads(encoded_schema)}
+            payload["response_format"] = {"type": "json_object", "schema": decoded_schema}
         if "temperature" in request:
             temperature = request["temperature"]
             if (isinstance(temperature, bool) or not isinstance(temperature, (int, float))
