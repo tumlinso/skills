@@ -1,0 +1,4719 @@
+{
+  "format_version": "1.0",
+  "title": "V100 SXM2 software circuit-bending atlas",
+  "date": "2026-10-03",
+  "gpu_measured": false,
+  "cuda_compiled": false,
+  "documents": [
+    {
+      "id": "R00",
+      "title": "Reading and evidence contract",
+      "summary": "A design search space with explicit proof and reachability gates, not an assertion that every idea is fast.",
+      "path": "reference/R00.md",
+      "kind": "reference",
+      "tags": [
+        "evidence",
+        "reading",
+        "correctness"
+      ],
+      "requires": [],
+      "sources": [],
+      "level": 0,
+      "status": "source-backed synthesis",
+      "words": 404,
+      "bytes": 2972,
+      "sha256": "05f8fbfb1855ddd11f9f06904380e7c91abc8d3b2cc3854bb51125036a3449ea"
+    },
+    {
+      "id": "R01",
+      "title": "Machine reference",
+      "summary": "Separate the enabled product from the full die, and independent engines from shared bottlenecks.",
+      "path": "reference/R01.md",
+      "kind": "reference",
+      "tags": [
+        "overview",
+        "resources",
+        "topology"
+      ],
+      "requires": [],
+      "sources": [
+        "S01",
+        "S02"
+      ],
+      "level": 1,
+      "status": "source-backed synthesis",
+      "words": 358,
+      "bytes": 2403,
+      "sha256": "b740fa2377d45dd62ed35f839b0ff326ec558e90e2ddf748c45e3eefe9c947b0"
+    },
+    {
+      "id": "R02",
+      "title": "Execution, scoreboards and operands",
+      "summary": "Model the dependency graph and operand-delivery graph together.",
+      "path": "reference/R02.md",
+      "kind": "reference",
+      "tags": [
+        "scheduling",
+        "registers",
+        "scoreboards",
+        "occupancy"
+      ],
+      "requires": [],
+      "sources": [
+        "S01",
+        "S04",
+        "S05",
+        "S30"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 331,
+      "bytes": 2360,
+      "sha256": "e91ef8c5c3e68118156600088793de33dd8fb3654d9c5090eb946932148fef0b"
+    },
+    {
+      "id": "R03",
+      "title": "Memory as algorithmic structure",
+      "summary": "Track useful information per transaction, translation footprint and reuse lifetime.",
+      "path": "reference/R03.md",
+      "kind": "reference",
+      "tags": [
+        "memory",
+        "HBM",
+        "L1",
+        "L2",
+        "TLB",
+        "shared"
+      ],
+      "requires": [],
+      "sources": [
+        "S01",
+        "S04",
+        "S16",
+        "S30",
+        "S31"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 371,
+      "bytes": 2558,
+      "sha256": "f45bb0517d9c7566eb223f4590c745dbb8573ac824a3a12180268d6b7e95d6ef"
+    },
+    {
+      "id": "R04",
+      "title": "ISA families and generation traps",
+      "summary": "Source intrinsic, virtual instruction and physical opcode are different contracts.",
+      "path": "reference/R04.md",
+      "kind": "reference",
+      "tags": [
+        "PTX",
+        "SASS",
+        "integer",
+        "compatibility"
+      ],
+      "requires": [],
+      "sources": [
+        "S03",
+        "S05",
+        "S08",
+        "S09",
+        "S30"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 325,
+      "bytes": 2440,
+      "sha256": "c1419a7fde4e5ee8fba12f4a61679966da0b1c31303b2add37cb75cd94114501"
+    },
+    {
+      "id": "R05",
+      "title": "Tensor geometry and native register interfaces",
+      "summary": "Treat supported MMA operations as fixed bilinear circuits, not as an obligation to batch conventional examples.",
+      "path": "reference/R05.md",
+      "kind": "reference",
+      "tags": [
+        "tensor",
+        "HMMA",
+        "fragments",
+        "small algebra"
+      ],
+      "requires": [],
+      "sources": [
+        "S02",
+        "S03",
+        "S07",
+        "S22",
+        "S23"
+      ],
+      "level": 3,
+      "status": "source-backed synthesis",
+      "words": 315,
+      "bytes": 2351,
+      "sha256": "f2e560c3eebb6861e4e0a12d26f4d059f65037b9f8d4febce0cf9ab4b06e1ba7"
+    },
+    {
+      "id": "R06",
+      "title": "Participation, visibility and progress",
+      "summary": "Every unconventional executor needs all three proofs; a faster flag is not a complete protocol.",
+      "path": "reference/R06.md",
+      "kind": "reference",
+      "tags": [
+        "synchronization",
+        "queues",
+        "atomics",
+        "correctness"
+      ],
+      "requires": [],
+      "sources": [
+        "S03",
+        "S10",
+        "S17",
+        "S25",
+        "S30",
+        "S33"
+      ],
+      "level": 1,
+      "status": "source-backed synthesis",
+      "words": 351,
+      "bytes": 2572,
+      "sha256": "4b02909469914911d50a73f3128880cec97a2d7f02060a4ae280d98c85718a1c"
+    },
+    {
+      "id": "R07",
+      "title": "NVLink, PCIe and NUMA as information boundaries",
+      "summary": "Compare pull, push, staging and owner computation on the actual directed topology.",
+      "path": "reference/R07.md",
+      "kind": "reference",
+      "tags": [
+        "NVLink",
+        "PCIe",
+        "NUMA",
+        "communication"
+      ],
+      "requires": [],
+      "sources": [
+        "S02",
+        "S25",
+        "S26",
+        "S30",
+        "S33",
+        "S36"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 327,
+      "bytes": 2294,
+      "sha256": "8a2c22bf34971da6c9571cbe6fdacf97293298278b79ba7ac8ecf253d4164b4b"
+    },
+    {
+      "id": "R08",
+      "title": "Virtual memory, ATS and faults",
+      "summary": "Separate naming, backing, permission, residency and coherence before exploiting address-space structure.",
+      "path": "reference/R08.md",
+      "kind": "reference",
+      "tags": [
+        "VMM",
+        "UVA",
+        "ATS",
+        "TLB",
+        "managed memory"
+      ],
+      "requires": [],
+      "sources": [
+        "S16",
+        "S18",
+        "S28",
+        "S29",
+        "S31",
+        "S38"
+      ],
+      "level": 3,
+      "status": "source-backed synthesis",
+      "words": 314,
+      "bytes": 2208,
+      "sha256": "89d993bf0825ef15c198bcbaa6921f39cee5b4553f7f06c2ce040b7d622c7a4a"
+    },
+    {
+      "id": "R09",
+      "title": "The non-SM command machine",
+      "summary": "Copy engines and launch descriptors expose restricted transformations and control, not merely transport.",
+      "path": "reference/R09.md",
+      "kind": "reference",
+      "tags": [
+        "DMA",
+        "QMD",
+        "driver",
+        "firmware",
+        "non-SM"
+      ],
+      "requires": [],
+      "sources": [
+        "S12",
+        "S13",
+        "S15",
+        "S27",
+        "S37",
+        "S39",
+        "S40"
+      ],
+      "level": 3,
+      "status": "source-backed synthesis",
+      "words": 288,
+      "bytes": 2114,
+      "sha256": "aae12126bafb2f528ecd144780ba9c87793adbc82c1ceb94139291c480641dd8"
+    },
+    {
+      "id": "R10",
+      "title": "toolchain and binary evidence",
+      "summary": "Preserve a known sm70-producing toolchain and audit the executed path.",
+      "path": "reference/R10.md",
+      "kind": "reference",
+      "tags": [
+        "compiler",
+        "SASS",
+        "CUDA",
+        "libraries"
+      ],
+      "requires": [],
+      "sources": [
+        "S05",
+        "S06",
+        "S11",
+        "S14",
+        "S22",
+        "S23",
+        "S26",
+        "S34",
+        "S41"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 279,
+      "bytes": 2058,
+      "sha256": "26d5fde58cd072727bfe0254ad73411104733b5e9fc734be8401921859cd82a5"
+    },
+    {
+      "id": "R11",
+      "title": "Performance model for circuit bending",
+      "summary": "Compare complete semantic work, including conversions and synchronization.",
+      "path": "reference/R11.md",
+      "kind": "reference",
+      "tags": [
+        "cost model",
+        "representation",
+        "break-even",
+        "optimization"
+      ],
+      "requires": [],
+      "sources": [],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 324,
+      "bytes": 2493,
+      "sha256": "60f8d09e5dbcb3c7289f5e02c7f76d12e63e6be4d212de11c018e78689df0ca6"
+    },
+    {
+      "id": "R12",
+      "title": "Measurement discipline and obs er v ability",
+      "summary": "Use measurements to discriminate explanations, not merely collect impressive counters.",
+      "path": "reference/R12.md",
+      "kind": "reference",
+      "tags": [
+        "microbenchmarks",
+        "profiling",
+        "counters",
+        "validation"
+      ],
+      "requires": [],
+      "sources": [
+        "S04",
+        "S34",
+        "S35",
+        "S36"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 296,
+      "bytes": 2170,
+      "sha256": "d2e91cce854887b7d7ce331223d01708bc29354cb28292d7695a7dc2d90027b4"
+    },
+    {
+      "id": "R13",
+      "title": "Electrical, firmware and reliability frontier",
+      "summary": "Keep the less-public platform questions visible without inventing a schematic.",
+      "path": "reference/R13.md",
+      "kind": "reference",
+      "tags": [
+        "SXM2",
+        "electrical",
+        "firmware",
+        "RAS",
+        "reset"
+      ],
+      "requires": [],
+      "sources": [
+        "S02",
+        "S28",
+        "S36",
+        "S37",
+        "S38",
+        "S39",
+        "S40"
+      ],
+      "level": 3,
+      "status": "source-backed synthesis",
+      "words": 290,
+      "bytes": 2160,
+      "sha256": "10300c472bdb968f5a5f2c74cdc6d5db10a35a67991c3ad6ed856214d140203c"
+    },
+    {
+      "id": "R14",
+      "title": "Composition, conflict and scope map",
+      "summary": "Independent mechanisms often meet again at a shared bottleneck.",
+      "path": "reference/R14.md",
+      "kind": "reference",
+      "tags": [
+        "composition",
+        "concurrency",
+        "scope",
+        "granularity"
+      ],
+      "requires": [],
+      "sources": [
+        "S01",
+        "S12",
+        "S15",
+        "S25",
+        "S26",
+        "S30"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 273,
+      "bytes": 2266,
+      "sha256": "c3da6260170366919962bcc777fd043afe92002608957348208f9ada6998f834"
+    },
+    {
+      "id": "R15",
+      "title": "Numerical contracts for unconventional arithmetic",
+      "summary": "An algebraic encoding needs range, rounding and extraction proofs before it becomes a kernel primitive.",
+      "path": "reference/R15.md",
+      "kind": "reference",
+      "tags": [
+        "numerics",
+        "precision",
+        "tensor",
+        "counting",
+        "approximation"
+      ],
+      "requires": [],
+      "sources": [
+        "S03",
+        "S20",
+        "S21",
+        "S24"
+      ],
+      "level": 2,
+      "status": "source-backed synthesis",
+      "words": 296,
+      "bytes": 2228,
+      "sha256": "94a646a6424c462fefa594a8f5a8036a04b690f1bdee5175c7973ea8579648df"
+    },
+    {
+      "id": "M01",
+      "title": "LOP3 as a bank of Boolean circuits",
+      "summary": "Make each bit an independent logical instance, then synthesize its transition rule.",
+      "path": "mechanisms/M01.md",
+      "kind": "mechanism",
+      "tags": [
+        "Boolean",
+        "FSM",
+        "support",
+        "branch elimination"
+      ],
+      "requires": [
+        "R04",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S05"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 214,
+      "bytes": 1489,
+      "sha256": "4a463e65dc0cb1ce04f3d1e0350de89d99a78bc7a5a4f2ade399408cf7f04cc7"
+    },
+    {
+      "id": "M02",
+      "title": "Mask rank/select as routing",
+      "summary": "Membership, local index and next destination can live in the same word.",
+      "path": "mechanisms/M02.md",
+      "kind": "mechanism",
+      "tags": [
+        "support",
+        "rank",
+        "select",
+        "compaction"
+      ],
+      "requires": [
+        "R04",
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 189,
+      "bytes": 1301,
+      "sha256": "58b0b566b7b5709099f26a1fa820151179b4a4b019f051dfbaf8ac95851a10ec"
+    },
+    {
+      "id": "M03",
+      "title": "PRMT as a tiny register lookup",
+      "summary": "A byte-permutation unit can act as a limited table-selection circuit.",
+      "path": "mechanisms/M03.md",
+      "kind": "mechanism",
+      "tags": [
+        "PRMT",
+        "lookup",
+        "packing",
+        "sequence"
+      ],
+      "requires": [
+        "R04"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 185,
+      "bytes": 1346,
+      "sha256": "509a6c81d2785152c7b9f3f29fbad0d3894b37d34feef9d43de7bea3f12fbcd7"
+    },
+    {
+      "id": "M04",
+      "title": "Shuffle as a constrained routing fabric",
+      "summary": "Choose lane ownership so exchanging a value implements useful computation.",
+      "path": "mechanisms/M04.md",
+      "kind": "mechanism",
+      "tags": [
+        "routing",
+        "registers",
+        "graphs",
+        "transpose"
+      ],
+      "requires": [
+        "R02",
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S10"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 182,
+      "bytes": 1304,
+      "sha256": "a4fa80ca57c0fcbc99c7a84d5112b05ddc8e4c7d5214bde8be42c392d2938eef"
+    },
+    {
+      "id": "M05",
+      "title": "Match as an ephemeral associative table",
+      "summary": "Equality groups can share reservations, decoding and reductions without a stored hash table.",
+      "path": "mechanisms/M05.md",
+      "kind": "mechanism",
+      "tags": [
+        "match",
+        "grouping",
+        "atomics",
+        "metadata"
+      ],
+      "requires": [
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S10"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 167,
+      "bytes": 1260,
+      "sha256": "d9bcac54a50cfa307976d26fbffac27f4a35431bf20259920cfb15624b862877"
+    },
+    {
+      "id": "M06",
+      "title": "Ballot transpose and bit-sliced state",
+      "summary": "Encode once and make several later stages operate directly on planes.",
+      "path": "mechanisms/M06.md",
+      "kind": "mechanism",
+      "tags": [
+        "bitplanes",
+        "sequence",
+        "FSM",
+        "compression"
+      ],
+      "requires": [
+        "R04",
+        "R11"
+      ],
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 179,
+      "bytes": 1343,
+      "sha256": "95b65dbdebe589bdace0f61a8de07e5cb5428c4fd61bfac4fb7ec2475c3e1be1"
+    },
+    {
+      "id": "M07",
+      "title": "Predicates and reconvergence as data representation",
+      "summary": "Replace control only when masked work or routing is cheaper.",
+      "path": "mechanisms/M07.md",
+      "kind": "mechanism",
+      "tags": [
+        "predication",
+        "branch elimination",
+        "control"
+      ],
+      "requires": [
+        "R02",
+        "R04",
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S05",
+        "S10"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 176,
+      "bytes": 1321,
+      "sha256": "68e3fdc669982030cfeb5f1e044f4fd03c2023dcfcc7b5691e955fc147628210"
+    },
+    {
+      "id": "M08",
+      "title": "DP4A/DP2A as structural arithmetic",
+      "summary": "Use packed integer dots without assuming integer tensor-core support on GV100.",
+      "path": "mechanisms/M08.md",
+      "kind": "mechanism",
+      "tags": [
+        "DP4A",
+        "integer",
+        "counting",
+        "quantization"
+      ],
+      "requires": [
+        "R04",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S05",
+        "S08"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 183,
+      "bytes": 1362,
+      "sha256": "c1c7f782a188fbc79060499445e976320fec7d09168976ef1202e324b1285915"
+    },
+    {
+      "id": "M09",
+      "title": "Packed SIMD and conversions as state operators",
+      "summary": "Saturation, rounding and comparisons can embody transitions rather than bookkeeping.",
+      "path": "mechanisms/M09.md",
+      "kind": "mechanism",
+      "tags": [
+        "packing",
+        "conversion",
+        "quantization",
+        "state"
+      ],
+      "requires": [
+        "R04",
+        "R15"
+      ],
+      "sources": [
+        "S08",
+        "S09",
+        "S03"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 169,
+      "bytes": 1309,
+      "sha256": "bdb32e0b3f397de131cec6c1404a5ac04a6e66fee9d66b2be9dfcf7f2b6957cf"
+    },
+    {
+      "id": "M10",
+      "title": "S F Us and interpolation as alternate arithmetic",
+      "summary": "Use a different unit only with a deliberate error budget.",
+      "path": "mechanisms/M10.md",
+      "kind": "mechanism",
+      "tags": [
+        "SFU",
+        "approximation",
+        "nonlinear"
+      ],
+      "requires": [
+        "R02",
+        "R15"
+      ],
+      "sources": [
+        "S01",
+        "S03",
+        "S04",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 174,
+      "bytes": 1246,
+      "sha256": "40b73edc6525eed00772c1e563b997b801d764fdc44ef30fb9f2845979341a22"
+    },
+    {
+      "id": "M11",
+      "title": "FP64 and wide integer paths as alternate resources",
+      "summary": "A bounded subproblem can sometimes move to a different arithmetic domain.",
+      "path": "mechanisms/M11.md",
+      "kind": "mechanism",
+      "tags": [
+        "FP64",
+        "integer",
+        "pipeline"
+      ],
+      "requires": [
+        "R02",
+        "R15"
+      ],
+      "sources": [
+        "S01",
+        "S03",
+        "S08"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 164,
+      "bytes": 1243,
+      "sha256": "b37caaaed41e4b50e5ada29d41c5a51f41583a9bc2020223583c17ce77e00615"
+    },
+    {
+      "id": "M12",
+      "title": "Register banks as an operand-delivery circuit",
+      "summary": "Storage placement can matter even when the arithmetic is unchanged.",
+      "path": "mechanisms/M12.md",
+      "kind": "mechanism",
+      "tags": [
+        "register banks",
+        "SASS",
+        "reuse"
+      ],
+      "requires": [
+        "R02",
+        "R10"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 167,
+      "bytes": 1183,
+      "sha256": "ecff60fd4a2b1962657b60683a2767427b0c9bfea7ad16db1ca40f1fd353a888"
+    },
+    {
+      "id": "M13",
+      "title": "Operand reuse and dependency control",
+      "summary": "The short-lived operand path is a resource distinct from register capacity.",
+      "path": "mechanisms/M13.md",
+      "kind": "mechanism",
+      "tags": [
+        "reuse",
+        "scoreboard",
+        "manual scheduling"
+      ],
+      "requires": [
+        "R02",
+        "R10"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 166,
+      "bytes": 1219,
+      "sha256": "7cea55a525fc1745ee1173d84a80f8b5686fb0ad0ba2747009a66d5eb64d38a3"
+    },
+    {
+      "id": "M14",
+      "title": "Register-resident local state machines",
+      "summary": "Avoid turning a small evolving state into memory after every operation.",
+      "path": "mechanisms/M14.md",
+      "kind": "mechanism",
+      "tags": [
+        "registers",
+        "FSM",
+        "graph",
+        "state"
+      ],
+      "requires": [
+        "R02",
+        "R11"
+      ],
+      "sources": [
+        "S01",
+        "S03",
+        "S04"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 164,
+      "bytes": 1204,
+      "sha256": "fd555a3a5b3ae6e5be68ddb5b3288dd04c127979d5129e9c5666892bfbf6e672"
+    },
+    {
+      "id": "M15",
+      "title": "Warp and SM specialization",
+      "summary": "Assign roles only when they can coexist and make progress.",
+      "path": "mechanisms/M15.md",
+      "kind": "mechanism",
+      "tags": [
+        "warp specialization",
+        "persistent",
+        "scheduling"
+      ],
+      "requires": [
+        "R02",
+        "R06"
+      ],
+      "sources": [
+        "S01",
+        "S03",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 173,
+      "bytes": 1209,
+      "sha256": "97dc546f4425359272e97cb940bbb64b31bd65bd64cf3035641a482598cd45f8"
+    },
+    {
+      "id": "M16",
+      "title": "Instruction-level parallelism and useful overlap",
+      "summary": "Hide a dependency with required work, not with more busy work.",
+      "path": "mechanisms/M16.md",
+      "kind": "mechanism",
+      "tags": [
+        "ILP",
+        "latency hiding",
+        "occupancy"
+      ],
+      "requires": [
+        "R02",
+        "R11",
+        "R14"
+      ],
+      "sources": [
+        "S01",
+        "S04"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 158,
+      "bytes": 1166,
+      "sha256": "c2caead939d79219edc85ea16bfede9cbf2a986b0ad226b17085ca087872fdde"
+    },
+    {
+      "id": "M17",
+      "title": "Instruction cache and phase factoring",
+      "summary": "An enormous unrolled circuit can lose to a smaller stateful machine.",
+      "path": "mechanisms/M17.md",
+      "kind": "mechanism",
+      "tags": [
+        "instruction cache",
+        "unrolling",
+        "interpreter"
+      ],
+      "requires": [
+        "R02",
+        "R10"
+      ],
+      "sources": [
+        "S04",
+        "S05"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 152,
+      "bytes": 1130,
+      "sha256": "81400f5bf325ee115a6338fa4751dfc4631a29fa99046e6baab8f6db11e1766b"
+    },
+    {
+      "id": "M18",
+      "title": "Shared memory as a banked routing network",
+      "summary": "Layout can make broadcast and exchange the main computation.",
+      "path": "mechanisms/M18.md",
+      "kind": "mechanism",
+      "tags": [
+        "shared",
+        "banks",
+        "transpose",
+        "routing"
+      ],
+      "requires": [
+        "R03",
+        "R06"
+      ],
+      "sources": [
+        "S01",
+        "S30",
+        "S04"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 167,
+      "bytes": 1207,
+      "sha256": "21108337f9653595122c9f73c77ace4c83d5b39c97e9d525055114588c07cc67"
+    },
+    {
+      "id": "M19",
+      "title": "Barriers as phase boundaries",
+      "summary": "A phase machine needs known participants and a schedulable producer.",
+      "path": "mechanisms/M19.md",
+      "kind": "mechanism",
+      "tags": [
+        "barriers",
+        "synchronization",
+        "phases"
+      ],
+      "requires": [
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 153,
+      "bytes": 1141,
+      "sha256": "9a653e3b65f2db8b6e69dd95c0cdc2c623d7c57d7cb4734f093fc61181615e8b"
+    },
+    {
+      "id": "M20",
+      "title": "L1, local memory and deliberate cold spills",
+      "summary": "The right question is useful residency, not zero spills at any cost.",
+      "path": "mechanisms/M20.md",
+      "kind": "mechanism",
+      "tags": [
+        "L1",
+        "spills",
+        "occupancy"
+      ],
+      "requires": [
+        "R03"
+      ],
+      "sources": [
+        "S01",
+        "S04",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 158,
+      "bytes": 1113,
+      "sha256": "728674966289182a8e552e13d66815299f0d99f05a4b2f73563bb999d6a1a7d2"
+    },
+    {
+      "id": "M21",
+      "title": "L2 as a compact coordination service",
+      "summary": "A large computation can have a very small shared control state.",
+      "path": "mechanisms/M21.md",
+      "kind": "mechanism",
+      "tags": [
+        "L2",
+        "atomics",
+        "coordination"
+      ],
+      "requires": [
+        "R03",
+        "R06"
+      ],
+      "sources": [
+        "S02",
+        "S04",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 165,
+      "bytes": 1189,
+      "sha256": "6c30928861432e48f268fb3e6b23237edf4ee3d91c7f82e24f44de79c069caf0"
+    },
+    {
+      "id": "M22",
+      "title": "HBM and coalescing as layout constraints",
+      "summary": "Bring useful fields together before optimizing the load instruction.",
+      "path": "mechanisms/M22.md",
+      "kind": "mechanism",
+      "tags": [
+        "HBM",
+        "coalescing",
+        "partitioning"
+      ],
+      "requires": [
+        "R03",
+        "R11"
+      ],
+      "sources": [
+        "S02",
+        "S04",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 158,
+      "bytes": 1171,
+      "sha256": "f35b7bbf3dcd850142df713cc77eb40f5bc32a4c2d11e02b172f766fda25fdb8"
+    },
+    {
+      "id": "M23",
+      "title": "Constant and texture paths as function interfaces",
+      "summary": "Specialized lookup behavior can embody a small operator.",
+      "path": "mechanisms/M23.md",
+      "kind": "mechanism",
+      "tags": [
+        "constant",
+        "texture",
+        "lookup",
+        "interpolation"
+      ],
+      "requires": [
+        "R03",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 154,
+      "bytes": 1193,
+      "sha256": "f6b1b86e89fed874dc0a1aaa5d3004cd761cd1745482355df56e512444e63f4d"
+    },
+    {
+      "id": "M24",
+      "title": "Four native tensor microcircuits per warp",
+      "summary": "The documented sm70 decomposition permits smaller semantic problems than conventional WMMA usage suggests.",
+      "path": "mechanisms/M24.md",
+      "kind": "mechanism",
+      "tags": [
+        "HMMA",
+        "tensor",
+        "small algebra"
+      ],
+      "requires": [
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S22",
+        "S23"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 169,
+      "bytes": 1207,
+      "sha256": "de346ed0ac3bb590b122b65fdbaacb038e6fc7b4f68b637312f03031dcae4218"
+    },
+    {
+      "id": "M25",
+      "title": "Fragment-native intermediates",
+      "summary": "A result is already a usable distributed representation; canonical memory is optional.",
+      "path": "mechanisms/M25.md",
+      "kind": "mechanism",
+      "tags": [
+        "fragments",
+        "layout",
+        "registers",
+        "fusion"
+      ],
+      "requires": [
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S07",
+        "S22",
+        "S23"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 157,
+      "bytes": 1194,
+      "sha256": "c16aa57cf3017bda94b163bfb4473fbe7753dbd3791b2e328c02d2090db95d9a"
+    },
+    {
+      "id": "M26",
+      "title": "Tensor counting and reduction",
+      "summary": "Use ordinary algebra to encode structure, without imagining arbitrary semiring hardware.",
+      "path": "mechanisms/M26.md",
+      "kind": "mechanism",
+      "tags": [
+        "tensor",
+        "counting",
+        "reduction",
+        "support"
+      ],
+      "requires": [
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S19",
+        "S20"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 168,
+      "bytes": 1241,
+      "sha256": "6cf36b3e5585f3aa7f26b9f77c5bfd163ee37d26ebd862785d835fc14a9ae652"
+    },
+    {
+      "id": "M27",
+      "title": "Tensor transforms and state mixers",
+      "summary": "Fixed coefficient matrices can be configurable algebraic circuit elements.",
+      "path": "mechanisms/M27.md",
+      "kind": "mechanism",
+      "tags": [
+        "FFT",
+        "transforms",
+        "dynamics",
+        "tensor"
+      ],
+      "requires": [
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S19",
+        "S21",
+        "S24"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 152,
+      "bytes": 1197,
+      "sha256": "56fda8e78573690f18048a4b924823f31514763e68547c65989cd9cebe7064d1"
+    },
+    {
+      "id": "M28",
+      "title": "Mixed precision and certified decisions",
+      "summary": "Approximate arithmetic is most useful when the final decision has an exact contract.",
+      "path": "mechanisms/M28.md",
+      "kind": "mechanism",
+      "tags": [
+        "precision",
+        "filter",
+        "refinement"
+      ],
+      "requires": [
+        "R15"
+      ],
+      "sources": [
+        "S20",
+        "S21",
+        "S03"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 169,
+      "bytes": 1246,
+      "sha256": "c6838c8b907299545dbbd48e5d292a14044998495e342a3bf236123692e94808"
+    },
+    {
+      "id": "M29",
+      "title": "Atomics as merge algebra and state transitions",
+      "summary": "Arbitration and convergence can be the computation itself.",
+      "path": "mechanisms/M29.md",
+      "kind": "mechanism",
+      "tags": [
+        "atomics",
+        "fixed point",
+        "ownership",
+        "state"
+      ],
+      "requires": [
+        "R06",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 159,
+      "bytes": 1192,
+      "sha256": "a16ea36d78786fe9365779b8c126546596b78fb21e46e7feb5aa7b0b57fe1693"
+    },
+    {
+      "id": "M30",
+      "title": "Persistent queues and resident interpreters",
+      "summary": "Retain useful state and pay launch cost less often.",
+      "path": "mechanisms/M30.md",
+      "kind": "mechanism",
+      "tags": [
+        "persistent",
+        "scheduler",
+        "FSM",
+        "queues"
+      ],
+      "requires": [
+        "R06",
+        "R02"
+      ],
+      "sources": [
+        "S01",
+        "S30",
+        "S25"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 162,
+      "bytes": 1187,
+      "sha256": "4f87583fb9e4217df87005128cb55aff7a6d5ad80a016c38d02962a646e13ec7"
+    },
+    {
+      "id": "M31",
+      "title": "Stream memory waits and writes",
+      "summary": "Commands can coordinate work without a polling shader, subject to the submission graph.",
+      "path": "mechanisms/M31.md",
+      "kind": "mechanism",
+      "tags": [
+        "streams",
+        "semaphores",
+        "synchronization"
+      ],
+      "requires": [
+        "R06",
+        "R09"
+      ],
+      "sources": [
+        "S17",
+        "S30",
+        "S42"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 171,
+      "bytes": 1221,
+      "sha256": "44acc1613eef855400b6eff69ef2ebae3e5240279863858cc1d982260a6453c4"
+    },
+    {
+      "id": "M32",
+      "title": "Cooperative grids and historical multidevice launch",
+      "summary": "Keep forgotten mechanisms in view, but retain their admission and version constraints.",
+      "path": "mechanisms/M32.md",
+      "kind": "mechanism",
+      "tags": [
+        "cooperative",
+        "grid",
+        "multi GPU"
+      ],
+      "requires": [
+        "R06",
+        "R10"
+      ],
+      "sources": [
+        "S30",
+        "S03"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 160,
+      "bytes": 1212,
+      "sha256": "84f6f90d93cc35fc3f295777192b9e6e59b06335cb4e15deb3d40069177f46b6"
+    },
+    {
+      "id": "M33",
+      "title": "Graphs and device-side launches",
+      "summary": "Pre built command structure and dynamic expansion solve different granularity problems.",
+      "path": "mechanisms/M33.md",
+      "kind": "mechanism",
+      "tags": [
+        "graphs",
+        "CDP",
+        "launch overhead"
+      ],
+      "requires": [
+        "R09",
+        "R10"
+      ],
+      "sources": [
+        "S30",
+        "S32"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 156,
+      "bytes": 1152,
+      "sha256": "3a45910df701888e8869777853422065b2542d0cb5e76df8bc7d04d05462c74d"
+    },
+    {
+      "id": "M34",
+      "title": "Peer loads as a distributed data path",
+      "summary": "Direct access is one option alongside compact owner answers and staging.",
+      "path": "mechanisms/M34.md",
+      "kind": "mechanism",
+      "tags": [
+        "NVLink",
+        "remote memory",
+        "graphs"
+      ],
+      "requires": [
+        "R07",
+        "R06"
+      ],
+      "sources": [
+        "S02",
+        "S25",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 174,
+      "bytes": 1177,
+      "sha256": "ae01d66f93875f8755828d665db68fe0082aff132c9cb094c5f868b429a3e9b5"
+    },
+    {
+      "id": "M35",
+      "title": "Remote atomics and NVLink signaling",
+      "summary": "Use a narrow control channel only after checking the exact pair and operation.",
+      "path": "mechanisms/M35.md",
+      "kind": "mechanism",
+      "tags": [
+        "NVLink",
+        "remote atomics",
+        "queues"
+      ],
+      "requires": [
+        "R06",
+        "R07"
+      ],
+      "sources": [
+        "S02",
+        "S25",
+        "S30",
+        "S32"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 160,
+      "bytes": 1120,
+      "sha256": "ac7022e1636bd5e9bbd41b10a785349b0ab2e7f858a27d1a94c10a143c2c73df"
+    },
+    {
+      "id": "M36",
+      "title": "Copy engines as asynchronous workers",
+      "summary": "Exploit independent progress without forgetting shared HBM and power.",
+      "path": "mechanisms/M36.md",
+      "kind": "mechanism",
+      "tags": [
+        "DMA",
+        "copy",
+        "overlap",
+        "latency hiding"
+      ],
+      "requires": [
+        "R09",
+        "R14"
+      ],
+      "sources": [
+        "S02",
+        "S12",
+        "S15",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 164,
+      "bytes": 1172,
+      "sha256": "0a8eb09cd15186cc8eb20ae9ba7fca466a6e9ddf62e318a80b6e65c0f0253eb9"
+    },
+    {
+      "id": "M37",
+      "title": "Copy-engine component remapping",
+      "summary": "Investigate a restricted format transformer in the movement path.",
+      "path": "mechanisms/M37.md",
+      "kind": "mechanism",
+      "tags": [
+        "DMA",
+        "remap",
+        "packing",
+        "driver"
+      ],
+      "requires": [
+        "R09"
+      ],
+      "sources": [
+        "S12",
+        "S15"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 167,
+      "bytes": 1200,
+      "sha256": "0a75015d1ae8acac074b328b08005646850f25f6fc0ff487e42f7f6c464682a2"
+    },
+    {
+      "id": "M38",
+      "title": "semaphore arithmetic outside SM execution",
+      "summary": "A completion word can be updated without a shader or payload transfer.",
+      "path": "mechanisms/M38.md",
+      "kind": "mechanism",
+      "tags": [
+        "DMA",
+        "semaphores",
+        "non-SM",
+        "coordination"
+      ],
+      "requires": [
+        "R09",
+        "R06"
+      ],
+      "sources": [
+        "S12",
+        "S15"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 169,
+      "bytes": 1178,
+      "sha256": "060e97bb5be6b28e8452d94b53d2f7084e9705cd408045fd0f7bdd3b7d9372a5"
+    },
+    {
+      "id": "M39",
+      "title": "QMD as a control object",
+      "summary": "Dependent descriptors are a concrete research lead, not a complete hidden runtime.",
+      "path": "mechanisms/M39.md",
+      "kind": "mechanism",
+      "tags": [
+        "QMD",
+        "driver",
+        "dataflow",
+        "launch"
+      ],
+      "requires": [
+        "R09",
+        "R06"
+      ],
+      "sources": [
+        "S13",
+        "S27",
+        "S40"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 163,
+      "bytes": 1211,
+      "sha256": "a4de34715d948a2eac3e154af54f45ed0c16fc59a2700ab7d220091da4c16484"
+    },
+    {
+      "id": "M40",
+      "title": "VMM views and virtual contiguity",
+      "summary": "Change a view rather than moving bytes, when the exact mapping contract permits.",
+      "path": "mechanisms/M40.md",
+      "kind": "mechanism",
+      "tags": [
+        "VMM",
+        "alias",
+        "ring",
+        "layout"
+      ],
+      "requires": [
+        "R08",
+        "R06"
+      ],
+      "sources": [
+        "S18",
+        "S31",
+        "S16"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 156,
+      "bytes": 1144,
+      "sha256": "5e2ca48ec8d802d829c3f5a312307bd0efead8a98fa4b6c99334de9851242588"
+    },
+    {
+      "id": "M41",
+      "title": "ATS and fault replay as coarse policy machinery",
+      "summary": "Address translation can shape layout, but its useful controls are platform-specific.",
+      "path": "mechanisms/M41.md",
+      "kind": "mechanism",
+      "tags": [
+        "ATS",
+        "POWER9",
+        "MMU",
+        "faults"
+      ],
+      "requires": [
+        "R08",
+        "R13"
+      ],
+      "sources": [
+        "S02",
+        "S16",
+        "S28",
+        "S38"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 162,
+      "bytes": 1123,
+      "sha256": "b0fc26cd7c8043f4e916e3ac96c71548a31d793a1534f98603e2f9be30637b23"
+    },
+    {
+      "id": "M42",
+      "title": "Access counters as delayed feedback",
+      "summary": "Treat notifications as a policy signal, not an instantaneous free oracle.",
+      "path": "mechanisms/M42.md",
+      "kind": "mechanism",
+      "tags": [
+        "access counters",
+        "managed",
+        "adaptation"
+      ],
+      "requires": [
+        "R08",
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S29"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 142,
+      "bytes": 1092,
+      "sha256": "97013f9683c759ce103e8238402a7a7b803612b34081cd426ed04c9eb6ac9665"
+    },
+    {
+      "id": "M43",
+      "title": "NUMA-local host memory as a tier",
+      "summary": "Align data production, page placement and GPU ingress.",
+      "path": "mechanisms/M43.md",
+      "kind": "mechanism",
+      "tags": [
+        "NUMA",
+        "PCIe",
+        "host memory",
+        "zero copy"
+      ],
+      "requires": [
+        "R07",
+        "R08"
+      ],
+      "sources": [
+        "S30",
+        "S33",
+        "S36"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 165,
+      "bytes": 1109,
+      "sha256": "8adb33d52a53e2d02b36d012977a5ff4c4eefcec6bf736f111692e0ff6984051"
+    },
+    {
+      "id": "M44",
+      "title": "BAR, GPUDirect and external actors",
+      "summary": "Reachable memory is not automatically an ordered shared protocol.",
+      "path": "mechanisms/M44.md",
+      "kind": "mechanism",
+      "tags": [
+        "BAR",
+        "GPUDirect",
+        "RDMA",
+        "PCIe"
+      ],
+      "requires": [
+        "R07",
+        "R08",
+        "R06"
+      ],
+      "sources": [
+        "S33",
+        "S16",
+        "S30"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 158,
+      "bytes": 1138,
+      "sha256": "850bc44b64d5daa6856fb196b9ea8cec3908d3bce83b6be13575bdf058a3ff5c"
+    },
+    {
+      "id": "M45",
+      "title": "Contexts, IPC and MPS",
+      "summary": "multiplexing resources does not merge program semantics.",
+      "path": "mechanisms/M45.md",
+      "kind": "mechanism",
+      "tags": [
+        "contexts",
+        "MPS",
+        "IPC",
+        "isolation"
+      ],
+      "requires": [
+        "R10",
+        "R06"
+      ],
+      "sources": [
+        "S01",
+        "S30",
+        "S41"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 151,
+      "bytes": 1181,
+      "sha256": "1c838c614a2b25bcd2253b8b1bdc0a26b6075923ce82c83016fda24576c08142"
+    },
+    {
+      "id": "M46",
+      "title": "Counters as runtime feedback",
+      "summary": "The observation must repay its own cost.",
+      "path": "mechanisms/M46.md",
+      "kind": "mechanism",
+      "tags": [
+        "counters",
+        "CUPTI",
+        "adaptation"
+      ],
+      "requires": [
+        "R12",
+        "R10"
+      ],
+      "sources": [
+        "S34",
+        "S35",
+        "S36"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 154,
+      "bytes": 1127,
+      "sha256": "37fbe6fb4e398a2e7cf7f94d13ef5302eabc2d5e57fc4be97334805cecee79a6"
+    },
+    {
+      "id": "M47",
+      "title": "Special registers and local clocks",
+      "summary": "Observe placement and time without treating them as scheduling authority.",
+      "path": "mechanisms/M47.md",
+      "kind": "mechanism",
+      "tags": [
+        "smid",
+        "clock",
+        "globaltimer",
+        "persistent"
+      ],
+      "requires": [
+        "R02",
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S04"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 160,
+      "bytes": 1174,
+      "sha256": "02be10b8c51de916de8f5774576c43e005eecdd0284278e1a95d4d02fb1a0fa8"
+    },
+    {
+      "id": "M48",
+      "title": "Cubin and SASS transformation",
+      "summary": "Machine-code experiments need complete executable evidence.",
+      "path": "mechanisms/M48.md",
+      "kind": "mechanism",
+      "tags": [
+        "SASS",
+        "cubin",
+        "compiler",
+        "rewriting"
+      ],
+      "requires": [
+        "R10",
+        "R02",
+        "R06"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 150,
+      "bytes": 1140,
+      "sha256": "af7b5233f9c337c247e82fe5229944c06198bae4cf63b8575cf27e51d41c8615"
+    },
+    {
+      "id": "M49",
+      "title": "Embedded processors and firmware frontier",
+      "summary": "Study exposed operations before imagining spare programmable cores.",
+      "path": "mechanisms/M49.md",
+      "kind": "mechanism",
+      "tags": [
+        "firmware",
+        "Falcon",
+        "boot",
+        "reset"
+      ],
+      "requires": [
+        "R13"
+      ],
+      "sources": [
+        "S02",
+        "S37",
+        "S39",
+        "S40"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 148,
+      "bytes": 1162,
+      "sha256": "4ff55769053eead9e04a0b3b1a8c68b8ce8f721c04ad78f181773b262c410994"
+    },
+    {
+      "id": "M50",
+      "title": "Graphics, media and dormant engines",
+      "summary": "Shared die ancestry is not evidence of an exposed Tesla execution route.",
+      "path": "mechanisms/M50.md",
+      "kind": "mechanism",
+      "tags": [
+        "graphics",
+        "texture",
+        "media",
+        "raster"
+      ],
+      "requires": [
+        "R09",
+        "R13"
+      ],
+      "sources": [
+        "S02",
+        "S30",
+        "S37",
+        "S13"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 167,
+      "bytes": 1207,
+      "sha256": "57a75d1725e96cd3af2e31f3e691b5015d35e83fdceacf118a717bb5880aee79"
+    },
+    {
+      "id": "M51",
+      "title": "Faults, reset and RAS",
+      "summary": "Long-lived computation needs a failure model as well as a fast path.",
+      "path": "mechanisms/M51.md",
+      "kind": "mechanism",
+      "tags": [
+        "faults",
+        "RAS",
+        "ECC",
+        "reset"
+      ],
+      "requires": [
+        "R13",
+        "R08"
+      ],
+      "sources": [
+        "S02",
+        "S28",
+        "S36"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 153,
+      "bytes": 1105,
+      "sha256": "897be4aff4cf61eaa6b3362f727d242de6c5a88de79b5f4f49774281e4ba9872"
+    },
+    {
+      "id": "M52",
+      "title": "Power and thermal budgets as resources",
+      "summary": "The best sustained schedule may differ from the maximum instantaneous overlap.",
+      "path": "mechanisms/M52.md",
+      "kind": "mechanism",
+      "tags": [
+        "power",
+        "thermal",
+        "clocks",
+        "adaptation"
+      ],
+      "requires": [
+        "R13",
+        "R11"
+      ],
+      "sources": [
+        "S02",
+        "S36"
+      ],
+      "level": 2,
+      "status": "established mechanism + unmeasured application hypothesis",
+      "words": 155,
+      "bytes": 1167,
+      "sha256": "a0a9c17dc8656472ed7a94364cfa91c7e6cdd55981d6f347f182cf44807d8753"
+    },
+    {
+      "id": "C00",
+      "title": "Bit-sliced full adders and arbitrary local Boolean rules",
+      "summary": "Use the scalar logic data path as many parallel one-bit circuits.",
+      "path": "compositions/C00.md",
+      "kind": "composition",
+      "tags": [
+        "Boolean",
+        "FSM",
+        "support",
+        "LOP3"
+      ],
+      "requires": [
+        "M01",
+        "M06",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S05"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 288,
+      "bytes": 1900,
+      "sha256": "9ea57a6797b19f6a3b72c2eac3d1176c1ee1459992e8f11310a8b660e8b5db13"
+    },
+    {
+      "id": "C01",
+      "title": "Sequence symbols as two-plane equality circuits",
+      "summary": "Change symbol comparison into a few word-wide gates.",
+      "path": "compositions/C01.md",
+      "kind": "composition",
+      "tags": [
+        "sequence",
+        "support",
+        "bitsets"
+      ],
+      "requires": [
+        "M01",
+        "M02",
+        "M06"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 238,
+      "bytes": 1649,
+      "sha256": "cc084cba86e7a545bb8a536471830aa24f6a65c0bb2da19948eeca80816cd4d9"
+    },
+    {
+      "id": "C02",
+      "title": "Ballot transpose as a persistent state encoding",
+      "summary": "Use lane-to-bit transposition once, then keep the result as the working representation.",
+      "path": "compositions/C02.md",
+      "kind": "composition",
+      "tags": [
+        "bitplanes",
+        "packing",
+        "state",
+        "FSM"
+      ],
+      "requires": [
+        "M06",
+        "M04"
+      ],
+      "sources": [
+        "S03",
+        "S10"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 238,
+      "bytes": 1665,
+      "sha256": "63b7e5987e761e9563cb6cefb2a4a7d9e617b363d206c875c93cb8ab40053245"
+    },
+    {
+      "id": "C03",
+      "title": "A warp-resident byte lookup network",
+      "summary": "Build a small exact table from register owners, shuffle and byte selection.",
+      "path": "compositions/C03.md",
+      "kind": "composition",
+      "tags": [
+        "lookup",
+        "PRMT",
+        "registers",
+        "routing"
+      ],
+      "requires": [
+        "M03",
+        "M04",
+        "M14"
+      ],
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 259,
+      "bytes": 1734,
+      "sha256": "b6ebf6e639b82380238ab554b8be2fff9a4352b3db858404b074736254252ed3"
+    },
+    {
+      "id": "C04",
+      "title": "Warp CAM plus one reservation per equal destination",
+      "summary": "Combine match, rank and one atomic into compact grouped output.",
+      "path": "compositions/C04.md",
+      "kind": "composition",
+      "tags": [
+        "match",
+        "compaction",
+        "atomics",
+        "metadata"
+      ],
+      "requires": [
+        "M05",
+        "M02",
+        "M29",
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S10",
+        "S30"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 239,
+      "bytes": 1635,
+      "sha256": "6ecefa317d954fcbf52bc4d04da0b49fc2180d7ae9f6b8ddb88e8cb2036da12b"
+    },
+    {
+      "id": "C05",
+      "title": "A32-vertex graph carried in warp registers",
+      "summary": "Turn a small graph step into intersection tests and a ballot.",
+      "path": "compositions/C05.md",
+      "kind": "composition",
+      "tags": [
+        "graph",
+        "support",
+        "frontier",
+        "registers"
+      ],
+      "requires": [
+        "M01",
+        "M02",
+        "M04",
+        "M14"
+      ],
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 252,
+      "bytes": 1666,
+      "sha256": "31fe38f55d335a391fa86cd110b7207ebb7c3a4b8863e2ebda7bf30f94e86496"
+    },
+    {
+      "id": "C06",
+      "title": "A bit-sliced finite-state engine",
+      "summary": "Compile small state transitions into gates rather than per-object branches.",
+      "path": "compositions/C06.md",
+      "kind": "composition",
+      "tags": [
+        "FSM",
+        "state",
+        "Boolean",
+        "branch elimination"
+      ],
+      "requires": [
+        "M01",
+        "M06",
+        "M07",
+        "M14"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 211,
+      "bytes": 1555,
+      "sha256": "7424e6b96a68b293b228ace2058a8cf28036eda024391770e12a85dbb0e0effc"
+    },
+    {
+      "id": "C07",
+      "title": "Guard-digit convolution using ordinary integer multiplication",
+      "summary": "Use positional encoding to turn a bounded small convolution into multiply and extract.",
+      "path": "compositions/C07.md",
+      "kind": "composition",
+      "tags": [
+        "packing",
+        "integer",
+        "polynomial",
+        "convolution"
+      ],
+      "requires": [
+        "M09",
+        "M11",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 242,
+      "bytes": 1765,
+      "sha256": "2f636ba2f1d919e3273b05b9286afe72a94f474489c6ddf34ddc31801f1c7ce5"
+    },
+    {
+      "id": "C08",
+      "title": "Packed integer scores instead of float bookkeeping",
+      "summary": "Keep a bounded short score in the integer representation that produced it.",
+      "path": "compositions/C08.md",
+      "kind": "composition",
+      "tags": [
+        "DP4A",
+        "scoring",
+        "counting",
+        "quantization"
+      ],
+      "requires": [
+        "M08",
+        "M09",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 236,
+      "bytes": 1678,
+      "sha256": "cb0fb4411c15d6a21090acaaa2609477efe43ce8c6c42d6c7ecdf44debdd9e1e"
+    },
+    {
+      "id": "C09",
+      "title": "Exact bounded integers on the FP64 path",
+      "summary": "Move a proved arithmetic subproblem rather than blindly seeking idle units.",
+      "path": "compositions/C09.md",
+      "kind": "composition",
+      "tags": [
+        "FP64",
+        "integer",
+        "pipeline",
+        "exactness"
+      ],
+      "requires": [
+        "M11",
+        "M16",
+        "R15"
+      ],
+      "sources": [
+        "S01",
+        "S03"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 223,
+      "bytes": 1612,
+      "sha256": "0b0e306f704b812ff767d954225e470c475e9ca4bf36a6684fdc0f11a50e29b0"
+    },
+    {
+      "id": "C10",
+      "title": "Four tiny linear machines in one MMA warp",
+      "summary": "Use the real native groups for local operators instead of pretending every row must be a batch example.",
+      "path": "compositions/C10.md",
+      "kind": "composition",
+      "tags": [
+        "HMMA",
+        "small matrices",
+        "state",
+        "graph"
+      ],
+      "requires": [
+        "M24",
+        "M25",
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S22",
+        "S23"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 247,
+      "bytes": 1719,
+      "sha256": "dc50f8ec973441824ff369c09810bc9fda8989574c7ec640f61a85aff3d7414c"
+    },
+    {
+      "id": "C11",
+      "title": "Tensor cores as common-neighbor counters",
+      "summary": "Encode a batch of set intersections as binary matrix products, then test against bitsets.",
+      "path": "compositions/C11.md",
+      "kind": "composition",
+      "tags": [
+        "support",
+        "intersection",
+        "Jaccard",
+        "tensor"
+      ],
+      "requires": [
+        "M26",
+        "M08",
+        "M02",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S19",
+        "S20"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 246,
+      "bytes": 1738,
+      "sha256": "566ed54915f3932594ca915b880a637abcd4d0ac3a778ad2dc35e5a692180154"
+    },
+    {
+      "id": "C12",
+      "title": "Prefix and reductions by structured matrices",
+      "summary": "An all-ones or triangular matrix can encode data movement and accumulation.",
+      "path": "compositions/C12.md",
+      "kind": "composition",
+      "tags": [
+        "reduction",
+        "scan",
+        "tensor"
+      ],
+      "requires": [
+        "M26",
+        "M27",
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S19",
+        "S03"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 230,
+      "bytes": 1618,
+      "sha256": "9eb11093a1e059d8a4dced3648fa2e17ef12d1868b161db45de8edfbae9d96d6"
+    },
+    {
+      "id": "C13",
+      "title": "Fixed transforms as configurable tensor circuits",
+      "summary": "Use small basis changes, stencils or butterfly components as reusable coefficient banks.",
+      "path": "compositions/C13.md",
+      "kind": "composition",
+      "tags": [
+        "FFT",
+        "Hadamard",
+        "stencil",
+        "transform"
+      ],
+      "requires": [
+        "M27",
+        "M25",
+        "R05",
+        "R15"
+      ],
+      "sources": [
+        "S24",
+        "S03",
+        "S23"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 228,
+      "bytes": 1651,
+      "sha256": "d821ac3bd5f0e35d2e0b50c130e166266d7b39af85007beed99f545ed04c9f0d"
+    },
+    {
+      "id": "C14",
+      "title": "Certified approximate screening with exact refinement",
+      "summary": "Use fast approximate algebra to avoid expensive exact work without changing the final decision.",
+      "path": "compositions/C14.md",
+      "kind": "composition",
+      "tags": [
+        "filter",
+        "precision",
+        "sparse support",
+        "refinement"
+      ],
+      "requires": [
+        "M28",
+        "M02",
+        "R15"
+      ],
+      "sources": [
+        "S20",
+        "S21"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 241,
+      "bytes": 1665,
+      "sha256": "1226034fae0abc6b9b1e3a15cd020aa2abde5f53ec98382350b124789734b24a"
+    },
+    {
+      "id": "C15",
+      "title": "High/low precision expansion as a composite operator",
+      "summary": "Build additional accuracy from multiple native products with an explicit residual.",
+      "path": "compositions/C15.md",
+      "kind": "composition",
+      "tags": [
+        "precision",
+        "tensor",
+        "expansion"
+      ],
+      "requires": [
+        "M28",
+        "M09",
+        "R15"
+      ],
+      "sources": [
+        "S21",
+        "S20"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 220,
+      "bytes": 1598,
+      "sha256": "18c6989be5bef7c90e489ed0e139e42e1281426c8adf2628ec54a27b6eac49b3"
+    },
+    {
+      "id": "C16",
+      "title": "Cancel intermediate transposes by composing ownership maps",
+      "summary": "Keep data where the next instruction can already use it.",
+      "path": "compositions/C16.md",
+      "kind": "composition",
+      "tags": [
+        "fragments",
+        "layout",
+        "transpose",
+        "fusion"
+      ],
+      "requires": [
+        "M25",
+        "M18",
+        "M04",
+        "R05"
+      ],
+      "sources": [
+        "S07",
+        "S22",
+        "S23"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 237,
+      "bytes": 1680,
+      "sha256": "ab61fbacb88bc3a23424031f5855dcab2ab470b77b7014698362af3ac2edfd47"
+    },
+    {
+      "id": "C17",
+      "title": "Operand-read hypergraph coloring",
+      "summary": "Optimize how values reach instructions, not only where values are stored.",
+      "path": "compositions/C17.md",
+      "kind": "composition",
+      "tags": [
+        "register banks",
+        "reuse",
+        "SASS"
+      ],
+      "requires": [
+        "M12",
+        "M13",
+        "R02",
+        "R10"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 223,
+      "bytes": 1606,
+      "sha256": "d77b2e8f85868c73a68c3334cb7b686c2b0cd97ef8e34256907d9c0b0c6eadb7"
+    },
+    {
+      "id": "C18",
+      "title": "A portfolio of useful pipeline work",
+      "summary": "Interleave real subproblems that stress different resources.",
+      "path": "compositions/C18.md",
+      "kind": "composition",
+      "tags": [
+        "ILP",
+        "pipelines",
+        "latency hiding"
+      ],
+      "requires": [
+        "M16",
+        "M08",
+        "M11",
+        "R14"
+      ],
+      "sources": [
+        "S01",
+        "S04"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 211,
+      "bytes": 1504,
+      "sha256": "886b8bb78672c4f664a7ece0a3c1c3842f59298ed7125b100a432b80cfd31f66"
+    },
+    {
+      "id": "C19",
+      "title": "Manual latency hiding without importing cp.async",
+      "summary": "Build a Volta pipeline from early loads, independent work, shared stages or DMA.",
+      "path": "compositions/C19.md",
+      "kind": "composition",
+      "tags": [
+        "prefetch",
+        "persistent",
+        "DMA",
+        "latency hiding"
+      ],
+      "requires": [
+        "M15",
+        "M16",
+        "M19",
+        "M36",
+        "R06"
+      ],
+      "sources": [
+        "S01",
+        "S30",
+        "S15"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 229,
+      "bytes": 1546,
+      "sha256": "6d50ea106119e1b7f3d2562d749ddb39d2df4d637859dd4d25db0da5ca81cee0"
+    },
+    {
+      "id": "C20",
+      "title": "Owner-compute instead of remote pointer chasing",
+      "summary": "Send a compact question to where the large state already lives.",
+      "path": "compositions/C20.md",
+      "kind": "composition",
+      "tags": [
+        "NVLink",
+        "graph",
+        "owner compute",
+        "communication"
+      ],
+      "requires": [
+        "M34",
+        "M35",
+        "M30",
+        "R06",
+        "R07"
+      ],
+      "sources": [
+        "S02",
+        "S25",
+        "S26"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 253,
+      "bytes": 1709,
+      "sha256": "b7afa37db2bbdd6101830adc5d17e5842a60ef529af2919cb4f8ebe6cfea2443"
+    },
+    {
+      "id": "C21",
+      "title": "Transmit support or deltas instead of dense state",
+      "summary": "Choose the information boundary before choosing a faster transfer.",
+      "path": "compositions/C21.md",
+      "kind": "composition",
+      "tags": [
+        "NVLink",
+        "compression",
+        "support",
+        "delta"
+      ],
+      "requires": [
+        "M06",
+        "M34",
+        "M35",
+        "R07"
+      ],
+      "sources": [
+        "S02",
+        "S25",
+        "S26"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 227,
+      "bytes": 1586,
+      "sha256": "dfea98ef62fb6bde37c5af2812b787417fc3304804559ec30bf12be493d5a6fb"
+    },
+    {
+      "id": "C22",
+      "title": "A published ring with explicit reuse epochs",
+      "summary": "Build the synchronization protocol before optimizing the flag instruction.",
+      "path": "compositions/C22.md",
+      "kind": "composition",
+      "tags": [
+        "queue",
+        "semaphore",
+        "publication",
+        "progress"
+      ],
+      "requires": [
+        "M29",
+        "M31",
+        "M35",
+        "R06"
+      ],
+      "sources": [
+        "S17",
+        "S25",
+        "S30",
+        "S42"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 238,
+      "bytes": 1730,
+      "sha256": "7a47e621a38ce9662f21c3f95ea753db33ef4c9cd61405d5a7030afc0eabf873"
+    },
+    {
+      "id": "C23",
+      "title": "Topology-aware ownership and dual host ingress",
+      "summary": "Align where bytes are produced, stored and consumed instead of forcing one uniform path.",
+      "path": "compositions/C23.md",
+      "kind": "composition",
+      "tags": [
+        "NUMA",
+        "PCIe",
+        "NVLink",
+        "ownership"
+      ],
+      "requires": [
+        "M43",
+        "M36",
+        "M34",
+        "R07"
+      ],
+      "sources": [
+        "S30",
+        "S33",
+        "S36"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 233,
+      "bytes": 1613,
+      "sha256": "26173017e221f6e802f418933214ec61c8b7a3bee9e5c83a3c7859a8e18336d4"
+    },
+    {
+      "id": "C24",
+      "title": "Monotone atomic fixed-point computation",
+      "summary": "For the right algebra, duplicates and execution order can stop being correctness problems.",
+      "path": "compositions/C24.md",
+      "kind": "composition",
+      "tags": [
+        "atomics",
+        "dataflow",
+        "graph",
+        "fixed point"
+      ],
+      "requires": [
+        "M29",
+        "M21",
+        "M30",
+        "R06"
+      ],
+      "sources": [
+        "S03",
+        "S30"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 243,
+      "bytes": 1728,
+      "sha256": "890cf549f4f52f5fb4203ce158e7a2fe7903b3ae6d3c00b4703d5a708b32e0c1"
+    },
+    {
+      "id": "C25",
+      "title": "A resident micro service with a finite operator palette",
+      "summary": "Preserve hot computational state while consuming compact task descriptions.",
+      "path": "compositions/C25.md",
+      "kind": "composition",
+      "tags": [
+        "persistent",
+        "scheduler",
+        "FSM",
+        "latency"
+      ],
+      "requires": [
+        "M30",
+        "M15",
+        "M14",
+        "M17",
+        "R06"
+      ],
+      "sources": [
+        "S30",
+        "S01"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 225,
+      "bytes": 1582,
+      "sha256": "3e775688b4a886ff59bf9fe08543f9ce6039c1804f5f5378b80f2d2459afde5f"
+    },
+    {
+      "id": "C26",
+      "title": "Component remapping in the copy engine",
+      "summary": "Investigate moving a fixed record format directly into its consumer representation.",
+      "path": "compositions/C26.md",
+      "kind": "composition",
+      "tags": [
+        "DMA",
+        "format",
+        "remap",
+        "non-SM"
+      ],
+      "requires": [
+        "M37",
+        "M36",
+        "R09"
+      ],
+      "sources": [
+        "S12",
+        "S15"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 237,
+      "bytes": 1665,
+      "sha256": "5e773753b6d034cf4b2dd78679bf1960ab0ac810aefeaa3ea32dc8f7605d9f4f"
+    },
+    {
+      "id": "C27",
+      "title": "Command-engine completion arithmetic",
+      "summary": "Use a non-SM actor for narrow progress-state operations.",
+      "path": "compositions/C27.md",
+      "kind": "composition",
+      "tags": [
+        "semaphore",
+        "DMA",
+        "control",
+        "non-SM"
+      ],
+      "requires": [
+        "M38",
+        "M31",
+        "R09",
+        "R06"
+      ],
+      "sources": [
+        "S12",
+        "S15",
+        "S17"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 263,
+      "bytes": 1792,
+      "sha256": "cd866edc584dc6047599948526531899f99ca158452ead98b07fc52422df1afa"
+    },
+    {
+      "id": "C28",
+      "title": "Dependent QMDs as a bounded dataflow experiment",
+      "summary": "Explore the launch front end only after public graph replay is a measured baseline.",
+      "path": "compositions/C28.md",
+      "kind": "composition",
+      "tags": [
+        "QMD",
+        "launch",
+        "dataflow",
+        "driver"
+      ],
+      "requires": [
+        "M39",
+        "M38",
+        "M33",
+        "R09",
+        "R06"
+      ],
+      "sources": [
+        "S27",
+        "S13",
+        "S40"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 233,
+      "bytes": 1657,
+      "sha256": "0f749eafd3adc6f40edeba62bc92c9a4c9820ada764047f58994a4744ba43283"
+    },
+    {
+      "id": "C29",
+      "title": "A doubled virtual ring without duplicate payload",
+      "summary": "Use two legal views of one backing region to remove split-window handling.",
+      "path": "compositions/C29.md",
+      "kind": "composition",
+      "tags": [
+        "VMM",
+        "alias",
+        "ring",
+        "addressing"
+      ],
+      "requires": [
+        "M40",
+        "R08",
+        "R06"
+      ],
+      "sources": [
+        "S18",
+        "S31"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 233,
+      "bytes": 1583,
+      "sha256": "862ebddc0497f6c274eca01567228459020a57f09a9f3a992122c402f21076ce"
+    },
+    {
+      "id": "C30",
+      "title": "Translation-policy zoning on an ATS platform",
+      "summary": "An address-space boundary can be an algorithmic placement boundary.",
+      "path": "compositions/C30.md",
+      "kind": "composition",
+      "tags": [
+        "ATS",
+        "VMM",
+        "POWER9",
+        "policy"
+      ],
+      "requires": [
+        "M41",
+        "M42",
+        "R08"
+      ],
+      "sources": [
+        "S16",
+        "S28",
+        "S29"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 216,
+      "bytes": 1544,
+      "sha256": "26902d221d7eedfa83bf4290214ea230f7108d65ed37cfcb17466af640934326"
+    },
+    {
+      "id": "C31",
+      "title": "Texture interpolation as a nonlinear circuit element",
+      "summary": "Tabulate a smooth function and let the sampler supply part of the arithmetic.",
+      "path": "compositions/C31.md",
+      "kind": "composition",
+      "tags": [
+        "nonlinear",
+        "texture",
+        "SFU",
+        "approximation"
+      ],
+      "requires": [
+        "M23",
+        "M10",
+        "R15"
+      ],
+      "sources": [
+        "S30",
+        "S03"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 226,
+      "bytes": 1625,
+      "sha256": "65c43abe76632ee257a43463a9a7d1d142471361c02fe724d98f28916ac8ac36"
+    },
+    {
+      "id": "C32",
+      "title": "A coarse self-adapting kernel policy",
+      "summary": "Use a small validated choice set and make observation cost explicit.",
+      "path": "compositions/C32.md",
+      "kind": "composition",
+      "tags": [
+        "adaptation",
+        "counters",
+        "policy",
+        "latency"
+      ],
+      "requires": [
+        "M46",
+        "M42",
+        "M47",
+        "R11",
+        "R12"
+      ],
+      "sources": [
+        "S34",
+        "S35",
+        "S36",
+        "S29"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 221,
+      "bytes": 1554,
+      "sha256": "b7d5f989d04e5e2ded6896f01d30cc1e659e56cae571be7e807b1214c146530f"
+    },
+    {
+      "id": "C33",
+      "title": "Steady-state scheduling under power and thermal limits",
+      "summary": "Optimize useful sustained work rather than cold instantaneous utilization.",
+      "path": "compositions/C33.md",
+      "kind": "composition",
+      "tags": [
+        "power",
+        "thermal",
+        "scheduling"
+      ],
+      "requires": [
+        "M52",
+        "M46",
+        "R11",
+        "R13"
+      ],
+      "sources": [
+        "S02",
+        "S36"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 210,
+      "bytes": 1500,
+      "sha256": "4074a3661504ddc29294793f42b42fc28723f4f9a3bcbaf083e7a3ac7c492cfa"
+    },
+    {
+      "id": "C34",
+      "title": "Phase-factored circuits instead of a giant mega kernel",
+      "summary": "Keep the hot instruction and register working set small enough to be useful.",
+      "path": "compositions/C34.md",
+      "kind": "composition",
+      "tags": [
+        "instruction cache",
+        "persistent",
+        "phases"
+      ],
+      "requires": [
+        "M17",
+        "M30",
+        "M33",
+        "R02"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S30"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 223,
+      "bytes": 1474,
+      "sha256": "2908ff0deef7c068bfe748972d049959eadfd3bdcb622019a7e48fcef2229e58"
+    },
+    {
+      "id": "C35",
+      "title": "Delete metadata through positional identity",
+      "summary": "Use lane, bit or local slot as an address when both ends share the mapping.",
+      "path": "compositions/C35.md",
+      "kind": "composition",
+      "tags": [
+        "metadata",
+        "layout",
+        "routing",
+        "compression"
+      ],
+      "requires": [
+        "M02",
+        "M04",
+        "M14",
+        "R01"
+      ],
+      "sources": [
+        "S03",
+        "S10"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 222,
+      "bytes": 1513,
+      "sha256": "95d35b71fc7bfe3d2cd005fb3f8b5769f9b0984c8196926dc29649cb9856d321"
+    },
+    {
+      "id": "C36",
+      "title": "Compose lane, bank and fragment permutations",
+      "summary": "Optimize the entire path rather than one attractive memory layout.",
+      "path": "compositions/C36.md",
+      "kind": "composition",
+      "tags": [
+        "layout",
+        "transpose",
+        "shared",
+        "fragments"
+      ],
+      "requires": [
+        "M18",
+        "M25",
+        "M22",
+        "R05"
+      ],
+      "sources": [
+        "S22",
+        "S23",
+        "S30"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 229,
+      "bytes": 1565,
+      "sha256": "66b646b53bede33a83e94e1e997e51315696b4efd6f34d997ddbaa40be8b65c4"
+    },
+    {
+      "id": "C37",
+      "title": "Carry-save trees for bitset threshold queries",
+      "summary": "Count many masks without expanding each bit to a scalar counter.",
+      "path": "compositions/C37.md",
+      "kind": "composition",
+      "tags": [
+        "bitsets",
+        "threshold",
+        "reduction",
+        "Boolean"
+      ],
+      "requires": [
+        "M01",
+        "M02",
+        "M06",
+        "R15"
+      ],
+      "sources": [
+        "S03",
+        "S08"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 235,
+      "bytes": 1553,
+      "sha256": "850872ddaa65ea546c09a8cba110356711d012dbdfa6da5e9a310c711313d8a0"
+    },
+    {
+      "id": "C38",
+      "title": "Empirical conflict maps as placement hints",
+      "summary": "Exploit a repeatable memory conflict without pretending its physical cause is fully known.",
+      "path": "compositions/C38.md",
+      "kind": "composition",
+      "tags": [
+        "HBM",
+        "L2",
+        "placement",
+        "measurement"
+      ],
+      "requires": [
+        "M22",
+        "M21",
+        "R03",
+        "R12"
+      ],
+      "sources": [
+        "S04",
+        "S30"
+      ],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 217,
+      "bytes": 1503,
+      "sha256": "6bdc14bb9ced7bd764406b0365931d677721664a672060e4b642ce8bb890a322"
+    },
+    {
+      "id": "C39",
+      "title": "A representation-changing search procedure",
+      "summary": "For each new primitive, construct alternatives that move the problem to a different kind of machinery.",
+      "path": "compositions/C39.md",
+      "kind": "composition",
+      "tags": [
+        "design methodology",
+        "creative search",
+        "performance"
+      ],
+      "requires": [
+        "R00",
+        "R11",
+        "R14",
+        "R15"
+      ],
+      "sources": [],
+      "level": 3,
+      "status": "original hypothesis; no local GPU measurement",
+      "words": 250,
+      "bytes": 1826,
+      "sha256": "9d01c1b70a4cde8a044155e44c3582f815961fe88f447364f767588e30957496"
+    },
+    {
+      "id": "E00",
+      "title": "Inventory and capability gates",
+      "summary": "What exact machine and reachable feature set do these experiments target?",
+      "path": "experiments/E00.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "inventory",
+        "and",
+        "capability",
+        "gates"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S32",
+        "S36",
+        "S42"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 194,
+      "bytes": 1522,
+      "sha256": "e02adafcdef9b6e214b141297cd538289dab1d104917192b571e70db4718705c"
+    },
+    {
+      "id": "E01",
+      "title": "Algebra and encoding checks",
+      "summary": "Are the proposed word circuits and layout equations actually equivalent?",
+      "path": "experiments/E01.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "algebra",
+        "and",
+        "encoding",
+        "checks"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 167,
+      "bytes": 1398,
+      "sha256": "b7c9fde8b47c830a2644767f8bfbbd21290c45be8c82f040ede958ac79443815"
+    },
+    {
+      "id": "E02",
+      "title": "Instruction latency versus throughput",
+      "summary": "Which dependency and resource limits govern an exact sm70 instruction form?",
+      "path": "experiments/E02.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "instruction",
+        "latency",
+        "versus",
+        "throughput"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S01",
+        "S04",
+        "S05",
+        "S03"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 164,
+      "bytes": 1399,
+      "sha256": "94cd28a2f7f26652b84812bf13374553ce76db3697076bc0c1b67d88fce99d35"
+    },
+    {
+      "id": "E03",
+      "title": "Cross-pipeline interference",
+      "summary": "Can two useful operation families overlap without saturating another shared resource?",
+      "path": "experiments/E03.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "cross-pipeline",
+        "interference"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S01",
+        "S04",
+        "S35"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 161,
+      "bytes": 1381,
+      "sha256": "5106d7de688e75851391c7f21f26783c8c862b081fa53b7f483a45f401a22f38"
+    },
+    {
+      "id": "E04",
+      "title": "Register bank and operand-reuse effects",
+      "summary": "Does operand delivery limit this hot sequence?",
+      "path": "experiments/E04.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "register",
+        "bank",
+        "and",
+        "operand-reuse",
+        "effects"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 155,
+      "bytes": 1339,
+      "sha256": "698b943e0dfd0bc966835d0e7160835eeb754db0af93228a78006cd33700533b"
+    },
+    {
+      "id": "E05",
+      "title": "Warp routing, matching and lookup",
+      "summary": "When do register exchange and equality grouping beat memory-based structures?",
+      "path": "experiments/E05.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "warp",
+        "routing",
+        "matching",
+        "and",
+        "lookup"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S08",
+        "S10"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 161,
+      "bytes": 1391,
+      "sha256": "ac731e46b1748da72fe4169b8d27f370e1044805fe0b937509b44ac554b68cd1"
+    },
+    {
+      "id": "E06",
+      "title": "Shared banks and phase pipelines",
+      "summary": "Which layout and synchronization phase actually reduces complete movement cost?",
+      "path": "experiments/E06.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "shared",
+        "banks",
+        "and",
+        "phase",
+        "pipelines"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S01",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 158,
+      "bytes": 1349,
+      "sha256": "0f0a65a11f34de420a0580ce6ad9736f94f0041194573d20a9d67559cc8a1ef4"
+    },
+    {
+      "id": "E07",
+      "title": "Cache and transaction accounting",
+      "summary": "What fraction of traffic carries useful information, under which reuse conditions?",
+      "path": "experiments/E07.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "cache",
+        "and",
+        "transaction",
+        "accounting"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S04",
+        "S30",
+        "S35"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 161,
+      "bytes": 1375,
+      "sha256": "03dc91168b87a8ab3b11022b9df79871c39b37486a4ce6adf58e51c5e9f8311c"
+    },
+    {
+      "id": "E08",
+      "title": "Translation working sets and pages",
+      "summary": "Is the irregular workload limited by translation rather than data bandwidth?",
+      "path": "experiments/E08.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "translation",
+        "working",
+        "sets",
+        "and",
+        "pages"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S04",
+        "S16",
+        "S31"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 163,
+      "bytes": 1372,
+      "sha256": "31d7b11787cce3675c23b5c3a242068da169f03691f043ea38de2a7ba1512e03"
+    },
+    {
+      "id": "E09",
+      "title": "MMA lane and register ownership",
+      "summary": "Does the explicit sm70 fragment mapping match the compiled instruction?",
+      "path": "experiments/E09.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "mma",
+        "lane",
+        "and",
+        "register",
+        "ownership"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S22",
+        "S23"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 165,
+      "bytes": 1331,
+      "sha256": "04ed5ff28279e08fc947d3542ea9adccdd849d5cef5e7206c0d291823da021e9"
+    },
+    {
+      "id": "E10",
+      "title": "Tensor numerical fingerprint",
+      "summary": "Which target-specific rounding and range properties matter to an encoding?",
+      "path": "experiments/E10.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "tensor",
+        "numerical",
+        "fingerprint"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S20",
+        "S21",
+        "S03"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 169,
+      "bytes": 1400,
+      "sha256": "7d3ee4f297ffe3a63fee5dc779100bb2b628db40b252970d9497afcd4a8a4e5e"
+    },
+    {
+      "id": "E11",
+      "title": "Tensor versus bitset intersections",
+      "summary": "When do many shared overlap queries repay numeric expansion?",
+      "path": "experiments/E11.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "tensor",
+        "versus",
+        "bitset",
+        "intersections"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S19",
+        "S20",
+        "S08"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 155,
+      "bytes": 1298,
+      "sha256": "1e3891eb735235988c9d9eff52d1b079ba82d2ec7873f4428d96e41e3790a8c1"
+    },
+    {
+      "id": "E12",
+      "title": "Tensor circuits versus structured SIMT",
+      "summary": "Does a small transform benefit from MMA once routing is included?",
+      "path": "experiments/E12.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "tensor",
+        "circuits",
+        "versus",
+        "structured",
+        "simt"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S19",
+        "S24",
+        "S22"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 158,
+      "bytes": 1342,
+      "sha256": "e758573ebd1f75603f88f36f64c2c62d9685ca9cfe706d164860fb5b157e1474"
+    },
+    {
+      "id": "E13",
+      "title": "Representation crossover",
+      "summary": "How many uses repay bitplanes, packing or a changed numerical domain?",
+      "path": "experiments/E13.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "representation",
+        "crossover"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S08",
+        "S09",
+        "S03"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 158,
+      "bytes": 1303,
+      "sha256": "5e7b94955a6ed836e396f1dd918d332b5cc94ece5caa217b68b8427b0776b665"
+    },
+    {
+      "id": "E14",
+      "title": "Atomics as useful coordination",
+      "summary": "How much semantic progress occurs per atomic transaction?",
+      "path": "experiments/E14.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "atomics",
+        "as",
+        "useful",
+        "coordination"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 151,
+      "bytes": 1280,
+      "sha256": "b69ead4d43330dce32b35c1b7f56efc69014b8240bda8cdab04065fde5f95574"
+    },
+    {
+      "id": "E15",
+      "title": "Publication and progress litmus",
+      "summary": "Can the proposed bounded protocol violate payload or scheduling invariants?",
+      "path": "experiments/E15.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "publication",
+        "and",
+        "progress",
+        "litmus"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S17",
+        "S25",
+        "S30",
+        "S33"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 171,
+      "bytes": 1404,
+      "sha256": "8ecdfd072b5648865dfbf71ca14ab4e5da9a1cfec63ecfc9e9fd3d723359da57"
+    },
+    {
+      "id": "E16",
+      "title": "Persistent roles and residency",
+      "summary": "When does retained state repay queueing and reserved resources?",
+      "path": "experiments/E16.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "persistent",
+        "roles",
+        "and",
+        "residency"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S01",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 153,
+      "bytes": 1307,
+      "sha256": "5e38b02b2097fea0652280d7f4f6c29b96996590e0073355dd2ff30eb00e3410"
+    },
+    {
+      "id": "E17",
+      "title": "DMA and compute overlap",
+      "summary": "Which actors and routes make progress concurrently on this machine?",
+      "path": "experiments/E17.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "dma",
+        "and",
+        "compute",
+        "overlap"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S15",
+        "S30",
+        "S32"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 159,
+      "bytes": 1290,
+      "sha256": "854b5b006eab75e158ac7b6297b488ca228d8377ed30cd812bf69414ad13f712"
+    },
+    {
+      "id": "E18",
+      "title": "Peer loads, cache behavior and latency",
+      "summary": "What actually services repeated peer accesses on the tested path?",
+      "path": "experiments/E18.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "peer",
+        "loads",
+        "cache",
+        "behavior",
+        "and",
+        "latency"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S25",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 160,
+      "bytes": 1311,
+      "sha256": "fa48a31bab92c74881bf3c3d8833d12a8c81dbc69111314a1d692e307005d2af"
+    },
+    {
+      "id": "E19",
+      "title": "Peer signaling and clock relationships",
+      "summary": "How much does a complete GPU-to-GPU handshake cost?",
+      "path": "experiments/E19.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "peer",
+        "signaling",
+        "and",
+        "clock",
+        "relationships"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S25",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 154,
+      "bytes": 1285,
+      "sha256": "b8a46d4977e9c9a2023d4b9579f654d65dc2460a257f797794b2d6c166b3369b"
+    },
+    {
+      "id": "E20",
+      "title": "Actual NVLink routing and saturation",
+      "summary": "Which links carry the traffic, and where does it saturate?",
+      "path": "experiments/E20.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "actual",
+        "nvlink",
+        "routing",
+        "and",
+        "saturation"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S36",
+        "S26"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 154,
+      "bytes": 1282,
+      "sha256": "bafb8604bb6e81dfd5b586f2f74168b49c3eb8a3ddb3b76ceac25256f14cf6c2"
+    },
+    {
+      "id": "E21",
+      "title": "Host NUMA ingress",
+      "summary": "Can locality remove cross-socket traffic or supply independent host paths?",
+      "path": "experiments/E21.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "host",
+        "numa",
+        "ingress"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S30",
+        "S33",
+        "S36"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 153,
+      "bytes": 1291,
+      "sha256": "1f8ceabcccac21f100abe1dad21f47f33ee940498b1b0ab9b86cdd5f3fc5c86e"
+    },
+    {
+      "id": "E22",
+      "title": "Stream memory operations",
+      "summary": "Which wait/write semantics are reachable and useful on the installed stack?",
+      "path": "experiments/E22.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "stream",
+        "memory",
+        "operations"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S17",
+        "S42"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 155,
+      "bytes": 1302,
+      "sha256": "10fa05378b3e3e321eae972a99cd589149b96d3d2bab23006f42ff8eed4dee53"
+    },
+    {
+      "id": "E23",
+      "title": "VMM alias and view behavior",
+      "summary": "Can a legal view remove address work without hidden coherence or translation cost?",
+      "path": "experiments/E23.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "vmm",
+        "alias",
+        "and",
+        "view",
+        "behavior"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S18",
+        "S31"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 159,
+      "bytes": 1263,
+      "sha256": "fdf67a219c088dfe53f50783b375ccc4360fe27225cdd01a4e8315a3a00c456e"
+    },
+    {
+      "id": "E24",
+      "title": "Fault and access-counter policy",
+      "summary": "Is coarse remote-access feedback useful before the phase ends?",
+      "path": "experiments/E24.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "fault",
+        "and",
+        "access-counter",
+        "policy"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S16",
+        "S28",
+        "S29",
+        "S31"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 151,
+      "bytes": 1304,
+      "sha256": "da9366dbacd3b8a35c13ba034fb3ffe2c1cc62fda54aec9e1e9da5910e873683"
+    },
+    {
+      "id": "E25",
+      "title": "Feedback cost and regret",
+      "summary": "Does adaptation outperform a fixed policy after paying for observation and switching?",
+      "path": "experiments/E25.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "feedback",
+        "cost",
+        "and",
+        "regret"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S34",
+        "S35",
+        "S36"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 155,
+      "bytes": 1276,
+      "sha256": "a48ef4c460dbc1056bf3b6cbb43a1d4f424fc081ae0e894c7d513493823b2458"
+    },
+    {
+      "id": "E26",
+      "title": "Texture and SFU approximation",
+      "summary": "Can a specialized arithmetic path meet a useful error/performance contract?",
+      "path": "experiments/E26.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "texture",
+        "and",
+        "sfu",
+        "approximation"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S30",
+        "S03"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 148,
+      "bytes": 1329,
+      "sha256": "217168c917e6f9a827f34ddb4457e680a01a3f7b3fce29e7ca6316017b215a09"
+    },
+    {
+      "id": "E27",
+      "title": "Copy remap reachability",
+      "summary": "Can the declared component transformer be safely invoked and outperform SM formatting?",
+      "path": "experiments/E27.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "copy",
+        "remap",
+        "reachability"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S12",
+        "S15"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 162,
+      "bytes": 1367,
+      "sha256": "65d69e249c426a6ca3ceac204425a094fcd5dc4f3915d3f01f4e880d4ea5133d"
+    },
+    {
+      "id": "E28",
+      "title": "Copy-engine semaphore actor",
+      "summary": "Can completion-word operations replace a shader boundary in a real pipeline?",
+      "path": "experiments/E28.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "copy-engine",
+        "semaphore",
+        "actor"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S12",
+        "S15",
+        "S17"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 166,
+      "bytes": 1342,
+      "sha256": "c46b824be003b280b9be218b6c7e6876bfdbc74443fe50db124472742e5369cf"
+    },
+    {
+      "id": "E29",
+      "title": "Dependent QMD minimal experiment",
+      "summary": "Is there a usable restricted descriptor dependency beyond public graph execution?",
+      "path": "experiments/E29.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "dependent",
+        "qmd",
+        "minimal",
+        "experiment"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S27",
+        "S13",
+        "S40"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 160,
+      "bytes": 1345,
+      "sha256": "fb1a7506d774d8f5045fc75078285e0f4ec3645365494ad8593c24fb7165ca15"
+    },
+    {
+      "id": "E30",
+      "title": "Binary transformation validation",
+      "summary": "Does an edited cubin preserve semantics and improve the intended bottleneck?",
+      "path": "experiments/E30.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "binary",
+        "transformation",
+        "validation"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S04",
+        "S05",
+        "S11"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 162,
+      "bytes": 1395,
+      "sha256": "9526b0c3d260188ba37dff495e8a25c7354336022fb7848edeb7226c4d6f81a5"
+    },
+    {
+      "id": "E31",
+      "title": "MPS and process interference",
+      "summary": "What sharing, latency and failure boundaries hold on this exact Volta stack?",
+      "path": "experiments/E31.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "mps",
+        "and",
+        "process",
+        "interference"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S01",
+        "S41",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 156,
+      "bytes": 1304,
+      "sha256": "4393a5994d8c000457d609ed82e8a8caa65ff00b6b969977b242537d3704d1b1"
+    },
+    {
+      "id": "E32",
+      "title": "Launch, graphs and CDP",
+      "summary": "Which supported submission mechanism best matches task granularity?",
+      "path": "experiments/E32.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "launch",
+        "graphs",
+        "and",
+        "cdp"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S30",
+        "S32",
+        "S06"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 145,
+      "bytes": 1257,
+      "sha256": "bef75ef68bff2162f23bb2461f2b66617d0280d7c3524699cfc010bdfdcb6257"
+    },
+    {
+      "id": "E33",
+      "title": "Power and steady-state behavior",
+      "summary": "Is the proposed schedule faster after thermal and power transients settle?",
+      "path": "experiments/E33.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "power",
+        "and",
+        "steady-state",
+        "behavior"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S36"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 148,
+      "bytes": 1269,
+      "sha256": "84726d072c4bd472e2e80b131e3d55d1d07004d006e4c7f41293ae0aa8bc9927"
+    },
+    {
+      "id": "E34",
+      "title": "RAS contamination audit",
+      "summary": "Are performance or correctness observations confounded by hardware errors or recovery?",
+      "path": "experiments/E34.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "ras",
+        "contamination",
+        "audit"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S28",
+        "S36"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 146,
+      "bytes": 1214,
+      "sha256": "0ee9fc93946932d0609c798f1bfbb50ebfa8f9c6e6b811c204520d138f390fff"
+    },
+    {
+      "id": "E35",
+      "title": "Platform and electrical evidence",
+      "summary": "Which module/baseboard details affect software-visible behavior?",
+      "path": "experiments/E35.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "platform",
+        "and",
+        "electrical",
+        "evidence"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S02",
+        "S36",
+        "S37",
+        "S39"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 146,
+      "bytes": 1305,
+      "sha256": "bcc678fb43aa90cfb1ec000c22f3a40fa9d752c28d9c3d9fa55402ba0858c9df"
+    },
+    {
+      "id": "E36",
+      "title": "toolchain and library compatibility",
+      "summary": "Which installed artifacts actually execute native sm70 paths?",
+      "path": "experiments/E36.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "toolchain",
+        "and",
+        "library",
+        "compatibility"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S06",
+        "S05",
+        "S32",
+        "S41"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 156,
+      "bytes": 1300,
+      "sha256": "80a57e0e4bc3830fb26df10cf822c4e4fb55e7e06b81ddc383428be724ed4bca"
+    },
+    {
+      "id": "E37",
+      "title": "New PTX spelling on old silicon",
+      "summary": "Does lop3.BoolOp expose useful sm70 code beyond the compiler baseline?",
+      "path": "experiments/E37.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "new",
+        "ptx",
+        "spelling",
+        "on",
+        "old",
+        "silicon"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S05",
+        "S06"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 162,
+      "bytes": 1297,
+      "sha256": "9ce3e8889e518e5ea91ef7c616e9e153a2d488b56c15424cce35f82a4d8914a5"
+    },
+    {
+      "id": "E38",
+      "title": "Negative-space falsification",
+      "summary": "Which attractive interpretation is actually unsupported or algebraically wrong?",
+      "path": "experiments/E38.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "negative-space",
+        "falsification"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [
+        "S03",
+        "S12",
+        "S27",
+        "S30"
+      ],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 158,
+      "bytes": 1355,
+      "sha256": "956756c2e3d5a6e69f0a98f35907f8ca9f4c129c8a3eab8d62d8aebba3364f68"
+    },
+    {
+      "id": "E39",
+      "title": "Complete composition usefulness",
+      "summary": "Does the new representation improve the actual problem after all costs?",
+      "path": "experiments/E39.md",
+      "kind": "experiment",
+      "tags": [
+        "experiment",
+        "complete",
+        "composition",
+        "usefulness"
+      ],
+      "requires": [
+        "R12"
+      ],
+      "sources": [],
+      "level": 4,
+      "status": "NOT_RUN_ON_GPU",
+      "words": 151,
+      "bytes": 1359,
+      "sha256": "db354698d3a25a9522ca2c298f6c1eabfc77d0e1214b8b5f9bef87ef1346c53c"
+    },
+    {
+      "id": "A00",
+      "title": "Start here — V100 software circuit-bending atlas",
+      "summary": "A progressively disclosed machine reference, mechanism catalogue and experiment ledger for GV100/V100 SXM2.",
+      "path": "START_HERE.md",
+      "kind": "index",
+      "tags": [
+        "entrypoint",
+        "model readability"
+      ],
+      "requires": [],
+      "sources": [],
+      "level": 0,
+      "status": "source-backed synthesis",
+      "words": 378,
+      "bytes": 2992,
+      "sha256": "e1927aa53817452d1d238c2e7beaa77d40c0639a97e80955b36a71614a0e43dd"
+    },
+    {
+      "id": "A01",
+      "title": "Index by computational need",
+      "summary": "Enter through the problem, not through a presumed CUDA implementation.",
+      "path": "NEED_INDEX.md",
+      "kind": "index",
+      "tags": [
+        "search",
+        "routing",
+        "index"
+      ],
+      "requires": [],
+      "sources": [],
+      "level": 0,
+      "status": "source-backed synthesis",
+      "words": 493,
+      "bytes": 3800,
+      "sha256": "215db32fcec7580875ec05a10543c4af43a317fabbde03f6e81b83da23f81942"
+    },
+    {
+      "id": "A02",
+      "title": "Performance field guide",
+      "summary": "A compact reasoning guide to using Volta as a collection of computational mechanisms.",
+      "path": "FIELD_GUIDE.md",
+      "kind": "index",
+      "tags": [
+        "performance",
+        "creative synthesis",
+        "field guide"
+      ],
+      "requires": [
+        "R00"
+      ],
+      "sources": [],
+      "level": 1,
+      "status": "source-backed synthesis",
+      "words": 990,
+      "bytes": 6891,
+      "sha256": "c3b3775ad60eb018a38ce2b761ae90e938788200934a449b88ec22bda5c7d5f0"
+    }
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "title": "NVIDIA Volta Tuning Guide",
+      "url": "https://docs.nvidia.com/cuda/volta-tuning-guide/index.html",
+      "version": "retrieved13.4, 2026-10-03",
+      "locator": "§1.4.1–1.4.6",
+      "evidence_capsule": "Four static warp-scheduler sets per SM;64 FP32,32 FP64,64 INT32,8 tensor units. Core FMA dependence latency4 cycles. Limits:64 warps,64 K 32-bit registers,255 registers/thread,32 CTAs,96 KB shared per SM. Combined shared/L1/texture128 KB. Independent-thread scheduling needs explicit synchronization. MPS supports separate VAs but not fatal-fault isolation. INT/FP overlap does not imply all resource peaks add.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S01.md",
+      "words": 93,
+      "bytes": 793,
+      "sha256": "30bc58d324054cda2f6638936c6d532d848253cee261253a635ea660a45a44e1"
+    },
+    {
+      "id": "S02",
+      "title": "NVIDIA Tesla V100 architecture whitepaper",
+      "url": "https://images.nvidia.com/content/volta-architecture/pdf/volta-architecture-whitepaper.pdf",
+      "version": "WP-08608-001_v1.1, August2017",
+      "locator": "SM, memory, NVLink, module/platform sections",
+      "evidence_capsule": "Distinguish full GV100 die from enabled V100 SKU. Four HBM2 stacks; original nominal 900 GB/s. Six NVLink2 ports,25 GB/s each direction per port. Original SXM2 module140×78 mm and 300 W nominal. POWER9 coherence/ATS is platform-specific. Access counters and copy-engine address-fault support expose additional control machinery. HBM uses sideband ECC.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S02.md",
+      "words": 95,
+      "bytes": 815,
+      "sha256": "49d318a7e24e63e8d782455c5d7d9da71805f9662817fb450b13dcb52da2996b"
+    },
+    {
+      "id": "S03",
+      "title": "PTX ISA",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/parallel-thread-execution/index.html",
+      "version": "PTX9.4 retrieved2026-10-03; exact target notes required",
+      "locator": "lop3; prmt; fns; match/shfl/vote; mma.m8n8k4; memory model; special registers",
+      "evidence_capsule": "PTX is virtual ISA, not latency contract. sm70 half-input m8n8k4 performs four independent 8×8×4 products under a full-warp collective contract. Explicit fragments differ from opaque WMMA. lop3.BoolOp arrived in PTX 8.2 while supporting sm70. Cache operators are not synchronization. Exact operand forms and target notes govern availability.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S03.md",
+      "words": 99,
+      "bytes": 822,
+      "sha256": "3f96b5508057726b01d404c482cd9ed87f7cb3b6fa37fb99d067cf10c08b6a9e"
+    },
+    {
+      "id": "S04",
+      "title": "Dissecting NVIDIA Volta via microbenchmarking",
+      "url": "https://arxiv.org/pdf/1804.06826",
+      "version": "Jia et al.,2018",
+      "locator": "register banking; table 4.1; instruction caches; TLBs",
+      "evidence_capsule": "Historical empirical results identify two 64-bit register banks selected by register parity; some three-source same-bank32-bit operations conflict unless reuse changes reads. Reported dependent la ten cie s include common FP32/logic 4, IMAD 5, packed-half 6, FP64 arithmetic 8, POPC 10, FLO/BREV/MUFU 14 cycles. Cache/TLB observations depend on allocation, code and measurement regime.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S04.md",
+      "words": 101,
+      "bytes": 789,
+      "sha256": "d588c9aa681651040295806be448a193312c3d8799cff9ab44d69bbe4ff0c3de"
+    },
+    {
+      "id": "S05",
+      "title": "CUDA Binary Utilities",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-binary-utilities/index.html",
+      "version": "CUDA12.9.1",
+      "locator": "Volta opcode table; nvdisasm; cuobjdump",
+      "evidence_capsule": "Machine code exposes convergence, operand and scheduling information absent from CUDA. The Volta mnemonic table includes IMMA, but names are not a validated operand-form capability matrix; do not override later-target restrictions in documented integer MMA forms.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S05.md",
+      "words": 80,
+      "bytes": 669,
+      "sha256": "6f1ec1c6c7a6fafcedea09ab014050d8ece2bdc3ad1e534c8029f2c286eb0ef5"
+    },
+    {
+      "id": "S06",
+      "title": "Navigating GPU Architecture Support",
+      "url": "https://developer.nvidia.com/blog/navigating-gpu-architecture-support-a-guide-for-nvidia-cuda-developers/",
+      "version": "NVIDIA,4August2025",
+      "locator": "offline targets and driver support",
+      "evidence_capsule": "CUDA 13 removes offline compilation below compute capability7.5. CUDA 12.9 retains sm70. R580 is the final driver branch for the older architectures with stated LTS through mid2028. Current individual library binaries require separate verification.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S06.md",
+      "words": 79,
+      "bytes": 700,
+      "sha256": "a328fe569cb73a27f9ac40257833a5e1e87eafb30f2f1f16d2735e944e53c79e"
+    },
+    {
+      "id": "S07",
+      "title": "SparkAttention",
+      "url": "https://arxiv.org/html/2502.12784v1",
+      "version": "arXiv2502.12784v1,2025",
+      "locator": "Volta fragment/accumulator discussion",
+      "evidence_capsule": "Volta-specific attention illustrates fragment-aware computation and the trade between FP16-accumulator conversion and FP32-fragment shuffle costs. Narrower storage is not automatically the cheaper complete pipeline.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S07.md",
+      "words": 64,
+      "bytes": 583,
+      "sha256": "bbdbf0b8b4e488b89e369bc1bd67cae80668ab798cd3fcf39bb303c09535e36b"
+    },
+    {
+      "id": "S08",
+      "title": "CUDA Integer Intrinsics",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-math-api/cuda_math_api/group__CUDA__MATH__INTRINSIC__INT.html",
+      "version": "CUDA12.9.1",
+      "locator": "__fns;__dp4a;__dp2a;__byte_perm; shifts; popcount",
+      "evidence_capsule": "Integer APIs include packed dots, set-bit search, permutation, multiply-high and funnel shifts. __fns has a base/offset contract and 0 xffffffff no-result sentinel. CUDA byte_perm does not expose every PTX prmt selector behavior. Intrinsic names do not guarantee one SASS instruction.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S08.md",
+      "words": 81,
+      "bytes": 735,
+      "sha256": "0cf620fa5082ceeaf99cdaaa652d99a42210e64f33b1070dad4cda9369676ccf"
+    },
+    {
+      "id": "S09",
+      "title": "CUDA SIMD Intrinsics",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-math-api/cuda_math_api/group__CUDA__MATH__INTRINSIC__SIMD.html",
+      "version": "CUDA12.9.1",
+      "locator": "packed arithmetic/comparison/saturation",
+      "evidence_capsule": "Packed byte/halfword operations expose useful semantics, but sm70 instruction expansion must be inspected. Saturating, ordinary packed and scalar arithmetic are not interchangeable.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S09.md",
+      "words": 63,
+      "bytes": 621,
+      "sha256": "41e06fb6157284fbc863b9052c84a036460fbd0801f90a96c4aea2d7ea7b8f1d"
+    },
+    {
+      "id": "S10",
+      "title": "Using CUDA Warp-Level Primitives",
+      "url": "https://developer.nvidia.com/blog/using-cuda-warp-level-primitives/",
+      "version": "NVIDIA2018",
+      "locator": "membership masks; matching; synchronization",
+      "evidence_capsule": "Derive logical participants before divergence; incidental activemask is not a replacement. Match groups equal keys. Shuffle/vote do not provide a general memory fence. Producer lanes must participate and hold defined data.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S10.md",
+      "words": 74,
+      "bytes": 633,
+      "sha256": "e04247d3633b7c896571d8744c378009cfd442844b5b7269aed4aaa4ad0e9a05"
+    },
+    {
+      "id": "S11",
+      "title": "CuAssembler",
+      "url": "https://github.com/cloudcores/CuAssembler",
+      "version": "upstream accessed2026-10-03; commit not captured",
+      "locator": "supported architectures; binary editing workflow",
+      "evidence_capsule": "Original community assembler/reassembler tooling supports machine-code experiments. It is not a vendor guarantee of arbitrary transformation safety. Pin architecture/tool/compiler/cubin hashes before use.",
+      "kind": "original tool",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S11.md",
+      "words": 68,
+      "bytes": 617,
+      "sha256": "046b76fc6afb03983299bd6a5289d061915170f4347b7e185300be148a47bebd"
+    },
+    {
+      "id": "S12",
+      "title": "VOLTA_DMA_COPY_A class C3B5",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-doc/master/classes/dma-copy/clc3b5.h",
+      "version": "official moving master accessed2026-10-03",
+      "locator": "REMAP_COMPONENTS; LAUNCH_DMA; semaphore; render enable",
+      "evidence_capsule": "Command definitions expose component selection, constants, write suppression, pitch/block-linear addressing, conditional execution and completion reductions. Reductions concern a semaphore word, not every transferred array element. Header presence does not establish a public CUDA route.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S12.md",
+      "words": 80,
+      "bytes": 754,
+      "sha256": "74444433382b8ba883538ea2502812d5e7e5fb9b32f1d68ee865234f94d14c5d"
+    },
+    {
+      "id": "S13",
+      "title": "VOLTA_COMPUTE_A class C3C0",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-doc/master/classes/compute/clc3c0.h",
+      "version": "official moving master accessed2026-10-03",
+      "locator": "cache/launch/control methods",
+      "evidence_capsule": "Compute methods reveal cache, shader-window and launch-related controls beneath CUDA. Ownership and command semantics must be established before manipulation; field names are not full operational contracts.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S13.md",
+      "words": 69,
+      "bytes": 645,
+      "sha256": "96a90a440cb9e74dff99cccec292fd2ffb0e291f42526110ee10563a7e73fc7d"
+    },
+    {
+      "id": "S14",
+      "title": "NVIDIA open GPU kernel modules",
+      "url": "https://github.com/NVIDIA/open-gpu-kernel-modules",
+      "version": "README accessed2026-10-03",
+      "locator": "supported hardware",
+      "evidence_capsule": "Open kernel modules support Turing and newer, not V100. Released shared UVM/HAL source nevertheless includes useful Volta implementations. Source visibility must not be confused with a supported open driver for GV100.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S14.md",
+      "words": 74,
+      "bytes": 598,
+      "sha256": "9c14b04153df877d1ce4ca66193da83224056fe7532a58c6f9683fa40be18481"
+    },
+    {
+      "id": "S15",
+      "title": "Volta UVM copy-engine implementation",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/580.95.05/kernel-open/nvidia-uvm/uvm_volta_ce.c",
+      "version": "R580.95.05",
+      "locator": "semaphore_release; reduction_inc; timestamp; memcopy; memset",
+      "evidence_capsule": "Pinned driver code emits release, increment and timestamp semaphore commands with data transfer disabled. It also demonstrates constant remapping for fill and explicit flush/pipelining choices. This is real control work outside SM kernels, not a general vector ALU or automatically callable user API.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S15.md",
+      "words": 87,
+      "bytes": 777,
+      "sha256": "02b4ad833d403b8fd31adf741287a1d645d60959899349d477e8689990db2f37"
+    },
+    {
+      "id": "S16",
+      "title": "Volta UVM MMU implementation",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/580.95.05/kernel-open/nvidia-uvm/uvm_volta_mmu.c",
+      "version": "R580.95.05",
+      "locator": "PTE apertures; NO_ATS; page levels",
+      "evidence_capsule": "Code distinguishes video/coherent-system/peer apertures and 47-bit physical addressing. In ATS systems, NO_ATS directory policy spans 512 MB virtual regions to prevent CPU translation from defeating intended GPU faults. This is platform-specific, not an ordinary CUDA PTE-editing interface.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S16.md",
+      "words": 81,
+      "bytes": 734,
+      "sha256": "063a752f0ae6000b6fc88a0e17a92621c7e08a851e2388d2c37ae73acafbfe87"
+    },
+    {
+      "id": "S17",
+      "title": "CUDA stream memory operations",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-driver-api/group__CUDA__MEMOP.html",
+      "version": "CUDA12.9.1",
+      "locator": "WaitValue/WriteValue/BatchMemOp warnings",
+      "evidence_capsule": "Stream memory waits/writes have capability and address restrictions; managed pointers are excluded. Dependencies created only by these operations are invisible to CUDA scheduling, so CUDA-visible ordering may also be required to prevent deadlock. Remote flush is conditional.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S17.md",
+      "words": 79,
+      "bytes": 697,
+      "sha256": "8089f2df7ab81ca76249c77708bee0d1a68289ec330b7cd2a469ddcf77ed631d"
+    },
+    {
+      "id": "S18",
+      "title": "Low-level GPU VMM introduction",
+      "url": "https://developer.nvidia.com/blog/introducing-low-level-gpu-virtual-memory-management/",
+      "version": "NVIDIA,CUDA10.2 introduction",
+      "locator": "reserve/create/map/setaccess",
+      "evidence_capsule": "Virtual reservation, backing and permissions can be controlled separately. Composite mappings do not merge execution domains or make remote memory uniform.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S18.md",
+      "words": 64,
+      "bytes": 588,
+      "sha256": "a94f6ad7dec544646c37c2089c7818d959ce6f8f2382d2d6b9e040eaa8f3a125"
+    },
+    {
+      "id": "S19",
+      "title": "Accelerating Reduction and Scan Using Tensor Core Units",
+      "url": "https://arxiv.org/pdf/1811.09736",
+      "version": "Dakkak et al.,2018/ICS2019",
+      "locator": "reduction and prefix constructions",
+      "evidence_capsule": "Original work maps reductions/scans to matrix operations. Benefits depend on shape, batching and staging; this does not establish that a tensor construction beats an isolated shuffle scan.",
+      "kind": "original research",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S19.md",
+      "words": 77,
+      "bytes": 604,
+      "sha256": "7a89a4295811196da2cd139113783e2364c3729e9dbeec064d83a76aa89121e7"
+    },
+    {
+      "id": "S20",
+      "title": "FTTN: Feature-Targeted Numerical Testing",
+      "url": "https://arxiv.org/html/2403.00232v1",
+      "version": "Li et al.,2024",
+      "locator": "numerical feature tests; V100 results",
+      "evidence_capsule": "Targeted tests report V100 truncation-related accumulation behavior and other format features that differ from a freely reordered chain of scalar IEEE FMAs. Validate exponent gaps, cancellation, subnormals and conversion separately; random-only agreement is insufficient.",
+      "kind": "original empirical research",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S20.md",
+      "words": 82,
+      "bytes": 676,
+      "sha256": "955eb2932ab9ad0bb9fe4e82b053cf208ecb4f041cffc8964e4ce171225373f8"
+    },
+    {
+      "id": "S21",
+      "title": "Tensor Core Programmability, Performance and Precision",
+      "url": "https://arxiv.org/abs/1803.04014",
+      "version": "Markidis et al.,2018",
+      "locator": "mixed precision accuracy recovery",
+      "evidence_capsule": "Precision expansion uses additional products and conversion/conditioning work; it is an algorithm, not a native full-FP32 tensor mode.",
+      "kind": "original research",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S21.md",
+      "words": 66,
+      "bytes": 542,
+      "sha256": "a6a88a7fd1263565466ed35cdf87dcc732bff79147d5ff9b8d8270c3a09c1fff"
+    },
+    {
+      "id": "S22",
+      "title": "CUTLASS sm70 MMA implementation",
+      "url": "https://raw.githubusercontent.com/NVIDIA/cutlass/v2.11.0/include/cutlass/arch/mma_sm70.h",
+      "version": "CUTLASSv2.11.0",
+      "locator": "8×8×4 inline PTX forms",
+      "evidence_capsule": "Explicit Volta MMA specializations expose row/column and accumulator forms. A logical group size of 8 does not remove the warp-wide instruction participation requirement.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S22.md",
+      "words": 66,
+      "bytes": 586,
+      "sha256": "14c1490e9cbe144615993fbbbd0f6ed33b44db4c3a9f02f22cb9868098de941c"
+    },
+    {
+      "id": "S23",
+      "title": "CUTLASS Volta multiplicand layouts",
+      "url": "https://raw.githubusercontent.com/NVIDIA/cutlass/v2.11.0/include/cutlass/layout/tensor_op_multiplicand_sm70.h",
+      "version": "CUTLASSv2.11.0",
+      "locator": "congruous/crosswise layout classes",
+      "evidence_capsule": "Volta-specific layouts use structured index permutations. Producer/consumer layout agreement can be more valuable than repeatedly materializing canonical arrays.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S23.md",
+      "words": 60,
+      "bytes": 611,
+      "sha256": "07e25341652d17af01926612632e4c5b8fdc4b9e936771876ec0f1274b920651"
+    },
+    {
+      "id": "S24",
+      "title": "tcFFT",
+      "url": "https://arxiv.org/pdf/2104.11471",
+      "version": "Li et al.,2021",
+      "locator": "fragment manipulation and V100 evaluation",
+      "evidence_capsule": "Tensor-core FFT research demonstrates transform appropriation with fragment-aware data arrangements. Numerical format, size and benchmark conditions limit the result; it is not universal full-precision FFT replacement.",
+      "kind": "original research",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S24.md",
+      "words": 70,
+      "bytes": 579,
+      "sha256": "f8d61adc528b0e336689b32f5bada08e89285052cb4580213b3f94c3c1ee8eed"
+    },
+    {
+      "id": "S25",
+      "title": "Using NVSHMEM",
+      "url": "https://docs.nvidia.com/nvshmem/api/latest/using.html",
+      "version": "retrieved2026-10-03; version-sensitive",
+      "locator": "symmetric addresses; CUDA model; transport prerequisites",
+      "evidence_capsule": "A symmetric pointer is local to its PE; remote addressing includes translation. GPU-side puts/gets/signals have explicit ordering and transport contracts. GPU-originated NIC communication has requirements beyond simply owning NVLink.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S25.md",
+      "words": 73,
+      "bytes": 652,
+      "sha256": "171f1340390e490cbc9f1e529f5881dc939f1f2d150d700a6a4d5ec8b8965e7c"
+    },
+    {
+      "id": "S26",
+      "title": "NCCL LL128 implementation",
+      "url": "https://raw.githubusercontent.com/NVIDIA/nccl/v2.18.6-1/src/collectives/device/prims_ll128.h",
+      "version": "NCCLv2.18.6-1",
+      "locator": "payload/flag movement and waits",
+      "evidence_capsule": "Warp-cooperative payload and progress handling form a complete protocol. Borrowing polling or volatile operations without its ordering, channel and target assumptions is not a correctness argument.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S26.md",
+      "words": 68,
+      "bytes": 617,
+      "sha256": "a4d60525bb88ffd4c93c2f0faa2151e0666548d6159439b610071ab2f38b1acf"
+    },
+    {
+      "id": "S27",
+      "title": "Volta QMD v02_02",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-doc/master/classes/compute/clc3c0qmd.h",
+      "version": "official moving master accessed2026-10-03",
+      "locator": "dependent QMD; queues; release reductions; resource fields",
+      "evidence_capsule": "Descriptor definitions include dependent scheduling, circular queues, release slots and resource/cache controls. They do not by themselves prove arbitrary dataflow execution, CUDA SM affinity or safe self-modifying command queues.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S27.md",
+      "words": 77,
+      "bytes": 692,
+      "sha256": "d36233d9f114804649fa0f0c266a2c3b799ced035ffcc815e099cc29a039b926"
+    },
+    {
+      "id": "S28",
+      "title": "Volta UVM fault buffer",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/580.95.05/kernel-open/nvidia-uvm/uvm_volta_fault_buffer.c",
+      "version": "R580.95.05",
+      "locator": "overflow and GET handling",
+      "evidence_capsule": "A concrete implementation comment requires advancing GET before clearing overflow because a same-cycle arriving fault can reassert it. Control queues have timing/ordering contracts; overflow is not an application scheduling primitive.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S28.md",
+      "words": 73,
+      "bytes": 672,
+      "sha256": "b3922c87bec4e47dda80f6abc93454797372bebabee343c4e36b5f236af6b479"
+    },
+    {
+      "id": "S29",
+      "title": "UVM access counters",
+      "url": "https://raw.githubusercontent.com/NVIDIA/open-gpu-kernel-modules/580.95.05/kernel-open/nvidia-uvm/uvm_gpu_access_counters.c",
+      "version": "R580.95.05",
+      "locator": "batching; thresholds; migration policy",
+      "evidence_capsule": "Notifications are batched and interpreted by software policy. Shared multi-generation defaults are not a complete fixed V100 hardware specification or a free user-readable counter stream.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S29.md",
+      "words": 67,
+      "bytes": 636,
+      "sha256": "b0f5ee47384ed4fb45681f96cc42eb1a4955b8e589a65d9f94f7f0334896eb38"
+    },
+    {
+      "id": "S30",
+      "title": "CUDA C++ Programming Guide",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-c-programming-guide/index.html",
+      "version": "CUDA12.9.1",
+      "locator": "memory model; texture; cooperative launch; CDP; feature tables",
+      "evidence_capsule": "Participation, ordering and progress are separate requirements. Streams need not run concurrently. Legacy atomics are not general acquire/release fences. Later cp.async, ldmatrix, mbarrier, clusters, TMA, DPX, TF32/BF16 tensor modes and L2-persistence controls must not be imported into ordinary sm70 designs.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S30.md",
+      "words": 88,
+      "bytes": 746,
+      "sha256": "b1e70d2670be21dc5c85ab6c27450d14c49f201ef959cee5af05389e8d8a3047"
+    },
+    {
+      "id": "S31",
+      "title": "CUDA VMM Driver API",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-driver-api/group__CUDA__VA.html",
+      "version": "CUDA12.9.1",
+      "locator": "allocation granularity; map; setaccess; unmap",
+      "evidence_capsule": "Capabilities/granularity and allocation handles/mappings/permissions are distinct. remapping must obey lifetime and synchronization contracts. Alias accessibility is not a promise of coherent concurrent use through every view.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S31.md",
+      "words": 71,
+      "bytes": 640,
+      "sha256": "e81cba9ab376d842ac4b42967be3dbce8977e39c6aabd00fa84794a4f6258d51"
+    },
+    {
+      "id": "S32",
+      "title": "CUDA Device API",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-driver-api/group__CUDA__DEVICE.html",
+      "version": "CUDA12.9.1",
+      "locator": "device and capability queries",
+      "evidence_capsule": "Query the actual device/driver instead of inferring every capability from V100 branding. Capacity, cooperative support, managed/VMM and stream memory capabilities can have separate restrictions.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S32.md",
+      "words": 67,
+      "bytes": 592,
+      "sha256": "d8a98947a07da94662f9fa548eb91b8b4e62980f0df40309e419b1cc369dcb0e"
+    },
+    {
+      "id": "S33",
+      "title": "GPUDirect RDMA",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/gpudirect-rdma/index.html",
+      "version": "CUDA12.9.1",
+      "locator": "BAR; registration; IOMMU; memory ordering",
+      "evidence_capsule": "External DMA requires registration, lifetime and ordering discipline. BAR size and root topology matter. A kernel polling external writes is not automatically a correctly ordered shared-memory protocol.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S33.md",
+      "words": 70,
+      "bytes": 596,
+      "sha256": "e2921e23345b876a3f3f940e6516d8dd891a908181d5dfe9555536dd6b00d658"
+    },
+    {
+      "id": "S34",
+      "title": "CUPTI usage",
+      "url": "https://docs.nvidia.com/cupti/main/main.html",
+      "version": "retrieved2026-10-03",
+      "locator": "activities; callbacks; profiling; sampling",
+      "evidence_capsule": "Tracing, sampling and counter collection differ in compatibility and overhead. Replay and callbacks can perturb a workload. Current API descriptions do not establish that a feature works on an R580 Volta stack.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S34.md",
+      "words": 73,
+      "bytes": 585,
+      "sha256": "95aec48467c1949188a03b5b9051419a709b20b39ecdd0a1d307556e853534c8"
+    },
+    {
+      "id": "S35",
+      "title": "Nsight Compute Profiling Guide",
+      "url": "https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html",
+      "version": "retrieved2026-10-03",
+      "locator": "replay; cache/clock control; overhead",
+      "evidence_capsule": "Profiling can replay work or change cache/clock conditions. Keep uninstrumented application timing separate from diagnostic counter runs.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S35.md",
+      "words": 60,
+      "bytes": 546,
+      "sha256": "4f2afb0414c5e2797391b55e0125f92c38af583ed8d4e2a5a06affba8346657c"
+    },
+    {
+      "id": "S36",
+      "title": "nvidia-smi / management documentation",
+      "url": "https://docs.nvidia.com/deploy/nvidia-smi/index.html",
+      "version": "retrieved2026-10-03",
+      "locator": "topology; UUID; NVLink; power; reset",
+      "evidence_capsule": "UUID/BDF is more stable than ordinal identity. Capture topology, clocks, ECC and link state. Reset of older NVLink-connected devices may require a peer group; never treat reset as harmless microbenchmark setup.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S36.md",
+      "words": 75,
+      "bytes": 613,
+      "sha256": "383d941364cb877bd618e6ddc910ae73fccc9dfbced12fe2d7e3061cf9952749"
+    },
+    {
+      "id": "S37",
+      "title": "Nouveau GV100 graphics",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/gpu/drm/nouveau/nvkm/engine/gr/gv100.c",
+      "version": "Linuxv6.12",
+      "locator": "GV100 implementation",
+      "evidence_capsule": "Firmware-backed graphics/context initialization is visible, but Tesla API availability is SKU-specific.",
+      "kind": "original implementation",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S37.md",
+      "words": 52,
+      "bytes": 531,
+      "sha256": "40245c54fe358351d810bae9fec38961ffc514de326eca8e2dd7b43b8c4e30a9"
+    },
+    {
+      "id": "S38",
+      "title": "Nouveau GV100 MMU",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/gv100.c",
+      "version": "Linuxv6.12",
+      "locator": "GV100 implementation",
+      "evidence_capsule": "Common and generation-specific MMU implementations compose; a small wrapper is not a complete translation specification.",
+      "kind": "original implementation",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S38.md",
+      "words": 56,
+      "bytes": 544,
+      "sha256": "42837311733443e5fb7bd80975b0f53303e0f3d218d19e10f952938e1f13881e"
+    },
+    {
+      "id": "S39",
+      "title": "Nouveau GV100 authenticated code region",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/gpu/drm/nouveau/nvkm/subdev/acr/gv100.c",
+      "version": "Linuxv6.12",
+      "locator": "GV100 implementation",
+      "evidence_capsule": "Authenticated firmware bootstrap reveals security/ownership boundaries, not arbitrary user programmability.",
+      "kind": "original implementation",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S39.md",
+      "words": 53,
+      "bytes": 553,
+      "sha256": "dd27ccc9d11a340cdc147b0d10dca9c298afd944fc59148c343a75d7506ad200"
+    },
+    {
+      "id": "S40",
+      "title": "Nouveau GV100 FIFO",
+      "url": "https://raw.githubusercontent.com/torvalds/linux/v6.12/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gv100.c",
+      "version": "Linuxv6.12",
+      "locator": "GV100 implementation",
+      "evidence_capsule": "Channels, runlists, preemption and engine faults sit below streams; their contract is required for safe command work.",
+      "kind": "original implementation",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S40.md",
+      "words": 58,
+      "bytes": 543,
+      "sha256": "9429cc68ef1cd23cd42dce4206fd81ea754d8de17c8d3e680719a780fdc1fccf"
+    },
+    {
+      "id": "S41",
+      "title": "NVIDIA MPS documentation",
+      "url": "https://docs.nvidia.com/deploy/mps/latest/index.html",
+      "version": "retrieved2026-10-03; current/legacy split",
+      "locator": "MPS variants and compatibility",
+      "evidence_capsule": "Current documentation includes newer MPS interfaces. Do not assume those controls are available on a Volta/R580 installation; use Volta-specific evidence and installed-version checks.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S41.md",
+      "words": 67,
+      "bytes": 589,
+      "sha256": "10646471960c01a48fb5861973e91e27cb59ca6808504079469feee6d9dd0b6f"
+    },
+    {
+      "id": "S42",
+      "title": "CUDA Driver API types",
+      "url": "https://docs.nvidia.com/cuda/archive/12.9.1/cuda-driver-api/group__CUDA__TYPES.html",
+      "version": "CUDA12.9.1",
+      "locator": "device attributes; P2P attributes; stream wait flags",
+      "evidence_capsule": "Capabilities distinguish VMM, host page tables, cooperative launch,64-bit stream operations and remote-write flush. Some aliases are deprecated. Stream GEQ uses cyclic signed-difference comparison and needs bounded counter distance.",
+      "kind": "primary",
+      "accessed": "2026-10-03",
+      "full_source_redistributed": false,
+      "path": "sources/S42.md",
+      "words": 75,
+      "bytes": 658,
+      "sha256": "578583d700dfb99561328eca908353016ddf9a22428ee2d43fa0c5066fa390a3"
+    }
+  ],
+  "entrypoint": "START_HERE.md",
+  "need_index": "NEED_INDEX.md",
+  "evidence_axes": {
+    "knowledge": [
+      "A",
+      "D",
+      "E",
+      "R",
+      "H",
+      "S",
+      "U"
+    ],
+    "reachability": [
+      "C",
+      "P",
+      "B",
+      "K",
+      "F"
+    ]
+  },
+  "counts": {
+    "reference": 16,
+    "mechanism": 52,
+    "composition": 40,
+    "experiment": 40,
+    "index": 3,
+    "source": 42
+  },
+  "unique_document_words": 31263,
+  "source_capsule_words": 3075,
+  "validation_status": {
+    "gpu_measured": false,
+    "cuda_compiled": false,
+    "cpu_semantics": {
+      "status": "PASS",
+      "assertions": 31094,
+      "test_groups": 15
+    }
+  },
+  "compendium": {
+    "path": "V100_ATLAS_FULL.md",
+    "words": 39229,
+    "sha256": "c5204819376280e2cad08e68316b9e3542954bf6ee8f00360982581b021c9c56"
+  }
+}
