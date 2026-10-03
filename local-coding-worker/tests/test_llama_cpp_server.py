@@ -10,6 +10,7 @@ SKILL = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(SKILL))
 
+from local_worker.service import AdapterError
 from local_worker.servers import LlamaCppServerAdapter
 
 
@@ -35,6 +36,33 @@ class Help:
 
 
 class LlamaCppServerTests(unittest.TestCase):
+    def test_run_forwards_bounded_schema_and_validates_before_transport(self):
+        calls = []
+        def transport(*args):
+            calls.append(args)
+            return 200, {"choices": [{"message": {"content": "{}"}, "finish_reason": "stop"}]}
+        adapter = LlamaCppServerAdapter(transport=transport)
+        adapter._servers["fixture"] = {"evicted": False, "accepting": True, "canceled": set(),
+            "base_url": "http://fixture", "usage": {"runs": 0, "prompt_tokens": 0,
+            "completion_tokens": 0, "duration_ms": 0}}
+        schema = {"type": "object", "properties": {"summary": {"type": "string"}}}
+        request = {"messages": [{"role": "user", "content": "packet"}],
+            "response_format": {"type": "json_object", "schema": schema}, "temperature": 0}
+        adapter.run("fixture", request)
+        self.assertEqual(calls[0][2]["response_format"], request["response_format"])
+        self.assertEqual(calls[0][2]["temperature"], 0)
+        invalid_formats = [None, {"type": "json_schema", "schema": schema},
+            {"type": "json_object", "schema": {"type": "array"}},
+            {"type": "json_object", "schema": {"type": "object", "$ref": "file:///secret"}},
+            {"type": "json_object", "schema": {"type": "object", "description": "x" * 16384}}]
+        for value in invalid_formats:
+            with self.subTest(response_format=value), self.assertRaises(AdapterError):
+                adapter.run("fixture", {**request, "response_format": value})
+        for value in (True, -1, 3, float("nan"), float("inf"), "0"):
+            with self.subTest(temperature=value), self.assertRaises(AdapterError):
+                adapter.run("fixture", {**request, "temperature": value})
+        self.assertEqual(len(calls), 1)
+
     def test_v2_profile_passes_detected_flags_allocation_logs_and_health(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

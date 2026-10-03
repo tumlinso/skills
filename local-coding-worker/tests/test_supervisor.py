@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import json
 import tempfile
 import threading
 import time
@@ -628,6 +629,77 @@ class ServicePoolTests(unittest.TestCase):
         backend.release(first["service_lease_id"])
         self.assertTrue(backend.warm()["reused"])
         backend.close()
+
+    def test_observer_packet_schema_budget_and_lease_cleanup(self):
+        backend, _, service = self.backend()
+        packet = {"source_identity": {"digest": "fixture"}, "query": "What is relevant?",
+                  "evidence": [{"id": "E-1", "text": "bounded evidence"}]}
+        original = service.run
+        def run(name, handle, request):
+            original(name, handle, request)
+            return {"text": json.dumps({"summary": "Relevant evidence.", "evidence_ids": ["E-1"],
+                                        "uncertainty": "Limited fixture."}),
+                    "response_metadata": {"finish_reason": "stop"}}
+        service.run = run
+        try:
+            result = backend.analyze_observer_packet(packet)
+            self.assertEqual(result["status"], "available")
+            request = service.requests[0][2]
+            self.assertEqual((request["max_tokens"], request["timeout_seconds"], request["temperature"]), (1024, 90, 0))
+            schema = request["response_format"]["schema"]
+            self.assertFalse(schema["additionalProperties"])
+            self.assertEqual(schema["properties"]["evidence_ids"]["items"]["enum"], ["E-1"])
+            self.assertIn("not system authority", request["messages"][0]["content"])
+            self.assertEqual((backend.status()["active_leases"], backend.status()["active_admissions"]), (0, 0))
+        finally:
+            backend.close()
+
+    def test_observer_packet_invalid_output_is_typed_and_releases_capacity(self):
+        backend, _, service = self.backend()
+        packet = {"source_identity": {}, "evidence": [{"id": "E-1", "text": "evidence"}]}
+        good = {"summary": "Short answer", "evidence_ids": ["E-1"], "uncertainty": ""}
+        cases = [
+            ({**good, "evidence_ids": ["unknown"]}, "stop", "observer_provider_unknown_evidence_id"),
+            ({**good, "evidence_ids": [1]}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "evidence_ids": []}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "evidence_ids": ["E-1", "E-1"]}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "summary": " "}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "summary": "x" * 1201}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "uncertainty": 1}, "stop", "observer_provider_invalid_shape"),
+            ({**good, "extra": True}, "stop", "observer_provider_invalid_shape"),
+            (good, "length", "observer_provider_output_incomplete"),
+            ([], "stop", "observer_provider_invalid_shape"),
+        ]
+        try:
+            for value, finish, reason in cases:
+                with self.subTest(reason=reason, value=value):
+                    service.run = lambda *_args, value=value, finish=finish: {
+                        "text": json.dumps(value), "response_metadata": {"finish_reason": finish}}
+                    result = backend.analyze_observer_packet(packet)
+                    self.assertEqual((result["status"], result["reason"]), ("unavailable", reason))
+                    self.assertEqual((backend.status()["active_leases"], backend.status()["active_admissions"]), (0, 0))
+            service.run = lambda *_args: {"text": "private invalid content"}
+            self.assertEqual(backend.analyze_observer_packet(packet)["reason"], "observer_provider_invalid_shape")
+        finally:
+            backend.close()
+
+    def test_observer_packet_rejects_empty_or_duplicate_refs_and_busy_without_admission(self):
+        backend, runtime, service = self.backend()
+        try:
+            for evidence in ([], [{"id": ""}], [{"id": "E-1"}, {"id": "E-1"}]):
+                result = backend.analyze_observer_packet({"source_identity": {}, "evidence": evidence})
+                self.assertEqual(result["reason"], "observer_packet_evidence_refs_invalid")
+            backend._analysis_capacity.acquire()
+            backend._analysis_capacity.acquire()
+            try:
+                result = backend.analyze_observer_packet({"source_identity": {}, "evidence": [{"id": "E-1"}]})
+            finally:
+                backend._analysis_capacity.release()
+                backend._analysis_capacity.release()
+            self.assertEqual(result["reason"], "observer_provider_busy")
+            self.assertEqual((service.starts, runtime.host.owners), (0, {}))
+        finally:
+            backend.close()
 
     def test_observer_turn_rejects_non_text_protocol_fields_before_admission(self):
         backend, runtime, service = self.backend()

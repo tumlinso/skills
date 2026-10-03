@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -202,6 +203,35 @@ class LlamaCppServerAdapter:
             payload["model"] = request["model"]
         if request.get("max_tokens") is not None:
             payload["max_tokens"] = int(request["max_tokens"])
+        if "response_format" in request:
+            response_format = request["response_format"]
+            if (not isinstance(response_format, dict) or set(response_format) != {"type", "schema"}
+                    or response_format.get("type") != "json_object"
+                    or not isinstance(response_format.get("schema"), dict)
+                    or response_format["schema"].get("type") != "object"):
+                raise AdapterError("llama.cpp response_format requires a JSON object schema")
+            try:
+                encoded_schema = json.dumps(response_format["schema"], ensure_ascii=False, allow_nan=False)
+                if len(encoded_schema.encode("utf-8")) > 16 * 1024:
+                    raise ValueError("schema too large")
+                pending = [response_format["schema"]]
+                while pending:
+                    node = pending.pop()
+                    if isinstance(node, dict):
+                        if "$ref" in node and (not isinstance(node["$ref"], str) or not node["$ref"].startswith("#/")):
+                            raise ValueError("external schema reference")
+                        pending.extend(node.values())
+                    elif isinstance(node, list):
+                        pending.extend(node)
+            except (TypeError, ValueError, RecursionError):
+                raise AdapterError("llama.cpp response_format schema invalid or exceeds bound") from None
+            payload["response_format"] = {"type": "json_object", "schema": json.loads(encoded_schema)}
+        if "temperature" in request:
+            temperature = request["temperature"]
+            if (isinstance(temperature, bool) or not isinstance(temperature, (int, float))
+                    or not math.isfinite(temperature) or not 0 <= temperature <= 2):
+                raise AdapterError("llama.cpp temperature must be finite and between 0 and 2")
+            payload["temperature"] = temperature
         started = time.perf_counter()
         timeout = request.get("timeout_seconds", 600)
         if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 3600:
