@@ -1,0 +1,2962 @@
+{
+  "schema_version": 1,
+  "resources": [
+    {
+      "id": "cuda-resource-0e95f5a3666031d6fac42bc6ca698b40b61648f4974c8ec355181ed4888c5c26",
+      "path": "SKILL.md",
+      "title": "CUDA",
+      "sha256": "ad4b7c4ac17de7d46185a9adb208a6705d61ab3cd4efaa34ad135c58acdeac9c",
+      "bytes": 3945,
+      "role": "canonical",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA",
+        "SKILL.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-711b558cdb40a1cb6e65767d5ea21af054e843759c230563a36186f00ddf3198",
+      "path": "assets/custom_torch_ops.template.md",
+      "title": "Custom Torch Ops",
+      "sha256": "81ed0fc9a3b21c7f7f11f02cf176a5192fed31cefa5f9f819f94db7102a56392",
+      "bytes": 687,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Custom Torch Ops",
+        "assets/custom_torch_ops.template.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "path": "references/addendum-bio-data-layouts.md",
+      "title": "Addendum: Bio Data Layouts",
+      "sha256": "a6115330fce6c5e86bb1d2aee163292865167d97d327a62e8a0b0547e2b29aa9",
+      "bytes": 2294,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Bio Data Layouts",
+        "references/addendum-bio-data-layouts.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "path": "references/addendum-cpu-porting.md",
+      "title": "Addendum: CPU-Centric To CUDA Porting",
+      "sha256": "9dab44bd3332c2f2f846fd5d175d58e7bd8dbe09990da2e66f3b4d7fe45a5efb",
+      "bytes": 2348,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: CPU-Centric To CUDA Porting",
+        "references/addendum-cpu-porting.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "path": "references/addendum-crash-debugging.md",
+      "title": "Addendum: Crash Debugging",
+      "sha256": "506284aedcb8f6f64b4e2f381602076e53dddb766a7ce0b2673f87573dbc3dcc",
+      "bytes": 1837,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Crash Debugging",
+        "references/addendum-crash-debugging.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "path": "references/addendum-ddp-topology.md",
+      "title": "Addendum: DDP Topology",
+      "sha256": "1249255512010b89e688701f3fc259fa7109b0a181822a540dcd5eea00928415",
+      "bytes": 1687,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: DDP Topology",
+        "references/addendum-ddp-topology.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-4006001d0380abff594be55fa00b2cb3c2a639cb1906317f0253ffb0e70f4317",
+      "path": "references/addendum-host-device-pipeline.md",
+      "title": "Addendum: Host Device Pipeline",
+      "sha256": "3caa062445b50dca267659f89676f6520233f27069217c074ed0d978b570349f",
+      "bytes": 1485,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Host Device Pipeline",
+        "references/addendum-host-device-pipeline.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "path": "references/addendum-kernel-mechanics.md",
+      "title": "Addendum: Kernel Mechanics",
+      "sha256": "059eb56579b35cfb5af45b10c7cec706e69f5374b694da5cc21b8b10b8ae0f39",
+      "bytes": 10186,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Kernel Mechanics",
+        "references/addendum-kernel-mechanics.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "path": "references/addendum-kernel-roofline-lab.md",
+      "title": "Addendum: Kernel Roofline Lab",
+      "sha256": "ae82ce666974c5524b82af516ac6acc3ce1a6936c5db8e180c91d8a4f1ac1540",
+      "bytes": 2499,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Kernel Roofline Lab",
+        "references/addendum-kernel-roofline-lab.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "path": "references/addendum-memory-budgeting.md",
+      "title": "Addendum: Memory Budgeting",
+      "sha256": "daaa9250d6bf31feba6fb29753c740f2cc7955e567038f79184f58e92c51733a",
+      "bytes": 1790,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Memory Budgeting",
+        "references/addendum-memory-budgeting.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "path": "references/addendum-nvhpc-cpp.md",
+      "title": "Addendum: NVHPC C++",
+      "sha256": "c274884e6c20b80df4b68b7cda0a9529efa184dd16b001e3d30ffe355e6356fb",
+      "bytes": 2106,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: NVHPC C++",
+        "references/addendum-nvhpc-cpp.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "path": "references/addendum-ptx-routing.md",
+      "title": "Addendum: PTX Routing",
+      "sha256": "9f43f2f51be586991542181e5fc35bae1a9a4de13a0285c429a8ec0b9ae0154e",
+      "bytes": 5599,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: PTX Routing",
+        "references/addendum-ptx-routing.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "path": "references/addendum-tensor-core-routing.md",
+      "title": "Tensor Core Routing For Volta V100",
+      "sha256": "888838ca4ad7d361d311275f23b94256aea6ea369ac92a1868923c1ce3fe29e3",
+      "bytes": 6462,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Tensor Core Routing For Volta V100",
+        "references/addendum-tensor-core-routing.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "path": "references/addendum-torch-extensions.md",
+      "title": "Addendum: Torch Extensions",
+      "sha256": "61e652ef2a64d40c60b6c3ff201499a4266655914213c2b11b0b60cfe6ab9a65",
+      "bytes": 4793,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Addendum: Torch Extensions",
+        "references/addendum-torch-extensions.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-8c529ddd4905b8d959ac3c36755fdf8696f0ff65395863e5f8c27b0bd842a1d3",
+      "path": "references/architectures/ampere/addendum-host-device-pipeline.md",
+      "title": "Ampere Host-Device Pipeline",
+      "sha256": "22c63b15d15d824019268e39f317ea512d4afd44ceee96931fa8a95ef1c5702b",
+      "bytes": 351,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Host-Device Pipeline",
+        "references/architectures/ampere/addendum-host-device-pipeline.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-49439a5d55e966e23687e14f2348cc235b3403a9f923a1859bb46a04fb8ce798",
+      "path": "references/architectures/ampere/addendum-kernel-mechanics.md",
+      "title": "Ampere Kernel Mechanics",
+      "sha256": "10439859b773739b098ea3000e91c63c7c1a4aeb1e8754c6898729ebe0a27e49",
+      "bytes": 410,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Kernel Mechanics",
+        "references/architectures/ampere/addendum-kernel-mechanics.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-77a96b0aa534445c0aef5b0bacb4853c4f1fcc90e2e0eee9a0ba51ed048515a3",
+      "path": "references/architectures/ampere/addendum-kernel-roofline-lab.md",
+      "title": "Ampere Hot-Kernel Lab",
+      "sha256": "cc2cf2cb39256cbd81870dfa9df6ea0d4d689b9ba7482294171ea1c0b0cbca7b",
+      "bytes": 312,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Hot-Kernel Lab",
+        "references/architectures/ampere/addendum-kernel-roofline-lab.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-5e19ef2df925b7deaf12e73c1cd67e0d0ea07cbe1d4e1d088b3bbf02309d3953",
+      "path": "references/architectures/ampere/addendum-memory-topology.md",
+      "title": "Ampere Memory And Topology",
+      "sha256": "f4c4d980734978be922aba2253909b2741c307e9ece6767b73b741fdf82e306b",
+      "bytes": 656,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Memory And Topology",
+        "references/architectures/ampere/addendum-memory-topology.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-955081280b6b9e371ba309e0bb0d5645e93d1f21168ca90fc74a6c78e2888e2b",
+      "path": "references/architectures/ampere/addendum-ptx-routing.md",
+      "title": "Ampere PTX Routing",
+      "sha256": "fbfd4e09952f82396309d83a57d9dcaf20047b13b89b9c4889465e39f0270922",
+      "bytes": 289,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere PTX Routing",
+        "references/architectures/ampere/addendum-ptx-routing.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-81cca708954cfa174f6d46ed3467b17aabcb35a4bae1aefd3f2acf619a9b36da",
+      "path": "references/architectures/ampere/addendum-tensor-core-routing.md",
+      "title": "Ampere Tensor Core Routing",
+      "sha256": "732f80db19cf054af28f0569fe8a3ff7dc68a384e20c2b782f592a8820604282",
+      "bytes": 603,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Tensor Core Routing",
+        "references/architectures/ampere/addendum-tensor-core-routing.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b1a25e4606deab8992600a8a250bfc8ed0c581c8367ebbf88ccd9841cdb920f2",
+      "path": "references/architectures/ampere/low-level-optimization.md",
+      "title": "Ampere Low-Level Optimization",
+      "sha256": "b5aab3fbe6e2ad702a57d4bb141e4fc273d306f288f29b7b7aa9759dfa949b56",
+      "bytes": 2972,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Low-Level Optimization",
+        "references/architectures/ampere/low-level-optimization.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-36a2bc64da8b8a5ed49b7d1ef0347887c96e847ea4240372193a5853d48a23e1",
+      "path": "references/architectures/ampere/profiling-interpretation.md",
+      "title": "Ampere Profiling Interpretation",
+      "sha256": "8e4d1f8f71826027e5e46d1a089e9975db4983d31bbfd6c4a22229642143db25",
+      "bytes": 644,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Profiling Interpretation",
+        "references/architectures/ampere/profiling-interpretation.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-f1cb2d6f1c7d26454b439cdc664d2e7ccddac2b1702435ac82e3c548552e2e29",
+      "path": "references/architectures/ampere/programming-guide.md",
+      "title": "Ampere Programming Guide",
+      "sha256": "f51bec2562b1e0762e4298ef5aa27bc37aae61979fe8208b0b908691c32d4e30",
+      "bytes": 722,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Programming Guide",
+        "references/architectures/ampere/programming-guide.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "path": "references/architectures/ampere/router.md",
+      "title": "Ampere Router",
+      "sha256": "0b07b83828f20a1a0431648bcc218d3cff3fb1e12a170e30b1dc4b28ffb2543f",
+      "bytes": 3377,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "ampere"
+      ],
+      "aliases": [
+        "Ampere Router",
+        "references/architectures/ampere/router.md",
+        "ampere"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-dbc5f7400ca7db7d6e6d06e6c66ac003c6ec6ca1b72063e6debc1832299fa681",
+      "path": "references/architectures/blackwell/addendum-host-device-pipeline.md",
+      "title": "Blackwell Host-Device Pipeline",
+      "sha256": "957e19ae92dfd7d0fa7fb6fb9c67e28246f14d60b6c7bc5fa2f9e84da8206b9d",
+      "bytes": 293,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Host-Device Pipeline",
+        "references/architectures/blackwell/addendum-host-device-pipeline.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-3ac9e1aeb0e7baacb40dec21767b74b5e72b02f1469313826c719aed1892005a",
+      "path": "references/architectures/blackwell/addendum-kernel-mechanics.md",
+      "title": "Blackwell Kernel Mechanics",
+      "sha256": "343b8ef9ada8e91cae54ab456d68efdc517a9f6b248f4f69cc023bbdd5cf82c3",
+      "bytes": 410,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Kernel Mechanics",
+        "references/architectures/blackwell/addendum-kernel-mechanics.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d6adf46890a0dfeaac42a1e55c452b2707d8444dbe9df56e13bc248f24168445",
+      "path": "references/architectures/blackwell/addendum-kernel-roofline-lab.md",
+      "title": "Blackwell Hot-Kernel Lab",
+      "sha256": "94baf3e5468a25e22bd86a333b74001740dc5fed99484f541efd179060e61f8c",
+      "bytes": 286,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Hot-Kernel Lab",
+        "references/architectures/blackwell/addendum-kernel-roofline-lab.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-1ea9d3280e7a5da7ab1a09dd8bde97c695a911aa00446935ea208b17c18ac0c2",
+      "path": "references/architectures/blackwell/addendum-memory-topology.md",
+      "title": "Blackwell Memory And Topology",
+      "sha256": "ebc5b9fb51ee925df118c9a01e086689ed0a24e0b0ecebbad1c984bb6fa908ac",
+      "bytes": 386,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Memory And Topology",
+        "references/architectures/blackwell/addendum-memory-topology.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-de5e3a53c8571010e663295f901da85078182b137d90c6fd6f46c6440e54e786",
+      "path": "references/architectures/blackwell/addendum-ptx-routing.md",
+      "title": "Blackwell PTX Routing",
+      "sha256": "e7c2f3117d7eee79c64fea2b72ea2428d115494f3d1fc79ce1e1c41d1273af96",
+      "bytes": 353,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell PTX Routing",
+        "references/architectures/blackwell/addendum-ptx-routing.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-4cce7fbcb0039b281766b95064a6df98908848cc036a5646ae3dec0265d9bad4",
+      "path": "references/architectures/blackwell/addendum-tensor-core-routing.md",
+      "title": "Blackwell Tensor Core Routing",
+      "sha256": "c210a66e44115a8794b24afe913ce31887f34a6dfe787afd0b05bb5b03c2438c",
+      "bytes": 621,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Tensor Core Routing",
+        "references/architectures/blackwell/addendum-tensor-core-routing.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e5f482632c87504124b6d35be0cbc9aa944dc4d158ae07ba3ec5778819f9ca9c",
+      "path": "references/architectures/blackwell/low-level-optimization.md",
+      "title": "Blackwell Low-Level Optimization",
+      "sha256": "d837f64e19f10735477fb65f066d2aa27a9139d320dee728724419c4b142586c",
+      "bytes": 3061,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Low-Level Optimization",
+        "references/architectures/blackwell/low-level-optimization.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-1d4e24ba192928a91e93786ed4c57ae370a66597b0faaac6b264899d67b68a95",
+      "path": "references/architectures/blackwell/profiling-interpretation.md",
+      "title": "Blackwell Profiling Interpretation",
+      "sha256": "8144e1075422ce03616dbf80f7b8545200390abc504a6776f51e1921092793c5",
+      "bytes": 354,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Profiling Interpretation",
+        "references/architectures/blackwell/profiling-interpretation.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b95de35352af8bee8a264af32fd74fdaa9e2ca1e76301ce5d653aed7c1fe6a15",
+      "path": "references/architectures/blackwell/programming-guide.md",
+      "title": "Blackwell Programming Guide",
+      "sha256": "8a68f3cbd4aaf27a86125c06090082dfb62e4ddf667dfd625a7fecdee9cf57bf",
+      "bytes": 734,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Programming Guide",
+        "references/architectures/blackwell/programming-guide.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "path": "references/architectures/blackwell/router.md",
+      "title": "Blackwell Router",
+      "sha256": "c897714ede417a02c35a7628df679b32a23b9478d9eeb552d445498c53ac0b79",
+      "bytes": 3424,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "blackwell"
+      ],
+      "aliases": [
+        "Blackwell Router",
+        "references/architectures/blackwell/router.md",
+        "blackwell"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-49009f5fbe27b1a582854d8ecf1991664b33ea54de42a8cebdc59c618452f8b6",
+      "path": "references/architectures/hopper/addendum-host-device-pipeline.md",
+      "title": "Hopper Host-Device Pipeline",
+      "sha256": "77c1797667d6546cfceb8d4f9c3c58783913d5189805cfeab4ed6f1900d43ae1",
+      "bytes": 261,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Host-Device Pipeline",
+        "references/architectures/hopper/addendum-host-device-pipeline.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a8f802e723516c4b0a242cdcc9dcbb1c23ccfd5fad9a7125ca54516e3eb61153",
+      "path": "references/architectures/hopper/addendum-kernel-mechanics.md",
+      "title": "Hopper Kernel Mechanics",
+      "sha256": "0c385724fc5e5c7225ba3c0bbe8507064b32865cfb79359f578f6f6188c77a2e",
+      "bytes": 409,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Kernel Mechanics",
+        "references/architectures/hopper/addendum-kernel-mechanics.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-7ea3a77068b5a0a634285f06de8f035f5162ec382fab65004c148e9167906463",
+      "path": "references/architectures/hopper/addendum-kernel-roofline-lab.md",
+      "title": "Hopper Hot-Kernel Lab",
+      "sha256": "d81718eb683959a85258c476e8fb6a6eea948cbc024ad0efa3831bf84a072b3a",
+      "bytes": 261,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Hot-Kernel Lab",
+        "references/architectures/hopper/addendum-kernel-roofline-lab.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-c519740d1607ff2a65ed66f3c98881f8254930f5c8ac0be8de67ef0fea87a175",
+      "path": "references/architectures/hopper/addendum-memory-topology.md",
+      "title": "Hopper Memory And Topology",
+      "sha256": "c7440ab4240e054793f51a700c8e400abeba1958c94e4c6daf91a584c4921491",
+      "bytes": 534,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Memory And Topology",
+        "references/architectures/hopper/addendum-memory-topology.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-c938ddfa51595c83385762c0763b43d2ccaeba23bc1d3605ee7718fd80a6738b",
+      "path": "references/architectures/hopper/addendum-ptx-routing.md",
+      "title": "Hopper PTX Routing",
+      "sha256": "58f8687046ec73d63e19e7a190b9f935e04cf1dca4f80d969576bb6b59b0dc92",
+      "bytes": 289,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper PTX Routing",
+        "references/architectures/hopper/addendum-ptx-routing.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-231a072b945e114ae8ea293c9adbaa8792f9c7f9e471e1c3ce11a238b2ea0689",
+      "path": "references/architectures/hopper/addendum-tensor-core-routing.md",
+      "title": "Hopper Tensor Core Routing",
+      "sha256": "3f0a2bc57a50dec56352ac091a6b5f1dbdc55b4952b42c6c2c32265f3761d3ae",
+      "bytes": 473,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Tensor Core Routing",
+        "references/architectures/hopper/addendum-tensor-core-routing.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-7fc9bb29d1ded70a54d9516e1b157a4f0e1bc9e7a3091bd7db9512e2252bf07f",
+      "path": "references/architectures/hopper/low-level-optimization.md",
+      "title": "Hopper Low-Level Optimization",
+      "sha256": "28de58f628eaa7a40b005db47672da878fea6990e6a34431c2725f5feb628e85",
+      "bytes": 2564,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Low-Level Optimization",
+        "references/architectures/hopper/low-level-optimization.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-809234152ee0a930efab9f84b0572a4e57a9d96c51c84f0e67dc40192d7a195f",
+      "path": "references/architectures/hopper/profiling-interpretation.md",
+      "title": "Hopper Profiling Interpretation",
+      "sha256": "249e9e3c92f13fe3dbbeb9f8c3c5ce6d212fd3aab54f21c7ccc7256ee7292da0",
+      "bytes": 366,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Profiling Interpretation",
+        "references/architectures/hopper/profiling-interpretation.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0bc8cfaeb47238e4cafc4af3ce7109f36fb812862453dd1cff9c727eaad449a2",
+      "path": "references/architectures/hopper/programming-guide.md",
+      "title": "Hopper Programming Guide",
+      "sha256": "dfd5afbf1af41bc6d16bd85743ec5d00315342e37fa6cad83f21829ddbbb1c64",
+      "bytes": 639,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Programming Guide",
+        "references/architectures/hopper/programming-guide.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "path": "references/architectures/hopper/router.md",
+      "title": "Hopper Router",
+      "sha256": "a003f924c8b79ca90547aa13f6ac1fd958ac409d6ce51a2ded5aeadde5a90a7e",
+      "bytes": 3166,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "hopper"
+      ],
+      "aliases": [
+        "Hopper Router",
+        "references/architectures/hopper/router.md",
+        "hopper"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d8f7caea842ba2749d54a1196aafbf3526fc247cc3af1c1ff79b11f636580fe5",
+      "path": "references/architectures/volta/fusion-and-specialization.md",
+      "title": "Native V100 Fusion And Specialization",
+      "sha256": "bdab8035516715fe022a624f20283a03bf7312b643b936f0f16474e2f129761a",
+      "bytes": 2075,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Native V100 Fusion And Specialization",
+        "references/architectures/volta/fusion-and-specialization.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-8245e515f65f40e134c1eced9473aa8b1f9b04837089e7c411ca014570bdf4a8",
+      "path": "references/architectures/volta/native-benchmark-loop.md",
+      "title": "Native V100 Benchmark Loop",
+      "sha256": "6b8a05105a25fe326aedef93aeaf2325ac4dba92f0769a5c270477c101b3ccda",
+      "bytes": 1127,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Native V100 Benchmark Loop",
+        "references/architectures/volta/native-benchmark-loop.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "path": "references/architectures/volta/native-v100-extreme.md",
+      "title": "Native V100 Extreme Optimization",
+      "sha256": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32",
+      "bytes": 2755,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Native V100 Extreme Optimization",
+        "references/architectures/volta/native-v100-extreme.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0805bbdce237578684281715c030696af6a43f727cae1207874e12685165d8da",
+      "path": "references/architectures/volta/register-pressure-and-occupancy.md",
+      "title": "Native V100 Register Pressure And Occupancy",
+      "sha256": "110be7edc594bb26d22988a94d14f3d99fec74e60cbc245af76453d688e85212",
+      "bytes": 1466,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Native V100 Register Pressure And Occupancy",
+        "references/architectures/volta/register-pressure-and-occupancy.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "path": "references/architectures/volta/router.md",
+      "title": "Volta Router",
+      "sha256": "3ea24c6f691113be2bfa956a21e14873c87d9ed7c4b4cc4df8b2b2e0589fc363",
+      "bytes": 5333,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Router",
+        "references/architectures/volta/router.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-244b4f4b8c88cdcd5e0bec626fd40c28254a5fbf331f336d361a967236f956dd",
+      "path": "references/architectures/volta/routes/benchmark.md",
+      "title": "Volta Benchmark Route",
+      "sha256": "fea0973055f53dfac70ef365080fef4245180cf007711a20ca4651efbd1e664f",
+      "bytes": 635,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Benchmark Route",
+        "references/architectures/volta/routes/benchmark.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "path": "references/architectures/volta/routes/fusion.md",
+      "title": "Volta Fusion Route",
+      "sha256": "2e9010b438a6cbaaf572593bb283e12b79a3bfbe7f9fda06a4df6c91ebee672d",
+      "bytes": 844,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Fusion Route",
+        "references/architectures/volta/routes/fusion.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "path": "references/architectures/volta/routes/hot-kernel.md",
+      "title": "Volta Hot-Kernel Route",
+      "sha256": "e8e9198c65e3b914fa1671136c307643d7acb9b3c591362a70accabfbd1e08c7",
+      "bytes": 784,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Hot-Kernel Route",
+        "references/architectures/volta/routes/hot-kernel.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "path": "references/architectures/volta/routes/native.md",
+      "title": "Volta Native Route",
+      "sha256": "7a49dbab92e432b7162152c30e83515d9e006741c41e24b1208675d8e22f14b0",
+      "bytes": 837,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Native Route",
+        "references/architectures/volta/routes/native.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "path": "references/architectures/volta/routes/tensor.md",
+      "title": "Volta Tensor Route",
+      "sha256": "9fa0a3f1fd6175c6af1543a43ea75f666b2d66fda925a3ba9315de95f1eb983a",
+      "bytes": 828,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Tensor Route",
+        "references/architectures/volta/routes/tensor.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "path": "references/architectures/volta/routes/torch-op.md",
+      "title": "Volta Torch-Op Route",
+      "sha256": "301a1b9edac8bdb905f8558ee28b03f9cd896c458d7c987a93740d99dc0f7a2b",
+      "bytes": 801,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Volta Torch-Op Route",
+        "references/architectures/volta/routes/torch-op.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-49efd7dc4b531c83a3aed5047dc25c579588b58ae032331fa07495cdf26ac779",
+      "path": "references/architectures/volta/sass-and-ptx-triage.md",
+      "title": "Native V100 SASS And PTX Triage",
+      "sha256": "8dab89bdfbf260bd79811794a3717b9feb802d86e6ea8a9455388218f001a6e3",
+      "bytes": 1141,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta"
+      ],
+      "aliases": [
+        "Native V100 SASS And PTX Triage",
+        "references/architectures/volta/sass-and-ptx-triage.md",
+        "volta"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b2337431190b142ef903f9d69efff2aa59f8894b1d35c0668730b433fef8baf8",
+      "path": "references/benchmark-large-data.md",
+      "title": "Large-Data Benchmark Saturation On V100",
+      "sha256": "70f3fdcf35a50b150f82ba6199d7b1de4715b1a72377a746356577c7c226f255",
+      "bytes": 4861,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Large-Data Benchmark Saturation On V100",
+        "references/benchmark-large-data.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b6a75a8a2786d787813a9c26c7a20750604bb4dad863d55e76c24956f0a49bad",
+      "path": "references/benchmark-real-data.md",
+      "title": "Real-Data Benchmarking",
+      "sha256": "812dfb3cb333b7471af6cdead1fbd8e89344801ac817eae6ff5ec9b50d611054",
+      "bytes": 2767,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Real-Data Benchmarking",
+        "references/benchmark-real-data.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-ed2a9232b78153c0a686c0fda2ae15e1bafd1a524f12bc43dd63b1d1eabbe214",
+      "path": "references/benchmark-registry.md",
+      "title": "CUDA benchmark registry",
+      "sha256": "cd6446ec040aff50d160bbf341f7e8ebf92b8396caa64edc7906da1e77e9b047",
+      "bytes": 4360,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA benchmark registry",
+        "references/benchmark-registry.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "path": "references/benchmark-standardization.md",
+      "title": "Benchmark Standardization",
+      "sha256": "56f1da5e6adcf5aff7268544b929c5155cd76b9a6e7d09748d29240bce686f81",
+      "bytes": 5987,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Benchmark Standardization",
+        "references/benchmark-standardization.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-915aa78fe5463d228629a7c0db0feedfa9534ef172111afb5ff85c96a1210df4",
+      "path": "references/benchmark-target-authoring.md",
+      "title": "Benchmark Target Authoring",
+      "sha256": "a17618a0a7f2649fc7ca5828fe98ce59b812987b7a10eabfab11985926688358",
+      "bytes": 4554,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Benchmark Target Authoring",
+        "references/benchmark-target-authoring.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-f46c242329be829d6197171e552fdc4814d84a141a6124aa014160b4bbfcc07b",
+      "path": "references/bio-data-phases.md",
+      "title": "Bio Data Phases On V100",
+      "sha256": "bfcdca8be8b6e028ca2797c6886a77d8fd73a9b485574ac68d67d9d7ac18ada3",
+      "bytes": 1924,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Bio Data Phases On V100",
+        "references/bio-data-phases.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a2ce5ffc3fcc95a2cda8869ebb723821079b95cef555c0859c71bbe708d0deed",
+      "path": "references/bio-format-decision-tables.md",
+      "title": "Format Decision Tables",
+      "sha256": "6017236cd1db953c30b950973ec88b9dd1dd977f07e86a8360e67e5a430a6400",
+      "bytes": 1726,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Format Decision Tables",
+        "references/bio-format-decision-tables.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-46c6a083492d51306e8de265887bb49319f12ada734aeeeefe32d68fc5c5357a",
+      "path": "references/common/code-organization.md",
+      "title": "Code Organization For Low-Level CUDA Work",
+      "sha256": "c7637b919a9e5db4bc62e25f523155163eb6e1b36acb69919fdc274d312b04ba",
+      "bytes": 2645,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Code Organization For Low-Level CUDA Work",
+        "references/common/code-organization.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "path": "references/common/compute-libraries.md",
+      "title": "NVIDIA Compute Library Routing",
+      "sha256": "926116c46c28cc11787c5d3ef1527d4be3f6e62e65e3b29b5081e59860e5c044",
+      "bytes": 8711,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "NVIDIA Compute Library Routing",
+        "references/common/compute-libraries.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e2393c2bfef5c895d1d184ee6dff4b0cc7f4a54d55110a3341c0a4813939f6bd",
+      "path": "references/common/diagnostics-workflow.md",
+      "title": "CUDA Diagnostics Workflow",
+      "sha256": "54a1715810bac204f5644ece9123584cd246c46e350f63ab0d3b3895ff172b97",
+      "bytes": 1621,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA Diagnostics Workflow",
+        "references/common/diagnostics-workflow.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "path": "references/compute-sanitizer-playbook.md",
+      "title": "Compute Sanitizer Playbook",
+      "sha256": "80a687fe3de534226b7f3ae8496f5e36f49fbaf7c9678e5f7f0a52f3e3fbdb7f",
+      "bytes": 1913,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Compute Sanitizer Playbook",
+        "references/compute-sanitizer-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-604a28ac9cce257fa59efae33e2cee9bd20c67433ea3866bb83bdb48abee312b",
+      "path": "references/controller-background-contract.md",
+      "title": "CUDA Controller Background Contract",
+      "sha256": "39b355e5eb57099f71c7247c82099d3641b381b3f96c3b7fa8e4a76045dc836c",
+      "bytes": 4662,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA Controller Background Contract",
+        "references/controller-background-contract.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "path": "references/cpu-porting-decision-tree.md",
+      "title": "CPU-To-CUDA Porting Decision Tree",
+      "sha256": "710a9267e905995dad5ab9c5566ba5a47ae081faf325ad593100d059aa16ee5e",
+      "bytes": 2078,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CPU-To-CUDA Porting Decision Tree",
+        "references/cpu-porting-decision-tree.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "path": "references/cpu-porting-sparse-bio.md",
+      "title": "CPU-To-CUDA Porting For Sparse Bioinformatics Code",
+      "sha256": "fa534eeeb433b175755601732bd4557f3016f96bdf698ab3bf58cd523af1e16e",
+      "bytes": 2372,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CPU-To-CUDA Porting For Sparse Bioinformatics Code",
+        "references/cpu-porting-sparse-bio.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-759e6bb631296a280a7f0479ffbe30db33d97eca1837e40594f0164cdef18bcc",
+      "path": "references/cpu-to-cuda-rewrite-patterns.md",
+      "title": "Native CUDA Rewrite Patterns For CPU-Centric Code",
+      "sha256": "eb4d5e12193d9d18984e432ec20224d8c187684d73044521b1ceef5c65249e52",
+      "bytes": 2928,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Native CUDA Rewrite Patterns For CPU-Centric Code",
+        "references/cpu-to-cuda-rewrite-patterns.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e574c7fb925b0fb1937c73b26baa5e3f48a499524ac5d0d337e86b57ab8f05de",
+      "path": "references/crash-signature-map.md",
+      "title": "Crash Signature Map",
+      "sha256": "574fde92376bb12c8918af004aa2a0fc141f345130a2fea8dbbf4e60555d29b1",
+      "bytes": 1440,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Crash Signature Map",
+        "references/crash-signature-map.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-0acb2caaa597884981ec30be964adb8a8d4c3a6bf36e53c151767260d0b5284b",
+      "path": "references/crash-triage-playbook.md",
+      "title": "Crash Triage Playbook",
+      "sha256": "d0c98c1c0b87b1738478209d7022348dc71da7ba2b45d1c7e86613c4e73114cd",
+      "bytes": 1896,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Crash Triage Playbook",
+        "references/crash-triage-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "path": "references/cuda-gdb-playbook.md",
+      "title": "CUDA-GDB Playbook",
+      "sha256": "44946b6f6a3743ab6b53a669c5cee11859994d8be4b9624d632f23a473215f94",
+      "bytes": 1535,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA-GDB Playbook",
+        "references/cuda-gdb-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a4f7c6035eab6b74ac5ae102986d3046fc80d8f13980c7795994eede3b317b99",
+      "path": "references/custom-torch-ops-registry.md",
+      "title": "Custom Torch Ops Registry",
+      "sha256": "4f78fc202b54a7fb6f60d434e61d8a5981cec1ac3b7ae42bef1fe200043934cd",
+      "bytes": 1632,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Custom Torch Ops Registry",
+        "references/custom-torch-ops-registry.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-dd8f59418821cc36ef481543f5377942e2d4abad77539b69c9a36ec2455ddc57",
+      "path": "references/ddp-benchmark-interpretation.md",
+      "title": "Benchmark Interpretation",
+      "sha256": "d3d1c4cb22e807fb374855f9210a84352a248399032546791af06511849fad6d",
+      "bytes": 1209,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Benchmark Interpretation",
+        "references/ddp-benchmark-interpretation.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-af82080a0e2f8a3c4514b1fddc5f51cc76055aa09ab141eb8bc86ab631c8cbf0",
+      "path": "references/ddp-hierarchy-patterns.md",
+      "title": "Hierarchy Patterns",
+      "sha256": "aaea2e6ebc37acf67fa89fb776a30d1d04230f0a07904280567eae0cebeedc41",
+      "bytes": 792,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Hierarchy Patterns",
+        "references/ddp-hierarchy-patterns.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-c0f7e6c1807a678b59e5ba02dd8531b8113a031754079f813e7b6bfc5f2bd712",
+      "path": "references/ddp-nccl-experiments.md",
+      "title": "NCCL Experiments Worth Running",
+      "sha256": "22e1f540c592a1e477c08833c7e5a117378f7293bcc8e0bd3c2df8754d8437e4",
+      "bytes": 962,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "NCCL Experiments Worth Running",
+        "references/ddp-nccl-experiments.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e00a6e11bbc909a69b57f5867647a3d5d5770abf5c131e0336cc376c6261c7ca",
+      "path": "references/ddp-rank-layouts.md",
+      "title": "Rank Layouts",
+      "sha256": "ac5dfebc379aeff4ab122f67bce7b3d4aeda02e747b1212751ea2245daebf3a3",
+      "bytes": 603,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Rank Layouts",
+        "references/ddp-rank-layouts.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d17979e42f584151423e6ba4968a727c1654c120f4433cd1923d0f584e56702f",
+      "path": "references/ddp-topology-playbook.md",
+      "title": "Topology Playbook",
+      "sha256": "07927c1ece39ac6514a78b2f97bd57f1c28f51bc8ed7b3224582eeb804e63f9a",
+      "bytes": 1530,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Topology Playbook",
+        "references/ddp-topology-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "path": "references/legacy-skill-router.md",
+      "title": "CUDA",
+      "sha256": "2d5d7dbb0fef393b3b87e3e62fd0c49444341e714f0260f410c083673420c26d",
+      "bytes": 7104,
+      "role": "legacy_router",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA",
+        "references/legacy-skill-router.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-6d5936cd888a866d1c1eb4a4018289380d6848560a9376717d1c2a2936c76109",
+      "path": "references/memory-accounting.md",
+      "title": "Memory Accounting On V100 16GB",
+      "sha256": "8af39c7b4c5e8bc8f5dcbd816bd5a52760f0084d57177561f7391d9ce01c1aaf",
+      "bytes": 2253,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Memory Accounting On V100 16GB",
+        "references/memory-accounting.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-f28b380cf11b3b709b58f8e976574faac449f0c2c9560effa3a90075808640d7",
+      "path": "references/memory-fit-strategy.md",
+      "title": "Fit Strategy Order",
+      "sha256": "fc1cd3a7df6bbb23a3e78e100cb14d1c681d6f67364e7ba2d8d40e7f8e718952",
+      "bytes": 968,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Fit Strategy Order",
+        "references/memory-fit-strategy.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-55d0454db31c58c5645d8715f5bbc612d033f2496a94ebd4ca50291f7a70bbbd",
+      "path": "references/memory-scenario-formulas.md",
+      "title": "Scenario Formulas",
+      "sha256": "cad4d3e7926b3eb19ea793ef0c71c592ca7afb4f0ed2843cae210be849231a7c",
+      "bytes": 1190,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Scenario Formulas",
+        "references/memory-scenario-formulas.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e3d1987bd71639e1acf8e07c010ec14f6a0965e8603298ee7f3ade01d91701a9",
+      "path": "references/nvhpc-case-notes.md",
+      "title": "Case Notes",
+      "sha256": "32f9a2707c796b878adb065e7d4394ee41e231e452812661f8792a3f58178ff9",
+      "bytes": 1296,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Case Notes",
+        "references/nvhpc-case-notes.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d7d9d8264b00fb0de7227e524788f10c3b2e777150edd0c386d425c5832fd1fb",
+      "path": "references/nvhpc-data-movement-modes.md",
+      "title": "Data Movement Modes",
+      "sha256": "e4bfb17919ae1ceb8a157f813695038da892481be404254e707d545bf0a6054f",
+      "bytes": 1273,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Data Movement Modes",
+        "references/nvhpc-data-movement-modes.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-aca8d8404f8bd6e56a022f69f0c2ebca936e7bd8ca16c7a7db29419d0c231c1d",
+      "path": "references/nvhpc-library-interop.md",
+      "title": "Library Interop",
+      "sha256": "30de6eb10b2b4414ccd22b7a697ab737999b64cef0c25147d9ee75258c3f8082",
+      "bytes": 893,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Library Interop",
+        "references/nvhpc-library-interop.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d71318f97adf75241d1648a98152a4906588d2df40112c8e1af49d3fb5e3aa1b",
+      "path": "references/nvhpc-offload-models.md",
+      "title": "NVHPC Offload Models",
+      "sha256": "421c0c69e3623df2e93ec78238e68099920ff70065f4ac3c6ea01a90eb2b2aeb",
+      "bytes": 983,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "NVHPC Offload Models",
+        "references/nvhpc-offload-models.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "path": "references/nvhpc-tradeoffs.md",
+      "title": "NVHPC Tradeoffs On V100",
+      "sha256": "7acac34d106631f7819d1a1b9bda08cba4904b99b8b9bd03878cb8d9ee177951",
+      "bytes": 2287,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "NVHPC Tradeoffs On V100",
+        "references/nvhpc-tradeoffs.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-66571b68e065cc71d74e93d8d9aabca0bdae72b6f3269626f52ba4da0a401897",
+      "path": "references/performance-facts.md",
+      "title": "CUDA performance facts and clean measurement",
+      "sha256": "7480ca2595829dbbc2eb23a4f7819cde16e96211bf924e03721679847ac45a94",
+      "bytes": 3123,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUDA performance facts and clean measurement",
+        "references/performance-facts.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-beffa6c3cb0488971076e2cfbc4b26339df062ba2f2cd162f2eba1721d9ace42",
+      "path": "references/pipeline-bottlenecks.md",
+      "title": "Pipeline Bottlenecks",
+      "sha256": "fe8941beff5d416845dca2da2d8ee2f516b111c25e903cfca11e6fe5aefc2ca1",
+      "bytes": 1301,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Pipeline Bottlenecks",
+        "references/pipeline-bottlenecks.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-1a00b9121d303421f6cdbe0bfa253ea391584121ab5ec3cb5f525d849568347d",
+      "path": "references/pipeline-overlap-rules.md",
+      "title": "Overlap Rules",
+      "sha256": "5f6bb4a63dbdc36943bc2aafbcbb0d744a7252699d822a2f74cb044e3682258f",
+      "bytes": 670,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Overlap Rules",
+        "references/pipeline-overlap-rules.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "path": "references/ptx-general-guidelines.md",
+      "title": "General PTX Guidelines For CUDA Workloads",
+      "sha256": "5aaf7fa690af32724a61614b88c662fb0ca1c521149574c7aff18dffa0c3186a",
+      "bytes": 6118,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "General PTX Guidelines For CUDA Workloads",
+        "references/ptx-general-guidelines.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "path": "references/ptx-sparse-bio-hotpaths.md",
+      "title": "PTX For Sparse Bioinformatics Hot Paths",
+      "sha256": "724b2d90de8360c76dc107c395ec2751c0ea7b24b3efb5da48e30025adda8897",
+      "bytes": 4643,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "PTX For Sparse Bioinformatics Hot Paths",
+        "references/ptx-sparse-bio-hotpaths.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-2542fe9b0aea7b0050a1c304017560ca1d21d9815049763e74a96c7a7f8a3939",
+      "path": "references/ptx-volta-extreme.md",
+      "title": "Volta-Extreme PTX For Tesla V100 `sm_70`",
+      "sha256": "4269f7a1ff85805fcac6d8b8142807dd9dd909ad7c9a0326efcb4876c7242868",
+      "bytes": 9480,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "Volta-Extreme PTX For Tesla V100 `sm_70`",
+        "references/ptx-volta-extreme.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-05a5d5dd717b4df68d8e1e31063e2e4a32a3132e3c770d912771969b64fa4c1e",
+      "path": "references/roofline-counter-triage.md",
+      "title": "Counter Triage",
+      "sha256": "856d5cece36769b8b87ba59ce3d8523e14e034358ed361b50497dead08044834",
+      "bytes": 2332,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Counter Triage",
+        "references/roofline-counter-triage.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-4b58f5400dced61f0515fd0743837bc6ebbdafcbf9e92394fd51b4eb3397a74e",
+      "path": "references/roofline-cutlass-vs-handwritten.md",
+      "title": "CUTLASS Vs Handwritten Dense Kernels",
+      "sha256": "8211970717ae164ccdb7cc40d0af725048c99a8653f798f3d7763dda3228c232",
+      "bytes": 1482,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "CUTLASS Vs Handwritten Dense Kernels",
+        "references/roofline-cutlass-vs-handwritten.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-d187a2055ca76c0529ffa4794cdcdbc5b90f38b18dd2fc038426f42c15aff0b0",
+      "path": "references/roofline-example-tuning-loops.md",
+      "title": "Example Tuning Loops",
+      "sha256": "17bd53eeee80e0cd0c925bd5e1c43418c3b327bccaaf691aa36db1f7fd043f18",
+      "bytes": 1830,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Example Tuning Loops",
+        "references/roofline-example-tuning-loops.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-b1d1be59326db8681e55148f9830b1267190426f8787cdd375b1e470e6d4e5bb",
+      "path": "references/roofline-launch-bound-patterns.md",
+      "title": "Launch-Bound Patterns",
+      "sha256": "bac7cf28ca4e131db829632dc5f777bf84833dd6e08433f1d58f262f4b20f425",
+      "bytes": 1880,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Launch-Bound Patterns",
+        "references/roofline-launch-bound-patterns.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-8838e34fe923391cee345aa6851df802ffa426afb7adf7e4bc5d44afbe53708f",
+      "path": "references/roofline-playbook.md",
+      "title": "Roofline Playbook",
+      "sha256": "ca85552dd9803a446c1d2976ab5cf502d60a5460c55372364fd7739a29359841",
+      "bytes": 3006,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Roofline Playbook",
+        "references/roofline-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-493653ceaf8387ba0d202ad92b37cdb71a6dede90d83b1012311153ff3073088",
+      "path": "references/systems/gb200-nvl72.md",
+      "title": "GB200 NVL72 System Route",
+      "sha256": "c4d0a695786d80c8ca42e455e91899b8a31665bde48d1a05d72ebba7e0d6ba93",
+      "bytes": 1654,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "GB200 NVL72 System Route",
+        "references/systems/gb200-nvl72.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-c6ca77068e3f4474a7dcc2e6f5b5f50aa416362570c42d39b89f7804ded602e5",
+      "path": "references/systems/native.md",
+      "title": "Native System Route",
+      "sha256": "2f59e82ed7108f0f6267569a049d95819ec554bafd3d5190cad84b1e334b56db",
+      "bytes": 1623,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Native System Route",
+        "references/systems/native.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "path": "references/torch-extension-playbook.md",
+      "title": "Torch Extension Playbook",
+      "sha256": "f4b01bf09159a8915c505eef199f5546e96bfdd947c5b221a488611afcc91d3d",
+      "bytes": 6526,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [],
+      "aliases": [
+        "Torch Extension Playbook",
+        "references/torch-extension-playbook.md"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "path": "references/v100_bioinformatics_guide.md",
+      "title": "Extreme CUDA/C++ Optimization For Sparse Bioinformatics / Omics On Tesla V100 16GB",
+      "sha256": "dab7266ca3af112cf013f6bb3bdd8dc250306d3d35e9ab43bf49168e47d11852",
+      "bytes": 11593,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "Extreme CUDA/C++ Optimization For Sparse Bioinformatics / Omics On Tesla V100 16GB",
+        "references/v100_bioinformatics_guide.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "path": "references/v100_cuda_cpp_optimize.md",
+      "title": "Extreme CUDA/C++ Optimization Guide For Tesla V100 16GB (`sm_70`)",
+      "sha256": "82a796ce8d4d90f9390d2eaca5b0e4f38ebe74c05190323fb3e59bdf0b30dd58",
+      "bytes": 13938,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "Extreme CUDA/C++ Optimization Guide For Tesla V100 16GB (`sm_70`)",
+        "references/v100_cuda_cpp_optimize.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-807ac7340f26fbb391022784333e6a3da419d0cddcc0f04eafc56086c49ba105",
+      "path": "references/v100_profiling_interpretation.md",
+      "title": "V100 Profiling And Interpretation",
+      "sha256": "4eac0481e2b087e453b2f106c69cc4d5d75ef47212bbcfa9d113b084e8bcd56e",
+      "bytes": 6943,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "V100 Profiling And Interpretation",
+        "references/v100_profiling_interpretation.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "path": "references/v100_programming_guide.md",
+      "title": "Extreme V100 Optimization Guide For Diffusers / Transformers Kernels",
+      "sha256": "9816ac78e6ccb23b8ca575219cb60d68699a6e5f2ae24e3c089fb922e2b04f24",
+      "bytes": 16142,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "Extreme V100 Optimization Guide For Diffusers / Transformers Kernels",
+        "references/v100_programming_guide.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-62164cdcb59d93848e5a5df64d5590b67ef6a2a9f6903a81a4767d09e03fe642",
+      "path": "references/volta-tensor-core-low-level.md",
+      "title": "Low-Level Volta Tensor Core Work",
+      "sha256": "b86d2720869d6f697815c646293b5356bbaa3f7a6f394d32f04d3cf94f0b7335",
+      "bytes": 6203,
+      "role": "operational_guide",
+      "index_excluded": false,
+      "tags": [
+        "volta",
+        "v100"
+      ],
+      "aliases": [
+        "Low-Level Volta Tensor Core Work",
+        "references/volta-tensor-core-low-level.md",
+        "volta",
+        "v100"
+      ],
+      "lineage": []
+    },
+    {
+      "id": "cuda-resource-fdc0b9ba4e352fba9c02eac90d710c3284bd8f817bcd6ae75943f37e2461294e",
+      "path": "assets/cuda-markdown-manifest.json",
+      "title": "assets/cuda-markdown-manifest.json",
+      "sha256": "a9137a9bcd8f2049d2295b36fc42fbc0ad158e6356e44116c206f9994f733b83",
+      "bytes": 19165,
+      "role": "generated",
+      "index_excluded": true,
+      "tags": [],
+      "aliases": [
+        "assets/cuda-markdown-manifest.json"
+      ],
+      "lineage": []
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cuda-resource-0e95f5a3666031d6fac42bc6ca698b40b61648f4974c8ec355181ed4888c5c26",
+      "to": "cuda-resource-604a28ac9cce257fa59efae33e2cee9bd20c67433ea3866bb83bdb48abee312b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0e95f5a3666031d6fac42bc6ca698b40b61648f4974c8ec355181ed4888c5c26",
+      "to": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "to": "cuda-resource-f46c242329be829d6197171e552fdc4814d84a141a6124aa014160b4bbfcc07b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "to": "cuda-resource-a2ce5ffc3fcc95a2cda8869ebb723821079b95cef555c0859c71bbe708d0deed",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "to": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "to": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "to": "cuda-resource-759e6bb631296a280a7f0479ffbe30db33d97eca1837e40594f0164cdef18bcc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "to": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "to": "cuda-resource-e574c7fb925b0fb1937c73b26baa5e3f48a499524ac5d0d337e86b57ab8f05de",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "to": "cuda-resource-0acb2caaa597884981ec30be964adb8a8d4c3a6bf36e53c151767260d0b5284b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "to": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "to": "cuda-resource-dd8f59418821cc36ef481543f5377942e2d4abad77539b69c9a36ec2455ddc57",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "to": "cuda-resource-af82080a0e2f8a3c4514b1fddc5f51cc76055aa09ab141eb8bc86ab631c8cbf0",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "to": "cuda-resource-c0f7e6c1807a678b59e5ba02dd8531b8113a031754079f813e7b6bfc5f2bd712",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "to": "cuda-resource-e00a6e11bbc909a69b57f5867647a3d5d5770abf5c131e0336cc376c6261c7ca",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "to": "cuda-resource-d17979e42f584151423e6ba4968a727c1654c120f4433cd1923d0f584e56702f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-4006001d0380abff594be55fa00b2cb3c2a639cb1906317f0253ffb0e70f4317",
+      "to": "cuda-resource-beffa6c3cb0488971076e2cfbc4b26339df062ba2f2cd162f2eba1721d9ace42",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-4006001d0380abff594be55fa00b2cb3c2a639cb1906317f0253ffb0e70f4317",
+      "to": "cuda-resource-1a00b9121d303421f6cdbe0bfa253ea391584121ab5ec3cb5f525d849568347d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-05a5d5dd717b4df68d8e1e31063e2e4a32a3132e3c770d912771969b64fa4c1e",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-b1d1be59326db8681e55148f9830b1267190426f8787cdd375b1e470e6d4e5bb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-8838e34fe923391cee345aa6851df802ffa426afb7adf7e4bc5d44afbe53708f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "to": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "to": "cuda-resource-05a5d5dd717b4df68d8e1e31063e2e4a32a3132e3c770d912771969b64fa4c1e",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "to": "cuda-resource-4b58f5400dced61f0515fd0743837bc6ebbdafcbf9e92394fd51b4eb3397a74e",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "to": "cuda-resource-d187a2055ca76c0529ffa4794cdcdbc5b90f38b18dd2fc038426f42c15aff0b0",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "to": "cuda-resource-b1d1be59326db8681e55148f9830b1267190426f8787cdd375b1e470e6d4e5bb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "to": "cuda-resource-8838e34fe923391cee345aa6851df802ffa426afb7adf7e4bc5d44afbe53708f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "to": "cuda-resource-6d5936cd888a866d1c1eb4a4018289380d6848560a9376717d1c2a2936c76109",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "to": "cuda-resource-f28b380cf11b3b709b58f8e976574faac449f0c2c9560effa3a90075808640d7",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "to": "cuda-resource-55d0454db31c58c5645d8715f5bbc612d033f2496a94ebd4ca50291f7a70bbbd",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-e3d1987bd71639e1acf8e07c010ec14f6a0965e8603298ee7f3ade01d91701a9",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-d7d9d8264b00fb0de7227e524788f10c3b2e777150edd0c386d425c5832fd1fb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-aca8d8404f8bd6e56a022f69f0c2ebca936e7bd8ca16c7a7db29419d0c231c1d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-d71318f97adf75241d1648a98152a4906588d2df40112c8e1af49d3fb5e3aa1b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "to": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "to": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "to": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "to": "cuda-resource-2542fe9b0aea7b0050a1c304017560ca1d21d9815049763e74a96c7a7f8a3939",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "to": "cuda-resource-62164cdcb59d93848e5a5df64d5590b67ef6a2a9f6903a81a4767d09e03fe642",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-711b558cdb40a1cb6e65767d5ea21af054e843759c230563a36186f00ddf3198",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-a4f7c6035eab6b74ac5ae102986d3046fc80d8f13980c7795994eede3b317b99",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "to": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-8c529ddd4905b8d959ac3c36755fdf8696f0ff65395863e5f8c27b0bd842a1d3",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-49439a5d55e966e23687e14f2348cc235b3403a9f923a1859bb46a04fb8ce798",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-77a96b0aa534445c0aef5b0bacb4853c4f1fcc90e2e0eee9a0ba51ed048515a3",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-5e19ef2df925b7deaf12e73c1cd67e0d0ea07cbe1d4e1d088b3bbf02309d3953",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-955081280b6b9e371ba309e0bb0d5645e93d1f21168ca90fc74a6c78e2888e2b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-81cca708954cfa174f6d46ed3467b17aabcb35a4bae1aefd3f2acf619a9b36da",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-36a2bc64da8b8a5ed49b7d1ef0347887c96e847ea4240372193a5853d48a23e1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-f1cb2d6f1c7d26454b439cdc664d2e7ccddac2b1702435ac82e3c548552e2e29",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-dbc5f7400ca7db7d6e6d06e6c66ac003c6ec6ca1b72063e6debc1832299fa681",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-3ac9e1aeb0e7baacb40dec21767b74b5e72b02f1469313826c719aed1892005a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-d6adf46890a0dfeaac42a1e55c452b2707d8444dbe9df56e13bc248f24168445",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-1ea9d3280e7a5da7ab1a09dd8bde97c695a911aa00446935ea208b17c18ac0c2",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-de5e3a53c8571010e663295f901da85078182b137d90c6fd6f46c6440e54e786",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-4cce7fbcb0039b281766b95064a6df98908848cc036a5646ae3dec0265d9bad4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-1d4e24ba192928a91e93786ed4c57ae370a66597b0faaac6b264899d67b68a95",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-b95de35352af8bee8a264af32fd74fdaa9e2ca1e76301ce5d653aed7c1fe6a15",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-493653ceaf8387ba0d202ad92b37cdb71a6dede90d83b1012311153ff3073088",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-49009f5fbe27b1a582854d8ecf1991664b33ea54de42a8cebdc59c618452f8b6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-a8f802e723516c4b0a242cdcc9dcbb1c23ccfd5fad9a7125ca54516e3eb61153",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-7ea3a77068b5a0a634285f06de8f035f5162ec382fab65004c148e9167906463",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-c519740d1607ff2a65ed66f3c98881f8254930f5c8ac0be8de67ef0fea87a175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-c938ddfa51595c83385762c0763b43d2ccaeba23bc1d3605ee7718fd80a6738b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-231a072b945e114ae8ea293c9adbaa8792f9c7f9e471e1c3ce11a238b2ea0689",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-809234152ee0a930efab9f84b0572a4e57a9d96c51c84f0e67dc40192d7a195f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-0bc8cfaeb47238e4cafc4af3ce7109f36fb812862453dd1cff9c727eaad449a2",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-d8f7caea842ba2749d54a1196aafbf3526fc247cc3af1c1ff79b11f636580fe5",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-8245e515f65f40e134c1eced9473aa8b1f9b04837089e7c411ca014570bdf4a8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-0805bbdce237578684281715c030696af6a43f727cae1207874e12685165d8da",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "to": "cuda-resource-46c6a083492d51306e8de265887bb49319f12ada734aeeeefe32d68fc5c5357a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-627126cdb3a379e753cb5c01cbeead6a8ae08b1de3347be4788941819f63f541",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-4006001d0380abff594be55fa00b2cb3c2a639cb1906317f0253ffb0e70f4317",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-60d05737f38bf965a7a73643fba81e8233b61fce8ab9614399df928dd8ebf402",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-8245e515f65f40e134c1eced9473aa8b1f9b04837089e7c411ca014570bdf4a8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-0805bbdce237578684281715c030696af6a43f727cae1207874e12685165d8da",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-244b4f4b8c88cdcd5e0bec626fd40c28254a5fbf331f336d361a967236f956dd",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-49efd7dc4b531c83a3aed5047dc25c579588b58ae032331fa07495cdf26ac779",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-73032de87015f0f8c3ddc87560865eeec2cd3946fe72f1040d479c242685ea8c",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-759e6bb631296a280a7f0479ffbe30db33d97eca1837e40594f0164cdef18bcc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-e574c7fb925b0fb1937c73b26baa5e3f48a499524ac5d0d337e86b57ab8f05de",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-c8e2935c1cc9143cba5f48e41b1e52a964e4638a9f291566fef8c70fd8db8ca4",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-d17979e42f584151423e6ba4968a727c1654c120f4433cd1923d0f584e56702f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-6d5936cd888a866d1c1eb4a4018289380d6848560a9376717d1c2a2936c76109",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-f28b380cf11b3b709b58f8e976574faac449f0c2c9560effa3a90075808640d7",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-ac3812a0f534b4daac35087aacf38376b3ea1ccae4db0dcd8b795ace024cbeef",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-beffa6c3cb0488971076e2cfbc4b26339df062ba2f2cd162f2eba1721d9ace42",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-1a00b9121d303421f6cdbe0bfa253ea391584121ab5ec3cb5f525d849568347d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-2542fe9b0aea7b0050a1c304017560ca1d21d9815049763e74a96c7a7f8a3939",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-b1d1be59326db8681e55148f9830b1267190426f8787cdd375b1e470e6d4e5bb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-807ac7340f26fbb391022784333e6a3da419d0cddcc0f04eafc56086c49ba105",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "to": "cuda-resource-62164cdcb59d93848e5a5df64d5590b67ef6a2a9f6903a81a4767d09e03fe642",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-244b4f4b8c88cdcd5e0bec626fd40c28254a5fbf331f336d361a967236f956dd",
+      "to": "cuda-resource-8245e515f65f40e134c1eced9473aa8b1f9b04837089e7c411ca014570bdf4a8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-244b4f4b8c88cdcd5e0bec626fd40c28254a5fbf331f336d361a967236f956dd",
+      "to": "cuda-resource-1318c4642724a9f28794ad5fabe1a7879abe1e61e0aed3d4d222465fcc924b0d",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-244b4f4b8c88cdcd5e0bec626fd40c28254a5fbf331f336d361a967236f956dd",
+      "to": "cuda-resource-807ac7340f26fbb391022784333e6a3da419d0cddcc0f04eafc56086c49ba105",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "to": "cuda-resource-d8f7caea842ba2749d54a1196aafbf3526fc247cc3af1c1ff79b11f636580fe5",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "to": "cuda-resource-b1d1be59326db8681e55148f9830b1267190426f8787cdd375b1e470e6d4e5bb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "to": "cuda-resource-0805bbdce237578684281715c030696af6a43f727cae1207874e12685165d8da",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "to": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "to": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "to": "cuda-resource-ba6fdcd916c2e241423d76ecf001dd614b7c817a697ff9e49ce0571a8c8b568e",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "to": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "to": "cuda-resource-b2efcf856ccf19e9016f08f875514e60b0f5f9743e2e34674832e45b466b2bf9",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0b807204de863f8e853477a47679aeb46a4adf6294f50f52eaa0e70817f3c5a1",
+      "to": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "to": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "to": "cuda-resource-62164cdcb59d93848e5a5df64d5590b67ef6a2a9f6903a81a4767d09e03fe642",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "to": "cuda-resource-14f15ec5184ee38966372a1a0cf992ed3741f80879c9c42d5e915864600cf175",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "to": "cuda-resource-0e62bab20add4b0e2402d8eb8ea4f7a26c45b80d4f1f60883aa3ed9ff3bf7785",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "to": "cuda-resource-8f0afdc5cc6daef7e44dff58a9ebc49db54cecb5a4b48f6cc298245b7853f387",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-b6dd9f46143cecb12d53dfde15f571314c0d5175d19caecd6b0477f7e7764d59",
+      "to": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-4030e48f5b4cf249457f02f3770df49a433013375efed80e0ad14219c964cff6",
+      "to": "cuda-resource-759e6bb631296a280a7f0479ffbe30db33d97eca1837e40594f0164cdef18bcc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-0acb2caaa597884981ec30be964adb8a8d4c3a6bf36e53c151767260d0b5284b",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-a4f7c6035eab6b74ac5ae102986d3046fc80d8f13980c7795994eede3b317b99",
+      "to": "cuda-resource-711b558cdb40a1cb6e65767d5ea21af054e843759c230563a36186f00ddf3198",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-3672db68b8af0a0faba8abaad60f2efb556bc17684ac49d85f88ad8356fb08ea",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-bfd64a1a24210bb6ffb70f15ed1b09384c6f3cae35f04e4f8c4791cb4bcfdd3f",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-46c6a083492d51306e8de265887bb49319f12ada734aeeeefe32d68fc5c5357a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-50fd5e4ded1fbdbbb89a7603e01ba6c7ac88f1ba09aa9a7fbe8d404aea179306",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-e2393c2bfef5c895d1d184ee6dff4b0cc7f4a54d55110a3341c0a4813939f6bd",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-493653ceaf8387ba0d202ad92b37cdb71a6dede90d83b1012311153ff3073088",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-cc598806ee90c728ef14ba097c22499c0ba37930d327e7ec48f83c7df0a0c314",
+      "to": "cuda-resource-c6ca77068e3f4474a7dcc2e6f5b5f50aa416362570c42d39b89f7804ded602e5",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "to": "cuda-resource-a7beb9e92fc17d2d4152d740c383335a1dd7633fc968e805b5f8b1e452569d35",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "to": "cuda-resource-a0e1d343e8153c97373657518b9f3803a0edad2ac057ead2e93b92f87b647d48",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "to": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-05a5d5dd717b4df68d8e1e31063e2e4a32a3132e3c770d912771969b64fa4c1e",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-493653ceaf8387ba0d202ad92b37cdb71a6dede90d83b1012311153ff3073088",
+      "to": "cuda-resource-758ee0d937475cb5ffc05c7232a5a730f561642310cdaaa8fcb492b6dd21b0e8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-493653ceaf8387ba0d202ad92b37cdb71a6dede90d83b1012311153ff3073088",
+      "to": "cuda-resource-e2393c2bfef5c895d1d184ee6dff4b0cc7f4a54d55110a3341c0a4813939f6bd",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-c6ca77068e3f4474a7dcc2e6f5b5f50aa416362570c42d39b89f7804ded602e5",
+      "to": "cuda-resource-905939c517124b431909535610c2b9ef40002d859414a3b1163122689ab23fe6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-c6ca77068e3f4474a7dcc2e6f5b5f50aa416362570c42d39b89f7804ded602e5",
+      "to": "cuda-resource-46c6a083492d51306e8de265887bb49319f12ada734aeeeefe32d68fc5c5357a",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-c6ca77068e3f4474a7dcc2e6f5b5f50aa416362570c42d39b89f7804ded602e5",
+      "to": "cuda-resource-e2393c2bfef5c895d1d184ee6dff4b0cc7f4a54d55110a3341c0a4813939f6bd",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "to": "cuda-resource-711b558cdb40a1cb6e65767d5ea21af054e843759c230563a36186f00ddf3198",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "to": "cuda-resource-50d9d3f79b9dfd8602bf0cb1b8dad4cdd7f8469061ad24ec66b2d6550f6bf33b",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-8362c4cb52550008f39996b290c3c3f079f895ac923acb2d898cf479e08d7684",
+      "to": "cuda-resource-a2b0817c2109974270d0f603f8abc35e0e12a96b77f4752fcd82a4ac5b799e68",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "to": "cuda-resource-2678a909dfe5e5ee58e0956cc83c6290333c1735ed93afcf9102aac369d0e760",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-93a723621be00e2b9b9d33c42df722c71874e9db614a6d061cfbf1a139f52fa1",
+      "to": "cuda-resource-f43f5f13061a2602853d013b923f94303bb5db25b38b655b4d5d450eeba9eeeb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-b3446ca596ed36f64b42df23304889a26c5f4334651282b36681bc7ffde7e3bc",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-f075beeec0d57fe5fe20d6b58ce59ebdbbbef2c2f160231e5b92569a2446bd21",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-591eb0cd9d1a2d0823120aa2002f4385338339a6786df4d974d6247012a6917a",
+      "to": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-807ac7340f26fbb391022784333e6a3da419d0cddcc0f04eafc56086c49ba105",
+      "to": "cuda-resource-7eb74b5b670b4cf4f760017da49bc41b3b6ce944593abdfafb5dce00a03567f6",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "to": "cuda-resource-39983df8be8c5459ba61154943c6fce4f219d362acbc2b4a9c065f549e27f6cb",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-e17b4e86d277dd5fd3999c98bf18f6e9546e7c8e17443aefc0ac73cf882e8c17",
+      "to": "cuda-resource-b2337431190b142ef903f9d69efff2aa59f8894b1d35c0668730b433fef8baf8",
+      "type": "linked_to"
+    },
+    {
+      "from": "cuda-resource-62164cdcb59d93848e5a5df64d5590b67ef6a2a9f6903a81a4767d09e03fe642",
+      "to": "cuda-resource-0c952d48188b496cfba53d8f25ec6a585814f200439e262e2466ffe30c390a01",
+      "type": "linked_to"
+    }
+  ]
+}

@@ -13,13 +13,12 @@
 2. Read a composition to obtain an explicit representation, equation, strong baseline and falsifier. Read R06 for concurrency, R15 for numerical reinterpretation, and R05 for tensor-fragment details.
 3. Open a source capsule or experiment only when its guarantee, availability or uncertainty affects the choice.
 
-```
-python tools/read_atlas.py search "branchless sequence routing"
-python tools/read_atlas.py read M01 M03 C01 --budget 1800 --refs
-python tools/read_atlas.py read R05 C10 E09 --budget 2600
+```python
+skill_context(query="V100 branchless sequence routing", skill="<returned CUDA ID>")
+skill_read(skill_id="<returned CUDA ID>", resource="<returned resource path>")
 ```
 
-Budgets are words, not model-specific tokens. The reader emits complete cards or summaries with paths; it does not silently truncate correctness caveats. `--refs` shows prerequisite/source summaries without recursively dumping documents. The full compendium is for archival reading, not default model context.
+Use the returned resource paths to read the relevant mechanism, composition and prerequisite/source sections. The private reader is preserved in the original ZIP as historical authoring tooling; it is not the Project Control observer runtime. The full compendium is for explicit archival reading through `skill_read`, not default model context.
 
 ## Navigation surfaces
 
