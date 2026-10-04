@@ -1,0 +1,46 @@
+{
+  "format": "as1-producer-receipt/1",
+  "producer_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "producer_task_id": "SK-AS1-CAPABILITY-PUBLICATION",
+  "source_identity": {
+    "commit": "05d0fff9d69feb4cb28007a31bf2f011707090fe",
+    "completion_revision": 933,
+    "gate_revision": 932,
+    "gate_evidence_id": "ea7567e0-ccad-44e5-bfca-35b917bee148"
+  },
+  "gate_ids": [
+    "SK-AS1-CAPABILITY-PUBLICATION-ACCEPT"
+  ],
+  "contract_hashes": {
+    "todo-orchestrator/todo_orchestrator/project_amendments.py": "7c80d30599e4b961327d69e30ed8fc6fb81ca11789ec296148cfe226f43ef70d",
+    "todo-orchestrator/todo_orchestrator/workflow/capabilities.py": "1e99d376a812abfa259117a019ec4b431ec4dd9e21f28d50512ddb58492bd8ae",
+    "todo-orchestrator/todo_orchestrator/workflow/protocol.py": "44eac148c8f4d1881f38d094640a47efe130147051765f39d55c4ad7e41e1256",
+    "todo-orchestrator/todo_orchestrator/workflow/roles.py": "1567eb0df6a533ed76359d2096eb548f65c42a86ecf67834a1cd9102229ccfd6",
+    "todo-orchestrator/todo_orchestrator/workflow/service.py": "99a328298ecf3591052ba90726720a4422aa97e16c51bceed8904aa71724557f",
+    "todo-orchestrator/tests/test_as1_capability_publication.py": "35782d6e48d8e88c586e74ab951c74eec49310640b2360396083febab21edd83",
+    "todo-orchestrator/tests/test_workflow_protocol_mcp.py": "a7882694d2c25e3dad228fe752216f0ee3a565a64d2234043cad4b157b636e07",
+    "docs/as1-capability-publication.md": "8ee0235114b4205daf3a8565819c269c0c01cb0c3ad5d6735eef63dd2335fdae"
+  },
+  "coverage": {
+    "native_publication_cases": 30,
+    "source_fence_tests": 17,
+    "workflow_regressions": 30,
+    "independent_review": "Confirmed callback-2 same-content symlink race fixed with descriptor checks and final source fence; leaf and parent-directory regression cases pass."
+  },
+  "contracts": {
+    "operation": "coordinate:publish_project_context",
+    "kinds": [
+      "skill_use",
+      "finding",
+      "candidate_relation"
+    ],
+    "authentication": "Opaque handle resolved and persisted capability, lineage, active claim, session and dispatch rechecked in transaction. No raw credential recovery.",
+    "ownership": "Exact canonical claim repository and task exclusive source scope; trusted source callback and no-follow descriptor fences.",
+    "compatibility": "Existing raw-token fact publication and generic context-fragment role permissions preserved."
+  },
+  "limits": [
+    "Disposable schema-12 authorities only; deployed canonical schema-11 state preserved.",
+    "No GPU or observer-runtime source changed; earlier source-bound GPU qualification remains applicable to those exact bytes."
+  ],
+  "status": "passed"
+}

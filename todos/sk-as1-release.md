@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-RELEASE: Pin the qualified standalone release in Skills
 
-Task revision: `928`; current project revision is in `todo-status.md`.
+Task revision: `930`; current project revision is in `todo-status.md`.
 
 ## Objective
 Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
