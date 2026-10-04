@@ -5,7 +5,6 @@ All authority fixtures are disposable; no live Todo or model/GPU is started.
 """
 from __future__ import annotations
 
-import asyncio
 import copy
 import importlib.util
 import hashlib
@@ -14,6 +13,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 import unittest
 from pathlib import Path
@@ -412,30 +412,73 @@ class AS1RuntimeAcceptance(unittest.TestCase):
 
     @pytest.mark.as1_case('RUN-03')
     def test_native_model_routing_rejects_dormant_delegation_before_handler(self):
-        from coding_workflow_mcp._canonical import canonical_server
+        # This qualifies the standalone source factory, not the installed PC
+        # release. Native gates inherit a different deployment's release/root
+        # binding; never replace that binding in the gate's own process.
+        # Isolate the whole child provider context: both Skills root aliases,
+        # Todo fingerprint, and release manifest/digest. The real child factory
+        # validates and computes its own source identity; no guard is mocked.
+        binding_keys = ('PROJECT_CONTROL_SKILLS_ROOT', 'CODING_WORKFLOW_SKILLS_ROOT',
+                        'CODING_WORKFLOW_RUNTIME_FINGERPRINT',
+                        'PROJECT_CONTROL_RELEASE_MANIFEST', 'PROJECT_CONTROL_RELEASE_DIGEST')
+        inherited = {key: os.environ.get(key) for key in binding_keys}
+        environment = dict(os.environ)
+        for key in binding_keys:
+            environment.pop(key, None)
+        environment.update(PROJECT_CONTROL_SKILLS_ROOT=str(SKILLS),
+                           CODING_WORKFLOW_SKILLS_ROOT=str(SKILLS),
+                           PYTHONPATH=os.pathsep.join(str(SKILLS / path) for path in
+                               ('todo-orchestrator', 'integrations/coding-workflow-mcp')))
+        probe = textwrap.dedent('''\
+        import asyncio, hashlib, json
+        from pathlib import Path
+        from coding_workflow_mcp._canonical import canonical_server, runtime_identity
         from coding_workflow_mcp.native_routing import NativeRoutingFastMCP
         from mcp.server.fastmcp.exceptions import ToolError
-        # Actual supported Skills factory installs the guard; no synthetic
-        # server class or patched discovery/dispatch stands in for integration.
-        with patch.dict(os.environ, {'PROJECT_CONTROL_SKILLS_ROOT': str(SKILLS),
-                                     'CODING_WORKFLOW_SKILLS_ROOT': str(SKILLS)}):
-            server = canonical_server()
-        self.assertIsInstance(server, NativeRoutingFastMCP)
+        import todo_orchestrator
+        import coding_workflow_mcp
+        server = canonical_server()
+        assert isinstance(server, NativeRoutingFastMCP)
         names = {tool.name for tool in asyncio.run(server.list_tools())}
-        self.assertEqual(names, {'next_task', 'inspect_task', 'coordinate_task', 'finish_task'})
+        assert names == {'next_task', 'inspect_task', 'coordinate_task', 'finish_task'}, names
         for name in ('delegate_task', 'collect_delegation'):
             policy = server.routing_policy[name]
-            self.assertEqual(policy['status'], 'temporarily_inactive')
-            self.assertTrue(policy['preserve_implementation'])
-            self.assertTrue(policy['reason'])
-            self.assertIn('explicit operator decision', policy['reactivation'])
-            self.assertIsNotNone(server._tool_manager.get_tool(name), 'internal handler was removed')
+            assert policy['status'] == 'temporarily_inactive'
+            assert policy['preserve_implementation']
+            assert policy['reason']
+            assert 'explicit operator decision' in policy['reactivation']
+            assert server._tool_manager.get_tool(name) is not None, 'internal handler was removed'
             # Canonical handlers demand arguments; explicit inactive denial
             # proves this never enters argument conversion or authority access.
-            with self.assertRaises(ToolError) as denied:
+            try:
                 asyncio.run(server.call_tool(name, {}))
-            self.assertIn('temporarily_inactive', str(denied.exception))
-            self.assertIn('reactivation', str(denied.exception))
+            except ToolError as denied:
+                assert 'temporarily_inactive' in str(denied)
+                assert 'reactivation' in str(denied)
+            else:
+                raise AssertionError('inactive handler dispatch was permitted')
+        modules = {'todo_source': Path(todo_orchestrator.__file__).resolve(),
+                   'compat_source': Path(coding_workflow_mcp.__file__).resolve()}
+        print(json.dumps({'modules': {name: str(path) for name, path in modules.items()},
+                          'sha256': {name: hashlib.sha256(path.read_bytes()).hexdigest()
+                                     for name, path in modules.items()},
+                          'runtime_identity': runtime_identity().public()}))
+        ''')
+        result = subprocess.run([sys.executable, '-c', probe], cwd=SKILLS,
+                                env=environment, capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        sources = json.loads(result.stdout)
+        expected = {'todo_source': SKILLS / 'todo-orchestrator/todo_orchestrator/__init__.py',
+                    'compat_source': SKILLS / 'integrations/coding-workflow-mcp/coding_workflow_mcp/__init__.py'}
+        self.assertEqual(sources['modules'], {name: str(path) for name, path in expected.items()})
+        self.assertEqual(sources['sha256'], {name: hashlib.sha256(path.read_bytes()).hexdigest()
+                                           for name, path in expected.items()})
+        identity = sources['runtime_identity']
+        self.assertEqual(identity['skills_root'], str(SKILLS))
+        self.assertEqual(identity['package_root'], str(expected['todo_source'].parent))
+        self.assertEqual(identity['package_source'], str(expected['todo_source']))
+        self.assertEqual(len(identity['fingerprint']), 64)
+        self.assertEqual({key: os.environ.get(key) for key in binding_keys}, inherited)
 
 
 if __name__ == '__main__':
