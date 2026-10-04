@@ -1,0 +1,127 @@
+{
+  "format": "as1-skills-routing-producer-receipt/1",
+  "project": "skills",
+  "task": "SK-AS1-ROUTING",
+  "run": "SK-AS1-RUN-1",
+  "lane": "SK-AS1-L-EXEC",
+  "source": {
+    "repository": "/home/tumlinson/.agents/skills",
+    "commit": "85bcaf5c2a4d922ecf753b08f972eea4a7edc9be",
+    "delivery": "pushed as reported by root",
+    "files_sha256": {
+      "cpp-context-compiler/SKILL.md": "ad6a88ce98bab68d27372d5858e35ba2eeacfac2ff5a9c579882165bfabc7660",
+      "cuda/SKILL.md": "0e130b7d8a92441a2dbdfa1256baa3345d66c444bdf74eed500cf62cffde61a4",
+      "local-coding-worker/SKILL.md": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+      "todo-orchestrator/SKILL.md": "0947d87f4ee1d0335460e14423ea712a68d52d8c1503e04dc21927c877a29ddb",
+      "integrations/coding-workflow-mcp/README.md": "9541d829fdbf842bd450cc8289e3bd68ac7736dadb5b9ad82a8e1b5102a65a6e",
+      "integrations/native-skill-routing.md": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+      "integrations/native-skill-catalog.json": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+      "tests/as1/test_sk_as1_routing.py": "3e8cfdb51472ea015caf490ea411703ce28122050160aed6fd67d4dc3391c07d",
+      "planning/adaptive-surface-v1/validation/routing-corpus-baseline.json": "09ca1f6f933644307d274a46916e617dbef0d892fd7ecd66181eac02dae0e824"
+    }
+  },
+  "native_acceptance": {
+    "status": "completed_validated",
+    "completion_revision": 927,
+    "gate_revision": 926,
+    "evidence_id": "30a607c9-9357-46f0-9bde-e8f3edd59e44",
+    "proof_origin": "Root authoritative native completion and gate proof supplied to bounded receipt worker; no gate rerun by this worker.",
+    "test_file": "tests/as1/test_sk_as1_routing.py",
+    "result": "4 native acceptance cases passed",
+    "cases": [
+      {
+        "id": "NAT-01",
+        "status": "passed",
+        "test": "AS1RoutingAcceptance::test_native_filesystem_routes_and_inactive_fallback_dispatch",
+        "coverage": "Native filesystem guidance and real Skills fallback discovery/dispatch guard; internal handler remains callable."
+      },
+      {
+        "id": "NAT-02",
+        "status": "passed",
+        "test": "AS1RoutingAcceptance::test_normal_task_publication_distinguishes_applied_and_consulted",
+        "coverage": "Disposable canonical authority task-scoped publication: consulted versus applied, source identity/route retention, idempotence, stale project anchor rejection."
+      },
+      {
+        "id": "NAT-03",
+        "status": "passed",
+        "test": "AS1RoutingAcceptance::test_every_captured_cuda_ctxpp_technical_resource_is_identical",
+        "coverage": "Mandatory captured tracked technical hashes; optional local source observations; absent/present/hash-mismatch portability fixture."
+      },
+      {
+        "id": "NAT-04",
+        "status": "passed",
+        "test": "AS1RoutingAcceptance::test_catalog_covers_installed_entries_and_nested_native_routes",
+        "coverage": "Four accessible standalone skill entries with current entry hashes, authored CUDA routers and nested architecture routes, atlas navigation, explicit external missing/unsupported metadata."
+      }
+    ],
+    "historical_validation": "Earlier full suite and changed NAT-03 targeted rerun are historical diagnostics. Native gate proof above is the current acceptance authority; temporary reports are not release evidence."
+  },
+  "routing_contract": {
+    "native_roles": "Coder, mutator and scout use installed SKILL.md through filesystem/command access and follow skill-authored maps/references agentically; no mandatory overview or observer adapter.",
+    "observer": "Existing read-only local supervisor/ObserverWorkerPort only; ordinary research, implementation, tests and review use configured Codex subagents.",
+    "skill_authority": "Installed skill instructions, maps, references, branches and prerequisites own route selection.",
+    "navigation_aids": "skill_context graphs, indexes and derived catalog are optional navigation acceleration, not routing authority.",
+    "broker_authority": [
+      "registered access",
+      "source identity",
+      "direct authoritative reads",
+      "freshness validation",
+      "durable jobs and packets",
+      "provenance"
+    ],
+    "broker_limit": "Project Control is not the skill routing brain.",
+    "applied_use": "Materially applied route identity/hash and relevance publish alongside normal authorized context/handoff; reading alone is consulted.",
+    "search_consumer_requirement": "Project Control semantic search absorbs existing exact typed find lookup without loss of discovery behavior; no second public find. This receipt does not qualify that PC consumer implementation."
+  },
+  "compatibility_surface": {
+    "qualified_source_scope": "Skills-owned compatibility fallback selected when the Project Control CLI is genuinely absent",
+    "guard": "integrations/coding-workflow-mcp/coding_workflow_mcp/native_routing.py",
+    "temporarily_inactive": [
+      "delegate_task",
+      "collect_delegation"
+    ],
+    "internal_handlers": "Preserved for supported explicit maintenance/fallback; no ordinary local coding delegation.",
+    "preferred_installed_route": "Existing forwarding call to Project Control serve codex remains.",
+    "not_yet_qualified": [
+      "Preferred installed/deployed PC discovery and dispatch",
+      "PC-SURFACE",
+      "API-03",
+      "API-04",
+      "paired SQA"
+    ],
+    "retirement_limit": "No claim that deployed legacy aliases have already disappeared."
+  },
+  "technical_preservation": {
+    "baseline": {
+      "path": "planning/adaptive-surface-v1/validation/routing-corpus-baseline.json",
+      "sha256": "09ca1f6f933644307d274a46916e617dbef0d892fd7ecd66181eac02dae0e824"
+    },
+    "mandatory_tracked_nonentry_cuda_ctxpp_resources": 461,
+    "optional_source_only_observations": 247,
+    "optional_policy": "Ignored/untracked observations, including AppleDouble, are verified if present; absence does not fail clean source/frozen installation or deployment.",
+    "appledouble": "Locally preserved unchanged, untracked and not committed; no product deployment requirement.",
+    "preserved": "Captured CUDA/ctxpp technical bodies, atlas resource IDs/edges, compendium and source ZIP are hash-preserved. Entry changes are scoped routing instructions; no broad technical rewrite.",
+    "gpu": "No GPU launch or rerun performed by this routing worker."
+  },
+  "metadata_coverage": {
+    "catalog": {
+      "path": "integrations/native-skill-catalog.json",
+      "sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7"
+    },
+    "purpose": "Derived navigation metadata and source-only preservation records; not a new plan or second Project Control implementation.",
+    "scope": "Four installed standalone Skills entries and documented nested native routes only. External missing/unsupported dependencies are explicit.",
+    "limitations": [
+      "No arbitrary external Codex skill coverage",
+      "Historical MANIFEST does not cover additive source artifacts",
+      "No default MANIFEST coverage claim",
+      "Documentation and source routing are not deployed consumer qualification",
+      "Skill hash records the version used; automatic installed-skill update invalidation is not established by NAT-02"
+    ]
+  },
+  "consumer_obligations": [
+    "PC-SKILL after PC-JOBS must qualify agentic installed-entry/map/reference traversal and broker direct reads/freshness/provenance.",
+    "PC-SURFACE, API-03/API-04 and paired SQA must qualify preferred installed discovery/dispatch and consolidated public surface.",
+    "Standalone paired release manifest follows qualification, with separate Project Control source /home/tumlinson/project-control; no second Project Control copy."
+  ],
+  "lifecycle_limit": "Root retains native lifecycle, final acceptance, commit and push. SK-AS1-QUALIFY remains blocked on PC-SURFACE; this worker is not authorized for qualification source work."
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T20:16:15Z",
+  "generated_at": "2026-10-04T20:26:44Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 924,
+  "project_revision": 927,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9691,6 +9691,36 @@
         "revision": 924,
         "seq": 924,
         "timestamp": "2026-10-04T20:16:15Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-ROUTING-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-ROUTING-ACCEPT\"}",
+        "revision": 925,
+        "seq": 925,
+        "timestamp": "2026-10-04T20:26:43Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-ROUTING-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"30a607c9-9357-46f0-9bde-e8f3edd59e44\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 926,
+        "seq": 926,
+        "timestamp": "2026-10-04T20:26:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-ROUTING",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 927, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 927,
+        "seq": 927,
+        "timestamp": "2026-10-04T20:26:44Z"
       }
     ],
     "evidence": [
@@ -10121,6 +10151,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_canonical_runtime.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"2acf65befefdbd2880224ee4b3b4454df5df561cd569b65c666b9c4bc04a9c7f\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"local-coding-worker/tests\", \"-p\", \"test_canonical_runtime.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"6cb370b506987b8edae78faaa0a5daf0e7d62f54\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"cdb5ea71da5f87a32d4557fbeff7f90dc23e72332ba6eb3201eac3b713021c11\", \"started_revision\": 329, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-12\"}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/2f72ae05-7c41-4bcc-921c-ef4c2ac1e5c3",
         "revision": 330,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-10-04T20:26:44Z",
+        "gate_id": "SK-AS1-ROUTING-ACCEPT",
+        "id": "30a607c9-9357-46f0-9bde-e8f3edd59e44",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"3e45ed88412358b0a8bc50efb6e8ff5fedeff4780276cc00043fa63ed3d47cf6\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"todos/sk-as1-routing.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"integrations\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/contracts\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"sha256\": \"721b8b0fe6b4df41ad824be878eeb2c57d3b82c57acf7646cc2513b77538a385\"}, {\"path\": \"tests/as1\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 925}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/30a607c9-9357-46f0-9bde-e8f3edd59e44",
+        "revision": 926,
         "status": "passed"
       },
       {
@@ -13197,14 +13240,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"cwd\": \".\", \"input_paths\": [\"cuda\", \"local-coding-worker\", \"todo-orchestrator\", \"cpp-context-compiler\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-ROUTING-ACCEPT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf",
+        "last_run_at": "2026-10-04T20:26:44Z",
         "required": 1,
-        "revision": 916,
-        "status": "pending",
+        "revision": 926,
+        "status": "passed",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -14596,6 +14639,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"completion_gates\": [{\"evidence_id\": \"13079fb8-085a-437f-a67d-24085c6af0ba\", \"evidence_revision\": 181, \"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\"}], \"completion_revision\": 182, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-16-CORE\", \"input_fingerprint\": \"a042d7c45466725e4814f29f1fd4c6655e0ff62aa048d2518057a4e0e1923358\", \"last_run_at\": \"2026-08-27T12:12:36Z\", \"revision\": 181, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 76 +++++++++++++++++++++++++++++++---\\n todo-status.md                         |  2 +-\\n todos.md                               |  2 +-\\n todos/wfu-00.md                        |  2 +-\\n todos/wfu-01.md                        |  2 +-\\n todos/wfu-02.md                        |  2 +-\\n todos/wfu-10.md                        |  2 +-\\n todos/wfu-11.md                        |  2 +-\\n todos/wfu-12.md                        |  2 +-\\n todos/wfu-13.md                        |  2 +-\\n todos/wfu-14.md                        |  2 +-\\n todos/wfu-15.md                        |  2 +-\\n todos/wfu-16.md                        |  3 +-\\n todos/wfu-20.md                        |  2 +-\\n todos/wfu-21.md                        |  2 +-\\n todos/wfu-22.md                        |  2 +-\\n todos/wfu-23.md                        |  2 +-\\n todos/wfu-30.md                        |  2 +-\\n todos/wfu-31.md                        |  2 +-\\n 19 files changed, 90 insertions(+), 23 deletions(-)\", \"git_head\": \"93a7d7fc3c0003496762bf459aceb9050df1ad9b\", \"interfaces\": [], \"note\": \"Core authority contracts hardened; workflow gate 13079fb8-085a-437f-a67d-24085c6af0ba passed; commits f22031b, 2ccebb8, c7461f3, 93a7d7f.\", \"resources\": [], \"task_id\": \"WFU-16\"}",
         "revision": 182,
         "task_id": "WFU-16"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-10-04T20:26:44Z",
+        "id": "aa4a2b4a-098b-4bbc-b14e-bec53d9d91f5",
+        "kind": "complete",
+        "note": "NAT01\u201304 source cases passed; 461 tracked technical resources preserved,247 source-only observations checked when present. Native agent local tools remain appropriate; observer reads SKILL.md and authored maps agentically, indexes acceleration only. Public delegated worker tools inactive; real paired deployed preferred route remains SQA obligation. Unknown AppleDouble preserved.",
+        "payload_json": "{\"authority_commit\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"changed_owned_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"checkpoints\": [], \"completion_commit\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"completion_gates\": [{\"evidence_id\": \"30a607c9-9357-46f0-9bde-e8f3edd59e44\", \"evidence_revision\": 926, \"id\": \"SK-AS1-ROUTING-ACCEPT\", \"input_fingerprint\": \"4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\"}], \"completion_revision\": 927, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-AS1-ROUTING-ACCEPT\", \"input_fingerprint\": \"4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf\", \"last_run_at\": \"2026-10-04T20:26:44Z\", \"revision\": 926, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"todos/sk-as1-routing.md | 6 +++---\\n 1 file changed, 3 insertions(+), 3 deletions(-)\", \"git_head\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"NAT01\\u201304 source cases passed; 461 tracked technical resources preserved,247 source-only observations checked when present. Native agent local tools remain appropriate; observer reads SKILL.md and authored maps agentically, indexes acceleration only. Public delegated worker tools inactive; real paired deployed preferred route remains SQA obligation. Unknown AppleDouble preserved.\", \"producer_commit\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-AS1-ROUTING\"}",
+        "revision": 927,
+        "task_id": "SK-AS1-ROUTING"
       },
       {
         "claim_id": null,
@@ -18798,6 +18851,19 @@
         "task_id": "SK-AS1-GPU",
         "valid": 1,
         "validation_git_head": "bc412ba342ec61c1bb771c9675cd0fdf11d0a616"
+      },
+      {
+        "completion_git_head": "85bcaf5c2a4d922ecf753b08f972eea4a7edc9be",
+        "completion_revision": 927,
+        "evidence_id": "30a607c9-9357-46f0-9bde-e8f3edd59e44",
+        "evidence_revision": 926,
+        "gate_id": "SK-AS1-ROUTING-ACCEPT",
+        "input_fingerprint": "4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf",
+        "provenance_json": "{\"claim_id\": \"edb7cfa3-dc07-44a1-baa1-de3ee2d893df\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"3e45ed88412358b0a8bc50efb6e8ff5fedeff4780276cc00043fa63ed3d47cf6\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"todos/sk-as1-routing.md\"], \"files\": [{\"path\": \"cpp-context-compiler\", \"sha256\": \"missing\"}, {\"path\": \"cuda\", \"sha256\": \"missing\"}, {\"path\": \"integrations\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/contracts\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"sha256\": \"721b8b0fe6b4df41ad824be878eeb2c57d3b82c57acf7646cc2513b77538a385\"}, {\"path\": \"tests/as1\", \"sha256\": \"missing\"}, {\"path\": \"todo-orchestrator\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"85bcaf5c2a4d922ecf753b08f972eea4a7edc9be\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 925}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/30a607c9-9357-46f0-9bde-e8f3edd59e44\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-AS1-ROUTING",
+        "valid": 1,
+        "validation_git_head": "85bcaf5c2a4d922ecf753b08f972eea4a7edc9be"
       },
       {
         "completion_git_head": "9ffcf14ae88d66817d457b188904f2c5b5fa7657",
@@ -23552,9 +23618,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "85bcaf5c2a4d922ecf753b08f972eea4a7edc9be",
+        "completion_git_head": "85bcaf5c2a4d922ecf753b08f972eea4a7edc9be",
+        "completion_revision": 927,
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-ROUTING",
         "kind": "task",
@@ -23566,14 +23632,14 @@
         "parallel_policy": "serial",
         "parent_id": "SK-AS1-0000",
         "priority": 100,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 924,
-        "status": "in_progress",
+        "revision": 927,
+        "status": "done",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T20:16:15Z",
-        "version": 9
+        "updated_at": "2026-10-04T20:26:44Z",
+        "version": 10
       },
       {
         "attention_reason": null,
@@ -27739,12 +27805,12 @@
       },
       {
         "activated_at": "2026-10-04T20:16:15Z",
-        "completed_at": null,
+        "completed_at": "2026-10-04T20:26:44Z",
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 3,
-        "revision": 924,
-        "state": "active",
+        "revision": 927,
+        "state": "completed",
         "task_id": "SK-AS1-ROUTING"
       },
       {
@@ -28584,11 +28650,11 @@
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 924,
+        "revision": 927,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
-        "state": "active",
-        "updated_at": "2026-10-04T20:16:15Z",
+        "state": "ready",
+        "updated_at": "2026-10-04T20:26:44Z",
         "workspace_mode": "exclusive"
       },
       {

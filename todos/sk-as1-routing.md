@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-ROUTING: Make native skills role-efficient and preserve corpus routing
 
-Task revision: `916`; current project revision is in `todo-status.md`.
+Task revision: `927`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.

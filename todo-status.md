@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `924`
+Project revision: `927`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -84,7 +84,7 @@ Project revision: `924`
 - `SK-AS1-GPU` | status: done | execution: closed | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-QUALIFY` | status: planned | execution: ready | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-ROUTING` | status: in_progress | execution: claimed | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-ROUTING` | status: done | execution: closed | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RUNTIME` | status: done | execution: closed | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-SEMANTIC-PORT` | status: done | execution: closed | next: Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.
 - `SK-AS1-SEMANTICS` | status: done | execution: closed | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
