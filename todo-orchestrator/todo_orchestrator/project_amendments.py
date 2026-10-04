@@ -293,7 +293,11 @@ def review(service, conn, request):
     canonical_payload = json.loads(encode(request['payload']))
     for locator in payload_locators(canonical_payload):
         for source in prerequisites:
-            if ('project_uuid' in source and locator['project'] in (source['project'], source['project_uuid'])
+            # Local content anchors must not acquire a revision pin that the
+            # amendment itself immediately invalidates. Keep caller pins intact;
+            # source_prerequisites already validated them through the host.
+            if ('project_uuid' in source and source['project_uuid'] != service.project['project_uuid']
+                    and locator['project'] in (source['project'], source['project_uuid'])
                     and all(locator[key] == source[key] for key in ('repository', 'path', 'content_sha256'))):
                 locator.update({key: source[key] for key in ('project', 'project_uuid', 'revision')})
                 break

@@ -14,6 +14,13 @@ grant declaration powers: publication still authenticates the claim, task,
 publication kind and owned path before checking source prerequisites inside the
 native transaction. Failure preserves revision, declarations and event state.
 
+Verified receipts from the current native authority do not add project identity
+or revision pins to stored content anchors. A local orientation amendment can
+therefore remain fresh after its own revision increment and an identical new
+operation remains a no-op. Explicit caller UUID and revision pins are preserved
+and verified; a caller-pinned revision can become stale after publication.
+Foreign-authority anchors still store exact verified UUID/revision provenance.
+
 Qualification uses actual imported source with module path and SHA256 checks in
 isolated child fixtures and disposable native repositories. Deployment bindings
 are removed only from those fixture children, following the existing semantic
@@ -31,3 +38,5 @@ aliases, exact receipt repository/path/hash matching, and no-verifier success
 and stale-hash refusal. Denials compare the full native database dump and
 revision before and after the transaction. The existing 15 semantic port checks
 cover foreign verification and native plan preservation.
+Five additional orientation cases cover local freshness and no-op behavior,
+UUID-only anchors, preserved full pins and invalid UUID/revision refusal.
