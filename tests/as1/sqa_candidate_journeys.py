@@ -49,6 +49,14 @@ def child(journey, scratch):
         Path('/home/tumlinson/project-control'), release['project_control_commit'], 'src/project_control')
     assert identity.fingerprint == committed_package_fingerprint(
         SKILLS, SK_COMMIT, 'todo-orchestrator/todo_orchestrator')
+    observer_package = identity.skills_root / 'local-coding-worker/local_worker'
+    observer_fingerprint = committed_package_fingerprint(
+        SKILLS, SK_COMMIT, 'local-coding-worker/local_worker')
+    assert package_fingerprint(observer_package) == observer_fingerprint
+    assert release['observer_analysis_binding']['fingerprint'] == observer_fingerprint
+    observer_runtime = 'local-coding-worker/local_worker/observer_runtime.py'
+    assert (identity.skills_root / observer_runtime).read_bytes() == subprocess.check_output([
+        'git', '-C', str(SKILLS), 'show', SK_COMMIT + ':' + observer_runtime])
     validate_runtime(identity)
     binding = initialize_workflow_binding()
     contract = json.loads((SKILLS / 'planning/adaptive-surface-v1/contracts/surface.json').read_text())

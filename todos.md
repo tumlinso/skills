@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `941`
+Project revision: `957`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -83,6 +83,8 @@ Project revision: `941`
 - `PCU-SK-32` | kind: task | status: done | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Expose a supported authenticated canonical publication port without raw claim credential recovery, preserving role/operation/repository/task/source authorization and generic context fragment behavior.
 - `SK-AS1-GPU` | kind: task | status: done | parent: SK-AS1-0000 | objective: Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
+- `SK-AS1-OBSERVER-CONTINUATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair actual observed repeated source reads across stateless model turns; preserve native agentic skill routing, bounded public observation state, strict JSON, canonical source provenance and preemption.
+- `SK-AS1-OBSERVER-CONVERSATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair confirmed actual-model continuation nonprogress by replaying only public tool calls and packetized results as bounded conversation history, without hidden reasoning or semantic skill routing.
 - `SK-AS1-OBSERVER-PROGRESS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair actual model placeholder anchoring and nonprogress retries while preserving strict single-object parsing, trusted sandbox roots, source authority, and recoverable foreground eviction.
 - `SK-AS1-QUALIFY` | kind: task | status: in_progress | parent: SK-AS1-0000 | objective: Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
 - `SK-AS1-RELEASE` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.

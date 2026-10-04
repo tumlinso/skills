@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `941`
+Project revision: `957`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -83,6 +83,8 @@ Project revision: `941`
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | status: done | execution: closed | next: Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.
 - `SK-AS1-GPU` | status: done | execution: closed | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-OBSERVER-CONTINUATION` | status: done | execution: closed | next: Use retained public observations as continuation state; initial command recommendation only before first observations; exact installed entry example; model decides evidence sufficiency and native skill references. Test initial/continuation/resumed states and immutable bounds, then paired real inference.
+- `SK-AS1-OBSERVER-CONVERSATION` | status: done | execution: closed | next: Record actual accepted public tool-call JSON in observations and replay assistant call/user result conversation from durable checkpoints; bounded no hidden reasoning, no forced source rereads or routing policy. Qualify short actual read-answer before full paired journey.
 - `SK-AS1-OBSERVER-PROGRESS` | status: done | execution: closed | next: Use native trusted runner roots for executable command example, terminal partial with unresolved reason on step budget exhaustion, actual installed-port fixtures and preemption regression; return qualified source pin for PCbroker.
 - `SK-AS1-QUALIFY` | status: in_progress | execution: claimed | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.

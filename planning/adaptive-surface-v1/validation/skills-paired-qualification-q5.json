@@ -1,0 +1,289 @@
+{
+  "complete": false,
+  "executed_model_proof": {
+    "cleanup_checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "cleanup_errors": [],
+    "diagnostic_sha256": "8a3e738c301b72f591fa1acc919a21af46cf3bc651049a1e3c3fc2a00a773095",
+    "failure_diagnostic": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/failure-diagnostic.json",
+    "initial_pid": 513338,
+    "investigation_budget": 6,
+    "metrics": {
+      "real_turn_count": 26,
+      "total_active_seconds": 35.81429867697443,
+      "total_visible_output_bytes": 4631,
+      "total_visible_request_bytes": 213648,
+      "usage": [
+        {
+          "completion_tokens": 61,
+          "prompt_tokens": 1554,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 1615
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 1852,
+          "prompt_tokens_details": {
+            "cached_tokens": 386
+          },
+          "total_tokens": 1909
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 1538,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          },
+          "total_tokens": 1604
+        },
+        {
+          "completion_tokens": 71,
+          "prompt_tokens": 1970,
+          "prompt_tokens_details": {
+            "cached_tokens": 386
+          },
+          "total_tokens": 2041
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2328,
+          "prompt_tokens_details": {
+            "cached_tokens": 1939
+          },
+          "total_tokens": 2385
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2688,
+          "prompt_tokens_details": {
+            "cached_tokens": 2297
+          },
+          "total_tokens": 2745
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3046,
+          "prompt_tokens_details": {
+            "cached_tokens": 2657
+          },
+          "total_tokens": 3103
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3404,
+          "prompt_tokens_details": {
+            "cached_tokens": 3015
+          },
+          "total_tokens": 3461
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 1538,
+          "prompt_tokens_details": {
+            "cached_tokens": 1537
+          },
+          "total_tokens": 1604
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 1969,
+          "prompt_tokens_details": {
+            "cached_tokens": 1638
+          },
+          "total_tokens": 2035
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2328,
+          "prompt_tokens_details": {
+            "cached_tokens": 1938
+          },
+          "total_tokens": 2385
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2689,
+          "prompt_tokens_details": {
+            "cached_tokens": 2297
+          },
+          "total_tokens": 2746
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3048,
+          "prompt_tokens_details": {
+            "cached_tokens": 2658
+          },
+          "total_tokens": 3105
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3405,
+          "prompt_tokens_details": {
+            "cached_tokens": 3017
+          },
+          "total_tokens": 3462
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 1538,
+          "prompt_tokens_details": {
+            "cached_tokens": 1537
+          },
+          "total_tokens": 1604
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 1971,
+          "prompt_tokens_details": {
+            "cached_tokens": 1638
+          },
+          "total_tokens": 2028
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 2326,
+          "prompt_tokens_details": {
+            "cached_tokens": 1940
+          },
+          "total_tokens": 2392
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2678,
+          "prompt_tokens_details": {
+            "cached_tokens": 2295
+          },
+          "total_tokens": 2735
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3036,
+          "prompt_tokens_details": {
+            "cached_tokens": 2647
+          },
+          "total_tokens": 3093
+        },
+        {
+          "completion_tokens": 66,
+          "prompt_tokens": 3393,
+          "prompt_tokens_details": {
+            "cached_tokens": 3005
+          },
+          "total_tokens": 3459
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2216,
+          "prompt_tokens_details": {
+            "cached_tokens": 386
+          },
+          "total_tokens": 2273
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2579,
+          "prompt_tokens_details": {
+            "cached_tokens": 386
+          },
+          "total_tokens": 2636
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 2943,
+          "prompt_tokens_details": {
+            "cached_tokens": 2548
+          },
+          "total_tokens": 3000
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3306,
+          "prompt_tokens_details": {
+            "cached_tokens": 2912
+          },
+          "total_tokens": 3363
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 3664,
+          "prompt_tokens_details": {
+            "cached_tokens": 3275
+          },
+          "total_tokens": 3721
+        },
+        {
+          "completion_tokens": 57,
+          "prompt_tokens": 4025,
+          "prompt_tokens_details": {
+            "cached_tokens": 3633
+          },
+          "total_tokens": 4082
+        }
+      ]
+    },
+    "receipt": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/receipt.json",
+    "receipt_sha256": "b51daedb0102e91616f595466ffa77e0c95f21fcfde7e0b3e38acb6d20ca90fd",
+    "reloaded_pid": 513843,
+    "requested_skill_budget": 12,
+    "skill_reached": false
+  },
+  "format": "as1-skills-paired-qualification-followup/1",
+  "generated_at": "2026-10-04T22:43:08.387624+00:00",
+  "installed_candidate": {
+    "catalog_freeze": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-a60a5ef-21be127/catalog-freeze-coverage.json",
+    "evidence_index": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-a60a5ef-21be127/evidence-sha256.json",
+    "identity_pip_catalog_and_schemas_passed": true,
+    "role_schemas": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-a60a5ef-21be127/role-schema-discovery.json",
+    "runtime_identity": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-a60a5ef-21be127/runtime-identity.json"
+  },
+  "integration_state": "No commits, product edits, activation or canonical authority mutation by workstream. Root retains lifecycle and final acceptance.",
+  "local_decision": "No further blind helper prompt retry. Captured model inputs contain stage-aware continuation and exact source observations, but real model repeats source reads; root owns native conversation/protocol/model decision.",
+  "native_subset": {
+    "elapsed_seconds": 8.29,
+    "full_acceptance_executed": false,
+    "realproof_deselected": 1,
+    "report": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/final-native-diagnostic-report.json",
+    "tests_passed": 3
+  },
+  "prior_failed_attempts_preserved": [
+    "q1",
+    "q2",
+    "q3",
+    "q4"
+  ],
+  "remaining": [
+    "Real busy queue and resumed scout must complete from retained verified evidence.",
+    "Real skill agent must read SKILL.md and legacy/Volta routing and return exact authoritative excerpts.",
+    "Full SQA four tests and bound native acceptance gate must pass."
+  ],
+  "root_claim": "SKclaim948",
+  "source_files_sha256": {
+    "planning/adaptive-surface-v1/scripts/qualify_real_journeys_q5.py": "aab340fec45e04aad36b36bd85784dc1d24e6c70aa4da88fbd38d51509699925",
+    "tests/as1/sqa_candidate_journeys.py": "8563e8b504f73385b9311f54e22003ae1db914b8eba484570d5ccc832d11e7d0",
+    "tests/as1/test_sk_as1_qualify.py": "0b98e1a11156d66b723b40bb0bdf9a0a27bdeb8b968541a58038b26302ec8ea7"
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-a60a5ef-21be127-20261004",
+    "fixture_commit": "8c3aa259dd36a9c00f40c768bb58222bc75893b0",
+    "helper_sha256": "aab340fec45e04aad36b36bd85784dc1d24e6c70aa4da88fbd38d51509699925",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "76f82d2ad6f0972df3c7016b60c30884fde72974fc1929fe029887541e935e3a",
+    "pc_commit": "a60a5ef737295b5aeb5df5e9c3a591e09a620177",
+    "release_sha256": "837f3becf7d38f8997fcf3f36f43b083641de0f11c49eabe82ce0cd802f0655d",
+    "skills_commit": "21be127240c4fd91616a26c5ce1c1ada6aed23df"
+  },
+  "status": "failed",
+  "task": "SK-AS1-QUALIFY"
+}

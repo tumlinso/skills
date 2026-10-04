@@ -15,10 +15,10 @@ import subprocess
 import pytest
 
 SKILLS = Path(__file__).resolve().parents[2]
-PC_COMMIT = os.environ.get('AS1_SQA_PC_COMMIT', 'daaab5aeb800390c529edfe976db03ad28c5b850')
-SK_COMMIT = os.environ.get('AS1_SQA_SK_COMMIT', 'e2ea75a550f876ba0bd8836c0d1d47fd5aa13f7e')
-CANDIDATE = Path(os.environ.get('AS1_SQA_CANDIDATE', '/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004'))
-PROOF = Path(os.environ.get('AS1_SQA_PROOF', str(SKILLS / 'planning/adaptive-surface-v1/validation/sqa-real' / CANDIDATE.name / 'receipt.json')))
+PC_COMMIT = os.environ.get('AS1_SQA_PC_COMMIT', '4d15efd8343718b685b402d8a2a56359cb163cdf')
+SK_COMMIT = os.environ.get('AS1_SQA_SK_COMMIT', '9676989b4cbb64da007789f5594b03d9f7b182c8')
+CANDIDATE = Path(os.environ.get('AS1_SQA_CANDIDATE', '/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004'))
+PROOF = Path(os.environ.get('AS1_SQA_PROOF', str(SKILLS / 'planning/adaptive-surface-v1/validation/sqa-real' / (CANDIDATE.name + '-q6') / 'receipt.json')))
 
 
 def sha(path):
@@ -74,6 +74,10 @@ def test_real_scout_skill_eviction_proof_is_bound_to_exact_candidate(tmp_path):
     assert identity['pc_commit'] == PC_COMMIT
     assert identity['skills_commit'] == SK_COMMIT
     assert identity['release_sha256'] == sha(CANDIDATE / 'release-manifest.json')
+    for key, relative in (('observer_runtime_sha256', 'local-coding-worker/local_worker/observer_runtime.py'),
+                          ('native_catalog_sha256', 'integrations/native-skill-catalog.json'),
+                          ('native_routing_sha256', 'integrations/native-skill-routing.md')):
+        assert identity[key] == sha(CANDIDATE / 'runtime-skills' / relative), key
     assert proof['status'] == 'passed'
     assert proof['artifacts']
     for relative, expected in proof['artifacts'].items():
