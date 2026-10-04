@@ -75,6 +75,11 @@ class WorkflowKernelPort(Protocol):
     def coordinate_task(
         self, capability: AuthorizedCapability, *, action: str, payload: Mapping[str, Any]
     ) -> Mapping[str, Any]: ...
+    def _publish_project_context(
+        self, capability: AuthorizedCapability, *, workflow_handle: str,
+        kind: str, payload: Mapping[str, Any], task_id: str | None = None,
+        source_verifier=None, expected_repository_root=None,
+    ) -> Mapping[str, Any]: ...
     def delegate_task(
         self, capability: AuthorizedCapability, *, objective: str, mode: str, source_targets: list[str] | None = None,
     ) -> Mapping[str, Any]: ...
@@ -185,6 +190,13 @@ def action_policy(lineage: Any) -> dict[str, Any]:
         for action, (required, allowed) in _ACTION_SCHEMAS.items()
         if f"coordinate:{action}" in operations and action in role_allowed
     }
+    if "coordinate:publish_project_context" in operations and "publish_project_context" in role_allowed:
+        semantic = {"required": ["kind", "payload"], "optional": ["task_id"],
+                    "supported_kinds": ["skill_use", "finding", "candidate_relation"]}
+        if "publish_context" in coordinate:
+            coordinate["publish_context"]["semantic_variant"] = semantic
+        else:
+            coordinate["publish_context"] = semantic
     tools: list[str] = []
     if "inspect_task" in operations:
         tools.append("inspect_task")
@@ -382,6 +394,26 @@ class WorkflowProtocol:
         self, *, workflow_handle: str, action: str, payload: Mapping[str, Any] | None = None
     ) -> dict[str, Any]:
         body = dict(payload or {})
+        if action == "publish_context" and "kind" in body:
+            if (set(body) - {"kind", "payload", "task_id"}
+                    or body.get("kind") not in {"skill_use", "finding", "candidate_relation"}
+                    or not isinstance(body.get("payload"), Mapping)
+                    or ("task_id" in body and not isinstance(body["task_id"], str))):
+                raise TodoError("invalid_coordination_payload", "Scoped publication needs exact kind/payload and optional task_id")
+            internal = self.publish_project_context(
+                workflow_handle, kind=body["kind"], payload=body["payload"],
+                task_id=body.get("task_id"),
+            )
+            capability = self.capabilities.resolve(
+                workflow_handle, required_operation="coordinate:publish_project_context",
+                expected_class="first_class",
+            )
+            _add_identity(internal, capability)
+            policy = action_policy(capability.lineage)
+            internal["action_policy"] = policy
+            internal["operation_status"] = internal.pop("status", "published")
+            return envelope("claimed", internal, allowed_actions=policy["tools"],
+                            budget_bytes=COORDINATE_TASK_BUDGET_BYTES)
         _validate_action(action, body)
         capability = self.capabilities.resolve(
             workflow_handle,
@@ -401,6 +433,21 @@ class WorkflowProtocol:
             recommended_next_call=recommended,
             budget_bytes=COORDINATE_TASK_BUDGET_BYTES,
         )
+
+    def publish_project_context(
+        self, workflow_handle: str, *, kind: str, payload: Mapping[str, Any],
+        task_id: str | None = None, source_verifier=None, expected_repository_root=None,
+    ) -> dict[str, Any]:
+        """Host-only semantic publication seam; no caller-authored claim identity."""
+        capability = self.capabilities.resolve(
+            workflow_handle, required_operation="coordinate:publish_project_context",
+            expected_class="first_class",
+        )
+        return dict(self.port._publish_project_context(
+            capability, workflow_handle=workflow_handle, kind=kind, payload=payload,
+            task_id=task_id, source_verifier=source_verifier,
+            expected_repository_root=expected_repository_root,
+        ))
 
     def delegate_task(
         self,

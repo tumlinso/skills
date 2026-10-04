@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import stat
 import re
 import uuid
 from pathlib import Path
@@ -373,6 +375,12 @@ def amend_in_transaction(service, conn, revision, request):
 def publish_in_transaction(service, conn, revision, request, claim_token):
     require_schema(conn)
     claim = authenticate_claim(conn, claim_token)
+    return _publish_authenticated_claim(service, conn, revision, request, claim)
+
+
+def _publish_authenticated_claim(service, conn, revision, request, claim, *, source_verifier=None, strict=False):
+    """Private fact writer; callers authenticate the claim in this transaction."""
+    require_schema(conn)
     task_id = claim['task_id']
     kind = request.get('kind')
     if kind not in ('skill_use', 'finding', 'candidate_relation'):
@@ -383,13 +391,19 @@ def publish_in_transaction(service, conn, revision, request, claim_token):
     source_anchors = anchors(payload)
     if not source_anchors:
         fail('invalid_project_amendment', 'Scoped publication needs source anchors')
-    scopes = scopes_for(conn, task_id)
+    scopes = scopes_for(conn, task_id, 'exclusive' if strict else None)
     for anchor in source_anchors:
         path = anchor['path']
         if anchor['project'] not in (service.project['project_uuid'], service.project['project_name'], service.project.get('configuration', {}).get('registered_project_id')) or not any(scope == '.' or path == scope.rstrip('/') or path.startswith(scope.rstrip('/') + '/') for scope in scopes):
             fail('publication_scope_denied', 'Publication anchor exceeds authenticated task scopes')
+    if strict:
+        _verify_publication_sources(service, source_anchors, source_verifier)
     # Validate local source hashes without giving coders project declaration powers.
     source_prerequisites(service, {'project': source_anchors[0]['project'], 'action': 'record_skill_use', 'payload': payload})
+    if strict:
+        # Recheck every local locator after the final trusted source callback.
+        for anchor in source_anchors:
+            _verify_local_publication_path(service.paths.repo_root.resolve(), anchor)
     if kind == 'skill_use' and (payload.get('status') not in ('consulted', 'applied') or not payload.get('skill') or not payload.get('reason')):
         fail('invalid_project_amendment', 'Skill publication needs skill/reason/status')
     identity = task_id + ':' + payload['id']
@@ -398,3 +412,48 @@ def publish_in_transaction(service, conn, revision, request, claim_token):
         return Unchanged({'status': 'noop', 'task_id': task_id, 'id': identity})
     conn.execute('INSERT INTO project_declarations VALUES(?,?,?,?,?,?,0,?,?)', (kind, identity, previous['version'] + 1 if previous else 1, encode(payload), 'candidate' if kind == 'candidate_relation' else 'task_scoped', task_id, utc_now(), revision))
     return {'status': 'published', 'task_id': task_id, 'id': identity, 'origin': 'task_scoped'}
+
+
+def _verify_publication_sources(service, source_anchors, source_verifier=None):
+    """Exact local repository fence, then optional trusted host source receipt."""
+    root = service.paths.repo_root.resolve()
+    for anchor in source_anchors:
+        if anchor['project'] not in (service.project['project_uuid'], service.project['project_name'], service.project.get('configuration', {}).get('registered_project_id')):
+            fail('publication_scope_denied', 'Publication project differs from authenticated authority')
+        if anchor['repository'] not in local_repositories(service.project, root):
+            fail('publication_scope_denied', 'Publication repository differs from authenticated repository')
+        _verify_local_publication_path(root, anchor)
+        if source_verifier is not None:
+            locator = {**anchor, 'project': service.project['project_uuid']}
+            verified_foreign_source(source_verifier, locator)
+            # A host callback may perform IO. Fence the actual source again
+            # after it returns, immediately before the fact writer proceeds.
+            _verify_local_publication_path(root, anchor)
+
+
+def _verify_local_publication_path(root, anchor):
+    """Hash through no-follow directory descriptors; never follow a swapped link."""
+    descriptors = []
+    try:
+        parent = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        descriptors.append(parent)
+        parts = [part for part in anchor['path'].split('/') if part and part != '.']
+        if not parts:
+            fail('source_prerequisite_stale', 'Publication source must be a file')
+        for part in parts[:-1]:
+            parent = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=parent)
+            descriptors.append(parent)
+        source = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent)
+        descriptors.append(source)
+        if not stat.S_ISREG(os.fstat(source).st_mode):
+            fail('source_prerequisite_stale', 'Publication source must be a regular file')
+        actual = hashlib.sha256()
+        while chunk := os.read(source, 1024 * 1024):
+            actual.update(chunk)
+        if actual.hexdigest() != anchor['content_sha256']:
+            fail('source_prerequisite_stale', 'Publication source hash changed')
+    except OSError:
+        fail('source_prerequisite_stale', 'Publication source is unavailable or traverses a symlink')
+    finally:
+        for descriptor in reversed(descriptors):
+            os.close(descriptor)

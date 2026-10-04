@@ -815,6 +815,53 @@ class WorkflowKernel:
         require_bounded_payload(payload, limit=budget_bytes, code="workflow_inspection_too_large")
         return payload
 
+    def _publish_project_context(
+        self, capability: AuthorizedCapability, *, workflow_handle: str,
+        kind: str, payload: Mapping[str, Any], task_id: str | None = None,
+        source_verifier=None, expected_repository_root=None,
+    ) -> Mapping[str, Any]:
+        from .capabilities import capability_hash
+        from ..project_amendments import (
+            anchors, encode, _publish_authenticated_claim, _verify_publication_sources,
+        )
+        service = self._resolve_service(capability)
+        if expected_repository_root is not None and Path(expected_repository_root).resolve() != service.paths.repo_root.resolve():
+            raise TodoError("repository_identity_mismatch", "Publication repository differs from host binding")
+        # Freeze request data before crossing callback/transaction boundaries.
+        request = json.loads(encode({"kind": kind, "payload": dict(payload),
+                                    "task_id": capability.lineage.task_id if task_id is None else task_id}))
+        if kind not in {"skill_use", "finding", "candidate_relation"}:
+            raise TodoError("publication_scope_denied", "Unsupported scoped publication kind")
+        _verify_publication_sources(service, anchors(request['payload']), source_verifier)
+
+        def operation(conn, revision):
+            row = conn.execute("SELECT * FROM workflow_capabilities WHERE token_hash=?", (capability_hash(workflow_handle),)).fetchone()
+            if row is None or row['id'] != capability.id or row['state'] != 'active' or row['expires_at'] <= utc_now():
+                raise TodoError("invalid_workflow_capability", "Publication capability is inactive")
+            store = WorkflowCapabilityStore(service.db)
+            lineage = store._lineage(row)
+            if lineage != capability.lineage or lineage.capability_class != 'first_class' or 'coordinate:publish_project_context' not in lineage.allowed_operations:
+                raise TodoError("capability_operation_forbidden", "Publication capability lineage changed")
+            store._validate_lineage_rows(conn, lineage)
+            from .roles import require_lane_action
+            require_lane_action(conn, str(lineage.lane_id), "publish_project_context",
+                                allowed_run_ids=[str(lineage.run_id)])
+            session = conn.execute("SELECT repo_root FROM sessions WHERE id=?", (lineage.session_id,)).fetchone()
+            if Path(session['repo_root']).resolve() != service.paths.repo_root.resolve() or repository_identity(service.paths.repo_root, str(service.project['project_uuid'])) != lineage.repository_identity:
+                raise TodoError("repository_identity_mismatch", "Publication dispatch repository changed")
+            claim = conn.execute("SELECT * FROM claims WHERE id=?", (lineage.claim_id,)).fetchone()
+            from ..claims import compatible_workflow_owner
+            if not compatible_workflow_owner(claim["owner_system"]) or not claim["owner_instance_id"]:
+                raise TodoError("publication_scope_denied", "Publication claim is not owned by the canonical workflow")
+            return _publish_authenticated_claim(
+                service, conn, revision, request, claim,
+                source_verifier=source_verifier, strict=True,
+            )
+
+        return service._project_semantic_mutation(
+            operation=operation, event_type="workflow.project_context_published",
+        )
+
     def coordinate_task(self, capability: AuthorizedCapability, *, action: str, payload: Mapping[str, Any]) -> Mapping[str, Any]:
         service = self._resolve_service(capability)
         lineage = capability.lineage

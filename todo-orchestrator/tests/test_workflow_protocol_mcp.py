@@ -331,9 +331,24 @@ class CapabilityTests(unittest.TestCase):
             policy = action_policy(self.fixture.lineage(role=role))
             self.assertEqual(policy["tools"], sorted(policy["tools"], key=order.index))
             for action, schema in policy["coordinate"].items():
-                self.assertIn(action, role_actions(role))
-                self.assertIn(f"coordinate:{action}", default_first_class_operations(role))
-                self.assertEqual(set(schema), {"required", "optional"})
+                if action == "publish_context" and role in {"implementer", "specialist"}:
+                    self.assertIn("publish_project_context", role_actions(role))
+                    self.assertIn("coordinate:publish_project_context", default_first_class_operations(role))
+                    self.assertNotIn("coordinate:publish_context", default_first_class_operations(role))
+                    self.assertEqual(schema["required"], ["kind", "payload"])
+                    self.assertEqual(schema["optional"], ["task_id"])
+                    self.assertEqual(schema["supported_kinds"], ["skill_use", "finding", "candidate_relation"])
+                    self.assertEqual(set(schema), {"required", "optional", "supported_kinds"})
+                else:
+                    self.assertIn(action, role_actions(role))
+                    self.assertIn(f"coordinate:{action}", default_first_class_operations(role))
+                    if action == "publish_context":
+                        self.assertEqual(set(schema), {"required", "optional", "semantic_variant"})
+                        self.assertEqual(schema["required"], ["anchors", "content", "series_key"])
+                        self.assertEqual(schema["semantic_variant"]["required"], ["kind", "payload"])
+                        self.assertIn("coordinate:publish_project_context", default_first_class_operations(role))
+                    else:
+                        self.assertEqual(set(schema), {"required", "optional"})
         self.assertIn("delegate_task", action_policy(self.fixture.lineage(role="coordinator"))["tools"])
         self.assertIn("accept_child", action_policy(self.fixture.lineage(role="coordinator"))["coordinate"])
         self.assertIn("reject_child", action_policy(self.fixture.lineage(role="coordinator"))["coordinate"])

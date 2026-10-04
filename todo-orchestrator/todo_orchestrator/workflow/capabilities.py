@@ -408,6 +408,8 @@ def default_first_class_operations(role: str = "implementer") -> frozenset[str]:
     }
     if role not in additions:
         raise TodoError("invalid_workflow_role", "Cannot derive operations for unknown role")
+    if role in {"implementer", "specialist", "coordinator", "integrator"}:
+        additions[role].add("coordinate:publish_project_context")
     return frozenset(common | additions[role])
 
 

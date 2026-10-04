@@ -1,0 +1,11 @@
+# Opaque capability semantic publication
+
+The trusted host adapter uses `WorkflowProtocol.publish_project_context(workflow_handle, *, kind, payload, task_id=None, source_verifier=None, expected_repository_root=None)` for semantic `coordinate_task(action="publish_context")` requests. Supported kinds are `skill_use`, `finding`, and `candidate_relation`; payloads retain the existing additive declaration schema and task-scoped idempotence. This is an internal host port, not another public tool.
+
+The port resolves a real first-class opaque handle with `coordinate:publish_project_context`. This distinct capability operation and role action are available to coordinator, implementer, integrator, and specialist lanes. Generic context-note publication keeps its existing `coordinate:publish_context` operation and role permissions.
+
+The mutation transaction rechecks the handle digest, persisted capability identity and lineage, expiry/revocation, active session/run/claim/dispatch, canonical workflow claim ownership, role, and exact session repository identity. It derives the task from the authenticated claim, rejects mismatched tasks and foreign project/repository anchors, and requires every anchor to fall within the task's exclusive path scopes. Local paths must remain inside the canonical repository, traverse no symlinks, and match their SHA256. Trusted host source verification runs per anchor before the transaction and again inside it; receipt identity and optional authority pins use the existing qualified source fence. No raw credential is recovered or supplied by the model.
+
+The raw claim-token compatibility method delegates to the same private fact writer and retains its previous source admission behavior. Canonical publication applies the stricter repository/exclusive-scope fence. A duplicate fact returns `noop` without adding a declaration version or project revision. Findings and skill use remain task facts; candidate relationships remain candidates.
+
+Validation: `python -m pytest todo-orchestrator/tests/test_as1_capability_publication.py -q`. Tests invoke actual source imports and native opaque-handle issuance/resolution in disposable schema-12 authorities. They do not migrate deployed schema-11 authority or claim deployed-runtime qualification.
