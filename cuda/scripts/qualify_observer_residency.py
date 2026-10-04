@@ -11,6 +11,7 @@ import ctypes
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -41,6 +42,67 @@ def write(path, document):
     path.chmod(0o600)
 
 
+
+def normalize_pci_bus_id(value):
+    """Canonicalize the documented hexadecimal domain:bus:device.function form."""
+    match = re.fullmatch(r"([0-9a-fA-F]{1,8}):([0-9a-fA-F]{1,2}):([0-9a-fA-F]{1,2})\.([0-7])", value)
+    if not match:
+        raise ValueError("malformed PCI bus ID")
+    domain, bus, device, function = (int(part, 16) for part in match.groups())
+    if device > 31:
+        raise ValueError("invalid PCI device number")
+    return f"{domain:08x}:{bus:02x}:{device:02x}.{function:x}"
+
+
+def map_runtime_devices(pci_ids, rows, expected_uuids, visible):
+    """Fail closed before allocation unless physical PCI/UUID/index order agrees."""
+    if len(pci_ids) != len(expected_uuids) or len(visible) != len(expected_uuids):
+        raise ValueError("runtime/lease device count mismatch")
+    if len(set(expected_uuids)) != len(expected_uuids) or len(set(visible)) != len(visible):
+        raise ValueError("duplicate lease or visible device")
+    by_pci, seen_uuids = {}, set()
+    for row in rows:
+        device_uuid = row["uuid"]
+        if not re.fullmatch(r"GPU-[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}", device_uuid):
+            raise ValueError("physical GPU UUID required; MIG mapping unsupported")
+        key = normalize_pci_bus_id(row["pci_bus_id"])
+        if key in by_pci or device_uuid in seen_uuids:
+            raise ValueError("ambiguous physical PCI/UUID mapping")
+        seen_uuids.add(device_uuid)
+        by_pci[key] = row
+    mapped = []
+    for logical, pci_id in enumerate(pci_ids):
+        row = by_pci.get(normalize_pci_bus_id(pci_id))
+        if row is None or row["uuid"] != expected_uuids[logical]:
+            raise ValueError("runtime physical UUID order differs from approved lease")
+        if row["mig_mode"] not in ("Disabled", "N/A", "[N/A]"):
+            raise ValueError("MIG physical-device mapping unsupported")
+        if visible[logical] not in (str(row["index"]), row["uuid"]):
+            raise ValueError("controller visible-device order differs from physical mapping")
+        mapped.append(row["uuid"])
+    return mapped
+
+
+def bind_cuda_runtime(library):
+    # cudaDeviceGetPCIBusId(char*, int, int), CUDA Runtime API 12.0 DEVICE docs.
+    signatures = {
+        "cudaRuntimeGetVersion": [ctypes.POINTER(ctypes.c_int)],
+        "cudaGetDeviceCount": [ctypes.POINTER(ctypes.c_int)],
+        "cudaDeviceGetPCIBusId": [ctypes.POINTER(ctypes.c_char), ctypes.c_int, ctypes.c_int],
+        "cudaSetDevice": [ctypes.c_int],
+        "cudaMalloc": [ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t],
+        "cudaFree": [ctypes.c_void_p],
+        "cudaMemset": [ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t],
+        "cudaMemcpy": [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int],
+        "cudaDeviceSynchronize": [],
+    }
+    for name, args in signatures.items():
+        function = getattr(library, name)  # Resolve ALL required symbols before any CUDA call.
+        function.argtypes = args
+        function.restype = ctypes.c_int
+    return library
+
+
 def foreground_check():
     if not __debug__:
         raise RuntimeError("qualification requires enabled runtime checks")
@@ -53,24 +115,26 @@ def foreground_check():
     library_path = Path(os.environ["CUDA_RUNTIME_LIBRARY"]).resolve(strict=True)
     library_sha = digest(library_path)
     assert library_sha == os.environ["CUDA_RUNTIME_LIBRARY_SHA256"]
-    library = ctypes.CDLL(str(library_path))
+    library = bind_cuda_runtime(ctypes.CDLL(str(library_path)))
     version = ctypes.c_int()
-    assert library.cudaRuntimeGetVersion(ctypes.byref(version)) == 0
-    library.cudaMalloc.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t]
-    library.cudaFree.argtypes = [ctypes.c_void_p]
-    library.cudaMemset.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t]
-    library.cudaMemcpy.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int]
+    assert library.cudaRuntimeGetVersion(ctypes.byref(version)) == 0 and version.value >= 12000
     count = ctypes.c_int()
     assert library.cudaGetDeviceCount(ctypes.byref(count)) == 0 and count.value == len(visible)
-    class DeviceUuid(ctypes.Structure):
-        _fields_ = [("bytes", ctypes.c_ubyte * 16)]
-    library.cudaDeviceGetUuid.argtypes = [ctypes.POINTER(DeviceUuid), ctypes.c_int]
-    mapped_uuids = []
+    runtime_pci_ids = []
     for device in range(count.value):
-        device_uuid = DeviceUuid()
-        assert library.cudaDeviceGetUuid(ctypes.byref(device_uuid), device) == 0
-        mapped_uuids.append("GPU-" + str(uuid.UUID(bytes=bytes(device_uuid.bytes))))
-    assert mapped_uuids == expected_uuids
+        pci_id = ctypes.create_string_buffer(32)
+        assert library.cudaDeviceGetPCIBusId(pci_id, len(pci_id), device) == 0
+        runtime_pci_ids.append(pci_id.value.decode("ascii"))
+    pci_observed_unix = time.time()
+    pci_query = subprocess.run(["nvidia-smi", "--query-gpu=uuid,pci.bus_id,index,mig.mode.current",
+                                "--format=csv,noheader,nounits"], capture_output=True, text=True, check=True)
+    pci_rows = []
+    for line in pci_query.stdout.splitlines():
+        fields = [field.strip() for field in line.split(",")]
+        if len(fields) != 4:
+            raise ValueError("malformed physical GPU PCI observation")
+        pci_rows.append({"uuid": fields[0], "pci_bus_id": fields[1], "index": int(fields[2]), "mig_mode": fields[3]})
+    mapped_uuids = map_runtime_devices(runtime_pci_ids, pci_rows, expected_uuids, visible)
     for device in range(count.value):
         pointer = ctypes.c_void_p()
         assert library.cudaSetDevice(device) == 0
@@ -87,6 +151,8 @@ def foreground_check():
                       "controller_visible_devices": visible,
                       "lease": receipt, "admission_observation": admission_observation,
                       "runtime_gpu_uuids": mapped_uuids,
+                      "runtime_pci_bus_ids": runtime_pci_ids,
+                      "physical_pci_observation": {"observed_unix": pci_observed_unix, "devices": pci_rows},
                       "cuda_runtime": {"path": str(library_path), "sha256": library_sha, "version": version.value},
                       "device_memset_copy_verified": True}))
 
