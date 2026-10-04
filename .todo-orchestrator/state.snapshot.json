@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T18:18:56Z",
+  "generated_at": "2026-10-04T18:40:58Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 900,
+  "project_revision": 901,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9451,6 +9451,16 @@
         "revision": 900,
         "seq": 900,
         "timestamp": "2026-10-04T18:18:56Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"df876b0da98198e8ffc83e5adb324bdef419b9327defba90d59e3aba65742900\", \"source\": \"project-control\"}",
+        "revision": 901,
+        "seq": 901,
+        "timestamp": "2026-10-04T18:40:58Z"
       }
     ],
     "evidence": [
@@ -12812,12 +12822,12 @@
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-GPU\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts\", \"cuda/tests\", \"local-coding-worker\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-GPU\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts\", \"cuda/tests\", \"local-coding-worker\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-GPU-ACCEPT",
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-GPU",
         "type": "command",
@@ -12830,7 +12840,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12843,7 +12853,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-QUALIFY",
         "type": "command",
@@ -12856,7 +12866,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12869,7 +12879,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-RELEASE",
         "type": "command",
@@ -12882,7 +12892,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12895,7 +12905,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
@@ -12908,7 +12918,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12921,7 +12931,7 @@
         "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
         "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 898,
+        "revision": 901,
         "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
@@ -12934,7 +12944,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12947,7 +12957,7 @@
         "input_fingerprint": "abe42f33e7709566bb6ea90b19dc86773138864435cf1ff204f9e6b45bd73eeb",
         "last_run_at": "2026-10-04T17:52:53Z",
         "required": 1,
-        "revision": 892,
+        "revision": 901,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTICS",
         "type": "command",
@@ -12960,7 +12970,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 889,
+        "revision": 901,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -16045,6 +16055,16 @@
       {
         "mode": "exclusive",
         "path": "tests/as1",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/background/host.py",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/runtime/facade.py",
         "task_id": "SK-AS1-GPU"
       },
       {
@@ -19627,7 +19647,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 902,
+        "id": 908,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-GPU",
@@ -19638,7 +19658,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 903,
+        "id": 909,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-ROUTING",
         "task_id": "SK-AS1-QUALIFY",
@@ -19649,7 +19669,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 904,
+        "id": 910,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-QUALIFY",
         "task_id": "SK-AS1-RELEASE",
@@ -19660,7 +19680,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 905,
+        "id": 911,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-ROUTING",
@@ -19671,7 +19691,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 906,
+        "id": 912,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-GPU",
         "task_id": "SK-AS1-ROUTING",
@@ -19682,7 +19702,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 907,
+        "id": 913,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-RUNTIME",
@@ -22870,12 +22890,12 @@
         "priority": 0,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 889,
+        "revision": 901,
         "status": "planned",
         "tags_json": "[]",
         "title": "AS1 skills: consolidated adaptive helper surface",
-        "updated_at": "2026-10-04T17:30:47Z",
-        "version": 2
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -22895,12 +22915,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 900,
+        "revision": 901,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T18:18:56Z",
-        "version": 3
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -22920,12 +22940,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 889,
+        "revision": 901,
         "status": "planned",
         "tags_json": "[]",
         "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
-        "updated_at": "2026-10-04T17:30:47Z",
-        "version": 2
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -22945,12 +22965,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 889,
+        "revision": 901,
         "status": "planned",
         "tags_json": "[]",
         "title": "Pin the qualified standalone release in Skills",
-        "updated_at": "2026-10-04T17:30:47Z",
-        "version": 2
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -22970,12 +22990,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 889,
+        "revision": 901,
         "status": "planned",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T17:30:47Z",
-        "version": 2
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -22995,12 +23015,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 899,
+        "revision": 901,
         "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T18:18:48Z",
-        "version": 4
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -23020,12 +23040,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 893,
+        "revision": 901,
         "status": "done",
         "tags_json": "[]",
         "title": "Extend canonical semantic and mutation contracts",
-        "updated_at": "2026-10-04T17:52:53Z",
-        "version": 4
+        "updated_at": "2026-10-04T18:40:58Z",
+        "version": 5
       },
       {
         "attention_reason": null,

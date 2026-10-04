@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-GPU: Make warm observer models reclaimable by foreground work
 
-Task revision: `900`; current project revision is in `todo-status.md`.
+Task revision: `901`; current project revision is in `todo-status.md`.
 
 ## Objective
 Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
@@ -23,6 +23,8 @@ Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify p
 - `exclusive`: `local-coding-worker`
 - `exclusive`: `planning/adaptive-surface-v1`
 - `exclusive`: `tests/as1`
+- `exclusive`: `todo-orchestrator/todo_orchestrator/background/host.py`
+- `exclusive`: `todo-orchestrator/todo_orchestrator/runtime/facade.py`
 - `read`: `planning/adaptive-surface-v1`
 
 ## Dependencies
