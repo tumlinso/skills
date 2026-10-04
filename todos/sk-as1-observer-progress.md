@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-OBSERVER-PROGRESS: Make observer protocol commands executable and step exhaustion terminal
 
-Task revision: `953`; current project revision is in `todo-status.md`.
+Task revision: `966`; current project revision is in `todo-status.md`.
 
 ## Objective
 Repair actual model placeholder anchoring and nonprogress retries while preserving strict single-object parsing, trusted sandbox roots, source authority, and recoverable foreground eviction.

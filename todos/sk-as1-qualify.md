@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-QUALIFY: Qualify kernel, worker, CUDA and native-skill interoperation
 
-Task revision: `957`; current project revision is in `todo-status.md`.
+Task revision: `966`; current project revision is in `todo-status.md`.
 
 ## Objective
 Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
@@ -19,7 +19,9 @@ Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Veri
 
 ## Ownership
 - `exclusive`: `cuda/tests`
+- `exclusive`: `docs/as1-observer-skill-protocol.md`
 - `exclusive`: `integrations`
+- `exclusive`: `local-coding-worker/local_worker/observer_runtime.py`
 - `exclusive`: `local-coding-worker/tests`
 - `exclusive`: `planning/adaptive-surface-v1`
 - `exclusive`: `tests`

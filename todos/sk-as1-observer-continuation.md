@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-OBSERVER-CONTINUATION: Resume observer reasoning from retained evidence
 
-Task revision: `953`; current project revision is in `todo-status.md`.
+Task revision: `966`; current project revision is in `todo-status.md`.
 
 ## Objective
 Repair actual observed repeated source reads across stateless model turns; preserve native agentic skill routing, bounded public observation state, strict JSON, canonical source provenance and preemption.

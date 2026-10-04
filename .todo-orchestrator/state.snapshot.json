@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T22:57:50Z",
+  "generated_at": "2026-10-04T23:40:25Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 957,
+  "project_revision": 966,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -10021,6 +10021,96 @@
         "revision": 957,
         "seq": 957,
         "timestamp": "2026-10-04T22:57:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-QUALIFY",
+        "entity_type": "task",
+        "event_type": "workflow.task.release",
+        "payload_json": "{\"reason\": \"Bounded observer entry-first feedback repair before qualification\"}",
+        "revision": 958,
+        "seq": 958,
+        "timestamp": "2026-10-04T23:24:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/skills.observer-entry.json\"}",
+        "revision": 959,
+        "seq": 959,
+        "timestamp": "2026-10-04T23:24:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-OBSERVER-ENTRY",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-OBSERVER-ENTRY\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-OBSERVER-ENTRY\"}",
+        "revision": 960,
+        "seq": 960,
+        "timestamp": "2026-10-04T23:24:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/skills.observer-entry.json\"}",
+        "revision": 961,
+        "seq": 961,
+        "timestamp": "2026-10-04T23:25:46Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-OBSERVER-ENTRY-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-OBSERVER-ENTRY-ACCEPT\"}",
+        "revision": 962,
+        "seq": 962,
+        "timestamp": "2026-10-04T23:29:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-OBSERVER-ENTRY-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"2574ce94-e356-492d-8f94-7455ecfd691b\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 963,
+        "seq": 963,
+        "timestamp": "2026-10-04T23:29:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-OBSERVER-ENTRY",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 964, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 964,
+        "seq": 964,
+        "timestamp": "2026-10-04T23:29:50Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-EXEC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-EXEC\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-QUALIFY\"}",
+        "revision": 965,
+        "seq": 965,
+        "timestamp": "2026-10-04T23:29:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/skills.qualification-source-repair.json\"}",
+        "revision": 966,
+        "seq": 966,
+        "timestamp": "2026-10-04T23:40:25Z"
       }
     ],
     "evidence": [
@@ -10360,6 +10450,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import os,subprocess,sys; p=Path('todo-orchestrator/todo_orchestrator/runtime_identity.py'); e=dict(os.environ); r=Path.cwd().resolve(); e['PROJECT_CONTROL_SKILLS_ROOT']=str(r); e['CODING_WORKFLOW_SKILLS_ROOT']=str(r); e['PYTHONPATH']=os.pathsep.join([str(r/'todo-orchestrator'),str(r/'integrations/coding-workflow-mcp'),e.get('PYTHONPATH','')]); raise SystemExit(0 if not p.is_file() else subprocess.run([sys.executable,'-m','unittest','discover','-s','todo-orchestrator/tests','-v'],env=e).returncode)\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"9b90b0d3646a9ccfa81bed8fd36df7250f03fb50e9b899139c12976963d60a2c\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-c\", \"from pathlib import Path; import os,subprocess,sys; p=Path('todo-orchestrator/todo_orchestrator/runtime_identity.py'); e=dict(os.environ); r=Path.cwd().resolve(); e['PROJECT_CONTROL_SKILLS_ROOT']=str(r); e['CODING_WORKFLOW_SKILLS_ROOT']=str(r); e['PYTHONPATH']=os.pathsep.join([str(r/'todo-orchestrator'),str(r/'integrations/coding-workflow-mcp'),e.get('PYTHONPATH','')]); raise SystemExit(0 if not p.is_file() else subprocess.run([sys.executable,'-m','unittest','discover','-s','todo-orchestrator/tests','-v'],env=e).returncode)\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"305da58ed7470b3fbc36977acfaeb465a52608c5\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"2a82a8567c0187ddaf0710b213bafde1e872fc5fb3622220f5c054df3ce8cabf\", \"started_revision\": 630, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination\"}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/2088020f-d6f4-4e3c-a750-60553e259030",
         "revision": 632,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-10-04T23:29:50Z",
+        "gate_id": "SK-AS1-OBSERVER-ENTRY-ACCEPT",
+        "id": "2574ce94-e356-492d-8f94-7455ecfd691b",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"tests/as1/test_sk_as1_observer_entry.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"tests/as1/test_sk_as1_observer_entry.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"133f47c34dd891ec5f3e73846cfcf903dcea5f3c01a3dab1e7918acac8bbc917\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"local-coding-worker/local_worker/observer_runtime.py\", \"planning/adaptive-surface-v1/scripts/qualify_real_journeys_q10.py\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight_metrics.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight_metrics.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/skill_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/skill_job.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/failure-diagnostic.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/failure-diagnostic.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-smoke-q1/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-smoke-q1/smoke.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/useful_while_busy.json\", \"tests/as1/test_sk_as1_observer_entry.py\", \"todo-status.md\", \"todos.md\", \"todos/sk-as1-0000.md\", \"todos/sk-as1-capability-publication.md\", \"todos/sk-as1-gpu.md\", \"todos/sk-as1-observer-continuation.md\", \"todos/sk-as1-observer-conversation.md\", \"todos/sk-as1-observer-entry.md\", \"todos/sk-as1-observer-progress.md\", \"todos/sk-as1-qualify.md\", \"todos/sk-as1-release.md\", \"todos/sk-as1-routing.md\", \"todos/sk-as1-runtime.md\", \"todos/sk-as1-semantic-port.md\", \"todos/sk-as1-semantics.md\", \"todos/sk-as1-source-fence.md\", \"todos/sk-as1-source-freshness.md\"], \"files\": [{\"path\": \"docs/as1-observer-entry.md\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker/local_worker/observer_runtime.py\", \"sha256\": \"8f19069f55b6f9e24b396c269f18a6c5eb7d162a7eef4880e530fdee045447dd\"}, {\"path\": \"local-coding-worker/tests/test_observer_runtime.py\", \"sha256\": \"missing\"}, {\"path\": \"tests/as1/test_sk_as1_observer_continuation.py\", \"sha256\": \"f6b1ff939b91374d16e1f062b6af684af492e79d1f65f3a384c5a7749927040c\"}, {\"path\": \"tests/as1/test_sk_as1_observer_conversation.py\", \"sha256\": \"5cea66e9bf80e44721d38537c272a0237bf1b1514d956f9bfeedaa5e0e380514\"}, {\"path\": \"tests/as1/test_sk_as1_observer_entry.py\", \"sha256\": \"3565d8e73f4808aed5970553b4d0346cd0ec22bbf92a0d0292447c7ccf58a9f9\"}, {\"path\": \"tests/as1/test_sk_as1_observer_progress.py\", \"sha256\": \"329a917ab71b7a7b9ce1d1d842ef01a6969a234c8943c0c8996cdd1981a90f40\"}, {\"path\": \"tests/as1/test_sk_as1_runtime.py\", \"sha256\": \"864817deb7ba35d5928803bb1b69de623648486e4ec0e21e06e6d02b02c1524e\"}], \"interfaces\": [], \"recorded_git_head\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 962}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/2574ce94-e356-492d-8f94-7455ecfd691b",
+        "revision": 963,
         "status": "passed"
       },
       {
@@ -13517,7 +13620,7 @@
         "input_fingerprint": "6072cde2db08bfa711ebc9f17b214151f628bc61444d2f8fdfdcca950fe5574b",
         "last_run_at": "2026-10-04T21:29:55Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-CAPABILITY-PUBLICATION",
         "type": "command",
@@ -13530,7 +13633,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13543,7 +13646,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13556,7 +13659,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13569,7 +13672,7 @@
         "input_fingerprint": "02ec3873d8a2df7bbd1a2986ce726661261228584cea631c1610d6081390a43e",
         "last_run_at": "2026-10-04T20:15:36Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-GPU",
         "type": "command",
@@ -13582,7 +13685,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13595,7 +13698,7 @@
         "input_fingerprint": "68dd7f55611b6ac602d3088a9f19d0cbfdbff37d79691da7f38b5fd8a04140fe",
         "last_run_at": "2026-10-04T22:31:12Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-OBSERVER-CONTINUATION",
         "type": "command",
@@ -13608,11 +13711,37 @@
         "input_fingerprint": "b7445f4086dcb25895e855914174338190f2a58481584124c2e0f6d742ebf60f",
         "last_run_at": "2026-10-04T22:53:11Z",
         "required": 1,
-        "revision": 955,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-OBSERVER-CONVERSATION",
         "type": "command",
         "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"tests/as1/test_sk_as1_observer_entry.py\", \"-q\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker/local_worker/observer_runtime.py\", \"tests/as1/test_sk_as1_observer_entry.py\", \"docs/as1-observer-entry.md\", \"tests/as1/test_sk_as1_observer_conversation.py\", \"tests/as1/test_sk_as1_observer_continuation.py\", \"tests/as1/test_sk_as1_runtime.py\", \"tests/as1/test_sk_as1_observer_progress.py\", \"local-coding-worker/tests/test_observer_runtime.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-OBSERVER-ENTRY-ACCEPT",
+        "input_fingerprint": "de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe",
+        "last_run_at": "2026-10-04T23:29:50Z",
+        "required": 1,
+        "revision": 966,
+        "status": "passed",
+        "task_id": "SK-AS1-OBSERVER-ENTRY",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-OBSERVER-ENTRY\", \"track_git_head\": false}",
+        "id": "SK-AS1-OBSERVER-ENTRY-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 966,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
       },
       {
         "checkpoint_id": null,
@@ -13621,7 +13750,7 @@
         "input_fingerprint": "670cbfad84e9d8edb4b4fd7d39a9488b04aa6293d139cca1f4add343b88c3fe6",
         "last_run_at": "2026-10-04T22:13:02Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-OBSERVER-PROGRESS",
         "type": "command",
@@ -13634,7 +13763,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13642,12 +13771,12 @@
       },
       {
         "checkpoint_id": null,
-        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-QUALIFY\"], \"cwd\": \".\", \"input_paths\": [\"tests\", \"todo-orchestrator/tests\", \"cuda/tests\", \"local-coding-worker/tests\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-QUALIFY\"], \"cwd\": \".\", \"input_paths\": [\"tests\", \"todo-orchestrator/tests\", \"cuda/tests\", \"local-coding-worker/tests\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"local-coding-worker/local_worker/observer_runtime.py\", \"docs/as1-observer-skill-protocol.md\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-QUALIFY-ACCEPT",
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-QUALIFY",
         "type": "command",
@@ -13660,7 +13789,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13673,7 +13802,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-RELEASE",
         "type": "command",
@@ -13686,7 +13815,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13699,7 +13828,7 @@
         "input_fingerprint": "4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf",
         "last_run_at": "2026-10-04T20:26:44Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
@@ -13712,7 +13841,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13725,7 +13854,7 @@
         "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
         "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
@@ -13738,7 +13867,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13751,7 +13880,7 @@
         "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42",
         "last_run_at": "2026-10-04T19:37:12Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTIC-PORT",
         "type": "command",
@@ -13764,7 +13893,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13777,7 +13906,7 @@
         "input_fingerprint": "abe42f33e7709566bb6ea90b19dc86773138864435cf1ff204f9e6b45bd73eeb",
         "last_run_at": "2026-10-04T17:52:53Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTICS",
         "type": "command",
@@ -13790,7 +13919,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13803,7 +13932,7 @@
         "input_fingerprint": "8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f",
         "last_run_at": "2026-10-04T19:59:01Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-SOURCE-FENCE",
         "type": "command",
@@ -13816,7 +13945,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13829,7 +13958,7 @@
         "input_fingerprint": "a128d4bf3127239fdb11d3b1c3ee3e6d60dfa4e863c1fd9665d3508679fac508",
         "last_run_at": "2026-10-04T20:07:16Z",
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "passed",
         "task_id": "SK-AS1-SOURCE-FRESHNESS",
         "type": "command",
@@ -13842,7 +13971,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 953,
+        "revision": 966,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -15365,6 +15494,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\", \"completion_gates\": [{\"evidence_id\": \"47fcf012-3855-4b55-8261-d6e612d96629\", \"evidence_revision\": 211, \"id\": \"WFU-25-ROUTING\", \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\"}], \"completion_revision\": 212, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"WFU-25-ROUTING\", \"input_fingerprint\": \"b4ecdd613da6b5b806f4e844f5960693d671f72605a53aa07365b05a8c655c89\", \"last_run_at\": \"2026-08-27T13:11:36Z\", \"revision\": 211, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 65 ++++++++++++++++++++++++++++------\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/wfu-25.md                        |  6 ++--\\n 4 files changed, 61 insertions(+), 18 deletions(-)\", \"git_head\": \"bf3dd7c5689533726363d3245dc66f2c196bf11e\", \"interfaces\": [], \"note\": \"Exact six-tool installed smoke and subordinate-child guidance validated.\", \"resources\": [], \"task_id\": \"WFU-25\"}",
         "revision": 212,
         "task_id": "WFU-25"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-10-04T23:29:50Z",
+        "id": "fc0dc413-dba3-4a67-955b-31d20c6a8238",
+        "kind": "complete",
+        "note": "Entry-first policy denials return bounded corrective observations before dispatch; 58 tests and 11 subtests passed; independent boundary review found no consequential issues.",
+        "payload_json": "{\"authority_commit\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"changed_owned_paths\": [\"local-coding-worker/local_worker/observer_runtime.py\", \"tests/as1/test_sk_as1_observer_entry.py\"], \"checkpoints\": [], \"completion_commit\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"completion_gates\": [{\"evidence_id\": \"2574ce94-e356-492d-8f94-7455ecfd691b\", \"evidence_revision\": 963, \"id\": \"SK-AS1-OBSERVER-ENTRY-ACCEPT\", \"input_fingerprint\": \"de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\"}], \"completion_revision\": 964, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-AS1-OBSERVER-ENTRY-ACCEPT\", \"input_fingerprint\": \"de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe\", \"last_run_at\": \"2026-10-04T23:29:50Z\", \"revision\": 963, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 461 +++++++++++++++------\\n .../local_worker/observer_runtime.py               |  36 +-\\n todo-status.md                                     |   5 +-\\n todos.md                                           |   3 +-\\n todos/sk-as1-0000.md                               |   2 +-\\n todos/sk-as1-capability-publication.md             |   2 +-\\n todos/sk-as1-gpu.md                                |   2 +-\\n todos/sk-as1-observer-continuation.md              |   2 +-\\n todos/sk-as1-observer-conversation.md              |   2 +-\\n todos/sk-as1-observer-progress.md                  |   2 +-\\n todos/sk-as1-qualify.md                            |   4 +-\\n todos/sk-as1-release.md                            |   2 +-\\n todos/sk-as1-routing.md                            |   2 +-\\n todos/sk-as1-runtime.md                            |   2 +-\\n todos/sk-as1-semantic-port.md                      |   2 +-\\n todos/sk-as1-semantics.md                          |   2 +-\\n todos/sk-as1-source-fence.md                       |   2 +-\\n todos/sk-as1-source-freshness.md                   |   2 +-\\n 18 files changed, 394 insertions(+), 141 deletions(-)\", \"git_head\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Entry-first policy denials return bounded corrective observations before dispatch; 58 tests and 11 subtests passed; independent boundary review found no consequential issues.\", \"producer_commit\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-AS1-OBSERVER-ENTRY\"}",
+        "revision": 964,
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
       }
     ],
     "interface_consumers": [
@@ -17141,6 +17280,56 @@
       },
       {
         "mode": "exclusive",
+        "path": "docs/as1-observer-entry.md",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/observer_runtime.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests/test_observer_runtime.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1/test_sk_as1_observer_continuation.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1/test_sk_as1_observer_conversation.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1/test_sk_as1_observer_entry.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1/test_sk_as1_observer_progress.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1/test_sk_as1_runtime.py",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker/local_worker",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
+      },
+      {
+        "mode": "exclusive",
         "path": "docs/as1-observer-progress.md",
         "task_id": "SK-AS1-OBSERVER-PROGRESS"
       },
@@ -17176,7 +17365,17 @@
       },
       {
         "mode": "exclusive",
+        "path": "docs/as1-observer-skill-protocol.md",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
         "path": "integrations",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/local_worker/observer_runtime.py",
         "task_id": "SK-AS1-QUALIFY"
       },
       {
@@ -19523,6 +19722,19 @@
         "validation_git_head": "9676989b4cbb64da007789f5594b03d9f7b182c8"
       },
       {
+        "completion_git_head": "34b7933fac3d39234388ba6adfb1cbe1fc2af943",
+        "completion_revision": 964,
+        "evidence_id": "2574ce94-e356-492d-8f94-7455ecfd691b",
+        "evidence_revision": 963,
+        "gate_id": "SK-AS1-OBSERVER-ENTRY-ACCEPT",
+        "input_fingerprint": "de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe",
+        "provenance_json": "{\"claim_id\": \"33d0ee45-ce64-4729-b419-9fe5354a6144\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"tests/as1/test_sk_as1_observer_entry.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"de9dfeec65f6f6601b2e01b4773b3c98bcc3f804f06b7f1e2b5dc8aaa92c8afe\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"tests/as1/test_sk_as1_observer_entry.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"133f47c34dd891ec5f3e73846cfcf903dcea5f3c01a3dab1e7918acac8bbc917\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"local-coding-worker/local_worker/observer_runtime.py\", \"planning/adaptive-surface-v1/scripts/qualify_real_journeys_q10.py\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/preflight_metrics.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q6/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q7/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q8/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/phase_order.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/preflight_metrics.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/skill_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/skill_job.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-4d15efd-9676989-20261004-q9/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/execution_policy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/failure-diagnostic.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-a60a5ef-21be127-20261004-q5/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/useful_while_busy.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/failure-diagnostic.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-smoke-q1/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-smoke-q1/smoke.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/approval.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/busy_admissions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/checkpoint_before.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/checkpoint_yielded.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/cleanup.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/controller-spec.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/exact_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/failure.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/foreground.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/hint.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/poll_after_eviction.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/poll_starts_no_model.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/receipt.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/scout.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/scout_admission.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/sessions.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/source_identity.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/turns.json\", \"planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/useful_while_busy.json\", \"tests/as1/test_sk_as1_observer_entry.py\", \"todo-status.md\", \"todos.md\", \"todos/sk-as1-0000.md\", \"todos/sk-as1-capability-publication.md\", \"todos/sk-as1-gpu.md\", \"todos/sk-as1-observer-continuation.md\", \"todos/sk-as1-observer-conversation.md\", \"todos/sk-as1-observer-entry.md\", \"todos/sk-as1-observer-progress.md\", \"todos/sk-as1-qualify.md\", \"todos/sk-as1-release.md\", \"todos/sk-as1-routing.md\", \"todos/sk-as1-runtime.md\", \"todos/sk-as1-semantic-port.md\", \"todos/sk-as1-semantics.md\", \"todos/sk-as1-source-fence.md\", \"todos/sk-as1-source-freshness.md\"], \"files\": [{\"path\": \"docs/as1-observer-entry.md\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker/local_worker/observer_runtime.py\", \"sha256\": \"8f19069f55b6f9e24b396c269f18a6c5eb7d162a7eef4880e530fdee045447dd\"}, {\"path\": \"local-coding-worker/tests/test_observer_runtime.py\", \"sha256\": \"missing\"}, {\"path\": \"tests/as1/test_sk_as1_observer_continuation.py\", \"sha256\": \"f6b1ff939b91374d16e1f062b6af684af492e79d1f65f3a384c5a7749927040c\"}, {\"path\": \"tests/as1/test_sk_as1_observer_conversation.py\", \"sha256\": \"5cea66e9bf80e44721d38537c272a0237bf1b1514d956f9bfeedaa5e0e380514\"}, {\"path\": \"tests/as1/test_sk_as1_observer_entry.py\", \"sha256\": \"3565d8e73f4808aed5970553b4d0346cd0ec22bbf92a0d0292447c7ccf58a9f9\"}, {\"path\": \"tests/as1/test_sk_as1_observer_progress.py\", \"sha256\": \"329a917ab71b7a7b9ce1d1d842ef01a6969a234c8943c0c8996cdd1981a90f40\"}, {\"path\": \"tests/as1/test_sk_as1_runtime.py\", \"sha256\": \"864817deb7ba35d5928803bb1b69de623648486e4ec0e21e06e6d02b02c1524e\"}], \"interfaces\": [], \"recorded_git_head\": \"34b7933fac3d39234388ba6adfb1cbe1fc2af943\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 962}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/2574ce94-e356-492d-8f94-7455ecfd691b\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-AS1-OBSERVER-ENTRY",
+        "valid": 1,
+        "validation_git_head": "34b7933fac3d39234388ba6adfb1cbe1fc2af943"
+      },
+      {
         "completion_git_head": "e59b903d4603781bac907ee46b0327dfc403fb1e",
         "completion_revision": 940,
         "evidence_id": "8e9a9567-7b28-4bad-8671-591df510f470",
@@ -20941,7 +21153,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1021,
+        "id": 1062,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SOURCE-FRESHNESS",
         "task_id": "SK-AS1-CAPABILITY-PUBLICATION",
@@ -20952,7 +21164,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1022,
+        "id": 1063,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-GPU",
@@ -20963,7 +21175,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1023,
+        "id": 1064,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-OBSERVER-PROGRESS",
         "task_id": "SK-AS1-OBSERVER-CONTINUATION",
@@ -20974,7 +21186,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1024,
+        "id": 1065,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-OBSERVER-CONTINUATION",
         "task_id": "SK-AS1-OBSERVER-CONVERSATION",
@@ -20985,7 +21197,18 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1025,
+        "id": 1066,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-OBSERVER-CONVERSATION",
+        "task_id": "SK-AS1-OBSERVER-ENTRY",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 1067,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-OBSERVER-PROGRESS",
@@ -20996,7 +21219,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1026,
+        "id": 1068,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-ROUTING",
         "task_id": "SK-AS1-QUALIFY",
@@ -21007,7 +21230,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1027,
+        "id": 1069,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-QUALIFY",
         "task_id": "SK-AS1-RELEASE",
@@ -21018,7 +21241,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1028,
+        "id": 1070,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-ROUTING",
@@ -21029,7 +21252,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1029,
+        "id": 1071,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-GPU",
         "task_id": "SK-AS1-ROUTING",
@@ -21040,7 +21263,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1030,
+        "id": 1072,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-RUNTIME",
@@ -21051,7 +21274,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1031,
+        "id": 1073,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-SEMANTIC-PORT",
@@ -21062,7 +21285,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1032,
+        "id": 1074,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTIC-PORT",
         "task_id": "SK-AS1-SOURCE-FENCE",
@@ -21073,7 +21296,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 1033,
+        "id": 1075,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SOURCE-FENCE",
         "task_id": "SK-AS1-SOURCE-FRESHNESS",
@@ -24261,12 +24484,12 @@
         "priority": 0,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "planned",
         "tags_json": "[]",
         "title": "AS1 skills: consolidated adaptive helper surface",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 15
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 18
       },
       {
         "attention_reason": null,
@@ -24286,12 +24509,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Connect canonical opaque workflow handles to scoped semantic publication",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 9
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 12
       },
       {
         "attention_reason": null,
@@ -24311,12 +24534,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 17
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 20
       },
       {
         "attention_reason": null,
@@ -24336,12 +24559,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Resume observer reasoning from retained evidence",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 6
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -24361,11 +24584,36 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 956,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Persist and replay public observer tool conversation",
-        "updated_at": "2026-10-04T22:53:12Z",
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 8
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "34b7933fac3d39234388ba6adfb1cbe1fc2af943",
+        "completion_git_head": "34b7933fac3d39234388ba6adfb1cbe1fc2af943",
+        "completion_revision": 964,
+        "created_at": "2026-10-04T23:24:27Z",
+        "id": "SK-AS1-OBSERVER-ENTRY",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.",
+        "notes": "",
+        "objective": "Recover from an observed pre-entry listing without aborting the skill job; enforce authoritative SKILL.md before resource access, preserving native agentic navigation and honest public-call provenance.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": "validated",
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 966,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Return bounded entry-first feedback to the native skill agent",
+        "updated_at": "2026-10-04T23:40:25Z",
         "version": 5
       },
       {
@@ -24386,15 +24634,15 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Make observer protocol commands executable and step exhaustion terminal",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 7
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 10
       },
       {
-        "attention_reason": "Confirmed actual model nonprogress despite retained payload requires bounded public conversation repair before qualification.",
+        "attention_reason": "Bounded observer entry-first feedback repair before qualification",
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
@@ -24411,12 +24659,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 957,
+        "revision": 966,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
-        "updated_at": "2026-10-04T22:57:50Z",
-        "version": 22
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 27
       },
       {
         "attention_reason": null,
@@ -24436,12 +24684,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "planned",
         "tags_json": "[]",
         "title": "Pin the qualified standalone release in Skills",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 15
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 18
       },
       {
         "attention_reason": null,
@@ -24461,12 +24709,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 17
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 20
       },
       {
         "attention_reason": null,
@@ -24486,12 +24734,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 17
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 20
       },
       {
         "attention_reason": null,
@@ -24511,12 +24759,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Complete trusted semantic verification and idempotent control ports",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 14
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 17
       },
       {
         "attention_reason": null,
@@ -24536,12 +24784,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Extend canonical semantic and mutation contracts",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 17
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 20
       },
       {
         "attention_reason": null,
@@ -24561,12 +24809,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Enforce trusted source verifier for local publication anchors",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 11
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 14
       },
       {
         "attention_reason": null,
@@ -24586,12 +24834,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 953,
+        "revision": 966,
         "status": "done",
         "tags_json": "[]",
         "title": "Preserve local content freshness after source-backed amendments",
-        "updated_at": "2026-10-04T22:47:48Z",
-        "version": 10
+        "updated_at": "2026-10-04T23:40:25Z",
+        "version": 13
       },
       {
         "attention_reason": null,
@@ -26726,6 +26974,23 @@
         "version": 1
       },
       {
+        "content_hash": "c4a6d071e31a93c34ec5a4eb370935f3836f68ec295487693409e59b5a9a56c0",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-OBSERVER-ENTRY\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T23:24:27Z",
+        "creation_revision": 959,
+        "id": "SK-AS1-RUN-1:lane_brief:SK-AS1-L-OBSERVER-ENTRY:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-OBSERVER-ENTRY",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-OBSERVER-ENTRY\",\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
         "content_hash": "b610c83184c5456cff889e111ec3de542ecb790da256bb4e1f21450ba6f0e1fa",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-OBSERVER-PROGRESS\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-10-04T22:04:16Z",
@@ -26969,6 +27234,23 @@
         "created_at": "2026-10-04T22:44:02Z",
         "creation_revision": 950,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:8",
+        "invalidated_at": "2026-10-04T23:24:27Z",
+        "invalidation_revision": 959,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-0000\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:9",
+        "task_id": "SK-AS1-0000",
+        "version": 8
+      },
+      {
+        "content_hash": "ea7cbede65a5736287e26ba9e6e4994770d5f0bd78353cc15e5249e69b73d674",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\",\"SK-AS1-SOURCE-FRESHNESS-CLOSED\",\"SK-AS1-CAPABILITY-PUBLICATION-CLOSURE\",\"SK-AS1-OBSERVER-PROGRESS-CLOSURE\",\"SK-AS1-CLOSURE-OBSERVER-CONTINUATION\",\"SK-AS1-CLOSURE-OBSERVER-CONVERSATION\",\"SK-AS1-OBSERVER-ENTRY-CLOSED\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\",\"SK-AS1-SOURCE-FRESHNESS-CLOSED\",\"SK-AS1-CAPABILITY-PUBLICATION-CLOSURE\",\"SK-AS1-OBSERVER-PROGRESS-CLOSURE\",\"SK-AS1-CLOSURE-OBSERVER-CONTINUATION\",\"SK-AS1-CLOSURE-OBSERVER-CONVERSATION\",\"SK-AS1-OBSERVER-ENTRY-CLOSED\"]}",
+        "created_at": "2026-10-04T23:24:27Z",
+        "creation_revision": 959,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:9",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -26978,7 +27260,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-0000",
-        "version": 8
+        "version": 9
       },
       {
         "content_hash": "902fafe9bb4021bcd4cb93f524fd1b4fe4263156fe694dac9921dd054ef410ba",
@@ -27020,6 +27302,23 @@
         "created_at": "2026-10-04T17:21:33Z",
         "creation_revision": 888,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-QUALIFY:1",
+        "invalidated_at": "2026-10-04T23:40:25Z",
+        "invalidation_revision": 966,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-QUALIFY\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-QUALIFY:2",
+        "task_id": "SK-AS1-QUALIFY",
+        "version": 1
+      },
+      {
+        "content_hash": "719256e7dd60719695ee4e0210b04afad698b776d6864e47b610efcab48b27c5",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-QUALIFY-ACCEPT\"],\"next_action\":\"Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Produce a paired Skills qualification receipt usable by Project Control without merging authorities.\",\"scope\":{\"exclusive_paths\":[\"tests\",\"todo-orchestrator/tests\",\"cuda/tests\",\"local-coding-worker/tests\",\"integrations\",\"planning/adaptive-surface-v1\",\"local-coding-worker/local_worker/observer_runtime.py\",\"docs/as1-observer-skill-protocol.md\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-QUALIFY-ACCEPT\"]}",
+        "created_at": "2026-10-04T23:40:25Z",
+        "creation_revision": 966,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-QUALIFY:2",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -27029,7 +27328,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-QUALIFY",
-        "version": 1
+        "version": 2
       },
       {
         "content_hash": "f7e7bfca47d57d0a1261af29b173ee8b8afac7379f6492187e29ab956c1a610b",
@@ -27166,6 +27465,23 @@
         "superseded_by": null,
         "task_id": "SK-AS1-OBSERVER-CONVERSATION",
         "version": 3
+      },
+      {
+        "content_hash": "c1be070ba86b38998c9eb4563eed936576629dd2c2c712eb9a0d4e62078c861a",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-OBSERVER-ENTRY-ACCEPT\"],\"next_action\":\"Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.\",\"objective\":\"Recover from an observed pre-entry listing without aborting the skill job; enforce authoritative SKILL.md before resource access, preserving native agentic navigation and honest public-call provenance.\",\"scope\":{\"exclusive_paths\":[\"local-coding-worker/local_worker/observer_runtime.py\",\"tests/as1/test_sk_as1_observer_entry.py\",\"docs/as1-observer-entry.md\",\"tests/as1/test_sk_as1_observer_conversation.py\",\"tests/as1/test_sk_as1_observer_continuation.py\",\"tests/as1/test_sk_as1_runtime.py\",\"tests/as1/test_sk_as1_observer_progress.py\",\"local-coding-worker/tests/test_observer_runtime.py\"],\"read_paths\":[\"planning/adaptive-surface-v1\",\"local-coding-worker/local_worker\"]},\"tests\":[\"SK-AS1-OBSERVER-ENTRY-ACCEPT\"]}",
+        "created_at": "2026-10-04T23:24:27Z",
+        "creation_revision": 959,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-OBSERVER-ENTRY:SK-AS1-OBSERVER-ENTRY:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-OBSERVER-ENTRY",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-OBSERVER-ENTRY\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-OBSERVER-ENTRY\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-OBSERVER-ENTRY",
+        "version": 1
       },
       {
         "content_hash": "1d88801922d8f02d0d9f6b4b6706794d43707866d52fbc6c489919b82d995e4c",
@@ -28861,7 +29177,7 @@
         "enqueued_at": "2026-10-04T21:17:49Z",
         "lane_id": "SK-AS1-L-CAPABILITY-PUBLICATION",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
       },
@@ -28871,7 +29187,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTICS"
       },
@@ -28881,7 +29197,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 1,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-RUNTIME"
       },
@@ -28891,7 +29207,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 2,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-GPU"
       },
@@ -28901,17 +29217,17 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 3,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-ROUTING"
       },
       {
-        "activated_at": "2026-10-04T22:57:50Z",
+        "activated_at": "2026-10-04T23:29:57Z",
         "completed_at": null,
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 4,
-        "revision": 957,
+        "revision": 966,
         "state": "active",
         "task_id": "SK-AS1-QUALIFY"
       },
@@ -28921,7 +29237,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 5,
-        "revision": 953,
+        "revision": 966,
         "state": "queued",
         "task_id": "SK-AS1-RELEASE"
       },
@@ -28931,7 +29247,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 6,
-        "revision": 953,
+        "revision": 966,
         "state": "queued",
         "task_id": "SK-AS1-0000"
       },
@@ -28941,7 +29257,7 @@
         "enqueued_at": "2026-10-04T22:26:40Z",
         "lane_id": "SK-AS1-L-OBSERVER-CONTINUATION",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-OBSERVER-CONTINUATION"
       },
@@ -28951,9 +29267,19 @@
         "enqueued_at": "2026-10-04T22:44:02Z",
         "lane_id": "SK-AS1-L-OBSERVER-CONVERSATION",
         "position": 0,
-        "revision": 956,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-OBSERVER-CONVERSATION"
+      },
+      {
+        "activated_at": "2026-10-04T23:24:34Z",
+        "completed_at": "2026-10-04T23:29:50Z",
+        "enqueued_at": "2026-10-04T23:24:27Z",
+        "lane_id": "SK-AS1-L-OBSERVER-ENTRY",
+        "position": 0,
+        "revision": 966,
+        "state": "completed",
+        "task_id": "SK-AS1-OBSERVER-ENTRY"
       },
       {
         "activated_at": "2026-10-04T22:04:56Z",
@@ -28961,7 +29287,7 @@
         "enqueued_at": "2026-10-04T22:04:16Z",
         "lane_id": "SK-AS1-L-OBSERVER-PROGRESS",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-OBSERVER-PROGRESS"
       },
@@ -28971,7 +29297,7 @@
         "enqueued_at": "2026-10-04T19:13:03Z",
         "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTIC-PORT"
       },
@@ -28991,7 +29317,7 @@
         "enqueued_at": "2026-10-04T19:52:12Z",
         "lane_id": "SK-AS1-L-SOURCE-FENCE",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-SOURCE-FENCE"
       },
@@ -29001,7 +29327,7 @@
         "enqueued_at": "2026-10-04T20:02:53Z",
         "lane_id": "SK-AS1-L-SOURCE-FRESHNESS",
         "position": 0,
-        "revision": 953,
+        "revision": 966,
         "state": "completed",
         "task_id": "SK-AS1-SOURCE-FRESHNESS"
       },
@@ -29772,11 +30098,11 @@
         "created_at": "2026-10-04T21:17:49Z",
         "id": "SK-AS1-L-CAPABILITY-PUBLICATION",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29784,11 +30110,11 @@
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 957,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "active",
-        "updated_at": "2026-10-04T22:57:50Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29796,11 +30122,11 @@
         "created_at": "2026-10-04T22:26:40Z",
         "id": "SK-AS1-L-OBSERVER-CONTINUATION",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29808,11 +30134,23 @@
         "created_at": "2026-10-04T22:44:02Z",
         "id": "SK-AS1-L-OBSERVER-CONVERSATION",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 956,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:53:12Z",
+        "updated_at": "2026-10-04T23:40:25Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-10-04T23:24:27Z",
+        "id": "SK-AS1-L-OBSERVER-ENTRY",
+        "parent_lane_id": "SK-AS1-L-EXEC",
+        "revision": 966,
+        "role": "implementer",
+        "run_id": "SK-AS1-RUN-1",
+        "state": "closed",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29820,11 +30158,11 @@
         "created_at": "2026-10-04T22:04:16Z",
         "id": "SK-AS1-L-OBSERVER-PROGRESS",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29832,11 +30170,11 @@
         "created_at": "2026-10-04T19:13:03Z",
         "id": "SK-AS1-L-SEMANTIC-CONTROL",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29856,11 +30194,11 @@
         "created_at": "2026-10-04T19:52:12Z",
         "id": "SK-AS1-L-SOURCE-FENCE",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -29868,11 +30206,11 @@
         "created_at": "2026-10-04T20:02:53Z",
         "id": "SK-AS1-L-SOURCE-FRESHNESS",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 953,
+        "revision": 966,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T22:47:48Z",
+        "updated_at": "2026-10-04T23:40:25Z",
         "workspace_mode": "exclusive"
       },
       {

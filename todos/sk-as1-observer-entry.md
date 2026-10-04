@@ -1,12 +1,12 @@
 
 
 <!-- todo-orchestrator:v2-managed:start -->
-# SK-AS1-OBSERVER-CONVERSATION: Persist and replay public observer tool conversation
+# SK-AS1-OBSERVER-ENTRY: Return bounded entry-first feedback to the native skill agent
 
 Task revision: `966`; current project revision is in `todo-status.md`.
 
 ## Objective
-Repair confirmed actual-model continuation nonprogress by replaying only public tool calls and packetized results as bounded conversation history, without hidden reasoning or semantic skill routing.
+Recover from an observed pre-entry listing without aborting the skill job; enforce authoritative SKILL.md before resource access, preserving native agentic navigation and honest public-call provenance.
 
 ## State
 - Lifecycle: `done`
@@ -15,18 +15,20 @@ Repair confirmed actual-model continuation nonprogress by replaying only public 
 - Result: `validated`
 
 ## Next Action
-Record actual accepted public tool-call JSON in observations and replay assistant call/user result conversation from durable checkpoints; bounded no hidden reasoning, no forced source rereads or routing policy. Qualify short actual read-answer before full paired journey.
+Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.
 
 ## Ownership
-- `exclusive`: `docs/as1-observer-conversation.md`
+- `exclusive`: `docs/as1-observer-entry.md`
 - `exclusive`: `local-coding-worker/local_worker/observer_runtime.py`
+- `exclusive`: `local-coding-worker/tests/test_observer_runtime.py`
 - `exclusive`: `tests/as1/test_sk_as1_observer_continuation.py`
 - `exclusive`: `tests/as1/test_sk_as1_observer_conversation.py`
+- `exclusive`: `tests/as1/test_sk_as1_observer_entry.py`
 - `exclusive`: `tests/as1/test_sk_as1_observer_progress.py`
 - `exclusive`: `tests/as1/test_sk_as1_runtime.py`
 - `read`: `local-coding-worker/local_worker`
 - `read`: `planning/adaptive-surface-v1`
 
 ## Dependencies
-- `task`: `SK-AS1-OBSERVER-CONTINUATION`
+- `task`: `SK-AS1-OBSERVER-CONVERSATION`
 <!-- todo-orchestrator:v2-managed:end -->
