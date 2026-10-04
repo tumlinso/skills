@@ -12,7 +12,18 @@ from test_sk_as1_observer_progress import Backend, example, final, fixture, requ
 
 
 def context(turn):
-    return json.loads(turn['messages'][1]['content'])
+    messages = turn['messages']
+    initial = json.loads(messages[1]['content'])
+    observations = []
+    for index, message in enumerate(messages[2:], 2):
+        value = json.loads(message['content'])
+        if message['role'] == 'user' and 'packet_id' in value:
+            observations.append({**value, 'public_tool_call': json.loads(messages[index - 1]['content'])})
+        elif message['role'] == 'user' and 'retained_observation' in value:
+            observations.append(value['retained_observation'])
+    progress = json.loads(messages[-1]['content']).get('progress', initial.get('progress'))
+    return {**{key: value for key, value in initial.items() if key not in {'progress', 'instruction'}},
+            'observations': observations, 'progress': progress}
 
 
 def test_initial_cat_then_continuation_can_finish_without_source_reread(fixture):
@@ -21,7 +32,7 @@ def test_initial_cat_then_continuation_can_finish_without_source_reread(fixture)
     source.write_text('The public source value is 42.\n')
     def initial(turn):
         assert context(turn)['progress'] == {'stage': 'initial', 'observation_count': 0, 'remaining_steps': 6}
-        assert 'Start with command for source/files/Git relevant' in turn['messages'][0]['content']
+        assert 'Start with command for source/files/Git relevant' in turn['messages'][1]['content']
         return {'tool': 'command', 'arguments': {'argv': ['cat', str(source)], 'cwd': str(root)}}
     def continuation(turn):
         public = context(turn)
@@ -102,11 +113,13 @@ def test_skill_initial_example_reads_exact_entry_then_follows_native_maps(fixtur
         return command
     def read_router(turn):
         assert context(turn)['progress']['stage'] == 'continuation'
-        assert 'native map' in turn['messages'][1]['content']
+        assert 'native map' in json.dumps(context(turn)['observations'])
+        assert 'native map' not in turn['messages'][1]['content']
         assert 'follow its own maps and references agentically' in turn['messages'][0]['content']
         return {'tool': 'command', 'arguments': {'argv': ['cat', str(router)], 'cwd': str(root)}}
     def read_selected(turn):
-        assert 'Read selected.md before selecting' in turn['messages'][1]['content']
+        assert 'Read selected.md before selecting' in json.dumps(context(turn)['observations'])
+        assert 'Read selected.md before selecting' not in turn['messages'][1]['content']
         return {'tool': 'command', 'arguments': {'argv': ['cat', str(selected)], 'cwd': str(root)}}
     selection = {'format': 'pc-skill-selection/1', 'synthesis': 'native selection',
         'selections': [{'skill': 'tiny', 'resource': 'refs/selected.md', 'reason': 'native prerequisite',

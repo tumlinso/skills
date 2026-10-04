@@ -161,7 +161,13 @@ def test_foreground_yield_resumes_retained_source_with_fresh_attempt(fixture):
     resumed = port.run(request(attempt=2, session_id='fixture-session', observations=yielded['observations']))
     assert resumed['status'] == 'completed'
     assert resumed['observations'] == yielded['observations']
-    assert 'source survives foreground preemption' in backend.turns[-1]['messages'][1]['content']
+    messages = backend.turns[-1]['messages']
+    assert 'source survives foreground preemption' not in messages[1]['content']
+    assert json.loads(messages[2]['content']) == yielded['observations'][0]['public_tool_call']
+    retained_result = json.loads(messages[3]['content'])
+    assert 'source survives foreground preemption' in retained_result['stdout']
+    assert retained_result['packet_id'] == yielded['observations'][0]['packet_id']
+    assert retained_result['source_reads'] == yielded['observations'][0]['source_reads']
 
 
 def test_superseded_turn_cannot_publish_a_command(fixture):

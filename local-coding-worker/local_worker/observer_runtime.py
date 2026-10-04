@@ -221,13 +221,19 @@ class ObserverWorkerPort:
             check()
             return {**base, "status": status, "observations": observations,
                     "findings": [], "unresolved_questions": [], **extra}
-        def observe(result):
+        def observe(result, public_call=None):
             check()
             if not isinstance(result, dict) or not isinstance(result.get("packet_id"), str) or not result["packet_id"]:
                 raise ValueError("tool_result_not_packetized")
+            result = {k: v for k, v in result.items() if k != "public_tool_call"}
+            if public_call is not None:
+                result["public_tool_call"] = json.loads(json.dumps(public_call))
             if len(json.dumps(result, ensure_ascii=False).encode()) > 16384:
                 # Never invent an excerpt's identity as the full packet body.
-                result = {"packet_id": result["packet_id"], "omissions": ["tool payload exceeded worker context budget"]}
+                result = {"packet_id": result["packet_id"], "omissions": ["tool payload exceeded worker context budget"],
+                          **({"public_tool_call": result["public_tool_call"]} if public_call is not None else {})}
+            if len(json.dumps(result, ensure_ascii=False).encode()) > 16384:
+                raise ValueError("public_tool_call_exceeded_observation_budget")
             observations.append(result)
             if len(observations) > 24:
                 del observations[0]
@@ -286,6 +292,13 @@ class ObserverWorkerPort:
                     "selections [{skill,resource,content_sha256,line_start,line_end,reason}], synthesis, unresolved. "
                     "Resources are relative to the registered skill root. Report useful source selections, not a whole skill dump."
                 )
+            instruction += (
+                " Review retained public observations before acting. Decide whether their evidence is sufficient. "
+                "If sufficient, return final JSON now with evidence-backed findings and any unresolved questions. "
+                "Use additional commands/tools only to obtain missing evidence; do not reread retained sources "
+                "unless their evidence is incomplete, stale, or otherwise needs verification."
+            )
+            initial_context = {k: request[k] for k in ("question", "scope", "hints", "skill") if k in request}
             for step in range(max_steps):
                 check()
                 session = request.get("session_id")
@@ -294,15 +307,32 @@ class ObserverWorkerPort:
                     check()
                     if status.get("preempt_requested") or status.get("draining"):
                         return snapshot("yielding", reason="foreground_preemption")
-                context = {k: request[k] for k in ("question", "scope", "hints", "skill") if k in request}
-                context["observations"] = observations
                 stage = ("resumed" if observations and step == 0 else
                          "continuation" if observations else "initial")
-                context["progress"] = {"stage": stage, "observation_count": len(observations),
-                                       "remaining_steps": max_steps - step}
+                progress = {"stage": stage, "observation_count": len(observations),
+                            "remaining_steps": max_steps - step}
+                messages = [{"role": "system", "content": instruction},
+                            {"role": "user", "content": json.dumps(
+                                initial_context if observations else {**initial_context, "progress": progress,
+                                    "instruction": "Start with command for source/files/Git relevant to the question."},
+                                ensure_ascii=False)}]
+                for observation in observations:
+                    public_call = observation.get("public_tool_call")
+                    if public_call is not None:
+                        if (not isinstance(public_call, dict) or set(public_call) != {"tool", "arguments"}
+                                or public_call.get("tool") not in TOOLS or not isinstance(public_call.get("arguments"), dict)):
+                            raise ValueError("invalid_retained_public_tool_call")
+                        messages.append({"role": "assistant", "content": json.dumps(public_call, ensure_ascii=False)})
+                        payload = {k: v for k, v in observation.items() if k != "public_tool_call"}
+                        messages.append({"role": "user", "content": json.dumps(payload, ensure_ascii=False)})
+                    else:
+                        # Old checkpoints and internal validation reads have
+                        # no accepted model call. Never invent one for them.
+                        messages.append({"role": "user", "content": json.dumps(
+                            {"retained_observation": observation}, ensure_ascii=False)})
                 if observations:
-                    stage_instruction = (
-                        " Current stage: " + stage + ". Review the retained public observations before acting; "
+                    continuation = (
+                        "Review the retained public observations before acting; "
                         "this is a continuation of the supplied question, not a new investigation. "
                         "Decide whether that evidence is sufficient. If sufficient, return final JSON now with "
                         "evidence-backed findings and any unresolved questions. Use additional commands/tools "
@@ -310,22 +340,16 @@ class ObserverWorkerPort:
                         "unless their evidence is incomplete, stale, or otherwise needs verification. "
                         "Retained packet IDs identify observations, not proof that they answer the question."
                     )
-                else:
-                    stage_instruction = (
-                        " Current stage: initial. No observations have been retained yet. "
-                        "Start with command for source/files/Git relevant to the question."
-                    )
-                encoded = json.dumps(context, ensure_ascii=False)
-                if len(encoded.encode()) > 60000:
-                    return snapshot("partial", reason="context_budget", unresolved_questions=["Select retained evidence before resuming"])
-                turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
-                    {"role": "system", "content": instruction + stage_instruction},
-                    {"role": "user", "content": encoded}],
+                    messages.append({"role": "user", "content": json.dumps(
+                        {"progress": progress, "continuation": continuation}, ensure_ascii=False)})
+                turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
                     "max_tokens": 2048, "timeout_seconds": 90,
                     "compute_profile": request.get("compute_profile", "narrow"),
                     "parallelism": request.get("parallelism", "default")}
                 if session:
                     turn["session_id"] = session
+                if len(json.dumps(turn, ensure_ascii=False).encode()) > 60000:
+                    return snapshot("partial", reason="context_budget", unresolved_questions=["Select retained evidence before resuming"])
                 response = self.backend.run_observer_turn(turn)
                 check()
                 if not isinstance(response, dict):
@@ -344,12 +368,16 @@ class ObserverWorkerPort:
                     tool, arguments = value.get("tool"), value.get("arguments")
                     if tool not in TOOLS or not isinstance(arguments, dict) or set(value) != {"tool", "arguments"}:
                         raise ValueError("tool_denied_for_readonly_mode")
+                    public_call = json.loads(json.dumps(value))
+                    if len(json.dumps({"packet_id": "reserved", "omissions": ["tool payload exceeded worker context budget"],
+                                       "public_tool_call": value}, ensure_ascii=False).encode()) > 16384:
+                        raise ValueError("public_tool_call_exceeded_observation_budget")
                     check()
                     result = (self.command.run(**arguments, guard=guard) if tool == "command" else self.tools(tool, arguments))
                     if request["mode"] == "skill" and entry not in read_resources():
                         if not any(r.get("path") == entry for r in result.get("source_reads", [])):
                             raise ValueError("skill_must_read_installed_entry_first")
-                    observe(result)
+                    observe(result, public_call)
                     continue
                 if not isinstance(value.get("answer"), str) or not value["answer"].strip():
                     raise ValueError("final_answer_missing")
