@@ -36,6 +36,26 @@ class Help:
 
 
 class LlamaCppServerTests(unittest.TestCase):
+    def test_spawn_ownership_callback_precedes_readiness_poll(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binary = root / 'llama-server'
+            binary.write_text('#!/bin/sh\n')
+            binary.chmod(0o755)
+            model = root / 'fixture.gguf'
+            model.write_bytes(b'GGUFfixture')
+            order = []
+            def transport(*args):
+                order.append('health')
+                self.assertEqual(order[0], 'owned')
+                return 200, {}
+            adapter = LlamaCppServerAdapter(str(binary), process_factory=Factory(),
+                                           help_runner=lambda *a, **kw: Help(), transport=transport)
+            handle = adapter.start({'model_path': str(model), 'startup_timeout_seconds': 1,
+                'on_spawn': lambda handle, info: order.append('owned')})
+            self.assertEqual(order, ['owned', 'health'])
+            adapter.evict(handle)
+
     def test_run_forwards_bounded_schema_and_validates_before_transport(self):
         calls = []
         def transport(*args):

@@ -305,6 +305,12 @@ def _profile(*, maximum=2, ttl=900):
 
 
 class _PoolBackend(ProductionBackend):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("residency_observer", lambda uuids: {
+            "available": True, "devices": [{"uuid": gpu, "memory_used_mib": 0} for gpu in uuids],
+            "processes": []})
+        super().__init__(*args, **kwargs)
+
     def _healthy(self, slot):
         return bool(self.service.health("llama", slot.handle).get("healthy"))
 
@@ -312,6 +318,66 @@ class _PoolBackend(ProductionBackend):
 
 
 class ServicePoolTests(unittest.TestCase):
+    def test_failed_vram_cleanup_keeps_physical_owner_until_observed_release(self):
+        backend, runtime, service = self.backend(maximum=1)
+        lease = backend.warm()
+        backend.release(lease["service_lease_id"])
+        memory = {"value": 800}
+        backend._observe_residency = lambda uuids: {
+            "available": True, "devices": [{"uuid": gpu, "memory_used_mib": memory["value"]} for gpu in uuids],
+            "processes": []}
+        runtime.host.preemptions.add(lease["owner_id"])
+        backend.poll()
+        self.assertIn(lease["owner_id"], runtime.host.owners)
+        self.assertEqual(backend._slots[lease["slot_id"]].state, "draining")
+        with self.assertRaises(SupervisorError):
+            backend.warm()
+        memory["value"] = 0
+        backend.poll()
+        self.assertNotIn(lease["owner_id"], runtime.host.owners)
+        self.assertTrue(backend.cleanup_receipts[-1]["memory_released"])
+
+    def test_active_turn_drains_without_termination_and_blocks_next_turn(self):
+        entered, resume = threading.Event(), threading.Event()
+        class BlockedService(_Service):
+            def run(self, name, handle, request):
+                entered.set()
+                if not resume.wait(2):
+                    raise AssertionError("turn not resumed")
+                return super().run(name, handle, request)
+        backend, runtime, service = self.backend(service=BlockedService())
+        lease = backend.warm()
+        request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "session_id": lease["service_lease_id"],
+                   "messages": [{"role": "user", "content": "fixture"}],
+                   "max_tokens": 20, "timeout_seconds": 2, "compute_profile": "narrow"}
+        results = []
+        thread = threading.Thread(target=lambda: results.append(backend.run_observer_turn(request)))
+        thread.start()
+        self.assertTrue(entered.wait(1))
+        runtime.host.preemptions.add(lease["owner_id"])
+        backend.poll()
+        self.assertTrue(service.handles[backend._slots[lease["slot_id"]].handle])
+        self.assertIn(lease["owner_id"], runtime.host.owners)
+        resume.set()
+        thread.join(2)
+        self.assertEqual(results[0]["status"], "available")
+        self.assertIn("preempt", backend.run_observer_turn(request)["reason"])
+        backend.poll()
+        self.assertTrue(backend.preemption_status(lease["service_lease_id"])["preempt_requested"])
+        self.assertTrue(backend.preemption_status(lease["service_lease_id"])["preempt_requested"])
+        backend.release(lease["service_lease_id"])
+        backend.close()
+
+    def test_allowed_device_policy_never_falls_back_to_other_island(self):
+        backend, runtime, service = self.backend()
+        backend.profile["deployment_policy"]["allowed_gpu_uuids"] = ["GPU-c", "GPU-d"]
+        lease = backend.warm()
+        self.assertEqual(set(lease["gpu_uuids"]), {"GPU-c", "GPU-d"})
+        with self.assertRaises(SupervisorError):
+            backend.warm()
+        self.assertEqual(service.starts, 1)
+        backend.close()
+
     def test_backend_creates_its_private_runtime_namespace(self):
         with tempfile.TemporaryDirectory() as temporary:
             namespace = Path(temporary) / "app" / "observer-analysis"

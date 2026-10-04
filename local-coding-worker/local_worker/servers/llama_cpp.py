@@ -146,12 +146,20 @@ class LlamaCppServerAdapter:
             "profile": profile,
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
+        on_spawn = context.get("on_spawn")
+        if on_spawn is not None:
+            try:
+                on_spawn(handle, self.owned_process_descriptor(handle))
+            except Exception as error:
+                failure = AdapterError(f"model_spawn_ownership_incomplete: {error}")
+                failure.owned_handle = handle
+                raise failure from error
         timeout = float(profile.get("startup_timeout_seconds", context.get("startup_timeout_seconds", 0)))
         if timeout > 0:
             deadline = time.monotonic() + timeout
             while True:
                 if process.poll() is not None:
-                    self.evict(handle)
+                    self._startup_evict(handle)
                     raise AdapterError(f"llama-server exited during startup; log: {log_path}")
                 try:
                     status, _ = self.transport("GET", f"http://{host}:{port}/health", None, 2.0)
@@ -160,16 +168,29 @@ class LlamaCppServerAdapter:
                 if status == 200:
                     break
                 if time.monotonic() >= deadline:
-                    self.evict(handle)
+                    self._startup_evict(handle)
                     raise AdapterError(f"llama-server startup timed out; log: {log_path}")
                 self.sleeper(min(0.1, timeout))
         return handle
+
+    def _startup_evict(self, handle: str) -> None:
+        try:
+            self.evict(handle)
+        except Exception as error:
+            failure = AdapterError(f"model_startup_cleanup_incomplete: {error}")
+            failure.owned_handle = handle
+            raise failure from error
 
     def _server(self, handle: str) -> dict[str, Any]:
         try:
             return self._servers[handle]
         except KeyError as error:
             raise AdapterError("unknown llama.cpp server handle") from error
+
+    def owned_process_descriptor(self, handle: str) -> dict[str, Any]:
+        """Local process identity independent of HTTP endpoint readiness."""
+        server = self._server(handle)
+        return {"pid": server["process"].pid, "base_url": server["base_url"]}
 
     def health(self, handle: str) -> dict[str, Any]:
         server = self._server(handle)
@@ -301,6 +322,9 @@ class LlamaCppServerAdapter:
                     os.killpg(process.pid, signal.SIGKILL)
                 except (AttributeError, ProcessLookupError, PermissionError):
                     process.kill()
+                process.wait(timeout=10)
+        if process.poll() is None:
+            raise AdapterError("model_process_not_quiescent")
         server["log_stream"].close()
         server["accepting"] = False
         server["evicted"] = True
@@ -308,7 +332,7 @@ class LlamaCppServerAdapter:
 
     def quiescent(self, handle: str) -> bool:
         server = self._server(handle)
-        return bool(server["evicted"] or server["process"].poll() is not None)
+        return server["process"].poll() is not None
 
     def usage(self, handle: str) -> dict[str, Any]:
         usage = dict(self._server(handle)["usage"])
