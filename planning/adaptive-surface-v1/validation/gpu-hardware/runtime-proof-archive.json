@@ -1,0 +1,47 @@
+{
+  "format": "pc-as1-external-runtime-proof-archive/1",
+  "archive_root": "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu-runtime-proof-archive",
+  "reason": "Ephemeral controller runtime DB/WAL/SHM preserved outside source tracking; immutable qualification JSON, stdout and snapshots remain tracked.",
+  "files": [
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4/controller/.todo-orchestrator/runtime/background.sqlite3",
+      "sha256": "8dfb7e87ac6e4e9fc675e3a6b3232c07e9f5940472ea3947e63006ed8c943ce3"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4/controller/.todo-orchestrator/runtime/background.sqlite3-shm",
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4/controller/.todo-orchestrator/runtime/background.sqlite3-wal",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/controller/.todo-orchestrator/runtime/background.sqlite3",
+      "sha256": "73df5f8722256d32ee12e8f4f92057b8ec4d05c57364530c018ec208f2c834d0"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3",
+      "sha256": "cbbc35332cac3d1b6f5c06d065709b74b356c37d1c0c0adcc67e41f7c693285d"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-shm",
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-wal",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3",
+      "sha256": "b570e3f813ab4db1adab06aa1a153e0f24da4022d0ef18f7238e3b842cab6c29"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-shm",
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-wal",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

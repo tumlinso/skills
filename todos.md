@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `920`
+Project revision: `924`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -81,10 +81,10 @@ Project revision: `920`
 - `CWM-09` | kind: integration_task | status: done | parent: - | objective: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | kind: integration_task | status: done | parent: - | objective: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
 - `PCU-SK-32` | kind: task | status: done | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
-- `SK-AS1-GPU` | kind: task | status: in_progress | parent: SK-AS1-0000 | objective: Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
+- `SK-AS1-GPU` | kind: task | status: done | parent: SK-AS1-0000 | objective: Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
 - `SK-AS1-QUALIFY` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
 - `SK-AS1-RELEASE` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
-- `SK-AS1-ROUTING` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
+- `SK-AS1-ROUTING` | kind: task | status: in_progress | parent: SK-AS1-0000 | objective: Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
 - `SK-AS1-RUNTIME` | kind: task | status: done | parent: SK-AS1-0000 | objective: Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.
 - `SK-AS1-SEMANTIC-PORT` | kind: task | status: done | parent: SK-AS1-0000 | objective: Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.
 - `SK-AS1-SEMANTICS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.
