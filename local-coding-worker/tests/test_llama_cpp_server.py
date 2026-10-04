@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import tempfile
 import unittest
+import subprocess
 from pathlib import Path
 from unittest import mock
 
@@ -12,6 +13,7 @@ sys.path.insert(0, str(SKILL))
 
 from local_worker.service import AdapterError
 from local_worker.servers import LlamaCppServerAdapter
+from local_worker.residency import process_identity
 
 
 class FakeProcess:
@@ -36,6 +38,21 @@ class Help:
 
 
 class LlamaCppServerTests(unittest.TestCase):
+    def test_default_adapter_eviction_uses_actual_owned_pidfd_and_wait(self):
+        process = subprocess.Popen([sys.executable, '-c', 'import time;time.sleep(90)'], start_new_session=True)
+        try:
+            with tempfile.TemporaryFile(mode='w+') as log:
+                adapter = LlamaCppServerAdapter()
+                adapter._servers['owned-cpu-fixture'] = {'process': process, 'accepting': True, 'evicted': False,
+                    'termination_identity': process_identity(process.pid), 'log_stream': log}
+                self.assertTrue(adapter.evict('owned-cpu-fixture')['evicted'])
+                self.assertIsNotNone(process.poll())
+                self.assertTrue(adapter.quiescent('owned-cpu-fixture'))
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                process.wait(timeout=5)
+
     def test_spawn_ownership_callback_precedes_readiness_poll(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -50,7 +67,9 @@ class LlamaCppServerTests(unittest.TestCase):
                 self.assertEqual(order[0], 'owned')
                 return 200, {}
             adapter = LlamaCppServerAdapter(str(binary), process_factory=Factory(),
-                                           help_runner=lambda *a, **kw: Help(), transport=transport)
+                                           help_runner=lambda *a, **kw: Help(), transport=transport,
+                                           identity_reader=lambda pid: {"pid": pid},
+                                           owned_terminator=lambda identity: None)
             handle = adapter.start({'model_path': str(model), 'startup_timeout_seconds': 1,
                 'on_spawn': lambda handle, info: order.append('owned')})
             self.assertEqual(order, ['owned', 'health'])
@@ -101,7 +120,8 @@ class LlamaCppServerTests(unittest.TestCase):
                         "usage": {"completion_tokens": 9}}
                 return 200, {"status": "ok"}
             adapter = LlamaCppServerAdapter(str(binary), process_factory=factory,
-                help_runner=help_runner, transport=transport)
+                help_runner=help_runner, transport=transport,
+                identity_reader=lambda pid: {"pid": pid}, owned_terminator=lambda identity: None)
             profile = {"format": "CORE4-MODEL-SERVICE/2", "model_sha256": "a" * 64,
                 "allocated_gpu_uuids": ["GPU-a", "GPU-b"], "split_mode": "layer",
                 "tensor_split": [1, 2], "main_gpu": 0, "context_size": 16384,

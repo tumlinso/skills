@@ -6,6 +6,9 @@ import itertools
 import json
 import os
 import sqlite3
+import math
+import secrets
+import hashlib
 import tempfile
 import time
 import uuid
@@ -38,6 +41,9 @@ CREATE TABLE IF NOT EXISTS host_owners(
  state TEXT NOT NULL, preempt_requested INTEGER NOT NULL DEFAULT 0,
  priority_class TEXT NOT NULL DEFAULT 'background_cuda',
  preemptible INTEGER NOT NULL DEFAULT 1,
+ residency_protected INTEGER NOT NULL DEFAULT 0,
+ residency_metadata_json TEXT NOT NULL DEFAULT '{}',
+ residency_release_verified INTEGER NOT NULL DEFAULT 0,
  cpu_threads INTEGER NOT NULL DEFAULT 0, ram_bytes INTEGER NOT NULL DEFAULT 0,
  acquired_at REAL NOT NULL, heartbeat_at REAL NOT NULL
 );
@@ -104,7 +110,7 @@ class HostCoordinator:
     def initialize(self) -> None:
         connection = self.connect()
         try:
-            connection.executescript(SCHEMA)
+            connection.executescript("BEGIN IMMEDIATE;\n" + SCHEMA)
             columns = {str(row[1]) for row in connection.execute("PRAGMA table_info(host_owners)")}
             if "service_id" not in columns:
                 connection.execute("ALTER TABLE host_owners ADD COLUMN service_id TEXT")
@@ -112,8 +118,60 @@ class HostCoordinator:
                 connection.execute("ALTER TABLE host_owners ADD COLUMN priority_class TEXT NOT NULL DEFAULT 'background_cuda'")
             if "preemptible" not in columns:
                 connection.execute("ALTER TABLE host_owners ADD COLUMN preemptible INTEGER NOT NULL DEFAULT 1")
+            for name, declaration in (
+                ("residency_protected", "INTEGER NOT NULL DEFAULT 0"),
+                ("residency_metadata_json", "TEXT NOT NULL DEFAULT '{}'"),
+                ("residency_release_verified", "INTEGER NOT NULL DEFAULT 0"),
+            ):
+                if name not in columns:
+                    connection.execute(f"ALTER TABLE host_owners ADD COLUMN {name} {declaration}")
+            self._install_residency_guards(connection)
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
         finally:
             connection.close()
+
+    @staticmethod
+    def _install_residency_guards(connection: sqlite3.Connection) -> None:
+        # Guards execute for old frozen clients sharing this database too.
+        # IGNORE preserves unrelated clients and their ordinary reservations.
+        guards = {
+            "owner_insert": ("host_owners", "INSERT", "EXISTS(SELECT 1 FROM host_owners WHERE id=NEW.id AND residency_protected=1 AND state='active')"),
+            "owner_delete": ("host_owners", "DELETE", "OLD.residency_protected=1 AND OLD.state='active'"),
+            "owner_update": ("host_owners", "UPDATE", """OLD.residency_protected=1 AND OLD.state='active' AND (
+                (NEW.residency_protected=0 AND NOT(NEW.residency_release_verified=1 AND OLD.residency_release_verified=0)) OR
+                (NEW.residency_protected=1 AND (NEW.state IS NOT OLD.state OR NEW.id IS NOT OLD.id OR
+                 NEW.owner_kind IS NOT OLD.owner_kind OR NEW.project_root IS NOT OLD.project_root OR
+                 NEW.job_id IS NOT OLD.job_id OR NEW.attempt_id IS NOT OLD.attempt_id OR
+                 NEW.service_id IS NOT OLD.service_id OR NEW.acquired_at IS NOT OLD.acquired_at OR
+                 NEW.cpu_threads IS NOT OLD.cpu_threads OR NEW.ram_bytes IS NOT OLD.ram_bytes OR
+                 json_extract(NEW.residency_metadata_json,'$.generation') IS NOT json_extract(OLD.residency_metadata_json,'$.generation') OR
+                 json_extract(NEW.residency_metadata_json,'$.residency_capability_sha256') IS NOT json_extract(OLD.residency_metadata_json,'$.residency_capability_sha256') OR
+                 json_extract(NEW.residency_metadata_json,'$.origin') IS NOT json_extract(OLD.residency_metadata_json,'$.origin') OR
+                 json_extract(NEW.residency_metadata_json,'$.baseline') IS NOT json_extract(OLD.residency_metadata_json,'$.baseline') OR
+                 json_extract(NEW.residency_metadata_json,'$.resource_ids') IS NOT json_extract(OLD.residency_metadata_json,'$.resource_ids') OR
+                 ((NEW.pid IS NOT OLD.pid OR NEW.process_start IS NOT OLD.process_start) AND NOT(
+                   json_extract(OLD.residency_metadata_json,'$.phase')='reserved' AND
+                   json_extract(NEW.residency_metadata_json,'$.phase')='spawned' AND
+                   json_extract(NEW.residency_metadata_json,'$.model_pid')=NEW.pid AND
+                   json_extract(NEW.residency_metadata_json,'$.process_start')=NEW.process_start)))))"""),
+        }
+        protected = "EXISTS(SELECT 1 FROM host_owners WHERE id=OLD.owner_id AND residency_protected=1 AND state='active')"
+        for table, identity in (("host_reservations", "resource_id"), ("host_foreground_intents", "id")):
+            guards[f"{table}_delete"] = (table, "DELETE", f"OLD.state='active' AND {protected}")
+            extra = " OR NEW.resources_json IS NOT OLD.resources_json OR NEW.cpu_threads IS NOT OLD.cpu_threads OR NEW.ram_bytes IS NOT OLD.ram_bytes" if table == "host_foreground_intents" else ""
+            acquired = "created_at" if table == "host_foreground_intents" else "acquired_at"
+            condition = (f"OLD.state='active' AND {protected} AND (NEW.state IS NOT OLD.state OR "
+                         f"NEW.owner_id IS NOT OLD.owner_id OR NEW.{identity} IS NOT OLD.{identity} OR "
+                         f"NEW.{acquired} IS NOT OLD.{acquired}{extra})")
+            guards[f"{table}_update"] = (table, "UPDATE", condition)
+            collision = f"EXISTS(SELECT 1 FROM {table} old JOIN host_owners owner ON owner.id=old.owner_id WHERE old.{identity}=NEW.{identity} AND old.state='active' AND owner.residency_protected=1 AND owner.state='active')"
+            guards[f"{table}_insert"] = (table, "INSERT", collision)
+        for name, (table, operation, condition) in guards.items():
+            connection.execute(f"DROP TRIGGER IF EXISTS residency_guard_{name}")
+            connection.execute(f"CREATE TRIGGER residency_guard_{name} BEFORE {operation} ON {table} WHEN {condition} BEGIN SELECT RAISE(IGNORE); END")
 
     def _tx(self) -> sqlite3.Connection:
         connection = self.connect()
@@ -159,6 +217,8 @@ class HostCoordinator:
     def _sweep_locked(self, connection: sqlite3.Connection, stale_seconds: float = 30.0) -> None:
         cutoff = time.time() - stale_seconds
         for owner in connection.execute("SELECT * FROM host_owners WHERE state IN ('active','intent') AND heartbeat_at<?", (cutoff,)).fetchall():
+            if owner["residency_protected"]:
+                continue
             if _alive(owner["pid"], owner["process_start"]):
                 continue
             self._release_locked(connection, str(owner["id"]), "stale")
@@ -213,6 +273,9 @@ class HostCoordinator:
             for row in rows:
                 owner_id = str(row["id"])
                 if owner_id not in live_owner_ids:
+                    row = connection.execute("SELECT residency_protected FROM host_owners WHERE id=?", (owner_id,)).fetchone()
+                    if row and row[0]:
+                        continue
                     self._release_locked(connection, owner_id, "orphaned")
                     released.append(owner_id)
             connection.commit()
@@ -532,10 +595,131 @@ class HostCoordinator:
         connection.execute("UPDATE host_owners SET state=?,heartbeat_at=? WHERE id=?", (state, now, owner_id))
         connection.execute("UPDATE host_foreground_intents SET state='released',heartbeat_at=? WHERE owner_id=? AND state='active'", (now, owner_id))
 
-    def release(self, owner_id: str) -> None:
+    def protect_residency(self, owner_id: str, *, memory_baseline: dict[str, float]) -> dict[str, object]:
         connection = self._tx()
         try:
-            self._release_locked(connection, owner_id)
+            owner = connection.execute("SELECT * FROM host_owners WHERE id=?", (owner_id,)).fetchone()
+            resources = {str(row[0]).removeprefix("accelerator:") for row in connection.execute(
+                "SELECT resource_id FROM host_reservations WHERE owner_id=? AND state='active' AND resource_id LIKE 'accelerator:%'", (owner_id,))}
+            if (not owner or owner['state'] != 'active' or owner['owner_kind'] != 'service' or
+                    not str(owner['service_id']).startswith('core4-local-') or owner['pid'] != os.getpid() or
+                    set(memory_baseline) != resources or not resources or
+                    any(isinstance(value, bool) or not math.isfinite(float(value)) or float(value) < 0 for value in memory_baseline.values())):
+                raise ValueError('residency_protection_identity_invalid')
+            if owner['residency_protected']:
+                raise ValueError('residency_protection_immutable')
+            capability = secrets.token_hex(32)
+            origin = {'pid': os.getpid(), 'process_start': _process_start(os.getpid()),
+                      'boot_id': Path('/proc/sys/kernel/random/boot_id').read_text().strip()}
+            resource_ids = sorted(str(row[0]) for row in connection.execute(
+                "SELECT resource_id FROM host_reservations WHERE owner_id=? AND state='active'", (owner_id,)))
+            generation = uuid.uuid4().hex
+            metadata = {'phase': 'reserved', 'model_pid': None, 'baseline': memory_baseline,
+                        'origin': origin, 'generation': generation, 'resource_ids': resource_ids,
+                        'residency_capability_sha256': hashlib.sha256(capability.encode()).hexdigest()}
+            connection.execute('UPDATE host_owners SET residency_protected=1,residency_metadata_json=? WHERE id=?',
+                               (canonical_json(metadata), owner_id))
             connection.commit()
+            return {'residency_capability': capability, 'generation': generation,
+                    'origin': origin, 'resource_ids': resource_ids}
+        except Exception:
+            connection.rollback()
+            raise
         finally:
             connection.close()
+
+    def record_residency_process(self, owner_id: str, *, pid: int, residency_capability: str,
+                                 generation: str) -> None:
+        connection = self._tx()
+        try:
+            owner = connection.execute('SELECT * FROM host_owners WHERE id=?', (owner_id,)).fetchone()
+            start = _process_start(pid)
+            if not owner or owner['state'] != 'active' or not owner['residency_protected'] or not start:
+                raise ValueError('residency_process_identity_invalid')
+            metadata = json.loads(owner['residency_metadata_json'])
+            self._verify_residency_capability(metadata, residency_capability, generation)
+            if not self._residency_origin_caller(metadata):
+                raise ValueError('residency_process_owner_mismatch')
+            if metadata['phase'] == 'spawned' and (metadata['model_pid'] != pid or metadata['process_start'] != start):
+                raise ValueError('residency_process_identity_immutable')
+            if metadata['phase'] == 'reserved' and owner['pid'] != os.getpid():
+                raise ValueError('residency_process_owner_mismatch')
+            metadata.update(phase='spawned', model_pid=pid, process_start=start)
+            connection.execute('UPDATE host_owners SET pid=?,process_start=?,residency_metadata_json=?,heartbeat_at=? WHERE id=?',
+                               (pid, start, canonical_json(metadata), time.time(), owner_id))
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+
+    def release(self, owner_id: str, *, residency_quiescence: dict[str, object] | None = None,
+                residency_capability: str | None = None, generation: str | None = None) -> None:
+        connection = self._tx()
+        try:
+            owner = connection.execute('SELECT * FROM host_owners WHERE id=?', (owner_id,)).fetchone()
+            if owner and owner['residency_protected']:
+                metadata = json.loads(owner['residency_metadata_json'])
+                self._verify_residency_capability(metadata, residency_capability, generation)
+                origin = metadata['origin']
+                if metadata['phase'] == 'reserved' and not self._residency_origin_caller(metadata):
+                    raise ValueError('residency_release_reserved_recovery_blocked')
+                if not self._residency_origin_caller(metadata) and _alive(origin['pid'], origin['process_start']):
+                    raise ValueError('residency_release_owner_alive')
+                self._verify_residency_release(connection, owner, residency_quiescence)
+                connection.execute('UPDATE host_owners SET residency_protected=0,residency_release_verified=1 WHERE id=?', (owner_id,))
+            self._release_locked(connection, owner_id)
+            connection.commit()
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+
+    @staticmethod
+    def _verify_residency_capability(metadata: dict, capability: str | None, generation: str | None) -> None:
+        if (not isinstance(capability, str) or len(capability) != 64 or
+                generation != metadata.get('generation') or not secrets.compare_digest(
+                    hashlib.sha256(capability.encode()).hexdigest(), metadata['residency_capability_sha256'])):
+            raise ValueError('residency_cleanup_capability_invalid')
+
+    @staticmethod
+    def _residency_origin_caller(metadata: dict) -> bool:
+        origin = metadata['origin']
+        return (origin['pid'] == os.getpid() and origin['process_start'] == _process_start(os.getpid()) and
+                origin['boot_id'] == Path('/proc/sys/kernel/random/boot_id').read_text().strip())
+
+    @staticmethod
+    def _verify_residency_release(connection: sqlite3.Connection, owner: sqlite3.Row,
+                                  proof: dict[str, object] | None) -> None:
+        if not isinstance(proof, dict) or proof.get('format') != 'CORE4-RESIDENCY-QUIESCENCE/1' or proof.get('owner_id') != owner['id']:
+            raise ValueError('residency_release_requires_quiescence')
+        observed = proof.get('observed_unix')
+        if isinstance(observed, bool) or not isinstance(observed, (int, float)) or not math.isfinite(observed) or not 0 <= time.time() - observed <= 5:
+            raise ValueError('residency_release_observation_stale')
+        metadata = json.loads(owner['residency_metadata_json'])
+        pid = metadata.get('model_pid')
+        if pid is not None and (owner['pid'] != pid or owner['process_start'] != metadata.get('process_start')):
+            raise ValueError('residency_release_process_identity_changed')
+        if proof.get('owned_pid') != pid or (pid is not None and _alive(pid, metadata.get('process_start'))):
+            raise ValueError('residency_release_model_still_alive')
+        observation = proof.get('observation')
+        if not isinstance(observation, dict) or observation.get('available') is not True:
+            raise ValueError('residency_release_observation_unavailable')
+        resources = {str(row[0]).removeprefix('accelerator:') for row in connection.execute(
+            "SELECT resource_id FROM host_reservations WHERE owner_id=? AND state='active' AND resource_id LIKE 'accelerator:%'", (owner['id'],))}
+        exact_resources = sorted(str(row[0]) for row in connection.execute(
+            "SELECT resource_id FROM host_reservations WHERE owner_id=? AND state='active'", (owner['id'],)))
+        if exact_resources != metadata['resource_ids']:
+            raise ValueError('residency_release_resources_changed')
+        baseline = metadata['baseline']
+        rows = observation.get('devices')
+        processes = observation.get('processes')
+        if not isinstance(rows, list) or not isinstance(processes, list) or set(baseline) != resources or len(rows) != len(resources):
+            raise ValueError('residency_release_resources_changed')
+        memory = {row['uuid']: float(row['memory_used_mib']) for row in rows}
+        if set(memory) != resources or any(not math.isfinite(value) or value < 0 or value > float(baseline[gpu]) + 16 for gpu, value in memory.items()):
+            raise ValueError('residency_release_memory_not_quiescent')
+        if any(row.get('pid') == pid for row in processes) or (metadata['phase'] == 'reserved' and processes):
+            raise ValueError('residency_release_process_not_quiescent')

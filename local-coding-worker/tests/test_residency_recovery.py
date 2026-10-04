@@ -8,10 +8,11 @@ import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
+import signal
 from unittest.mock import patch
 
 from test_supervisor import _Adapter, _Cache, _Host, _PoolBackend, _Service, _profile
-from local_worker.residency import process_identity
+from local_worker.residency import process_identity, terminate_owned, _open_pidfd
 from local_worker.servers.llama_cpp import LlamaCppServerAdapter
 from local_worker.supervisor import SupervisorError
 
@@ -35,8 +36,11 @@ class RecoveryHost(_Host):
     def owner(self, owner_id):
         return self.metadata[owner_id] | {'resources': list(self.owners.get(owner_id, []))}
 
-    def release(self, owner_id):
-        super().release(owner_id)
+    def record_residency_process(self, owner_id, *, pid, **kwargs):
+        self.heartbeat(owner_id, pid=pid)
+
+    def release(self, owner_id, **kwargs):
+        super().release(owner_id, **kwargs)
         self.metadata[owner_id]['state'] = 'released'
 
 
@@ -125,6 +129,52 @@ class RecoveryTests(unittest.TestCase):
                 self.assertTrue(self.marker().exists())
                 self.assertIsNone(self.service.process.poll())
                 self.assertEqual(self.host.owner(self.endpoint['owner_id'])['state'], 'active')
+
+    def test_real_named_pidfd_binding_and_stale_pid_identity_refuse_signal(self):
+        descriptor = _open_pidfd(self.service.process.pid)
+        try:
+            self.assertIn('pidfd', os.readlink(f'/proc/self/fd/{descriptor}'))
+        finally:
+            os.close(descriptor)
+        identity = process_identity(self.service.process.pid)
+        with patch('local_worker.residency.process_identity', return_value={**identity, 'process_start': 'reused'}), \
+                patch('local_worker.residency.signal.pidfd_send_signal') as send:
+            with self.assertRaisesRegex(ValueError, 'identity_mismatch'):
+                terminate_owned(identity)
+            send.assert_not_called()
+        self.assertIsNone(self.service.process.poll())
+
+    def test_exit_at_signal_boundary_never_signals_replacement_process(self):
+        identity = process_identity(self.service.process.pid)
+        replacement = []
+        real_send = signal.pidfd_send_signal
+        def race(descriptor, sig):
+            self.service.process.terminate()
+            self.service.process.wait(timeout=5)
+            replacement.append(subprocess.Popen([sys.executable, '-c', 'import time;time.sleep(90)'], start_new_session=True))
+            real_send(descriptor, sig)
+        try:
+            with patch('local_worker.residency.signal.pidfd_send_signal', side_effect=race):
+                with self.assertRaises(ProcessLookupError):
+                    terminate_owned(identity)
+            self.assertEqual(len(replacement), 1)
+            self.assertIsNone(replacement[0].poll())
+        finally:
+            for process in replacement:
+                process.terminate()
+                process.wait(timeout=5)
+
+    def test_failed_pidfd_wait_retains_owned_lease(self):
+        class NeverReady:
+            def register(self, *args): pass
+            def poll(self, *args): return []
+        identity = process_identity(self.service.process.pid)
+        with patch('local_worker.residency.select.poll', return_value=NeverReady()), \
+                patch('local_worker.residency.signal.pidfd_send_signal'):
+            with self.assertRaisesRegex(ValueError, 'wait_failed'):
+                terminate_owned(identity, timeout=0)
+        self.assertIsNone(self.service.process.poll())
+        self.assertEqual(self.host.owner(self.endpoint['owner_id'])['state'], 'active')
 
 
 if __name__ == '__main__':

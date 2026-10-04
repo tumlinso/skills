@@ -6,6 +6,26 @@ import os
 from pathlib import Path
 import signal
 import time
+import select
+import ctypes
+
+
+def _open_pidfd(pid: int) -> int:
+    if hasattr(os, "pidfd_open"):
+        return os.pidfd_open(pid)
+    # Some installed Python builds omit the wrapper while libc exposes the
+    # same kernel primitive. Never fall back to numeric syscalls or PID signals.
+    libc = ctypes.CDLL(None, use_errno=True)
+    operation = getattr(libc, "pidfd_open", None)
+    if operation is None:
+        raise ValueError("owned_process_pidfd_unavailable")
+    operation.argtypes = [ctypes.c_int, ctypes.c_uint]
+    operation.restype = ctypes.c_int
+    descriptor = operation(pid, 0)
+    if descriptor < 0:
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error))
+    return descriptor
 
 
 def process_identity(pid: int) -> dict:
@@ -20,33 +40,40 @@ def process_identity(pid: int) -> dict:
 def terminate_owned(identity: dict, *, timeout: float = 10) -> None:
     if identity["boot_id"] != Path("/proc/sys/kernel/random/boot_id").read_text().strip():
         raise ValueError("owned_process_boot_mismatch")
-    if not (Path("/proc") / str(identity["pid"])).exists():
-        return
-    if process_identity(identity["pid"]) != identity or identity["process_group"] != identity["pid"]:
-        raise ValueError("owned_process_identity_mismatch")
-    for sig in (signal.SIGTERM, signal.SIGKILL):
-        os.killpg(identity["process_group"], sig)
-        deadline = time.monotonic() + timeout
-        while time.monotonic() < deadline:
-            try:
-                # Reap a direct orphan child when this process is its parent;
-                # otherwise /proc disappearance is the wait observation.
-                try:
-                    waited, _ = os.waitpid(identity["pid"], os.WNOHANG)
-                    if waited == identity["pid"]:
-                        return
-                except ChildProcessError:
-                    pass
-                current = process_identity(identity["pid"])
-            except FileNotFoundError:
-                return
-            if current != identity:
-                raise ValueError("owned_process_identity_changed")
-            time.sleep(0.05)
-    raise ValueError("owned_process_wait_failed")
+    if not hasattr(signal, "pidfd_send_signal"):
+        raise ValueError("owned_process_pidfd_unavailable")
+    try:
+        descriptor = _open_pidfd(identity["pid"])
+    except ProcessLookupError:
+        if not (Path("/proc") / str(identity["pid"])).exists():
+            return
+        raise ValueError("owned_process_identity_unavailable")
+    try:
+        if process_identity(identity["pid"]) != identity or identity["process_group"] != identity["pid"]:
+            raise ValueError("owned_process_identity_mismatch")
+        for task in (Path("/proc") / str(identity["pid"]) / "task").iterdir():
+            if (task / "children").read_text().strip():
+                raise ValueError("owned_process_descendants_unsupported")
+        poll = select.poll()
+        poll.register(descriptor, select.POLLIN)
+        for sig in (signal.SIGTERM, signal.SIGKILL):
+            if poll.poll(0):
+                break
+            signal.pidfd_send_signal(descriptor, sig)
+            if poll.poll(max(0, int(timeout * 1000))):
+                break
+        else:
+            raise ValueError("owned_process_wait_failed")
+        try:
+            os.waitpid(identity["pid"], os.WNOHANG)
+        except ChildProcessError:
+            pass
+    finally:
+        os.close(descriptor)
 
 
 def observe_residency(uuids: list[str]) -> dict:
+    observed_unix = time.time()
     try:
         devices = subprocess.run(
             ["nvidia-smi", "--query-gpu=uuid,memory.used", "--format=csv,noheader,nounits"],
@@ -66,9 +93,10 @@ def observe_residency(uuids: list[str]) -> dict:
             if gpu in selected:
                 apps.append({"uuid": gpu, "pid": int(pid)})
         return {"available": {r["uuid"] for r in rows} == selected,
-                "devices": rows, "processes": apps}
+                "devices": rows, "processes": apps, "observed_unix": observed_unix}
     except (OSError, ValueError, subprocess.SubprocessError) as error:
-        return {"available": False, "devices": [], "processes": [], "reason": str(error)[:300]}
+        return {"available": False, "devices": [], "processes": [], "reason": str(error)[:300],
+                "observed_unix": observed_unix}
 
 
 def memory_snapshot(observation: dict, uuids: list[str]) -> dict[str, float]:

@@ -5,7 +5,6 @@ import math
 import os
 import shutil
 import subprocess
-import signal
 import time
 import urllib.error
 import urllib.request
@@ -14,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ..service import AdapterError
+from ..residency import process_identity, terminate_owned
 
 
 def _bounded_shape(value: Any, *, depth: int = 0) -> dict[str, Any]:
@@ -57,12 +57,16 @@ class LlamaCppServerAdapter:
     def __init__(self, binary: str = "llama-server", *, process_factory=subprocess.Popen,
                  transport: Callable[[str, str, dict[str, Any] | None, float], tuple[int, dict[str, Any]]] = _http_json,
                  help_runner: Callable[..., Any] = subprocess.run,
-                 sleeper: Callable[[float], None] = time.sleep) -> None:
+                 sleeper: Callable[[float], None] = time.sleep,
+                 identity_reader: Callable[[int], dict] = process_identity,
+                 owned_terminator: Callable[[dict], None] = terminate_owned) -> None:
         self.binary = binary
         self.process_factory = process_factory
         self.transport = transport
         self.help_runner = help_runner
         self.sleeper = sleeper
+        self.identity_reader = identity_reader
+        self.owned_terminator = owned_terminator
         self._servers: dict[str, dict[str, Any]] = {}
         self._supported_flags: set[str] | None = None
 
@@ -146,6 +150,12 @@ class LlamaCppServerAdapter:
             "profile": profile,
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
+        try:
+            self._servers[handle]["termination_identity"] = self.identity_reader(process.pid)
+        except Exception as error:
+            failure = AdapterError(f"model_spawn_identity_incomplete: {error}")
+            failure.owned_handle = handle
+            raise failure from error
         on_spawn = context.get("on_spawn")
         if on_spawn is not None:
             try:
@@ -311,18 +321,11 @@ class LlamaCppServerAdapter:
         server = self._server(handle)
         process = server["process"]
         if process.poll() is None:
-            try:
-                os.killpg(process.pid, signal.SIGTERM)
-            except (AttributeError, ProcessLookupError, PermissionError):
-                process.terminate()
-            try:
-                process.wait(timeout=10)
-            except subprocess.TimeoutExpired:
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except (AttributeError, ProcessLookupError, PermissionError):
-                    process.kill()
-                process.wait(timeout=10)
+            identity = server.get("termination_identity")
+            if identity is None:
+                raise AdapterError("owned_process_identity_unavailable")
+            self.owned_terminator(identity)
+            process.wait(timeout=10)
         if process.poll() is None:
             raise AdapterError("model_process_not_quiescent")
         server["log_stream"].close()

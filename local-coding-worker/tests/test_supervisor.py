@@ -6,6 +6,8 @@ import tempfile
 import threading
 import time
 import unittest
+import shutil
+import weakref
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
@@ -229,7 +231,14 @@ class _Host:
         self.reconciliations.append(kwargs)
         return []
     def preempt_requested(self, owner_id): return owner_id in self.preemptions
-    def release(self, owner_id): self.owners.pop(owner_id, None)
+    def protect_residency(self, owner_id, *, memory_baseline):
+        from local_worker.residency import process_identity
+        identity = process_identity(os.getpid())
+        return {"residency_capability": "f" * 64, "generation": owner_id,
+                "origin": {key: identity[key] for key in ("pid", "process_start", "boot_id")},
+                "resource_ids": sorted(self.owners[owner_id])}
+    def record_residency_process(self, owner_id, *, pid, **kwargs): return None
+    def release(self, owner_id, **kwargs): self.owners.pop(owner_id, None)
 
 
 class _Runtime:
@@ -306,6 +315,10 @@ def _profile(*, maximum=2, ttl=900):
 
 class _PoolBackend(ProductionBackend):
     def __init__(self, *args, **kwargs):
+        if kwargs.get("service_state_root") is None:
+            fixture_state = tempfile.mkdtemp(prefix="gpu-supervisor-unit-")
+            weakref.finalize(self, shutil.rmtree, fixture_state, True)
+            kwargs["service_state_root"] = fixture_state
         kwargs.setdefault("residency_observer", lambda uuids: {
             "available": True, "devices": [{"uuid": gpu, "memory_used_mib": 0} for gpu in uuids],
             "processes": []})

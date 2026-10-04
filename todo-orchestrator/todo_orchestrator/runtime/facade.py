@@ -354,8 +354,17 @@ class HostResourceFacade:
     def heartbeat(self, owner_id: str, *, pid: int | None = None) -> None:
         self._coordinator.heartbeat(owner_id, pid)
 
-    def release(self, owner_id: str) -> None:
-        self._coordinator.release(owner_id)
+    def protect_residency(self, owner_id: str, *, memory_baseline: dict[str, float]) -> dict[str, object]:
+        return self._coordinator.protect_residency(owner_id, memory_baseline=memory_baseline)
+
+    def record_residency_process(self, owner_id: str, *, pid: int, residency_capability: str, generation: str) -> None:
+        self._coordinator.record_residency_process(owner_id, pid=pid,
+            residency_capability=residency_capability, generation=generation)
+
+    def release(self, owner_id: str, *, residency_quiescence: dict[str, object] | None = None,
+                residency_capability: str | None = None, generation: str | None = None) -> None:
+        self._coordinator.release(owner_id, residency_quiescence=residency_quiescence,
+                                  residency_capability=residency_capability, generation=generation)
         self._drain_callbacks.pop(owner_id, None)
 
 

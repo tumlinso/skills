@@ -13,6 +13,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -38,14 +39,11 @@ class IsolatedHost(fixtures._Host):
     """Simulated topology; reservations/preemption use the real native ledger."""
     def __init__(self):
         super().__init__()
-        self.supervisor_pid = None
         self.ledger = HostCoordinator()
         self.ledger.upsert_resources(self.list())
 
     def reserve_service(self, **kwargs):
         request = kwargs.pop('resource_request')
-        if self.supervisor_pid is not None:
-            kwargs['pid'] = self.supervisor_pid
         result = self.ledger.reserve_service(request=request, **kwargs)
         return None if result is None else {'owner_id': result[0], 'resource_ids': result[1]}
 
@@ -58,8 +56,14 @@ class IsolatedHost(fixtures._Host):
     def preempt_requested(self, owner_id):
         return self.ledger.preempt_requested(owner_id)
 
-    def release(self, owner_id):
-        self.ledger.release(owner_id)
+    def protect_residency(self, owner_id, *, memory_baseline):
+        return self.ledger.protect_residency(owner_id, memory_baseline=memory_baseline)
+
+    def record_residency_process(self, owner_id, **kwargs):
+        return self.ledger.record_residency_process(owner_id, **kwargs)
+
+    def release(self, owner_id, **kwargs):
+        return self.ledger.release(owner_id, **kwargs)
 
     def reconcile_current_service_owners(self, **kwargs):
         return self.ledger.reconcile_current_service_owners(**kwargs)
@@ -77,8 +81,11 @@ class ProcessModel(fixtures._Service):
         self.samples = []
         self.run_hook = None
         self.fail_describe = False
+        self.start_hook = None
 
     def start(self, name, context):
+        if self.start_hook:
+            self.start_hook()
         handle = super().start(name, context)
         self.processes[handle] = subprocess.Popen(
             [sys.executable, '-c', 'import time; time.sleep(120)'],
@@ -208,13 +215,12 @@ class GPUProtocolAcceptance(unittest.TestCase):
 
     @pytest.mark.as1_case('GPU-02')
     def test_expired_supervisor_owner_cannot_hide_live_owned_model_process(self):
-        # Reservation initially belongs to a real supervisor child. Production
-        # startup must bind its model PID before that supervisor can disappear.
+        # Production startup must bind its actual model PID. Staleness must
+        # preserve that owned live child even after an expired supervisor PID.
         dead_supervisor = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(120)'])
         self.addCleanup(lambda: dead_supervisor.poll() is None and dead_supervisor.kill())
         dead_start = _process_start(dead_supervisor.pid)
         self.assertTrue(dead_start)
-        self.host.supervisor_pid = dead_supervisor.pid
         endpoint = self.backend.warm()
         self.backend.release(endpoint['service_lease_id'])
         self.assertEqual(self.host.ledger.owner(endpoint['owner_id'])['pid'], endpoint['server_pid'])
@@ -246,6 +252,74 @@ class GPUProtocolAcceptance(unittest.TestCase):
         self.backend.poll()
         self.assertIsNotNone(process.poll())
         self.assertTrue(self.host.ledger.activate_foreground(owner, resources))
+
+    @pytest.mark.as1_case('GPU-02')
+    def test_private_prespawn_capability_rejects_missing_wrong_raw_and_crossprocess_cleanup(self):
+        def assert_private_before_spawn():
+            markers = list((self.backend._state_root() / 'residencies').glob('*.json'))
+            self.assertEqual(len(markers), 1)
+            marker = markers[0]
+            self.assertEqual(marker.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(marker.parent.stat().st_mode & 0o777, 0o700)
+            self.assertEqual(len(json.loads(marker.read_text())['residency_capability']), 64)
+        self.service.start_hook = assert_private_before_spawn
+        endpoint = self.backend.warm()
+        slot = self.backend._slots[endpoint['slot_id']]
+        owner = self.host.ledger.owner(endpoint['owner_id'])
+        metadata = json.loads(owner['residency_metadata_json'])
+        self.assertNotIn('residency_capability', metadata)
+        self.assertTrue(metadata['residency_capability_sha256'] ==
+                        hashlib.sha256(slot.residency_capability.encode()).hexdigest())
+        self.backend.release(endpoint['service_lease_id'])
+        self.service.evict('llama', slot.handle)
+        proof = {'format': 'CORE4-RESIDENCY-QUIESCENCE/1', 'owner_id': slot.owner_id,
+                 'owned_pid': endpoint['server_pid'], 'observed_unix': time.time(),
+                 'observation': self.service.observe(list(slot.gpu_uuids))}
+        for arguments in ({}, {'residency_capability': '0' * 64, 'generation': slot.residency_generation},
+                          {'residency_capability': slot.residency_capability, 'generation': 'wrong-generation'}):
+            with self.assertRaises(ValueError):
+                self.host.ledger.release(slot.owner_id, residency_quiescence=proof, **arguments)
+            self.assertEqual(self.host.ledger.owner(slot.owner_id)['state'], 'active')
+        with self.assertRaises(ValueError):
+            self.host.ledger.release(slot.owner_id, residency_capability=slot.residency_capability,
+                                    generation=slot.residency_generation,
+                                    residency_quiescence={'quiescent': True})
+        # Even possession of the real capability cannot let a second process
+        # clear this live origin's reservation. Secrets travel over stdin only.
+        child = '''import json,sys
+from todo_orchestrator.background.host import HostCoordinator
+request=json.load(sys.stdin)
+try:
+    HostCoordinator().release(**request)
+except ValueError:
+    sys.exit(0)
+sys.exit(1)
+'''
+        environment = {**os.environ, 'PYTHONPATH': str(SKILLS / 'todo-orchestrator')}
+        result = subprocess.run([sys.executable, '-c', child], input=json.dumps({
+            'owner_id': slot.owner_id, 'residency_capability': slot.residency_capability,
+            'generation': slot.residency_generation, 'residency_quiescence': proof}),
+            env=environment, capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, 'crossprocess cleanup authorization was permitted or probe failed')
+        self.assertEqual(self.host.ledger.owner(slot.owner_id)['state'], 'active')
+        foreground, resources = self.foreground(endpoint['gpu_uuids'])
+        self.backend.poll()
+        self.assertEqual(self.host.ledger.owner(slot.owner_id)['state'], 'released')
+        self.assertTrue(self.host.ledger.activate_foreground(foreground, resources))
+
+    @pytest.mark.as1_case('GPU-02')
+    def test_lost_active_model_releases_session_only_after_native_observed_cleanup(self):
+        endpoint = self.backend.warm()
+        slot = self.backend._slots[endpoint['slot_id']]
+        self.service.evict('llama', slot.handle)
+        try:
+            self.backend.release(endpoint['service_lease_id'])
+        except Exception as error:
+            self.fail('lost active model session release failed: ' + type(error).__name__)
+        foreground, resources = self.foreground(endpoint['gpu_uuids'])
+        self.backend.poll()
+        self.assertEqual(self.host.ledger.owner(endpoint['owner_id'])['state'], 'released')
+        self.assertTrue(self.host.ledger.activate_foreground(foreground, resources))
 
     @pytest.mark.as1_case('GPU-03')
     def test_cooperative_turn_yield_restart_retains_durable_port_evidence_and_fences_late_answer(self):
@@ -331,6 +405,33 @@ class GPUProtocolAcceptance(unittest.TestCase):
         self.backend.release(reloaded['service_lease_id'])
 
 
+class NativeHostGuardAcceptance(unittest.TestCase):
+    @pytest.mark.as1_case('GPU-02')
+    def test_exact_old_kernel_writer_and_capability_guards_on_same_disposable_database(self):
+        path = SKILLS / 'tests/as1/test_sk_as1_gpu_host_guards.py'
+        specification = importlib.util.spec_from_file_location('as1_native_host_guard_acceptance', path)
+        module = importlib.util.module_from_spec(specification)
+        specification.loader.exec_module(module)
+        suite = unittest.defaultTestLoader.loadTestsFromTestCase(module.NativeHostGuardTests)
+        required_methods = {
+            'test_exact_old_writer_dead_sweep_release_and_reconcile_keep_same_database_lease',
+            'test_guard_blocks_destructive_old_updates_deletes_replace_and_upsert',
+            'test_missing_wrong_generation_capability_and_untrusted_proof_cannot_release',
+            'test_same_capability_in_other_process_cannot_release_live_origin_reservation',
+            'test_spawned_live_child_or_unreleased_vram_stays_protected',
+            'test_observation_delay_cannot_refresh_old_physical_snapshot',
+        }
+        loaded_methods = {test._testMethodName for test in suite}
+        self.assertTrue(required_methods <= loaded_methods,
+                        'native guard acceptance methods missing: ' + ', '.join(sorted(required_methods - loaded_methods)))
+        result = unittest.TestResult()
+        suite.run(result)
+        self.assertEqual(result.testsRun, len(loaded_methods), 'loaded native guard cases were not all executed')
+        self.assertEqual(result.skipped, [])
+        self.assertTrue(result.wasSuccessful(), 'native same-database host guard cases failed: ' +
+                        ', '.join(test.id() for test, _ in result.errors + result.failures))
+
+
 class InstalledGPUAcceptance(unittest.TestCase):
     @pytest.mark.as1_case('GPU-04')
     def test_root_approved_installed_multigpu_probe_is_required(self):
@@ -341,13 +442,31 @@ class InstalledGPUAcceptance(unittest.TestCase):
                         'qualification at ' + str(receipt_path) + '; protocol fixtures are insufficient')
         receipt = json.loads(receipt_path.read_text())
         self.assertEqual(receipt['format'], 'sk-as1-gpu-hardware/1')
-        self.assertEqual(receipt['source_identity']['skills_root'], str(SKILLS))
+        identity = receipt['source_identity']
+        self.assertEqual(identity['skills_root'], str(SKILLS))
+        installed = Path(identity['installed_skills_root']).resolve(strict=True)
+        self.assertEqual(identity['runtime_identity']['skills_root'], str(installed))
+        self.assertEqual(identity['runtime_identity']['package_root'],
+                         str(installed / 'todo-orchestrator/todo_orchestrator'))
+        self.assertEqual(identity['runtime_identity']['package_source'],
+                         str(installed / 'todo-orchestrator/todo_orchestrator/__init__.py'))
+        self.assertEqual(len(identity['runtime_identity']['fingerprint']), 64)
         for relative in ('local-coding-worker/local_worker/supervisor.py',
                          'todo-orchestrator/todo_orchestrator/background/host.py',
-                         'cuda/scripts/cuda_controller.py', 'local-coding-worker/local_worker/residency.py'):
-            self.assertEqual(receipt['source_identity']['sha256'][relative],
-                             hashlib.sha256((SKILLS / relative).read_bytes()).hexdigest(),
+                         'todo-orchestrator/todo_orchestrator/runtime/facade.py',
+                         'cuda/scripts/cuda_controller.py', 'local-coding-worker/local_worker/residency.py',
+                         'local-coding-worker/local_worker/servers/llama_cpp.py',
+                         'cuda/scripts/qualify_observer_residency.py'):
+            canonical_digest = hashlib.sha256((SKILLS / relative).read_bytes()).hexdigest()
+            self.assertEqual(identity['sha256'][relative], canonical_digest,
                              'hardware proof does not qualify current source: ' + relative)
+            self.assertEqual(identity['installed_runtime_sha256'][relative], canonical_digest)
+            self.assertEqual(hashlib.sha256((installed / relative).read_bytes()).hexdigest(), canonical_digest,
+                             'installed runtime source differs from canonical qualified source')
+        for validation_path in ('tests/as1/test_sk_as1_gpu.py', 'tests/as1/test_sk_as1_gpu_host_guards.py'):
+            validation_digest = hashlib.sha256((SKILLS / validation_path).read_bytes()).hexdigest()
+            self.assertEqual(identity['source_validation_sha256'][validation_path], validation_digest)
+            self.assertEqual(identity['sha256'][validation_path], validation_digest)
         # The receipt is an execution attestation, not cryptographic proof of
         # hardware. Require raw observed artifacts and independently check their
         # contents as well as their hashes. Never accept summary booleans alone.
@@ -358,8 +477,14 @@ class InstalledGPUAcceptance(unittest.TestCase):
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), artifact['sha256'])
             self.assertNotIn(artifact['kind'], raw, 'duplicate proof kind')
             raw[artifact['kind']] = json.loads(path.read_text())
-        self.assertTrue({'approval', 'discovery', 'controller', 'quiescence', 'reuse', 'cleanup'} <= raw.keys())
-        approved = set(raw['approval']['resource_ids'])
+        self.assertTrue({'approval', 'discovery', 'controller', 'foreground', 'quiescence', 'reuse', 'cleanup'} <= raw.keys())
+        approval_path = SKILLS / 'planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json'
+        self.assertTrue(approval_path.is_file(), 'independent root GPU approval artifact unavailable')
+        independent_approval = json.loads(approval_path.read_text())
+        self.assertIs(independent_approval['authorized'], True)
+        self.assertEqual(raw['approval'], independent_approval,
+                         'qualification proof differs from independent root authorization')
+        approved = set(independent_approval['resource_ids'])
         self.assertGreaterEqual(len(approved), 2, 'multi-GPU approval required')
         self.assertTrue(all(r.startswith('accelerator:GPU-') for r in approved))
         approved_uuids = {r.removeprefix('accelerator:') for r in approved}
@@ -376,7 +501,16 @@ class InstalledGPUAcceptance(unittest.TestCase):
         self.assertEqual(set(controller['lease']['resource_ids']), approved)
         self.assertEqual(set(controller['spec']['resources']['gpu_uuids']), approved_uuids)
         self.assertEqual(controller['spec']['resources']['gpus'], len(approved_uuids))
+        foreground = raw['foreground']
+        self.assertEqual(set(foreground['checked_gpu_uuids']), approved_uuids)
+        self.assertGreaterEqual(foreground['allocation_bytes_per_device'], 1048576)
+        self.assertIs(foreground['device_memset_copy_verified'], True)
+        self.assertEqual(foreground['lease'], controller['lease'])
+        self.assertIs(foreground['admission_observation']['available'], True)
+        self.assertEqual({d['uuid'] for d in foreground['admission_observation']['devices']}, approved_uuids)
+        self.assertEqual(foreground['admission_observation']['processes'], [])
         proof = raw['quiescence']['controller']
+        self.assertEqual(controller['evidence']['summary']['resource_samples']['quiescence'], proof)
         self.assertEqual(proof['format'], 'CUDA-QUIESCENCE/1')
         self.assertEqual(proof['state'], 'quiescent')
         self.assertEqual(set(proof['device_uuids']), approved_uuids)
@@ -414,6 +548,14 @@ class InstalledGPUAcceptance(unittest.TestCase):
         self.assertEqual(cleanup['remaining_slots'], [])
         self.assertEqual(cleanup['remaining_owned_leases'], [])
         self.assertEqual(cleanup['owned_model_pids'], [])
+        self.assertEqual(cleanup['remaining_model_cache_leases'], [])
+        physical_owners = {row['owner_id']: row for row in cleanup['host_owners']}
+        expected_owners = {reuse['initial_evicted_endpoint']['owner_id'], reuse['before']['owner_id'],
+                           controller['lease']['owner_id']}
+        self.assertEqual(set(physical_owners), expected_owners)
+        for row in physical_owners.values():
+            self.assertEqual(row['state'], 'released')
+            self.assertEqual(row['resources'], [])
         self.assertTrue(cleanup['observation']['available'])
         self.assertFalse(cleanup['observation']['processes'])
         self.assertEqual({d['uuid'] for d in cleanup['observation']['devices']}, approved_uuids)

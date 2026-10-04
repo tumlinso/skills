@@ -17,6 +17,7 @@ from local_worker.service import AdapterError, AdapterService, disposable_task_c
 
 
 class FakeProcess:
+    pid = 424242
     def __init__(self, argv, *, stdout_text="", returncode=0, **kwargs):
         self.argv = argv
         self.stdout_text = stdout_text
@@ -143,7 +144,8 @@ class AdapterTests(unittest.TestCase):
             return 200, {"choices": [{"message": {"content": "answer"}}],
                          "usage": {"prompt_tokens": 3, "completion_tokens": 1}}
 
-        adapter = LlamaCppServerAdapter(str(self.binary), process_factory=factory, transport=transport)
+        adapter = LlamaCppServerAdapter(str(self.binary), process_factory=factory, transport=transport,
+            identity_reader=lambda pid: {"pid": pid}, owned_terminator=lambda identity: None)
         handle = adapter.start({"model_path": str(model), "host": "127.0.0.1", "port": 18080})
         self.assertTrue(adapter.health(handle)["healthy"])
         result = adapter.run(handle, {"request_id": "r1", "messages": [{"role": "user", "content": "hi"}]})

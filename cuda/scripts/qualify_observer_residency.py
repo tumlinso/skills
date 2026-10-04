@@ -16,6 +16,7 @@ import subprocess
 import sys
 import time
 import tomllib
+import uuid
 
 SKILLS = Path(__file__).resolve().parents[2]
 QUALIFIED_PATHS = (
@@ -25,7 +26,7 @@ QUALIFIED_PATHS = (
     "cuda/scripts/cuda_controller.py", "local-coding-worker/local_worker/residency.py",
     "local-coding-worker/local_worker/servers/llama_cpp.py",
     "cuda/scripts/qualify_observer_residency.py")
-SOURCE_VALIDATION_PATHS = ("tests/as1/test_sk_as1_gpu.py",)
+SOURCE_VALIDATION_PATHS = ("tests/as1/test_sk_as1_gpu.py", "tests/as1/test_sk_as1_gpu_host_guards.py")
 sys.path.insert(0, str(SKILLS / "local-coding-worker"))
 sys.path.insert(0, str(SKILLS / "todo-orchestrator"))
 sys.path.insert(0, str(SKILLS / "cuda/scripts"))
@@ -41,19 +42,35 @@ def write(path, document):
 
 
 def foreground_check():
+    if not __debug__:
+        raise RuntimeError("qualification requires enabled runtime checks")
     # The controller supplies the exact CUDA_VISIBLE_DEVICES and lease receipt.
     visible = os.environ["CUDA_VISIBLE_DEVICES"].split(",")
     receipt = json.loads(Path(os.environ["TODO_GPU_LEASE_RECEIPT"]).read_text())
-    assert set(receipt["resource_ids"]) == {f"accelerator:{gpu}" for gpu in visible}
+    expected_uuids = [resource.removeprefix("accelerator:") for resource in receipt["resource_ids"]]
     from local_worker.residency import observe_residency
-    admission_observation = observe_residency(visible)
-    library = ctypes.CDLL(os.environ.get("CUDA_RUNTIME_LIBRARY", "libcudart.so"))
+    admission_observation = observe_residency(expected_uuids)
+    library_path = Path(os.environ["CUDA_RUNTIME_LIBRARY"]).resolve(strict=True)
+    library_sha = digest(library_path)
+    assert library_sha == os.environ["CUDA_RUNTIME_LIBRARY_SHA256"]
+    library = ctypes.CDLL(str(library_path))
+    version = ctypes.c_int()
+    assert library.cudaRuntimeGetVersion(ctypes.byref(version)) == 0
     library.cudaMalloc.argtypes = [ctypes.POINTER(ctypes.c_void_p), ctypes.c_size_t]
     library.cudaFree.argtypes = [ctypes.c_void_p]
     library.cudaMemset.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_size_t]
     library.cudaMemcpy.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int]
     count = ctypes.c_int()
     assert library.cudaGetDeviceCount(ctypes.byref(count)) == 0 and count.value == len(visible)
+    class DeviceUuid(ctypes.Structure):
+        _fields_ = [("bytes", ctypes.c_ubyte * 16)]
+    library.cudaDeviceGetUuid.argtypes = [ctypes.POINTER(DeviceUuid), ctypes.c_int]
+    mapped_uuids = []
+    for device in range(count.value):
+        device_uuid = DeviceUuid()
+        assert library.cudaDeviceGetUuid(ctypes.byref(device_uuid), device) == 0
+        mapped_uuids.append("GPU-" + str(uuid.UUID(bytes=bytes(device_uuid.bytes))))
+    assert mapped_uuids == expected_uuids
     for device in range(count.value):
         pointer = ctypes.c_void_p()
         assert library.cudaSetDevice(device) == 0
@@ -66,8 +83,11 @@ def foreground_check():
             assert bytes(observed) == b"\x5a" * 32
         finally:
             assert library.cudaFree(pointer) == 0
-    print(json.dumps({"checked_gpu_uuids": visible, "allocation_bytes_per_device": 1024 * 1024,
+    print(json.dumps({"checked_gpu_uuids": mapped_uuids, "allocation_bytes_per_device": 1024 * 1024,
+                      "controller_visible_devices": visible,
                       "lease": receipt, "admission_observation": admission_observation,
+                      "runtime_gpu_uuids": mapped_uuids,
+                      "cuda_runtime": {"path": str(library_path), "sha256": library_sha, "version": version.value},
                       "device_memset_copy_verified": True}))
 
 
@@ -94,10 +114,18 @@ def qualify(args):
                                   capture_output=True, text=True, check=True).stdout.strip()
     identity, context = bind(args.project)
     validate(identity)
+    private_state = args.private_state_root.resolve()
+    if any(private_state.is_relative_to(root.resolve()) for root in (source_root, SKILLS, args.project, args.output)):
+        raise ValueError("private residency state must remain outside all source and artifact roots")
+    if private_state.exists():
+        raise ValueError("qualification private state root must be new; preserve existing recovery markers")
+    library_path = args.cuda_runtime_library.resolve(strict=True)
+    if digest(library_path) != args.cuda_runtime_sha256:
+        raise ValueError("root-approved CUDA runtime hash mismatch")
     args.output.mkdir(parents=True, exist_ok=False, mode=0o700)
     profile = tomllib.loads((SKILLS / "local-coding-worker/config/production-profile.toml").read_text())
     profile["deployment_policy"].update(allowed_gpu_uuids=selected, max_real_workers=1)
-    backend = ProductionBackend(args.project, service_state_root=args.output / "supervisor", profile=profile)
+    backend = ProductionBackend(args.project, service_state_root=private_state, profile=profile)
     documents = {"approval": approval, "discovery": {
         "devices": probe_gpus(dynamic=True), "approved_gpu_uuids": selected,
         "topology": text_run(["nvidia-smi", "topo", "-m"]).stdout}}
@@ -121,6 +149,7 @@ def qualify(args):
         backend.release(first["service_lease_id"])
         spec = {"schema_version": 1, "project_root": str(args.project),
             "resources": {"gpu_uuids": selected, "gpus": 2,
+                          "cpu_threads": 0, "ram_bytes": 0,
                           "isolate_nvlink_domain": False, "isolate_pcie_root": False},
             "argv": [sys.executable, str(Path(__file__).resolve()), "--foreground-check"],
             "paths": [], "recipe": "baseline", "preempt_grace_seconds": 30,
@@ -129,7 +158,8 @@ def qualify(args):
         write(spec_path, spec)
         controller_process = subprocess.Popen([sys.executable, str(SKILLS / "cuda/scripts/cuda_controller.py"),
             "run", "--spec", str(spec_path), "--json"], stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE, text=True, env={**os.environ, **subprocess_environment(identity)})
+            stderr=subprocess.PIPE, text=True, env={**os.environ, **subprocess_environment(identity),
+                "CUDA_RUNTIME_LIBRARY": str(library_path), "CUDA_RUNTIME_LIBRARY_SHA256": args.cuda_runtime_sha256})
         deadline = time.monotonic() + 120
         while controller_process.poll() is None and time.monotonic() < deadline:
             backend.poll()
@@ -143,6 +173,7 @@ def qualify(args):
         lease = json.loads(Path(result["lease_receipt"]).read_text())
         evidence = BackgroundStore(args.output / "controller").result(result["evidence_id"])
         documents["controller"] = {"spec": spec, "result": result, "lease": lease, "evidence": evidence}
+        documents["foreground"] = json.loads(Path(result["stdout_path"]).read_text())
         if not backend.cleanup_receipts:
             raise RuntimeError("observer eviction not observed")
         documents["quiescence"] = {"eviction": backend.cleanup_receipts[-1],
@@ -171,9 +202,20 @@ def qualify(args):
             "unrelated_after": sorted((row["uuid"], row["pid"], row["process"]) for row in compute_processes()
                                       if row["uuid"] not in selected),
             "observation": observe_residency(selected)}
+        owned_ids = {endpoint["owner_id"] for endpoint in (first, reloaded, reused) if endpoint}
+        if "controller" in documents:
+            owned_ids.add(documents["controller"]["lease"]["owner_id"])
+        documents["cleanup"]["host_owners"] = [
+            {"owner_id": owner_id, "state": owner["state"], "resources": owner["resources"]}
+            for owner_id in sorted(owned_ids) if (owner := backend.runtime.host.owner(owner_id))]
+        documents["cleanup"]["remaining_model_cache_leases"] = [
+            str(path.relative_to(private_state)) for path in (private_state / "model-leases").rglob("*.json")]
         for kind, document in documents.items():
             write(args.output / f"{kind}.json", document)
-    if documents["cleanup"]["remaining_slots"]:
+    cleanup = documents["cleanup"]
+    if (cleanup["remaining_slots"] or cleanup["remaining_model_cache_leases"] or
+            len(cleanup["host_owners"]) != len(owned_ids) or
+            any(owner["state"] != "released" or owner["resources"] for owner in cleanup["host_owners"])):
         raise RuntimeError("owned physical cleanup incomplete; retain lease and investigate")
     receipt = {"format": "sk-as1-gpu-hardware/1", "source_identity": {
         "skills_root": str(source_root), "installed_skills_root": str(SKILLS),
@@ -194,6 +236,9 @@ def main():
     parser.add_argument("--source-root", type=Path, required=True)
     parser.add_argument("--approval", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--private-state-root", type=Path, required=True)
+    parser.add_argument("--cuda-runtime-library", type=Path, required=True)
+    parser.add_argument("--cuda-runtime-sha256", required=True)
     parser.add_argument("--gpu-uuid", action="append", required=True)
     qualify(parser.parse_args())
 

@@ -69,9 +69,12 @@ def _private_directory(path: Path) -> None:
 
 
 def _atomic_json(path: Path, value: object) -> None:
-    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
-    temporary.write_text(json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
-    temporary.chmod(0o600)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.{uuid.uuid4().hex}.tmp")
+    descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+        stream.write(json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
     os.replace(temporary, path)
 
 
@@ -121,6 +124,10 @@ class _ServiceSlot:
     active_turns: int = 0
     memory_baseline: dict[str, float] = field(default_factory=dict)
     last_cleanup: dict[str, Any] = field(default_factory=dict)
+    residency_capability: str | None = field(default=None, repr=False)
+    residency_generation: str | None = None
+    residency_origin: dict[str, Any] = field(default_factory=dict)
+    residency_resource_ids: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -208,6 +215,15 @@ class ProductionBackend:
     def _state_root(self) -> Path:
         return state_root(self.service_state_root)
 
+    def _residency_sample(self, uuids: list[str]) -> dict[str, Any]:
+        started = time.time()
+        observation = dict(self._observe_residency(uuids))
+        # Cached observations retain their older timestamp. Completion or
+        # cache cleanup never turns an old physical sample into a fresh one.
+        supplied = observation.get("observed_unix", started)
+        observation["observed_unix"] = min(started, supplied) if isinstance(supplied, (int, float)) and not isinstance(supplied, bool) else supplied
+        return observation
+
     def _marker_path(self, slot_id: str) -> Path:
         return self._state_root() / "residencies" / f"{slot_id}.json"
 
@@ -216,7 +232,8 @@ class ProductionBackend:
         if not isinstance(self.adapter, LlamaCppServerAdapter):
             descriptor = getattr(self.adapter, "owned_process_descriptor", None)
             if callable(descriptor):
-                self.runtime.host.heartbeat(slot.owner_id, pid=int(descriptor(slot.handle)["pid"]))
+                self.runtime.host.record_residency_process(slot.owner_id, pid=int(descriptor(slot.handle)["pid"]),
+                    residency_capability=slot.residency_capability, generation=slot.residency_generation)
             return
         identity = process_identity(int(slot.endpoint_descriptor["server_pid"]))
         if identity["executable"] != str(Path(self.profile["server"]["binary"]).resolve()):
@@ -227,40 +244,62 @@ class ProductionBackend:
                   "gpu_uuids": list(slot.gpu_uuids), "memory_baseline": slot.memory_baseline,
                   "project_root": str(self.repo_root), "service_state_root": str(self.service_state_root),
                   "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}
+        marker.update(residency_capability=slot.residency_capability, generation=slot.residency_generation,
+                      origin=slot.residency_origin, resource_ids=slot.residency_resource_ids)
         path = self._marker_path(slot.slot_id)
         _private_directory(path.parent)
         _atomic_json(path, marker)
-        self.runtime.host.heartbeat(slot.owner_id, pid=identity["pid"])
+        self.runtime.host.record_residency_process(slot.owner_id, pid=identity["pid"],
+            residency_capability=slot.residency_capability, generation=slot.residency_generation)
 
     def _recover_residencies(self) -> None:
         if self._recovery_checked:
             return
         for path in sorted((self._state_root() / "residencies").glob("*.json")):
+            if path.is_symlink() or path.stat().st_uid != os.getuid() or path.stat().st_mode & 0o777 != 0o600:
+                raise SupervisorError("owned_residency_recovery_blocked: marker permissions invalid")
             marker = json.loads(path.read_text())
             owner = self.runtime.host.owner(marker["owner_id"])
             approved = self.profile.get("deployment_policy", {}).get("allowed_gpu_uuids", marker["gpu_uuids"])
+            process = marker.get("process")
+            if process is None:
+                raise SupervisorError("owned_residency_recovery_blocked: incomplete startup process identity")
+            origin = marker["origin"]
+            if origin["pid"] != os.getpid():
+                try:
+                    observed_origin = process_identity(origin["pid"])
+                except (OSError, ValueError):
+                    observed_origin = None
+                if observed_origin and observed_origin["process_start"] == origin["process_start"]:
+                    raise SupervisorError("owned_residency_recovery_blocked: original supervisor still live")
             valid = (marker.get("format") == "CORE4-OWNED-RESIDENCY/1" and
                      marker.get("project_root") == str(self.repo_root) and
                      marker.get("service_state_root") == str(self.service_state_root) and
                      marker.get("source_sha256") == hashlib.sha256(Path(__file__).read_bytes()).hexdigest() and
-                     marker["process"]["executable"] == str(Path(self.profile["server"]["binary"]).resolve()) and
-                     marker["process"]["process_group"] == marker["process"]["pid"] and
+                     (process is None or (process["executable"] == str(Path(self.profile["server"]["binary"]).resolve()) and
+                      process["process_group"] == process["pid"])) and
                      set(marker["gpu_uuids"]) <= set(approved) and owner and owner["state"] == "active" and
-                     owner["pid"] == marker["process"]["pid"] and
-                     owner["process_start"] == marker["process"]["process_start"] and
+                     owner["pid"] == (process["pid"] if process else origin["pid"]) and
+                     owner["process_start"] == (process["process_start"] if process else origin["process_start"]) and
                      owner["project_root"] == str(self.repo_root) and
-                     {f"accelerator:{gpu}" for gpu in marker["gpu_uuids"]} <= set(owner["resources"]))
+                     set(marker["resource_ids"]) == set(owner["resources"]))
             if not valid:
                 raise SupervisorError("owned_residency_recovery_blocked: marker/lease identity mismatch")
             try:
-                terminate_owned(marker["process"])
-                observation = self._observe_residency(marker["gpu_uuids"])
+                if process:
+                    terminate_owned(process)
+                observation = self._residency_sample(marker["gpu_uuids"])
                 memory = memory_snapshot(observation, marker["gpu_uuids"])
-                if any(row["pid"] == marker["process"]["pid"] for row in observation["processes"]):
+                if any(row["pid"] == (process["pid"] if process else None) for row in observation["processes"]) or (process is None and observation["processes"]):
                     raise ValueError("owned_model_still_visible")
                 if any(memory[gpu] > marker["memory_baseline"][gpu] + 16 for gpu in marker["gpu_uuids"]):
                     raise ValueError("owned_model_memory_not_released")
-                self.runtime.host.release(marker["owner_id"])
+                self.runtime.host.release(marker["owner_id"],
+                    residency_capability=marker["residency_capability"], generation=marker["generation"],
+                    residency_quiescence={
+                    "format": "CORE4-RESIDENCY-QUIESCENCE/1", "owner_id": marker["owner_id"],
+                    "owned_pid": process["pid"] if process else None, "observed_unix": observation["observed_unix"],
+                    "observation": observation})
                 path.unlink()
             except Exception as error:
                 raise SupervisorError(f"owned_residency_recovery_blocked: {error}") from error
@@ -510,7 +549,7 @@ class ProductionBackend:
                 "active_admissions": len(self._admissions)}
 
     def _lease(self, slot: _ServiceSlot, *, reused: bool) -> dict[str, Any]:
-        if slot.state == "draining" or self.runtime.host.preempt_requested(slot.owner_id):
+        if slot.state == "draining" or self.runtime.host.preempt_requested(slot.owner_id) or not self._healthy(slot):
             raise SupervisorError("observer_session_preempt_requested")
         if slot.service_lease_id is not None:
             raise SupervisorError("model service slot already has an active lease")
@@ -641,14 +680,27 @@ class ProductionBackend:
             rotated.unlink(missing_ok=True)
             log.replace(rotated)
         try:
-            baseline = memory_snapshot(self._observe_residency(gpu_uuids), gpu_uuids)
+            baseline = memory_snapshot(self._residency_sample(gpu_uuids), gpu_uuids)
+            protect = getattr(self.runtime.host, "protect_residency", None)
+            if not callable(protect):
+                raise SupervisorError("protected_residency_capability_unavailable")
+            protection = protect(owner_id, memory_baseline=baseline)
+            marker_path = self._marker_path(slot_id)
+            _private_directory(marker_path.parent)
+            _atomic_json(marker_path, {"format": "CORE4-OWNED-RESIDENCY/1", "process": None,
+                "owner_id": owner_id, "slot_id": slot_id, "gpu_uuids": gpu_uuids,
+                "memory_baseline": baseline, "project_root": str(self.repo_root),
+                "service_state_root": str(self.service_state_root),
+                "source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), **protection})
             cache_lease = self.cache.lease(str(active["candidate_id"]), str(active["payload_sha256"]), owner_id)
             model_path = cache_lease.__enter__()
             def record_spawn(spawned_handle, process_descriptor):
                 spawned_slot = _ServiceSlot(slot_id=slot_id, handle=spawned_handle,
                     endpoint_descriptor={"server_pid": process_descriptor["pid"]}, owner_id=owner_id,
                     cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids), compatibility_key="",
-                    memory_baseline=baseline, state="draining")
+                    memory_baseline=baseline, state="draining",
+                    residency_capability=protection["residency_capability"], residency_generation=protection["generation"],
+                    residency_origin=protection["origin"], residency_resource_ids=protection["resource_ids"])
                 self._slots[slot_id] = spawned_slot
                 self._record_residency(spawned_slot)
             handle = self.service.start("llama", {
@@ -662,6 +714,10 @@ class ProductionBackend:
                 endpoint_descriptor={"server_pid": server_info["pid"]}, owner_id=owner_id,
                 cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids), compatibility_key="",
                 memory_baseline=baseline, state="draining")
+            slot.residency_capability = protection["residency_capability"]
+            slot.residency_generation = protection["generation"]
+            slot.residency_origin = protection["origin"]
+            slot.residency_resource_ids = protection["resource_ids"]
             self._slots[slot_id] = slot
             self._record_residency(slot)
             server_info = self.adapter.describe(handle)
@@ -681,6 +737,8 @@ class ProductionBackend:
                 compute_profile=compute_profile,
                 parallelism=resolved_parallelism,
                 memory_baseline=baseline,
+                residency_capability=protection["residency_capability"], residency_generation=protection["generation"],
+                residency_origin=protection["origin"], residency_resource_ids=protection["resource_ids"],
             )
             self._slots[slot_id] = slot
             return self._lease(slot, reused=False)
@@ -696,13 +754,24 @@ class ProductionBackend:
                     endpoint_descriptor={"server_pid": info["pid"]}, owner_id=owner_id,
                     cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids), compatibility_key="",
                     memory_baseline=baseline, state="draining")
+                slot.residency_capability = protection["residency_capability"]
+                slot.residency_generation = protection["generation"]
+                slot.residency_origin = protection["origin"]
+                slot.residency_resource_ids = protection["resource_ids"]
                 self._slots[slot_id] = slot
                 self._record_residency(slot)
                 self._evict_slot(slot_id)
             else:
                 if "cache_lease" in locals():
                     cache_lease.__exit__(None, None, None)
-                self.runtime.host.release(owner_id)
+                observation = self._residency_sample(gpu_uuids)
+                self.runtime.host.release(owner_id,
+                    residency_capability=protection.get("residency_capability") if "protection" in locals() else None,
+                    generation=protection.get("generation") if "protection" in locals() else None,
+                    residency_quiescence={
+                    "format": "CORE4-RESIDENCY-QUIESCENCE/1", "owner_id": owner_id,
+                    "owned_pid": None, "observed_unix": observation["observed_unix"], "observation": observation})
+                self._marker_path(slot_id).unlink(missing_ok=True)
             raise
 
     @_pool_synchronized
@@ -722,14 +791,18 @@ class ProductionBackend:
         if slot is None or slot.service_lease_id != service_lease_id:
             raise SupervisorError("service lease does not own the selected slot")
         slot.service_lease_id = None
-        if slot.state == "draining" or self.runtime.host.preempt_requested(slot.owner_id):
+        if slot.state == "draining" or self.runtime.host.preempt_requested(slot.owner_id) or not self._healthy(slot):
             self._evict_slot(slot_id, preempted=True)
             return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                     "clients": len(self._leases)}
         slot.state = "idle"
         slot.idle_since = time.monotonic()
         self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
-        self._record_residency(slot)
+        try:
+            self._record_residency(slot)
+        except (OSError, ValueError, SupervisorError):
+            slot.state = "draining"
+            self._evict_slot(slot.slot_id)
         return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                 "clients": len(self._leases), "idle_ttl_seconds": self.ttl}
 
@@ -970,7 +1043,7 @@ class ProductionBackend:
         try:
             self.service.drain("llama", slot.handle)
             self.service.evict("llama", slot.handle)
-            observation = self._observe_residency(list(slot.gpu_uuids))
+            observation = self._residency_sample(list(slot.gpu_uuids))
             memory = memory_snapshot(observation, list(slot.gpu_uuids))
             owned_pid = int(slot.endpoint_descriptor["server_pid"])
             process_released = not any(row["pid"] == owned_pid for row in observation["processes"])
@@ -980,7 +1053,10 @@ class ProductionBackend:
             if not process_released or not memory_released:
                 return False
             slot.cache_lease.__exit__(None, None, None)
-            self.runtime.host.release(slot.owner_id)
+            self.runtime.host.release(slot.owner_id, residency_capability=slot.residency_capability,
+                generation=slot.residency_generation, residency_quiescence={
+                "format": "CORE4-RESIDENCY-QUIESCENCE/1", "owner_id": slot.owner_id,
+                "owned_pid": owned_pid, "observed_unix": observation["observed_unix"], "observation": observation})
             self._marker_path(slot.slot_id).unlink(missing_ok=True)
         except Exception as error:
             slot.last_cleanup = {"released": False, "reason": str(error)[:500]}
