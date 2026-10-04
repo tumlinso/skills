@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T17:53:07Z",
+  "generated_at": "2026-10-04T18:18:56Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 894,
+  "project_revision": 900,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9391,6 +9391,66 @@
         "revision": 894,
         "seq": 894,
         "timestamp": "2026-10-04T17:53:07Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-RUNTIME-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-RUNTIME-ACCEPT\"}",
+        "revision": 895,
+        "seq": 895,
+        "timestamp": "2026-10-04T18:13:30Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-RUNTIME-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"85722d16-0397-4233-8d0a-5a8f955d2a3e\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 896,
+        "seq": 896,
+        "timestamp": "2026-10-04T18:13:32Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-RUNTIME-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-RUNTIME-ACCEPT\"}",
+        "revision": 897,
+        "seq": 897,
+        "timestamp": "2026-10-04T18:18:45Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-RUNTIME-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"7f032890-d936-40f3-ace3-56d757c70449\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 898,
+        "seq": 898,
+        "timestamp": "2026-10-04T18:18:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-RUNTIME",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 899, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 899,
+        "seq": 899,
+        "timestamp": "2026-10-04T18:18:48Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-EXEC",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-EXEC\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-GPU\"}",
+        "revision": 900,
+        "seq": 900,
+        "timestamp": "2026-10-04T18:18:56Z"
       }
     ],
     "evidence": [
@@ -10750,6 +10810,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-10-04T18:18:48Z",
+        "gate_id": "SK-AS1-RUNTIME-ACCEPT",
+        "id": "7f032890-d936-40f3-ace3-56d757c70449",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"6474d7f83f9cc63994a2a2696f3ad51ed387e66de755edf0b32ae3246f06b974\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/contracts\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"sha256\": \"721b8b0fe6b4df41ad824be878eeb2c57d3b82c57acf7646cc2513b77538a385\"}, {\"path\": \"tests/as1\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 897}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7f032890-d936-40f3-ace3-56d757c70449",
+        "revision": 898,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-30T12:19:41Z",
         "gate_id": "PCU-SK-11-FRONTDOOR",
         "id": "7f1957bb-e8d3-4d9d-977b-c60c5eca55d9",
@@ -10836,6 +10909,19 @@
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/83038a87-9f9c-4454-9cfe-f677d4d4e2cb",
         "revision": 648,
         "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-10-04T18:13:32Z",
+        "gate_id": "SK-AS1-RUNTIME-ACCEPT",
+        "id": "85722d16-0397-4233-8d0a-5a8f955d2a3e",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"6474d7f83f9cc63994a2a2696f3ad51ed387e66de755edf0b32ae3246f06b974\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/contracts\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"sha256\": \"721b8b0fe6b4df41ad824be878eeb2c57d3b82c57acf7646cc2513b77538a385\"}, {\"path\": \"tests/as1\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"cd149c328404c9e51e8ddd03d2cacd3ef23a422e\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"started_revision\": 895}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/85722d16-0397-4233-8d0a-5a8f955d2a3e",
+        "revision": 896,
+        "status": "failed"
       },
       {
         "checkpoint_id": null,
@@ -12832,14 +12918,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker\", \"integrations/coding-workflow-mcp\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-RUNTIME-ACCEPT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
+        "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 889,
-        "status": "pending",
+        "revision": 898,
+        "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -13887,6 +13973,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-22-CANDIDATE\", \"input_fingerprint\": null, \"last_run_at\": null, \"revision\": 657, \"status\": \"pending\", \"valid\": 0}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 6785 ++++++++++++++++++++++++++++----\\n pcu-v1.skills.plan.json                |    8 +-\\n todo-status.md                         |   16 +-\\n todos.md                               |   16 +-\\n todos/pcu-sk-00.md                     |    2 +-\\n todos/pcu-sk-01.md                     |    2 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |    2 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |    2 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    8 +-\\n todos/pcu-sk-21.md                     |    9 +-\\n todos/pcu-sk-22.md                     |   21 +-\\n todos/pcu-sk-30.md                     |    2 +-\\n todos/pcu-sk-31.md                     |    2 +-\\n todos/pcu-sk-32.md                     |    2 +-\\n todos/pcu-sk-33.md                     |    2 +-\\n 19 files changed, 6187 insertions(+), 724 deletions(-)\", \"git_head\": \"94aef9424595e5d082570af66a1b194d199901b6\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-22\"}",
         "revision": 663,
         "task_id": "PCU-SK-22"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-10-04T18:18:48Z",
+        "id": "7d1aa3a3-50ca-431a-936a-b3a734e978ac",
+        "kind": "complete",
+        "note": "Runtime source cd149c3 plus explicit standalone source-factory fixture isolation; parent deployed binding preserved. Native gate retry after authentic release-root mismatch correction; production deployment qualification remains required by receipt.",
+        "payload_json": "{\"authority_commit\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"completion_gates\": [{\"evidence_id\": \"7f032890-d936-40f3-ace3-56d757c70449\", \"evidence_revision\": 898, \"id\": \"SK-AS1-RUNTIME-ACCEPT\", \"input_fingerprint\": \"494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\"}], \"completion_revision\": 899, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-AS1-RUNTIME-ACCEPT\", \"input_fingerprint\": \"494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1\", \"last_run_at\": \"2026-10-04T18:18:47Z\", \"revision\": 898, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Runtime source cd149c3 plus explicit standalone source-factory fixture isolation; parent deployed binding preserved. Native gate retry after authentic release-root mismatch correction; production deployment qualification remains required by receipt.\", \"producer_commit\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-AS1-RUNTIME\"}",
+        "revision": 899,
+        "task_id": "SK-AS1-RUNTIME"
       },
       {
         "claim_id": null,
@@ -18176,6 +18272,19 @@
         "task_id": "PCU-SK-41",
         "valid": 1,
         "validation_git_head": "8e471a8166de6b1c7b5cf5f6e4e892cded3898a0"
+      },
+      {
+        "completion_git_head": "9ffcf14ae88d66817d457b188904f2c5b5fa7657",
+        "completion_revision": 899,
+        "evidence_id": "7f032890-d936-40f3-ace3-56d757c70449",
+        "evidence_revision": 898,
+        "gate_id": "SK-AS1-RUNTIME-ACCEPT",
+        "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
+        "provenance_json": "{\"claim_id\": \"3bda4b1a-3371-409b-944c-6b3a51b27779\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"6474d7f83f9cc63994a2a2696f3ad51ed387e66de755edf0b32ae3246f06b974\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"files\": [{\"path\": \"integrations/coding-workflow-mcp\", \"sha256\": \"missing\"}, {\"path\": \"local-coding-worker\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/contracts\", \"sha256\": \"missing\"}, {\"path\": \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"sha256\": \"721b8b0fe6b4df41ad824be878eeb2c57d3b82c57acf7646cc2513b77538a385\"}, {\"path\": \"tests/as1\", \"sha256\": \"missing\"}], \"interfaces\": [], \"recorded_git_head\": \"9ffcf14ae88d66817d457b188904f2c5b5fa7657\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 897}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/7f032890-d936-40f3-ace3-56d757c70449\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-AS1-RUNTIME",
+        "valid": 1,
+        "validation_git_head": "9ffcf14ae88d66817d457b188904f2c5b5fa7657"
       },
       {
         "completion_git_head": "94d07da9a1d865cdaf76f567a5060d05aae8cbae",
@@ -22786,12 +22895,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 889,
-        "status": "planned",
+        "revision": 900,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T17:30:47Z",
-        "version": 2
+        "updated_at": "2026-10-04T18:18:56Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -22870,9 +22979,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "9ffcf14ae88d66817d457b188904f2c5b5fa7657",
+        "completion_git_head": "9ffcf14ae88d66817d457b188904f2c5b5fa7657",
+        "completion_revision": 899,
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-RUNTIME",
         "kind": "task",
@@ -22884,14 +22993,14 @@
         "parallel_policy": "serial",
         "parent_id": "SK-AS1-0000",
         "priority": 100,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 894,
-        "status": "in_progress",
+        "revision": 899,
+        "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T17:53:07Z",
-        "version": 3
+        "updated_at": "2026-10-04T18:18:48Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -26699,22 +26808,22 @@
       },
       {
         "activated_at": "2026-10-04T17:53:07Z",
-        "completed_at": null,
+        "completed_at": "2026-10-04T18:18:48Z",
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 1,
-        "revision": 894,
-        "state": "active",
+        "revision": 899,
+        "state": "completed",
         "task_id": "SK-AS1-RUNTIME"
       },
       {
-        "activated_at": null,
+        "activated_at": "2026-10-04T18:18:56Z",
         "completed_at": null,
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 2,
-        "revision": 888,
-        "state": "queued",
+        "revision": 900,
+        "state": "active",
         "task_id": "SK-AS1-GPU"
       },
       {
@@ -27524,11 +27633,11 @@
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 894,
+        "revision": 900,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "active",
-        "updated_at": "2026-10-04T17:53:07Z",
+        "updated_at": "2026-10-04T18:18:56Z",
         "workspace_mode": "exclusive"
       },
       {

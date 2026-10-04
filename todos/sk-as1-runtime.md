@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-RUNTIME: Adapt the existing local service for read-only scout modes
 
-Task revision: `894`; current project revision is in `todo-status.md`.
+Task revision: `899`; current project revision is in `todo-status.md`.
 
 ## Objective
 Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
