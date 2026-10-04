@@ -1,0 +1,461 @@
+{
+  "blocking_evidence": {
+    "path": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/failure-diagnostic.json",
+    "reason": "Q1 queued real model responses violated native JSON protocol. Q2 emitted repeated literal placeholder commands across 35 turns and six attempts; no module checkpoint. Native retry drains lacked nonprogress termination.",
+    "sha256": "dfd99d71215a56c793d92be41c237b5a6cc85d34e7ee295a5c2d8e06bae37a1a"
+  },
+  "complete": false,
+  "format": "as1-skills-paired-qualification/1",
+  "generated_at": "2026-10-04T22:00:49.384939+00:00",
+  "installed_candidate": {
+    "build_evidence_index": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-daaab5a-e2ea75a/evidence-sha256.json",
+    "catalog_freeze_proof": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-daaab5a-e2ea75a/catalog-freeze-coverage.json",
+    "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004",
+    "release_manifest_sha256": "f0aa9d267ccf4c5ad83f397a3c4c70e2329ce1b38d310ae31bcb96ca7caf92ad",
+    "role_schema_proof": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-daaab5a-e2ea75a/role-schema-discovery.json",
+    "role_tool_counts": {
+      "coder": 12,
+      "codex": 12,
+      "investigator": 10,
+      "mutator": 16,
+      "observer": 11,
+      "skill_assembler": 10
+    },
+    "runtime_identity_proof": "/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/paired-daaab5a-e2ea75a/runtime-identity.json"
+  },
+  "integration_state": "Bounded tests and failed proof preserved; root owns product repair, lifecycle, integration and final acceptance. No commits by this workstream.",
+  "native_subset": {
+    "elapsed_seconds": 8.33,
+    "full_qualification": false,
+    "report": "planning/adaptive-surface-v1/validation/skills-paired-native-subset.json",
+    "status": "passed",
+    "tests": 3
+  },
+  "preservation": {
+    "activation_performed": false,
+    "approved_gpu_1_3_quiescent": true,
+    "canonical_todo_mutations_performed_by_workstream": false,
+    "owned_gpu_leases_cleared": true,
+    "protected_gpu_0_2_identity_preserved": true,
+    "q3_started": false
+  },
+  "qualified_helper_backup": {
+    "path": "planning/adaptive-surface-v1/scripts/qualify_real_journeys.py",
+    "sha256": "3b6479c11768214a39c8dd7a63d7373c6463b0aeef8af60049a7cbb58ff47c1a",
+    "tested_external_path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/qualify_real_journeys.py"
+  },
+  "real_attempts": [
+    {
+      "attempt": "q1",
+      "cleanup_checks": {
+        "approved_vram_zero": true,
+        "exact_approved_devices": true,
+        "no_approved_apps": true,
+        "no_owned_leases": true,
+        "no_owned_slots": true,
+        "observation_available": true,
+        "protected_start_identity_preserved": true,
+        "unrelated_preserved": true
+      },
+      "cleanup_errors": [],
+      "metrics": {
+        "real_turn_count": 7,
+        "total_active_seconds": 13.244921646000876,
+        "total_visible_output_bytes": 2711,
+        "total_visible_request_bytes": 30420,
+        "usage": [
+          {
+            "completion_tokens": 46,
+            "prompt_tokens": 1253,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1299
+          },
+          {
+            "completion_tokens": 101,
+            "prompt_tokens": 1502,
+            "prompt_tokens_details": {
+              "cached_tokens": 1246
+            },
+            "total_tokens": 1603
+          },
+          {
+            "completion_tokens": 102,
+            "prompt_tokens": 1240,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1342
+          },
+          {
+            "completion_tokens": 161,
+            "prompt_tokens": 1591,
+            "prompt_tokens_details": {
+              "cached_tokens": 1233
+            },
+            "total_tokens": 1752
+          },
+          {
+            "completion_tokens": 276,
+            "prompt_tokens": 1240,
+            "prompt_tokens_details": {
+              "cached_tokens": 1233
+            },
+            "total_tokens": 1516
+          },
+          {
+            "completion_tokens": 65,
+            "prompt_tokens": 1240,
+            "prompt_tokens_details": {
+              "cached_tokens": 1239
+            },
+            "total_tokens": 1305
+          },
+          {
+            "completion_tokens": 158,
+            "prompt_tokens": 1861,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 2019
+          }
+        ]
+      },
+      "receipt": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004/receipt.json",
+      "receipt_sha256": "c3545d2d1f62290543a7a1e26b872aa1a3a0093231b193993baffaad963c119f",
+      "status": "failed"
+    },
+    {
+      "attempt": "q2",
+      "cleanup_checks": {
+        "approved_vram_zero": true,
+        "exact_approved_devices": true,
+        "no_approved_apps": true,
+        "no_owned_leases": true,
+        "no_owned_slots": true,
+        "observation_available": true,
+        "protected_start_identity_preserved": true,
+        "unrelated_preserved": true
+      },
+      "cleanup_errors": [],
+      "metrics": {
+        "real_turn_count": 35,
+        "total_active_seconds": 83.27732290603308,
+        "total_visible_output_bytes": 2380,
+        "total_visible_request_bytes": 475567,
+        "usage": [
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 1300,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1317
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 1503,
+            "prompt_tokens_details": {
+              "cached_tokens": 1293
+            },
+            "total_tokens": 1520
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 1707,
+            "prompt_tokens_details": {
+              "cached_tokens": 1496
+            },
+            "total_tokens": 1724
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 1908,
+            "prompt_tokens_details": {
+              "cached_tokens": 1700
+            },
+            "total_tokens": 1925
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 2110,
+            "prompt_tokens_details": {
+              "cached_tokens": 1901
+            },
+            "total_tokens": 2127
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 2309,
+            "prompt_tokens_details": {
+              "cached_tokens": 2103
+            },
+            "total_tokens": 2326
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 2520,
+            "prompt_tokens_details": {
+              "cached_tokens": 1294
+            },
+            "total_tokens": 2537
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 2725,
+            "prompt_tokens_details": {
+              "cached_tokens": 2513
+            },
+            "total_tokens": 2742
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 2928,
+            "prompt_tokens_details": {
+              "cached_tokens": 2718
+            },
+            "total_tokens": 2945
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 3131,
+            "prompt_tokens_details": {
+              "cached_tokens": 2921
+            },
+            "total_tokens": 3148
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 3334,
+            "prompt_tokens_details": {
+              "cached_tokens": 3124
+            },
+            "total_tokens": 3351
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 3538,
+            "prompt_tokens_details": {
+              "cached_tokens": 3327
+            },
+            "total_tokens": 3555
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 3748,
+            "prompt_tokens_details": {
+              "cached_tokens": 2515
+            },
+            "total_tokens": 3765
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 3949,
+            "prompt_tokens_details": {
+              "cached_tokens": 3741
+            },
+            "total_tokens": 3966
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 4153,
+            "prompt_tokens_details": {
+              "cached_tokens": 3942
+            },
+            "total_tokens": 4170
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 4356,
+            "prompt_tokens_details": {
+              "cached_tokens": 4146
+            },
+            "total_tokens": 4373
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 4555,
+            "prompt_tokens_details": {
+              "cached_tokens": 4349
+            },
+            "total_tokens": 4572
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 4757,
+            "prompt_tokens_details": {
+              "cached_tokens": 4548
+            },
+            "total_tokens": 4774
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 4963,
+            "prompt_tokens_details": {
+              "cached_tokens": 3743
+            },
+            "total_tokens": 4980
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 5166,
+            "prompt_tokens_details": {
+              "cached_tokens": 4956
+            },
+            "total_tokens": 5183
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 5370,
+            "prompt_tokens_details": {
+              "cached_tokens": 5159
+            },
+            "total_tokens": 5387
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 5575,
+            "prompt_tokens_details": {
+              "cached_tokens": 5363
+            },
+            "total_tokens": 5592
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 5776,
+            "prompt_tokens_details": {
+              "cached_tokens": 5568
+            },
+            "total_tokens": 5793
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 5978,
+            "prompt_tokens_details": {
+              "cached_tokens": 5769
+            },
+            "total_tokens": 5995
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6186,
+            "prompt_tokens_details": {
+              "cached_tokens": 4958
+            },
+            "total_tokens": 6203
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6182,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6199
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6182,
+            "prompt_tokens_details": {
+              "cached_tokens": 1329
+            },
+            "total_tokens": 6199
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6184,
+            "prompt_tokens_details": {
+              "cached_tokens": 1329
+            },
+            "total_tokens": 6201
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6185,
+            "prompt_tokens_details": {
+              "cached_tokens": 1329
+            },
+            "total_tokens": 6202
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6188,
+            "prompt_tokens_details": {
+              "cached_tokens": 1329
+            },
+            "total_tokens": 6205
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6186,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6203
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6185,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6202
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6183,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6200
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6178,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6195
+          },
+          {
+            "completion_tokens": 17,
+            "prompt_tokens": 6175,
+            "prompt_tokens_details": {
+              "cached_tokens": 1330
+            },
+            "total_tokens": 6192
+          }
+        ]
+      },
+      "receipt": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-daaab5a-e2ea75a-20261004-q2/receipt.json",
+      "receipt_sha256": "3967bde4036333ba90a4a2d6e615d5549335d2927b55c51e0c4a9b49500e7401",
+      "status": "failed"
+    }
+  ],
+  "remaining": [
+    "Genuine busy-queue jobs all complete under native protocol.",
+    "Real agentic skill entry to legacy/Volta routing and authoritative exact excerpts.",
+    "Full four-test SQA acceptance execution and native bound gate pass."
+  ],
+  "reused_gpu_core_proof": {
+    "path": "planning/adaptive-surface-v1/validation/skills-gpu-hardware-qualification.json",
+    "scope": "Previously verified backend CUDA allocation/eviction/warm reuse, not current broker or skill qualification.",
+    "sha256": "d470ad46708cb2fb5a2d6cd1836b9eb7a91cb1cdd6b6c26a29570bada9a0d9ce"
+  },
+  "review": "planning/adaptive-surface-v1/validation/skills-paired-qualification-review.json",
+  "root_claim": "SKclaim934",
+  "run": "SK-AS1-RUN-1",
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004",
+    "fixture_commit": "ab4f6d54934a982dce2ed3232d70f7ffb7d81559",
+    "helper_sha256": "3b6479c11768214a39c8dd7a63d7373c6463b0aeef8af60049a7cbb58ff47c1a",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "99ebb05632b7768403e103bc32bb5f04885c86662272cef14bf83fb25e57ce8b",
+    "pc_commit": "daaab5aeb800390c529edfe976db03ad28c5b850",
+    "release_sha256": "f0aa9d267ccf4c5ad83f397a3c4c70e2329ce1b38d310ae31bcb96ca7caf92ad",
+    "skills_commit": "e2ea75a550f876ba0bd8836c0d1d47fd5aa13f7e"
+  },
+  "status": "failed",
+  "task": "SK-AS1-QUALIFY"
+}

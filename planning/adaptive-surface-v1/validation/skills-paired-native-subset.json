@@ -1,0 +1,31 @@
+{
+  "case_report": {
+    "cases": {
+      "SQA-01": [
+        {
+          "outcome": "passed",
+          "test": "tests/as1/test_sk_as1_qualify.py::test_installed_identity_profiles_canonical_reads_and_native_workflow"
+        }
+      ],
+      "SQA-02": [
+        {
+          "outcome": "passed",
+          "test": "tests/as1/test_sk_as1_qualify.py::test_installed_dormant_delegation_is_preserved_but_dispatch_inactive"
+        }
+      ],
+      "SQA-03": [
+        {
+          "outcome": "passed",
+          "test": "tests/as1/test_sk_as1_qualify.py::test_exact_skills_producer_consumption_and_native_route_provenance"
+        }
+      ]
+    },
+    "pytest_exitstatus": 0
+  },
+  "elapsed_seconds": 8.33,
+  "format": "as1-paired-native-subset-diagnostic/1",
+  "full_suite_executed": false,
+  "live_realproof_test_deselected": true,
+  "test_count": 3,
+  "warning": "SQA-02 internal dormant delegation passed; required real scout+skill test was not executed in this subset. This diagnostic does not satisfy full qualification."
+}
