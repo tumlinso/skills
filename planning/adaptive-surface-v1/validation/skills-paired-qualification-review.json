@@ -1,0 +1,39 @@
+{
+  "configured_role": "wf2-reviewer",
+  "coverage": "Read-only helper and SQA conformance source review. No inference, hardware execution, native workflow mutation or final program acceptance. Workers have behavioral scope; mechanical worker isolation not claimed.",
+  "findings": [
+    {
+      "correction": "Native test helper verifies pinned source and frozen runtime resource bytes including native catalog/routing and manifest resource pins.",
+      "finding": "Producer receipt historical Git hashes alone did not prove installed candidate consumed matching resources.",
+      "id": "SQA-REVIEW-01",
+      "priority": "P1",
+      "status": "source_corrected_pending_final_execution"
+    },
+    {
+      "correction": "Live helper requires direct-cat module source hash and answer citation plus mandatory skill entry, legacy map and Volta map source hashes with visited-map excerpt.",
+      "finding": "Checkpoint reuse could pass empty source reads; exact skill excerpt did not require requested Volta route traversal.",
+      "id": "SQA-REVIEW-02",
+      "priority": "P1",
+      "status": "source_corrected_pending_real_execution"
+    },
+    {
+      "correction": "Controller stop is independently guarded and owned backend cleanup/proof still runs; incomplete cleanup cannot pass.",
+      "finding": "Controller stop TimeoutExpired could skip owned model cleanup and failure proof.",
+      "id": "SQA-REVIEW-03",
+      "priority": "P2",
+      "status": "source_corrected_pending_real_execution"
+    }
+  ],
+  "format": "as1-paired-focused-review/1",
+  "independent_review_completed": true,
+  "integration_state": "Final catalog-complete official candidate and real execution pending.",
+  "reviewed_at": "2026-10-04T21:48:12.568308+00:00",
+  "reviewer": "/root/paired_qualification/proof_review",
+  "root_claim": "SKclaim934",
+  "source_review_followup_sha256": {
+    "/home/tumlinson/.agents/skills/tests/as1/sqa_candidate_journeys.py": "94f7b81683863a18f5efe2750f0545b3e5b610c25df1b1deee919856fe70c40f",
+    "/home/tumlinson/.agents/skills/tests/as1/test_sk_as1_qualify.py": "3f75d022db173a8a4258ed1ff735a5d3204b082c120fbbfdf6b943d2b7eb2658",
+    "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/qualify_real_journeys.py": "384d3f4366d6c1a79ff48eb2bda2cc9c5ef2e244eaa7349ed08e7bc813726731"
+  },
+  "task": "SK-AS1-QUALIFY"
+}
