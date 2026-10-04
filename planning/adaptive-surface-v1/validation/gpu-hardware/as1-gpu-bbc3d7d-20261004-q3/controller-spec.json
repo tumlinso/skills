@@ -1,0 +1,25 @@
+{
+  "_storage_root": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller",
+  "argv": [
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/bin/python",
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py",
+    "--foreground-check"
+  ],
+  "paths": [],
+  "preempt_grace_seconds": 30,
+  "project_root": "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-projects/as1-gpu-bbc3d7d-20261004-q3",
+  "recipe": "baseline",
+  "resources": {
+    "cpu_threads": 0,
+    "gpu_uuids": [
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+    ],
+    "gpus": 2,
+    "isolate_nvlink_domain": false,
+    "isolate_pcie_root": false,
+    "ram_bytes": 0
+  },
+  "schema_version": 1,
+  "timeout": 60
+}

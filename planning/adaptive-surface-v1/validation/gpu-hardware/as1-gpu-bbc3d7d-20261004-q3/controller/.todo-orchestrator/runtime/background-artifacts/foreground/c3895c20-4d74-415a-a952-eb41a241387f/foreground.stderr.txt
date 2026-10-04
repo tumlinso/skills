@@ -1,0 +1,17 @@
+[benchmark-mutex] acquired cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock
+Traceback (most recent call last):
+  File "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py", line 247, in <module>
+    main()
+    ~~~~^^
+  File "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py", line 232, in main
+    foreground_check()
+    ~~~~~~~~~~~~~~~~^^
+  File "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py", line 67, in foreground_check
+    library.cudaDeviceGetUuid.argtypes = [ctypes.POINTER(DeviceUuid), ctypes.c_int]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/tumlinson/Software/miniconda3/lib/python3.13/ctypes/__init__.py", line 412, in __getattr__
+    func = self.__getitem__(name)
+  File "/home/tumlinson/Software/miniconda3/lib/python3.13/ctypes/__init__.py", line 417, in __getitem__
+    func = self._FuncPtr((name_or_ordinal, self))
+AttributeError: /usr/lib/x86_64-linux-gnu/libcudart.so.12.0.146: undefined symbol: cudaDeviceGetUuid
+[benchmark-mutex] released cuda-controller-foreground via /tmp/cuda_v100_benchmark.lock

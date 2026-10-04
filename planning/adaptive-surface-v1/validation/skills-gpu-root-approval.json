@@ -1,0 +1,64 @@
+{
+  "authorized": true,
+  "resource_ids": [
+    "accelerator:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  ],
+  "format": "pc-as1-gpu-root-approval/1",
+  "approved_at": "2026-10-04T19:40:13.333211+00:00",
+  "task_id": "SK-AS1-GPU",
+  "run_id": "SK-AS1-RUN-1",
+  "canonical_todo_revision": 920,
+  "candidate_release_sha256": "cc4c1893dda6ed00832dfaff8118aa58e988623ae7d6d819d46f90677eb439d3",
+  "source_gpu_commit": "5257dbb5c81f283de19e40988cc3da9204730dcd",
+  "argv": [
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/bin/python",
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py",
+    "--project",
+    "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-projects/as1-gpu-5257dbb-20261004-q4",
+    "--source-root",
+    "/home/tumlinson/.agents/skills",
+    "--approval",
+    "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json",
+    "--output",
+    "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4",
+    "--private-state-root",
+    "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-private/as1-gpu-5257dbb-20261004-q4",
+    "--cuda-runtime-library",
+    "/usr/lib/x86_64-linux-gnu/libcudart.so.12.0.146",
+    "--cuda-runtime-sha256",
+    "960a404b602cc8c9493c4eb0e8ffdb8c3df6bec0ccfbd23f2ec7cbcc56cb5d3c",
+    "--gpu-uuid",
+    "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "--gpu-uuid",
+    "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  ],
+  "environment_set": {
+    "PROJECT_CONTROL_SKILLS_ROOT": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills",
+    "PROJECT_CONTROL_RELEASE_MANIFEST": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/release-manifest.json",
+    "PROJECT_CONTROL_RELEASE_DIGEST": "cc4c1893dda6ed00832dfaff8118aa58e988623ae7d6d819d46f90677eb439d3",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "environment_unset": [
+    "CODING_WORKFLOW_SKILLS_ROOT",
+    "CODING_WORKFLOW_RUNTIME_FINGERPRINT",
+    "PROJECT_CONTROL_TODO_RUNTIME_FINGERPRINT",
+    "TODO_BACKGROUND_HOST_RUNTIME_DIR"
+  ],
+  "constraints": [
+    "Global HostCoordinator foreground admission and protected-residency guards required.",
+    "Preserve existing service and owners on GPUs 0 and 2.",
+    "No canonical Todo initialization, migration, or writable Service construction.",
+    "External Git-only fixture and private0700 marker root; no capabilities in artifacts.",
+    "Fresh exact physical admission and actual CUDA on both UUIDs required; no fallback."
+  ],
+  "enforcement_note": "Helper enforces authorized/resource_ids; remaining fields are root audit metadata. Candidate hash and runtime identity independently verified.",
+  "prior_failed_attempt": {
+    "attempt": "q3",
+    "helper_exit_code": 1,
+    "reason": "approved12.0 library missing cudaDeviceGetUuid beforeallocation; corrected helper uses documented PCI mapping",
+    "postcomparison": "/tmp/sk-as1-gpu04-q3-canonical-postcomparison.json",
+    "postcomparison_sha256": "957361da9389878134c7b2711a2db12aab85df3fef9a1e205ade2ec4ffc086df"
+  },
+  "recovery_authorization": "Root q4 launch explicitly authorized under existing exact-pair grant; corrected official candidate; tracked README fixture and installed snapshot selfcheck; prelaunch canonical11/920 baseline and writefreeze."
+}

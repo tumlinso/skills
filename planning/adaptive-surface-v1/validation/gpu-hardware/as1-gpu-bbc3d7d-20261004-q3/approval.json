@@ -1,0 +1,64 @@
+{
+  "approved_at": "2026-10-04T19:40:13.333211+00:00",
+  "argv": [
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/bin/python",
+    "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py",
+    "--project",
+    "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-projects/as1-gpu-bbc3d7d-20261004-q3",
+    "--source-root",
+    "/home/tumlinson/.agents/skills",
+    "--approval",
+    "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json",
+    "--output",
+    "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3",
+    "--private-state-root",
+    "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-private/as1-gpu-bbc3d7d-20261004-q3",
+    "--cuda-runtime-library",
+    "/usr/lib/x86_64-linux-gnu/libcudart.so.12.0.146",
+    "--cuda-runtime-sha256",
+    "960a404b602cc8c9493c4eb0e8ffdb8c3df6bec0ccfbd23f2ec7cbcc56cb5d3c",
+    "--gpu-uuid",
+    "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "--gpu-uuid",
+    "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  ],
+  "authorized": true,
+  "candidate_release_sha256": "25b785a2f6f82af78b2ad5eb498cdba015cd2d8b6e3b9d47e562520e2a69c973",
+  "canonical_todo_revision": 910,
+  "constraints": [
+    "Global HostCoordinator foreground admission and protected-residency guards required.",
+    "Preserve existing service and owners on GPUs 0 and 2.",
+    "No canonical Todo initialization, migration, or writable Service construction.",
+    "External Git-only fixture and private0700 marker root; no capabilities in artifacts.",
+    "Fresh exact physical admission and actual CUDA on both UUIDs required; no fallback."
+  ],
+  "enforcement_note": "Helper enforces authorized/resource_ids; remaining fields are root audit metadata. Candidate hash and runtime identity independently verified.",
+  "environment_set": {
+    "PROJECT_CONTROL_RELEASE_DIGEST": "25b785a2f6f82af78b2ad5eb498cdba015cd2d8b6e3b9d47e562520e2a69c973",
+    "PROJECT_CONTROL_RELEASE_MANIFEST": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/release-manifest.json",
+    "PROJECT_CONTROL_SKILLS_ROOT": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-bbc3d7d-20261004/runtime-skills",
+    "XDG_RUNTIME_DIR": "/run/user/1000"
+  },
+  "environment_unset": [
+    "CODING_WORKFLOW_SKILLS_ROOT",
+    "CODING_WORKFLOW_RUNTIME_FINGERPRINT",
+    "PROJECT_CONTROL_TODO_RUNTIME_FINGERPRINT",
+    "TODO_BACKGROUND_HOST_RUNTIME_DIR"
+  ],
+  "format": "pc-as1-gpu-root-approval/1",
+  "prior_failed_attempt": {
+    "attempt": "q2",
+    "helper_exit_code": 1,
+    "postcomparison": "/tmp/sk-as1-gpu04-q2-canonical-postcomparison.json",
+    "postcomparison_sha256": "3c027b43ca00f81dc297f7b9ee7f9c22a3171371b1cffb91ddadc975b3224c62",
+    "reason": "empty Git tree archive ReadError:end of file header before CUDA child"
+  },
+  "recovery_authorization": "Root routine recovery q3 explicitly authorized; tracked README fixture commit and installed snapshot selfcheck before model; same candidate/environment/exact resources; retain q1/q2 evidence.",
+  "resource_ids": [
+    "accelerator:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  ],
+  "run_id": "SK-AS1-RUN-1",
+  "source_gpu_commit": "bbc3d7db11e6251fc3a6aa311aa0556adab9dc18",
+  "task_id": "SK-AS1-GPU"
+}

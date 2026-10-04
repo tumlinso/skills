@@ -1,0 +1,12 @@
+{
+  "format": "CUDA-FOREGROUND-LEASE/1",
+  "owner_id": "foreground:ea7112a5-52b0-45e0-8df6-bcdc64427152",
+  "project_root": "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-projects/as1-gpu-bbc3d7d-20261004-q3",
+  "pid": 449120,
+  "resource_ids": [
+    "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+    "accelerator:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+  ],
+  "observed_unix": 1791143576.7124834,
+  "state": "active"
+}
