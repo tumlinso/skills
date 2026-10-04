@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `901`
+Project revision: `905`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -86,6 +86,7 @@ Project revision: `901`
 - `SK-AS1-RELEASE` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
 - `SK-AS1-ROUTING` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
 - `SK-AS1-RUNTIME` | kind: task | status: done | parent: SK-AS1-0000 | objective: Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.
+- `SK-AS1-SEMANTIC-PORT` | kind: task | status: in_progress | parent: SK-AS1-0000 | objective: Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.
 - `SK-AS1-SEMANTICS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.
 - `SK-PCE2-COLLABORATE` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Delegate meaningful bounded work with the context and executor it actually needs, and share immutable source deliveries before final qualification without manual provenance reconstruction.
 - `SK-PCE2-MAINTAIN` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Provide bounded resume, amend, supersede/retire and applicability-invalidation operations over existing canonical services; grants follow an approved job rather than the target claim or expensive model.

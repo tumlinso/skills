@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-SEMANTICS: Extend canonical semantic and mutation contracts
 
-Task revision: `901`; current project revision is in `todo-status.md`.
+Task revision: `904`; current project revision is in `todo-status.md`.
 
 ## Objective
 Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.

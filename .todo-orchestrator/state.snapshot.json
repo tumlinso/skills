@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T18:40:58Z",
+  "generated_at": "2026-10-04T19:13:04Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 901,
+  "project_revision": 905,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9461,6 +9461,46 @@
         "revision": 901,
         "seq": 901,
         "timestamp": "2026-10-04T18:40:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"1a0b0ee6dc314d2c413c7592d6c0f9e0b930ffe9f458ccd3edc5ebedeeca8866\", \"source\": \"project-control\"}",
+        "revision": 902,
+        "seq": 902,
+        "timestamp": "2026-10-04T19:01:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"2835cf9b3fc30279cbc7bc486b02dc5c0d7a0c4e8e2f462b0520466126e329c3\", \"source\": \"project-control\"}",
+        "revision": 903,
+        "seq": 903,
+        "timestamp": "2026-10-04T19:04:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"4c0a69777300c04bbea69e1f1a20851a4fef243ad6de37f956e59f2df1930f34\", \"source\": \"project-control\"}",
+        "revision": 904,
+        "seq": 904,
+        "timestamp": "2026-10-04T19:13:03Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-SEMANTIC-CONTROL",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-SEMANTIC-CONTROL\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-SEMANTIC-PORT\"}",
+        "revision": 905,
+        "seq": 905,
+        "timestamp": "2026-10-04T19:13:04Z"
       }
     ],
     "evidence": [
@@ -12827,7 +12867,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-GPU",
         "type": "command",
@@ -12840,7 +12880,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12853,7 +12893,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-QUALIFY",
         "type": "command",
@@ -12866,7 +12906,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12879,7 +12919,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-RELEASE",
         "type": "command",
@@ -12892,7 +12932,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12905,7 +12945,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
@@ -12918,7 +12958,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12931,7 +12971,7 @@
         "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
         "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
@@ -12944,7 +12984,33 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"docs/as1-foreign-source-port.md\", \"todo-orchestrator/todo_orchestrator/plan.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 904,
+        "status": "pending",
+        "task_id": "SK-AS1-SEMANTIC-PORT",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-SEMANTIC-PORT\", \"track_git_head\": false}",
+        "id": "SK-AS1-SEMANTIC-PORT-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12957,7 +13023,7 @@
         "input_fingerprint": "abe42f33e7709566bb6ea90b19dc86773138864435cf1ff204f9e6b45bd73eeb",
         "last_run_at": "2026-10-04T17:52:53Z",
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTICS",
         "type": "command",
@@ -12970,7 +13036,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 901,
+        "revision": 904,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -16201,6 +16267,36 @@
         "mode": "read",
         "path": "planning/adaptive-surface-v1",
         "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/as1-foreign-source-port.md",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_as1_foreign_source_port.py",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/plan.py",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/project_amendments.py",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/service.py",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "mode": "read",
+        "path": "docs/project-amendments.md",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
       },
       {
         "mode": "exclusive",
@@ -19647,7 +19743,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 908,
+        "id": 928,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-GPU",
@@ -19658,7 +19754,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 909,
+        "id": 929,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-ROUTING",
         "task_id": "SK-AS1-QUALIFY",
@@ -19669,7 +19765,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 910,
+        "id": 930,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-QUALIFY",
         "task_id": "SK-AS1-RELEASE",
@@ -19680,7 +19776,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 911,
+        "id": 931,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-ROUTING",
@@ -19691,7 +19787,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 912,
+        "id": 932,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-GPU",
         "task_id": "SK-AS1-ROUTING",
@@ -19702,10 +19798,21 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 913,
+        "id": 933,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-RUNTIME",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 934,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-SEMANTICS",
+        "task_id": "SK-AS1-SEMANTIC-PORT",
         "type": "task"
       }
     ],
@@ -22890,12 +22997,12 @@
         "priority": 0,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "planned",
         "tags_json": "[]",
         "title": "AS1 skills: consolidated adaptive helper surface",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 3
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -22915,12 +23022,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 4
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -22940,12 +23047,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "planned",
         "tags_json": "[]",
         "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 3
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -22965,12 +23072,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "planned",
         "tags_json": "[]",
         "title": "Pin the qualified standalone release in Skills",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 3
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -22990,12 +23097,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "planned",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 3
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -23015,12 +23122,37 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 5
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 8
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T19:01:12Z",
+        "id": "SK-AS1-SEMANTIC-PORT",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.",
+        "notes": "",
+        "objective": "Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 905,
+        "status": "in_progress",
+        "tags_json": "[]",
+        "title": "Complete trusted semantic verification and idempotent control ports",
+        "updated_at": "2026-10-04T19:13:04Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -23040,12 +23172,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 901,
+        "revision": 904,
         "status": "done",
         "tags_json": "[]",
         "title": "Extend canonical semantic and mutation contracts",
-        "updated_at": "2026-10-04T18:40:58Z",
-        "version": 5
+        "updated_at": "2026-10-04T19:13:03Z",
+        "version": 8
       },
       {
         "attention_reason": null,
@@ -25129,6 +25261,23 @@
         "version": 1
       },
       {
+        "content_hash": "bc04904950a6bd444d2e7eeba57fcfa99ce139414ee44e9d1ff6c3dcdde8f4ae",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-SEMANTIC-PORT\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T19:13:03Z",
+        "creation_revision": 904,
+        "id": "SK-AS1-RUN-1:lane_brief:SK-AS1-L-SEMANTIC-CONTROL:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SEMANTIC-CONTROL\",\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
         "content_hash": "9f02e6a3cf4bc4ca15719971f527122afec60680e84420bc1b77d0c29227b280",
         "content_json": "{\"boundaries\":[\"Separate Todo/Git/host authorities; preserve dirty source, historical successful evidence and CUDA/atlas guidance.\",\"Do not resume NF1A or mutate unrelated scientific projects. Destructive admin actions require explicit user permission.\",\"One exclusive Skills lane preserves the existing prerequisite sequence; cross-authority producer receipts remain required before consumer execution.\"],\"motivation\":\"More useful engineering progress with less context, coordination and maintenance overhead.\",\"objective\":\"Implement the complete consolidated role-efficient Project Control surface using canonical backend authorities.\",\"references\":[\"planning/adaptive-surface-v1/START_HERE.md\",\"planning/adaptive-surface-v1/planning/outcomes.json\",\"planning/adaptive-surface-v1/contracts/requirements.json\",\"planning/adaptive-surface-v1/planning/cross-authority.json\",\"planning/adaptive-surface-v1/EXECUTION_HANDOFF.md\"]}",
         "created_at": "2026-10-04T17:21:33Z",
@@ -25151,6 +25300,23 @@
         "created_at": "2026-10-04T17:21:33Z",
         "creation_revision": 888,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:1",
+        "invalidated_at": "2026-10-04T19:13:03Z",
+        "invalidation_revision": 904,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-0000\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:2",
+        "task_id": "SK-AS1-0000",
+        "version": 1
+      },
+      {
+        "content_hash": "4b3220e5880798f14c9f3a40a3a1e4130ca691dc9fd251989a99a7b74ea595b6",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\"]}",
+        "created_at": "2026-10-04T19:13:03Z",
+        "creation_revision": 904,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:2",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -25160,7 +25326,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-0000",
-        "version": 1
+        "version": 2
       },
       {
         "content_hash": "902fafe9bb4021bcd4cb93f524fd1b4fe4263156fe694dac9921dd054ef410ba",
@@ -25168,6 +25334,23 @@
         "created_at": "2026-10-04T17:21:33Z",
         "creation_revision": 888,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-GPU:1",
+        "invalidated_at": "2026-10-04T19:13:03Z",
+        "invalidation_revision": 904,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-GPU\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-GPU:2",
+        "task_id": "SK-AS1-GPU",
+        "version": 1
+      },
+      {
+        "content_hash": "fc2d55c67afac5450d8bd4f266c032d1889035239aebdcb47564117e9f020007",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-GPU-ACCEPT\"],\"next_action\":\"Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.\",\"scope\":{\"exclusive_paths\":[\"cuda/scripts\",\"cuda/tests\",\"local-coding-worker\",\"planning/adaptive-surface-v1\",\"tests/as1\",\"todo-orchestrator/todo_orchestrator/background/host.py\",\"todo-orchestrator/todo_orchestrator/runtime/facade.py\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-GPU-ACCEPT\"]}",
+        "created_at": "2026-10-04T19:13:03Z",
+        "creation_revision": 904,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-GPU:2",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -25177,7 +25360,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-GPU",
-        "version": 1
+        "version": 2
       },
       {
         "content_hash": "176468cf72c81fcc9c08b01c92afea33e744c83c41ab43182d9ce60ea6cd87c1",
@@ -25263,6 +25446,91 @@
         "superseded_by": null,
         "task_id": "SK-AS1-SEMANTICS",
         "version": 1
+      },
+      {
+        "content_hash": "eb5b95ac84dac432e2ca77b12bba447753d1bb4ad5be280432e85edf8e45fa71",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"],\"next_action\":\"Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.\",\"objective\":\"Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/service.py\",\"todo-orchestrator/todo_orchestrator/project_amendments.py\",\"todo-orchestrator/tests/test_as1_foreign_source_port.py\",\"docs/as1-foreign-source-port.md\",\"todo-orchestrator/todo_orchestrator/plan.py\"],\"read_paths\":[\"docs/project-amendments.md\"]},\"tests\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"]}",
+        "created_at": "2026-10-04T19:13:03Z",
+        "creation_revision": 904,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-SEMANTIC-CONTROL:SK-AS1-SEMANTIC-PORT:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SEMANTIC-CONTROL\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-SEMANTIC-PORT\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-SEMANTIC-PORT",
+        "version": 1
+      },
+      {
+        "content_hash": "bc04904950a6bd444d2e7eeba57fcfa99ce139414ee44e9d1ff6c3dcdde8f4ae",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-SEMANTIC-PORT\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T19:01:12Z",
+        "creation_revision": 902,
+        "id": "SK-AS1-SEMANTIC-PORT-RUN-1:lane_brief:SK-AS1-L-SEMANTIC-PORT:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-SEMANTIC-PORT",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SEMANTIC-PORT\",\"run_id\":\"SK-AS1-SEMANTIC-PORT-RUN-1\"}",
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "48caa20aa171b6c6300a2d243bb673b7aeeda841f27345b2e5b244a4e6724f70",
+        "content_json": "{\"boundaries\":[\"No live authority migration or foreign repository mutation.\",\"Preserve existing runs, claims, source work and GPU residency.\",\"One bounded source seam; root retains lifecycle and final acceptance.\"],\"objective\":\"Complete the trusted semantic verifier seam required by PC-AS1-CONTROL.\"}",
+        "created_at": "2026-10-04T19:01:12Z",
+        "creation_revision": 902,
+        "id": "SK-AS1-SEMANTIC-PORT-RUN-1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"SK-AS1-SEMANTIC-PORT-RUN-1\"}",
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "b4a672c18f87441e74bc22e33043923de83c774f0b08538143e03fbad8905b3d",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"],\"next_action\":\"Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.\",\"objective\":\"Add startup-only foreign source verifier support without permitting request-defined routing or expanding filesystem authority. Preserve unavailable behavior without a verifier.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/service.py\",\"todo-orchestrator/todo_orchestrator/project_amendments.py\",\"todo-orchestrator/tests/test_as1_foreign_source_port.py\",\"docs/as1-foreign-source-port.md\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"]}",
+        "created_at": "2026-10-04T19:01:12Z",
+        "creation_revision": 902,
+        "id": "SK-AS1-SEMANTIC-PORT-RUN-1:task_brief:SK-AS1-L-SEMANTIC-PORT:SK-AS1-SEMANTIC-PORT:1",
+        "invalidated_at": "2026-10-04T19:04:27Z",
+        "invalidation_revision": 903,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-SEMANTIC-PORT",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SEMANTIC-PORT\",\"run_id\":\"SK-AS1-SEMANTIC-PORT-RUN-1\",\"task_id\":\"SK-AS1-SEMANTIC-PORT\"}",
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-SEMANTIC-PORT-RUN-1:task_brief:SK-AS1-L-SEMANTIC-PORT:SK-AS1-SEMANTIC-PORT:2",
+        "task_id": "SK-AS1-SEMANTIC-PORT",
+        "version": 1
+      },
+      {
+        "content_hash": "9c8d45851ca4064638bf0a50713f1a1ce40ea76fd789ba78279cfe070d48f2cd",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"],\"next_action\":\"Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.\",\"objective\":\"Add startup-only foreign source verifier support without permitting request-defined routing or expanding filesystem authority. Preserve unavailable behavior without a verifier.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/service.py\",\"todo-orchestrator/todo_orchestrator/project_amendments.py\",\"todo-orchestrator/tests/test_as1_foreign_source_port.py\",\"docs/as1-foreign-source-port.md\"],\"read_paths\":[\"docs/project-amendments.md\"]},\"tests\":[\"SK-AS1-SEMANTIC-PORT-ACCEPT\"]}",
+        "created_at": "2026-10-04T19:04:27Z",
+        "creation_revision": 903,
+        "id": "SK-AS1-SEMANTIC-PORT-RUN-1:task_brief:SK-AS1-L-SEMANTIC-PORT:SK-AS1-SEMANTIC-PORT:2",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-SEMANTIC-PORT",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SEMANTIC-PORT\",\"run_id\":\"SK-AS1-SEMANTIC-PORT-RUN-1\",\"task_id\":\"SK-AS1-SEMANTIC-PORT\"}",
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-SEMANTIC-PORT",
+        "version": 2
       },
       {
         "content_hash": "a013ce3b8b959d23e5d00d9314ec7bc07e1cb1f1d2016943dd77f6f9b68756d2",
@@ -26822,7 +27090,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 0,
-        "revision": 893,
+        "revision": 904,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTICS"
       },
@@ -26832,7 +27100,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 1,
-        "revision": 899,
+        "revision": 904,
         "state": "completed",
         "task_id": "SK-AS1-RUNTIME"
       },
@@ -26842,7 +27110,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 2,
-        "revision": 900,
+        "revision": 904,
         "state": "active",
         "task_id": "SK-AS1-GPU"
       },
@@ -26852,7 +27120,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 3,
-        "revision": 888,
+        "revision": 904,
         "state": "queued",
         "task_id": "SK-AS1-ROUTING"
       },
@@ -26862,7 +27130,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 4,
-        "revision": 888,
+        "revision": 904,
         "state": "queued",
         "task_id": "SK-AS1-QUALIFY"
       },
@@ -26872,7 +27140,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 5,
-        "revision": 888,
+        "revision": 904,
         "state": "queued",
         "task_id": "SK-AS1-RELEASE"
       },
@@ -26882,9 +27150,29 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 6,
-        "revision": 888,
+        "revision": 904,
         "state": "queued",
         "task_id": "SK-AS1-0000"
+      },
+      {
+        "activated_at": "2026-10-04T19:13:04Z",
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T19:13:03Z",
+        "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
+        "position": 0,
+        "revision": 905,
+        "state": "active",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T19:01:12Z",
+        "lane_id": "SK-AS1-L-SEMANTIC-PORT",
+        "position": 0,
+        "revision": 903,
+        "state": "queued",
+        "task_id": "SK-AS1-SEMANTIC-PORT"
       },
       {
         "activated_at": null,
@@ -27653,11 +27941,35 @@
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 900,
+        "revision": 904,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "active",
-        "updated_at": "2026-10-04T18:18:56Z",
+        "updated_at": "2026-10-04T19:13:03Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-10-04T19:13:03Z",
+        "id": "SK-AS1-L-SEMANTIC-CONTROL",
+        "parent_lane_id": "SK-AS1-L-EXEC",
+        "revision": 905,
+        "role": "implementer",
+        "run_id": "SK-AS1-RUN-1",
+        "state": "active",
+        "updated_at": "2026-10-04T19:13:04Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-10-04T19:01:12Z",
+        "id": "SK-AS1-L-SEMANTIC-PORT",
+        "parent_lane_id": null,
+        "revision": 903,
+        "role": "implementer",
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "state": "ready",
+        "updated_at": "2026-10-04T19:04:27Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28448,6 +28760,16 @@
         "version": 1
       },
       {
+        "content_hash": "48caa20aa171b6c6300a2d243bb673b7aeeda841f27345b2e5b244a4e6724f70",
+        "content_json": "{\"boundaries\":[\"No live authority migration or foreign repository mutation.\",\"Preserve existing runs, claims, source work and GPU residency.\",\"One bounded source seam; root retains lifecycle and final acceptance.\"],\"objective\":\"Complete the trusted semantic verifier seam required by PC-AS1-CONTROL.\"}",
+        "created_at": "2026-10-04T19:01:12Z",
+        "creation_revision": 902,
+        "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "a15b24e3a32147e02ce1d12f21fc0738dd642451fb2758500583fbb4ac2c9c74",
         "content_json": "{\"acceptance_conditions\":[\"Current executed evidence for all PCE2 scenarios and supported old calls.\",\"Shared 3M aggregate token ceiling including relevant prior PCE1 work; disclose metering gaps.\"],\"boundaries\":[\"Independent Todo/Git/host authority; preserve source/evidence.\",\"Observer stays nonmutating; trusted scoped grants authorize maintenance, not model labels.\",\"No live Cellerator/GlassHelix writes, deployment activation or NF1A continuation.\"],\"delegated_judgment\":\"Choose APIs, tests, local decomposition, supported concurrency and economical configured agents; no procedural microtasks or fixed delegation/test quotas.\",\"desired_end_state\":\"Six PCE2 outcomes qualified in one paired candidate; donor NF1A paused.\",\"motivation\":\"Reduce avoidable calls, workarounds, repeated gates and root handoffs.\",\"objective\":\"Make engineering execution easy through semantic guidance, automatic routine mechanics and scoped delegable maintenance.\",\"references\":[\"planning/pce2/DESIGN.md\",\"planning/pce2/BOOTSTRAP.md\",\"planning/pce2/machine/outcomes.json\",\"planning/pce2/machine/usage.json\",\"planning/pce2/machine/cross-authority.json\"]}",
         "created_at": "2026-09-20T13:38:44Z",
@@ -28518,6 +28840,16 @@
         "root_task_id": "SK-AS1-0000",
         "status": "active",
         "updated_at": "2026-10-04T17:21:33Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-10-04T19:01:12Z",
+        "id": "SK-AS1-SEMANTIC-PORT-RUN-1",
+        "revision": 902,
+        "root_task_id": "SK-AS1-SEMANTIC-PORT",
+        "status": "active",
+        "updated_at": "2026-10-04T19:01:12Z"
       },
       {
         "active_charter_version": 1,
