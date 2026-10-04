@@ -1,0 +1,382 @@
+{
+  "attempts": [
+    {
+      "attempt": "q3",
+      "cleanup_checks": {
+        "approved_vram_zero": true,
+        "exact_approved_devices": true,
+        "no_approved_apps": true,
+        "no_owned_leases": true,
+        "no_owned_slots": true,
+        "observation_available": true,
+        "protected_start_identity_preserved": true,
+        "unrelated_preserved": true
+      },
+      "cleanup_errors": [],
+      "helper_backup": "planning/adaptive-surface-v1/scripts/qualify_real_journeys_q3.py",
+      "metrics": {
+        "real_turn_count": 6,
+        "total_active_seconds": 7.170512698001403,
+        "total_visible_output_bytes": 996,
+        "total_visible_request_bytes": 42404,
+        "usage": [
+          {
+            "completion_tokens": 59,
+            "prompt_tokens": 1430,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1489
+          },
+          {
+            "completion_tokens": 58,
+            "prompt_tokens": 1648,
+            "prompt_tokens_details": {
+              "cached_tokens": 1423
+            },
+            "total_tokens": 1706
+          },
+          {
+            "completion_tokens": 59,
+            "prompt_tokens": 1867,
+            "prompt_tokens_details": {
+              "cached_tokens": 1641
+            },
+            "total_tokens": 1926
+          },
+          {
+            "completion_tokens": 26,
+            "prompt_tokens": 2083,
+            "prompt_tokens_details": {
+              "cached_tokens": 1860
+            },
+            "total_tokens": 2109
+          },
+          {
+            "completion_tokens": 50,
+            "prompt_tokens": 2720,
+            "prompt_tokens_details": {
+              "cached_tokens": 2076
+            },
+            "total_tokens": 2770
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 3390,
+            "prompt_tokens_details": {
+              "cached_tokens": 2713
+            },
+            "total_tokens": 3445
+          }
+        ]
+      },
+      "receipt": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q3/receipt.json",
+      "receipt_sha256": "cb95e4b7a8206ea19883106fd2f9c9ea304e2f0c751e2b34eee8d5bd6b5a10ac",
+      "source_identity": {
+        "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-cefdb93-e59b903-20261004",
+        "fixture_commit": "1af1a4f3cb0e944e93e7ae793a0c39caa06206ad",
+        "helper_sha256": "a5f28cf35295690a2e41580a7beb89a995f1e9336f6671cc9d37c93161cadba5",
+        "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+        "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+        "observer_runtime_sha256": "0cb31c565e02a5aa524ba6cff8af0a35f94246385fac53d692260573e519336b",
+        "pc_commit": "cefdb9389b9e948102bc972e2b38addf8eefa80f",
+        "release_sha256": "d8a2dba92af6251e410f7a3c7597f9d964f05919308cfb64228a2e4c1c188ebd",
+        "skills_commit": "e59b903d4603781bac907ee46b0327dfc403fb1e"
+      },
+      "status": "failed"
+    },
+    {
+      "attempt": "q4",
+      "cleanup_checks": {
+        "approved_vram_zero": true,
+        "exact_approved_devices": true,
+        "no_approved_apps": true,
+        "no_owned_leases": true,
+        "no_owned_slots": true,
+        "observation_available": true,
+        "protected_start_identity_preserved": true,
+        "unrelated_preserved": true
+      },
+      "cleanup_errors": [],
+      "helper_backup": "planning/adaptive-surface-v1/scripts/qualify_real_journeys_q4.py",
+      "metrics": {
+        "real_turn_count": 25,
+        "total_active_seconds": 27.73599406100402,
+        "total_visible_output_bytes": 4624,
+        "total_visible_request_bytes": 182316,
+        "usage": [
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 1436,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1491
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 1420,
+            "prompt_tokens_details": {
+              "cached_tokens": 0
+            },
+            "total_tokens": 1475
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 1770,
+            "prompt_tokens_details": {
+              "cached_tokens": 1413
+            },
+            "total_tokens": 1834
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 2118,
+            "prompt_tokens_details": {
+              "cached_tokens": 1763
+            },
+            "total_tokens": 2173
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2464,
+            "prompt_tokens_details": {
+              "cached_tokens": 2111
+            },
+            "total_tokens": 2528
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2815,
+            "prompt_tokens_details": {
+              "cached_tokens": 2457
+            },
+            "total_tokens": 2879
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 3167,
+            "prompt_tokens_details": {
+              "cached_tokens": 2808
+            },
+            "total_tokens": 3231
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 1420,
+            "prompt_tokens_details": {
+              "cached_tokens": 1413
+            },
+            "total_tokens": 1475
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 1772,
+            "prompt_tokens_details": {
+              "cached_tokens": 1413
+            },
+            "total_tokens": 1836
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2123,
+            "prompt_tokens_details": {
+              "cached_tokens": 1765
+            },
+            "total_tokens": 2187
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2474,
+            "prompt_tokens_details": {
+              "cached_tokens": 2116
+            },
+            "total_tokens": 2538
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2828,
+            "prompt_tokens_details": {
+              "cached_tokens": 2467
+            },
+            "total_tokens": 2892
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 3180,
+            "prompt_tokens_details": {
+              "cached_tokens": 2821
+            },
+            "total_tokens": 3244
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 1420,
+            "prompt_tokens_details": {
+              "cached_tokens": 1413
+            },
+            "total_tokens": 1475
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 1766,
+            "prompt_tokens_details": {
+              "cached_tokens": 1413
+            },
+            "total_tokens": 1830
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2113,
+            "prompt_tokens_details": {
+              "cached_tokens": 1759
+            },
+            "total_tokens": 2177
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 2464,
+            "prompt_tokens_details": {
+              "cached_tokens": 2106
+            },
+            "total_tokens": 2519
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2812,
+            "prompt_tokens_details": {
+              "cached_tokens": 2457
+            },
+            "total_tokens": 2876
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 3164,
+            "prompt_tokens_details": {
+              "cached_tokens": 2805
+            },
+            "total_tokens": 3228
+          },
+          {
+            "completion_tokens": 69,
+            "prompt_tokens": 1791,
+            "prompt_tokens_details": {
+              "cached_tokens": 385
+            },
+            "total_tokens": 1860
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 2143,
+            "prompt_tokens_details": {
+              "cached_tokens": 1784
+            },
+            "total_tokens": 2198
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 2497,
+            "prompt_tokens_details": {
+              "cached_tokens": 2136
+            },
+            "total_tokens": 2552
+          },
+          {
+            "completion_tokens": 64,
+            "prompt_tokens": 2851,
+            "prompt_tokens_details": {
+              "cached_tokens": 2490
+            },
+            "total_tokens": 2915
+          },
+          {
+            "completion_tokens": 69,
+            "prompt_tokens": 3206,
+            "prompt_tokens_details": {
+              "cached_tokens": 2844
+            },
+            "total_tokens": 3275
+          },
+          {
+            "completion_tokens": 55,
+            "prompt_tokens": 3555,
+            "prompt_tokens_details": {
+              "cached_tokens": 3199
+            },
+            "total_tokens": 3610
+          }
+        ]
+      },
+      "receipt": "planning/adaptive-surface-v1/validation/sqa-real/as1-paired-cefdb93-e59b903-20261004-q4/receipt.json",
+      "receipt_sha256": "67a77772d47db5a72f52acf6f33d212f51f6fc704858b33d6d7103057880ed9f",
+      "source_identity": {
+        "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-cefdb93-e59b903-20261004",
+        "fixture_commit": "1b60304a0f83d8cc0c7f344cd40122de1ae04957",
+        "helper_sha256": "59107c62d909142b6fd276cc139e3cd29de57a0a4b3cf7694e30054f148d7a9e",
+        "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+        "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+        "observer_runtime_sha256": "0cb31c565e02a5aa524ba6cff8af0a35f94246385fac53d692260573e519336b",
+        "pc_commit": "cefdb9389b9e948102bc972e2b38addf8eefa80f",
+        "release_sha256": "d8a2dba92af6251e410f7a3c7597f9d964f05919308cfb64228a2e4c1c188ebd",
+        "skills_commit": "e59b903d4603781bac907ee46b0327dfc403fb1e"
+      },
+      "status": "failed"
+    }
+  ],
+  "complete": false,
+  "direct_head_execution": {
+    "actual_model": "gpt-6.1-sol",
+    "actual_reasoning": "high",
+    "actual_role": "wf2-parallel-head",
+    "observable_trigger": "Three real_journeys followup_task attempts returned agent thread limit reached, including after builder completion and root interrupted obsolete pending threads.",
+    "requested_model": "gpt-6.1-sol",
+    "requested_reasoning": "medium",
+    "requested_role": "wf2-implementer",
+    "root_authorized": true,
+    "scope": "Existing bounded actual qualification helper execution and necessary source-pin/protocol test changes; no product source or architecture changes."
+  },
+  "failure_conclusions": [
+    "Q3 actual model reached module direct-cat checkpoint at the ordinary six-step boundary; normal terminal budget result could not satisfy planned preemption resume.",
+    "Q4 first direct-cat checkpoint and actual foreground model eviction/reload succeeded; repeated reads of already-observed sources caused queue and resumed scout normal budget partial results.",
+    "Q4 raw model requests include complete exact stdout, source hashes and packet IDs; provider output stopped normally, excluding missing payload and token truncation."
+  ],
+  "format": "as1-skills-paired-qualification-followup/1",
+  "generated_at": "2026-10-04T22:26:30.514454+00:00",
+  "native_subset": {
+    "diagnostic_report": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/final-native-diagnostic-report.json",
+    "elapsed_seconds": 8.46,
+    "full_acceptance": false,
+    "realproof_deselected": 1,
+    "tests_passed": 3
+  },
+  "preservation": {
+    "activation": false,
+    "approved_gpu_1_3_quiescent": true,
+    "canonical_todo_mutated_by_workstream": false,
+    "own_commits": false,
+    "owned_slots_and_leases_cleared": true,
+    "product_source_edits_by_head": false,
+    "protected_gpu_0_2_boot_start_identity_preserved": true,
+    "q1_q2_archives_preserved": true
+  },
+  "remaining": [
+    "Root-native observer continuation contract qualification.",
+    "Real skill entry and legacy/Volta traversal/exact excerpt.",
+    "Busy queue and resumed scout complete with verified reuse.",
+    "Full four-test SQA acceptance and native bound gate."
+  ],
+  "root_claim": "SKclaim941",
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-cefdb93-e59b903-20261004",
+    "fixture_commit": "1b60304a0f83d8cc0c7f344cd40122de1ae04957",
+    "helper_sha256": "59107c62d909142b6fd276cc139e3cd29de57a0a4b3cf7694e30054f148d7a9e",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "0cb31c565e02a5aa524ba6cff8af0a35f94246385fac53d692260573e519336b",
+    "pc_commit": "cefdb9389b9e948102bc972e2b38addf8eefa80f",
+    "release_sha256": "d8a2dba92af6251e410f7a3c7597f9d964f05919308cfb64228a2e4c1c188ebd",
+    "skills_commit": "e59b903d4603781bac907ee46b0327dfc403fb1e"
+  },
+  "status": "failed",
+  "task": "SK-AS1-QUALIFY"
+}
