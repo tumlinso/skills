@@ -238,6 +238,15 @@ def source_prerequisites(service, request):
     for anchor in locators:
         local_ids = {request['project'], service.project['project_uuid'], service.project['project_name'],
                      service.project.get('configuration', {}).get('registered_project_id')}
+        if service.project_source_verifier is not None:
+            # The host verifier owns source admission, including local sources.
+            # Normalize only exact known local identities, never repository/path.
+            locator = dict(anchor)
+            if locator['project'] in {service.project['project_uuid'], service.project['project_name'],
+                                      service.project.get('configuration', {}).get('registered_project_id')}:
+                locator['project'] = service.project['project_uuid']
+            result.append(verified_foreign_source(service.project_source_verifier, locator))
+            continue
         if anchor['project'] not in local_ids or anchor['repository'] not in local_repositories(service.project, service.paths.repo_root):
             result.append(verified_foreign_source(service.project_source_verifier, anchor))
             continue
