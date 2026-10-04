@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T19:37:12Z",
+  "generated_at": "2026-10-04T19:59:01Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 910,
+  "project_revision": 915,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9551,6 +9551,56 @@
         "revision": 910,
         "seq": 910,
         "timestamp": "2026-10-04T19:37:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/skills.source-fence-amendment.json\"}",
+        "revision": 911,
+        "seq": 911,
+        "timestamp": "2026-10-04T19:52:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-SOURCE-FENCE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-SOURCE-FENCE\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-SOURCE-FENCE\"}",
+        "revision": 912,
+        "seq": 912,
+        "timestamp": "2026-10-04T19:52:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SOURCE-FENCE-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-SOURCE-FENCE-ACCEPT\"}",
+        "revision": 913,
+        "seq": 913,
+        "timestamp": "2026-10-04T19:58:55Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SOURCE-FENCE-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"8f9f961b-fec9-4761-b246-bf89a788410f\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 914,
+        "seq": 914,
+        "timestamp": "2026-10-04T19:59:01Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SOURCE-FENCE",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 915, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 915,
+        "seq": 915,
+        "timestamp": "2026-10-04T19:59:01Z"
       }
     ],
     "evidence": [
@@ -11086,6 +11136,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"0908af00a92e53d00b48cbdc0eacb9fd23c360dffdd7dc02fc626196c00a8021\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"todo-orchestrator/tests\", \"-p\", \"test_force_release.py\", \"-v\"]}, \"diff_fingerprint\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\", \"dirty_paths\": [], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"21de9bd51acc328a6fec23236893925cfd84a7e6\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 290, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/pcu-sk-11\"}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/8bd63dc0-d2a3-4bd0-bf22-a4b7f36e73ce",
         "revision": 291,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-10-04T19:59:01Z",
+        "gate_id": "SK-AS1-SOURCE-FENCE-ACCEPT",
+        "id": "8f9f961b-fec9-4761-b246-bf89a788410f",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"ad58bdc98d45cda2bc56937e260b0752091f6127b1556c17faeeb4940d19889a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/discovery.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-shm\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-wal\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/discovery.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/foreground.stderr.txt\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/foreground.stdout.txt\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/lease.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/snapshots/684e21aaefe0c3bcb112c57e9cfec8aa3c0a87dc270c7f9cff63c95ca9cb3a50/source/README.md\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-shm\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-wal\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/discovery.json\", \"planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json\", \"todo-status.md\", \"todos.md\", \"todos/sk-as1-0000.md\", \"todos/sk-as1-gpu.md\", \"todos/sk-as1-qualify.md\", \"todos/sk-as1-release.md\", \"todos/sk-as1-routing.md\", \"todos/sk-as1-runtime.md\", \"todos/sk-as1-semantic-port.md\", \"todos/sk-as1-semantics.md\", \"todos/sk-as1-source-fence.md\"], \"files\": [{\"path\": \"docs/as1-source-fence.md\", \"sha256\": \"01210b1b54f8a975213d8698e7c5464ce84ae8e8ddba8ca66b7b5a5d4978db97\"}, {\"path\": \"todo-orchestrator/tests/test_as1_source_fence.py\", \"sha256\": \"d0745d3e1afa4d20fabf0656f194c34a40c141fba1e32e75d28a3183ff98ae6f\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"sha256\": \"344b61cd1cbe8448ad54318cf04d7f8c24edd55c780dc74f61d24a25f6e2dac9\"}], \"interfaces\": [], \"recorded_git_head\": \"23f49042cfe243da344365a4a4add8493042f411\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 913}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/8f9f961b-fec9-4761-b246-bf89a788410f",
+        "revision": 914,
         "status": "passed"
       },
       {
@@ -12943,7 +13006,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-GPU",
         "type": "command",
@@ -12956,7 +13019,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12969,7 +13032,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-QUALIFY",
         "type": "command",
@@ -12982,7 +13045,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -12995,7 +13058,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-RELEASE",
         "type": "command",
@@ -13008,7 +13071,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13021,7 +13084,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
@@ -13034,7 +13097,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13047,7 +13110,7 @@
         "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
         "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
@@ -13060,7 +13123,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13073,7 +13136,7 @@
         "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42",
         "last_run_at": "2026-10-04T19:37:12Z",
         "required": 1,
-        "revision": 909,
+        "revision": 911,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTIC-PORT",
         "type": "command",
@@ -13086,7 +13149,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13099,7 +13162,7 @@
         "input_fingerprint": "abe42f33e7709566bb6ea90b19dc86773138864435cf1ff204f9e6b45bd73eeb",
         "last_run_at": "2026-10-04T17:52:53Z",
         "required": 1,
-        "revision": 904,
+        "revision": 911,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTICS",
         "type": "command",
@@ -13112,7 +13175,33 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 904,
+        "revision": 911,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"-q\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"docs/as1-source-fence.md\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-SOURCE-FENCE-ACCEPT",
+        "input_fingerprint": "8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f",
+        "last_run_at": "2026-10-04T19:59:01Z",
+        "required": 1,
+        "revision": 914,
+        "status": "passed",
+        "task_id": "SK-AS1-SOURCE-FENCE",
+        "type": "command",
+        "valid": 1
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-SOURCE-FENCE\", \"track_git_head\": false}",
+        "id": "SK-AS1-SOURCE-FENCE-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 911,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -14025,6 +14114,16 @@
         "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"94aef9424595e5d082570af66a1b194d199901b6\", \"completion_gates\": [{\"evidence_id\": \"728b2a8c-5eb1-4011-a4f1-a7634dc9bdc5\", \"evidence_revision\": 650, \"id\": \"PCU-SK-21-SUBMODULE\", \"input_fingerprint\": \"5add058f7e8b9cda2ede53f164f36aa83abc41dd63e4687d9e0d04b215891dbd\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"617b7c8b5ff3634731a088602e375c5a4923a8ec\"}], \"completion_revision\": 651, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"PCU-SK-21-SUBMODULE\", \"input_fingerprint\": \"5add058f7e8b9cda2ede53f164f36aa83abc41dd63e4687d9e0d04b215891dbd\", \"last_run_at\": \"2026-08-30T15:03:35Z\", \"revision\": 650, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 6514 ++++++++++++++++++++++++++++----\\n pcu-v1.skills.plan.json                |    6 +-\\n todo-status.md                         |   14 +-\\n todos.md                               |   14 +-\\n todos/pcu-sk-00.md                     |    2 +-\\n todos/pcu-sk-01.md                     |    2 +-\\n todos/pcu-sk-10.md                     |    8 +-\\n todos/pcu-sk-11.md                     |    2 +-\\n todos/pcu-sk-12.md                     |    8 +-\\n todos/pcu-sk-13.md                     |    8 +-\\n todos/pcu-sk-14.md                     |    2 +-\\n todos/pcu-sk-15.md                     |    8 +-\\n todos/pcu-sk-20.md                     |    8 +-\\n todos/pcu-sk-21.md                     |    7 +-\\n todos/pcu-sk-22.md                     |    2 +-\\n todos/pcu-sk-30.md                     |    2 +-\\n todos/pcu-sk-31.md                     |    2 +-\\n todos/pcu-sk-32.md                     |    2 +-\\n todos/pcu-sk-33.md                     |    2 +-\\n 19 files changed, 5902 insertions(+), 711 deletions(-)\", \"git_head\": \"94aef9424595e5d082570af66a1b194d199901b6\", \"interfaces\": [], \"note\": \"Validated immutable PCU producer commit; candidate kernel exercised workspace-bound gates and artifact publication.\", \"resources\": [], \"task_id\": \"PCU-SK-21\"}",
         "revision": 651,
         "task_id": "PCU-SK-21"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-10-04T19:59:01Z",
+        "id": "6857520f-2a78-46b5-a1ae-faef11a26575",
+        "kind": "complete",
+        "note": "All-source trusted callback closes reproduced local publication bypass. No-verifier local behavior preserved; verifier rejection has no fallback. Twelve new and fifteen existing source ports tests pass; actual source module guard reused. Root reviewed trusted callback decision; no canonical migration.",
+        "payload_json": "{\"authority_commit\": \"23f49042cfe243da344365a4a4add8493042f411\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"23f49042cfe243da344365a4a4add8493042f411\", \"completion_gates\": [{\"evidence_id\": \"8f9f961b-fec9-4761-b246-bf89a788410f\", \"evidence_revision\": 914, \"id\": \"SK-AS1-SOURCE-FENCE-ACCEPT\", \"input_fingerprint\": \"8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"23f49042cfe243da344365a4a4add8493042f411\"}], \"completion_revision\": 915, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-AS1-SOURCE-FENCE-ACCEPT\", \"input_fingerprint\": \"8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f\", \"last_run_at\": \"2026-10-04T19:59:01Z\", \"revision\": 914, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 300 ++++++++++++++++++++++++++-------\\n todo-status.md                         |   3 +-\\n todos.md                               |   3 +-\\n todos/sk-as1-0000.md                   |   2 +-\\n todos/sk-as1-gpu.md                    |   2 +-\\n todos/sk-as1-qualify.md                |   2 +-\\n todos/sk-as1-release.md                |   2 +-\\n todos/sk-as1-routing.md                |   2 +-\\n todos/sk-as1-runtime.md                |   2 +-\\n todos/sk-as1-semantic-port.md          |   2 +-\\n todos/sk-as1-semantics.md              |   2 +-\\n 11 files changed, 252 insertions(+), 70 deletions(-)\", \"git_head\": \"23f49042cfe243da344365a4a4add8493042f411\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"All-source trusted callback closes reproduced local publication bypass. No-verifier local behavior preserved; verifier rejection has no fallback. Twelve new and fifteen existing source ports tests pass; actual source module guard reused. Root reviewed trusted callback decision; no canonical migration.\", \"producer_commit\": \"23f49042cfe243da344365a4a4add8493042f411\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-AS1-SOURCE-FENCE\"}",
+        "revision": 915,
+        "task_id": "SK-AS1-SOURCE-FENCE"
       },
       {
         "claim_id": null,
@@ -16410,6 +16509,31 @@
         "task_id": "SK-AS1-SEMANTICS"
       },
       {
+        "mode": "exclusive",
+        "path": "docs/as1-source-fence.md",
+        "task_id": "SK-AS1-SOURCE-FENCE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_as1_source_fence.py",
+        "task_id": "SK-AS1-SOURCE-FENCE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/project_amendments.py",
+        "task_id": "SK-AS1-SOURCE-FENCE"
+      },
+      {
+        "mode": "read",
+        "path": "docs/as1-foreign-source-port.md",
+        "task_id": "SK-AS1-SOURCE-FENCE"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/todo_orchestrator/service.py",
+        "task_id": "SK-AS1-SOURCE-FENCE"
+      },
+      {
         "mode": "read",
         "path": "planning/pce2",
         "task_id": "SK-PCE2-0000"
@@ -18515,6 +18639,19 @@
         "validation_git_head": "94d07da9a1d865cdaf76f567a5060d05aae8cbae"
       },
       {
+        "completion_git_head": "23f49042cfe243da344365a4a4add8493042f411",
+        "completion_revision": 915,
+        "evidence_id": "8f9f961b-fec9-4761-b246-bf89a788410f",
+        "evidence_revision": 914,
+        "gate_id": "SK-AS1-SOURCE-FENCE-ACCEPT",
+        "input_fingerprint": "8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f",
+        "provenance_json": "{\"claim_id\": \"59f2b29e-11ef-4f71-8b23-7f7df381bdf5\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_source_fence.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"ad58bdc98d45cda2bc56937e260b0752091f6127b1556c17faeeb4940d19889a\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/discovery.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-shm\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/controller/.todo-orchestrator/runtime/background.sqlite3-wal\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/discovery.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/approval.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/cleanup.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller-spec.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/foreground.stderr.txt\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/foreground.stdout.txt\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/foreground/c3895c20-4d74-415a-a952-eb41a241387f/lease.json\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background-artifacts/snapshots/684e21aaefe0c3bcb112c57e9cfec8aa3c0a87dc270c7f9cff63c95ca9cb3a50/source/README.md\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-shm\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/controller/.todo-orchestrator/runtime/background.sqlite3-wal\", \"planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/discovery.json\", \"planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json\", \"todo-status.md\", \"todos.md\", \"todos/sk-as1-0000.md\", \"todos/sk-as1-gpu.md\", \"todos/sk-as1-qualify.md\", \"todos/sk-as1-release.md\", \"todos/sk-as1-routing.md\", \"todos/sk-as1-runtime.md\", \"todos/sk-as1-semantic-port.md\", \"todos/sk-as1-semantics.md\", \"todos/sk-as1-source-fence.md\"], \"files\": [{\"path\": \"docs/as1-source-fence.md\", \"sha256\": \"01210b1b54f8a975213d8698e7c5464ce84ae8e8ddba8ca66b7b5a5d4978db97\"}, {\"path\": \"todo-orchestrator/tests/test_as1_source_fence.py\", \"sha256\": \"d0745d3e1afa4d20fabf0656f194c34a40c141fba1e32e75d28a3183ff98ae6f\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"sha256\": \"344b61cd1cbe8448ad54318cf04d7f8c24edd55c780dc74f61d24a25f6e2dac9\"}], \"interfaces\": [], \"recorded_git_head\": \"23f49042cfe243da344365a4a4add8493042f411\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 913}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/8f9f961b-fec9-4761-b246-bf89a788410f\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-AS1-SOURCE-FENCE",
+        "valid": 1,
+        "validation_git_head": "23f49042cfe243da344365a4a4add8493042f411"
+      },
+      {
         "completion_git_head": "c0636f32f4c01615e4740475281827579a980d48",
         "completion_revision": 823,
         "evidence_id": "d2dc343d-99a4-495d-ba3b-9c97ae725988",
@@ -19842,7 +19979,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 928,
+        "id": 935,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-GPU",
@@ -19853,7 +19990,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 929,
+        "id": 936,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-ROUTING",
         "task_id": "SK-AS1-QUALIFY",
@@ -19864,7 +20001,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 930,
+        "id": 937,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-QUALIFY",
         "task_id": "SK-AS1-RELEASE",
@@ -19875,7 +20012,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 931,
+        "id": 938,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-ROUTING",
@@ -19886,7 +20023,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 932,
+        "id": 939,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-GPU",
         "task_id": "SK-AS1-ROUTING",
@@ -19897,7 +20034,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 933,
+        "id": 940,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-RUNTIME",
@@ -19908,10 +20045,21 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 934,
+        "id": 941,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-SEMANTIC-PORT",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 942,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-SEMANTIC-PORT",
+        "task_id": "SK-AS1-SOURCE-FENCE",
         "type": "task"
       }
     ],
@@ -23096,12 +23244,12 @@
         "priority": 0,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "planned",
         "tags_json": "[]",
         "title": "AS1 skills: consolidated adaptive helper surface",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 6
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -23121,12 +23269,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "in_progress",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 7
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 8
       },
       {
         "attention_reason": null,
@@ -23146,12 +23294,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "planned",
         "tags_json": "[]",
         "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 6
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -23171,12 +23319,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "planned",
         "tags_json": "[]",
         "title": "Pin the qualified standalone release in Skills",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 6
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -23196,12 +23344,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "planned",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 6
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -23221,12 +23369,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 8
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -23246,12 +23394,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 910,
+        "revision": 911,
         "status": "done",
         "tags_json": "[]",
         "title": "Complete trusted semantic verification and idempotent control ports",
-        "updated_at": "2026-10-04T19:37:12Z",
-        "version": 5
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 6
       },
       {
         "attention_reason": null,
@@ -23271,12 +23419,37 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 904,
+        "revision": 911,
         "status": "done",
         "tags_json": "[]",
         "title": "Extend canonical semantic and mutation contracts",
-        "updated_at": "2026-10-04T19:13:03Z",
-        "version": 8
+        "updated_at": "2026-10-04T19:52:12Z",
+        "version": 9
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": "23f49042cfe243da344365a4a4add8493042f411",
+        "completion_git_head": "23f49042cfe243da344365a4a4add8493042f411",
+        "completion_revision": 915,
+        "created_at": "2026-10-04T19:52:12Z",
+        "id": "SK-AS1-SOURCE-FENCE",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Route all anchored source verification through the startup-owned verifier when present, qualify local/foreign denial and no-verifier fallback in disposable fixtures, and return source-bound receipt for PC CONTROL.",
+        "notes": "",
+        "objective": "Close the reproduced local-source callback bypass during claim-scoped publication, preserving native fallback only when no trusted verifier is configured.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": "validated",
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 915,
+        "status": "done",
+        "tags_json": "[]",
+        "title": "Enforce trusted source verifier for local publication anchors",
+        "updated_at": "2026-10-04T19:59:01Z",
+        "version": 3
       },
       {
         "attention_reason": null,
@@ -25377,6 +25550,23 @@
         "version": 1
       },
       {
+        "content_hash": "e03a9f7bad3b5936dc4f2b610fd0afe63dc781d60646ed9488404eb13fd71cc7",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-SOURCE-FENCE\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T19:52:12Z",
+        "creation_revision": 911,
+        "id": "SK-AS1-RUN-1:lane_brief:SK-AS1-L-SOURCE-FENCE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-SOURCE-FENCE",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SOURCE-FENCE\",\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
         "content_hash": "9f02e6a3cf4bc4ca15719971f527122afec60680e84420bc1b77d0c29227b280",
         "content_json": "{\"boundaries\":[\"Separate Todo/Git/host authorities; preserve dirty source, historical successful evidence and CUDA/atlas guidance.\",\"Do not resume NF1A or mutate unrelated scientific projects. Destructive admin actions require explicit user permission.\",\"One exclusive Skills lane preserves the existing prerequisite sequence; cross-authority producer receipts remain required before consumer execution.\"],\"motivation\":\"More useful engineering progress with less context, coordination and maintenance overhead.\",\"objective\":\"Implement the complete consolidated role-efficient Project Control surface using canonical backend authorities.\",\"references\":[\"planning/adaptive-surface-v1/START_HERE.md\",\"planning/adaptive-surface-v1/planning/outcomes.json\",\"planning/adaptive-surface-v1/contracts/requirements.json\",\"planning/adaptive-surface-v1/planning/cross-authority.json\",\"planning/adaptive-surface-v1/EXECUTION_HANDOFF.md\"]}",
         "created_at": "2026-10-04T17:21:33Z",
@@ -25416,6 +25606,23 @@
         "created_at": "2026-10-04T19:13:03Z",
         "creation_revision": 904,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:2",
+        "invalidated_at": "2026-10-04T19:52:12Z",
+        "invalidation_revision": 911,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-0000\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:3",
+        "task_id": "SK-AS1-0000",
+        "version": 2
+      },
+      {
+        "content_hash": "c00d49c51b26a909fa0740b0fa827298f25b35d9b9e21f7e8b490d5c34b5dff9",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\"]}",
+        "created_at": "2026-10-04T19:52:12Z",
+        "creation_revision": 911,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:3",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -25425,7 +25632,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-0000",
-        "version": 2
+        "version": 3
       },
       {
         "content_hash": "902fafe9bb4021bcd4cb93f524fd1b4fe4263156fe694dac9921dd054ef410ba",
@@ -25561,6 +25768,23 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-SEMANTIC-PORT",
+        "version": 1
+      },
+      {
+        "content_hash": "fa4a320d36e268c11d06671095a5e2d2dc27f37a3cfa1dc04d64629d25f71a18",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SOURCE-FENCE-ACCEPT\"],\"next_action\":\"Route all anchored source verification through the startup-owned verifier when present, qualify local/foreign denial and no-verifier fallback in disposable fixtures, and return source-bound receipt for PC CONTROL.\",\"objective\":\"Close the reproduced local-source callback bypass during claim-scoped publication, preserving native fallback only when no trusted verifier is configured.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/project_amendments.py\",\"todo-orchestrator/tests/test_as1_source_fence.py\",\"docs/as1-source-fence.md\"],\"read_paths\":[\"todo-orchestrator/todo_orchestrator/service.py\",\"docs/as1-foreign-source-port.md\"]},\"tests\":[\"SK-AS1-SOURCE-FENCE-ACCEPT\"]}",
+        "created_at": "2026-10-04T19:52:12Z",
+        "creation_revision": 911,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-SOURCE-FENCE:SK-AS1-SOURCE-FENCE:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-SOURCE-FENCE",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-SOURCE-FENCE\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-SOURCE-FENCE\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-SOURCE-FENCE",
         "version": 1
       },
       {
@@ -27189,7 +27413,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 0,
-        "revision": 904,
+        "revision": 911,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTICS"
       },
@@ -27199,7 +27423,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 1,
-        "revision": 904,
+        "revision": 911,
         "state": "completed",
         "task_id": "SK-AS1-RUNTIME"
       },
@@ -27209,7 +27433,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 2,
-        "revision": 904,
+        "revision": 911,
         "state": "active",
         "task_id": "SK-AS1-GPU"
       },
@@ -27219,7 +27443,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 3,
-        "revision": 904,
+        "revision": 911,
         "state": "queued",
         "task_id": "SK-AS1-ROUTING"
       },
@@ -27229,7 +27453,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 4,
-        "revision": 904,
+        "revision": 911,
         "state": "queued",
         "task_id": "SK-AS1-QUALIFY"
       },
@@ -27239,7 +27463,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 5,
-        "revision": 904,
+        "revision": 911,
         "state": "queued",
         "task_id": "SK-AS1-RELEASE"
       },
@@ -27249,7 +27473,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 6,
-        "revision": 904,
+        "revision": 911,
         "state": "queued",
         "task_id": "SK-AS1-0000"
       },
@@ -27259,7 +27483,7 @@
         "enqueued_at": "2026-10-04T19:13:03Z",
         "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
         "position": 0,
-        "revision": 910,
+        "revision": 911,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTIC-PORT"
       },
@@ -27272,6 +27496,16 @@
         "revision": 903,
         "state": "queued",
         "task_id": "SK-AS1-SEMANTIC-PORT"
+      },
+      {
+        "activated_at": "2026-10-04T19:52:12Z",
+        "completed_at": "2026-10-04T19:59:01Z",
+        "enqueued_at": "2026-10-04T19:52:12Z",
+        "lane_id": "SK-AS1-L-SOURCE-FENCE",
+        "position": 0,
+        "revision": 915,
+        "state": "completed",
+        "task_id": "SK-AS1-SOURCE-FENCE"
       },
       {
         "activated_at": null,
@@ -28040,11 +28274,11 @@
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 904,
+        "revision": 911,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "active",
-        "updated_at": "2026-10-04T19:13:03Z",
+        "updated_at": "2026-10-04T19:52:12Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28052,11 +28286,11 @@
         "created_at": "2026-10-04T19:13:03Z",
         "id": "SK-AS1-L-SEMANTIC-CONTROL",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 910,
+        "revision": 911,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T19:37:12Z",
+        "updated_at": "2026-10-04T19:52:12Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28069,6 +28303,18 @@
         "run_id": "SK-AS1-SEMANTIC-PORT-RUN-1",
         "state": "ready",
         "updated_at": "2026-10-04T19:04:27Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-10-04T19:52:12Z",
+        "id": "SK-AS1-L-SOURCE-FENCE",
+        "parent_lane_id": "SK-AS1-L-EXEC",
+        "revision": 915,
+        "role": "implementer",
+        "run_id": "SK-AS1-RUN-1",
+        "state": "closed",
+        "updated_at": "2026-10-04T19:59:01Z",
         "workspace_mode": "exclusive"
       },
       {

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `910`
+Project revision: `915`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -88,6 +88,7 @@ Project revision: `910`
 - `SK-AS1-RUNTIME` | status: done | execution: closed | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-SEMANTIC-PORT` | status: done | execution: closed | next: Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.
 - `SK-AS1-SEMANTICS` | status: done | execution: closed | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-SOURCE-FENCE` | status: done | execution: closed | next: Route all anchored source verification through the startup-owned verifier when present, qualify local/foreign denial and no-verifier fallback in disposable fixtures, and return source-bound receipt for PC CONTROL.
 - `SK-PCE2-COLLABORATE` | status: planned | execution: ready | next: Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-MAINTAIN` | status: planned | execution: ready | next: Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-OPERATE` | status: in_progress | execution: idle | next: Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.

@@ -1,0 +1,30 @@
+{
+  "format": "pc-as1-producer-receipt/1",
+  "producer_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "producer_task_id": "SK-AS1-SOURCE-FENCE",
+  "gate_ids": [
+    "SK-AS1-SOURCE-FENCE-ACCEPT"
+  ],
+  "source_identity": {
+    "commit": "23f49042cfe243da344365a4a4add8493042f411",
+    "completion_revision": 915,
+    "gate_revision": 914,
+    "gate_evidence_id": "8f9f961b-fec9-4761-b246-bf89a788410f",
+    "input_fingerprint": "8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f"
+  },
+  "contract_hashes": {
+    "todo-orchestrator/todo_orchestrator/project_amendments.py": "344b61cd1cbe8448ad54318cf04d7f8c24edd55c780dc74f61d24a25f6e2dac9",
+    "todo-orchestrator/tests/test_as1_source_fence.py": "d0745d3e1afa4d20fabf0656f194c34a40c141fba1e32e75d28a3183ff98ae6f",
+    "docs/as1-source-fence.md": "01210b1b54f8a975213d8698e7c5464ce84ae8e8ddba8ca66b7b5a5d4978db97"
+  },
+  "coverage": {
+    "new_tests_passed": 12,
+    "existing_port_tests_passed": 15,
+    "root_boundary_review": "Configured verifier handles all locators; callback denial has no native fallback; known local project identifiers normalize to canonical UUID only."
+  },
+  "limits": [
+    "Installed canonical kernel remains extension11; no migration or runtime activation performed.",
+    "PC claim-scoped publication callback and descriptor reads are paired consumer obligations."
+  ],
+  "status": "passed"
+}
