@@ -590,10 +590,33 @@ CREATE INDEX IF NOT EXISTS idx_workflow_fragments_owner
   ON workflow_context_fragments(run_id,lane_id,task_id,kind,series_key,version);
 """
 
+# Project declarations share the existing Todo authority and revision/event stream.
+MIGRATION_12 = r"""
+CREATE TABLE IF NOT EXISTS project_declarations(
+  kind TEXT NOT NULL, id TEXT NOT NULL, version INTEGER NOT NULL,
+  payload_json TEXT NOT NULL, origin TEXT NOT NULL,
+  task_id TEXT REFERENCES tasks(id), retired INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL, revision INTEGER NOT NULL,
+  PRIMARY KEY(kind,id,version)
+);
+CREATE TABLE IF NOT EXISTS project_amendments(
+  operation_id TEXT PRIMARY KEY, request_hash TEXT NOT NULL,
+  request_json TEXT NOT NULL, review_json TEXT NOT NULL,
+  receipt_json TEXT, created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS project_fragment_invalidations(
+  id TEXT PRIMARY KEY, kind TEXT NOT NULL, entity_id TEXT NOT NULL,
+  revision INTEGER NOT NULL, reason TEXT NOT NULL
+);
+"""
+
 MIGRATIONS = {
   1: MIGRATION_1, 2: MIGRATION_2, 3: MIGRATION_3, 4: MIGRATION_4,
   5: MIGRATION_5, 6: MIGRATION_6, 7: MIGRATION_7, 8: MIGRATION_8,
-  9: MIGRATION_9, 10: MIGRATION_10, 11: MIGRATION_11,
+  9: MIGRATION_9, 10: MIGRATION_10, 11: MIGRATION_11, 12: MIGRATION_12,
 }
 
 DATABASE_MIGRATION_VERSION = max(MIGRATIONS)
+
+# Existing core readers need migration 11; semantic declarations need 12.
+READ_COMPATIBLE_MIGRATION_VERSION = 11

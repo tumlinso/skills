@@ -120,6 +120,58 @@ class Service:
     def refresh(self, task_ids: set[str] | None = None) -> dict[str, object]:
         return refresh_projections(self.db, self.paths, self.project, task_ids)
 
+    def project_context(self) -> dict[str, object]:
+        """Read canonical project declarations, skill use and orientation."""
+        from .project_amendments import read_context
+        with self.db.read() as conn:
+            return read_context(conn, self.project, repo_root=self.paths.repo_root)
+
+    def _project_semantic_mutation(self, *, operation, event_type, principal=None):
+        # Internal host route, not the legacy self_debug escape hatch. No-op
+        # results bypass projection churn while committing durable replay data.
+        require_mutation_route(self.project, operation=event_type,
+                               mutation_mode=self.mutation_mode, canonical_workflow=True)
+        result, revision = self.db.mutate(
+            actor_session_id=None, entity_type="project",
+            entity_id=str(self.project["project_uuid"]), event_type=event_type,
+            payload=lambda value: {"principal": principal, "operation_id": value.get("operation_id"),
+                                   "changes": value.get("changes", []),
+                                   "invalidations": value.get("invalidations", [])},
+            operation=operation,
+        )
+        projection = None
+        if result.get("status") in {"applied", "published"}:
+            try:
+                projection = self.refresh(set())
+            except Exception as exc:
+                # A committed semantic result remains true even when a derived
+                # projection fails; callers can repair through canonical refresh.
+                projection = {"status": "failed", "error": str(exc), "repair": "Service.refresh"}
+        return {**result, "project_revision": revision, "projection": projection}
+
+    def amend_project(self, request, *, principal=None, role="observer", context=None):
+        """Host-only role/context arguments must be derived by trusted adapter.
+
+        A caller-authored wire role is never authentication. Root/project access
+        and provider trust are explicit host configuration, never declarations.
+        """
+        from .project_amendments import validate_request, amend_in_transaction
+        if role != "mutator":
+            raise TodoError("project_amendment_forbidden", "Project declarations require trusted mutator policy")
+        parsed = validate_request(request, self.project, context)
+        return self._project_semantic_mutation(
+            operation=lambda conn, revision: amend_in_transaction(self, conn, revision, parsed),
+            event_type="project.amended", principal=principal,
+        )
+
+    def publish_project_context(self, request, *, claim_token):
+        """Scoped coder publication authenticates canonical task claim/scopes."""
+        from .project_amendments import publish_in_transaction
+        return self._project_semantic_mutation(
+            operation=lambda conn, revision: publish_in_transaction(self, conn, revision, request, claim_token),
+            event_type="workflow.project_context_published",
+        )
+
     @property
     def claim_lease_seconds(self) -> int:
         return int(self.project.get("configuration", {}).get("claim_lease_seconds", 7200))

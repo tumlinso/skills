@@ -16,6 +16,8 @@ MANAGED_START = "<!-- todo-orchestrator:v2-managed:start -->"
 MANAGED_END = "<!-- todo-orchestrator:v2-managed:end -->"
 
 DURABLE_TABLES = [
+    "project_amendments",
+    "project_fragment_invalidations",
     "tasks",
     "decisions",
     "task_dependencies",
@@ -38,6 +40,7 @@ DURABLE_TABLES = [
     "checkpoint_gates",
     "evidence",
     "task_completion_gates",
+    "project_declarations",
     "handoffs",
     "live_recovery_audit",
     "migration_warnings",
@@ -152,6 +155,7 @@ def _table_rows(conn, table: str) -> list[dict[str, object]]:
 def build_snapshot(conn, project: dict[str, object]) -> dict[str, object]:
     revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
     event = conn.execute("SELECT timestamp FROM events WHERE revision=?", (revision,)).fetchone()
+    from .project_amendments import read_context
     return {
         "schema_version": SCHEMA_VERSION,
         "snapshot_version": SNAPSHOT_VERSION,
@@ -160,6 +164,7 @@ def build_snapshot(conn, project: dict[str, object]) -> dict[str, object]:
         "project_revision": revision,
         "generated_at": event[0] if event else project.get("created_at"),
         "tables": {table: _table_rows(conn, table) for table in DURABLE_TABLES},
+        "semantic_context": read_context(conn, project, optional=True),
     }
 
 

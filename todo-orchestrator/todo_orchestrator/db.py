@@ -7,14 +7,21 @@ import random
 import sqlite3
 import time
 from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Iterator, TypeVar
 
 from .config import utc_now
-from .migrations import DATABASE_MIGRATION_VERSION, MIGRATIONS, SCHEMA_VERSION
+from .migrations import DATABASE_MIGRATION_VERSION, READ_COMPATIBLE_MIGRATION_VERSION, MIGRATIONS, SCHEMA_VERSION
 from .models import ExitCode, TodoError
 
 T = TypeVar("T")
+
+
+@dataclass(frozen=True)
+class Unchanged:
+    """Canonical transaction result with ledger writes but no semantic change."""
+    value: Any
 
 
 class Database:
@@ -101,14 +108,14 @@ class Database:
                 if migrations_table
                 else 0
             )
-        if observed < DATABASE_MIGRATION_VERSION:
+        if observed < READ_COMPATIBLE_MIGRATION_VERSION:
             raise TodoError(
                 "schema_migration_required",
                 "Todo authority schema migration is required before read-only observation",
                 ExitCode.CONSISTENCY_ERROR,
                 {
                     "observed_migration_version": observed,
-                    "required_migration_version": DATABASE_MIGRATION_VERSION,
+                    "required_migration_version": READ_COMPATIBLE_MIGRATION_VERSION,
                     "project_uuid": project.get("project_uuid"),
                     "project_name": project.get("project_name"),
                     "repository": str(repo_root) if repo_root is not None else None,
@@ -151,6 +158,9 @@ class Database:
                 current = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0])
                 revision = current + 1
                 result = operation(conn, revision)
+                if isinstance(result, Unchanged):
+                    conn.commit()
+                    return result.value, current
                 resolved_actor = actor_session_id(result) if callable(actor_session_id) else actor_session_id
                 resolved_entity = entity_id(result) if callable(entity_id) else entity_id
                 resolved_payload = payload(result) if callable(payload) else payload

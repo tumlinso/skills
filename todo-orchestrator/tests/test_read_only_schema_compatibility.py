@@ -12,7 +12,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from todo_orchestrator.db import Database
-from todo_orchestrator.migrations import DATABASE_MIGRATION_VERSION, MIGRATIONS
+from todo_orchestrator.migrations import DATABASE_MIGRATION_VERSION, READ_COMPATIBLE_MIGRATION_VERSION, MIGRATIONS
 from todo_orchestrator.models import ExitCode, TodoError
 from todo_orchestrator.semantic import SemanticReader
 from todo_orchestrator.read_port import create_todo_read_port
@@ -121,7 +121,7 @@ class ReadOnlySchemaCompatibilityTests(unittest.TestCase):
         self.assertEqual(error.code, "schema_migration_required")
         self.assertEqual(error.exit_code, ExitCode.CONSISTENCY_ERROR)
         self.assertEqual(error.details["observed_migration_version"], OLD_MIGRATION_VERSION)
-        self.assertEqual(error.details["required_migration_version"], DATABASE_MIGRATION_VERSION)
+        self.assertEqual(error.details["required_migration_version"], READ_COMPATIBLE_MIGRATION_VERSION)
         self.assertEqual(error.details["project_uuid"], self.fixture.project["project_uuid"])
         self.assertEqual(error.details["project_name"], self.fixture.project["project_name"])
         self.assertEqual(error.details["repository"], str(self.fixture.root))
