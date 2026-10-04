@@ -1,0 +1,605 @@
+{
+  "format": "as1-gpu-producer-receipt/1",
+  "project": "skills",
+  "task": "SK-AS1-GPU",
+  "run_id": "SK-AS1-RUN-1",
+  "checked_at": "2026-10-04T20:20:09.477854+00:00",
+  "status": "native_task_accepted_backend_hardware_qualified",
+  "prerequisite": {
+    "task": "SK-AS1-RUNTIME",
+    "status": "passed",
+    "completion_revision": 899,
+    "gate_revision": 898,
+    "gate_evidence_id": "7f032890-d936-40f3-ace3-56d757c70449",
+    "source_commit": "9ffcf14ae88d66817d457b188904f2c5b5fa7657",
+    "owner": "root controller"
+  },
+  "source_identity": {
+    "installed_runtime_sha256": {
+      "cuda/scripts/cuda_controller.py": "07fd3704bdb441479c8accd75075e83fbccec824fd8d0b6e73f5e1df0c344959",
+      "cuda/scripts/qualify_observer_residency.py": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4",
+      "local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+      "local-coding-worker/local_worker/servers/llama_cpp.py": "0799bdbe4b40a23a85a15ded39d14f683b9405b1c92ee8e535127e3f890287a0",
+      "local-coding-worker/local_worker/supervisor.py": "7a98ff795ab50dd2343ec9ce8d9e1c0761bf4ccfe44047f1a5da8ebea26be214",
+      "todo-orchestrator/todo_orchestrator/background/host.py": "c8a03ec31213b6121e4502fdf547e3a8092764b9b11952bbee205ff92b6e7a88",
+      "todo-orchestrator/todo_orchestrator/runtime/facade.py": "edb16cdcede8fa9fb8ad8e8bbc6d56192e28b16854883cac4f1316b7d9d15ed3"
+    },
+    "installed_skills_root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills",
+    "runtime_context": {
+      "contract": "PCU-RUNTIME-IDENTITY/1",
+      "fingerprint": "d73f6d7ff0e85c91b99e2bae259346c857afc39758834e56598b667e5405cb23",
+      "package_root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/todo-orchestrator/todo_orchestrator",
+      "package_source": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/todo-orchestrator/todo_orchestrator/__init__.py",
+      "skills_root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills",
+      "todo_schema_version": 2
+    },
+    "runtime_identity": {
+      "contract": "PCU-RUNTIME-IDENTITY/1",
+      "fingerprint": "d73f6d7ff0e85c91b99e2bae259346c857afc39758834e56598b667e5405cb23",
+      "package_root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/todo-orchestrator/todo_orchestrator",
+      "package_source": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/todo-orchestrator/todo_orchestrator/__init__.py",
+      "skills_root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills",
+      "todo_schema_version": 2
+    },
+    "sha256": {
+      "cuda/scripts/cuda_controller.py": "07fd3704bdb441479c8accd75075e83fbccec824fd8d0b6e73f5e1df0c344959",
+      "cuda/scripts/qualify_observer_residency.py": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4",
+      "local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+      "local-coding-worker/local_worker/servers/llama_cpp.py": "0799bdbe4b40a23a85a15ded39d14f683b9405b1c92ee8e535127e3f890287a0",
+      "local-coding-worker/local_worker/supervisor.py": "7a98ff795ab50dd2343ec9ce8d9e1c0761bf4ccfe44047f1a5da8ebea26be214",
+      "tests/as1/test_sk_as1_gpu.py": "e5c5f62f6d073521830e7bb04fb152d450185d8ba9efc66fe680760443f191cf",
+      "tests/as1/test_sk_as1_gpu_host_guards.py": "90207a1e3d653916ab3c913359a90e6d9e65feef5cb1d18f973262388de32bbb",
+      "todo-orchestrator/todo_orchestrator/background/host.py": "c8a03ec31213b6121e4502fdf547e3a8092764b9b11952bbee205ff92b6e7a88",
+      "todo-orchestrator/todo_orchestrator/runtime/facade.py": "edb16cdcede8fa9fb8ad8e8bbc6d56192e28b16854883cac4f1316b7d9d15ed3"
+    },
+    "skills_root": "/home/tumlinson/.agents/skills",
+    "source_commit": "ea83695c622e0ee5f9d047947cf8a56bdceb90b1",
+    "source_validation_sha256": {
+      "tests/as1/test_sk_as1_gpu.py": "e5c5f62f6d073521830e7bb04fb152d450185d8ba9efc66fe680760443f191cf",
+      "tests/as1/test_sk_as1_gpu_host_guards.py": "90207a1e3d653916ab3c913359a90e6d9e65feef5cb1d18f973262388de32bbb"
+    }
+  },
+  "candidate": {
+    "root": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004",
+    "skills_gpu_source_commit": "5257dbb5c81f283de19e40988cc3da9204730dcd",
+    "project_control_commit": "6faadbd6c3b1dfdcdc25d7a56aa9a7a5866cab29",
+    "release_manifest": {
+      "path": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/release-manifest.json",
+      "sha256": "cc4c1893dda6ed00832dfaff8118aa58e988623ae7d6d819d46f90677eb439d3"
+    },
+    "verification": {
+      "path": "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/candidate-verification.json",
+      "sha256": "f881550ddd1e995179ed61305f5d12f95075496393e87d0fbfcd9aa4c572365d"
+    },
+    "qualified_runtime_paths_sha256": {
+      "cuda/scripts/cuda_controller.py": "07fd3704bdb441479c8accd75075e83fbccec824fd8d0b6e73f5e1df0c344959",
+      "cuda/scripts/qualify_observer_residency.py": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4",
+      "local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+      "local-coding-worker/local_worker/servers/llama_cpp.py": "0799bdbe4b40a23a85a15ded39d14f683b9405b1c92ee8e535127e3f890287a0",
+      "local-coding-worker/local_worker/supervisor.py": "7a98ff795ab50dd2343ec9ce8d9e1c0761bf4ccfe44047f1a5da8ebea26be214",
+      "todo-orchestrator/todo_orchestrator/background/host.py": "c8a03ec31213b6121e4502fdf547e3a8092764b9b11952bbee205ff92b6e7a88",
+      "todo-orchestrator/todo_orchestrator/runtime/facade.py": "edb16cdcede8fa9fb8ad8e8bbc6d56192e28b16854883cac4f1316b7d9d15ed3"
+    },
+    "qualification_scope": "Verified installed candidate and exact source-bound runtime paths; candidate identity differs explicitly from canonical source and is not a deployed adaptive-surface release."
+  },
+  "approval": {
+    "evidence": {
+      "path": "planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json",
+      "sha256": "371fbe517449932efc0ad8f0b154351d8e9ab31952cf5098d0f78699a06580ec"
+    },
+    "argv": [
+      "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/bin/python",
+      "/home/tumlinson/.local/share/project-control/candidates/as1-gpu-5257dbb-20261004/runtime-skills/cuda/scripts/qualify_observer_residency.py",
+      "--project",
+      "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-projects/as1-gpu-5257dbb-20261004-q4",
+      "--source-root",
+      "/home/tumlinson/.agents/skills",
+      "--approval",
+      "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/skills-gpu-root-approval.json",
+      "--output",
+      "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4",
+      "--private-state-root",
+      "/home/tumlinson/.local/state/project-control/as1-bootstrap/gpu04-private/as1-gpu-5257dbb-20261004-q4",
+      "--cuda-runtime-library",
+      "/usr/lib/x86_64-linux-gnu/libcudart.so.12.0.146",
+      "--cuda-runtime-sha256",
+      "960a404b602cc8c9493c4eb0e8ffdb8c3df6bec0ccfbd23f2ec7cbcc56cb5d3c",
+      "--gpu-uuid",
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "--gpu-uuid",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "resource_ids": [
+      "accelerator:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "scope": "Root-authorized exact physical UUID pair; actual global host interlock remains resource authority."
+  },
+  "acceptance": {
+    "source_gate": {
+      "path": "/tmp/sk-as1-gpu04-q4-source-gate.json",
+      "sha256": "ef25b6c7cdb2053204e0296aef54d74fa625653cecb98aabade760fb218b9d65"
+    },
+    "result": {
+      "kind": "executed_product_acceptance",
+      "missing_or_failed_cases": [],
+      "outcome": "SK-AS1-GPU",
+      "passed_cases": [
+        "GPU-01",
+        "GPU-02",
+        "GPU-03",
+        "GPU-04"
+      ],
+      "pytest_returncode": 0,
+      "required_cases": [
+        "GPU-01",
+        "GPU-02",
+        "GPU-03",
+        "GPU-04"
+      ],
+      "status": "passed",
+      "test_file": "tests/as1/test_sk_as1_gpu.py",
+      "test_output_tail": ".........                                                                [100%]\n9 passed in 2.64s\n\n"
+    },
+    "hardware_receipt": {
+      "path": "planning/adaptive-surface-v1/validation/skills-gpu-hardware-qualification.json",
+      "sha256": "d470ad46708cb2fb5a2d6cd1836b9eb7a91cb1cdd6b6c26a29570bada9a0d9ce"
+    },
+    "raw_q4_receipt": {
+      "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-5257dbb-20261004-q4/receipt.json",
+      "sha256": "bb034f1a2dfa7797841fc51df5b8c06f7d34757fbf0840396e07c6893c90e8d5"
+    },
+    "raw_artifacts": [
+      {
+        "kind": "approval",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/approval.json",
+        "sha256": "fac30a5e4f3ebbe3a6dde1e875ddecae76e7882687d8e37a00ee609a926810f0"
+      },
+      {
+        "kind": "discovery",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/discovery.json",
+        "sha256": "15eea7d83b86092be402f468eb59b345a1b58efd70cbdb0df2f84a5e78de8d09"
+      },
+      {
+        "kind": "controller",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/controller.json",
+        "sha256": "09c06d9ab4abfbb05dcc4d3abc67e6b969d1b1395942e3b15a429545fc73d050"
+      },
+      {
+        "kind": "foreground",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/foreground.json",
+        "sha256": "dc0972c615f2d87de992f0ac544a74ab3297d540ededf3e86aaa7c79a6613c96"
+      },
+      {
+        "kind": "quiescence",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/quiescence.json",
+        "sha256": "3d9674115ba4d6331541ca7a8d4224ab0664530f76773aae5086dee0e67625f2"
+      },
+      {
+        "kind": "reuse",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/reuse.json",
+        "sha256": "cb5731cea476e2b7f4a29e4366ec22c072bb91508d948d08830e948a6d769dda"
+      },
+      {
+        "kind": "cleanup",
+        "path": "gpu-hardware/as1-gpu-5257dbb-20261004-q4/cleanup.json",
+        "sha256": "273403abd3ce2e3673da64a70f1bf1d39ca61e3d9ce3252e6b8a4798ffd1fba6"
+      }
+    ],
+    "helper_exit_code": 0
+  },
+  "native_workflow_acceptance": {
+    "status": "passed",
+    "completion_revision": 923,
+    "gate_revision": 922,
+    "gate_evidence_id": "e1cd40e6-c745-473f-bd86-fdd888efc09c",
+    "proof_checkpoint": "bc412ba342ec61c1bb771c9675cd0fdf11d0a616",
+    "owner": "root controller",
+    "provenance": "authoritative native finish result supplied by root; worker did not mutate or independently complete live authority"
+  },
+  "observed_backend": {
+    "initial_owned_model_pid": 456492,
+    "reloaded_owned_model_pid": 457927,
+    "reused_owned_model_pid": 457927,
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "reload_reuse_compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "warm_reused": true,
+    "actual_backend_turns": {
+      "first_turn": {
+        "status": "available",
+        "provider": "llama-server",
+        "text_sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      "reload_turn": {
+        "status": "available",
+        "provider": "llama-server",
+        "text_sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      },
+      "reuse_turn": {
+        "status": "available",
+        "provider": "llama-server",
+        "text_sha256": "b24d6d33736ecd5604a4b17bc9c6481039fac362bb7df044ef1c10a2bfd21db6"
+      }
+    },
+    "scope": "Actual installed ProductionBackend.run_observer_turn investigator-protocol inference before eviction, after reload, and on warm reuse; no claim of a complete real broker or native skill/command agent loop."
+  },
+  "physical_qualification": {
+    "gpu_uuids": [
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+    ],
+    "dynamically_observed_physical_indices": [
+      1,
+      3
+    ],
+    "runtime_pci_bus_ids": [
+      "0000:84:00.0",
+      "0000:03:00.0"
+    ],
+    "cuda_runtime": {
+      "path": "/usr/lib/x86_64-linux-gnu/libcudart.so.12.0.146",
+      "sha256": "960a404b602cc8c9493c4eb0e8ffdb8c3df6bec0ccfbd23f2ec7cbcc56cb5d3c",
+      "version": 12000
+    },
+    "allocation_bytes_per_device": 1048576,
+    "device_memset_copy_verified": true,
+    "controller_evidence_id": "e6313f40-cc81-4616-885d-dde1e2887619",
+    "controller_quiescence": {
+      "state": "quiescent",
+      "required_consecutive_samples": 3,
+      "observed_consecutive_samples": 3
+    },
+    "eviction": {
+      "gpu_uuids": [
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      ],
+      "memory_baseline": {
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+      },
+      "memory_released": true,
+      "observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791144709.2206144,
+        "processes": []
+      },
+      "owned_pid": 456492,
+      "owner_id": "service:309039a42c898766:core4-local-model-slot-509e32fed088:d724b8c1-707a-4aef-b306-9bc8c9f0cd83",
+      "process_released": true,
+      "released": true
+    },
+    "foreground_admission_observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791144724.656468,
+      "processes": []
+    },
+    "freshness_and_pid_scope": "Real timestamped UUID-complete physical snapshots and exact owned-PID release under protected capability guards; stale/missing/wrong/crossprocess grants and observation-delay behavior were exercised by source GPU-02 protocol/native guard tests. Actual helper proves idle backend residency eviction, not broker-controlled active-job preemption."
+  },
+  "cleanup": {
+    "host_owners": [
+      {
+        "owner_id": "foreground:fcdb3ca0-ad82-411b-8da4-fbbbd0d90301",
+        "resources": [],
+        "state": "released"
+      },
+      {
+        "owner_id": "service:309039a42c898766:core4-local-model-slot-31aee1cacf51:a3559005-f4f6-4734-82d3-bde2c3a194d8",
+        "resources": [],
+        "state": "released"
+      },
+      {
+        "owner_id": "service:309039a42c898766:core4-local-model-slot-509e32fed088:d724b8c1-707a-4aef-b306-9bc8c9f0cd83",
+        "resources": [],
+        "state": "released"
+      }
+    ],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791144765.3247163,
+      "processes": []
+    },
+    "owned_model_pids": [],
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791144709.2206144,
+          "processes": []
+        },
+        "owned_pid": 456492,
+        "owner_id": "service:309039a42c898766:core4-local-model-slot-509e32fed088:d724b8c1-707a-4aef-b306-9bc8c9f0cd83",
+        "process_released": true,
+        "released": true
+      },
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791144761.3184848,
+          "processes": []
+        },
+        "owned_pid": 457927,
+        "owner_id": "service:309039a42c898766:core4-local-model-slot-31aee1cacf51:a3559005-f4f6-4734-82d3-bde2c3a194d8",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_model_cache_leases": [],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "canonical_preservation": {
+    "comparison": {
+      "path": "/tmp/sk-as1-gpu04-q4-canonical-postcomparison.json",
+      "sha256": "cdce348312e66c457f255a40f9d07d326de24dc8caa7506f742216add4ea04d1"
+    },
+    "helper_exit_code": 0,
+    "canonical_unchanged": true,
+    "compared_paths": 107,
+    "schema_migration_version": 11,
+    "project_revision": 920,
+    "existing_identity_unchanged": true,
+    "existing_identity_after": {
+      "existing_parent": {
+        "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+        "parent": 2170,
+        "pid": 2348,
+        "start": 1735
+      },
+      "existing_process": {
+        "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+        "parent": 2348,
+        "pid": 32750,
+        "start": 637666
+      }
+    },
+    "physical_host_conflicts_after": [],
+    "scope": "Root read-only comparison around q4 hardware execution, before separate authorized native completion revisions922/923. External disposable Git-only project; no writable canonical TodoService construction or migration."
+  },
+  "prior_attempts": [
+    {
+      "attempt": "q1",
+      "status": "failed_preserved",
+      "helper_exit_code": 1,
+      "reason": "External disposable Git fixture lacked a committed HEAD; controller snapshot failed with not-a-git-repository.",
+      "helper_log": {
+        "path": "/tmp/sk-as1-gpu04-helper.log",
+        "sha256": "e27d473873534dcf522eb22f4cfef827de0e002ab2a49a7ff5445dffde0bc207"
+      },
+      "cleanup_evidence": {
+        "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q1/cleanup.json",
+        "sha256": "e535ec20cc62f4e5229b738094ea6058443ab08c3eb6fd0a2d95d88dba54ef6f"
+      },
+      "preservation_comparison": {
+        "path": "/tmp/sk-as1-gpu04-canonical-postcomparison.json",
+        "sha256": "cfe7c9df2e715c7be3016c2ee1f2c417ea5408875d5a110caaa61d0117dcd3c3"
+      },
+      "remaining_slots": [],
+      "remaining_owned_leases": [],
+      "owned_device_observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791143115.5117862,
+        "processes": []
+      },
+      "unrelated_process_identity_unchanged": true,
+      "canonical_comparison_unchanged": true,
+      "canonical_preservation_coverage": "Root captured canonical before/after comparison; no failed attempt constitutes GPU-04 acceptance."
+    },
+    {
+      "attempt": "q2",
+      "status": "failed_preserved",
+      "helper_exit_code": 1,
+      "reason": "External empty commit produced an empty snapshot archive; controller reported end of file header.",
+      "helper_log": {
+        "path": "/tmp/sk-as1-gpu04-q2-helper.log",
+        "sha256": "5b593239bfbdb86053ce447eaa0158cd8cb6e81b2f8bc9393b7dea0b380a2ed6"
+      },
+      "cleanup_evidence": {
+        "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q2/cleanup.json",
+        "sha256": "cafeecced93cfcadacbb47cb0e8eaf6858252b85db3733cc960f4630d00d455d"
+      },
+      "preservation_comparison": {
+        "path": "/tmp/sk-as1-gpu04-q2-canonical-postcomparison.json",
+        "sha256": "3c027b43ca00f81dc297f7b9ee7f9c22a3171371b1cffb91ddadc975b3224c62"
+      },
+      "remaining_slots": [],
+      "remaining_owned_leases": [],
+      "owned_device_observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791143360.1699333,
+        "processes": []
+      },
+      "unrelated_process_identity_unchanged": true,
+      "canonical_comparison_unchanged": true,
+      "canonical_preservation_coverage": "Root captured canonical before/after comparison; no failed attempt constitutes GPU-04 acceptance."
+    },
+    {
+      "attempt": "q3",
+      "status": "failed_preserved",
+      "helper_exit_code": 1,
+      "reason": "Selected CUDA 12.0 library lacked cudaDeviceGetUuid before the foreground allocation; source helper was repaired to map the actual runtime PCI bus IDs to observed physical UUIDs.",
+      "helper_log": {
+        "path": "/tmp/sk-as1-gpu04-q3-helper.log",
+        "sha256": "f6db0bcebe0a6796cc56fdab81cbfd57931365f31d7cf6fe97583a57df1a0435"
+      },
+      "cleanup_evidence": {
+        "path": "planning/adaptive-surface-v1/validation/gpu-hardware/as1-gpu-bbc3d7d-20261004-q3/cleanup.json",
+        "sha256": "874831d7718bd342f9c2fc03b6e5f96cadc7141be4cc981f07045a7dc1a1a59f"
+      },
+      "preservation_comparison": {
+        "path": "/tmp/sk-as1-gpu04-q3-canonical-postcomparison.json",
+        "sha256": "957361da9389878134c7b2711a2db12aab85df3fef9a1e205ade2ec4ffc086df"
+      },
+      "remaining_slots": [],
+      "remaining_owned_leases": [],
+      "owned_device_observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791143597.984335,
+        "processes": []
+      },
+      "unrelated_process_identity_unchanged": true,
+      "canonical_comparison_unchanged": true,
+      "canonical_preservation_coverage": "Post-exit912 baseline only; authorized root910->912 write window excluded from GPU preservation claim"
+    }
+  ],
+  "required_consumer_qualification": [
+    {
+      "owner": "PC-AS1-JOBS",
+      "status": "required_consumer_qualification",
+      "requirement": "Qualify genuine broker transaction atomicity, disconnected-job durability, outbox/packet reconciliation, cancellation and attempt fences, and checkpoint retention during real foreground preemption. Persistent callback/fence fixtures do not establish these broker properties."
+    },
+    {
+      "owner": "PC-AS1-SURFACE and paired SQA",
+      "cases": [
+        "API-03",
+        "API-04",
+        "SQA"
+      ],
+      "status": "required_consumer_qualification",
+      "requirement": "Execute preferred installed and deployed role discovery/dispatch. Verify delegate_task/collect_delegation remain internally implemented but temporarily inactive before handler dispatch, with explicit reactivation behavior. Backend hardware turns and the standalone fallback source factory do not qualify the deployed API."
+    },
+    {
+      "owner": "paired SQA",
+      "cases": [
+        "SQA"
+      ],
+      "status": "required_consumer_qualification",
+      "requirement": "Execute full real ObserverWorkerPort investigator command loops and native skill entry/router/prerequisite loops with durable broker jobs. Verify investigator/skill mode separation, job-scoped context, checkpoint reuse after real eviction/reload, and resumed fenced attempts. The hardware helper exercises ProductionBackend.run_observer_turn with investigator protocol, not the full broker/agentic skill loop."
+    },
+    {
+      "owner": "paired qualification and release controllers",
+      "status": "release_after_qualification_only",
+      "requirement": "Consumer qualification must precede activation of the bound standalone paired release. Reuse the existing canonical standalone Project Control release path; do not create a second Project Control copy or claim this candidate is the deployed adaptive surface."
+    }
+  ],
+  "coverage_limits": [
+    "GPU-01..03 include explicit protocol fixtures and real harmless CPU processes; only GPU-04 is installed real multi-GPU inference/foreground-operation evidence.",
+    "Private capability markers remain outside model/source/artifact mounts; this receipt contains no raw capability or private marker contents. Only public observed identity, resource and cleanup evidence is linked.",
+    "No full production broker transaction/durability, agentic skill-loop, or preferred/deployed API qualification is claimed.",
+    "No broad performance, speedup, biological, scientific, or production-readiness claim.",
+    "Additive qualification artifacts have independent SHA256 references; historical package MANIFEST.sha256 does not cover these receipts. Temporary /tmp proof references are retained as observed and require root evidence preservation for long-term delivery."
+  ]
+}

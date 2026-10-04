@@ -67,7 +67,8 @@
     "genuine Bubblewrap read-only mounts/network/environment/credential/device restrictions and detached-child cleanup",
     "job-scoped mode/session protocol, warm backend fixtures, cooperative yields, attempt fences and byte bounds",
     "agentic SKILL entry/resource observations, exact UTF-8 source proof and non-UTF8 omission",
-    "executed supported Skills compatibility fallback native discovery/dispatch guard with retained internal coding kernel behavior"
+    "executed supported Skills compatibility fallback native discovery/dispatch guard with retained internal coding kernel behavior",
+    "Subsequent separately source-bound GPU-04 backend inference/foreground reclaim and cleanup evidence is linked in gpu_backend_followup; full broker/agentic loops remain pending consumer qualification."
   ],
   "required_consumer_qualification": [
     {
@@ -76,23 +77,28 @@
         "API-03",
         "API-04"
       ],
-      "requirement": "Wire and execute preferred installed Project Control and deployed native profile discovery/dispatch; hide delegate_task/collect_delegation and reject temporarily_inactive before handlers. The existing preferred forwarding path is unchanged by this source outcome."
+      "requirement": "Execute preferred installed and deployed role discovery/dispatch. Verify delegate_task/collect_delegation remain internally implemented but temporarily inactive before handler dispatch, with explicit reactivation behavior. Backend hardware turns and the standalone fallback source factory do not qualify the deployed API."
     },
     {
-      "owner": "SK-AS1-GPU and paired qualification",
+      "owner": "paired qualification",
       "cases": [
-        "GPU-04",
         "SQA"
       ],
-      "requirement": "Exercise verified installed real local model via qualified port under coordinated host CUDA admission; qualify foreground eviction/preemption and evidence-backed investigator/skill output. Fixture transports and cache quick checks do not prove inference."
+      "requirement": "Execute full real ObserverWorkerPort investigator command loops and native skill entry/router/prerequisite loops with durable broker jobs. Verify investigator/skill mode separation, job-scoped context, checkpoint reuse after real eviction/reload, and resumed fenced attempts. The hardware helper exercises ProductionBackend.run_observer_turn with investigator protocol, not the full broker/agentic skill loop.",
+      "historical_runtime_requirement": "Exercise verified installed real local model via qualified port under coordinated host CUDA admission; qualify foreground eviction/preemption and evidence-backed investigator/skill output. Fixture transports and cache quick checks do not prove inference.",
+      "status": "backend_GPU04_qualified_full_agentic_consumer_pending",
+      "backend_evidence": {
+        "path": "planning/adaptive-surface-v1/validation/skills-gpu-producer-receipt.json",
+        "sha256": "400bc736cbd3e271d405349be4355ee23184243114268ca0b4b30b8eee261f88"
+      }
     },
     {
-      "owner": "Project Control durable job broker",
-      "requirement": "Atomically fence checkpoints and final results in broker transactions; callback fences alone do not prove persistence race safety or disconnected-job durability."
+      "owner": "PC-AS1-JOBS genuine durable job broker",
+      "requirement": "Qualify genuine broker transaction atomicity, disconnected-job durability, outbox/packet reconciliation, cancellation and attempt fences, and checkpoint retention during real foreground preemption. Persistent callback/fence fixtures do not establish these broker properties."
     }
   ],
   "coverage_limits": [
-    "No GPU/model inference, network/download/paid fallback or live authority migration executed.",
+    "Original RUN source qualification used fixture model transport; genuine later backend inference/foreground eviction is linked separately in gpu_backend_followup. No full real broker/command/skill agent loop, deployed API, network/download/paid fallback, or live authority migration is claimed by this runtime receipt.",
     "Review and Codex worker source isolation is procedural; the produced command adapter sandbox was exercised mechanically.",
     "Unlisted qualification receipt is an additive artifact; historical package MANIFEST.sha256 does not cover this runtime evidence."
   ],
@@ -127,5 +133,38 @@
       "reason": "Invalid Todo release binding: release Skills root mismatch"
     },
     "coverage": "Source guard factory was real; model transports were fixtures. Child computes genuine source identity, never an accepted fake deployment fingerprint. Preferred/deployed release binding remains API-03/API-04 and SQA obligation."
+  },
+  "gpu_backend_followup": {
+    "producer_receipt": {
+      "path": "planning/adaptive-surface-v1/validation/skills-gpu-producer-receipt.json",
+      "sha256": "400bc736cbd3e271d405349be4355ee23184243114268ca0b4b30b8eee261f88"
+    },
+    "hardware_receipt": {
+      "path": "planning/adaptive-surface-v1/validation/skills-gpu-hardware-qualification.json",
+      "sha256": "d470ad46708cb2fb5a2d6cd1836b9eb7a91cb1cdd6b6c26a29570bada9a0d9ce"
+    },
+    "source_gate": {
+      "path": "/tmp/sk-as1-gpu04-q4-source-gate.json",
+      "sha256": "ef25b6c7cdb2053204e0296aef54d74fa625653cecb98aabade760fb218b9d65"
+    },
+    "native_workflow_acceptance": {
+      "status": "passed",
+      "completion_revision": 923,
+      "gate_revision": 922,
+      "gate_evidence_id": "e1cd40e6-c745-473f-bd86-fdd888efc09c",
+      "proof_checkpoint": "bc412ba342ec61c1bb771c9675cd0fdf11d0a616",
+      "owner": "root controller",
+      "provenance": "authoritative native finish result supplied by root; worker did not mutate or independently complete live authority"
+    },
+    "qualified_runtime_paths_sha256": {
+      "cuda/scripts/cuda_controller.py": "07fd3704bdb441479c8accd75075e83fbccec824fd8d0b6e73f5e1df0c344959",
+      "cuda/scripts/qualify_observer_residency.py": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4",
+      "local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+      "local-coding-worker/local_worker/servers/llama_cpp.py": "0799bdbe4b40a23a85a15ded39d14f683b9405b1c92ee8e535127e3f890287a0",
+      "local-coding-worker/local_worker/supervisor.py": "7a98ff795ab50dd2343ec9ce8d9e1c0761bf4ccfe44047f1a5da8ebea26be214",
+      "todo-orchestrator/todo_orchestrator/background/host.py": "c8a03ec31213b6121e4502fdf547e3a8092764b9b11952bbee205ff92b6e7a88",
+      "todo-orchestrator/todo_orchestrator/runtime/facade.py": "edb16cdcede8fa9fb8ad8e8bbc6d56192e28b16854883cac4f1316b7d9d15ed3"
+    },
+    "scope": "Subsequent genuine installed backend inference, idle foreground eviction, actual two-GPU CUDA operation, reload/warm reuse and observed cleanup. Original RUN acceptance remains source-fixture/sandbox qualification; full broker/agentic-loop/API consumers remain required."
   }
 }
