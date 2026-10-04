@@ -1,0 +1,37 @@
+{
+  "format": "pc-as1-producer-receipt/1",
+  "producer_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "producer_task_id": "SK-AS1-SEMANTIC-PORT",
+  "gate_ids": [
+    "SK-AS1-SEMANTIC-PORT-ACCEPT"
+  ],
+  "source_identity": {
+    "commit": "60f961f24a07b0b5098518d89a1d20598a5c94c3",
+    "completion_revision": 910,
+    "gate_revision": 909,
+    "gate_evidence_id": "f97634cf-9140-49f4-89af-c4d4506e28ad",
+    "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42"
+  },
+  "contract_hashes": {
+    "todo-orchestrator/todo_orchestrator/service.py": "550a438edef49be54158683fba70d42fbe0adbad60061cd2149ab9a0ae7e247d",
+    "todo-orchestrator/todo_orchestrator/project_amendments.py": "6d1cd1474025525b1c69628028c542d593a7c3fca2ecaea20006db2eb9bb2fbe",
+    "todo-orchestrator/todo_orchestrator/plan.py": "b4c054f8ffe70e6557bb0b9ffec655a65f88716bda05cadf73ee7a17fdbe5613",
+    "todo-orchestrator/tests/test_as1_foreign_source_port.py": "b6256c2746ed80596426363df397754be2492d3b07038d69db9cd86c5299f530",
+    "docs/as1-foreign-source-port.md": "4833d7c0d681e215c95f04b880d9b985a5f9886df6933a318628a5416b35b326"
+  },
+  "coverage": {
+    "targeted_tests_passed": 15,
+    "native_regression_tests_passed": 26,
+    "independent_source_review": "no remaining P1/P2 findings in these exact bytes",
+    "capabilities": [
+      "startup-only canonical foreign source verifier",
+      "idempotent nonempty plan preservation"
+    ]
+  },
+  "limits": [
+    "Installed canonical kernel remains extension11; no migration or runtime activation performed.",
+    "PC publication wrapper must additionally enforce canonical repository-root scope.",
+    "Large authority performance unmeasured."
+  ],
+  "status": "passed"
+}

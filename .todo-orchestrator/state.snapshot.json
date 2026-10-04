@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T19:13:04Z",
+  "generated_at": "2026-10-04T19:37:12Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 905,
+  "project_revision": 910,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9501,6 +9501,56 @@
         "revision": 905,
         "seq": 905,
         "timestamp": "2026-10-04T19:13:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-SEMANTIC-PORT-ACCEPT\"}",
+        "revision": 906,
+        "seq": 906,
+        "timestamp": "2026-10-04T19:27:57Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f2d17003-85a5-4a13-ab3e-5c73550200b3\", \"status\": \"failed\", \"valid\": false}",
+        "revision": 907,
+        "seq": 907,
+        "timestamp": "2026-10-04T19:27:58Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.started",
+        "payload_json": "{\"gate_id\": \"SK-AS1-SEMANTIC-PORT-ACCEPT\"}",
+        "revision": 908,
+        "seq": 908,
+        "timestamp": "2026-10-04T19:37:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "entity_type": "gate",
+        "event_type": "gate.completed",
+        "payload_json": "{\"evidence_id\": \"f97634cf-9140-49f4-89af-c4d4506e28ad\", \"status\": \"passed\", \"valid\": true}",
+        "revision": 909,
+        "seq": 909,
+        "timestamp": "2026-10-04T19:37:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-SEMANTIC-PORT",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 910, \"disposition\": \"validated\", \"reached_checkpoints\": []}",
+        "revision": 910,
+        "seq": 910,
+        "timestamp": "2026-10-04T19:37:12Z"
       }
     ],
     "evidence": [
@@ -12030,6 +12080,19 @@
         "checkpoint_id": null,
         "claim_id": null,
         "content_hash": null,
+        "created_at": "2026-10-04T19:27:58Z",
+        "gate_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "id": "f2d17003-85a5-4a13-ab3e-5c73550200b3",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"df1850656addfb9387cf97aabc27cdd52d6fdb14295eef49bf6551b92cea358b\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"c99573093ee1c737ce95afe894294ff011aff990ad766903f0de9fb02d386267\", \"dirty_paths\": [\".todo-orchestrator/state.snapshot.json\", \"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\", \"todo-status.md\", \"todos.md\", \"todos/sk-as1-0000.md\", \"todos/sk-as1-gpu.md\", \"todos/sk-as1-qualify.md\", \"todos/sk-as1-release.md\", \"todos/sk-as1-routing.md\", \"todos/sk-as1-runtime.md\", \"todos/sk-as1-semantic-port.md\", \"todos/sk-as1-semantics.md\"], \"files\": [{\"path\": \"docs/as1-foreign-source-port.md\", \"sha256\": \"04a69ae2b83990e5e4fef4cccf22e200dd7599546193f240e3c63a838934b7a2\"}, {\"path\": \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"sha256\": \"544c25c4a4422d1598376e720320777230e110698daddc681cd795d8355e664e\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/plan.py\", \"sha256\": \"b4c054f8ffe70e6557bb0b9ffec655a65f88716bda05cadf73ee7a17fdbe5613\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"sha256\": \"6d1cd1474025525b1c69628028c542d593a7c3fca2ecaea20006db2eb9bb2fbe\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"550a438edef49be54158683fba70d42fbe0adbad60061cd2149ab9a0ae7e247d\"}], \"interfaces\": [], \"recorded_git_head\": \"78d5f59d8cf1089a9c7ea7bb43379e65c085eeb0\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 1, \"started_revision\": 906}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f2d17003-85a5-4a13-ab3e-5c73550200b3",
+        "revision": 907,
+        "status": "failed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
         "created_at": "2026-08-30T14:17:46Z",
         "gate_id": "PCU-SK-20-INTEGRATION",
         "id": "f304ad1c-480c-4562-bd34-84031d5795c1",
@@ -12102,6 +12165,19 @@
         "metadata_json": "{\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"f03c9dc9e82d8350f0eec62b0189070be2fbbc08e541bacb275d055433a668c5\", \"inputs\": {\"command_contract\": {\"argv\": [\"python\", \"-m\", \"unittest\", \"discover\", \"-s\", \"integrations/coding-workflow-mcp/tests\", \"-v\"], \"env\": {\"CODING_WORKFLOW_SKILLS_ROOT\": \".\", \"PROJECT_CONTROL_SKILLS_ROOT\": \".\"}}, \"diff_fingerprint\": \"d0e9a99f38dbd7a0eaeea86fd17d91696305c3d9cb267e092837bea9437036a6\", \"dirty_paths\": [\"todo-orchestrator/tests/test_live_claim_override.py\", \"todo-orchestrator/tests/test_workflow_front_door.py\", \"todo-orchestrator/todo_orchestrator/claims.py\", \"todo-orchestrator/todo_orchestrator/front_door.py\", \"todo-orchestrator/todo_orchestrator/workflow/service.py\"], \"files\": [], \"interfaces\": [], \"recorded_git_head\": \"e7a6845cdc276a36f7024f7a25521b184ea35f8d\"}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"source_identity\": \"f37005f40679799434a45157b63650057495e950d2174d2fbf36c097145e7553\", \"started_revision\": 401, \"workspace_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/integration-destination\"}",
         "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f921fe8d-5f45-4d83-aa0d-bea1329cfa22",
         "revision": 402,
+        "status": "passed"
+      },
+      {
+        "checkpoint_id": null,
+        "claim_id": null,
+        "content_hash": null,
+        "created_at": "2026-10-04T19:37:12Z",
+        "gate_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "id": "f97634cf-9140-49f4-89af-c4d4506e28ad",
+        "kind": "command",
+        "metadata_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"6474d7f83f9cc63994a2a2696f3ad51ed387e66de755edf0b32ae3246f06b974\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"files\": [{\"path\": \"docs/as1-foreign-source-port.md\", \"sha256\": \"4833d7c0d681e215c95f04b880d9b985a5f9886df6933a318628a5416b35b326\"}, {\"path\": \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"sha256\": \"b6256c2746ed80596426363df397754be2492d3b07038d69db9cd86c5299f530\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/plan.py\", \"sha256\": \"b4c054f8ffe70e6557bb0b9ffec655a65f88716bda05cadf73ee7a17fdbe5613\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"sha256\": \"6d1cd1474025525b1c69628028c542d593a7c3fca2ecaea20006db2eb9bb2fbe\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"550a438edef49be54158683fba70d42fbe0adbad60061cd2149ab9a0ae7e247d\"}], \"interfaces\": [], \"recorded_git_head\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 908}",
+        "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f97634cf-9140-49f4-89af-c4d4506e28ad",
+        "revision": 909,
         "status": "passed"
       },
       {
@@ -12994,14 +13070,14 @@
         "checkpoint_id": null,
         "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"docs/as1-foreign-source-port.md\", \"todo-orchestrator/todo_orchestrator/plan.py\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
-        "input_fingerprint": null,
-        "last_run_at": null,
+        "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42",
+        "last_run_at": "2026-10-04T19:37:12Z",
         "required": 1,
-        "revision": 904,
-        "status": "pending",
+        "revision": 909,
+        "status": "passed",
         "task_id": "SK-AS1-SEMANTIC-PORT",
         "type": "command",
-        "valid": 0
+        "valid": 1
       },
       {
         "checkpoint_id": null,
@@ -13639,6 +13715,16 @@
         "payload_json": "{\"authority_commit\": \"b442d058bd2c667c45a04a92f9fa7c2bdf6e3bc2\", \"changed_owned_paths\": [], \"checkpoints\": [{\"id\": \"SK-WF2-I10-CP\", \"reached_at\": \"2026-09-12T19:25:54Z\", \"state\": \"reached\"}], \"completion_commit\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"completion_gates\": [{\"evidence_id\": \"d78f9138-3c7a-4be3-9961-78ee246328c1\", \"evidence_revision\": 864, \"id\": \"SK-WF2-I10-G\", \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"0e141b9c5e3f51f3775d99f43ca9e1169149cefd\"}], \"completion_revision\": 867, \"finalized_checkpoints\": [\"SK-WF2-I10-CP\"], \"gates\": [{\"id\": \"SK-WF2-I10-G\", \"input_fingerprint\": \"977932f571451cbc58ab5db22ac5be2280fdd137f280aeae311eaff80e61f735\", \"last_run_at\": \"2026-09-12T19:24:31Z\", \"revision\": 864, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Root finalized accepted SK-WF2-I10 donor integration milestone.\", \"producer_commit\": \"b5644fda3e3a18b19492b397c706288abd97487a\", \"producer_root\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/workflow-workspaces/sk-wf2-l-i\", \"resources\": [], \"task_id\": \"SK-WF2-I10\"}",
         "revision": 867,
         "task_id": "SK-WF2-I10"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-10-04T19:37:12Z",
+        "id": "0bc8fbe7-90fd-471e-9dfd-20428bb0b2aa",
+        "kind": "complete",
+        "note": "Independent source review closed; 15 source tests and actual inherited-release fixture tests pass. Child binding isolation verifies actual source module bytes; deployed parent binding unchanged. Source ports committed; installed extension11 remains untouched.",
+        "payload_json": "{\"authority_commit\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"completion_gates\": [{\"evidence_id\": \"f97634cf-9140-49f4-89af-c4d4506e28ad\", \"evidence_revision\": 909, \"id\": \"SK-AS1-SEMANTIC-PORT-ACCEPT\", \"input_fingerprint\": \"e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42\", \"status\": \"passed\", \"valid\": true, \"validation_git_head\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\"}], \"completion_revision\": 910, \"finalized_checkpoints\": [], \"gates\": [{\"id\": \"SK-AS1-SEMANTIC-PORT-ACCEPT\", \"input_fingerprint\": \"e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42\", \"last_run_at\": \"2026-10-04T19:37:12Z\", \"revision\": 909, \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \"\", \"git_head\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"integration_commit\": null, \"interfaces\": [], \"note\": \"Independent source review closed; 15 source tests and actual inherited-release fixture tests pass. Child binding isolation verifies actual source module bytes; deployed parent binding unchanged. Source ports committed; installed extension11 remains untouched.\", \"producer_commit\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"producer_root\": \"/home/tumlinson/.agents/skills\", \"resources\": [], \"task_id\": \"SK-AS1-SEMANTIC-PORT\"}",
+        "revision": 910,
+        "task_id": "SK-AS1-SEMANTIC-PORT"
       },
       {
         "claim_id": null,
@@ -18403,6 +18489,19 @@
         "validation_git_head": "9ffcf14ae88d66817d457b188904f2c5b5fa7657"
       },
       {
+        "completion_git_head": "60f961f24a07b0b5098518d89a1d20598a5c94c3",
+        "completion_revision": 910,
+        "evidence_id": "f97634cf-9140-49f4-89af-c4d4506e28ad",
+        "evidence_revision": 909,
+        "gate_id": "SK-AS1-SEMANTIC-PORT-ACCEPT",
+        "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42",
+        "provenance_json": "{\"claim_id\": \"28762d02-8a09-41d4-b080-716519a882d9\", \"evidence_content_hash\": null, \"evidence_kind\": \"command\", \"evidence_metadata\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"environment\": {}, \"expected_exit_code\": 0, \"input_fingerprint\": \"e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42\", \"inputs\": {\"command_contract\": {\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"-q\"], \"cwd\": \".\", \"timeout\": 1200}, \"diff_fingerprint\": \"6474d7f83f9cc63994a2a2696f3ad51ed387e66de755edf0b32ae3246f06b974\", \"dirty_paths\": [\"cuda/references/architectures/volta/._V100_SXM2_Circuit_Bending_Atlas.zip\"], \"files\": [{\"path\": \"docs/as1-foreign-source-port.md\", \"sha256\": \"4833d7c0d681e215c95f04b880d9b985a5f9886df6933a318628a5416b35b326\"}, {\"path\": \"todo-orchestrator/tests/test_as1_foreign_source_port.py\", \"sha256\": \"b6256c2746ed80596426363df397754be2492d3b07038d69db9cd86c5299f530\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/plan.py\", \"sha256\": \"b4c054f8ffe70e6557bb0b9ffec655a65f88716bda05cadf73ee7a17fdbe5613\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"sha256\": \"6d1cd1474025525b1c69628028c542d593a7c3fca2ecaea20006db2eb9bb2fbe\"}, {\"path\": \"todo-orchestrator/todo_orchestrator/service.py\", \"sha256\": \"550a438edef49be54158683fba70d42fbe0adbad60061cd2149ab9a0ae7e247d\"}], \"interfaces\": [], \"recorded_git_head\": \"60f961f24a07b0b5098518d89a1d20598a5c94c3\", \"static_path\": null}, \"locks\": [], \"resources\": [], \"returncode\": 0, \"started_revision\": 908}, \"evidence_path\": \"/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/f97634cf-9140-49f4-89af-c4d4506e28ad\", \"source\": \"completion_transaction\"}",
+        "status": "passed",
+        "task_id": "SK-AS1-SEMANTIC-PORT",
+        "valid": 1,
+        "validation_git_head": "60f961f24a07b0b5098518d89a1d20598a5c94c3"
+      },
+      {
         "completion_git_head": "94d07da9a1d865cdaf76f567a5060d05aae8cbae",
         "completion_revision": 893,
         "evidence_id": "ca37839b-c7a1-4528-b8c5-c06c2f759fa5",
@@ -23131,9 +23230,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "60f961f24a07b0b5098518d89a1d20598a5c94c3",
+        "completion_git_head": "60f961f24a07b0b5098518d89a1d20598a5c94c3",
+        "completion_revision": 910,
         "created_at": "2026-10-04T19:01:12Z",
         "id": "SK-AS1-SEMANTIC-PORT",
         "kind": "task",
@@ -23145,14 +23244,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": "SK-AS1-0000",
         "priority": 100,
-        "result": null,
+        "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 905,
-        "status": "in_progress",
+        "revision": 910,
+        "status": "done",
         "tags_json": "[]",
         "title": "Complete trusted semantic verification and idempotent control ports",
-        "updated_at": "2026-10-04T19:13:04Z",
-        "version": 4
+        "updated_at": "2026-10-04T19:37:12Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -27156,12 +27255,12 @@
       },
       {
         "activated_at": "2026-10-04T19:13:04Z",
-        "completed_at": null,
+        "completed_at": "2026-10-04T19:37:12Z",
         "enqueued_at": "2026-10-04T19:13:03Z",
         "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
         "position": 0,
-        "revision": 905,
-        "state": "active",
+        "revision": 910,
+        "state": "completed",
         "task_id": "SK-AS1-SEMANTIC-PORT"
       },
       {
@@ -27953,11 +28052,11 @@
         "created_at": "2026-10-04T19:13:03Z",
         "id": "SK-AS1-L-SEMANTIC-CONTROL",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 905,
+        "revision": 910,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
-        "state": "active",
-        "updated_at": "2026-10-04T19:13:04Z",
+        "state": "closed",
+        "updated_at": "2026-10-04T19:37:12Z",
         "workspace_mode": "exclusive"
       },
       {

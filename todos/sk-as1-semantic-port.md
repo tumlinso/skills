@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-SEMANTIC-PORT: Complete trusted semantic verification and idempotent control ports
 
-Task revision: `905`; current project revision is in `todo-status.md`.
+Task revision: `910`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.
 
 ## State
-- Lifecycle: `in_progress`
-- Execution: `claimed`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `parallel_safe`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.
