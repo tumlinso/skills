@@ -58,7 +58,9 @@ def canonical_server():
     runtime_identity()
     from todo_orchestrator.workflow.mcp import create_server
 
-    return create_server(protocol_factory=protocol)
+    from .native_routing import bind_native_routing
+
+    return bind_native_routing(create_server(protocol_factory=protocol))
 
 
 def run_fallback_server() -> int:

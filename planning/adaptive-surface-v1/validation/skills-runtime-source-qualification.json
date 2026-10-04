@@ -1,0 +1,92 @@
+{
+  "format": "as1-runtime-source-qualification/1",
+  "project": "skills",
+  "task": "SK-AS1-RUNTIME",
+  "checked_at": "2026-10-04T18:08:01Z",
+  "source_identity": {
+    "base_commit": "94d07da9a1d865cdaf76f567a5060d05aae8cbae",
+    "observed_head": "d602910299d144e7984cffa0519931786ddb6db3",
+    "qualification_scope": "uncommitted exact source bytes",
+    "sha256": {
+      "local-coding-worker/local_worker/observer_runtime.py": "99ebb05632b7768403e103bc32bb5f04885c86662272cef14bf83fb25e57ce8b",
+      "local-coding-worker/SKILL.md": "b0f809864d239b1a6b8d7ba9c925efd4173253c7a95b6bf1f5f5fd3f9833c184",
+      "local-coding-worker/references/observer-port.md": "22a6960c4b3c24ccad7f660312ac6fcfe3928e09caef354fb7a6d25765d91aa9",
+      "integrations/coding-workflow-mcp/coding_workflow_mcp/native_routing.py": "bc11a01b79405c69805a735e81f0fb4e3d1fafff95711d25b683509d1ded9a31",
+      "integrations/coding-workflow-mcp/coding_workflow_mcp/_canonical.py": "566f217dcafb23125a15478011e346b3bfe93f245bd81b568709a981ac756077",
+      "integrations/coding-workflow-mcp/coding_workflow_mcp/protocol.py": "09d1022b4afc8ee69970c59dccb0d78bd01c7bcee66ed4bd62af89432e9808ff",
+      "tests/as1/test_sk_as1_runtime.py": "b2b6b1d3d85a5f3bcce60e09205d59dffc326aea4b3abaebc9904c5606e518a5"
+    }
+  },
+  "prerequisite": {
+    "task": "SK-AS1-SEMANTICS",
+    "completion_revision": 893,
+    "gate_evidence_id": "ca37839b-c7a1-4528-b8c5-c06c2f759fa5",
+    "source_commit": "94d07da9a1d865cdaf76f567a5060d05aae8cbae"
+  },
+  "acceptance": {
+    "kind": "executed_product_acceptance",
+    "missing_or_failed_cases": [],
+    "outcome": "SK-AS1-RUNTIME",
+    "passed_cases": [
+      "RUN-01",
+      "RUN-02",
+      "RUN-03"
+    ],
+    "pytest_returncode": 0,
+    "required_cases": [
+      "RUN-01",
+      "RUN-02",
+      "RUN-03"
+    ],
+    "status": "passed",
+    "test_file": "tests/as1/test_sk_as1_runtime.py",
+    "test_output_tail": "...................                                           [100%]\n19 passed, 11 subtests passed in 1.95s\n\n"
+  },
+  "command": [
+    "/home/tumlinson/project-control/.venv/bin/python",
+    "planning/adaptive-surface-v1/scripts/acceptance_gate.py",
+    "--outcome",
+    "SK-AS1-RUNTIME",
+    "--repo",
+    "/home/tumlinson/.agents/skills"
+  ],
+  "regression": {
+    "tests_passed": 143,
+    "subtests_passed": 22,
+    "log": "/tmp/sk-as1-runtime-source-regression.log"
+  },
+  "native_workflow_acceptance": "root-owned; not claimed by this source receipt",
+  "covered": [
+    "genuine Bubblewrap read-only mounts/network/environment/credential/device restrictions and detached-child cleanup",
+    "job-scoped mode/session protocol, warm backend fixtures, cooperative yields, attempt fences and byte bounds",
+    "agentic SKILL entry/resource observations, exact UTF-8 source proof and non-UTF8 omission",
+    "executed supported Skills compatibility fallback native discovery/dispatch guard with retained internal coding kernel behavior"
+  ],
+  "required_consumer_qualification": [
+    {
+      "owner": "PC-AS1-SURFACE",
+      "cases": [
+        "API-03",
+        "API-04"
+      ],
+      "requirement": "Wire and execute preferred installed Project Control and deployed native profile discovery/dispatch; hide delegate_task/collect_delegation and reject temporarily_inactive before handlers. The existing preferred forwarding path is unchanged by this source outcome."
+    },
+    {
+      "owner": "SK-AS1-GPU and paired qualification",
+      "cases": [
+        "GPU-04",
+        "SQA"
+      ],
+      "requirement": "Exercise verified installed real local model via qualified port under coordinated host CUDA admission; qualify foreground eviction/preemption and evidence-backed investigator/skill output. Fixture transports and cache quick checks do not prove inference."
+    },
+    {
+      "owner": "Project Control durable job broker",
+      "requirement": "Atomically fence checkpoints and final results in broker transactions; callback fences alone do not prove persistence race safety or disconnected-job durability."
+    }
+  ],
+  "coverage_limits": [
+    "No GPU/model inference, network/download/paid fallback or live authority migration executed.",
+    "Review and Codex worker source isolation is procedural; the produced command adapter sandbox was exercised mechanically.",
+    "Unlisted qualification receipt is an additive artifact; historical package MANIFEST.sha256 does not cover this runtime evidence."
+  ]
+}

@@ -1,4 +1,4 @@
-"""Official-SDK smoke for the six preserved workflow tool contracts."""
+"""Official-SDK smoke for active native routing and preserved internal contracts."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ EXPECTED_WORKFLOW_TOOLS = {
     "collect_delegation", "finish_task",
 }
 
+EXPECTED_NATIVE_TOOLS = EXPECTED_WORKFLOW_TOOLS - {"delegate_task", "collect_delegation"}
+
 
 async def smoke(command: str, skills_root: str) -> dict[str, object]:
     parameters = StdioServerParameters(
@@ -30,10 +32,12 @@ async def smoke(command: str, skills_root: str) -> dict[str, object]:
     names = {tool.name for tool in tools.tools}
     instructions = initialized.instructions or ""
     return {
-        "ok": EXPECTED_WORKFLOW_TOOLS <= names,
+        "ok": EXPECTED_NATIVE_TOOLS <= names and not names & {"delegate_task", "collect_delegation"},
         "server": initialized.serverInfo.name,
         "tools": sorted(names),
         "workflow_tools": sorted(EXPECTED_WORKFLOW_TOOLS),
+        "active_workflow_tools": sorted(EXPECTED_NATIVE_TOOLS),
+        "temporarily_inactive": ["collect_delegation", "delegate_task"],
         "instructions_bytes": len(instructions.encode("utf-8")),
     }
 

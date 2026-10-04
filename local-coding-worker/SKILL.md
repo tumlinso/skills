@@ -5,6 +5,22 @@ description: Subordinate bounded child execution under exactly one active coding
 
 # Local Coding Worker
 
+## Read-only observer service
+
+Project Control's durable broker may run investigator and skill jobs through
+`local_worker.observer_runtime.ObserverWorkerPort` on the existing verified local
+model supervisor. Both modes have job-scoped evidence and explicit messages;
+warm model residency never grants shared conversation state or child authority.
+The broker owns the queue, packet store, history, attempt fences and dispatch.
+The worker has `command`, `log` and shared read-only information tools only.
+Skill mode reads installed `SKILL.md` and follows its maps and references through
+the same sandbox. See [observer-port](references/observer-port.md).
+
+Native model routing marks coding `delegate_task` and `collect_delegation`
+temporarily inactive. The internal coding implementations and maintenance
+contracts below remain available for explicit operator use; they are not the
+ordinary observer job path. Reactivation requires an explicit operator decision.
+
 ## Repository workflow
 
 For substantial repository work, use `coding-workflow`. Invoke this skill only
