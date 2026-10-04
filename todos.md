@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `915`
+Project revision: `920`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -89,6 +89,7 @@ Project revision: `915`
 - `SK-AS1-SEMANTIC-PORT` | kind: task | status: done | parent: SK-AS1-0000 | objective: Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.
 - `SK-AS1-SEMANTICS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.
 - `SK-AS1-SOURCE-FENCE` | kind: task | status: done | parent: SK-AS1-0000 | objective: Close the reproduced local-source callback bypass during claim-scoped publication, preserving native fallback only when no trusted verifier is configured.
+- `SK-AS1-SOURCE-FRESHNESS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Avoid implicit same-authority revision self-invalidation while preserving trusted source fencing, explicit caller pins, and exact foreign authority stamps.
 - `SK-PCE2-COLLABORATE` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Delegate meaningful bounded work with the context and executor it actually needs, and share immutable source deliveries before final qualification without manual provenance reconstruction.
 - `SK-PCE2-MAINTAIN` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Provide bounded resume, amend, supersede/retire and applicability-invalidation operations over existing canonical services; grants follow an approved job rather than the target claim or expensive model.
 - `SK-PCE2-OPERATE` | kind: task | status: in_progress | parent: SK-PCE2-0000 | objective: Share executable action semantics across policy, context and workflow results; make starting, inspecting, validating and finishing work possible without procedural guesswork.

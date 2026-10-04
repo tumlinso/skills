@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-SEMANTIC-PORT: Complete trusted semantic verification and idempotent control ports
 
-Task revision: `911`; current project revision is in `todo-status.md`.
+Task revision: `916`; current project revision is in `todo-status.md`.
 
 ## Objective
 Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.

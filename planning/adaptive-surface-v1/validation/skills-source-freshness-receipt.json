@@ -1,0 +1,30 @@
+{
+  "format": "pc-as1-producer-receipt/1",
+  "producer_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "producer_task_id": "SK-AS1-SOURCE-FRESHNESS",
+  "gate_ids": [
+    "SK-AS1-SOURCE-FRESHNESS-ACCEPT"
+  ],
+  "source_identity": {
+    "commit": "be000bed4a71b906706194d3dcd7f7632a1ae0a3",
+    "completion_revision": 920,
+    "gate_revision": 919,
+    "gate_evidence_id": "cf54240e-a793-412e-8eb0-380a1b5b0b23",
+    "input_fingerprint": "a128d4bf3127239fdb11d3b1c3ee3e6d60dfa4e863c1fd9665d3508679fac508"
+  },
+  "contract_hashes": {
+    "todo-orchestrator/todo_orchestrator/project_amendments.py": "56783f401e0f18051e4e89412ed15d3b0c9623d50a8c5ce36859e75bb6e738e2",
+    "todo-orchestrator/tests/test_as1_source_fence.py": "1a6cc964da7df2b004dbae430bcd0da1b330c5acf07a77ed97ae8b0697044280",
+    "docs/as1-source-fence.md": "278adb3b32e22885201aa6cfc4993a8f05fa7b658bad25cf83d4f0f4d874b056"
+  },
+  "coverage": {
+    "source_fence_tests_passed": 17,
+    "existing_port_tests_passed": 15,
+    "root_boundary_review": "Local content anchors avoid implicit self-invalidating revision stamps. Explicit caller pins retained; foreign authority UUID/revision capture unchanged."
+  },
+  "limits": [
+    "Installed canonical kernel remains extension11; no migration or runtime activation performed.",
+    "PC paired consumer validation and final public surface integration remain downstream."
+  ],
+  "status": "passed"
+}
