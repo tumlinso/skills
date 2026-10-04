@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `887`
+Project revision: `888`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -81,6 +81,12 @@ Project revision: `887`
 - `CWM-09` | status: done | execution: closed | next: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | status: done | execution: closed | next: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
+- `SK-AS1-GPU` | status: planned | execution: ready | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-QUALIFY` | status: planned | execution: ready | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-ROUTING` | status: planned | execution: ready | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-RUNTIME` | status: planned | execution: ready | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-SEMANTICS` | status: planned | execution: ready | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-PCE2-COLLABORATE` | status: planned | execution: ready | next: Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-MAINTAIN` | status: planned | execution: ready | next: Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-OPERATE` | status: in_progress | execution: idle | next: Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
@@ -95,5 +101,6 @@ Project revision: `887`
 - `CWM-06` | status: done | execution: closed | next: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 - `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
+- `SK-AS1-0000` | status: planned | execution: inactive | next: Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.
 - `SK-PCE2-0000` | status: planned | execution: inactive | next: Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.
 <!-- todo-orchestrator:v2-managed:end -->

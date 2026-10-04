@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `887`
+Project revision: `888`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -81,6 +81,12 @@ Project revision: `887`
 - `CWM-09` | kind: integration_task | status: done | parent: - | objective: Add an exceptional one-use owner-approved next_task recovery path for a lost facade capability over one unchanged facade-owned live claim, backed by a transactional todo recovery API, strict attached-work refusal, opaque capabilities, audit evidence, and concurrency safety without changing the five-tool MCP surface.
 - `CWM-10` | kind: integration_task | status: done | parent: - | objective: Ensure coding-workflow establishes or proves a usable bounded ctxpp packet before local-worker child creation and admission, serializes safe first-use initialization, fails early without leases or model startup, and proves a delegated disposable read-only request reaches actual worker execution.
 - `PCU-SK-32` | kind: task | status: done | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
+- `SK-AS1-GPU` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
+- `SK-AS1-QUALIFY` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
+- `SK-AS1-RELEASE` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
+- `SK-AS1-ROUTING` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
+- `SK-AS1-RUNTIME` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.
+- `SK-AS1-SEMANTICS` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.
 - `SK-PCE2-COLLABORATE` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Delegate meaningful bounded work with the context and executor it actually needs, and share immutable source deliveries before final qualification without manual provenance reconstruction.
 - `SK-PCE2-MAINTAIN` | kind: task | status: planned | parent: SK-PCE2-0000 | objective: Provide bounded resume, amend, supersede/retire and applicability-invalidation operations over existing canonical services; grants follow an approved job rather than the target claim or expensive model.
 - `SK-PCE2-OPERATE` | kind: task | status: in_progress | parent: SK-PCE2-0000 | objective: Share executable action semantics across policy, context and workflow results; make starting, inspecting, validating and finishing work possible without procedural guesswork.
@@ -95,5 +101,6 @@ Project revision: `887`
 - `CWM-06` | kind: validation_task | status: done | parent: - | objective: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | kind: epic | status: done | parent: - | objective: Roll up ENGINES acceptance, preserving independent ctxpp/CUDA behavior and legacy semantic evidence. No separate donor parity campaign.
 - `SK-WF2A-ENGINES` | kind: task | status: done | parent: - | objective: Against a pinned Project Control CORE candidate, rewire only needed Todo-runtime consumers and CLI guidance to the unified core. Keep ctxpp standalone; remove the X-mode shape rejection while retaining reservations/preemption. Support the optional tool-less local-analysis path only by cheap reuse. Return one candidate-bound compatibility receipt.
+- `SK-AS1-0000` | kind: epic | status: planned | parent: - | objective: Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.
 - `SK-PCE2-0000` | kind: epic | status: planned | parent: - | objective: Aggregate verified local outcomes only; this is not a coordinator seat or a prerequisite of its children.
 <!-- todo-orchestrator:v2-managed:end -->

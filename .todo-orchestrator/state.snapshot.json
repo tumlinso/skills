@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T13:32:04Z",
+  "generated_at": "2026-10-04T17:21:33Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 887,
+  "project_revision": 888,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9321,6 +9321,16 @@
         "revision": 887,
         "seq": 887,
         "timestamp": "2026-09-21T13:32:04Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"plan_digest\": \"7bbe12a16f14e037677cdc3944402b155f30ddfb1b1166ce388b34463cc76505\", \"source\": \"project-control\"}",
+        "revision": 888,
+        "seq": 888,
+        "timestamp": "2026-10-04T17:21:33Z"
       }
     ],
     "evidence": [
@@ -12643,6 +12653,162 @@
       },
       {
         "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-GPU\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts\", \"cuda/tests\", \"local-coding-worker\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-GPU-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-GPU",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-GPU\", \"track_git_head\": false}",
+        "id": "SK-AS1-GPU-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-QUALIFY\"], \"cwd\": \".\", \"input_paths\": [\"tests\", \"todo-orchestrator/tests\", \"cuda/tests\", \"local-coding-worker/tests\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-QUALIFY-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-QUALIFY",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-QUALIFY\", \"track_git_head\": false}",
+        "id": "SK-AS1-QUALIFY-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RELEASE\"], \"cwd\": \".\", \"input_paths\": [\"project-control\", \".gitmodules\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-RELEASE-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-RELEASE",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-RELEASE\", \"track_git_head\": false}",
+        "id": "SK-AS1-RELEASE-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-ROUTING\"], \"cwd\": \".\", \"input_paths\": [\"cuda\", \"local-coding-worker\", \"todo-orchestrator\", \"cpp-context-compiler\", \"integrations\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-ROUTING-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-ROUTING",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-ROUTING\", \"track_git_head\": false}",
+        "id": "SK-AS1-ROUTING-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-RUNTIME\"], \"cwd\": \".\", \"input_paths\": [\"local-coding-worker\", \"integrations/coding-workflow-mcp\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-RUNTIME-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-RUNTIME",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-RUNTIME\", \"track_git_head\": false}",
+        "id": "SK-AS1-RUNTIME-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"python3\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-SEMANTICS\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator\", \"integrations/coding-workflow-mcp\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-SEMANTICS-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-SEMANTICS",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-SEMANTICS\", \"track_git_head\": false}",
+        "id": "SK-AS1-SEMANTICS-CLOSED",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 888,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
         "config_json": "{\"argv\": [\"python3\", \"-B\", \"planning/workflow-foundation-v2/scripts/run_gate.py\", \"--task\", \"SK-WF2-0000\"], \"cwd\": \".\", \"input_paths\": [\"planning/workflow-foundation-v2\"], \"timeout\": 1800}",
         "id": "SK-WF2-0000-G",
         "input_fingerprint": null,
@@ -15666,6 +15832,201 @@
         "mode": "read",
         "path": "unification/pcu-v1/scripts",
         "task_id": "PCU-SK-41"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-0000"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-0000"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/scripts",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/tests",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda/tests",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker/tests",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "mode": "exclusive",
+        "path": ".gitmodules",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "project-control",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cpp-context-compiler",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "cuda",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "mode": "exclusive",
+        "path": "integrations/coding-workflow-mcp",
+        "task_id": "SK-AS1-SEMANTICS"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-SEMANTICS"
+      },
+      {
+        "mode": "exclusive",
+        "path": "tests/as1",
+        "task_id": "SK-AS1-SEMANTICS"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator",
+        "task_id": "SK-AS1-SEMANTICS"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-SEMANTICS"
       },
       {
         "mode": "read",
@@ -19055,6 +19416,72 @@
         "prerequisite_task_id": "SK-PCE2-OPERATE",
         "task_id": "SK-PCE2-MAINTAIN",
         "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 896,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-RUNTIME",
+        "task_id": "SK-AS1-GPU",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 897,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-ROUTING",
+        "task_id": "SK-AS1-QUALIFY",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 898,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-QUALIFY",
+        "task_id": "SK-AS1-RELEASE",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 899,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-SEMANTICS",
+        "task_id": "SK-AS1-ROUTING",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 900,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-GPU",
+        "task_id": "SK-AS1-ROUTING",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 901,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-SEMANTICS",
+        "task_id": "SK-AS1-RUNTIME",
+        "type": "task"
       }
     ],
     "task_invariants": [
@@ -22225,6 +22652,181 @@
         "completion_commit": null,
         "completion_git_head": null,
         "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-0000",
+        "kind": "epic",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.",
+        "notes": "",
+        "objective": "Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 0,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "AS1 skills: consolidated adaptive helper surface",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-GPU",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Make warm observer models reclaimable by foreground work",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-QUALIFY",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Produce a paired Skills qualification receipt usable by Project Control without merging authorities.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-RELEASE",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Pin the qualified standalone release in Skills",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-ROUTING",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Update instruction routing for native agents and the observer adapter without rewriting technical skill content.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Make native skills role-efficient and preserve corpus routing",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-RUNTIME",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Adapt the existing local service for read-only scout modes",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-SEMANTICS",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.",
+        "notes": "",
+        "objective": "Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.",
+        "parallel_policy": "serial",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 888,
+        "status": "planned",
+        "tags_json": "[]",
+        "title": "Extend canonical semantic and mutation contracts",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "version": 1
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
         "created_at": "2026-09-20T13:38:44Z",
         "id": "SK-PCE2-0000",
         "kind": "epic",
@@ -24285,6 +24887,159 @@
         "version": 1
       },
       {
+        "content_hash": "442f396261c4c49c24f9ecb5eb62635d938b503b4162bbd0f2c81399e67a1f37",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-SEMANTICS\",\"SK-AS1-RUNTIME\",\"SK-AS1-GPU\",\"SK-AS1-ROUTING\",\"SK-AS1-QUALIFY\",\"SK-AS1-RELEASE\",\"SK-AS1-0000\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:lane_brief:SK-AS1-L-EXEC:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "9f02e6a3cf4bc4ca15719971f527122afec60680e84420bc1b77d0c29227b280",
+        "content_json": "{\"boundaries\":[\"Separate Todo/Git/host authorities; preserve dirty source, historical successful evidence and CUDA/atlas guidance.\",\"Do not resume NF1A or mutate unrelated scientific projects. Destructive admin actions require explicit user permission.\",\"One exclusive Skills lane preserves the existing prerequisite sequence; cross-authority producer receipts remain required before consumer execution.\"],\"motivation\":\"More useful engineering progress with less context, coordination and maintenance overhead.\",\"objective\":\"Implement the complete consolidated role-efficient Project Control surface using canonical backend authorities.\",\"references\":[\"planning/adaptive-surface-v1/START_HERE.md\",\"planning/adaptive-surface-v1/planning/outcomes.json\",\"planning/adaptive-surface-v1/contracts/requirements.json\",\"planning/adaptive-surface-v1/planning/cross-authority.json\",\"planning/adaptive-surface-v1/EXECUTION_HANDOFF.md\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "6a45a431568278561699b7deab6066c48ee53c636e2e2978432d114a73b851d7",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-0000\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-0000",
+        "version": 1
+      },
+      {
+        "content_hash": "902fafe9bb4021bcd4cb93f524fd1b4fe4263156fe694dac9921dd054ef410ba",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-GPU-ACCEPT\"],\"next_action\":\"Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.\",\"scope\":{\"exclusive_paths\":[\"cuda/scripts\",\"cuda/tests\",\"local-coding-worker\",\"planning/adaptive-surface-v1\",\"tests/as1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-GPU-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-GPU:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-GPU\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-GPU",
+        "version": 1
+      },
+      {
+        "content_hash": "176468cf72c81fcc9c08b01c92afea33e744c83c41ab43182d9ce60ea6cd87c1",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-QUALIFY-ACCEPT\"],\"next_action\":\"Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Produce a paired Skills qualification receipt usable by Project Control without merging authorities.\",\"scope\":{\"exclusive_paths\":[\"tests\",\"todo-orchestrator/tests\",\"cuda/tests\",\"local-coding-worker/tests\",\"integrations\",\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-QUALIFY-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-QUALIFY:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-QUALIFY\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-QUALIFY",
+        "version": 1
+      },
+      {
+        "content_hash": "f7e7bfca47d57d0a1261af29b173ee8b8afac7379f6492187e29ab956c1a610b",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-RELEASE-ACCEPT\"],\"next_action\":\"Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.\",\"scope\":{\"exclusive_paths\":[\"project-control\",\".gitmodules\",\"integrations\",\"planning/adaptive-surface-v1\",\"tests/as1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-RELEASE-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-RELEASE:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-RELEASE\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-RELEASE",
+        "version": 1
+      },
+      {
+        "content_hash": "6dba245655567c68bcb56cb858e8ac15a0df67553ab804afe0bf2ecdf79f0a2a",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-ROUTING-ACCEPT\"],\"next_action\":\"Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Update instruction routing for native agents and the observer adapter without rewriting technical skill content.\",\"scope\":{\"exclusive_paths\":[\"cuda\",\"local-coding-worker\",\"todo-orchestrator\",\"cpp-context-compiler\",\"integrations\",\"planning/adaptive-surface-v1\",\"tests/as1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-ROUTING-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-ROUTING:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-ROUTING\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-ROUTING",
+        "version": 1
+      },
+      {
+        "content_hash": "cab9c2212698767f1905a37d2797acafdf04dd3b8d9165893b406c51df01fb3a",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-RUNTIME-ACCEPT\"],\"next_action\":\"Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.\",\"scope\":{\"exclusive_paths\":[\"local-coding-worker\",\"integrations/coding-workflow-mcp\",\"planning/adaptive-surface-v1\",\"tests/as1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-RUNTIME-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-RUNTIME:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-RUNTIME\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-RUNTIME",
+        "version": 1
+      },
+      {
+        "content_hash": "0fe5aaaa7931ce7833ed9b9837a0da5e15dd60fe6cf637214afa300949a49041",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-ACCEPT\"],\"next_action\":\"Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.\",\"objective\":\"Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator\",\"integrations/coding-workflow-mcp\",\"planning/adaptive-surface-v1\",\"tests/as1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-ACCEPT\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-SEMANTICS:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-SEMANTICS\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-SEMANTICS",
+        "version": 1
+      },
+      {
         "content_hash": "a013ce3b8b959d23e5d00d9314ec7bc07e1cb1f1d2016943dd77f6f9b68756d2",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-PCE2-OPERATE\",\"SK-PCE2-MAINTAIN\",\"SK-PCE2-COLLABORATE\",\"SK-PCE2-0000\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-09-20T13:38:44Z",
@@ -25839,6 +26594,76 @@
       {
         "activated_at": null,
         "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 0,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-SEMANTICS"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 1,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-RUNTIME"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 2,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-GPU"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 3,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-ROUTING"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 4,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-QUALIFY"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 5,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-RELEASE"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T17:21:33Z",
+        "lane_id": "SK-AS1-L-EXEC",
+        "position": 6,
+        "revision": 888,
+        "state": "queued",
+        "task_id": "SK-AS1-0000"
+      },
+      {
+        "activated_at": null,
+        "completed_at": null,
         "enqueued_at": "2026-09-20T13:38:44Z",
         "lane_id": "SK-PCE2-L-EXEC",
         "position": 0,
@@ -26597,6 +27422,18 @@
         "state": "closed",
         "updated_at": "2026-08-30T16:38:40Z",
         "workspace_mode": "read_shared"
+      },
+      {
+        "context_cursor": 0,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-L-EXEC",
+        "parent_lane_id": null,
+        "revision": 888,
+        "role": "implementer",
+        "run_id": "SK-AS1-RUN-1",
+        "state": "ready",
+        "updated_at": "2026-10-04T17:21:33Z",
+        "workspace_mode": "exclusive"
       },
       {
         "context_cursor": 0,
@@ -27376,6 +28213,16 @@
         "version": 1
       },
       {
+        "content_hash": "9f02e6a3cf4bc4ca15719971f527122afec60680e84420bc1b77d0c29227b280",
+        "content_json": "{\"boundaries\":[\"Separate Todo/Git/host authorities; preserve dirty source, historical successful evidence and CUDA/atlas guidance.\",\"Do not resume NF1A or mutate unrelated scientific projects. Destructive admin actions require explicit user permission.\",\"One exclusive Skills lane preserves the existing prerequisite sequence; cross-authority producer receipts remain required before consumer execution.\"],\"motivation\":\"More useful engineering progress with less context, coordination and maintenance overhead.\",\"objective\":\"Implement the complete consolidated role-efficient Project Control surface using canonical backend authorities.\",\"references\":[\"planning/adaptive-surface-v1/START_HERE.md\",\"planning/adaptive-surface-v1/planning/outcomes.json\",\"planning/adaptive-surface-v1/contracts/requirements.json\",\"planning/adaptive-surface-v1/planning/cross-authority.json\",\"planning/adaptive-surface-v1/EXECUTION_HANDOFF.md\"]}",
+        "created_at": "2026-10-04T17:21:33Z",
+        "creation_revision": 888,
+        "run_id": "SK-AS1-RUN-1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "a15b24e3a32147e02ce1d12f21fc0738dd642451fb2758500583fbb4ac2c9c74",
         "content_json": "{\"acceptance_conditions\":[\"Current executed evidence for all PCE2 scenarios and supported old calls.\",\"Shared 3M aggregate token ceiling including relevant prior PCE1 work; disclose metering gaps.\"],\"boundaries\":[\"Independent Todo/Git/host authority; preserve source/evidence.\",\"Observer stays nonmutating; trusted scoped grants authorize maintenance, not model labels.\",\"No live Cellerator/GlassHelix writes, deployment activation or NF1A continuation.\"],\"delegated_judgment\":\"Choose APIs, tests, local decomposition, supported concurrency and economical configured agents; no procedural microtasks or fixed delegation/test quotas.\",\"desired_end_state\":\"Six PCE2 outcomes qualified in one paired candidate; donor NF1A paused.\",\"motivation\":\"Reduce avoidable calls, workarounds, repeated gates and root handoffs.\",\"objective\":\"Make engineering execution easy through semantic guidance, automatic routine mechanics and scoped delegable maintenance.\",\"references\":[\"planning/pce2/DESIGN.md\",\"planning/pce2/BOOTSTRAP.md\",\"planning/pce2/machine/outcomes.json\",\"planning/pce2/machine/usage.json\",\"planning/pce2/machine/cross-authority.json\"]}",
         "created_at": "2026-09-20T13:38:44Z",
@@ -27436,6 +28283,16 @@
         "root_task_id": "PCU-SK-00",
         "status": "active",
         "updated_at": "2026-08-30T11:43:03Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-10-04T17:21:33Z",
+        "id": "SK-AS1-RUN-1",
+        "revision": 888,
+        "root_task_id": "SK-AS1-0000",
+        "status": "active",
+        "updated_at": "2026-10-04T17:21:33Z"
       },
       {
         "active_charter_version": 1,
