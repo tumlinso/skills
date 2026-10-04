@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import copy
 import sqlite3
 from collections import deque
 from pathlib import Path
 from typing import Any
 
 from . import PLAN_SCHEMA_VERSION, SCHEMA_VERSION
+from .db import Unchanged
 from .config import utc_now
 from .gates import validate_gate_spec
 from .git_state import canonical_relative
@@ -271,8 +273,11 @@ def _clear_task_details(conn: sqlite3.Connection, task_id: str) -> None:
         conn.execute(f"DELETE FROM {table} WHERE task_id=?", (task_id,))
 
 
-def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, revision: int) -> dict[str, object]:
+def apply_plan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, revision: int, *, _comparison=False) -> dict[str, object]:
     validate_plan(data, repo_root)
+    data = _preserve_omitted_task_fields(conn, data)
+    if not _comparison and not _plan_changes(conn, data, repo_root, revision):
+        return Unchanged({"status": "noop", "tasks_upserted": 0, "barriers": [], "workflow": {"runs": []}})
     now = utc_now()
     for lock in data.get("locks", []):
         conn.execute(
@@ -581,6 +586,20 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                 if ("task_brief", lane_id, task_id) in declared_kinds:
                     continue
                 task = next(item for item in data.get("tasks", []) if str(item["id"]) == task_id)
+                task = dict(task)
+                prior_brief = conn.execute(
+                    "SELECT content_json FROM workflow_context_fragments WHERE run_id=? AND lane_id=? AND task_id=? AND kind='task_brief' ORDER BY version DESC LIMIT 1",
+                    (run_id, lane_id, task_id),
+                ).fetchone()
+                prior_content = json.loads(prior_brief[0]) if prior_brief else {}
+                for key in ('completion_contract', 'motivation', 'desired_end_state', 'conceptual_end_state', 'rationale', 'uncertainties', 'risks', 'delegated_choices', 'delegated_judgment', 'references'):
+                    if key in prior_content:
+                        task.setdefault(key, prior_content[key])
+                prior_scope = prior_content.get('scope', {})
+                current_scope = task.get('scope', {})
+                scope_keys = set(prior_scope) | set(current_scope)
+                if prior_brief and all(sorted(prior_scope.get(key, [])) == sorted(current_scope.get(key, [])) for key in scope_keys):
+                    task['scope'] = prior_scope
                 task_brief = {
                     "objective": str(task.get("objective", task.get("title", task_id))),
                     "next_action": str(task.get("next_action", task.get("objective", task.get("title", task_id)))),
@@ -594,6 +613,13 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
                     task_brief["consumes_interfaces"] = [
                         dict(interface) for interface in task["consumes_interfaces"]
                     ]
+                for key in ('tests', 'gates'):
+                    if key in prior_content and sorted(prior_content[key]) == sorted(task_brief[key]):
+                        task_brief[key] = prior_content[key]
+                def consumer_meaning(values):
+                    return sorted((str(value['id']), str(value.get('required_state', 'frozen')), value.get('required_version')) for value in values)
+                if ('consumes_interfaces' in prior_content and consumer_meaning(prior_content['consumes_interfaces']) == consumer_meaning(task_brief.get('consumes_interfaces', []))):
+                    task_brief['consumes_interfaces'] = prior_content['consumes_interfaces']
                 task_brief.update({key: task[key] for key in ("motivation", "desired_end_state", "conceptual_end_state", "rationale", "uncertainties", "risks", "delegated_choices", "delegated_judgment", "references") if key in task})
                 declared_fragments.append({
                     "kind": "task_brief", "lane_id": lane_id, "task_id": task_id,
@@ -647,14 +673,111 @@ def _apply_workflow_plan(conn: sqlite3.Connection, data: dict[str, Any], revisio
     return {"plan_schema_version": int(data.get("schema_version", SCHEMA_VERSION)), "compatibility": compatibility, "runs": applied_runs}
 
 
-def plan_diff(conn: sqlite3.Connection, data: dict[str, Any]) -> dict[str, object]:
+def _preserve_omitted_task_fields(conn, data):
+    """Absent fields preserve existing declarations; explicit empties clear them."""
+    data = copy.deepcopy(data)
+    for task in data.get('tasks', []):
+        row = conn.execute('SELECT * FROM tasks WHERE id=?', (str(task['id']),)).fetchone()
+        if row is None:
+            continue
+        for key in ('parent_id', 'kind', 'objective', 'status', 'priority', 'parallel_policy', 'result', 'next_action', 'notes'):
+            if key not in ('objective', 'next_action') or row[key]:
+                task.setdefault(key, row[key])
+        for key in ('tags', 'result_policy'):
+            task.setdefault(key, json.loads(row[key + '_json']))
+        existing_scope = {key: [r['path'] for r in conn.execute('SELECT path FROM ownership_scopes WHERE task_id=? AND mode=? ORDER BY path', (task['id'], mode))] for key, mode in (('exclusive_paths', 'exclusive'), ('read_paths', 'read'), ('forbidden_paths', 'forbidden'))}
+        existing_scope['shared_locks'] = [r[0] for r in conn.execute("SELECT lock_name FROM task_locks WHERE task_id=? AND phase='manual' ORDER BY lock_name", (task['id'],))]
+        task['scope'] = {**existing_scope, **task.get('scope', {})}
+        task.setdefault('gates', [{**json.loads(r['config_json']), 'id': r['id'], 'type': r['type'], 'required': bool(r['required']), **({'checkpoint_id': r['checkpoint_id']} if r['checkpoint_id'] else {})} for r in conn.execute('SELECT * FROM gates WHERE task_id=? ORDER BY id', (task['id'],))])
+        task.setdefault('consumes_interfaces', [{'id':r['interface_id'], 'required_state':r['required_state'], **({'required_version':r['required_version']} if r['required_version'] is not None else {})} for r in conn.execute('SELECT * FROM interface_consumers WHERE task_id=? ORDER BY interface_id', (task['id'],))])
+        task.setdefault('claim_locks', [r[0] for r in conn.execute("SELECT lock_name FROM task_locks WHERE task_id=? AND phase='claim' ORDER BY lock_name", (task['id'],))])
+        task.setdefault('invariants', [r[0] for r in conn.execute('SELECT invariant_id FROM task_invariants WHERE task_id=? ORDER BY invariant_id', (task['id'],))])
+        task.setdefault('produced_artifacts', [dict(r) for r in conn.execute('SELECT kind,path FROM task_artifacts WHERE task_id=? ORDER BY kind,path', (task['id'],))])
+        if 'depends_on' not in task:
+            task['depends_on'] = []
+            for dep in conn.execute('SELECT * FROM task_dependencies WHERE task_id=?', (task['id'],)):
+                kind = dep['type']
+                target = 'prerequisite_task_id' if kind == 'task' else kind + '_id'
+                task['depends_on'].append({'type': kind, ('task_id' if kind == 'task' else target): dep[target], **json.loads(dep['condition_json'])})
+        task.setdefault('resource_requests', [dict(r) for r in conn.execute('SELECT id,phase,selector,amount,mode,required FROM resource_requests WHERE task_id=? ORDER BY id', (task['id'],))])
+    return data
+
+
+def _semantic_plan_state(conn):
+    # Compare actual normalized native effects, excluding bookkeeping generated
+    # by the upsert itself. No authority/receipt is persisted by this probe.
+    ignored = {'revision', 'updated_at', 'created_at', 'creation_revision'}
+    generated_ids = {'task_dependencies', 'ownership_scopes', 'task_locks', 'task_artifacts', 'barrier_requirements'}
+    state = {}
+    for (table,) in conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"):
+        columns = [r[1] for r in conn.execute(f'PRAGMA table_info("{table}")') if r[1] not in ignored and not (table == 'tasks' and r[1] == 'version') and not (table in generated_ids and r[1] == 'id')]
+        if not columns:
+            continue
+        rows = []
+        for row in conn.execute('SELECT ' + ','.join('"' + c + '"' for c in columns) + ' FROM "' + table + '"'):
+            values = []
+            for column, value in zip(columns, row):
+                if column.endswith('_json') and isinstance(value, str):
+                    value = json.loads(value)
+                values.append(value)
+            rows.append(json.dumps(values, sort_keys=True, default=str))
+        state[table] = sorted(rows)
+    return state
+
+
+def _plan_changes(conn, data, repo_root, revision):
+    before = _semantic_plan_state(conn)
+    conn.execute('SAVEPOINT canonical_plan_comparison')
+    try:
+        apply_plan(conn, data, repo_root, revision, _comparison=True)
+        after = _semantic_plan_state(conn)
+    finally:
+        conn.execute('ROLLBACK TO canonical_plan_comparison')
+        conn.execute('RELEASE canonical_plan_comparison')
+    return before != after
+
+
+def _task_plan_state(conn, task_id):
+    state = {}
+    for table in ('tasks', 'ownership_scopes', 'task_locks', 'task_invariants', 'task_artifacts', 'task_dependencies', 'resource_requests', 'checkpoints', 'gates', 'interface_consumers'):
+        columns = [r[1] for r in conn.execute(f'PRAGMA table_info("{table}")') if r[1] not in {'revision', 'updated_at', 'created_at', 'version', 'reached_at', 'revoked_at'} and not (table in {'ownership_scopes', 'task_locks', 'task_artifacts', 'task_dependencies'} and r[1] == 'id')]
+        key = 'id' if table == 'tasks' else 'task_id'
+        rows = []
+        for row in conn.execute('SELECT ' + ','.join('"' + c + '"' for c in columns) + ' FROM "' + table + '" WHERE "' + key + '"=?', (task_id,)):
+            rows.append(json.dumps([json.loads(v) if c.endswith('_json') and isinstance(v, str) else v for c, v in zip(columns, row)], sort_keys=True, default=str))
+        state[table] = sorted(rows)
+    return state
+
+
+def plan_diff(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path | None = None, *, _probe=False) -> dict[str, object]:
+    if not _probe:
+        # Read ports retain read-only authority: project into an ephemeral native
+        # SQLite copy rather than acquire a write lock on the source authority.
+        probe = sqlite3.connect(':memory:', isolation_level=None)
+        probe.row_factory = sqlite3.Row
+        try:
+            conn.backup(probe)
+            probe.execute('PRAGMA foreign_keys=ON')
+            return plan_diff(probe, data, repo_root, _probe=True)
+        finally:
+            probe.close()
     existing = {row[0] for row in conn.execute("SELECT id FROM tasks")}
     incoming = {str(task["id"]) for task in data.get("tasks", [])}
-    return {
-        "add": sorted(incoming - existing),
-        "update": sorted(incoming & existing),
-        "unchanged_or_removed": sorted(existing - incoming),
-    }
+    revision = int(conn.execute("SELECT value FROM meta WHERE key='project_revision'").fetchone()[0]) + 1
+    before = _semantic_plan_state(conn)
+    task_before = {task_id: _task_plan_state(conn, task_id) for task_id in incoming & existing}
+    conn.execute('SAVEPOINT canonical_plan_diff')
+    try:
+        apply_plan(conn, data, repo_root or Path.cwd(), revision, _comparison=True)
+        changed = before != _semantic_plan_state(conn)
+        updates = [task_id for task_id, state in task_before.items() if state != _task_plan_state(conn, task_id)]
+    finally:
+        conn.execute('ROLLBACK TO canonical_plan_diff')
+        conn.execute('RELEASE canonical_plan_diff')
+    return {'add': sorted(incoming - existing), 'update': sorted(updates),
+            'unchanged': sorted((incoming & existing) - set(updates)),
+            'unchanged_or_removed': sorted(existing - incoming),
+            'status': 'changed' if changed else 'noop'}
 
 
 def apply_selective_replan(conn: sqlite3.Connection, data: dict[str, Any], repo_root: Path, revision: int) -> dict[str, object]:

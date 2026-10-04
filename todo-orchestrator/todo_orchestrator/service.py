@@ -70,7 +70,11 @@ class Service:
         name: str | None = None,
         mutation_mode: str = "automated",
         read_only: bool | None = None,
+        project_source_verifier=None,
     ):
+        if project_source_verifier is not None and not callable(project_source_verifier):
+            raise TypeError("project_source_verifier must be callable or None")
+        self.project_source_verifier = project_source_verifier
         if bootstrap:
             self.paths, self.project = create_project_identity(repo_root, name)
         else:
@@ -124,7 +128,7 @@ class Service:
         """Read canonical project declarations, skill use and orientation."""
         from .project_amendments import read_context
         with self.db.read() as conn:
-            return read_context(conn, self.project, repo_root=self.paths.repo_root)
+            return read_context(conn, self.project, repo_root=self.paths.repo_root, project_source_verifier=self.project_source_verifier)
 
     def _project_semantic_mutation(self, *, operation, event_type, principal=None):
         # Internal host route, not the legacy self_debug escape hatch. No-op
@@ -210,6 +214,8 @@ class Service:
             payload=payload,
             operation=operation,
         )
+        if isinstance(result, dict) and result.get("status") == "noop":
+            return result, revision, None
         changed_tasks: set[str] = set()
         if isinstance(result, dict):
             task_id = result.get("task_id")
@@ -366,7 +372,7 @@ class Service:
         data = load_plan(path)
         validate_plan(data, self.paths.repo_root)
         with self.db.read() as conn:
-            return plan_diff(conn, data)
+            return plan_diff(conn, data, self.paths.repo_root)
 
     def plan_apply(self, path: str) -> dict[str, object]:
         data = load_plan(path)

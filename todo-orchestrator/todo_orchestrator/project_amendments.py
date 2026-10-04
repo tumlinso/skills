@@ -159,7 +159,7 @@ def local_repositories(project, repo_root):
     return {configured} if configured else {str(root), root.name}
 
 
-def read_context(conn, project, *, optional=False, repo_root=None):
+def read_context(conn, project, *, optional=False, repo_root=None, project_source_verifier=None):
     if optional and not conn.execute("SELECT 1 FROM sqlite_master WHERE name='project_declarations'").fetchone():
         return {'status': 'unavailable', 'required_migration_version': 12}
     require_schema(conn)
@@ -185,6 +185,12 @@ def read_context(conn, project, *, optional=False, repo_root=None):
                                     state = 'fresh' if hashlib.sha256(path.read_bytes()).hexdigest() == locator['content_sha256'] else 'stale'
                                 except OSError:
                                     pass
+                        elif project_source_verifier is not None:
+                            try:
+                                verified_foreign_source(project_source_verifier, locator)
+                                state = 'fresh'
+                            except TodoError as exc:
+                                state = 'stale' if exc.code == 'source_prerequisite_stale' else 'unavailable'
                         states.append({'source': locator, 'status': state})
                     row['field_freshness'][field] = {'status': 'stale' if any(x['status'] == 'stale' for x in states) else 'unavailable' if any(x['status'] == 'unavailable' for x in states) else 'fresh', 'sources': states}
             rows.append(row)
@@ -193,6 +199,32 @@ def read_context(conn, project, *, optional=False, repo_root=None):
             'skill_uses': [r for r in rows if r['kind'] == 'skill_use'],
             'orientation': [r for r in rows if r['kind'] == 'orientation'],
             'invalidations': [dict(r) for r in conn.execute('SELECT * FROM project_fragment_invalidations ORDER BY revision,id')]}
+
+
+def verified_foreign_source(verifier, locator):
+    """Validate a startup-owned broker receipt; never accept substituted sources."""
+    if verifier is None:
+        fail('source_prerequisite_unavailable', 'Foreign source verification requires a trusted host source verifier')
+    try:
+        receipt = verifier(dict(locator))
+    except Exception as exc:
+        if isinstance(exc, TodoError) and exc.code == 'source_prerequisite_stale':
+            raise
+        fail('source_prerequisite_unavailable', 'Trusted foreign source verifier is unavailable')
+    required = {'project', 'project_uuid', 'revision', 'repository', 'path', 'content_sha256'}
+    if not isinstance(receipt, dict) or not required <= receipt.keys():
+        fail('source_prerequisite_unavailable', 'Foreign source verifier returned an incomplete receipt')
+    try:
+        valid_uuid = str(uuid.UUID(receipt['project_uuid'])) == receipt['project_uuid']
+    except (ValueError, TypeError, AttributeError):
+        valid_uuid = False
+    if not valid_uuid or type(receipt['revision']) is not int or receipt['revision'] < 0 or not isinstance(receipt['project'], str) or not receipt['project']:
+        fail('source_prerequisite_unavailable', 'Foreign source verifier returned invalid authority identity')
+    if (locator['project'] not in (receipt['project'], receipt['project_uuid'])
+            or any(locator[key] != receipt[key] for key in ('repository', 'path', 'content_sha256'))
+            or any(key in locator and locator[key] != receipt[key] for key in ('project_uuid', 'revision'))):
+        fail('source_prerequisite_stale', 'Foreign source receipt does not match the exact locator and authority')
+    return {**locator, **{key: receipt[key] for key in required}}
 
 
 def source_prerequisites(service, request):
@@ -207,7 +239,8 @@ def source_prerequisites(service, request):
         local_ids = {request['project'], service.project['project_uuid'], service.project['project_name'],
                      service.project.get('configuration', {}).get('registered_project_id')}
         if anchor['project'] not in local_ids or anchor['repository'] not in local_repositories(service.project, service.paths.repo_root):
-            fail('source_prerequisite_unavailable', 'External project/repository anchor freshness requires a trusted host source resolver')
+            result.append(verified_foreign_source(service.project_source_verifier, anchor))
+            continue
         root = service.paths.repo_root.resolve()
         path = (root / anchor['path']).resolve()
         if not path.is_relative_to(root) or not path.is_file():
@@ -248,13 +281,20 @@ def review(service, conn, request):
     kind, rows = affected_set(conn, request, service.project)
     prerequisites = source_prerequisites(service, request)
     trust = service.project.get('configuration', {}).get('project_providers', {}) if kind == 'provider' else {}
+    canonical_payload = json.loads(encode(request['payload']))
+    for locator in payload_locators(canonical_payload):
+        for source in prerequisites:
+            if ('project_uuid' in source and locator['project'] in (source['project'], source['project_uuid'])
+                    and all(locator[key] == source[key] for key in ('repository', 'path', 'content_sha256'))):
+                locator.update({key: source[key] for key in ('project', 'project_uuid', 'revision')})
+                break
     current = next((r for r in rows if r['kind'] == kind and r['id'] == request['payload']['id']), None)
-    noop = request['action'] != 'remove_registration' and current and not current['retired'] and json.loads(current['payload_json']) == request['payload'] and current['origin'] == 'project_declared'
+    noop = request['action'] != 'remove_registration' and current and not current['retired'] and json.loads(current['payload_json']) == canonical_payload and current['origin'] == 'project_declared'
     affected = [{'kind': r['kind'], 'id': r['id'], 'version': r['version']} for r in rows]
     identifiers = {request['payload']['id']} | {r['id'] for r in rows}
     for content in [request['payload']] + [json.loads(r['payload_json']) for r in rows]:
         identifiers.update(locator['path'] for locator in payload_locators(content))
-    return {'affected': affected, 'affected_digest': digest(rows), 'sources': prerequisites, 'trust_digest': digest(trust),
+    return {'canonical_payload': canonical_payload, 'affected': affected, 'affected_digest': digest(rows), 'sources': prerequisites, 'trust_digest': digest(trust),
             'kind': kind, 'noop': bool(noop), 'invalidation_entities': sorted(identifiers), 'invalidations': [] if noop else [{'kind': k, 'entity_id': identity} for identity in sorted(identifiers) for k in ('graph', 'search', 'orientation')],
             'changes': [] if noop else [{'action': request['action'], 'kind': kind, 'id': request['payload']['id']}]}
 
@@ -288,7 +328,7 @@ def amend_in_transaction(service, conn, revision, request):
         receipt = {'status': 'noop', 'operation_id': operation_id, 'revision': current, 'affected': current_review['affected'], 'invalidations': []}
         conn.execute('UPDATE project_amendments SET receipt_json=? WHERE operation_id=?', (encode(receipt), operation_id))
         return Unchanged({**receipt, 'receipt': receipt})
-    payload = request['payload']; kind = current_review['kind']; now = utc_now()
+    payload = current_review['canonical_payload']; kind = current_review['kind']; now = utc_now()
     targets = current_review['affected'] if request['action'] == 'remove_registration' else [{'kind': kind, 'id': payload['id']}]
     for target in targets:
         previous = conn.execute('SELECT * FROM project_declarations WHERE kind=? AND id=? ORDER BY version DESC LIMIT 1', (target['kind'], target['id'])).fetchone()
