@@ -256,6 +256,23 @@ class ObserverWorkerPort:
                     return {read["path"]: read for observation in observations
                             for read in observation.get("source_reads", [])
                             if isinstance(read, dict) and isinstance(read.get("path"), str)}
+                def entry_observed():
+                    return any(observation.get("status") == "completed"
+                               and observation.get("exit_code") == 0 and not observation.get("truncated")
+                               and any(read.get("path") == entry and isinstance(read.get("content_sha256"), str)
+                                       and len(read["content_sha256"]) == 64
+                                       for read in observation.get("source_reads", []) if isinstance(read, dict))
+                               for observation in observations)
+                def proposes_entry(tool, arguments):
+                    argv, cwd = arguments.get("argv"), arguments.get("cwd")
+                    if (tool != "command" or not isinstance(argv, list) or len(argv) != 2
+                            or argv[0] not in {"cat", "/bin/cat", "/usr/bin/cat"}
+                            or not isinstance(argv[1], str) or argv[1].startswith("-") or not isinstance(cwd, str)):
+                        return False
+                    target = Path(argv[1])
+                    if not target.is_absolute():
+                        target = Path(cwd) / target
+                    return str(target.resolve()) == entry
             # Only the runner's startup policy grants mounts. Caller scope,
             # hints and skill metadata never become permitted command roots.
             native_roots = [str(root) for root in getattr(self.command, "roots", ())
@@ -287,6 +304,8 @@ class ObserverWorkerPort:
                 instruction += (
                     " Skill mode: the command example reads the exact validated installed entry " + json.dumps(entry) + ". "
                     "Read that entry if it is not already present in retained source observations, "
+                    "Before successful exact entry proof, only a direct cat of that entry is permitted; "
+                    "a denied proposal or failed/truncated read is feedback, not source evidence. "
                     "then follow its own maps and references agentically. Read selected files with direct cat argv to retain exact source proof. "
                     "Indexes are advisory. Final JSON must include skill_selection with format pc-skill-selection/1, "
                     "selections [{skill,resource,content_sha256,line_start,line_end,reason}], synthesis, unresolved. "
@@ -340,6 +359,10 @@ class ObserverWorkerPort:
                         "unless their evidence is incomplete, stale, or otherwise needs verification. "
                         "Retained packet IDs identify observations, not proof that they answer the question."
                     )
+                    if request["mode"] == "skill" and not entry_observed():
+                        continuation += (" The validated installed entry has not been successfully read: " + entry +
+                                         ". Read it with direct cat before other commands/tools or final selection. "
+                                         "Failed or truncated entry observations do not satisfy this prerequisite.")
                     messages.append({"role": "user", "content": json.dumps(
                         {"progress": progress, "continuation": continuation}, ensure_ascii=False)})
                 turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
@@ -373,10 +396,13 @@ class ObserverWorkerPort:
                                        "public_tool_call": value}, ensure_ascii=False).encode()) > 16384:
                         raise ValueError("public_tool_call_exceeded_observation_budget")
                     check()
-                    result = (self.command.run(**arguments, guard=guard) if tool == "command" else self.tools(tool, arguments))
-                    if request["mode"] == "skill" and entry not in read_resources():
-                        if not any(r.get("path") == entry for r in result.get("source_reads", [])):
-                            raise ValueError("skill_must_read_installed_entry_first")
+                    if request["mode"] == "skill" and not entry_observed() and not proposes_entry(tool, arguments):
+                        result = self.command._packet({"status": "denied", "reason": "skill_entry_required",
+                            "dispatched": False, "required_skill_entry": entry,
+                            "corrective_action": "Read the validated installed entry successfully with direct cat "
+                                                 "before other commands/tools; failed or truncated reads are insufficient."}, guard)
+                    else:
+                        result = (self.command.run(**arguments, guard=guard) if tool == "command" else self.tools(tool, arguments))
                     observe(result, public_call)
                     continue
                 if not isinstance(value.get("answer"), str) or not value["answer"].strip():
@@ -392,7 +418,7 @@ class ObserverWorkerPort:
                     raise ValueError("invalid_unresolved_questions")
                 extra = {}
                 if request["mode"] == "skill":
-                    if entry not in read_resources():
+                    if not entry_observed():
                         raise ValueError("skill_installed_entry_not_read_agentically")
                     selection = value.get("skill_selection")
                     self._validate_selection(selection, skill, observe, guard, read_resources())
