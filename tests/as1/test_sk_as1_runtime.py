@@ -149,9 +149,10 @@ class AS1RuntimeAcceptance(unittest.TestCase):
         (self.root / 'refs/router.md').write_text('Read prerequisite.md before selecting\n')
         backend = ScriptedBackend([final('fabricated selection', skill_selection=self.selection())])
         result = self.worker(backend).run(self.request(mode='skill',
-                            skill={'name': 'tiny', 'root': str(self.root)}))
+                            skill={'name': 'tiny', 'root': str(self.root)}, max_steps=1))
         self.assertIn(result['status'], ('partial', 'failed'))
         self.assertNotIn('skill_selection', result)
+        self.assertEqual(result['observations'][-1]['validation_error'], 'skill_installed_entry_not_read_agentically')
 
     @pytest.mark.as1_case('RUN-01')
     def test_skill_cannot_select_unread_nested_route_via_final_validation(self):
@@ -164,9 +165,10 @@ class AS1RuntimeAcceptance(unittest.TestCase):
                                              'cwd': str(self.root)}},
             final('unread nested selection', skill_selection=self.selection('refs/prerequisite.md'))])
         result = self.worker(backend).run(self.request(mode='skill',
-                            skill={'name': 'tiny', 'root': str(self.root)}))
+                            skill={'name': 'tiny', 'root': str(self.root)}, max_steps=2))
         self.assertIn(result['status'], ('partial', 'failed'))
         self.assertNotIn('skill_selection', result)
+        self.assertEqual(result['observations'][-1]['validation_error'], 'skill_selected_resource_not_read_agentically')
 
     @pytest.mark.as1_case('RUN-01')
     def test_forbidden_tools_cannot_reach_injected_authority(self):

@@ -151,14 +151,14 @@ def test_total_message_request_budget_counts_history_and_system(fixture):
 
 def test_oversized_result_omission_preserves_exact_accepted_call(fixture):
     root, runner, packets, checkpoints, worker = fixture
-    call = {'tool': 'command', 'arguments': {'argv': ['/usr/bin/python3', '-c', 'print("x" * 18000)'],
-        'cwd': str(root), 'max_output_bytes': 20000}}
+    call = {'tool': 'command', 'arguments': {'argv': ['/usr/bin/python3', '-c', 'print("x" * 40000)'],
+        'cwd': str(root), 'max_output_bytes': 45000}}
     result = worker(Backend([call])).run(request(max_steps=1))
     observation = result['observations'][0]
     assert result['reason'] == 'step_budget_exhausted'
     assert observation['public_tool_call'] == call and observation['packet_id']
     assert 'stdout' not in observation and observation['omissions']
-    assert len(json.dumps(observation).encode()) <= 16384
+    assert len(json.dumps(observation).encode()) <= 32768
     assert checkpoints[-1] == result['observations']
 
 

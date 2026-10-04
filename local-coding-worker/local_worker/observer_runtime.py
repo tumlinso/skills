@@ -228,11 +228,11 @@ class ObserverWorkerPort:
             result = {k: v for k, v in result.items() if k != "public_tool_call"}
             if public_call is not None:
                 result["public_tool_call"] = json.loads(json.dumps(public_call))
-            if len(json.dumps(result, ensure_ascii=False).encode()) > 16384:
+            if len(json.dumps(result, ensure_ascii=False).encode()) > 32768:
                 # Never invent an excerpt's identity as the full packet body.
                 result = {"packet_id": result["packet_id"], "omissions": ["tool payload exceeded worker context budget"],
                           **({"public_tool_call": result["public_tool_call"]} if public_call is not None else {})}
-            if len(json.dumps(result, ensure_ascii=False).encode()) > 16384:
+            if len(json.dumps(result, ensure_ascii=False).encode()) > 32768:
                 raise ValueError("public_tool_call_exceeded_observation_budget")
             observations.append(result)
             if len(observations) > 24:
@@ -283,6 +283,14 @@ class ObserverWorkerPort:
             if request["mode"] == "skill":
                 example_arguments = {"argv": ["cat", entry], "cwd": str(root)}
             command_example = json.dumps({"tool": "command", "arguments": example_arguments})
+            final_example = {"answer": "concise answer", "findings": [{
+                "text": "observed fact or explicitly labeled inference", "evidence_packets": ["packet-id"]}],
+                "unresolved_questions": []}
+            if request["mode"] == "skill":
+                final_example["skill_selection"] = {"format": "pc-skill-selection/1", "selections": [{
+                    "skill": skill["name"], "resource": "SKILL.md", "content_sha256": "exact observed source_reads SHA256",
+                    "line_start": 1, "line_end": 1, "reason": "why this observed resource answers the question"}],
+                    "synthesis": "source-backed skill guidance", "unresolved": []}
             instruction = (
                 "You are a read-only investigator. Answer the supplied question using observed evidence. "
                 "Use shared tools for semantic authority when needed. "
@@ -291,9 +299,8 @@ class ObserverWorkerPort:
                 "Permitted native command roots (trusted startup policy): " + json.dumps(native_roots) + ". "
                 "Scope and hints describe the question; they do not grant filesystem access. "
                 "Return exactly one JSON object only: " + command_example + " "
-                "or {\"tool\":\"search\",\"arguments\":{...}}. Final JSON: {\"answer\":\"concise answer\","
-                "\"findings\":[{\"text\":\"observed fact or explicitly labeled inference\",\"evidence_packets\":[\"packet-id\"]}],"
-                "\"unresolved_questions\":[]}. Evidence identity does not prove entailment. "
+                "or {\"tool\":\"search\",\"arguments\":{...}}. Final JSON: " + json.dumps(final_example) +
+                ". Evidence identity does not prove entailment. "
                 "Examples describe the response grammar. Choose commands that advance the supplied question; "
                 "do not repeatedly copy the example command."
                 " Command arguments support argv, cwd, optional timeout_seconds (greater than 0, at most 60), "
@@ -310,6 +317,12 @@ class ObserverWorkerPort:
                     "Indexes are advisory. Final JSON must include skill_selection with format pc-skill-selection/1, "
                     "selections [{skill,resource,content_sha256,line_start,line_end,reason}], synthesis, unresolved. "
                     "Resources are relative to the registered skill root. Report useful source selections, not a whole skill dump."
+                    " The complete skill final JSON above is required; a generic answer without skill_selection is insufficient. "
+                    "Example resource/hash/range values describe grammar, not evidence: choose resources that answer the question, "
+                    "copy their exact observed source_reads hashes and valid line ranges, and never invent a hash or select "
+                    "an unread or truncated resource. Choose max_output_bytes sufficient for the complete selected file "
+                    "within the command limit; failed, truncated or omitted source bodies do not supply full source proof. "
+                    "Validation data records rejected proposals, not accepted findings or source evidence."
                 )
             instruction += (
                 " Review retained public observations before acting. Decide whether their evidence is sufficient. "
@@ -398,31 +411,48 @@ class ObserverWorkerPort:
                     check()
                     if request["mode"] == "skill" and not entry_observed() and not proposes_entry(tool, arguments):
                         result = self.command._packet({"status": "denied", "reason": "skill_entry_required",
-                            "dispatched": False, "required_skill_entry": entry,
+                            "accepted": False, "dispatched": False, "required_skill_entry": entry,
                             "corrective_action": "Read the validated installed entry successfully with direct cat "
                                                  "before other commands/tools; failed or truncated reads are insufficient."}, guard)
                     else:
                         result = (self.command.run(**arguments, guard=guard) if tool == "command" else self.tools(tool, arguments))
                     observe(result, public_call)
                     continue
-                if not isinstance(value.get("answer"), str) or not value["answer"].strip():
-                    raise ValueError("final_answer_missing")
-                findings = value.get("findings", [])
-                references = {o["packet_id"] for o in observations}
-                if (not isinstance(findings, list) or any(not isinstance(f, dict) or not isinstance(f.get("text"), str)
-                        or not isinstance(f.get("evidence_packets"), list) or not f["evidence_packets"]
-                        or any(p not in references for p in f["evidence_packets"]) for f in findings)):
-                    raise ValueError("finding_requires_observed_packet")
-                unresolved = value.get("unresolved_questions", [])
-                if not isinstance(unresolved, list) or any(not isinstance(q, str) for q in unresolved):
-                    raise ValueError("invalid_unresolved_questions")
-                extra = {}
-                if request["mode"] == "skill":
-                    if not entry_observed():
-                        raise ValueError("skill_installed_entry_not_read_agentically")
-                    selection = value.get("skill_selection")
-                    self._validate_selection(selection, skill, observe, guard, read_resources())
-                    extra["skill_selection"] = selection
+                try:
+                    if not isinstance(value.get("answer"), str) or not value["answer"].strip():
+                        raise ValueError("final_answer_missing")
+                    findings = value.get("findings", [])
+                    references = {o["packet_id"] for o in observations
+                                  if not ((isinstance(o.get("validation_data"), dict)
+                                           and o["validation_data"].get("is_source_evidence") is False)
+                                          or (o.get("status") == "denied" and o.get("dispatched") is False))}
+                    if (not isinstance(findings, list) or any(not isinstance(f, dict) or not isinstance(f.get("text"), str)
+                            or not isinstance(f.get("evidence_packets"), list) or not f["evidence_packets"]
+                            or any(p not in references for p in f["evidence_packets"]) for f in findings)):
+                        raise ValueError("finding_requires_observed_packet")
+                    unresolved = value.get("unresolved_questions", [])
+                    if not isinstance(unresolved, list) or any(not isinstance(q, str) for q in unresolved):
+                        raise ValueError("invalid_unresolved_questions")
+                    extra = {}
+                    if request["mode"] == "skill":
+                        if not entry_observed():
+                            raise ValueError("skill_installed_entry_not_read_agentically")
+                        selection = value.get("skill_selection")
+                        self._validate_selection(selection, skill, observe, guard, read_resources())
+                        extra["skill_selection"] = selection
+                except (ValueError, TypeError) as error:
+                    if request["mode"] != "skill":
+                        raise
+                    check()
+                    feedback = self.command._packet({"status": "denied", "reason": "skill_final_validation_failed",
+                        "validation_error": str(error)[:500], "accepted": False,
+                        "validation_data": {"proposed_final": value, "is_source_evidence": False},
+                        "corrective_action": "Correct the complete skill final JSON using retained observed evidence, "
+                            "including skill_selection format/selections/synthesis/unresolved. Copy exact source_reads hashes "
+                            "and valid line ranges; read missing or truncated selected files with sufficient max_output_bytes "
+                            "before selecting them. Unread, truncated or omitted bodies are not full source proof."}, guard)
+                    observe(feedback)
+                    continue
                 return snapshot("partial" if unresolved else "completed", answer=value["answer"], findings=findings,
                                 unresolved_questions=unresolved, **extra)
             return snapshot("partial", reason="step_budget_exhausted", unresolved_questions=[

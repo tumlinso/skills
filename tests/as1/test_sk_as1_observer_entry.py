@@ -119,11 +119,13 @@ def test_failed_or_truncated_entry_cannot_route_or_finalize_and_is_retained(fixt
         return cat(resource, root)
     backend = Backend([proposed, blocked_route, skill_final(root)])
     with patch.object(runner, 'run', wraps=runner.run) as dispatched:
-        result = worker(backend).run(skill_request(root))
+        result = worker(backend).run(skill_request(root, max_steps=3))
     assert dispatched.call_count == 1
-    assert result['status'] == 'partial' and result['reason'] == 'skill_installed_entry_not_read_agentically'
+    assert result['status'] == 'partial' and result['reason'] == 'step_budget_exhausted'
+    assert result['observations'][-1]['validation_error'] == 'skill_installed_entry_not_read_agentically'
+    assert result['observations'][-1]['accepted'] is False
     assert 'skill_selection' not in result and 'answer' not in result
-    assert len(result['observations']) == len(checkpoints) == 2
+    assert len(result['observations']) == len(checkpoints) == 3
     assert result['observations'][0]['public_tool_call'] == proposed
     assert result['observations'][1]['status'] == 'denied'
     assert not any(observation.get('source_reads') for observation in result['observations'])
