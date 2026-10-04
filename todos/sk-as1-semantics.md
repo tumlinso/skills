@@ -1,16 +1,18 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-SEMANTICS: Extend canonical semantic and mutation contracts
 
-Task revision: `888`; current project revision is in `todo-status.md`.
+Task revision: `893`; current project revision is in `todo-status.md`.
 
 ## Objective
 Supply durable project declarations/skill usage/orientation and typed amendments through the existing Todo authority.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.

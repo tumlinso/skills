@@ -1,0 +1,54 @@
+{
+  "format": "pc-as1-producer-receipt/1",
+  "producer_project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
+  "producer_task_id": "SK-AS1-SEMANTICS",
+  "gate_ids": [
+    "SK-AS1-SEMANTICS-ACCEPT"
+  ],
+  "source_identity": {
+    "commit": "94d07da9a1d865cdaf76f567a5060d05aae8cbae",
+    "completion_revision": 893,
+    "gate_evidence_id": "ca37839b-c7a1-4528-b8c5-c06c2f759fa5",
+    "feature_migration": 12,
+    "canonical_runtime_cutover": "pending"
+  },
+  "contract_hashes": {
+    "todo-orchestrator/todo_orchestrator/project_amendments.py": "e04806f43f972f76abb8eeac3ecef880389dcf244587da522c5d744fd26f5d77",
+    "todo-orchestrator/docs/project-amendments.md": "bb8f959b045fe6a49082995c98912cb71465a01416a1b0e5beeff2d3013b6ea6",
+    "tests/as1/test_sk_as1_semantics.py": "2e2094dea9cfd72fafa2eaa922bafa7a7b596209d89ba87154b96474b09a9f27"
+  },
+  "artifact_locators": [
+    {
+      "project": "skills",
+      "repository": "skills",
+      "path": "todo-orchestrator/todo_orchestrator/project_amendments.py",
+      "content_sha256": "e04806f43f972f76abb8eeac3ecef880389dcf244587da522c5d744fd26f5d77",
+      "revision": null,
+      "line_start": null,
+      "line_end": null,
+      "worktree": null
+    },
+    {
+      "project": "skills",
+      "repository": "skills",
+      "path": "todo-orchestrator/docs/project-amendments.md",
+      "content_sha256": "bb8f959b045fe6a49082995c98912cb71465a01416a1b0e5beeff2d3013b6ea6",
+      "revision": null,
+      "line_start": null,
+      "line_end": null,
+      "worktree": null
+    },
+    {
+      "project": "skills",
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_semantics.py",
+      "content_sha256": "2e2094dea9cfd72fafa2eaa922bafa7a7b596209d89ba87154b96474b09a9f27",
+      "revision": null,
+      "line_start": null,
+      "line_end": null,
+      "worktree": null
+    }
+  ],
+  "checked_at": "2026-10-04T18:06:28.637523+00:00",
+  "status": "passed"
+}

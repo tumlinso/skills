@@ -1,7 +1,9 @@
+
+
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-QUALIFY: Qualify kernel, worker, CUDA and native-skill interoperation
 
-Task revision: `888`; current project revision is in `todo-status.md`.
+Task revision: `889`; current project revision is in `todo-status.md`.
 
 ## Objective
 Produce a paired Skills qualification receipt usable by Project Control without merging authorities.

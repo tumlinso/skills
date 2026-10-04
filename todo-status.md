@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `888`
+Project revision: `894`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -85,8 +85,8 @@ Project revision: `888`
 - `SK-AS1-QUALIFY` | status: planned | execution: ready | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-ROUTING` | status: planned | execution: ready | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-RUNTIME` | status: planned | execution: ready | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-SEMANTICS` | status: planned | execution: ready | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-RUNTIME` | status: in_progress | execution: claimed | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-SEMANTICS` | status: done | execution: closed | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-PCE2-COLLABORATE` | status: planned | execution: ready | next: Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-MAINTAIN` | status: planned | execution: ready | next: Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-OPERATE` | status: in_progress | execution: idle | next: Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
