@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-SOURCE-FENCE: Enforce trusted source verifier for local publication anchors
 
-Task revision: `916`; current project revision is in `todo-status.md`.
+Task revision: `928`; current project revision is in `todo-status.md`.
 
 ## Objective
 Close the reproduced local-source callback bypass during claim-scoped publication, preserving native fallback only when no trusted verifier is configured.

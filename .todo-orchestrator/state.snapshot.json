@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T20:26:44Z",
+  "generated_at": "2026-10-04T21:17:49Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 927,
+  "project_revision": 929,
   "schema_version": 2,
   "snapshot_version": 3,
   "tables": {
@@ -9721,6 +9721,26 @@
         "revision": 927,
         "seq": 927,
         "timestamp": "2026-10-04T20:26:44Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/controller/skills.capability-publication-amendment.json\"}",
+        "revision": 928,
+        "seq": 928,
+        "timestamp": "2026-10-04T21:17:49Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-L-CAPABILITY-PUBLICATION",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-L-CAPABILITY-PUBLICATION\", \"run_id\": \"SK-AS1-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-CAPABILITY-PUBLICATION\"}",
+        "revision": 929,
+        "seq": 929,
+        "timestamp": "2026-10-04T21:17:49Z"
       }
     ],
     "evidence": [
@@ -13160,12 +13180,38 @@
       },
       {
         "checkpoint_id": null,
+        "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"-m\", \"pytest\", \"todo-orchestrator/tests/test_as1_capability_publication.py\", \"-q\"], \"cwd\": \".\", \"input_paths\": [\"todo-orchestrator/todo_orchestrator/workflow\", \"todo-orchestrator/todo_orchestrator/service.py\", \"todo-orchestrator/todo_orchestrator/project_amendments.py\", \"todo-orchestrator/tests/test_as1_capability_publication.py\", \"docs/as1-capability-publication.md\"], \"timeout\": 1200, \"track_git_head\": false}",
+        "id": "SK-AS1-CAPABILITY-PUBLICATION-ACCEPT",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 928,
+        "status": "pending",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION",
+        "type": "command",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
+        "config_json": "{\"status\": \"done\", \"task_id\": \"SK-AS1-CAPABILITY-PUBLICATION\"}",
+        "id": "SK-AS1-CAPABILITY-PUBLICATION-CLOSURE",
+        "input_fingerprint": null,
+        "last_run_at": null,
+        "required": 1,
+        "revision": 928,
+        "status": "pending",
+        "task_id": "SK-AS1-0000",
+        "type": "task_state",
+        "valid": 0
+      },
+      {
+        "checkpoint_id": null,
         "config_json": "{\"argv\": [\"/home/tumlinson/project-control/.venv/bin/python\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"--outcome\", \"SK-AS1-GPU\"], \"cwd\": \".\", \"input_paths\": [\"cuda/scripts\", \"cuda/tests\", \"local-coding-worker\", \"tests/as1\", \"planning/adaptive-surface-v1/contracts\", \"planning/adaptive-surface-v1/scripts/acceptance_gate.py\", \"todo-orchestrator/todo_orchestrator/background/host.py\", \"todo-orchestrator/todo_orchestrator/runtime/facade.py\"], \"timeout\": 1200, \"track_git_head\": false}",
         "id": "SK-AS1-GPU-ACCEPT",
         "input_fingerprint": "02ec3873d8a2df7bbd1a2986ce726661261228584cea631c1610d6081390a43e",
         "last_run_at": "2026-10-04T20:15:36Z",
         "required": 1,
-        "revision": 922,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-GPU",
         "type": "command",
@@ -13178,7 +13224,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13191,7 +13237,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-QUALIFY",
         "type": "command",
@@ -13204,7 +13250,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13217,7 +13263,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-RELEASE",
         "type": "command",
@@ -13230,7 +13276,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13243,7 +13289,7 @@
         "input_fingerprint": "4737d1415d03c32dcf24537459a784af632b9fa8afae0bd365a73b4579332daf",
         "last_run_at": "2026-10-04T20:26:44Z",
         "required": 1,
-        "revision": 926,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-ROUTING",
         "type": "command",
@@ -13256,7 +13302,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13269,7 +13315,7 @@
         "input_fingerprint": "494190cbaa403e11ef6a964efb14c3f636ad0113752443b82905f735016e1ab1",
         "last_run_at": "2026-10-04T18:18:47Z",
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-RUNTIME",
         "type": "command",
@@ -13282,7 +13328,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13295,7 +13341,7 @@
         "input_fingerprint": "e19403cbdeb6c7900a69b50298cd8c87100462a47ab2740e2b46121a2599cb42",
         "last_run_at": "2026-10-04T19:37:12Z",
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTIC-PORT",
         "type": "command",
@@ -13308,7 +13354,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13321,7 +13367,7 @@
         "input_fingerprint": "abe42f33e7709566bb6ea90b19dc86773138864435cf1ff204f9e6b45bd73eeb",
         "last_run_at": "2026-10-04T17:52:53Z",
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-SEMANTICS",
         "type": "command",
@@ -13334,7 +13380,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13347,7 +13393,7 @@
         "input_fingerprint": "8c0b69f44d9a498be237bcdf2d6f118a00547c772a2c8b1d4a249336ccac872f",
         "last_run_at": "2026-10-04T19:59:01Z",
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-SOURCE-FENCE",
         "type": "command",
@@ -13360,7 +13406,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -13373,7 +13419,7 @@
         "input_fingerprint": "a128d4bf3127239fdb11d3b1c3ee3e6d60dfa4e863c1fd9665d3508679fac508",
         "last_run_at": "2026-10-04T20:07:16Z",
         "required": 1,
-        "revision": 919,
+        "revision": 928,
         "status": "passed",
         "task_id": "SK-AS1-SOURCE-FRESHNESS",
         "type": "command",
@@ -13386,7 +13432,7 @@
         "input_fingerprint": null,
         "last_run_at": null,
         "required": 1,
-        "revision": 916,
+        "revision": 928,
         "status": "pending",
         "task_id": "SK-AS1-0000",
         "type": "task_state",
@@ -16497,6 +16543,41 @@
         "mode": "read",
         "path": "planning/adaptive-surface-v1",
         "task_id": "SK-AS1-0000"
+      },
+      {
+        "mode": "exclusive",
+        "path": "docs/as1-capability-publication.md",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/tests/test_as1_capability_publication.py",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/project_amendments.py",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/service.py",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "exclusive",
+        "path": "todo-orchestrator/todo_orchestrator/workflow",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "read",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
+        "mode": "read",
+        "path": "todo-orchestrator/todo_orchestrator/workflow",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
       },
       {
         "mode": "exclusive",
@@ -20258,7 +20339,18 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 943,
+        "id": 952,
+        "interface_id": null,
+        "prerequisite_task_id": "SK-AS1-SOURCE-FRESHNESS",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION",
+        "type": "task"
+      },
+      {
+        "barrier_id": null,
+        "checkpoint_id": null,
+        "condition_json": "{}",
+        "decision_id": null,
+        "id": 953,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-RUNTIME",
         "task_id": "SK-AS1-GPU",
@@ -20269,7 +20361,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 944,
+        "id": 954,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-ROUTING",
         "task_id": "SK-AS1-QUALIFY",
@@ -20280,7 +20372,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 945,
+        "id": 955,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-QUALIFY",
         "task_id": "SK-AS1-RELEASE",
@@ -20291,7 +20383,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 946,
+        "id": 956,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-ROUTING",
@@ -20302,7 +20394,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 947,
+        "id": 957,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-GPU",
         "task_id": "SK-AS1-ROUTING",
@@ -20313,7 +20405,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 948,
+        "id": 958,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-RUNTIME",
@@ -20324,7 +20416,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 949,
+        "id": 959,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTICS",
         "task_id": "SK-AS1-SEMANTIC-PORT",
@@ -20335,7 +20427,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 950,
+        "id": 960,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SEMANTIC-PORT",
         "task_id": "SK-AS1-SOURCE-FENCE",
@@ -20346,7 +20438,7 @@
         "checkpoint_id": null,
         "condition_json": "{}",
         "decision_id": null,
-        "id": 951,
+        "id": 961,
         "interface_id": null,
         "prerequisite_task_id": "SK-AS1-SOURCE-FENCE",
         "task_id": "SK-AS1-SOURCE-FRESHNESS",
@@ -23534,12 +23626,37 @@
         "priority": 0,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "planned",
         "tags_json": "[]",
         "title": "AS1 skills: consolidated adaptive helper surface",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 8
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 9
+      },
+      {
+        "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-04T21:17:49Z",
+        "id": "SK-AS1-CAPABILITY-PUBLICATION",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.",
+        "notes": "",
+        "objective": "Expose a supported authenticated canonical publication port without raw claim credential recovery, preserving role/operation/repository/task/source authorization and generic context fragment behavior.",
+        "parallel_policy": "parallel_safe",
+        "parent_id": "SK-AS1-0000",
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
+        "revision": 929,
+        "status": "in_progress",
+        "tags_json": "[]",
+        "title": "Connect canonical opaque workflow handles to scoped semantic publication",
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 2
       },
       {
         "attention_reason": null,
@@ -23559,12 +23676,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 923,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Make warm observer models reclaimable by foreground work",
-        "updated_at": "2026-10-04T20:15:36Z",
-        "version": 10
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -23584,12 +23701,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "planned",
         "tags_json": "[]",
         "title": "Qualify kernel, worker, CUDA and native-skill interoperation",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 8
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -23609,12 +23726,12 @@
         "priority": 100,
         "result": null,
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "planned",
         "tags_json": "[]",
         "title": "Pin the qualified standalone release in Skills",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 8
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 9
       },
       {
         "attention_reason": null,
@@ -23634,12 +23751,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 927,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Make native skills role-efficient and preserve corpus routing",
-        "updated_at": "2026-10-04T20:26:44Z",
-        "version": 10
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -23659,12 +23776,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Adapt the existing local service for read-only scout modes",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 10
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -23684,12 +23801,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Complete trusted semantic verification and idempotent control ports",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 7
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 8
       },
       {
         "attention_reason": null,
@@ -23709,12 +23826,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Extend canonical semantic and mutation contracts",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 10
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 11
       },
       {
         "attention_reason": null,
@@ -23734,12 +23851,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 916,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Enforce trusted source verifier for local publication anchors",
-        "updated_at": "2026-10-04T20:02:53Z",
-        "version": 4
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -23759,12 +23876,12 @@
         "priority": 100,
         "result": "validated",
         "result_policy_json": "{\"allowed_dispositions\": [\"validated\", \"no_change_required\"]}",
-        "revision": 920,
+        "revision": 928,
         "status": "done",
         "tags_json": "[]",
         "title": "Preserve local content freshness after source-backed amendments",
-        "updated_at": "2026-10-04T20:07:16Z",
-        "version": 3
+        "updated_at": "2026-10-04T21:17:49Z",
+        "version": 4
       },
       {
         "attention_reason": null,
@@ -25831,6 +25948,23 @@
         "version": 1
       },
       {
+        "content_hash": "4fb7af54409da89fe7e62118e88c509d9d193f91167980469bd3575acf235dd2",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-CAPABILITY-PUBLICATION\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-04T21:17:49Z",
+        "creation_revision": 928,
+        "id": "SK-AS1-RUN-1:lane_brief:SK-AS1-L-CAPABILITY-PUBLICATION:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-L-CAPABILITY-PUBLICATION",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-CAPABILITY-PUBLICATION\",\"run_id\":\"SK-AS1-RUN-1\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
         "content_hash": "442f396261c4c49c24f9ecb5eb62635d938b503b4162bbd0f2c81399e67a1f37",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-SEMANTICS\",\"SK-AS1-RUNTIME\",\"SK-AS1-GPU\",\"SK-AS1-ROUTING\",\"SK-AS1-QUALIFY\",\"SK-AS1-RELEASE\",\"SK-AS1-0000\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-10-04T17:21:33Z",
@@ -25916,6 +26050,23 @@
         "version": 1
       },
       {
+        "content_hash": "13eaa790c1fc38c822131067c4278bf39b8e19775a356abd46c0565cc96c9bec",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-CAPABILITY-PUBLICATION-ACCEPT\"],\"next_action\":\"Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.\",\"objective\":\"Expose a supported authenticated canonical publication port without raw claim credential recovery, preserving role/operation/repository/task/source authorization and generic context fragment behavior.\",\"scope\":{\"exclusive_paths\":[\"todo-orchestrator/todo_orchestrator/workflow\",\"todo-orchestrator/todo_orchestrator/service.py\",\"todo-orchestrator/todo_orchestrator/project_amendments.py\",\"todo-orchestrator/tests/test_as1_capability_publication.py\",\"docs/as1-capability-publication.md\"],\"read_paths\":[\"planning/adaptive-surface-v1\",\"todo-orchestrator/todo_orchestrator/workflow\"]},\"tests\":[\"SK-AS1-CAPABILITY-PUBLICATION-ACCEPT\"]}",
+        "created_at": "2026-10-04T21:17:49Z",
+        "creation_revision": 928,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-CAPABILITY-PUBLICATION:SK-AS1-CAPABILITY-PUBLICATION:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-CAPABILITY-PUBLICATION",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-CAPABILITY-PUBLICATION\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-CAPABILITY-PUBLICATION\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION",
+        "version": 1
+      },
+      {
         "content_hash": "6a45a431568278561699b7deab6066c48ee53c636e2e2978432d114a73b851d7",
         "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\"]}",
         "created_at": "2026-10-04T17:21:33Z",
@@ -25972,6 +26123,23 @@
         "created_at": "2026-10-04T20:02:53Z",
         "creation_revision": 916,
         "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:4",
+        "invalidated_at": "2026-10-04T21:17:49Z",
+        "invalidation_revision": 928,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-L-EXEC",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-L-EXEC\",\"run_id\":\"SK-AS1-RUN-1\",\"task_id\":\"SK-AS1-0000\"}",
+        "run_id": "SK-AS1-RUN-1",
+        "series_key": "",
+        "superseded_by": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:5",
+        "task_id": "SK-AS1-0000",
+        "version": 4
+      },
+      {
+        "content_hash": "cdc33cda2365973045cc44ba1eeeb5d9fa66b1d3f54d935963fcddf5a009dcea",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\",\"SK-AS1-SOURCE-FRESHNESS-CLOSED\",\"SK-AS1-CAPABILITY-PUBLICATION-CLOSURE\"],\"next_action\":\"Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.\",\"objective\":\"Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.\",\"scope\":{\"exclusive_paths\":[\"planning/adaptive-surface-v1\"],\"read_paths\":[\"planning/adaptive-surface-v1\"]},\"tests\":[\"SK-AS1-SEMANTICS-CLOSED\",\"SK-AS1-RUNTIME-CLOSED\",\"SK-AS1-GPU-CLOSED\",\"SK-AS1-ROUTING-CLOSED\",\"SK-AS1-QUALIFY-CLOSED\",\"SK-AS1-RELEASE-CLOSED\",\"SK-AS1-SEMANTIC-PORT-CLOSED\",\"SK-AS1-SOURCE-FENCE-CLOSED\",\"SK-AS1-SOURCE-FRESHNESS-CLOSED\",\"SK-AS1-CAPABILITY-PUBLICATION-CLOSURE\"]}",
+        "created_at": "2026-10-04T21:17:49Z",
+        "creation_revision": 928,
+        "id": "SK-AS1-RUN-1:task_brief:SK-AS1-L-EXEC:SK-AS1-0000:5",
         "invalidated_at": null,
         "invalidation_revision": null,
         "kind": "task_brief",
@@ -25981,7 +26149,7 @@
         "series_key": "",
         "superseded_by": null,
         "task_id": "SK-AS1-0000",
-        "version": 4
+        "version": 5
       },
       {
         "content_hash": "902fafe9bb4021bcd4cb93f524fd1b4fe4263156fe694dac9921dd054ef410ba",
@@ -27774,12 +27942,22 @@
         "task_id": "PCU-SK-30"
       },
       {
+        "activated_at": "2026-10-04T21:17:49Z",
+        "completed_at": null,
+        "enqueued_at": "2026-10-04T21:17:49Z",
+        "lane_id": "SK-AS1-L-CAPABILITY-PUBLICATION",
+        "position": 0,
+        "revision": 929,
+        "state": "active",
+        "task_id": "SK-AS1-CAPABILITY-PUBLICATION"
+      },
+      {
         "activated_at": "2026-10-04T17:35:53Z",
         "completed_at": "2026-10-04T17:52:53Z",
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 0,
-        "revision": 916,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTICS"
       },
@@ -27789,7 +27967,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 1,
-        "revision": 916,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-RUNTIME"
       },
@@ -27799,7 +27977,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 2,
-        "revision": 923,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-GPU"
       },
@@ -27809,7 +27987,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 3,
-        "revision": 927,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-ROUTING"
       },
@@ -27819,7 +27997,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 4,
-        "revision": 916,
+        "revision": 928,
         "state": "queued",
         "task_id": "SK-AS1-QUALIFY"
       },
@@ -27829,7 +28007,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 5,
-        "revision": 916,
+        "revision": 928,
         "state": "queued",
         "task_id": "SK-AS1-RELEASE"
       },
@@ -27839,7 +28017,7 @@
         "enqueued_at": "2026-10-04T17:21:33Z",
         "lane_id": "SK-AS1-L-EXEC",
         "position": 6,
-        "revision": 916,
+        "revision": 928,
         "state": "queued",
         "task_id": "SK-AS1-0000"
       },
@@ -27849,7 +28027,7 @@
         "enqueued_at": "2026-10-04T19:13:03Z",
         "lane_id": "SK-AS1-L-SEMANTIC-CONTROL",
         "position": 0,
-        "revision": 916,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-SEMANTIC-PORT"
       },
@@ -27869,7 +28047,7 @@
         "enqueued_at": "2026-10-04T19:52:12Z",
         "lane_id": "SK-AS1-L-SOURCE-FENCE",
         "position": 0,
-        "revision": 916,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-SOURCE-FENCE"
       },
@@ -27879,7 +28057,7 @@
         "enqueued_at": "2026-10-04T20:02:53Z",
         "lane_id": "SK-AS1-L-SOURCE-FRESHNESS",
         "position": 0,
-        "revision": 920,
+        "revision": 928,
         "state": "completed",
         "task_id": "SK-AS1-SOURCE-FRESHNESS"
       },
@@ -28647,14 +28825,26 @@
       },
       {
         "context_cursor": 0,
+        "created_at": "2026-10-04T21:17:49Z",
+        "id": "SK-AS1-L-CAPABILITY-PUBLICATION",
+        "parent_lane_id": "SK-AS1-L-EXEC",
+        "revision": 929,
+        "role": "implementer",
+        "run_id": "SK-AS1-RUN-1",
+        "state": "active",
+        "updated_at": "2026-10-04T21:17:49Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-10-04T17:21:33Z",
         "id": "SK-AS1-L-EXEC",
         "parent_lane_id": null,
-        "revision": 927,
+        "revision": 928,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "ready",
-        "updated_at": "2026-10-04T20:26:44Z",
+        "updated_at": "2026-10-04T21:17:49Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28662,11 +28852,11 @@
         "created_at": "2026-10-04T19:13:03Z",
         "id": "SK-AS1-L-SEMANTIC-CONTROL",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 916,
+        "revision": 928,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T20:02:53Z",
+        "updated_at": "2026-10-04T21:17:49Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28686,11 +28876,11 @@
         "created_at": "2026-10-04T19:52:12Z",
         "id": "SK-AS1-L-SOURCE-FENCE",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 916,
+        "revision": 928,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T20:02:53Z",
+        "updated_at": "2026-10-04T21:17:49Z",
         "workspace_mode": "exclusive"
       },
       {
@@ -28698,11 +28888,11 @@
         "created_at": "2026-10-04T20:02:53Z",
         "id": "SK-AS1-L-SOURCE-FRESHNESS",
         "parent_lane_id": "SK-AS1-L-EXEC",
-        "revision": 920,
+        "revision": 928,
         "role": "implementer",
         "run_id": "SK-AS1-RUN-1",
         "state": "closed",
-        "updated_at": "2026-10-04T20:07:16Z",
+        "updated_at": "2026-10-04T21:17:49Z",
         "workspace_mode": "exclusive"
       },
       {
