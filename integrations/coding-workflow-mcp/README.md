@@ -12,10 +12,17 @@ When Project Control is genuinely absent, old installations retain a bounded
 fallback which constructs Todo Orchestrator's canonical six-tool adapter. An
 installed-but-broken Project Control fails closed and never activates fallback.
 
-The discovered MCP surface is exactly `next_task`, `inspect_task`,
-`coordinate_task`, `delegate_task`, `collect_delegation`, and `finish_task`.
+The Skills-owned compatibility fallback discovers `next_task`, `inspect_task`,
+`coordinate_task`, and `finish_task`. Its native routing guard omits and rejects
+`delegate_task` and `collect_delegation` as temporarily inactive while preserving
+internal implementations. Ordinary delegation uses configured Codex subagents;
+local workers serve read-only observers. The preferred installed Project Control
+CLI still forwards `serve codex`; its deployed discovery/dispatch and final public
+surface are separately qualified by PC-SURFACE/API-03/API-04 and paired SQA.
 Explicit gates use `coordinate_task(action="run_gates")`; required gates also
 run during completion. Recovery is out of band and uses no model-held approval.
+
+See [native skill routing](../native-skill-routing.md) for access and handoffs.
 
 ## Historical install and rollback
 

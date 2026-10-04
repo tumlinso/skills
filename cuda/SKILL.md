@@ -49,11 +49,26 @@ Retrieve only what the current decision needs:
 python <skill-dir>/scripts/cuda_controller.py evidence <id> --focus <topic> --json
 ```
 
-For guidance, prefer Project Control `skill_context(query="CUDA <architecture
-and question>", skill="auto")` to retrieve bounded sections and semantic links.
-Use `skill_read(skill_id=<returned CUDA ID>, resource=<returned path>)` for
-an explicit bounded follow-up read. The controller `guide` command remains
-a direct compatibility fallback.
+For guidance, native coder, mutator and scout agents read this installed
+`SKILL.md` through filesystem/command access, then follow
+`references/legacy-skill-router.md` to the architecture and narrow workload
+route. For V100 circuit questions, also follow the nested
+`references/architectures/volta/v100_atlas/START_HERE.md` and `NEED_INDEX.md`;
+retain prerequisites and evidence/uncertainty links. Do not inject an overview
+or send native roles through observer read/skill adapters.
+
+CUDA is the mandatory primary skill for actual GPU resource work. Use the
+existing controller foreground `run` interlock for testing/profiling/inference
+and coordinated GPU admission; environment masks alone are not reservations.
+The observer's target public adapter is `skill(query?, skill?, hints?, ...)`.
+Its agent reads installed instructions and maps; `skill_context` graphs and
+indexes only accelerate navigation and never replace skill routing authority.
+Project Control owns access, durability, freshness, direct authoritative reads
+and provenance. Public alias retirement and deployed profile qualification
+remain PC-SURFACE/API-03/API-04 consumer checks, not claims made by this guidance.
+The controller `guide` command remains a direct compatibility fallback.
+Publish materially applied routes with source identity alongside the ordinary
+context/handoff, following `../integrations/native-skill-routing.md`.
 Evidence summaries point to authoritative raw artifacts. Generated context views
 are read-only; edit canonical source only. The controller uses
 cpp-context-compiler for small semantic source slices and falls back to

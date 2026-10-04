@@ -1,9 +1,19 @@
 ---
 name: local-coding-worker
-description: Subordinate bounded child execution under exactly one active coding-workflow parent claim. Local workers return candidate findings or patches to the parent; they never become project agents, claim todos, receive run lanes or roles, communicate across lanes, join rendezvous, decide architecture, or complete parent tasks.
+description: Read-only Project Control observer and skill-mode adapter on the existing local model supervisor. Coding delegation is temporarily inactive on native model routing; internal maintenance contracts remain preserved.
 ---
 
 # Local Coding Worker
+
+## Native skill access
+
+Native coder, mutator and scout agents read installed `SKILL.md` and its
+references through filesystem/command access. Follow the skill's own routes;
+indexes and graphs accelerate navigation without becoming routing authority.
+No observer skill adapter or mandatory overview is needed for native use.
+Record materially applied guidance during the existing context/handoff flow,
+with skill hash and route relevance; a read alone remains merely consulted.
+See [native routing and handoff](../integrations/native-skill-routing.md).
 
 ## Read-only observer service
 
@@ -23,15 +33,17 @@ ordinary observer job path. Reactivation requires an explicit operator decision.
 
 ## Repository workflow
 
-For substantial repository work, use `coding-workflow`. Invoke this skill only
-through `delegate_task`, under an explicit bounded fallback authorization, for
-user-requested worker maintenance, or while coding-workflow itself is being
-debugged.
+For substantial repository work, use `project-control`. Ordinary delegated
+research, implementation, tests and review use configured Codex subagents.
+Local workers are reserved for read-only observers. The coding commands below
+are retained internal maintenance examples only: invoke them solely for explicit
+operator maintenance or supported bounded fallback authorization. An unavailable
+local worker does not authorize local coding delegation or model escalation.
 
 Use this skill only from an active todo parent claim. The parent retains task,
 gate, acceptance, commit, and push authority.
 
-Delegate through the single public command and consume its compact result:
+For explicitly authorized internal maintenance, the preserved CLI is:
 
 ```bash
 python <skill-dir>/scripts/local_worker.py delegate \
@@ -66,7 +78,8 @@ that was granted before the topology changed.
 
 ## Workflow
 
-1. Prefer the public `delegate` command above.
+1. Ordinary observer work uses the broker-facing read-only port. The preserved
+   coding CLI below is internal maintenance only.
 2. For compatibility-only read-only investigation, validate and run an `LCW-REQUEST/1` with
    `scripts/local_worker.py eligible|run`.
 3. For the complete fake-backend flow, run `scripts/local_worker.py integrate`
