@@ -43,7 +43,12 @@ SQLite copy, without writing the source authority.
 
 Qualification uses disposable actual native authorities with separately bound
 fixture child processes. The child identifies the actual Skills source root;
-it does not spoof or qualify the deployed runtime binding. The required gate is:
+it does not spoof or qualify the deployed runtime binding. The fixture child
+removes inherited `PROJECT_CONTROL_RELEASE_MANIFEST` and
+`PROJECT_CONTROL_RELEASE_DIGEST` deployment pins while preserving the parent
+environment. Its native runtime guard binds the actual source root, and the
+fixture verifies imported service, plan and amendment module paths and SHA256
+against the files being qualified. The required gate is:
 
 ```sh
 /home/tumlinson/project-control/.venv/bin/python -m pytest todo-orchestrator/tests/test_as1_foreign_source_port.py -q

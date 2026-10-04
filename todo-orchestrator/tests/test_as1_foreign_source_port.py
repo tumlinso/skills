@@ -1,5 +1,7 @@
 """Disposable native authorities in a source-bound child (no guard mocks)."""
 import os
+import hashlib
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -15,6 +17,16 @@ from todo_orchestrator.service import Service
 from todo_orchestrator.models import TodoError
 from todo_orchestrator.runtime_identity import bind_canonical_runtime
 identity = bind_canonical_runtime()
+import todo_orchestrator.service as service_module
+import todo_orchestrator.plan as plan_module
+import todo_orchestrator.project_amendments as amendments_module
+actual_source = {}
+for module in (service_module, plan_module, amendments_module):
+    source = Path(module.__file__).resolve()
+    assert source.parent == identity.package_root
+    actual_source[source.name] = hashlib.sha256(source.read_bytes()).hexdigest()
+assert actual_source == json.loads(os.environ['AS1_SOURCE_HASHES'])
+print(json.dumps({'fixture_module_sha256':actual_source}))
 print(json.dumps({'fixture_source': identity.public()}))
 repo = V2Repo()
 try:
@@ -127,8 +139,12 @@ def test_native_source_port(scenario):
     env = os.environ.copy()
     # A child fixture is independently bound to actual source. The deployed
     # parent binding is neither altered nor represented as qualifying this code.
-    for key in ('CODING_WORKFLOW_RUNTIME_FINGERPRINT', 'TODO_ORCHESTRATOR_STATE_DIR'):
+    for key in ('CODING_WORKFLOW_RUNTIME_FINGERPRINT', 'TODO_ORCHESTRATOR_STATE_DIR',
+                'PROJECT_CONTROL_RELEASE_MANIFEST', 'PROJECT_CONTROL_RELEASE_DIGEST'):
         env.pop(key, None)
+    source_hashes = {name: hashlib.sha256((ROOT/'todo_orchestrator'/name).read_bytes()).hexdigest()
+                     for name in ('service.py', 'plan.py', 'project_amendments.py')}
+    env['AS1_SOURCE_HASHES'] = json.dumps(source_hashes, sort_keys=True)
     env.update(PROJECT_CONTROL_SKILLS_ROOT=str(ROOT.parent), CODING_WORKFLOW_SKILLS_ROOT=str(ROOT.parent),
                PYTHONPATH=os.pathsep.join([str(ROOT), str(ROOT/'tests')]), AS1_SCENARIO=scenario,
                PYTHONDONTWRITEBYTECODE='1')
