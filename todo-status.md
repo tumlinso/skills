@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `933`
+Project revision: `941`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -83,7 +83,8 @@ Project revision: `933`
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | status: done | execution: closed | next: Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.
 - `SK-AS1-GPU` | status: done | execution: closed | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-QUALIFY` | status: planned | execution: ready | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-OBSERVER-PROGRESS` | status: done | execution: closed | next: Use native trusted runner roots for executable command example, terminal partial with unresolved reason on step budget exhaustion, actual installed-port fixtures and preemption regression; return qualified source pin for PCbroker.
+- `SK-AS1-QUALIFY` | status: in_progress | execution: claimed | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-ROUTING` | status: done | execution: closed | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RUNTIME` | status: done | execution: closed | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.

@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-CAPABILITY-PUBLICATION: Connect canonical opaque workflow handles to scoped semantic publication
 
-Task revision: `933`; current project revision is in `todo-status.md`.
+Task revision: `935`; current project revision is in `todo-status.md`.
 
 ## Objective
 Expose a supported authenticated canonical publication port without raw claim credential recovery, preserving role/operation/repository/task/source authorization and generic context fragment behavior.

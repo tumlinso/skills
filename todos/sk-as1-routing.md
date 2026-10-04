@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-ROUTING: Make native skills role-efficient and preserve corpus routing
 
-Task revision: `930`; current project revision is in `todo-status.md`.
+Task revision: `935`; current project revision is in `todo-status.md`.
 
 ## Objective
 Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
