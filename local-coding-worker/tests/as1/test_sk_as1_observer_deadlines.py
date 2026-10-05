@@ -346,3 +346,22 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
     assert result['findings'][0]['evidence_packets'] == ['packet-5']
     assert result['skill_selection']['selections'][0]['resource'] == 'needs.md'
     assert all('hidden' not in observation for observation in result['observations'])
+
+
+@pytest.mark.parametrize('budget', [6, 2])
+def test_initial_prompt_announces_actual_round_budget_and_reserved_final(tmp_path, budget):
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {'status': 'available', 'text': json.dumps({'answer': 'No further inquiry needed.', 'findings': []})}
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=lambda *a: pytest.fail('unexpected tool'), fence=lambda *a: True)
+    result = worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'Explain available evidence',
+                        'max_steps': budget})
+    assert result['status'] == 'completed'
+    assert len(turns) == 1
+    opening = turns[0]['messages'][0]['content']
+    assert f'You have {budget} model rounds total for this attempt.' in opening
+    assert 'Reserve the final round for final JSON synthesis of the evidence gathered so far' in opening
+    assert 'no further command or tool calls are permitted on that final round' in opening
