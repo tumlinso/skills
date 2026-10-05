@@ -32,13 +32,15 @@ def test_initial_cat_then_continuation_can_finish_without_source_reread(fixture)
     source.write_text('The public source value is 42.\n')
     def initial(turn):
         assert context(turn)['progress'] == {'stage': 'initial', 'observation_count': 0, 'remaining_steps': 6,
-            'allowed_observation_packet_ids': [], 'omitted_observation_packet_ids': []}
+            'allowed_observation_packet_ids': [], 'omitted_observation_packet_ids': [],
+            'input_omitted_observation_packet_ids': []}
         assert 'Start with command for source/files/Git relevant' in turn['messages'][1]['content']
         return {'tool': 'command', 'arguments': {'argv': ['cat', str(source)], 'cwd': str(root)}}
     def continuation(turn):
         public = context(turn)
         assert public['progress'] == {'stage': 'continuation', 'observation_count': 1, 'remaining_steps': 5,
-            'allowed_observation_packet_ids': ['command-packet-1'], 'omitted_observation_packet_ids': []}
+            'allowed_observation_packet_ids': ['command-packet-1'], 'omitted_observation_packet_ids': [],
+            'input_omitted_observation_packet_ids': []}
         instruction = turn['messages'][0]['content']
         assert 'Start with command' not in instruction
         assert 'If sufficient, return final JSON now' in instruction
