@@ -652,7 +652,6 @@ class ProductionBackend:
         server = self.profile["server"]
         port = self._free_port(int(server["base_port"]))
         binary = str(server["binary"])
-        version = self._version(binary, deadline_epoch) if deadline_epoch is not None else self._version(binary)
         service_profile = {
             "format": "CORE4-MODEL-SERVICE/2", "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
@@ -669,7 +668,7 @@ class ProductionBackend:
             "model_id": active["candidate_id"], "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
             "p2p_enabled": True, "topology_order": topology_order,
-            "binary": str(Path(binary).resolve()), "binary_version": version, "gpu_uuids": gpu_uuids,
+            "binary": str(Path(binary).resolve()), "binary_version": "", "gpu_uuids": gpu_uuids,
             "context_size": service_profile["context_size"], "split_mode": service_profile["split_mode"],
             "tensor_split": service_profile["tensor_split"], "main_gpu": service_profile["main_gpu"],
             "kv_cache_type_k": service_profile["kv_cache_type_k"], "kv_cache_type_v": service_profile["kv_cache_type_v"],
@@ -683,6 +682,8 @@ class ProductionBackend:
             rotated.unlink(missing_ok=True)
             log.replace(rotated)
         try:
+            key_values["binary_version"] = (self._version(binary, deadline_epoch)
+                if deadline_epoch is not None else self._version(binary))
             baseline = memory_snapshot(self._residency_sample(gpu_uuids), gpu_uuids)
             protect = getattr(self.runtime.host, "protect_residency", None)
             if not callable(protect):
@@ -788,25 +789,34 @@ class ProductionBackend:
             if len(self._leases) != 1:
                 raise SupervisorError("unqualified release is ambiguous unless exactly one service lease exists")
             service_lease_id = next(iter(self._leases))
-        slot_id = self._leases.pop(service_lease_id, None)
+        slot_id = self._leases.get(service_lease_id)
         if slot_id is None:
             raise SupervisorError("unknown or already released service lease")
         slot = self._slots.get(slot_id)
         if slot is None or slot.service_lease_id != service_lease_id:
             raise SupervisorError("service lease does not own the selected slot")
-        slot.service_lease_id = None
+        if slot.active_turns:
+            raise SupervisorError("observer_session_cleanup_pending: model turn is still active")
         if slot.state == "draining" or self.runtime.host.preempt_requested(slot.owner_id) or not self._healthy(slot):
-            self._evict_slot(slot_id, preempted=True)
+            if not self._evict_slot(slot_id, preempted=True):
+                raise SupervisorError("observer_session_cleanup_pending: owned process or resources not quiescent")
+            self._preempted_leases.discard(service_lease_id)
             return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                     "clients": len(self._leases)}
         slot.state = "idle"
         slot.idle_since = time.monotonic()
         self.runtime.host.set_priority(slot.owner_id, "idle_model_residency")
+        slot.service_lease_id = None
         try:
             self._record_residency(slot)
         except (OSError, ValueError, SupervisorError):
+            slot.service_lease_id = service_lease_id
             slot.state = "draining"
-            self._evict_slot(slot.slot_id)
+            if not self._evict_slot(slot.slot_id):
+                raise SupervisorError("observer_session_cleanup_pending: residency cleanup incomplete")
+        if slot_id in self._slots:
+            self._leases.pop(service_lease_id, None)
+            slot.service_lease_id = None
         return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                 "clients": len(self._leases), "idle_ttl_seconds": self.ttl}
 

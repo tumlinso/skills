@@ -156,3 +156,65 @@ def test_supervisor_deadline_reaches_cold_start_and_transport(tmp_path):
     assert service.requests[0][2]["timeout_seconds"] <= 5
     backend.close_observer_session(session)
     backend.close()
+
+
+def test_version_probe_timeout_releases_consumed_admission(tmp_path):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "local-coding-worker/tests"))
+    from test_supervisor import _PoolBackend, _Runtime, _Service, _Adapter, _Cache, _profile
+    runtime, service = _Runtime(), _Service()
+    backend = _PoolBackend(tmp_path, runtime=runtime, service=service, adapter=_Adapter(),
+        cache=_Cache(), profile=_profile(),
+        topology_classifier=lambda: SimpleNamespace(mode="x_mode", status="available"))
+    def expired_version(*args):
+        raise TimeoutError("version_probe_deadline")
+    backend._version = expired_version
+    with pytest.raises(TimeoutError):
+        backend.open_observer_sessions(1, compute_profile="narrow", parallelism="default",
+                                        deadline_epoch=time.time() + 5)
+    assert not runtime.host.owners
+    assert not backend._admissions
+    assert not backend._leases
+    assert not service.starts
+
+
+def test_failed_owned_cleanup_keeps_session_resolvable_until_retry(tmp_path):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "local-coding-worker/tests"))
+    from test_supervisor import _PoolBackend, _Runtime, _Service, _Adapter, _Cache, _profile
+    from local_worker.supervisor import SupervisorError
+    runtime, service = _Runtime(), _Service()
+    backend = _PoolBackend(tmp_path, runtime=runtime, service=service, adapter=_Adapter(),
+        cache=_Cache(), profile=_profile(),
+        topology_classifier=lambda: SimpleNamespace(mode="x_mode", status="available"))
+    lease = backend.warm()
+    session, slot_id = lease["service_lease_id"], lease["slot_id"]
+    slot = backend._slots[slot_id]
+    slot.state = "draining"
+    original_evict = service.evict
+    def failed_evict(*args):
+        raise AdapterError("model_process_not_quiescent")
+    service.evict = failed_evict
+    with pytest.raises(SupervisorError, match="cleanup_pending"):
+        backend.close_observer_session(session)
+    assert backend._leases[session] == slot_id
+    assert slot.service_lease_id == session
+    assert slot.owner_id in runtime.host.owners
+    service.evict = original_evict
+    assert backend.close_observer_session(session)["released"]
+    assert session not in backend._leases and slot_id not in backend._slots
+    assert slot.owner_id not in runtime.host.owners
+
+
+def test_active_turn_cannot_release_dispatch_session(tmp_path):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "local-coding-worker/tests"))
+    from test_supervisor import ServicePoolTests
+    from local_worker.supervisor import SupervisorError
+    backend, runtime, service = ServicePoolTests().backend()
+    lease = backend.warm()
+    slot = backend._slots[lease["slot_id"]]
+    slot.active_turns = 1
+    with pytest.raises(SupervisorError, match="still active"):
+        backend.close_observer_session(lease["service_lease_id"])
+    assert slot.service_lease_id == lease["service_lease_id"]
+    slot.active_turns = 0
+    backend.close_observer_session(lease["service_lease_id"])
+    backend.close()
