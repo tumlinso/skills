@@ -92,6 +92,55 @@ class OrphanRecoveryTests(unittest.TestCase):
         self.write_marker()
         self.refuse()
 
+    def test_native_accelerator_and_nvlink_reservation_recovers(self):
+        uuids = ["GPU-fixture", "GPU-second"]
+        self.backend.profile["deployment_policy"]["allowed_gpu_uuids"] = uuids
+        self.marker.update(gpu_uuids=uuids, memory_baseline=dict.fromkeys(uuids, 0),
+            resource_ids=[*(f"accelerator:{gpu}" for gpu in uuids),
+                          "interference:nvlink:runtime:1-3"])
+        self.backend.runtime.host.list.return_value = [
+            {"id": f"accelerator:{gpu}", "tags": {"nvlink_domain": "runtime:1-3"}}
+            for gpu in uuids]
+        self.observation["devices"].append({"uuid": "GPU-second", "memory_used_mib": 12})
+        self.write_marker()
+        self.backend._recover_residencies()
+        self.backend.runtime.host.list.assert_called_once_with(kind="accelerator")
+        self.native_lease.assert_called_once_with("fixture", self.digest, "owner-fixture")
+        self.assertFalse(self.path.exists())
+        self.assertFalse(self.lease_path.exists())
+        self.terminate.assert_not_called()
+        self.backend.runtime.host.release.assert_not_called()
+        self.backend.runtime.host.compound_gpu_bundles.assert_not_called()
+
+    def test_unrelated_or_incomplete_interference_resources_refuse(self):
+        self.backend.runtime.host.list.return_value = [
+            {"id": "accelerator:GPU-fixture", "tags": {"nvlink_domain": "runtime:1-3"}}]
+        for extra in (["interference:nvlink:foreign"], ["profiler:nvidia"],
+                      ["interference:nvlink:runtime:1-3", "interference:pcie:foreign"],
+                      ["accelerator:GPU-other"], ["accelerator:GPU-fixture"]):
+            with self.subTest(extra=extra):
+                self.marker["resource_ids"] = ["accelerator:GPU-fixture", *extra]
+                self.write_marker()
+                self.refuse()
+
+    def test_interference_requires_registered_accelerator_identity(self):
+        self.marker["resource_ids"].append("interference:nvlink:runtime:1-3")
+        self.backend.runtime.host.list.return_value = []
+        self.write_marker()
+        self.refuse()
+
+    def test_partial_native_domain_set_refuses(self):
+        uuids = ["GPU-fixture", "GPU-second"]
+        self.backend.profile["deployment_policy"]["allowed_gpu_uuids"] = uuids
+        self.marker.update(gpu_uuids=uuids,
+            resource_ids=[*(f"accelerator:{gpu}" for gpu in uuids),
+                          "interference:nvlink:runtime:1-3"])
+        self.backend.runtime.host.list.return_value = [
+            {"id": "accelerator:GPU-fixture", "tags": {"nvlink_domain": "runtime:1-3"}},
+            {"id": "accelerator:GPU-second", "tags": {"nvlink_domain": "runtime:0-2"}}]
+        self.write_marker()
+        self.refuse()
+
     def test_unknown_pid_presence_proof_refuses(self):
         original_stat = Path.stat
         def guarded_stat(path, *args, **kwargs):
