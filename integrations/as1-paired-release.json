@@ -1,7 +1,7 @@
 {
   "candidate": {
-    "manifest_sha256": "e971d0390f8fecbe3955aa12d33076aaf2c3d35d2876d155d5d99deeb03311bc",
-    "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004"
+    "manifest_sha256": "0a968d2456e5a576ef0fc74c05b0543f4479c27385caa800e083018f507bbc34",
+    "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005"
   },
   "evidence": {
     "live_release": {
@@ -20,7 +20,7 @@
   "format": "skills-as1-paired-release/1",
   "instructions": {
     "path": "planning/adaptive-surface-v1/PAIRED_RELEASE.md",
-    "sha256": "39e6e3ba2cfec9f239522cb42b90031e5b61b98035b1faeae4730f926313a581"
+    "sha256": "18634fa66b64cd9ad121ca2bbd4d375c62492ba4125b9cb9bd4ad5e78f1517c2"
   },
   "live_consumer": {
     "path": "/home/tumlinson/project-control/tests/as1/test_pc_as1_release.py",
@@ -28,7 +28,7 @@
   },
   "pins": {
     "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
-    "project_control": "6d1a7324acd2d2297ea3bf4fa3471d25ac67e2be",
+    "project_control": "3905649ff9b03e3acec4211553a52cf2389489e9",
     "skills": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
   },
   "status": "pending"

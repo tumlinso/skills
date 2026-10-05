@@ -36,7 +36,7 @@ anything or mutate Todo:
 /home/tumlinson/project-control/.venv/bin/python integrations/as1_release.py \
   --bind-evidence \
   --skills-qualification /absolute/path/to/executed-skills-cases.json \
-  --skills-real-proof /absolute/path/to/actual-sqa-q12/receipt.json \
+  --skills-real-proof /absolute/path/to/actual-sqa-q13/receipt.json \
   --live-release /home/tumlinson/.local/state/project-control/as1-bootstrap/release/live-receipt.json
 /home/tumlinson/project-control/.venv/bin/python integrations/as1_release.py
 /home/tumlinson/project-control/.venv/bin/python planning/adaptive-surface-v1/scripts/acceptance_gate.py --outcome SK-AS1-RELEASE

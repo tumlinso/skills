@@ -29,7 +29,7 @@ def test_consumer_candidate_identity_is_exact_and_read_only():
     before = CONSUMER.sha(CONSUMER.DEFAULT)
     release = manifest()
     candidate = CONSUMER.validate_identity(release)
-    assert candidate.name == 'as1-paired-6d1a732-269646d-20261004'
+    assert candidate.name == 'as1-paired-3905649-269646d-20261005'
     assert CONSUMER.sha(CONSUMER.DEFAULT) == before
 
 
