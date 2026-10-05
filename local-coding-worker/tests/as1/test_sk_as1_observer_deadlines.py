@@ -10,6 +10,7 @@ from types import SimpleNamespace
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "local-coding-worker"))
+from local_worker import observer_runtime
 from local_worker.observer_runtime import (JOB_INPUT_MAX_BYTES, MODEL_TURN_MAX_BYTES,
     ObserverWorkerPort, ReadOnlyCommandRunner, _reasoning_mode)
 from local_worker.servers.llama_cpp import LlamaCppServerAdapter
@@ -557,6 +558,29 @@ def test_initial_prompt_announces_actual_round_budget_and_reserved_final(tmp_pat
     assert f'You have {budget} model rounds total for this attempt.' in opening
     assert 'Reserve the final round for final JSON synthesis of the evidence gathered so far' in opening
     assert 'no further command or tool calls are permitted on that final round' in opening
+
+
+def test_initial_prompt_distinguishes_active_runtime_from_cli_harness_limits(tmp_path):
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {'status': 'available', 'text': json.dumps({'answer': 'The evidence is sufficient.', 'findings': []})}
+    worker = ObserverWorkerPort(Backend(), command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet'),
+        tools=lambda *a: pytest.fail('unexpected tool'), fence=lambda *a: True)
+    worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'Explain this inquiry',
+                'max_steps': 3, 'deadline_epoch': time.time() + 30})
+    opening = turns[0]['messages'][0]['content']
+    worker_source = Path(observer_runtime.__file__).resolve()
+    production_profile = worker_source.parent.parent / 'config' / 'production-profile.toml'
+    assert str(worker_source) in opening
+    assert str(production_profile) in opening
+    assert 'src/project_control/as1_jobs.py' in opening
+    assert 'supplied to this attempt as max_steps and deadline_epoch' in opening
+    assert '[harnesses].qwen_* are separate CLI harness limits, not the public observer contract' in opening
+    assert 'refinement_contexts are calibration candidates, not proof of the active context' in opening
+    assert 'Do not infer public observer limits from those harnesses' in opening
+    assert 'You have 3 model rounds total for this attempt.' in opening
 
 
 def test_argument_schemas_are_available_on_first_model_turn(tmp_path):
