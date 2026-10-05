@@ -17,7 +17,9 @@ SKILL = Path(__file__).resolve().parents[1]
 import sys
 sys.path.insert(0, str(SKILL))
 
-from local_worker.supervisor import AdapterError, ProductionBackend, SupervisorClient, SupervisorError, SupervisorServer, runtime_root
+from local_worker.supervisor import (RPC_FRAME_BYTES, AdapterError, ProductionBackend,
+                                     SupervisorClient, SupervisorError, SupervisorServer,
+                                     _rpc_frame, runtime_root)
 
 
 class FakeBackend:
@@ -84,6 +86,19 @@ class FakeBackend:
 
 
 class SupervisorTests(unittest.TestCase):
+    def test_rpc_frame_fits_one_mib_utf8_normalized_message_with_unicode_and_controls(self):
+        content = "😀" * 250_000 + "\x01\n\t"
+        messages = [{"role": "user", "content": content}]
+        normalized = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
+        self.assertLessEqual(len(normalized.encode("utf-8")), 1024 * 1024)
+        envelope = {"operation": "observer-turn", "request": {
+            "format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
+            "max_tokens": 2048, "timeout_seconds": 60}}
+
+        frame = _rpc_frame(envelope)
+        self.assertLessEqual(len(frame) - 1, RPC_FRAME_BYTES)
+        self.assertEqual(json.loads(frame), envelope)
+
     def test_owner_only_protocol_reuses_and_stops(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary) / "runtime"
@@ -586,6 +601,23 @@ class ServicePoolTests(unittest.TestCase):
                          ("tensor", False, 2, "tensor"))
         backend.close()
 
+    def test_startup_generation_knobs_are_forwarded_and_invalidate_idle_server(self):
+        backend, _, service = self.backend()
+        backend.profile["server"].update({"batch_size": 512, "ubatch_size": 128,
+                                           "flash_attention": "auto", "parallel_slots": 1})
+        first = backend.warm(compute_profile="narrow", parallelism="layer")
+        settings = service.contexts[-1]["service_profile"]
+        self.assertEqual((settings["batch_size"], settings["ubatch_size"],
+                          settings["flash_attention"], settings["parallel_slots"]),
+                         (512, 128, "auto", 1))
+        backend.release(first["service_lease_id"])
+        backend.profile["server"]["ubatch_size"] = 256
+        second = backend.warm(compute_profile="narrow", parallelism="layer")
+        self.assertFalse(second["reused"])
+        self.assertEqual((service.starts, service.contexts[-1]["service_profile"]["ubatch_size"]),
+                         (2, 256))
+        backend.close()
+
     def test_explicit_parallelism_accepts_narrow_layer_and_tensor(self):
         backend, _, service = self.backend()
         layer = backend.warm(compute_profile="narrow", parallelism="layer")
@@ -798,6 +830,9 @@ class ServicePoolTests(unittest.TestCase):
             {"role": "user", "content": "evidence E-1"},
             {"role": "assistant", "content": "{\"action\":\"search_source\"}"},
         ], "max_tokens": 256, "timeout_seconds": 20, "compute_profile": "narrow"}
+        released = []
+        original_release = backend.release
+        backend.release = lambda lease_id: (released.append(lease_id), original_release(lease_id))[1]
         result = backend.run_observer_turn(request)
         self.assertEqual(result, {"status": "available", "authoritative": False,
                               "text": '{"action":"answer"}',
@@ -809,9 +844,57 @@ class ServicePoolTests(unittest.TestCase):
                               "topology_order": {"gpu_count": 2, "nvlink_island_count": 1,
                                                  "nvlink_island_sizes": [2], "pair_adjacent": True},
                               "compatibility_key": result["compatibility_key"]})
-        self.assertEqual(service.requests[0][2], {"messages": request["messages"],
-                                                   "max_tokens": 256, "timeout_seconds": 20.0})
+        self.assertEqual({key: service.requests[0][2][key] for key in
+                          ("messages", "max_tokens", "timeout_seconds", "observer_generation", "reasoning_mode")},
+                         {"messages": request["messages"], "max_tokens": 256, "timeout_seconds": 20.0,
+                          "observer_generation": {}, "reasoning_mode": "auto"})
+        self.assertEqual(service.requests[0][2]["reasoning_state_key"],
+                         released[0])
         self.assertEqual(backend.status()["active_leases"], 0)
+        backend.close()
+
+    def test_observer_turn_whitelists_reasoning_mode_and_clears_private_state_on_release(self):
+        backend, runtime, service = self.backend()
+        invalid = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "question"}], "max_tokens": 64,
+            "timeout_seconds": 10, "reasoning_mode": "maybe"})
+        self.assertEqual((invalid["status"], invalid["reason"]),
+                         ("unavailable", "investigator_turn_invalid_request"))
+        self.assertEqual((service.starts, runtime.host.owners), (0, {}))
+        cleared = []
+        backend.adapter.clear_reasoning = lambda handle, key: cleared.append((handle, key))
+        answer = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "question"}], "max_tokens": 64,
+            "timeout_seconds": 10, "compute_profile": "narrow", "reasoning_mode": "off"})
+        request = service.requests[-1][2]
+        self.assertEqual((answer["status"], request["reasoning_mode"]), ("available", "off"))
+        self.assertEqual(cleared, [(service.requests[-1][1], request["reasoning_state_key"])])
+        self.assertEqual(backend.status()["active_leases"], 0)
+        backend.close()
+
+    def test_observer_turn_accepts_private_message_budget_up_to_one_mib(self):
+        backend, runtime, service = self.backend()
+        accepted = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "x" * (1024 * 1024 - 64)}],
+            "max_tokens": 64, "timeout_seconds": 10, "compute_profile": "narrow"})
+        self.assertEqual(accepted["status"], "available")
+        over_budget = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "x" * (1024 * 1024)}],
+            "max_tokens": 64, "timeout_seconds": 10, "compute_profile": "narrow"})
+        self.assertEqual((over_budget["status"], over_budget["reason"]),
+                         ("unavailable", "investigator_turn_messages_too_large"))
+        self.assertEqual(service.starts, 1)
+        self.assertEqual(backend.status()["active_leases"], 0)
+        backend.close()
+
+    def test_adapter_context_budget_error_is_normalized_for_observer_pruning(self):
+        backend, _, service = self.backend()
+        service.run = lambda *_args: (_ for _ in ()).throw(AdapterError("observer_context_budget"))
+        result = backend.run_observer_turn({"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "question"}], "max_tokens": 64,
+            "timeout_seconds": 10, "compute_profile": "narrow"})
+        self.assertEqual((result["status"], result["reason"], result["error_code"]),
+                         ("unavailable", "context_budget", "observer_context_budget"))
         backend.close()
 
     def test_observer_turn_cancels_admission_and_releases_on_errors(self):

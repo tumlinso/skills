@@ -37,13 +37,14 @@ class SupervisorError(RuntimeError):
     pass
 
 
-RPC_FRAME_BYTES = 512 * 1024
+RPC_FRAME_BYTES = 2 * 1024 * 1024
 RPC_CONNECTIONS = 32
 
 
 def _rpc_frame(value: dict[str, Any]) -> bytes:
     try:
-        data = json.dumps(value, separators=(",", ":"), allow_nan=False).encode("utf-8")
+        data = json.dumps(value, separators=(",", ":"), ensure_ascii=False,
+                          allow_nan=False).encode("utf-8")
     except (TypeError, ValueError) as error:
         raise SupervisorError("supervisor_malformed_frame") from error
     if len(data) > RPC_FRAME_BYTES:
@@ -179,6 +180,7 @@ class _ServiceSlot:
     cache_lease: Any
     gpu_uuids: tuple[str, ...]
     compatibility_key: str
+    startup_settings: dict[str, Any] = field(default_factory=dict)
     compute_profile: str = "narrow"
     parallelism: str = "layer"
     service_lease_id: str | None = None
@@ -576,7 +578,30 @@ class ProductionBackend:
         selected = self._model_for_profile(compute_profile)
         return (slot.compute_profile == compute_profile and
                 slot.parallelism == parallelism and
-                slot.endpoint_descriptor.get("model_id") == selected["candidate_id"])
+                slot.endpoint_descriptor.get("model_id") == selected["candidate_id"] and
+                slot.endpoint_descriptor.get("model_sha256") == selected.get("payload_sha256") and
+                slot.startup_settings == self._startup_settings(compute_profile, parallelism))
+
+    def _startup_settings(self, compute_profile: str, parallelism: str) -> dict[str, Any]:
+        """Resolve every profile knob that changes llama-server startup behavior."""
+        server = self.profile["server"]
+        return {
+            "binary": str(Path(str(server["binary"])).resolve()),
+            "context_size": int(self.profile["experiment"]["initial_context"]),
+            "gpu_layers": int(server.get("gpu_layers", 999)),
+            "split_mode": parallelism,
+            "tensor_split": server.get("tensor_split"),
+            "main_gpu": server.get("main_gpu"),
+            "kv_cache_type_k": server.get("kv_cache_type_k"),
+            "kv_cache_type_v": server.get("kv_cache_type_v"),
+            "numa_policy": server.get("numa_policy"),
+            "cpu_threads": server.get("cpu_threads"),
+            "batch_size": server.get("batch_size"),
+            "ubatch_size": server.get("ubatch_size"),
+            "flash_attention": server.get("flash_attention"),
+            "parallel_slots": server.get("parallel_slots"),
+            "compute_profile": compute_profile,
+        }
 
     def _version(self, binary: str, deadline_epoch=None) -> str:
         result = subprocess.run([binary, "--version"], capture_output=True, text=True, timeout=min(30, remaining_seconds(deadline_epoch)) if deadline_epoch is not None else 30, check=False)
@@ -882,6 +907,9 @@ class ProductionBackend:
             "tensor_split": server.get("tensor_split"), "main_gpu": server.get("main_gpu"),
             "kv_cache_type_k": server.get("kv_cache_type_k"), "kv_cache_type_v": server.get("kv_cache_type_v"),
             "numa_policy": server.get("numa_policy"), "cpu_threads": server.get("cpu_threads"),
+            "batch_size": server.get("batch_size"), "ubatch_size": server.get("ubatch_size"),
+            "flash_attention": server.get("flash_attention"),
+            "parallel_slots": server.get("parallel_slots"),
             "port": port, "startup_timeout_seconds": float(server["startup_timeout_seconds"]),
             "idle_ttl_seconds": self.ttl, "log_path": str(self._state_root() / f"llama-server-{slot_id}.log"),
         }
@@ -895,6 +923,9 @@ class ProductionBackend:
             "kv_cache_type_k": service_profile["kv_cache_type_k"], "kv_cache_type_v": service_profile["kv_cache_type_v"],
             "gpu_layers": service_profile["gpu_layers"], "numa_policy": service_profile["numa_policy"],
             "cpu_threads": service_profile["cpu_threads"],
+            "batch_size": service_profile["batch_size"], "ubatch_size": service_profile["ubatch_size"],
+            "flash_attention": service_profile["flash_attention"],
+            "parallel_slots": service_profile["parallel_slots"],
         }
         _private_directory(self._state_root())
         log = Path(service_profile["log_path"])
@@ -923,6 +954,7 @@ class ProductionBackend:
                 spawned_slot = _ServiceSlot(slot_id=slot_id, handle=spawned_handle,
                     endpoint_descriptor={"server_pid": process_descriptor["pid"]}, owner_id=owner_id,
                     cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids), compatibility_key="",
+                    startup_settings=self._startup_settings(compute_profile, resolved_parallelism),
                     memory_baseline=baseline, state="draining",
                     residency_capability=protection["residency_capability"], residency_generation=protection["generation"],
                     residency_origin=protection["origin"], residency_resource_ids=protection["resource_ids"])
@@ -939,6 +971,7 @@ class ProductionBackend:
             slot = _ServiceSlot(slot_id=slot_id, handle=handle,
                 endpoint_descriptor={"server_pid": server_info["pid"]}, owner_id=owner_id,
                 cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids), compatibility_key="",
+                startup_settings=self._startup_settings(compute_profile, resolved_parallelism),
                 memory_baseline=baseline, state="draining")
             slot.residency_capability = protection["residency_capability"]
             slot.residency_generation = protection["generation"]
@@ -960,6 +993,7 @@ class ProductionBackend:
                 slot_id=slot_id, handle=handle, endpoint_descriptor=descriptor,
                 owner_id=owner_id, cache_lease=cache_lease, gpu_uuids=tuple(gpu_uuids),
                 compatibility_key=str(descriptor["compatibility_key"]),
+                startup_settings=self._startup_settings(compute_profile, resolved_parallelism),
                 compute_profile=compute_profile,
                 parallelism=resolved_parallelism,
                 memory_baseline=baseline,
@@ -1022,6 +1056,12 @@ class ProductionBackend:
             if not self._evict_slot(slot_id, preempted=True):
                 raise SupervisorError("observer_session_cleanup_pending: owned process or resources not quiescent")
             self._preempted_leases.discard(service_lease_id)
+            return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
+                    "clients": len(self._leases)}
+        if not self._clear_reasoning(slot, service_lease_id):
+            slot.state = "draining"
+            if not self._evict_slot(slot.slot_id):
+                raise SupervisorError("observer_session_cleanup_pending: reasoning state cleanup incomplete")
             return {"released": True, "slot_id": slot_id, "service_lease_id": service_lease_id,
                     "clients": len(self._leases)}
         slot.state = "idle"
@@ -1167,7 +1207,7 @@ class ProductionBackend:
         try:
             if not isinstance(request, dict):
                 raise SupervisorError("investigator_turn_invalid_request")
-            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id", "deadline_epoch"}
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id", "deadline_epoch", "reasoning_mode"}
             if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/2":
                 raise SupervisorError("investigator_turn_invalid_request")
             messages = request.get("messages")
@@ -1177,12 +1217,14 @@ class ProductionBackend:
             compute_profile = request.get("compute_profile", "wide")
             parallelism = request.get("parallelism", "default")
             session_id = request.get("session_id")
+            reasoning_mode = request.get("reasoning_mode", "auto")
             if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
                     not 0 < float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
                     parallelism not in {"default", "layer", "tensor"} or
+                    not isinstance(reasoning_mode, str) or reasoning_mode not in {"auto", "off"} or
                     (session_id is not None and (not isinstance(session_id, str) or len(session_id) > 128))):
                 raise SupervisorError("investigator_turn_invalid_request")
             if deadline_epoch is not None:
@@ -1196,7 +1238,7 @@ class ProductionBackend:
                     raise SupervisorError("investigator_turn_invalid_messages")
                 normalized.append({"role": message["role"], "content": message["content"]})
             encoded = json.dumps(normalized, ensure_ascii=False, separators=(",", ":"))
-            if len(encoded.encode("utf-8")) > 96 * 1024:
+            if len(encoded.encode("utf-8")) > 1024 * 1024:
                 raise SupervisorError("investigator_turn_messages_too_large")
             if not self._analysis_capacity.acquire(blocking=False):
                 raise SupervisorError("observer_provider_busy")
@@ -1217,10 +1259,14 @@ class ProductionBackend:
                                      "service_lease_id": session_id, "reused": True}
                     with self._pool_lock:
                         slot = self._slots[str(lease["slot_id"])]
+                    service_lease_id = str(lease["service_lease_id"])
                     raw = self._run_slot(slot, {
                         "messages": normalized,
                         "max_tokens": max_tokens,
                         "timeout_seconds": float(timeout_seconds),
+                        "observer_generation": dict(self.profile.get("observer_generation", {})),
+                        "reasoning_mode": reasoning_mode,
+                        "reasoning_state_key": service_lease_id,
                         **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}),
                     })
                     if not isinstance(raw, dict) or not isinstance(raw.get("text"), str):
@@ -1246,8 +1292,22 @@ class ProductionBackend:
             finally:
                 self._analysis_capacity.release()
         except (SupervisorError, AdapterError, TimeoutError, ValueError) as error:
+            error_code = str(error)
+            reason = "context_budget" if error_code == "observer_context_budget" else error_code
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
-                    "reason": str(error)[:500], "fallback": "project_control_read_broker"}
+                    "reason": reason[:500],
+                    **({"error_code": error_code} if error_code != reason else {}),
+                    "fallback": "project_control_read_broker"}
+
+    def _clear_reasoning(self, slot: _ServiceSlot, key: str | None) -> bool:
+        clear = getattr(self.adapter, "clear_reasoning", None)
+        if not callable(clear):
+            return True
+        try:
+            clear(slot.handle, key)
+            return True
+        except Exception:
+            return False
 
     def _run_slot(self, slot: _ServiceSlot, request: dict[str, Any]) -> dict[str, Any]:
         with self._pool_lock:
@@ -1290,6 +1350,7 @@ class ProductionBackend:
         if slot.active_turns:
             return False
         try:
+            self._clear_reasoning(slot, slot.service_lease_id)
             self.service.drain("llama", slot.handle)
             self.service.evict("llama", slot.handle)
             observation = self._residency_sample(list(slot.gpu_uuids))

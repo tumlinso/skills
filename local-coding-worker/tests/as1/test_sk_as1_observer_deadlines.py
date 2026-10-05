@@ -10,7 +10,8 @@ from types import SimpleNamespace
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "local-coding-worker"))
-from local_worker.observer_runtime import ObserverWorkerPort, ReadOnlyCommandRunner
+from local_worker.observer_runtime import (JOB_INPUT_MAX_BYTES, MODEL_TURN_MAX_BYTES,
+    ObserverWorkerPort, ReadOnlyCommandRunner, _reasoning_mode)
 from local_worker.servers.llama_cpp import LlamaCppServerAdapter
 from local_worker.service import AdapterError
 
@@ -118,6 +119,98 @@ def test_refresh_context_and_remaining_model_budget_are_forwarded(tmp_path):
     assert 0 < turns[0]["timeout_seconds"] <= 5
     assert json.loads(turns[0]["messages"][1]["content"])["refresh_context"] == refresh
     assert "Reuse valid prior work" in turns[0]["messages"][0]["content"]
+
+
+@pytest.mark.parametrize(("question", "mode"), [
+    ("What version does the file report?", "off"),
+    ("Why do the sources disagree, and how do they compare?", "auto"),
+    ("Which GPU UUID is configured?", "off"),
+])
+def test_reasoning_policy_distinguishes_direct_reads_and_synthesis(question, mode):
+    assert _reasoning_mode(question, mode="investigate", first_step=True,
+        has_protocol_feedback=False, remaining=60) == mode
+
+
+def test_reasoning_policy_disables_thinking_for_skill_entry_repair_and_short_turn():
+    assert _reasoning_mode("Read the skill entry", mode="skill", first_step=True,
+        has_protocol_feedback=False, remaining=60) == "off"
+    assert _reasoning_mode("Explain how these skill instructions compare", mode="skill", first_step=True,
+        has_protocol_feedback=False, remaining=60) == "auto"
+    assert _reasoning_mode("Explain the difference", mode="investigate", first_step=False,
+        has_protocol_feedback=True, remaining=60) == "off"
+    assert _reasoning_mode("Explain the difference", mode="investigate", first_step=False,
+        has_protocol_feedback=False, remaining=14.9) == "off"
+
+
+def test_internal_turn_envelope_grows_without_raising_job_input_or_visible_limits(tmp_path):
+    assert MODEL_TURN_MAX_BYTES == 1024 * 1024
+    assert JOB_INPUT_MAX_BYTES == 256 * 1024
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {"status": "available", "text": json.dumps({"answer": "ok", "findings": []})}
+    worker = ObserverWorkerPort(Backend(), command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet"),
+        tools=lambda *a: None, fence=lambda *a: True)
+    worker.run({"job_id": "job", "attempt": 1, "mode": "investigate",
+        "question": "What version does the file report?"})
+    assert turns[0]["reasoning_mode"] == "off"
+    assert turns[0]["max_tokens"] == 2048
+    assert len(turns[0]["messages"][-1]["content"].encode()) < 16384
+
+    never_called = type("NeverCalled", (), {"run_observer_turn": lambda *_: pytest.fail("oversized trusted input dispatched")})()
+    bounded = ObserverWorkerPort(never_called, command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet"),
+        tools=lambda *a: None, fence=lambda *a: True)
+    with pytest.raises(ValueError, match="job inputs exceed bounded evidence context"):
+        bounded.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "q",
+            "hints": "x" * JOB_INPUT_MAX_BYTES})
+
+
+def test_visible_answer_byte_limit_remains_sixteen_kib(tmp_path):
+    class Backend:
+        def run_observer_turn(self, request):
+            return {"status": "available", "text": "x" * 16385}
+    worker = ObserverWorkerPort(Backend(), command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet"),
+        tools=lambda *a: None, fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "q"})
+    assert result["status"] == "partial"
+    assert result["reason"] == "model_output_exceeded_budget"
+    assert "answer" not in result
+
+
+def test_context_preflight_prunes_oldest_observation_inside_same_semantic_round(tmp_path):
+    turns = []
+    observations = [
+        {"packet_id": "packet-old", "status": "completed", "stdout": "old evidence"},
+        {"packet_id": "packet-new", "status": "completed", "stdout": "current evidence"},
+    ]
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            if len(turns) == 1:
+                return {"status": "unavailable", "reason": "context_budget"}
+            progress = json.loads(request["messages"][1]["content"])
+            assert progress["progress"]["omitted_observation_packet_ids"] == ["packet-old"]
+            return {"status": "available", "text": json.dumps({"answer": "Current evidence is retained.",
+                "findings": [{"text": "Current evidence", "evidence_packets": ["packet-new"]}]})}
+    worker = ObserverWorkerPort(Backend(), command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet"),
+        tools=lambda *a: pytest.fail("context preflight must not dispatch a tool"), fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "Explain the observed evidence.",
+        "observations": observations, "max_steps": 1})
+    assert result["status"] == "completed"
+    assert result["findings"][0]["evidence_packets"] == ["packet-new"]
+    assert len(turns) == 2
+    assert turns[0]["reasoning_mode"] == turns[1]["reasoning_mode"] == "auto"
+
+
+def test_context_preflight_with_no_removable_observations_returns_partial(tmp_path):
+    class Backend:
+        def run_observer_turn(self, request):
+            return {"status": "unavailable", "reason": "context_budget"}
+    worker = ObserverWorkerPort(Backend(), command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet"),
+        tools=lambda *a: pytest.fail("context preflight must not dispatch a tool"), fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "Explain the evidence."})
+    assert result["status"] == "partial" and result["reason"] == "context_budget"
 
 
 def test_command_deadline_kills_cpu_process_group(tmp_path):

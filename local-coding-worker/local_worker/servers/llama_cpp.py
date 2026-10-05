@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import math
 import os
@@ -118,6 +119,8 @@ class LlamaCppServerAdapter:
         profile = dict(context.get("service_profile") or {})
         if profile and profile.get("format") != "CORE4-MODEL-SERVICE/2":
             raise AdapterError("unsupported model-service profile format")
+        if profile.get("observer_generation"):
+            profile["observer_generation"] = self._generation_policy(profile["observer_generation"])
         flags = self._flags(binary, deadline_epoch)
         argv = [binary, "--model", str(model), "--host", host, "--port", str(port)]
         options = {
@@ -130,6 +133,10 @@ class LlamaCppServerAdapter:
             "--cache-type-v": profile.get("kv_cache_type_v"),
             "--numa": profile.get("numa_policy"),
             "--threads": profile.get("cpu_threads"),
+            "--parallel": profile.get("parallel_slots"),
+            "--batch-size": profile.get("batch_size"),
+            "--ubatch-size": profile.get("ubatch_size"),
+            "--flash-attn": profile.get("flash_attention"),
         }
         for flag, value in options.items():
             if value is not None and flag in flags:
@@ -159,6 +166,10 @@ class LlamaCppServerAdapter:
             "process": process, "base_url": f"http://{host}:{port}", "accepting": True,
             "evicted": False, "canceled": set(), "active_requests": set(), "log_stream": log_stream, "log_path": str(log_path),
             "profile": profile,
+            "reasoning_state": {},
+            "observer_generation": copy.deepcopy(profile.get("observer_generation") or {}),
+            "conservative_tokens_per_second": (profile.get("observer_generation") or {}).get(
+                "conservative_tokens_per_second"),
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
         try:
@@ -212,6 +223,23 @@ class LlamaCppServerAdapter:
                     timer.cancel()
                     timer.join()
 
+        if profile.get("observer_generation"):
+            try:
+                status, props = self.transport("GET", f"http://{host}:{port}/props", None,
+                                               min(2.0, remaining_seconds(deadline_epoch)) if deadline_epoch is not None else 2.0)
+                context_size = props.get("default_generation_settings", {}).get("n_ctx") if status == 200 else None
+                if isinstance(context_size, bool) or not isinstance(context_size, int) or context_size < 1:
+                    raise AdapterError("observer_actual_context_unavailable")
+                self._servers[handle]["effective_context_size"] = context_size
+            except Exception as error:
+                try:
+                    self._startup_evict(handle)
+                except Exception:
+                    pass
+                if isinstance(error, AdapterError):
+                    raise
+                raise AdapterError("observer_actual_context_unavailable") from error
+
         return handle
 
     def _startup_evict(self, handle: str) -> None:
@@ -258,6 +286,13 @@ class LlamaCppServerAdapter:
         messages = request.get("messages")
         if not isinstance(messages, list) or not messages:
             raise AdapterError("llama.cpp request requires messages")
+        policy = request.get("observer_generation")
+        if policy is None:
+            policy = server.get("observer_generation") or {}
+        if policy:
+            if len(messages) > 24 or len(json.dumps(messages, ensure_ascii=False).encode("utf-8")) > 1024 * 1024:
+                raise AdapterError("observer_input_budget_exceeded")
+            return self._run_observer_generation(handle, request, policy)
         if len(json.dumps(messages, ensure_ascii=False)) > 200_000:
             raise AdapterError("llama.cpp messages exceed the adapter payload bound")
         payload = {"messages": messages, "stream": False}
@@ -340,6 +375,9 @@ class LlamaCppServerAdapter:
         message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
         content = message.get("content")
         text = content if isinstance(content, str) else ""
+        if "<think>" in text:
+            close = text.rfind("</think>")
+            text = text[close + len("</think>"):] if close >= 0 else ""
         other_keys = sorted(key for key in message if key not in {"content", "tool_calls", "reasoning_content"})[:8]
         other_fields = {key: _bounded_shape(message[key]) for key in other_keys}
         response_metadata = {
@@ -349,11 +387,12 @@ class LlamaCppServerAdapter:
                 "content_type": type(content).__name__,
                 "content_characters": len(text),
                 "content_bytes": len(text.encode("utf-8")),
-                "content_prefix": text[:1024],
-                "content_suffix": text[-1024:] if len(text) > 1024 else "",
                 "field_names": sorted(str(key) for key in message)[:24],
                 "tool_calls": _bounded_shape(message.get("tool_calls")) if "tool_calls" in message else {"present": False},
-                "reasoning_content": _bounded_shape(message.get("reasoning_content")) if "reasoning_content" in message else {"present": False},
+                # Never retain thought text in response metadata.
+                "reasoning_content": ({"present": True, "characters": len(message["reasoning_content"]),
+                    "bytes": len(message["reasoning_content"].encode("utf-8"))}
+                    if isinstance(message.get("reasoning_content"), str) else {"present": False}),
                 "other_fields": other_fields,
             },
             "choice_fields": sorted(str(key) for key in choice)[:16],
@@ -361,6 +400,373 @@ class LlamaCppServerAdapter:
         return {"status": "succeeded", "request_id": request_id, "text": text[:20_000], "usage": usage,
                 "duration_ms": round(duration, 3), "raw_output_omitted_chars": max(len(text) - 20_000, 0),
                 "response_metadata": response_metadata}
+
+    _GENERATION_DEFAULTS = {
+        "reasoning_tokens": 4096, "preserve_reasoning": True,
+        "thinking_temperature": 0.6, "direct_temperature": 0.7,
+        "top_k": 20, "thinking_top_p": 0.95, "direct_top_p": 0.8,
+        "min_p": 0.0, "presence_penalty": 0.0, "min_answer_seconds": 15,
+    }
+    _GENERATION_FIELDS = frozenset((*_GENERATION_DEFAULTS, "conservative_tokens_per_second"))
+
+    def _generation_policy(self, policy: Any) -> dict[str, Any]:
+        if not isinstance(policy, dict) or set(policy) - self._GENERATION_FIELDS:
+            raise AdapterError("observer_generation_policy_invalid")
+        result = dict(self._GENERATION_DEFAULTS)
+        result.update(policy)
+        cap = result["reasoning_tokens"]
+        if isinstance(cap, bool) or not isinstance(cap, int) or not 0 <= cap <= 16384:
+            raise AdapterError("observer_generation_policy_invalid")
+        if not isinstance(result["preserve_reasoning"], bool):
+            raise AdapterError("observer_generation_policy_invalid")
+        for key in ("thinking_temperature", "direct_temperature", "thinking_top_p", "direct_top_p", "min_p", "presence_penalty"):
+            value = result[key]
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise AdapterError("observer_generation_policy_invalid")
+        for key in ("thinking_temperature", "direct_temperature"):
+            if not 0 <= result[key] <= 2:
+                raise AdapterError("observer_generation_policy_invalid")
+        for key in ("thinking_top_p", "direct_top_p", "min_p"):
+            if not 0 <= result[key] <= 1:
+                raise AdapterError("observer_generation_policy_invalid")
+        if not 0 <= result["presence_penalty"] <= 2:
+            raise AdapterError("observer_generation_policy_invalid")
+        for key in ("top_k", "min_answer_seconds"):
+            value = result[key]
+            if (isinstance(value, bool) or not isinstance(value, int) or value < 0
+                    or (key == "min_answer_seconds" and value > 59)):
+                raise AdapterError("observer_generation_policy_invalid")
+        seed = result.get("conservative_tokens_per_second")
+        if seed is not None and (isinstance(seed, bool) or not isinstance(seed, (int, float))
+                                 or not math.isfinite(seed) or seed <= 0):
+            raise AdapterError("observer_generation_policy_invalid")
+        return result
+
+    def set_observer_generation(self, handle: str, policy: dict[str, Any]) -> None:
+        """Set bounded private generation tuning on an owned server for qualification."""
+        server = self._server(handle)
+        normalized = self._generation_policy(policy)
+        server["observer_generation"] = normalized
+        seed = normalized.get("conservative_tokens_per_second")
+        if seed is not None:
+            server["conservative_tokens_per_second"] = float(seed)
+
+    def clear_reasoning(self, handle: str, key: str | None = None) -> None:
+        server = self._server(handle)
+        if key is None:
+            server["reasoning_state"].clear()
+        else:
+            server["reasoning_state"].pop(str(key), None)
+
+    def _remaining_turn(self, deadline: float) -> float:
+        left = deadline - time.time()
+        if left <= 0:
+            raise AdapterError("observer_model_turn_timed_out")
+        return left
+
+    def _llama_call(self, server: dict[str, Any], path: str, payload: dict[str, Any], deadline: float) -> dict[str, Any]:
+        remaining = self._remaining_turn(deadline)
+        status, body = self.transport("POST", server["base_url"] + path, payload, remaining)
+        if status != 200:
+            raise AdapterError(f"llama.cpp {path} failed with HTTP {status}")
+        return body
+
+    def _template_prompt(self, server: dict[str, Any], messages: list[dict[str, Any]], *, thinking: bool,
+                         deadline: float) -> str:
+        body = self._llama_call(server, "/apply-template", {
+            "messages": messages, "chat_template_kwargs": {"enable_thinking": thinking}}, deadline)
+        prompt = body.get("prompt")
+        if not isinstance(prompt, str):
+            raise AdapterError("llama.cpp_template_invalid")
+        return prompt
+
+    def _tokenize(self, server: dict[str, Any], prompt: str, deadline: float) -> list[int]:
+        body = self._llama_call(server, "/tokenize", {"content": prompt, "parse_special": True}, deadline)
+        tokens = body.get("tokens")
+        if not isinstance(tokens, list) or any(isinstance(item, bool) or not isinstance(item, int) for item in tokens):
+            raise AdapterError("llama.cpp_tokenize_invalid")
+        return tokens
+
+    @staticmethod
+    def _assistant_text(message: dict[str, Any]) -> str | None:
+        content = message.get("content")
+        return content if isinstance(content, str) else None
+
+    def _messages_with_reasoning(self, messages: list[dict[str, Any]], history: list[dict[str, str]]) -> list[dict[str, Any]]:
+        augmented = copy.deepcopy(messages)
+        pending = list(reversed(history))
+        for message in reversed(augmented):
+            if not pending or not isinstance(message, dict) or message.get("role") != "assistant":
+                continue
+            content = self._assistant_text(message)
+            match = next((index for index, item in enumerate(pending) if item["answer"] == content), None)
+            if match is not None:
+                item = pending.pop(match)
+                message["content"] = "<think>" + item["reasoning"] + "</think>" + content
+        return augmented
+
+    def _completion(self, server: dict[str, Any], *, prompt: list[int], max_tokens: int, deadline: float,
+                    temperature: float, top_p: float, top_k: int, min_p: float, presence_penalty: float,
+                    stop: list[str] | None = None, response_format: dict[str, Any] | None = None) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "prompt": prompt, "n_predict": max_tokens, "temperature": temperature,
+            "top_p": top_p, "top_k": top_k, "min_p": min_p,
+            "presence_penalty": presence_penalty, "cache_prompt": True,
+            "id_slot": 0, "return_tokens": True,
+        }
+        if stop:
+            payload["stop"] = stop
+        if response_format:
+            payload["json_schema"] = response_format["schema"]
+        return self._llama_call(server, "/completion", payload, deadline)
+
+    def _run_observer_generation(self, handle: str, request: dict[str, Any], raw_policy: Any) -> dict[str, Any]:
+        server = self._server(handle)
+        policy = self._generation_policy(raw_policy)
+        messages = request["messages"]
+        request_id = str(request.get("request_id") or uuid.uuid4())
+        if request_id in server["canceled"]:
+            return {"status": "canceled", "request_id": request_id}
+        key = request.get("reasoning_state_key")
+        if policy["preserve_reasoning"] and (not isinstance(key, str) or not key or len(key) > 256):
+            raise AdapterError("reasoning_state_key_required")
+        mode = request.get("reasoning_mode", "auto")
+        if mode not in {"auto", "off"}:
+            raise AdapterError("reasoning_mode_invalid")
+        max_tokens = request.get("max_tokens", 2048)
+        if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or not 1 <= max_tokens <= 2048:
+            raise AdapterError("observer_visible_token_cap_invalid")
+        timeout = request.get("timeout_seconds", 60)
+        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or not 0 < timeout <= 60:
+            raise AdapterError("observer_model_turn_timeout_invalid")
+        deadline_epoch = request.get("deadline_epoch")
+        deadline = min(time.time() + float(timeout), float(deadline_epoch)) if deadline_epoch is not None else time.time() + float(timeout)
+        response_format = request.get("response_format")
+        if response_format is not None and (not isinstance(response_format, dict) or set(response_format) != {"type", "schema"}
+                or response_format.get("type") != "json_object" or not isinstance(response_format.get("schema"), dict)
+                or response_format["schema"].get("type") != "object"):
+            raise AdapterError("llama.cpp response_format requires a JSON object schema")
+        if response_format is not None:
+            try:
+                schema_json = json.dumps(response_format["schema"], ensure_ascii=False, allow_nan=False)
+                if len(schema_json.encode("utf-8")) > 16 * 1024:
+                    raise ValueError("schema too large")
+                schema = json.loads(schema_json)
+                pending = [schema]
+                while pending:
+                    node = pending.pop()
+                    if isinstance(node, dict):
+                        if "$ref" in node and (not isinstance(node["$ref"], str) or not node["$ref"].startswith("#/")):
+                            raise ValueError("external schema reference")
+                        pending.extend(node.values())
+                    elif isinstance(node, list):
+                        pending.extend(node)
+                response_format = {"type": "json_object", "schema": schema}
+            except (TypeError, ValueError, RecursionError):
+                raise AdapterError("llama.cpp response_format schema invalid or exceeds bound") from None
+        history = server["reasoning_state"].setdefault(key, []) if policy["preserve_reasoning"] else []
+        started = time.perf_counter()
+        server.setdefault("active_requests", set()).add(request_id)
+        reasoning_count = visible_count = prompt_count = 0
+        reasoning_token_budget = 0
+        reasoning_ms = visible_ms = 0.0
+        reasoning_prompt_count = answer_prompt_count = 0
+        reasoning_prompt_evaluated = answer_prompt_evaluated = 0
+        reasoning_prompt_cached = answer_prompt_cached = 0
+        reasoning_prompt_ms = answer_prompt_ms = 0.0
+        reasoning_prompt_tps = answer_prompt_tps = 0.0
+        reasoning_tps = visible_tps = 0.0
+        effective_context_size = server.get("effective_context_size", server["profile"].get("context_size"))
+        reasoning = ""
+        text = ""
+        answer_stage = False
+        try:
+            try:
+                rates = [value for value in (policy.get("conservative_tokens_per_second"),
+                    server.get("conservative_tokens_per_second"))
+                    if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0]
+                rate = min(rates) if rates else None
+                if mode == "auto" and rate and self._remaining_turn(deadline) > policy["min_answer_seconds"] + 1:
+                    turn_reason_cap = min(policy["reasoning_tokens"],
+                        int(max(0, self._remaining_turn(deadline) - policy["min_answer_seconds"] - 1) * rate))
+                else:
+                    turn_reason_cap = 0
+                use_thinking = turn_reason_cap > 0
+                augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                if not use_thinking:
+                    augmented = copy.deepcopy(messages) if not policy["preserve_reasoning"] else augmented
+                prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline)
+                if use_thinking and not prompt.rstrip().endswith("<think>"):
+                    use_thinking = False
+                    turn_reason_cap = 0
+                    augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                prompt_ids = self._tokenize(server, prompt, deadline)
+                prompt_count = len(prompt_ids)
+                # Template rendering and tokenization consume the same turn budget as inference.
+                remaining_for_thinking = self._remaining_turn(deadline) - policy["min_answer_seconds"] - 1
+                turn_reason_cap = min(turn_reason_cap, int(max(0, remaining_for_thinking * rate))) if use_thinking and rate else 0
+                if turn_reason_cap <= 0 and use_thinking:
+                    use_thinking = False
+                    augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                    prompt_ids = self._tokenize(server, prompt, deadline)
+                    prompt_count = len(prompt_ids)
+                ctx_size = server.get("effective_context_size", server["profile"].get("context_size"))
+                if isinstance(ctx_size, int) and ctx_size > 0:
+                    close_ids = self._tokenize(server, "</think>", deadline)
+                    base_required = prompt_count + (len(close_ids) if use_thinking else 0) + max_tokens
+                    while base_required > ctx_size and history:
+                        history.pop(0)
+                        augmented = self._messages_with_reasoning(messages, history)
+                        prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline)
+                        prompt_ids = self._tokenize(server, prompt, deadline)
+                        prompt_count = len(prompt_ids)
+                        base_required = prompt_count + (len(close_ids) if use_thinking else 0) + max_tokens
+                    if base_required > ctx_size:
+                        raise AdapterError("observer_context_budget")
+                    if use_thinking:
+                        turn_reason_cap = min(turn_reason_cap, max(0, ctx_size - base_required))
+                        if turn_reason_cap <= 0:
+                            use_thinking = False
+                            turn_reason_cap = 0
+                            augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                            prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                            prompt_ids = self._tokenize(server, prompt, deadline)
+                            prompt_count = len(prompt_ids)
+                            if prompt_count + max_tokens > ctx_size:
+                                raise AdapterError("observer_context_budget")
+                if use_thinking and rate:
+                    remaining_for_thinking = self._remaining_turn(deadline) - policy["min_answer_seconds"] - 1
+                    turn_reason_cap = min(turn_reason_cap, int(max(0, remaining_for_thinking * rate)))
+                    if turn_reason_cap <= 0:
+                        use_thinking = False
+                        turn_reason_cap = 0
+                        augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                        prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                        prompt_ids = self._tokenize(server, prompt, deadline)
+                        prompt_count = len(prompt_ids)
+                        if isinstance(ctx_size, int) and ctx_size > 0 and prompt_count + max_tokens > ctx_size:
+                            raise AdapterError("observer_context_budget")
+                reasoning_token_budget = turn_reason_cap if use_thinking else 0
+                if use_thinking:
+                    phase_deadline = deadline - policy["min_answer_seconds"]
+                    thought = self._completion(server, prompt=prompt_ids, max_tokens=turn_reason_cap,
+                        deadline=phase_deadline, temperature=policy["thinking_temperature"], top_p=policy["thinking_top_p"],
+                        top_k=policy["top_k"], min_p=policy["min_p"], presence_penalty=policy["presence_penalty"],
+                        stop=["</think>"])
+                    reasoning = thought.get("content") if isinstance(thought.get("content"), str) else ""
+                    thought_tokens = thought.get("tokens") if isinstance(thought.get("tokens"), list) else []
+                    timings = thought.get("timings") if isinstance(thought.get("timings"), dict) else {}
+                    predicted = timings.get("predicted_n", len(thought_tokens))
+                    reasoning_count = predicted if isinstance(predicted, int) and predicted >= 0 else len(thought_tokens)
+                    reasoning_ms = float(timings.get("predicted_ms", 0) or 0)
+                    reasoning_prompt_count = len(prompt_ids)
+                    reasoning_prompt_evaluated = int(timings.get("prompt_n", 0) or 0)
+                    reasoning_prompt_cached = int(timings.get("cache_n", 0) or 0)
+                    reasoning_prompt_ms = float(timings.get("prompt_ms", 0) or 0)
+                    reasoning_prompt_tps = float(timings.get("prompt_per_second", 0) or 0)
+                    reasoning_tps = float(timings.get("predicted_per_second", 0) or 0)
+                    rate = timings.get("predicted_per_second")
+                    if isinstance(rate, (int, float)) and not isinstance(rate, bool) and math.isfinite(rate) and rate > 0:
+                        old_rate = server.get("conservative_tokens_per_second")
+                        measured = float(rate) * 0.7
+                        server["conservative_tokens_per_second"] = min(old_rate, measured) if old_rate else measured
+                    closure_ids = self._tokenize(server, "</think>", deadline)
+                    if thought_tokens and closure_ids and thought_tokens[-len(closure_ids):] == closure_ids:
+                        reasoning_count = max(0, reasoning_count - len(closure_ids))
+                        answer_prompt = prompt_ids + thought_tokens
+                    else:
+                        answer_prompt = prompt_ids + thought_tokens + closure_ids
+                    if not thought_tokens:
+                        answer_prompt = self._tokenize(server, prompt + reasoning + "</think>", deadline)
+                    answer_stage = True
+                else:
+                    answer_prompt = self._tokenize(server, prompt, deadline)
+                if isinstance(ctx_size, int) and ctx_size > 0 and len(answer_prompt) + max_tokens > ctx_size:
+                    raise AdapterError("observer_context_budget")
+                answer = self._completion(server, prompt=answer_prompt, max_tokens=max_tokens,
+                    deadline=deadline, temperature=policy["direct_temperature"], top_p=policy["direct_top_p"],
+                    top_k=policy["top_k"], min_p=policy["min_p"], presence_penalty=policy["presence_penalty"],
+                    response_format=response_format)
+                text = answer.get("content") if isinstance(answer.get("content"), str) else ""
+                if "<think>" in text or "</think>" in text:
+                    raise AdapterError("observer_visible_reasoning_output_rejected")
+                if len(text.encode("utf-8")) > 16 * 1024:
+                    raise AdapterError("observer_visible_output_budget_exceeded")
+                answer_tokens = answer.get("tokens") if isinstance(answer.get("tokens"), list) else []
+                timings = answer.get("timings") if isinstance(answer.get("timings"), dict) else {}
+                visible_ms = float(timings.get("predicted_ms", 0) or 0)
+                answer_prompt_count = len(answer_prompt)
+                answer_prompt_evaluated = int(timings.get("prompt_n", 0) or 0)
+                answer_prompt_cached = int(timings.get("cache_n", 0) or 0)
+                answer_prompt_ms = float(timings.get("prompt_ms", 0) or 0)
+                answer_prompt_tps = float(timings.get("prompt_per_second", 0) or 0)
+                visible_tps = float(timings.get("predicted_per_second", 0) or 0)
+                visible_count = timings.get("predicted_n", len(answer_tokens))
+                if not isinstance(visible_count, int) or visible_count < 0:
+                    visible_count = len(answer_tokens)
+                rate = timings.get("predicted_per_second")
+                if visible_count >= 16 and isinstance(rate, (int, float)) and not isinstance(rate, bool) and math.isfinite(rate) and rate > 0:
+                    old_rate = server.get("conservative_tokens_per_second")
+                    measured = float(rate) * 0.7
+                    server["conservative_tokens_per_second"] = min(old_rate, measured) if old_rate else measured
+                if policy["preserve_reasoning"] and reasoning:
+                    history.append({"answer": text, "reasoning": reasoning})
+                    if len(history) > 32:
+                        del history[:-32]
+            except AdapterError:
+                raise
+            except (OSError, urllib.error.URLError, TimeoutError) as error:
+                self.clear_reasoning(handle, key if isinstance(key, str) else None)
+                timed_out = time.time() >= deadline or self._remaining_before_error(deadline)
+                try:
+                    self.cancel(handle, request_id)
+                except Exception:
+                    pass
+                raise AdapterError("observer_model_turn_timed_out" if timed_out else "observer_model_transport_failed") from error
+        except AdapterError as error:
+            if str(error) in {"observer_model_turn_timed_out", "observer_model_transport_failed"}:
+                self.clear_reasoning(handle, key if isinstance(key, str) else None)
+            if str(error) == "observer_model_turn_timed_out" and request_id in server.get("active_requests", ()):
+                self.cancel(handle, request_id)
+            raise
+        finally:
+            server["active_requests"].discard(request_id)
+        duration = (time.perf_counter() - started) * 1000
+        total = reasoning_count + visible_count
+        usage = {"prompt_tokens": prompt_count, "completion_tokens": total,
+                 "reasoning_tokens": reasoning_count, "visible_tokens": visible_count,
+                 "answer_tokens": visible_count, "total_tokens": prompt_count + total,
+                 "reasoning_token_budget": reasoning_token_budget,
+                 "reasoning_ms": round(reasoning_ms, 3), "visible_ms": round(visible_ms, 3),
+                 "reasoning_prompt_tokens": reasoning_prompt_count,
+                 "answer_prompt_tokens": answer_prompt_count,
+                 "reasoning_prompt_evaluated_tokens": reasoning_prompt_evaluated,
+                 "reasoning_prompt_cached_tokens": reasoning_prompt_cached,
+                 "answer_prompt_evaluated_tokens": answer_prompt_evaluated,
+                 "answer_prompt_cached_tokens": answer_prompt_cached,
+                 "reasoning_prompt_ms": round(reasoning_prompt_ms, 3),
+                 "answer_prompt_ms": round(answer_prompt_ms, 3),
+                 "reasoning_prompt_tokens_per_second": reasoning_prompt_tps,
+                 "answer_prompt_tokens_per_second": answer_prompt_tps,
+                 "reasoning_tokens_per_second": reasoning_tps,
+                 "visible_tokens_per_second": visible_tps,
+                 "context_tokens": len(answer_prompt) + visible_count,
+                 "effective_context_size": effective_context_size}
+        server["usage"]["runs"] += 1
+        server["usage"]["prompt_tokens"] += prompt_count
+        server["usage"]["completion_tokens"] += total
+        server["usage"]["duration_ms"] += duration
+        return {"status": "succeeded", "request_id": request_id, "text": text, "usage": usage,
+                "duration_ms": round(duration, 3), "response_metadata": {
+                    "finish_reason": answer.get("stop_type") or "unknown",
+                    "reasoning_preserved": bool(policy["preserve_reasoning"] and reasoning),
+                    "answer_stage": answer_stage, "content_bytes": len(text.encode("utf-8"))}}
+
+    @staticmethod
+    def _remaining_before_error(deadline: float) -> bool:
+        return time.time() >= deadline
 
     def cancel(self, handle: str, request_id: str | None = None) -> dict[str, Any]:
         server = self._server(handle)
@@ -390,6 +796,7 @@ class LlamaCppServerAdapter:
             server["log_stream"].close()
             server["accepting"] = False
             server["evicted"] = True
+            server.get("reasoning_state", {}).clear()
             return {"evicted": True}
 
     def quiescent(self, handle: str) -> bool:

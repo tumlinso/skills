@@ -10,6 +10,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import selectors
 import shutil
 import signal
@@ -21,7 +22,7 @@ from typing import Any, Callable
 TOOLS = frozenset({"command", "log", "overview", "delta", "frontier", "search",
                    "evidence", "impact", "history", "machine"})
 JOB_INPUT_MAX_BYTES = 256 * 1024
-MODEL_TURN_MAX_BYTES = 90000
+MODEL_TURN_MAX_BYTES = 1024 * 1024
 MODEL_TURN_MAX_MESSAGES = 24
 CHECKPOINT_MAX_BYTES = 96 * 1024
 
@@ -38,6 +39,32 @@ def remaining_seconds(deadline_epoch):
 
 class StaleAttempt(RuntimeError):
     pass
+
+
+_REASONING_COMPLEX_TERMS = re.compile(
+    r"\b(compare|contrast|why|explain|analy[sz]e|synthesi[sz]e|relationship|"
+    r"across|multiple|several|both|impact|effect|trade-?off|reasoning|"
+    r"reconcile|summari[sz]e)\b", re.IGNORECASE)
+_REASONING_SIMPLE_PATTERNS = (
+    re.compile(r"\b(what|which|who|when|where)\b.{0,100}\b(value|number|name|date|version|file|path|setting|status|uuid|identifier|gpu|configured|configuration|says|states|lists|reports|documented)\b", re.I),
+    re.compile(r"\b(extract|identify|quote|read off|look up)\b", re.I),
+)
+
+
+def _reasoning_mode(question: str, *, mode: str, first_step: bool,
+                    has_protocol_feedback: bool, remaining: float) -> str:
+    """Choose thinking for this private completion, with answer time reserved."""
+    if has_protocol_feedback or remaining < 15:
+        return "off"
+    if _REASONING_COMPLEX_TERMS.search(question):
+        return "auto"
+    if mode == "skill" and first_step:
+        return "off"
+    if any(pattern.search(question) for pattern in _REASONING_SIMPLE_PATTERNS):
+        return "off"
+    # The default preserves adaptive model thinking for questions whose work
+    # cannot be classified safely as direct extraction.
+    return "auto"
 
 
 class ReadOnlyCommandRunner:
@@ -394,7 +421,7 @@ class ObserverWorkerPort:
                     "then follow its own maps and references agentically. Read selected files with direct cat argv to retain exact source proof. "
                     "Indexes are advisory. Final JSON must include skill_selection with format pc-skill-selection/1, "
                     "selections [{skill,resource,content_sha256,line_start,line_end,reason}], synthesis, unresolved. "
-                    "Resources are relative to the registered skill root. Report useful source selections, not a whole skill dump."
+                    "Resources are relative to the registered skill root. Select a small coherent set of complete, useful sections or modular resources; include relevant prerequisites, constraints, and applicable validation instructions. Prefer enough authoritative context for the task without dumping whole skills or unrelated resources. The extended excerpt budget is a ceiling, not a target: do not pad selections or try to use it all. Keep synthesis concise, explain how the selected instructions apply, and let the broker supply the exact source excerpts."
                     " The complete skill final JSON above is required; a generic answer without skill_selection is insufficient. "
                     "Example resource/hash/range values describe grammar, not evidence: choose resources that answer the question, "
                     "copy their exact observed source_reads hashes and valid line ranges, and never invent a hash or select "
@@ -503,8 +530,14 @@ class ObserverWorkerPort:
                     return messages
                 messages = build_messages()
                 def model_turn():
+                    timeout_seconds = min(60.0, remaining_seconds(deadline_epoch))
+                    reasoning_mode = _reasoning_mode(
+                        request["question"], mode=request["mode"], first_step=(step == 0),
+                        has_protocol_feedback=bool(protocol_feedback),
+                        remaining=timeout_seconds)
                     candidate = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
-                        "max_tokens": 2048, "timeout_seconds": min(60.0, remaining_seconds(deadline_epoch)),
+                        "max_tokens": 2048, "reasoning_mode": reasoning_mode,
+                        "timeout_seconds": timeout_seconds,
                         "deadline_epoch": deadline_epoch,
                         "compute_profile": request.get("compute_profile", "narrow"),
                         "parallelism": request.get("parallelism", "default")}
@@ -525,13 +558,45 @@ class ObserverWorkerPort:
                         context_bytes=turn_size, context_limit_bytes=MODEL_TURN_MAX_BYTES,
                         context_messages=len(messages), context_message_limit=MODEL_TURN_MAX_MESSAGES,
                         unresolved_questions=["The trusted request context exceeds the model turn limit."])
-                response = self.backend.run_observer_turn(turn)
-                check()
-                remaining_seconds(deadline_epoch)
-                if not isinstance(response, dict):
-                    raise ValueError("local_backend_invalid_response")
-                if response.get("status") != "available":
+                while True:
+                    response = self.backend.run_observer_turn(turn)
+                    check()
+                    remaining_seconds(deadline_epoch)
+                    if not isinstance(response, dict):
+                        raise ValueError("local_backend_invalid_response")
+                    if response.get("status") == "available":
+                        break
                     reason = str(response.get("reason", "local_backend_unavailable"))[:500]
+                    # The adapter's context preflight returns this before any
+                    # completion. Drop the oldest visible observation and retry
+                    # inside this semantic round, keeping its packet ID explicit.
+                    if reason in {"context_budget", "observer_context_budget"} and visible_observations:
+                        removed = visible_observations.pop(0)
+                        packet_id = removed.get("packet_id")
+                        if isinstance(packet_id, str) and packet_id not in omitted_packet_ids:
+                            omitted_packet_ids.append(packet_id)
+                        messages = build_messages()
+                        while (visible_observations and
+                               (len(messages) > MODEL_TURN_MAX_MESSAGES or
+                                len(json.dumps(model_turn(), ensure_ascii=False).encode()) > MODEL_TURN_MAX_BYTES)):
+                            removed = visible_observations.pop(0)
+                            packet_id = removed.get("packet_id")
+                            if isinstance(packet_id, str) and packet_id not in omitted_packet_ids:
+                                omitted_packet_ids.append(packet_id)
+                            messages = build_messages()
+                        if (len(messages) > MODEL_TURN_MAX_MESSAGES or
+                                len(json.dumps(model_turn(), ensure_ascii=False).encode()) > MODEL_TURN_MAX_BYTES):
+                            return snapshot("partial", reason="context_budget",
+                                failure_classification="context_budget",
+                                context_messages=len(messages), context_message_limit=MODEL_TURN_MAX_MESSAGES,
+                                unresolved_questions=["The trusted request and required prompt exceed the model context budget."])
+                        turn = model_turn()
+                        continue
+                    if reason in {"context_budget", "observer_context_budget"}:
+                        return snapshot("partial", reason="context_budget",
+                            failure_classification="context_budget",
+                            context_messages=len(messages), context_message_limit=MODEL_TURN_MAX_MESSAGES,
+                            unresolved_questions=["The trusted request and required prompt exceed the model context budget."])
                     state = "queued_after_eviction" if "session_unavailable" in reason or "preempt" in reason else "yielding"
                     return snapshot(state, reason=reason)
                 text = response.get("text")
