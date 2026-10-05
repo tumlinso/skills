@@ -9,6 +9,8 @@ import math
 import os
 import signal
 import socket
+import stat as stat_module
+import struct
 import subprocess
 import sys
 import threading
@@ -33,6 +35,65 @@ from .canonical_runtime import subprocess_environment, validate as validate_cano
 
 class SupervisorError(RuntimeError):
     pass
+
+
+RPC_FRAME_BYTES = 512 * 1024
+RPC_CONNECTIONS = 32
+
+
+def _rpc_frame(value: dict[str, Any]) -> bytes:
+    try:
+        data = json.dumps(value, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError) as error:
+        raise SupervisorError("supervisor_malformed_frame") from error
+    if len(data) > RPC_FRAME_BYTES:
+        raise SupervisorError("supervisor_frame_too_large")
+    return data + b"\n"
+
+
+def _read_rpc_frame(connection: socket.socket, *, timeout: float) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout
+    data = bytearray()
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise SupervisorError("supervisor_request_timeout")
+        connection.settimeout(remaining)
+        block = connection.recv(4096)
+        if not block:
+            raise SupervisorError("supervisor_incomplete_frame")
+        data.extend(block)
+        newline = data.find(b"\n")
+        if (newline < 0 and len(data) > RPC_FRAME_BYTES) or newline > RPC_FRAME_BYTES:
+            raise SupervisorError("supervisor_frame_too_large")
+        if newline >= 0:
+            if data[newline + 1:]:
+                raise SupervisorError("supervisor_multiple_frames")
+            try:
+                value = json.loads(data[:newline].decode("utf-8"),
+                    parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
+            except (UnicodeDecodeError, ValueError) as error:
+                raise SupervisorError("supervisor_malformed_frame") from error
+            if not isinstance(value, dict):
+                raise SupervisorError("supervisor_malformed_frame")
+            return value
+
+
+def _check_peer_uid(connection: socket.socket) -> int:
+    if not hasattr(socket, "SO_PEERCRED"):
+        raise SupervisorError("supervisor_peer_identity_unavailable")
+    pid, uid, _ = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+    if uid != os.getuid():
+        raise SupervisorError("supervisor_peer_uid_mismatch")
+    return pid
+
+
+def _check_private(path: Path, mode: int, *, socket_file: bool = False) -> None:
+    info = path.lstat()
+    if (stat_module.S_ISLNK(info.st_mode) or info.st_uid != os.getuid() or
+            info.st_mode & 0o777 != mode or
+            (socket_file and not stat_module.S_ISSOCK(info.st_mode))):
+        raise SupervisorError("supervisor_private_path_invalid")
 
 
 def _pool_synchronized(method):
@@ -528,7 +589,6 @@ class ProductionBackend:
             "endpoint": endpoint, "slots": summaries,
         }
 
-    @_pool_synchronized
     def observer_status(self) -> dict[str, Any]:
         """Return the in-process observer pool's known state without probing it.
 
@@ -542,7 +602,7 @@ class ProductionBackend:
              "leased": slot.service_lease_id is not None,
              "compute_profile": slot.compute_profile,
              "parallelism": slot.parallelism}
-            for slot in sorted(self._slots.values(), key=lambda item: item.slot_id)
+            for slot in sorted(list(self._slots.values()), key=lambda item: item.slot_id)
         ]
         running = bool(summaries)
         draining = self.draining or any(item["state"] == "draining" for item in summaries)
@@ -980,6 +1040,9 @@ class ProductionBackend:
         a compact fallback; callers keep the authoritative envelope.
         """
         try:
+            deadline_epoch = packet.get("deadline_epoch") if isinstance(packet, dict) else None
+            if deadline_epoch is not None:
+                remaining_seconds(deadline_epoch)
             encoded = json.dumps(packet, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
             if not isinstance(packet, dict) or len(encoded.encode("utf-8")) > 64 * 1024:
                 raise SupervisorError("observer_packet_invalid_or_too_large")
@@ -996,7 +1059,8 @@ class ProductionBackend:
                 admission = self.admit()
                 lease: dict[str, Any] | None = None
                 try:
-                    lease = self.warm(str(admission["admission_id"]))
+                    lease = self.warm(str(admission["admission_id"]),
+                        **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}))
                     slot = self._slots[str(lease["slot_id"])]
                     schema = {
                         "type": "object", "additionalProperties": False,
@@ -1018,7 +1082,9 @@ class ProductionBackend:
                     raw = self._run_slot(slot, {
                         "messages": [{"role": "user", "content": prompt}],
                         "response_format": {"type": "json_object", "schema": schema},
-                        "temperature": 0, "max_tokens": 1024, "timeout_seconds": 90,
+                        "temperature": 0, "max_tokens": 1024,
+                        "timeout_seconds": min(90, remaining_seconds(deadline_epoch)) if deadline_epoch is not None else 90,
+                        **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}),
                     })
                     if raw.get("response_metadata", {}).get("finish_reason") == "length":
                         raise SupervisorError("observer_provider_output_incomplete")
@@ -1047,7 +1113,7 @@ class ProductionBackend:
                         self.cancel_admission(str(admission["admission_id"]))
             finally:
                 self._analysis_capacity.release()
-        except (SupervisorError, AdapterError, json.JSONDecodeError) as error:
+        except (SupervisorError, AdapterError, json.JSONDecodeError, TimeoutError, ValueError) as error:
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
                     "reason": str(error)[:500], "fallback": "authoritative_compact_envelope"}
 
@@ -1253,7 +1319,8 @@ class ProductionBackend:
 
 
 class SupervisorServer:
-    def __init__(self, backend: Backend, *, root: Path | None = None):
+    def __init__(self, backend: Backend, *, root: Path | None = None, observer_only: bool = False,
+                 shutdown_timeout_seconds: float = 330):
         self.backend = backend
         self.root = root or runtime_root()
         self.socket_path = self.root / "supervisor.sock"
@@ -1261,15 +1328,88 @@ class SupervisorServer:
         self.state_path = self.root / "supervisor-state.json"
         self.lock_path = self.root / "supervisor.lock"
         self.stopping = False
+        self.observer_only = observer_only
+        self.shutdown_timeout_seconds = shutdown_timeout_seconds
+        self._connections = threading.BoundedSemaphore(RPC_CONNECTIONS)
+        self._observer_executions = threading.BoundedSemaphore(2)
+        self._stop_event = threading.Event()
+        self._threads: set[threading.Thread] = set()
+        self._threads_lock = threading.Lock()
+        self._process_start = process_identity(os.getpid())["process_start"]
+        self._source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         self.runtime_identity, self.runtime_context = bind_canonical_runtime(
             getattr(backend, "repo_root", Path.cwd())
         )
         if not hasattr(backend, "repo_root"):
             self.runtime_context = self.runtime_identity.public()
 
+    def _observer_status(self) -> dict[str, Any]:
+        status = self.backend.observer_status()
+        known = {slot.slot_id: slot for slot in list(getattr(self.backend, "_slots", {}).values())}
+        summaries = []
+        for summary in status.get("slots", []):
+            slot = known.get(summary["slot_id"])
+            details = ({"server_pid": slot.endpoint_descriptor.get("server_pid"), "owner_id": slot.owner_id,
+                        "gpu_uuids": list(slot.gpu_uuids), "service_lease_id": slot.service_lease_id,
+                        "model_id": slot.endpoint_descriptor.get("model_id"),
+                        "model_sha256": slot.endpoint_descriptor.get("model_sha256")} if slot is not None else {})
+            summaries.append({**summary, **details})
+        return {**status, "slots": summaries, "idle_ttl_seconds": getattr(self.backend, "ttl", 900),
+                "runtime_identity": self.runtime_context,
+                "observer_contract": "PC-OBSERVER-SUPERVISOR/1",
+                "supervisor_pid": os.getpid(), "supervisor_process_start": self._process_start,
+                "source_sha256": self._source_sha256, "runtime_root": str(self.root),
+                "service_state_root": str(getattr(self.backend, "service_state_root", None)),
+                "allowed_gpu_uuids": list(getattr(self.backend, "profile", {}).get(
+                    "deployment_policy", {}).get("allowed_gpu_uuids", [])),
+                "observer_only": self.observer_only}
+
     def _dispatch(self, request: dict[str, Any]) -> dict[str, Any]:
         validate_canonical_runtime(self.runtime_identity)
         operation = request.get("operation")
+        observer_parameters = {
+            "observer-status": {"deadline_epoch"}, "observer-analyze": {"packet"},
+            "observer-turn": {"request"},
+            "observer-open": {"count", "compute_profile", "parallelism", "deadline_epoch"},
+            "observer-close": {"session_id", "deadline_epoch"}}
+        if operation in observer_parameters:
+            if set(request) - {"operation"} - observer_parameters[operation]:
+                raise SupervisorError("supervisor_observer_parameters_invalid")
+            if request.get("deadline_epoch") is not None:
+                remaining_seconds(request["deadline_epoch"])
+            if operation == "observer-status":
+                return self._observer_status()
+            if operation == "observer-open":
+                if (type(request.get("count")) is not int or request["count"] not in {1, 2} or
+                        request.get("compute_profile", "narrow") != "narrow" or
+                        request.get("parallelism", "default") not in {"default", "layer", "tensor"}):
+                    raise SupervisorError("supervisor_observer_parameters_invalid")
+                return self.backend.open_observer_sessions(request["count"],
+                    compute_profile=request.get("compute_profile", "narrow"),
+                    parallelism=request.get("parallelism", "default"),
+                    deadline_epoch=min(time.time() + 300, request.get("deadline_epoch") or time.time() + 300))
+            if operation == "observer-close":
+                if not isinstance(request.get("session_id"), str) or not 1 <= len(request["session_id"]) <= 128:
+                    raise SupervisorError("supervisor_observer_parameters_invalid")
+                return self.backend.close_observer_session(request["session_id"])
+            key = "packet" if operation == "observer-analyze" else "request"
+            if not isinstance(request.get(key), dict):
+                raise SupervisorError("supervisor_observer_parameters_invalid")
+            payload = dict(request[key])
+            if payload.get("deadline_epoch") is not None:
+                remaining_seconds(payload["deadline_epoch"])
+            payload["deadline_epoch"] = min(time.time() + 300, payload.get("deadline_epoch") or time.time() + 300)
+            if not self._observer_executions.acquire(blocking=False):
+                return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
+                        "reason": "observer_provider_busy", "fallback": "project_control_read_broker"}
+            try:
+                if operation == "observer-analyze":
+                    return self.backend.analyze_observer_packet(payload)
+                return self.backend.run_observer_turn(payload)
+            finally:
+                self._observer_executions.release()
+        if self.observer_only and operation != "stop":
+            raise SupervisorError("supervisor_maintenance_disabled")
         if operation == "status":
             return {**self.backend.status(), "runtime_identity": self.runtime_context}
         if operation == "admit":
@@ -1287,57 +1427,107 @@ class SupervisorServer:
         if operation == "evict":
             return self.backend.evict()
         if operation == "stop":
+            result = self.backend.evict()
+            if result.get("quiescent") is not True:
+                raise SupervisorError("supervisor_stop_not_quiescent")
             self.stopping = True
-            return {**self.backend.evict(), "stopped": True}
+            self._stop_event.set()
+            return {**result, "stopped": True}
         raise SupervisorError(f"unknown supervisor operation: {operation!r}")
+
+    def _serve_connection(self, connection: socket.socket) -> None:
+        try:
+            with connection:
+                try:
+                    _check_peer_uid(connection)
+                    request = _read_rpc_frame(connection, timeout=10)
+                    response = {"ok": True, "data": self._dispatch(request)}
+                    encoded = _rpc_frame(response)
+                except Exception as error:
+                    encoded = _rpc_frame({"ok": False, "error": str(error)[:1000]})
+                try:
+                    connection.settimeout(10)
+                    connection.sendall(encoded)
+                except (OSError, TimeoutError):
+                    pass  # An accepted turn survives a frontend disconnect.
+        finally:
+            self._connections.release()
+            with self._threads_lock:
+                self._threads.discard(threading.current_thread())
+
+    def _housekeeping(self) -> None:
+        while not self._stop_event.is_set():
+            try:
+                self.backend.poll()
+                status = self._observer_status() if self.observer_only else self.backend.status()
+                _atomic_json(self.state_path, status)
+            except Exception as error:
+                _atomic_json(self.state_path, {"healthy": False, "error": str(error)[:1000]})
+            self._stop_event.wait(.25)
+
+    def stop_accepting(self, signum=None, frame=None) -> None:
+        """Signal handler: leave verified model cleanup to the serve finally."""
+        self.stopping = True
+        self._stop_event.set()
 
     def serve(self) -> int:
         os.umask(0o077)
+        if self.root.is_symlink():
+            raise SupervisorError("supervisor_private_path_invalid")
         _private_directory(self.root)
+        _check_private(self.root, 0o700)
+        for path in (self.lock_path, self.pid_path, self.state_path):
+            if path.exists() or path.is_symlink():
+                _check_private(path, 0o600)
         lock_stream = self.lock_path.open("a+b")
         try:
             fcntl.flock(lock_stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             lock_stream.close()
             return 0
-        if self.socket_path.exists():
+        if self.socket_path.exists() or self.socket_path.is_symlink():
+            _check_private(self.socket_path, 0o600, socket_file=True)
             self.socket_path.unlink()
         server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         try:
             server.bind(str(self.socket_path))
             self.socket_path.chmod(0o600)
-            server.listen(8)
+            server.listen(RPC_CONNECTIONS)
             server.settimeout(0.25)
             self.pid_path.write_text(str(os.getpid()) + "\n", encoding="ascii")
             self.pid_path.chmod(0o600)
+            housekeeping = threading.Thread(target=self._housekeeping, daemon=True)
+            housekeeping.start()
             while not self.stopping:
-                self.backend.poll()
-                _atomic_json(self.state_path, self.backend.status())
                 try:
                     connection, _ = server.accept()
                 except socket.timeout:
                     continue
-                with connection:
-                    connection.settimeout(660)
-                    data = b""
-                    while b"\n" not in data and len(data) <= 64 * 1024:
-                        block = connection.recv(4096)
-                        if not block:
-                            break
-                        data += block
-                    try:
-                        request = json.loads(data.split(b"\n", 1)[0].decode("utf-8"))
-                        response = {"ok": True, "data": self._dispatch(request)}
-                    except Exception as exc:
-                        response = {"ok": False, "error": str(exc)[:1000]}
-                    try:
-                        connection.sendall(json.dumps(response, separators=(",", ":")).encode("utf-8") + b"\n")
-                    except (BrokenPipeError, ConnectionResetError):
-                        # A short status probe may leave while a cold start is
-                        # completing. The owner process and service pool remain valid.
-                        pass
+                if not self._connections.acquire(blocking=False):
+                    with connection:
+                        connection.settimeout(.1)
+                        try:
+                            _check_peer_uid(connection)
+                            connection.sendall(_rpc_frame({"ok": False, "error": "supervisor_connections_busy"}))
+                        except (OSError, SupervisorError):
+                            pass
+                    continue
+                worker = threading.Thread(target=self._serve_connection, args=(connection,), daemon=True)
+                with self._threads_lock:
+                    self._threads.add(worker)
+                worker.start()
             return 0
         finally:
+            self._stop_event.set()
+            shutdown_deadline = time.monotonic() + self.shutdown_timeout_seconds
+            self.backend.drain()
+            with self._threads_lock:
+                workers = list(self._threads)
+            for worker in workers:
+                worker.join(timeout=max(0, shutdown_deadline - time.monotonic()))
+            if "housekeeping" in locals():
+                housekeeping.join(timeout=1)
+            cleanup = self.backend.evict()
             self.backend.close()
             server.close()
             self.socket_path.unlink(missing_ok=True)
@@ -1345,6 +1535,8 @@ class SupervisorServer:
             self.state_path.unlink(missing_ok=True)
             fcntl.flock(lock_stream.fileno(), fcntl.LOCK_UN)
             lock_stream.close()
+            if cleanup.get("quiescent") is not True:
+                raise SupervisorError("supervisor_shutdown_not_quiescent")
 
 
 class SupervisorClient:
@@ -1352,6 +1544,7 @@ class SupervisorClient:
         self.repo_root = Path(repo_root).resolve()
         self.root = root or runtime_root()
         self.socket_path = self.root / "supervisor.sock"
+        self._observer_owner: tuple[int, str] | None = None
         self.runtime_identity, self.runtime_context = bind_canonical_runtime(self.repo_root)
 
     def _validate_status(self, status: dict[str, Any]) -> None:
@@ -1363,23 +1556,80 @@ class SupervisorClient:
             )
 
     def _request(self, operation: str, *, timeout: float = 660, **parameters: Any) -> dict[str, Any]:
+        encoded = _rpc_frame({"operation": operation, **parameters})
+        deadline_epoch = parameters.get("deadline_epoch")
+        for key in ("packet", "request"):
+            if isinstance(parameters.get(key), dict):
+                deadline_epoch = parameters[key].get("deadline_epoch", deadline_epoch)
+        if deadline_epoch is not None:
+            timeout = min(timeout, remaining_seconds(deadline_epoch))
+        started = time.monotonic()
+        _check_private(self.root, 0o700)
+        _check_private(self.socket_path, 0o600, socket_file=True)
+        for path in (self.root / "supervisor.pid", self.root / "supervisor-state.json"):
+            if path.exists() or path.is_symlink():
+                _check_private(path, 0o600)
         connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        connection.settimeout(timeout)
         try:
+            remaining = timeout - (time.monotonic() - started)
+            if remaining <= 0:
+                raise socket.timeout("supervisor_request_timeout")
+            connection.settimeout(remaining)
             connection.connect(str(self.socket_path))
-            connection.sendall(json.dumps({"operation": operation, **parameters}, separators=(",", ":")).encode("utf-8") + b"\n")
-            data = b""
-            while b"\n" not in data and len(data) <= 128 * 1024:
-                block = connection.recv(4096)
-                if not block:
-                    break
-                data += block
+            peer_pid = _check_peer_uid(connection)
+            if operation.startswith("observer-") and operation != "observer-status" and self._observer_owner is not None:
+                if (peer_pid, process_identity(peer_pid)["process_start"]) != self._observer_owner:
+                    raise SupervisorError("central_supervisor_process_identity_mismatch")
+            remaining = timeout - (time.monotonic() - started)
+            if remaining <= 0:
+                raise socket.timeout("supervisor_request_timeout")
+            connection.settimeout(remaining)
+            connection.sendall(encoded)
+            response = _read_rpc_frame(connection, timeout=max(.000001, timeout - (time.monotonic() - started)))
         finally:
             connection.close()
-        response = json.loads(data.split(b"\n", 1)[0].decode("utf-8"))
         if not response.get("ok"):
             raise SupervisorError(str(response.get("error", "supervisor request failed")))
-        return dict(response["data"])
+        if not isinstance(response.get("data"), dict):
+            raise SupervisorError("supervisor_malformed_response")
+        if operation == "observer-status":
+            status = response["data"]
+            if (status.get("supervisor_pid") != peer_pid or
+                    status.get("supervisor_process_start") != process_identity(peer_pid)["process_start"]):
+                raise SupervisorError("central_supervisor_process_identity_mismatch")
+        return response["data"]
+
+    def _observer_request(self, operation: str, **parameters: Any) -> dict[str, Any]:
+        try:
+            return self._request(operation, timeout=300, **parameters)
+        except socket.timeout as error:
+            raise SupervisorError("central_supervisor_timeout") from error
+        except OSError as error:
+            raise SupervisorError("central_supervisor_unavailable") from error
+
+    def observer_status(self, *, deadline_epoch=None) -> dict[str, Any]:
+        result = self._observer_request("observer-status", deadline_epoch=deadline_epoch if deadline_epoch is not None else time.time() + 2)
+        self._validate_status(result)
+        self._observer_owner = (result["supervisor_pid"], result["supervisor_process_start"])
+        return result
+
+    def analyze_observer_packet(self, packet: dict[str, Any]) -> dict[str, Any]:
+        return self._observer_request("observer-analyze", packet=packet)
+
+    def run_observer_turn(self, request: dict[str, Any]) -> dict[str, Any]:
+        return self._observer_request("observer-turn", request=request)
+
+    def open_observer_sessions(self, count: int, *, compute_profile: str = "narrow",
+                               parallelism: str = "default", deadline_epoch=None) -> dict[str, Any]:
+        return self._observer_request("observer-open", count=count, compute_profile=compute_profile,
+                                      parallelism=parallelism, deadline_epoch=deadline_epoch)
+
+    def close_observer_session(self, session_id: str, *, deadline_epoch=None) -> dict[str, Any]:
+        return self._observer_request("observer-close", session_id=session_id, deadline_epoch=deadline_epoch)
+
+    def close(self) -> None:
+        # Requests own short-lived sockets; frontend teardown owns no model.
+        pass
 
     def _recover_stale(self) -> None:
         pid_path = self.root / "supervisor.pid"
@@ -1429,6 +1679,8 @@ class SupervisorClient:
         raise SupervisorError("persistent model supervisor did not start")
 
     def request(self, operation: str, **parameters: Any) -> dict[str, Any]:
+        if operation.startswith("observer-"):
+            return self._observer_request(operation, **parameters)
         if operation in {"admit", "warm", "acquire"}:
             self.ensure_running()
         elif not self.socket_path.exists():
@@ -1443,10 +1695,58 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--repo-root", required=True)
+    parser.add_argument("--service-state-root")
+    parser.add_argument("--runtime-root")
+    parser.add_argument("--allowed-gpu-uuid", action="append")
+    parser.add_argument("--observer-only", action="store_true")
+    parser.add_argument("--shutdown-timeout-seconds", type=float, default=330)
     args = parser.parse_args(argv)
     if not args.serve:
         return 2
-    return SupervisorServer(ProductionBackend(args.repo_root)).serve()
+    configured_state = os.environ.get("PROJECT_CONTROL_OBSERVER_ANALYSIS_STATE_DIR")
+    service_state = args.service_state_root or (configured_state if args.observer_only else None)
+    if args.observer_only and not service_state:
+        raise SupervisorError("central_supervisor_state_root_required")
+    if args.observer_only and configured_state and Path(configured_state).expanduser().resolve() != Path(service_state).expanduser().resolve():
+        raise SupervisorError("central_supervisor_state_root_mismatch")
+    configured_runtime = os.environ.get("CORE4_SUPERVISOR_RUNTIME_DIR")
+    root = Path(args.runtime_root or configured_runtime).expanduser() if args.runtime_root or configured_runtime else runtime_root(service_state)
+    if args.observer_only and root.resolve() != runtime_root(service_state):
+        raise SupervisorError("central_supervisor_runtime_root_mismatch")
+    if args.runtime_root and configured_runtime and root.resolve() != Path(configured_runtime).expanduser().resolve():
+        raise SupervisorError("central_supervisor_runtime_root_mismatch")
+    profile = tomllib.loads((Path(__file__).resolve().parents[1] / "config/production-profile.toml").read_text())
+    configured_gpus = os.environ.get("PROJECT_CONTROL_OBSERVER_GPU_UUIDS")
+    allowed = json.loads(configured_gpus) if configured_gpus else None
+    if allowed is not None and (not isinstance(allowed, list) or not allowed or
+            any(not isinstance(gpu, str) or not gpu.startswith("GPU-") or len(gpu) > 128 for gpu in allowed) or
+            len(set(allowed)) != len(allowed)):
+        raise SupervisorError("central_supervisor_gpu_allowlist_invalid")
+    if args.allowed_gpu_uuid and allowed is not None and not set(args.allowed_gpu_uuid) <= set(allowed):
+        raise SupervisorError("central_supervisor_gpu_allowlist_mismatch")
+    allowed = args.allowed_gpu_uuid or allowed
+    if args.observer_only and not allowed:
+        raise SupervisorError("central_supervisor_gpu_allowlist_required")
+    if allowed is not None:
+        if (any(not isinstance(gpu, str) or not gpu.startswith("GPU-") or len(gpu) > 128 for gpu in allowed) or
+                len(set(allowed)) != len(allowed)):
+            raise SupervisorError("central_supervisor_gpu_allowlist_invalid")
+        policy_allowed = profile["deployment_policy"].get("allowed_gpu_uuids")
+        if policy_allowed is not None and not set(allowed) <= set(policy_allowed):
+            raise SupervisorError("central_supervisor_gpu_allowlist_mismatch")
+        profile["deployment_policy"]["allowed_gpu_uuids"] = allowed
+    if not math.isfinite(args.shutdown_timeout_seconds) or not 0 < args.shutdown_timeout_seconds <= 330:
+        raise SupervisorError("central_supervisor_shutdown_timeout_invalid")
+    owner = SupervisorServer(ProductionBackend(args.repo_root, service_state_root=service_state, profile=profile),
+        root=root, observer_only=args.observer_only, shutdown_timeout_seconds=args.shutdown_timeout_seconds)
+    handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+    try:
+        for sig in handlers:
+            signal.signal(sig, owner.stop_accepting)
+        return owner.serve()
+    finally:
+        for sig, previous in handlers.items():
+            signal.signal(sig, previous)
 
 
 if __name__ == "__main__":
