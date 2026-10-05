@@ -27,6 +27,13 @@ def read_bound(reference):
 
 
 def passing_cases(report, cases):
+    if report.get('kind') == 'executed_product_acceptance':
+        assert report['status'] == 'passed' and report['pytest_returncode'] == 0, 'Qualification failed'
+        assert report['outcome'] == 'SK-AS1-QUALIFY'
+        assert report['test_file'] == 'tests/as1/test_sk_as1_qualify.py'
+        assert not report['missing_or_failed_cases'], 'Qualification cases failed or missing'
+        assert cases == set(report['required_cases']) == set(report['passed_cases']), 'Qualification coverage differs'
+        return
     assert report['pytest_exitstatus'] == 0, 'Qualification failed'
     for case in cases:
         rows = report['cases'][case]

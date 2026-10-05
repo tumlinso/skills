@@ -63,3 +63,25 @@ def test_consumer_refuses_failed_or_absent_qualification():
         CONSUMER.passing_cases({'pytest_exitstatus': 0, 'cases': {}}, {'SQA-01'})
     with pytest.raises(AssertionError, match='SQA-01'):
         CONSUMER.passing_cases({'pytest_exitstatus': 0, 'cases': {'SQA-01': [{'outcome': 'failed'}]}}, {'SQA-01'})
+
+
+@pytest.mark.parametrize('changed', [
+    {'status': 'failed'},
+    {'pytest_returncode': 1},
+    {'missing_or_failed_cases': ['SQA-02']},
+    {'passed_cases': ['SQA-01', 'SQA-03']},
+    {'required_cases': ['SQA-01']},
+    {'outcome': 'SK-AS1-RELEASE'},
+    {'test_file': 'tests/as1/unrelated.py'},
+])
+def test_consumer_refuses_incompatible_native_gate_schema(changed):
+    # Malformed report fixtures are negative unit checks, never release proof.
+    report = {'kind': 'executed_product_acceptance', 'status': 'passed',
+              'pytest_returncode': 0, 'outcome': 'SK-AS1-QUALIFY',
+              'test_file': 'tests/as1/test_sk_as1_qualify.py',
+              'required_cases': ['SQA-01', 'SQA-02', 'SQA-03'],
+              'passed_cases': ['SQA-01', 'SQA-02', 'SQA-03'],
+              'missing_or_failed_cases': []}
+    report.update(changed)
+    with pytest.raises(AssertionError):
+        CONSUMER.passing_cases(report, {'SQA-01', 'SQA-02', 'SQA-03'})

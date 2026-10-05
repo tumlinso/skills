@@ -28,15 +28,15 @@ rollback, source-preserving adoption, unrelated work checks and raw artifact
 hashes as required by `tests/as1/test_pc_as1_release.py` in standalone PC.
 
 After actual Skills qualification and actual live release pass, bind their
-external receipts. Supply the executed pytest case report, actual inference
-receipt and root's actual live release receipt; these commands do not activate
+external receipts. Supply the executed pytest case report or the original native gate stdout
+JSON (`executed_product_acceptance`), plus the actual inference receipt and root's actual live release receipt; these commands do not activate
 anything or mutate Todo:
 
 ```sh
 /home/tumlinson/project-control/.venv/bin/python integrations/as1_release.py \
   --bind-evidence \
-  --skills-qualification /absolute/path/to/executed-skills-cases.json \
-  --skills-real-proof /absolute/path/to/actual-sqa-q13/receipt.json \
+  --skills-qualification /absolute/path/to/native-skills-qualification/stdout.txt \
+  --skills-real-proof /absolute/path/to/actual-sqa-q14/receipt.json \
   --live-release /home/tumlinson/.local/state/project-control/as1-bootstrap/release/live-receipt.json
 /home/tumlinson/project-control/.venv/bin/python integrations/as1_release.py
 /home/tumlinson/project-control/.venv/bin/python planning/adaptive-surface-v1/scripts/acceptance_gate.py --outcome SK-AS1-RELEASE

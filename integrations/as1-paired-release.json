@@ -20,11 +20,11 @@
   "format": "skills-as1-paired-release/1",
   "instructions": {
     "path": "planning/adaptive-surface-v1/PAIRED_RELEASE.md",
-    "sha256": "18634fa66b64cd9ad121ca2bbd4d375c62492ba4125b9cb9bd4ad5e78f1517c2"
+    "sha256": "a3548e5194fdff3045649e7324bc32139793b5306c0b19b0f5592e1b78979bc0"
   },
   "live_consumer": {
     "path": "/home/tumlinson/project-control/tests/as1/test_pc_as1_release.py",
-    "sha256": "fb1700115d16df8eb935df38abbdce91fbe9ef6d4ef700040ba2125ff159ebcb"
+    "sha256": "0c951ab08d059a4fb9a347d13aaaa09520e5481af8e43136a47c4118d010cb4c"
   },
   "pins": {
     "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
