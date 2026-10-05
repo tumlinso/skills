@@ -372,6 +372,56 @@ class LlamaCppServerTests(unittest.TestCase):
         self.assertLess(cached_result["usage"]["estimated_prefill_ms"], 200)
         self.assertNotIn("private thought", json.dumps(cached_result))
 
+    def test_failed_turn_clears_cached_prefix_bookkeeping(self):
+        fail_visible = True
+        def transport(method, url, payload, timeout):
+            if url.endswith("/apply-template"):
+                return 200, {"prompt": "one two three four <think></think>"}
+            if url.endswith("/tokenize"):
+                return 200, {"tokens": list(range(10))}
+            answer = "<think>private</think>{}" if fail_visible else "{}"
+            return 200, {"content": answer, "tokens": [91], "timings": {
+                "predicted_n": 1, "prompt_n": 1, "cache_n": 9, "prompt_ms": 1}}
+        adapter = self._observer_adapter(transport, context_size=256)
+        server = adapter._server("fixture")
+        server["last_completion_tokens"] = list(range(9))
+        server["reasoning_state"]["lease-a"] = [{"answer": "prior", "reasoning": "private prior"}]
+        policy = {"preserve_reasoning": True, "conservative_prompt_tokens_per_second": 10}
+        with self.assertRaisesRegex(AdapterError, "observer_visible_reasoning_output_rejected"):
+            adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 16,
+                "reasoning_state_key": "lease-a", "reasoning_mode": "off", "observer_generation": policy})
+        self.assertIsNone(server["last_completion_tokens"])
+        self.assertEqual(server["reasoning_state"]["lease-a"], [{"answer": "prior", "reasoning": "private prior"}])
+        fail_visible = False
+        result = adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 16,
+            "reasoning_state_key": "lease-a", "reasoning_mode": "off", "observer_generation": policy})
+        self.assertEqual(result["usage"]["uncached_prompt_tokens"], 10)
+
+    def test_failed_turn_clears_cached_prefix_bookkeeping(self):
+        fail_visible = True
+        def transport(method, url, payload, timeout):
+            if url.endswith("/apply-template"):
+                return 200, {"prompt": "one two three four <think></think>"}
+            if url.endswith("/tokenize"):
+                return 200, {"tokens": list(range(10))}
+            answer = "<think>private</think>{}" if fail_visible else "{}"
+            return 200, {"content": answer, "tokens": [91], "timings": {
+                "predicted_n": 1, "prompt_n": 1, "cache_n": 9, "prompt_ms": 1}}
+        adapter = self._observer_adapter(transport, context_size=256)
+        server = adapter._server("fixture")
+        server["last_completion_tokens"] = list(range(9))
+        server["reasoning_state"]["lease-a"] = [{"answer": "prior", "reasoning": "private prior"}]
+        policy = {"preserve_reasoning": True, "conservative_prompt_tokens_per_second": 10}
+        with self.assertRaisesRegex(AdapterError, "observer_visible_reasoning_output_rejected"):
+            adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 16,
+                "reasoning_state_key": "lease-a", "reasoning_mode": "off", "observer_generation": policy})
+        self.assertIsNone(server["last_completion_tokens"])
+        self.assertEqual(server["reasoning_state"]["lease-a"], [{"answer": "prior", "reasoning": "private prior"}])
+        fail_visible = False
+        result = adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 16,
+            "reasoning_state_key": "lease-a", "reasoning_mode": "off", "observer_generation": policy})
+        self.assertEqual(result["usage"]["uncached_prompt_tokens"], 10)
+
     def test_observer_prefill_estimate_disables_cold_long_prompt_but_uses_cached_prefix(self):
         templates = []
         prompt_body = " ".join(f"token{i}" for i in range(600))

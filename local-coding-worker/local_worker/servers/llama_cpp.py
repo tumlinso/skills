@@ -605,6 +605,7 @@ class LlamaCppServerAdapter:
             except (TypeError, ValueError, RecursionError):
                 raise AdapterError("llama.cpp response_format schema invalid or exceeds bound") from None
         history = server["reasoning_state"].setdefault(key, []) if policy["preserve_reasoning"] else []
+        history_length_before = len(history)
         started = time.perf_counter()
         server.setdefault("active_requests", set()).add(request_id)
         reasoning_count = visible_count = prompt_count = 0
@@ -789,7 +790,6 @@ class LlamaCppServerAdapter:
             except AdapterError:
                 raise
             except (OSError, urllib.error.URLError, TimeoutError) as error:
-                self.clear_reasoning(handle, key if isinstance(key, str) else None)
                 timed_out = time.time() >= deadline or self._remaining_before_error(deadline)
                 try:
                     self.cancel(handle, request_id)
@@ -797,10 +797,16 @@ class LlamaCppServerAdapter:
                     pass
                 raise AdapterError("observer_model_turn_timed_out" if timed_out else "observer_model_transport_failed") from error
         except AdapterError as error:
-            if str(error) in {"observer_model_turn_timed_out", "observer_model_transport_failed"}:
-                self.clear_reasoning(handle, key if isinstance(key, str) else None)
+            server["last_completion_tokens"] = None
+            if len(history) > history_length_before:
+                del history[history_length_before:]
             if str(error) == "observer_model_turn_timed_out" and request_id in server.get("active_requests", ()):
                 self.cancel(handle, request_id)
+            raise
+        except Exception:
+            server["last_completion_tokens"] = None
+            if len(history) > history_length_before:
+                del history[history_length_before:]
             raise
         finally:
             server["active_requests"].discard(request_id)
