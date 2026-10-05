@@ -132,9 +132,14 @@ read adapters, child delegation, task claims and mutation are denied before
 the callback. Machine diagnostics use fixed broker adapters, never device mounts.
 
 `run(request)` accepts job_id, positive attempt, mode (`investigate` or `skill`),
-question, optional scope/hints/observations, max_steps (1..12), session_id and
-existing compute_profile/parallelism. Skill requests include a broker-registered
-`skill={name,root}` constrained to the runner's trusted mounts. No whole-project
+question, optional scope/hints/observations, max_steps (1..12 model rounds), session_id and
+existing compute_profile/parallelism.
+The default six-round budget reserves its final model round for final JSON
+synthesis from retained observed evidence, with unresolved work reported as
+partial. At most five model-requested tools are dispatched; a tool proposal in
+the final round is refused without another model turn. Authoritative final
+source validation reads retain the same overall deadline.
+Skill requests include a broker-registered `skill={name,root}` constrained to the runner's trusted mounts. No whole-project
 overview, instruction files, or previous caller context is automatically added.
 Skill mode prompts the agent to read installed SKILL.md and traverse its own
 maps/references; indexes remain advisory. Final selections are checked against

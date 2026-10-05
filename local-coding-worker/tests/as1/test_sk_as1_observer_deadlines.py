@@ -265,3 +265,84 @@ def test_repository_labels_do_not_grant_unmounted_source_access(tmp_path):
         'installed_skill_roots': [str(outside)]})
     assert not runner.allows(outside)
     assert json.dumps({'tool': 'command', 'arguments': {'argv': ['pwd'], 'cwd': str(mounted)}}) in turns[0]['messages'][0]['content']
+
+
+@pytest.mark.parametrize('last_is_tool', [False, True])
+def test_final_model_round_synthesizes_or_refuses_more_tools(tmp_path, last_is_tool):
+    turns, calls = [], []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            if len(turns) <= 5 or last_is_tool:
+                value = {'tool': 'search', 'arguments': {'query': 'missing evidence'}}
+            else:
+                value = {'answer': 'Observed sources support a partial answer.',
+                    'findings': [{'text': 'Observed source fact', 'evidence_packets': ['packet-1']}],
+                    'unresolved_questions': ['One source remains unverified.']}
+            return {'status': 'available', 'text': json.dumps(value)}
+    def tools(name, arguments):
+        calls.append((name, arguments))
+        return {'packet_id': f'packet-{len(calls)}', 'source': 'observed source fact'}
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=tools, fence=lambda *a: True)
+    deadline = time.time() + 5
+    result = worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate',
+        'question': 'What do the observed sources establish?', 'max_steps': 6, 'deadline_epoch': deadline})
+    assert len(turns) == 6
+    assert len(calls) == 5
+    assert result['status'] == 'partial'
+    last_context = json.loads(turns[-1]['messages'][-1]['content'])
+    assert last_context['final_round'] is True
+    assert 'Return final JSON only' in last_context['instruction']
+    assert all(turn['deadline_epoch'] == deadline and 0 < turn['timeout_seconds'] <= 5 for turn in turns)
+    if last_is_tool:
+        assert result['reason'] == 'final_round_requires_answer'
+        assert 'answer' not in result
+    else:
+        assert result['answer'] == 'Observed sources support a partial answer.'
+        assert result['findings'][0]['evidence_packets'] == ['packet-1']
+        assert result['unresolved_questions'] == ['One source remains unverified.']
+
+
+def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp_path):
+    import hashlib
+    files = ['SKILL.md', 'map.md', 'architecture.md', 'start.md', 'needs.md']
+    for index, name in enumerate(files):
+        next_file = files[index + 1] if index + 1 < len(files) else 'none'
+        (tmp_path / name).write_text(f'Read {next_file}; observed guidance {index}.\n')
+    turns, reads = [], []
+    class Command(ReadOnlyCommandRunner):
+        def run(self, argv, cwd, **kwargs):
+            path = Path(argv[1]).resolve()
+            assert self.allows(path)
+            reads.append(path.name)
+            content = path.read_text()
+            return {'packet_id': f'packet-{len(reads)}', 'status': 'completed', 'exit_code': 0,
+                'stdout': content, 'truncated': False,
+                'source_reads': [{'path': str(path), 'content_sha256': hashlib.sha256(content.encode()).hexdigest()}]}
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            if len(turns) <= 5:
+                value = {'tool': 'command', 'arguments': {'argv': ['cat', str(tmp_path / files[len(turns) - 1])],
+                                                        'cwd': str(tmp_path)}}
+            else:
+                value = {'answer': 'The read maps provide partial guidance.',
+                    'findings': [{'text': 'Observed guidance 4.', 'evidence_packets': ['packet-5']}],
+                    'unresolved_questions': ['Further implementation details were not read.'],
+                    'skill_selection': {'format': 'pc-skill-selection/1', 'selections': [{
+                        'skill': 'fixture', 'resource': 'needs.md',
+                        'content_sha256': hashlib.sha256((tmp_path / 'needs.md').read_bytes()).hexdigest(),
+                        'line_start': 1, 'line_end': 1, 'reason': 'Observed task guidance'}],
+                        'synthesis': 'Observed guidance 4.', 'unresolved': ['Unread details.']}}
+            return {'status': 'available', 'text': json.dumps(value)}
+    command = Command([tmp_path], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=command, tools=lambda *a: pytest.fail('unexpected tool'), fence=lambda *a: True)
+    result = worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'skill', 'question': 'Read skill maps for guidance',
+        'skill': {'name': 'fixture', 'root': str(tmp_path)}, 'max_steps': 6, 'deadline_epoch': time.time() + 5})
+    assert result['status'] == 'partial'
+    assert len(turns) == 6
+    assert reads == [*files, 'needs.md']  # Last read is authoritative final validation, not a model-requested call.
+    assert result['findings'][0]['evidence_packets'] == ['packet-5']
+    assert result['skill_selection']['selections'][0]['resource'] == 'needs.md'
+    assert all('hidden' not in observation for observation in result['observations'])

@@ -376,6 +376,7 @@ class ObserverWorkerPort:
             initial_context = {k: request[k] for k in ("question", "scope", "hints", "skill", "refresh_context", "log_guidance",
                                                      "inquiry_repositories", "installed_skill_roots") if k in request}
             for step in range(max_steps):
+                final_round = step == max_steps - 1
                 check()
                 remaining_seconds(deadline_epoch)
                 session = request.get("session_id")
@@ -423,6 +424,15 @@ class ObserverWorkerPort:
                                          "Failed or truncated entry observations do not satisfy this prerequisite.")
                     messages.append({"role": "user", "content": json.dumps(
                         {"progress": progress, "continuation": continuation}, ensure_ascii=False)})
+                if final_round:
+                    messages.append({"role": "user", "content": json.dumps({
+                        "final_round": True,
+                        "instruction": "This is the final permitted model round. Return final JSON only; "
+                            "no further command or tool calls will be dispatched. Synthesize the actual retained "
+                            "source evidence with observed packet citations. Include the complete skill_selection "
+                            "when in skill mode. State incomplete or unverified work in unresolved_questions "
+                            "so the answer is explicitly partial; do not invent missing evidence or resources."
+                    })})
                 turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
                     "max_tokens": 2048, "timeout_seconds": min(60.0, remaining_seconds(deadline_epoch)),
                     "deadline_epoch": deadline_epoch,
@@ -448,6 +458,10 @@ class ObserverWorkerPort:
                 if not isinstance(value, dict):
                     raise ValueError("model_output_not_object")
                 if "tool" in value:
+                    if final_round:
+                        return snapshot("partial", reason="final_round_requires_answer",
+                            unresolved_questions=["The final model round proposed another tool instead of "
+                                "synthesizing retained evidence; no additional tool was dispatched."])
                     tool, arguments = value.get("tool"), value.get("arguments")
                     if tool not in TOOLS or not isinstance(arguments, dict) or set(value) != {"tool", "arguments"}:
                         raise ValueError("tool_denied_for_readonly_mode")
