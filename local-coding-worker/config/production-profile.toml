@@ -14,6 +14,28 @@ startup_timeout_seconds = 600
 request_timeout_seconds = 300
 gpu_layers = 999
 split_mode = "layer"
+batch_size = 4096
+ubatch_size = 1024
+parallel_slots = 1
+flash_attention = "auto"
+kv_cache_type_k = "f16"
+kv_cache_type_v = "f16"
+
+# Private native generation: completion/context/time budgets remain authoritative.
+# The 16K ceiling is reduced by measured decode speed, cold prefill and answer time.
+[observer_generation]
+reasoning_tokens = 16384
+preserve_reasoning = false
+thinking_temperature = 0.6
+direct_temperature = 0.7
+thinking_top_p = 0.95
+direct_top_p = 0.8
+top_k = 20
+min_p = 0.0
+presence_penalty = 0.0
+min_answer_seconds = 15
+conservative_tokens_per_second = 64.68
+conservative_prompt_tokens_per_second = 524.73
 
 [harnesses]
 qwen = "qwen"
@@ -28,8 +50,8 @@ qwen_writable_max_tool_calls = 8
 qwen_structured_retry_margin = 2
 
 [experiment]
-initial_context = 32768
-refinement_contexts = [8192, 16384, 32768]
+initial_context = 65536
+refinement_contexts = [16384, 32768, 65536]
 phase_a_task_ids = ["contract-authority"]
 phase_b_task_ids = ["contract-authority", "needs-codex", "resource-policy"]
 minimum_phase_a_acceptance = 1.0
@@ -46,10 +68,10 @@ max_real_workers = 2
 initial_warm_workers = 1
 worker_layout = "one-per-runtime-discovered-island"
 needs_codex_is_success = true
-reason = "Measured 32K Q4 services passed the dual-island memory, isolation, hot-reuse, oversubscription, and selective/global preemption guards; allocation remains demand-driven with one active task per runtime-discovered island."
+reason = "Qwen3.6 Q4 layer split passed a 36,448-token cold prompt at 64K context in 50 seconds, with at least 4.6 GiB GPU headroom; 8K and 16K reasoning ceilings passed at 32K context and remain adaptively bounded. Two independent NVLink-pair services share skill/investigate admission and retain hot residency."
 
 [compute_profiles]
-narrow = "qwen3-coder-30b-a3b-instruct-q4-k-m"
+narrow = "qwen3.6-35b-a3b-q4-k-m"
 
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
@@ -105,4 +127,11 @@ id = "gpt-oss-20b-mxfp4"
 family = "gpt-oss-20b"
 quantization = "MXFP4"
 artifact = "gpt-oss-20b-mxfp4.gguf"
+profile = "one-island"
+
+[[candidates]]
+id = "qwen3.6-35b-a3b-q4-k-m"
+family = "qwen3.6-35b-a3b"
+quantization = "Q4_K_M"
+artifact = "Qwen3.6-35B-A3B-Q4_K_M.gguf"
 profile = "one-island"

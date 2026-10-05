@@ -167,9 +167,12 @@ class LlamaCppServerAdapter:
             "evicted": False, "canceled": set(), "active_requests": set(), "log_stream": log_stream, "log_path": str(log_path),
             "profile": profile,
             "reasoning_state": {},
+            "last_completion_tokens": None,
             "observer_generation": copy.deepcopy(profile.get("observer_generation") or {}),
             "conservative_tokens_per_second": (profile.get("observer_generation") or {}).get(
                 "conservative_tokens_per_second"),
+            "conservative_prompt_tokens_per_second": (profile.get("observer_generation") or {}).get(
+                "conservative_prompt_tokens_per_second"),
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
         try:
@@ -407,7 +410,8 @@ class LlamaCppServerAdapter:
         "top_k": 20, "thinking_top_p": 0.95, "direct_top_p": 0.8,
         "min_p": 0.0, "presence_penalty": 0.0, "min_answer_seconds": 15,
     }
-    _GENERATION_FIELDS = frozenset((*_GENERATION_DEFAULTS, "conservative_tokens_per_second"))
+    _GENERATION_FIELDS = frozenset((*_GENERATION_DEFAULTS, "conservative_tokens_per_second",
+                                   "conservative_prompt_tokens_per_second"))
 
     def _generation_policy(self, policy: Any) -> dict[str, Any]:
         if not isinstance(policy, dict) or set(policy) - self._GENERATION_FIELDS:
@@ -440,6 +444,10 @@ class LlamaCppServerAdapter:
         if seed is not None and (isinstance(seed, bool) or not isinstance(seed, (int, float))
                                  or not math.isfinite(seed) or seed <= 0):
             raise AdapterError("observer_generation_policy_invalid")
+        prompt_seed = result.get("conservative_prompt_tokens_per_second")
+        if prompt_seed is not None and (isinstance(prompt_seed, bool) or not isinstance(prompt_seed, (int, float))
+                                        or not math.isfinite(prompt_seed) or prompt_seed <= 0):
+            raise AdapterError("observer_generation_policy_invalid")
         return result
 
     def set_observer_generation(self, handle: str, policy: dict[str, Any]) -> None:
@@ -450,6 +458,9 @@ class LlamaCppServerAdapter:
         seed = normalized.get("conservative_tokens_per_second")
         if seed is not None:
             server["conservative_tokens_per_second"] = float(seed)
+        prompt_seed = normalized.get("conservative_prompt_tokens_per_second")
+        if prompt_seed is not None:
+            server["conservative_prompt_tokens_per_second"] = float(prompt_seed)
 
     def clear_reasoning(self, handle: str, key: str | None = None) -> None:
         server = self._server(handle)
@@ -457,6 +468,34 @@ class LlamaCppServerAdapter:
             server["reasoning_state"].clear()
         else:
             server["reasoning_state"].pop(str(key), None)
+        server["last_completion_tokens"] = None
+
+    @staticmethod
+    def _prompt_cache_estimate(server: dict[str, Any], prompt_tokens: list[int], policy: dict[str, Any]) -> tuple[int, float | None, float | None]:
+        previous = server.get("last_completion_tokens") or []
+        prefix = 0
+        for old, new in zip(previous, prompt_tokens):
+            if old != new:
+                break
+            prefix += 1
+        uncached = len(prompt_tokens) - prefix
+        rates = [value for value in (policy.get("conservative_prompt_tokens_per_second"),
+            server.get("conservative_prompt_tokens_per_second"))
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and value > 0]
+        rate = min(rates) if rates else None
+        return uncached, (uncached / rate if rate else None), rate
+
+    @staticmethod
+    def _learn_prompt_rate(server: dict[str, Any], timings: dict[str, Any]) -> None:
+        evaluated = timings.get("prompt_n")
+        elapsed_ms = timings.get("prompt_ms")
+        if (isinstance(evaluated, bool) or not isinstance(evaluated, int) or evaluated < 512
+                or isinstance(elapsed_ms, bool) or not isinstance(elapsed_ms, (int, float))
+                or not math.isfinite(elapsed_ms) or elapsed_ms <= 0):
+            return
+        measured = 0.7 * evaluated * 1000 / elapsed_ms
+        previous = server.get("conservative_prompt_tokens_per_second")
+        server["conservative_prompt_tokens_per_second"] = min(previous, measured) if previous else measured
 
     def _remaining_turn(self, deadline: float) -> float:
         left = deadline - time.time()
@@ -577,6 +616,8 @@ class LlamaCppServerAdapter:
         reasoning_prompt_ms = answer_prompt_ms = 0.0
         reasoning_prompt_tps = answer_prompt_tps = 0.0
         reasoning_tps = visible_tps = 0.0
+        uncached_prompt_tokens = 0
+        estimated_prefill_seconds: float | None = None
         effective_context_size = server.get("effective_context_size", server["profile"].get("context_size"))
         reasoning = ""
         text = ""
@@ -655,6 +696,25 @@ class LlamaCppServerAdapter:
                         prompt_count = len(prompt_ids)
                         if isinstance(ctx_size, int) and ctx_size > 0 and prompt_count + max_tokens > ctx_size:
                             raise AdapterError("observer_context_budget")
+                uncached_prompt_tokens, estimated_prefill_seconds, prompt_rate = self._prompt_cache_estimate(
+                    server, prompt_ids, policy)
+                if use_thinking:
+                    remaining_for_thinking = self._remaining_turn(deadline) - policy["min_answer_seconds"] - 1
+                    if prompt_rate is None or estimated_prefill_seconds is None:
+                        turn_reason_cap = 0
+                    else:
+                        turn_reason_cap = min(turn_reason_cap, int(max(0,
+                            remaining_for_thinking - estimated_prefill_seconds) * rate))
+                    if turn_reason_cap <= 0:
+                        use_thinking = False
+                        turn_reason_cap = 0
+                        augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
+                        prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline,
+                            preserve_thinking=policy["preserve_reasoning"])
+                        prompt_ids = self._tokenize(server, prompt, deadline)
+                        prompt_count = len(prompt_ids)
+                        uncached_prompt_tokens, estimated_prefill_seconds, _ = self._prompt_cache_estimate(
+                            server, prompt_ids, policy)
                 reasoning_token_budget = turn_reason_cap if use_thinking else 0
                 if use_thinking:
                     phase_deadline = deadline - policy["min_answer_seconds"]
@@ -674,6 +734,7 @@ class LlamaCppServerAdapter:
                     reasoning_prompt_ms = float(timings.get("prompt_ms", 0) or 0)
                     reasoning_prompt_tps = float(timings.get("prompt_per_second", 0) or 0)
                     reasoning_tps = float(timings.get("predicted_per_second", 0) or 0)
+                    self._learn_prompt_rate(server, timings)
                     rate = timings.get("predicted_per_second")
                     if isinstance(rate, (int, float)) and not isinstance(rate, bool) and math.isfinite(rate) and rate > 0:
                         old_rate = server.get("conservative_tokens_per_second")
@@ -710,6 +771,7 @@ class LlamaCppServerAdapter:
                 answer_prompt_ms = float(timings.get("prompt_ms", 0) or 0)
                 answer_prompt_tps = float(timings.get("prompt_per_second", 0) or 0)
                 visible_tps = float(timings.get("predicted_per_second", 0) or 0)
+                self._learn_prompt_rate(server, timings)
                 visible_count = timings.get("predicted_n", len(answer_tokens))
                 if not isinstance(visible_count, int) or visible_count < 0:
                     visible_count = len(answer_tokens)
@@ -722,6 +784,8 @@ class LlamaCppServerAdapter:
                     history.append({"answer": text, "reasoning": reasoning})
                     if len(history) > 32:
                         del history[:-32]
+                server["last_completion_tokens"] = answer_prompt + [
+                    token for token in answer_tokens if isinstance(token, int) and not isinstance(token, bool)]
             except AdapterError:
                 raise
             except (OSError, urllib.error.URLError, TimeoutError) as error:
@@ -759,6 +823,9 @@ class LlamaCppServerAdapter:
                  "answer_prompt_tokens_per_second": answer_prompt_tps,
                  "reasoning_tokens_per_second": reasoning_tps,
                  "visible_tokens_per_second": visible_tps,
+                 "uncached_prompt_tokens": uncached_prompt_tokens,
+                 "estimated_prefill_ms": (round(estimated_prefill_seconds * 1000, 3)
+                    if estimated_prefill_seconds is not None else None),
                  "context_tokens": len(answer_prompt) + visible_count,
                  "effective_context_size": effective_context_size}
         server["usage"]["runs"] += 1
@@ -804,6 +871,7 @@ class LlamaCppServerAdapter:
             server["accepting"] = False
             server["evicted"] = True
             server.get("reasoning_state", {}).clear()
+            server["last_completion_tokens"] = None
             return {"evicted": True}
 
     def quiescent(self, handle: str) -> bool:

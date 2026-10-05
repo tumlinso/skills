@@ -44,6 +44,7 @@ class LlamaCppServerTests(unittest.TestCase):
         adapter._servers["fixture"] = {"evicted": False, "accepting": True, "canceled": set(),
             "active_requests": set(), "base_url": "http://fixture", "profile": {"context_size": context_size},
             "reasoning_state": {}, "observer_generation": {}, "conservative_tokens_per_second": 10.0,
+            "conservative_prompt_tokens_per_second": 10.0, "last_completion_tokens": None,
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0}}
         return adapter
 
@@ -328,6 +329,90 @@ class LlamaCppServerTests(unittest.TestCase):
         adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 64,
             "timeout_seconds": 10, "reasoning_mode": "auto", "observer_generation": policy})
         self.assertEqual(templates[-1], False)  # cannot allocate thinking and preserve 15 seconds for answer
+
+    def test_observer_prefill_estimate_disables_cold_long_prompt_but_uses_cached_prefix(self):
+        templates = []
+        prompt_body = " ".join(f"token{i}" for i in range(600))
+        def transport(method, url, payload, timeout):
+            if url.endswith("/apply-template"):
+                kwargs = payload["chat_template_kwargs"]
+                templates.append(kwargs["enable_thinking"])
+                suffix = " <think>" if kwargs["enable_thinking"] else " <think></think>"
+                return 200, {"prompt": prompt_body + suffix}
+            if url.endswith("/tokenize"):
+                return 200, {"tokens": list(range(len(payload["content"].split())))}
+            if payload.get("stop") == ["</think>"]:
+                return 200, {"content": "private thought", "tokens": [7001],
+                    "timings": {"predicted_n": 1, "predicted_per_second": 20,
+                        "prompt_n": 1, "cache_n": 600, "prompt_ms": 50}}
+            return 200, {"content": "answer", "tokens": [7002],
+                "timings": {"predicted_n": 16, "predicted_per_second": 20,
+                    "prompt_n": 600, "cache_n": 1, "prompt_ms": 10000}}
+
+        policy = {"reasoning_tokens": 4096, "preserve_reasoning": False,
+            "conservative_tokens_per_second": 10.0, "conservative_prompt_tokens_per_second": 10.0}
+        messages = [{"role": "user", "content": prompt_body}]
+        cold = self._observer_adapter(transport, context_size=4096)
+        cold_result = cold.run("fixture", {"messages": messages, "max_tokens": 64,
+            "reasoning_mode": "auto", "observer_generation": policy})
+        self.assertEqual(templates[-1], False)
+        self.assertEqual(cold_result["usage"]["reasoning_token_budget"], 0)
+        self.assertGreaterEqual(cold_result["usage"]["uncached_prompt_tokens"], 600)
+        self.assertGreater(cold_result["usage"]["estimated_prefill_ms"], 45_000)
+        self.assertNotIn("private thought", json.dumps(cold_result))
+
+        templates.clear()
+        cached = self._observer_adapter(transport, context_size=4096)
+        cached._server("fixture")["last_completion_tokens"] = list(range(600))
+        cached_result = cached.run("fixture", {"messages": messages, "max_tokens": 64,
+            "reasoning_mode": "auto", "observer_generation": policy})
+        self.assertEqual(templates, [True])
+        self.assertEqual(cached_result["usage"]["uncached_prompt_tokens"], 1)
+        self.assertGreater(cached_result["usage"]["reasoning_token_budget"], 400)
+        self.assertLess(cached_result["usage"]["estimated_prefill_ms"], 200)
+        self.assertNotIn("private thought", json.dumps(cached_result))
+
+    def test_observer_prefill_estimate_disables_cold_long_prompt_but_uses_cached_prefix(self):
+        templates = []
+        prompt_body = " ".join(f"token{i}" for i in range(600))
+        def transport(method, url, payload, timeout):
+            if url.endswith("/apply-template"):
+                kwargs = payload["chat_template_kwargs"]
+                templates.append(kwargs["enable_thinking"])
+                suffix = " <think>" if kwargs["enable_thinking"] else " <think></think>"
+                return 200, {"prompt": prompt_body + suffix}
+            if url.endswith("/tokenize"):
+                return 200, {"tokens": list(range(len(payload["content"].split())))}
+            if payload.get("stop") == ["</think>"]:
+                return 200, {"content": "private thought", "tokens": [7001],
+                    "timings": {"predicted_n": 1, "predicted_per_second": 20,
+                        "prompt_n": 1, "cache_n": 600, "prompt_ms": 50}}
+            return 200, {"content": "answer", "tokens": [7002],
+                "timings": {"predicted_n": 16, "predicted_per_second": 20,
+                    "prompt_n": 600, "cache_n": 1, "prompt_ms": 10000}}
+
+        policy = {"reasoning_tokens": 4096, "preserve_reasoning": False,
+            "conservative_tokens_per_second": 10.0, "conservative_prompt_tokens_per_second": 10.0}
+        messages = [{"role": "user", "content": prompt_body}]
+        cold = self._observer_adapter(transport, context_size=4096)
+        cold_result = cold.run("fixture", {"messages": messages, "max_tokens": 64,
+            "reasoning_mode": "auto", "observer_generation": policy})
+        self.assertEqual(templates[-1], False)
+        self.assertEqual(cold_result["usage"]["reasoning_token_budget"], 0)
+        self.assertGreaterEqual(cold_result["usage"]["uncached_prompt_tokens"], 600)
+        self.assertGreater(cold_result["usage"]["estimated_prefill_ms"], 45_000)
+        self.assertNotIn("private thought", json.dumps(cold_result))
+
+        templates.clear()
+        cached = self._observer_adapter(transport, context_size=4096)
+        cached._server("fixture")["last_completion_tokens"] = list(range(600))
+        cached_result = cached.run("fixture", {"messages": messages, "max_tokens": 64,
+            "reasoning_mode": "auto", "observer_generation": policy})
+        self.assertEqual(templates, [True])
+        self.assertEqual(cached_result["usage"]["uncached_prompt_tokens"], 1)
+        self.assertGreater(cached_result["usage"]["reasoning_token_budget"], 400)
+        self.assertLess(cached_result["usage"]["estimated_prefill_ms"], 200)
+        self.assertNotIn("private thought", json.dumps(cached_result))
 
 
 if __name__ == "__main__": unittest.main()
