@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T01:18:34Z",
+  "generated_at": "2026-10-05T08:39:18Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,13 +18,13 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 1008,
+  "project_revision": 1011,
   "schema_version": 2,
   "semantic_context": {
     "declarations": [],
     "invalidations": [],
     "orientation": [],
-    "project_revision": 1008,
+    "project_revision": 1011,
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "skill_uses": []
   },
@@ -10539,6 +10539,36 @@
         "revision": 1008,
         "seq": 1008,
         "timestamp": "2026-10-05T01:18:34Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/inquiry-cache/skills.todo-plan.json\"}",
+        "revision": 1009,
+        "seq": 1009,
+        "timestamp": "2026-10-05T06:41:54Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "SK-AS1-CACHE-INTEGRATE",
+        "entity_type": "workflow_dispatch",
+        "event_type": "workflow.next_task",
+        "payload_json": "{\"lane_id\": \"SK-AS1-CACHE-INTEGRATE\", \"run_id\": \"SK-AS1-CACHE-RUN-1\", \"status\": \"claimed\", \"task_id\": \"SK-AS1-INQUIRY-CACHE\"}",
+        "revision": 1010,
+        "seq": 1010,
+        "timestamp": "2026-10-05T06:42:02Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "460468fe-ee72-4a64-a565-87cfec640d0c",
+        "entity_type": "project",
+        "event_type": "plan.applied",
+        "payload_json": "{\"file\": \"/home/tumlinson/.local/state/project-control/as1-bootstrap/inquiry-cache/skills-central-oracle-intent-plan.json\"}",
+        "revision": 1011,
+        "seq": 1011,
+        "timestamp": "2026-10-05T08:39:18Z"
       }
     ],
     "evidence": [
@@ -17878,6 +17908,26 @@
         "mode": "read",
         "path": "planning/adaptive-surface-v1",
         "task_id": "SK-AS1-GPU"
+      },
+      {
+        "mode": "exclusive",
+        "path": "local-coding-worker",
+        "task_id": "SK-AS1-INQUIRY-CACHE"
+      },
+      {
+        "mode": "exclusive",
+        "path": "planning/adaptive-surface-v1",
+        "task_id": "SK-AS1-INQUIRY-CACHE"
+      },
+      {
+        "mode": "read",
+        "path": "integrations",
+        "task_id": "SK-AS1-INQUIRY-CACHE"
+      },
+      {
+        "mode": "read",
+        "path": "local-coding-worker",
+        "task_id": "SK-AS1-INQUIRY-CACHE"
       },
       {
         "mode": "exclusive",
@@ -25420,6 +25470,31 @@
       },
       {
         "attention_reason": null,
+        "completion_commit": null,
+        "completion_git_head": null,
+        "completion_revision": null,
+        "created_at": "2026-10-05T06:41:54Z",
+        "id": "SK-AS1-INQUIRY-CACHE",
+        "kind": "task",
+        "legacy_owner": null,
+        "legacy_payload_json": "{}",
+        "next_action": "Implement assigned scoped changes with Codex subagents, root integration and acceptance.",
+        "notes": "",
+        "objective": "Make Project Control a shared oracle of collective project knowledge, evidence, supplied hints, reusable answers and log entries across roles; caller/profile identity is provenance and tool permission, not a privacy boundary. Use one global last-50 answered-inquiry cache/log, with exact identity original literal question, mode, selected skill and project/authority context. Preserve configured project/source access and credential exclusions. Use one central Project Control inference supervisor and persistent warm pool across local MCP, remote HTTP and profile clients; no per-process ProductionBackend pools, and profile EOF leaves the central pool warm. Preserve global two-executing/four-waiting admission, stale incremental refresh, top-five lexical retrieval, 30s foreground and 300s lifetime; validate and deploy paired observer runtime.",
+        "parallel_policy": "serial",
+        "parent_id": null,
+        "priority": 100,
+        "result": null,
+        "result_policy_json": "{\"allowed_dispositions\": [\"validated\"]}",
+        "revision": 1011,
+        "status": "in_progress",
+        "tags_json": "[]",
+        "title": "Implement bounded read-only inquiry cache and incremental refresh",
+        "updated_at": "2026-10-05T08:39:18Z",
+        "version": 3
+      },
+      {
+        "attention_reason": null,
         "completion_commit": "21be127240c4fd91616a26c5ce1c1ada6aed23df",
         "completion_git_head": "21be127240c4fd91616a26c5ce1c1ada6aed23df",
         "completion_revision": 947,
@@ -27800,6 +27875,57 @@
         "version": 1
       },
       {
+        "content_hash": "2ead7cc9402e91ac7dc8047058d0c73cc395eacd6d91dd5f1680f5dd299b24ff",
+        "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-INQUIRY-CACHE\"],\"rendezvous\":[],\"role\":\"integrator\",\"workspace_mode\":\"exclusive\"}",
+        "created_at": "2026-10-05T06:41:54Z",
+        "creation_revision": 1009,
+        "id": "SK-AS1-CACHE-RUN-1:lane_brief:SK-AS1-CACHE-INTEGRATE:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "lane_brief",
+        "lane_id": "SK-AS1-CACHE-INTEGRATE",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-CACHE-INTEGRATE\",\"run_id\":\"SK-AS1-CACHE-RUN-1\"}",
+        "run_id": "SK-AS1-CACHE-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "d95e4116b45defc65fca61453dff86ed1ef78283aba6f0bfbe1b1655f4548a06",
+        "content_json": "{\"boundaries\":[\"No project/Todo writes by observer.\",\"Preserve standalone Skills and unrelated work.\",\"Service remains stopped until validated.\"],\"motivation\":\"Read inquiries reuse prior supported work without exposing a durable job workflow.\",\"objective\":\"Implement exact coalescing, stale incremental refresh, lexical log retrieval, two execution slots plus four waiting,30s foreground and300s lifetime; validate and deploy paired observer runtime.\",\"references\":[\"planning/adaptive-surface-v1\"]}",
+        "created_at": "2026-10-05T06:41:54Z",
+        "creation_revision": 1009,
+        "id": "SK-AS1-CACHE-RUN-1:run_charter:-:-:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "run_charter",
+        "lane_id": null,
+        "owner_scope_json": "{\"run_id\":\"SK-AS1-CACHE-RUN-1\"}",
+        "run_id": "SK-AS1-CACHE-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": null,
+        "version": 1
+      },
+      {
+        "content_hash": "27c7db1d34814353340b235c7406aad85e8e395ec428ae8995ee62d4034f7820",
+        "content_json": "{\"completion_contract\":null,\"forbidden_mutations\":[],\"gates\":[],\"next_action\":\"Implement assigned scoped changes with Codex subagents, root integration and acceptance.\",\"objective\":\"Implement exact coalescing, stale incremental refresh, lexical log retrieval, two execution slots plus four waiting,30s foreground and300s lifetime; validate and deploy paired observer runtime.\",\"scope\":{\"exclusive_paths\":[\"local-coding-worker\",\"planning/adaptive-surface-v1\"],\"read_paths\":[\"local-coding-worker\",\"integrations\"]},\"tests\":[]}",
+        "created_at": "2026-10-05T06:41:54Z",
+        "creation_revision": 1009,
+        "id": "SK-AS1-CACHE-RUN-1:task_brief:SK-AS1-CACHE-INTEGRATE:SK-AS1-INQUIRY-CACHE:1",
+        "invalidated_at": null,
+        "invalidation_revision": null,
+        "kind": "task_brief",
+        "lane_id": "SK-AS1-CACHE-INTEGRATE",
+        "owner_scope_json": "{\"lane_id\":\"SK-AS1-CACHE-INTEGRATE\",\"run_id\":\"SK-AS1-CACHE-RUN-1\",\"task_id\":\"SK-AS1-INQUIRY-CACHE\"}",
+        "run_id": "SK-AS1-CACHE-RUN-1",
+        "series_key": "",
+        "superseded_by": null,
+        "task_id": "SK-AS1-INQUIRY-CACHE",
+        "version": 1
+      },
+      {
         "content_hash": "4fb7af54409da89fe7e62118e88c509d9d193f91167980469bd3575acf235dd2",
         "content_json": "{\"authority\":\"server_enforced_role_and_task_scope\",\"interfaces\":[],\"ordered_tasks\":[\"SK-AS1-CAPABILITY-PUBLICATION\"],\"rendezvous\":[],\"role\":\"implementer\",\"workspace_mode\":\"exclusive\"}",
         "created_at": "2026-10-04T21:17:49Z",
@@ -30066,6 +30192,16 @@
         "task_id": "PCU-SK-30"
       },
       {
+        "activated_at": "2026-10-05T06:42:02Z",
+        "completed_at": null,
+        "enqueued_at": "2026-10-05T06:41:54Z",
+        "lane_id": "SK-AS1-CACHE-INTEGRATE",
+        "position": 0,
+        "revision": 1010,
+        "state": "active",
+        "task_id": "SK-AS1-INQUIRY-CACHE"
+      },
+      {
         "activated_at": "2026-10-04T21:17:49Z",
         "completed_at": "2026-10-04T21:29:55Z",
         "enqueued_at": "2026-10-04T21:17:49Z",
@@ -30989,6 +31125,18 @@
       },
       {
         "context_cursor": 0,
+        "created_at": "2026-10-05T06:41:54Z",
+        "id": "SK-AS1-CACHE-INTEGRATE",
+        "parent_lane_id": null,
+        "revision": 1010,
+        "role": "integrator",
+        "run_id": "SK-AS1-CACHE-RUN-1",
+        "state": "active",
+        "updated_at": "2026-10-05T06:42:02Z",
+        "workspace_mode": "exclusive"
+      },
+      {
+        "context_cursor": 0,
         "created_at": "2026-10-04T21:17:49Z",
         "id": "SK-AS1-L-CAPABILITY-PUBLICATION",
         "parent_lane_id": "SK-AS1-L-EXEC",
@@ -31897,6 +32045,16 @@
         "version": 1
       },
       {
+        "content_hash": "d95e4116b45defc65fca61453dff86ed1ef78283aba6f0bfbe1b1655f4548a06",
+        "content_json": "{\"boundaries\":[\"No project/Todo writes by observer.\",\"Preserve standalone Skills and unrelated work.\",\"Service remains stopped until validated.\"],\"motivation\":\"Read inquiries reuse prior supported work without exposing a durable job workflow.\",\"objective\":\"Implement exact coalescing, stale incremental refresh, lexical log retrieval, two execution slots plus four waiting,30s foreground and300s lifetime; validate and deploy paired observer runtime.\",\"references\":[\"planning/adaptive-surface-v1\"]}",
+        "created_at": "2026-10-05T06:41:54Z",
+        "creation_revision": 1009,
+        "run_id": "SK-AS1-CACHE-RUN-1",
+        "superseded_at": null,
+        "superseded_revision": null,
+        "version": 1
+      },
+      {
         "content_hash": "9f02e6a3cf4bc4ca15719971f527122afec60680e84420bc1b77d0c29227b280",
         "content_json": "{\"boundaries\":[\"Separate Todo/Git/host authorities; preserve dirty source, historical successful evidence and CUDA/atlas guidance.\",\"Do not resume NF1A or mutate unrelated scientific projects. Destructive admin actions require explicit user permission.\",\"One exclusive Skills lane preserves the existing prerequisite sequence; cross-authority producer receipts remain required before consumer execution.\"],\"motivation\":\"More useful engineering progress with less context, coordination and maintenance overhead.\",\"objective\":\"Implement the complete consolidated role-efficient Project Control surface using canonical backend authorities.\",\"references\":[\"planning/adaptive-surface-v1/START_HERE.md\",\"planning/adaptive-surface-v1/planning/outcomes.json\",\"planning/adaptive-surface-v1/contracts/requirements.json\",\"planning/adaptive-surface-v1/planning/cross-authority.json\",\"planning/adaptive-surface-v1/EXECUTION_HANDOFF.md\"]}",
         "created_at": "2026-10-04T17:21:33Z",
@@ -31977,6 +32135,16 @@
         "root_task_id": "PCU-SK-00",
         "status": "active",
         "updated_at": "2026-08-30T11:43:03Z"
+      },
+      {
+        "active_charter_version": 1,
+        "completed_at": null,
+        "created_at": "2026-10-05T06:41:54Z",
+        "id": "SK-AS1-CACHE-RUN-1",
+        "revision": 1009,
+        "root_task_id": "SK-AS1-INQUIRY-CACHE",
+        "status": "active",
+        "updated_at": "2026-10-05T06:41:54Z"
       },
       {
         "active_charter_version": 1,

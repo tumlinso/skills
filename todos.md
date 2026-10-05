@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `1008`
+Project revision: `1011`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -83,6 +83,7 @@ Project revision: `1008`
 - `PCU-SK-32` | kind: task | status: done | parent: PCU-SK-00 | objective: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Expose a supported authenticated canonical publication port without raw claim credential recovery, preserving role/operation/repository/task/source authorization and generic context fragment behavior.
 - `SK-AS1-GPU` | kind: task | status: done | parent: SK-AS1-0000 | objective: Complete observer/skill residency participation in the existing host-global CUDA eviction/interlock protocol.
+- `SK-AS1-INQUIRY-CACHE` | kind: task | status: in_progress | parent: - | objective: Make Project Control a shared oracle of collective project knowledge, evidence, supplied hints, reusable answers and log entries across roles; caller/profile identity is provenance and tool permission, not a privacy boundary. Use one global last-50 answered-inquiry cache/log, with exact identity original literal question, mode, selected skill and project/authority context. Preserve configured project/source access and credential exclusions. Use one central Project Control inference supervisor and persistent warm pool across local MCP, remote HTTP and profile clients; no per-process ProductionBackend pools, and profile EOF leaves the central pool warm. Preserve global two-executing/four-waiting admission, stale incremental refresh, top-five lexical retrieval, 30s foreground and 300s lifetime; validate and deploy paired observer runtime.
 - `SK-AS1-OBSERVER-CONTINUATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair actual observed repeated source reads across stateless model turns; preserve native agentic skill routing, bounded public observation state, strict JSON, canonical source provenance and preemption.
 - `SK-AS1-OBSERVER-CONVERSATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair confirmed actual-model continuation nonprogress by replaying only public tool calls and packetized results as bounded conversation history, without hidden reasoning or semantic skill routing.
 - `SK-AS1-OBSERVER-ENTRY` | kind: task | status: done | parent: SK-AS1-0000 | objective: Recover from an observed pre-entry listing without aborting the skill job; enforce authoritative SKILL.md before resource access, preserving native agentic navigation and honest public-call provenance.

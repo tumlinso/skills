@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1008`
+Project revision: `1011`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -83,6 +83,7 @@ Project revision: `1008`
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | status: done | execution: closed | next: Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.
 - `SK-AS1-GPU` | status: done | execution: closed | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-INQUIRY-CACHE` | status: in_progress | execution: claimed | next: Implement assigned scoped changes with Codex subagents, root integration and acceptance.
 - `SK-AS1-OBSERVER-CONTINUATION` | status: done | execution: closed | next: Use retained public observations as continuation state; initial command recommendation only before first observations; exact installed entry example; model decides evidence sufficiency and native skill references. Test initial/continuation/resumed states and immutable bounds, then paired real inference.
 - `SK-AS1-OBSERVER-CONVERSATION` | status: done | execution: closed | next: Record actual accepted public tool-call JSON in observations and replay assistant call/user result conversation from durable checkpoints; bounded no hidden reasoning, no forced source rereads or routing policy. Qualify short actual read-answer before full paired journey.
 - `SK-AS1-OBSERVER-ENTRY` | status: done | execution: closed | next: Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.
