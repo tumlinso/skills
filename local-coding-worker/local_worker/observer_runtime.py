@@ -20,6 +20,10 @@ from typing import Any, Callable
 
 TOOLS = frozenset({"command", "log", "overview", "delta", "frontier", "search",
                    "evidence", "impact", "history", "machine"})
+JOB_INPUT_MAX_BYTES = 256 * 1024
+MODEL_TURN_MAX_BYTES = 90000
+MODEL_TURN_MAX_MESSAGES = 24
+CHECKPOINT_MAX_BYTES = 96 * 1024
 
 
 def remaining_seconds(deadline_epoch):
@@ -237,8 +241,10 @@ class ObserverWorkerPort:
             raise ValueError("invalid inquiry repository context")
         observations = json.loads(json.dumps(request.get("observations", [])))
         if (not isinstance(observations, list) or len(observations) > 24 or
-                any(not isinstance(o, dict) or not isinstance(o.get("packet_id"), str) for o in observations)
-                or len(json.dumps(request, ensure_ascii=False).encode()) > 65536):
+                any(not isinstance(o, dict) or not isinstance(o.get("packet_id"), str)
+                    or not o["packet_id"] or len(o["packet_id"].encode()) > 256
+                    or len(json.dumps(o, ensure_ascii=False).encode()) > 32768 for o in observations)
+                or len(json.dumps(request, ensure_ascii=False).encode()) > JOB_INPUT_MAX_BYTES):
             raise ValueError("job inputs exceed bounded evidence context")
         deadline_epoch = request.get("deadline_epoch", time.time() + 300)
         remaining_seconds(deadline_epoch)
@@ -253,7 +259,8 @@ class ObserverWorkerPort:
                     "findings": [], "unresolved_questions": [], **extra}
         def observe(result, public_call=None):
             check()
-            if not isinstance(result, dict) or not isinstance(result.get("packet_id"), str) or not result["packet_id"]:
+            if (not isinstance(result, dict) or not isinstance(result.get("packet_id"), str)
+                    or not result["packet_id"] or len(result["packet_id"].encode()) > 256):
                 raise ValueError("tool_result_not_packetized")
             result = {k: v for k, v in result.items() if k != "public_tool_call"}
             if public_call is not None:
@@ -269,7 +276,19 @@ class ObserverWorkerPort:
                 del observations[0]
             if self.checkpoint is not None:
                 check()
-                self.checkpoint(job_id, attempt, json.loads(json.dumps(observations)))
+                checkpoint_observations = observations
+                if len(json.dumps(checkpoint_observations, ensure_ascii=False).encode()) > CHECKPOINT_MAX_BYTES:
+                    # Persist a complete, ordered suffix of frames under the
+                    # callback's storage ceiling. The in-memory/broker result
+                    # remains canonical and is never rewritten or compacted.
+                    suffix = []
+                    for observation in reversed(observations):
+                        candidate = [observation, *suffix]
+                        if len(json.dumps(candidate, ensure_ascii=False).encode()) > CHECKPOINT_MAX_BYTES:
+                            break
+                        suffix = candidate
+                    checkpoint_observations = suffix
+                self.checkpoint(job_id, attempt, json.loads(json.dumps(checkpoint_observations)))
                 check()
         try:
             check()
@@ -282,17 +301,17 @@ class ObserverWorkerPort:
                 if not self.command.allows(root) or not self.command.allows(root / "SKILL.md"):
                     raise ValueError("skill_root_outside_trusted_mounts")
                 entry = str((root / "SKILL.md").resolve())
-                def read_resources():
-                    return {read["path"]: read for observation in observations
+                def read_resources(source_observations=observations):
+                    return {read["path"]: read for observation in source_observations
                             for read in observation.get("source_reads", [])
                             if isinstance(read, dict) and isinstance(read.get("path"), str)}
-                def entry_observed():
+                def entry_observed(source_observations=observations):
                     return any(observation.get("status") == "completed"
                                and observation.get("exit_code") == 0 and not observation.get("truncated")
                                and any(read.get("path") == entry and isinstance(read.get("content_sha256"), str)
                                        and len(read["content_sha256"]) == 64
                                        for read in observation.get("source_reads", []) if isinstance(read, dict))
-                               for observation in observations)
+                               for observation in source_observations)
                 def proposes_entry(tool, arguments):
                     argv, cwd = arguments.get("argv"), arguments.get("cwd")
                     if (tool != "command" or not isinstance(argv, list) or len(argv) != 2
@@ -401,60 +420,95 @@ class ObserverWorkerPort:
                          "continuation" if observations else "initial")
                 progress = {"stage": stage, "observation_count": len(observations),
                             "remaining_steps": max_steps - step}
-                messages = [{"role": "system", "content": instruction},
-                            {"role": "user", "content": json.dumps(
-                                initial_context if observations else {**initial_context, "progress": progress,
-                                    "instruction": "Start with command for source/files/Git relevant to the question."},
-                                ensure_ascii=False)}]
-                for observation in observations:
-                    public_call = observation.get("public_tool_call")
-                    if public_call is not None:
-                        if (not isinstance(public_call, dict) or set(public_call) != {"tool", "arguments"}
-                                or public_call.get("tool") not in TOOLS or not isinstance(public_call.get("arguments"), dict)):
-                            raise ValueError("invalid_retained_public_tool_call")
-                        messages.append({"role": "assistant", "content": json.dumps(public_call, ensure_ascii=False)})
-                        payload = {k: v for k, v in observation.items() if k != "public_tool_call"}
-                        messages.append({"role": "user", "content": json.dumps(payload, ensure_ascii=False)})
-                    else:
-                        # Old checkpoints and internal validation reads have
-                        # no accepted model call. Never invent one for them.
+                visible_observations = list(observations)
+                omitted_packet_ids = []
+                def eligible_packet_ids(items):
+                    return {o["packet_id"] for o in items
+                        if isinstance(o.get("packet_id"), str)
+                        and o.get("status") != "denied"
+                        and o.get("dispatched") is not False
+                        and not (isinstance(o.get("validation_data"), dict)
+                                 and o["validation_data"].get("is_source_evidence") is False)
+                        and not o.get("omissions") and not o.get("truncated")}
+                def build_messages():
+                    visible_ids = sorted(eligible_packet_ids(visible_observations))
+                    turn_progress = {**progress, "allowed_observation_packet_ids": visible_ids,
+                                     "omitted_observation_packet_ids": omitted_packet_ids}
+                    first_user = (initial_context if observations else {**initial_context,
+                        "instruction": "Start with command for source/files/Git relevant to the question."})
+                    messages = [{"role": "system", "content": instruction},
+                                {"role": "user", "content": json.dumps(
+                                    {**first_user, "progress": turn_progress}, ensure_ascii=False)}]
+                    for observation in visible_observations:
+                        public_call = observation.get("public_tool_call")
+                        if public_call is not None:
+                            if (not isinstance(public_call, dict) or set(public_call) != {"tool", "arguments"}
+                                    or public_call.get("tool") not in TOOLS or not isinstance(public_call.get("arguments"), dict)):
+                                raise ValueError("invalid_retained_public_tool_call")
+                            messages.append({"role": "assistant", "content": json.dumps(public_call, ensure_ascii=False)})
+                            payload = {k: v for k, v in observation.items() if k != "public_tool_call"}
+                            messages.append({"role": "user", "content": json.dumps(payload, ensure_ascii=False)})
+                        else:
+                            # Old checkpoints and internal validation reads have
+                            # no accepted model call. Never invent one for them.
+                            messages.append({"role": "user", "content": json.dumps(
+                                {"retained_observation": observation}, ensure_ascii=False)})
+                    if omitted_packet_ids:
+                        messages.append({"role": "user", "content": json.dumps({
+                            "omitted_retained_observations": {"count": len(omitted_packet_ids),
+                                "packet_ids": omitted_packet_ids, "is_source_evidence": False},
+                            "instruction": "These complete observations were omitted from this model turn to fit the request limit. Their IDs are not allowed citations and their contents cannot support findings or source selections."}, ensure_ascii=False)})
+                    messages.extend(protocol_feedback)
+                    if observations:
+                        continuation = (
+                            "Review the visible retained public observations before acting; "
+                            "this is a continuation of the supplied question, not a new investigation. "
+                            "Decide whether their evidence is sufficient. If sufficient, return final JSON now with "
+                            "evidence-backed findings and any unresolved questions. Use additional commands/tools "
+                            "only to obtain missing evidence; do not restart initial reads or reread retained sources "
+                            "unless their evidence is incomplete, stale, or otherwise needs verification. "
+                            "For findings, use only allowed outer observation packet IDs; IDs nested inside source or "
+                            "tool payloads are not broker observation IDs."
+                        )
+                        if request["mode"] == "skill" and not entry_observed(visible_observations):
+                            continuation += (" The validated installed entry has not been successfully read in the "
+                                "visible observations: " + entry + ". Read it with direct cat before other commands/tools "
+                                "or final selection. Failed, truncated or omitted entry observations do not satisfy this prerequisite.")
                         messages.append({"role": "user", "content": json.dumps(
-                            {"retained_observation": observation}, ensure_ascii=False)})
-                messages.extend(protocol_feedback)
-                if observations:
-                    continuation = (
-                        "Review the retained public observations before acting; "
-                        "this is a continuation of the supplied question, not a new investigation. "
-                        "Decide whether that evidence is sufficient. If sufficient, return final JSON now with "
-                        "evidence-backed findings and any unresolved questions. Use additional commands/tools "
-                        "only to obtain missing evidence; do not restart initial reads or reread retained sources "
-                        "unless their evidence is incomplete, stale, or otherwise needs verification. "
-                        "Retained packet IDs identify observations, not proof that they answer the question."
-                    )
-                    if request["mode"] == "skill" and not entry_observed():
-                        continuation += (" The validated installed entry has not been successfully read: " + entry +
-                                         ". Read it with direct cat before other commands/tools or final selection. "
-                                         "Failed or truncated entry observations do not satisfy this prerequisite.")
-                    messages.append({"role": "user", "content": json.dumps(
-                        {"progress": progress, "continuation": continuation}, ensure_ascii=False)})
-                if final_round:
-                    messages.append({"role": "user", "content": json.dumps({
-                        "final_round": True,
-                        "instruction": "This is the final permitted model round. Return final JSON only; "
-                            "no further command or tool calls will be dispatched. Synthesize the actual retained "
-                            "source evidence with observed packet citations. Include the complete skill_selection "
-                            "when in skill mode. State incomplete or unverified work in unresolved_questions "
-                            "so the answer is explicitly partial; do not invent missing evidence or resources."
-                    })})
-                turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
-                    "max_tokens": 2048, "timeout_seconds": min(60.0, remaining_seconds(deadline_epoch)),
-                    "deadline_epoch": deadline_epoch,
-                    "compute_profile": request.get("compute_profile", "narrow"),
-                    "parallelism": request.get("parallelism", "default")}
-                if session:
-                    turn["session_id"] = session
-                if len(json.dumps(turn, ensure_ascii=False).encode()) > 60000:
-                    return snapshot("partial", reason="context_budget", unresolved_questions=["Select retained evidence before resuming"])
+                            {"progress": turn_progress, "continuation": continuation}, ensure_ascii=False)})
+                    if final_round:
+                        messages.append({"role": "user", "content": json.dumps({
+                            "final_round": True,
+                            "instruction": "This is the final permitted model round. Return final JSON only; "
+                                "no further command or tool calls will be dispatched. Synthesize the visible source "
+                                "evidence with allowed observed packet citations. Include the complete skill_selection "
+                                "when in skill mode. State incomplete or unverified work in unresolved_questions "
+                                "so the answer is explicitly partial; do not invent missing evidence or resources."})})
+                    return messages
+                messages = build_messages()
+                def model_turn():
+                    candidate = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
+                        "max_tokens": 2048, "timeout_seconds": min(60.0, remaining_seconds(deadline_epoch)),
+                        "deadline_epoch": deadline_epoch,
+                        "compute_profile": request.get("compute_profile", "narrow"),
+                        "parallelism": request.get("parallelism", "default")}
+                    if session:
+                        candidate["session_id"] = session
+                    return candidate
+                while ((len(json.dumps(model_turn(), ensure_ascii=False).encode()) > MODEL_TURN_MAX_BYTES
+                        or len(messages) > MODEL_TURN_MAX_MESSAGES) and visible_observations):
+                    removed = visible_observations.pop(0)
+                    packet_id = removed.get("packet_id")
+                    if isinstance(packet_id, str):
+                        omitted_packet_ids.append(packet_id)
+                    messages = build_messages()
+                turn = model_turn()
+                turn_size = len(json.dumps(turn, ensure_ascii=False).encode())
+                if turn_size > MODEL_TURN_MAX_BYTES or len(messages) > MODEL_TURN_MAX_MESSAGES:
+                    return snapshot("partial", reason="context_budget", failure_classification="context_budget",
+                        context_bytes=turn_size, context_limit_bytes=MODEL_TURN_MAX_BYTES,
+                        context_messages=len(messages), context_message_limit=MODEL_TURN_MAX_MESSAGES,
+                        unresolved_questions=["The trusted request context exceeds the model turn limit."])
                 response = self.backend.run_observer_turn(turn)
                 check()
                 remaining_seconds(deadline_epoch)
@@ -472,35 +526,47 @@ class ObserverWorkerPort:
                 except json.JSONDecodeError as error:
                     if final_round:
                         return snapshot("partial", reason="model_output_invalid_json",
+                            failure_classification="invalid_json_object",
                             unresolved_questions=["The final model round did not return exactly one valid JSON object."])
-                    # Keep protocol repair in this bounded attempt. Do not salvage
-                    # the first object from concatenated output: any trailing text
-                    # makes the whole model response invalid and no action is taken.
-                    protocol_feedback = [
-                        {"role": "assistant", "content": text[:4096]},
-                        {"role": "user", "content": json.dumps({
+                    # Reject the whole response, including trailing JSON data.
+                    # Repair uses a safe parser classification, never raw output.
+                    protocol_feedback = [{"role": "user", "content": json.dumps({
                             "protocol_error": "invalid_json_object",
                             "detail": f"{error.msg} at line {error.lineno}, column {error.colno}",
-                            "instruction": "No tool call was dispatched. Return exactly one JSON object in the required protocol, with no Markdown fence, commentary, or additional object. Continue from the supplied question and retained observations."
-                        }, ensure_ascii=False)},
-                    ]
+                            "instruction": "No tool call was dispatched. Return exactly one JSON object in the required protocol, with no Markdown fence, commentary, or additional object. Continue from the supplied question and visible observations."
+                        }, ensure_ascii=False)}]
                     continue
                 if not isinstance(value, dict):
-                    raise ValueError("model_output_not_object")
+                    if final_round:
+                        return snapshot("partial", reason="final_response_not_object",
+                            failure_classification="final_response_not_object",
+                            unresolved_questions=["The final model round did not return a JSON object."])
+                    protocol_feedback = [{"role": "user", "content": json.dumps({
+                        "protocol_error": "final_response_not_object", "instruction":
+                        "No tool call was dispatched. Return one JSON object in the required tool or final-answer schema, based only on the visible observations."})}]
+                    continue
                 if "tool" in value:
                     if final_round:
                         return snapshot("partial", reason="final_round_requires_answer",
                             unresolved_questions=["The final model round proposed another tool instead of "
                                 "synthesizing retained evidence; no additional tool was dispatched."])
                     tool, arguments = value.get("tool"), value.get("arguments")
-                    if tool not in TOOLS or not isinstance(arguments, dict) or set(value) != {"tool", "arguments"}:
-                        raise ValueError("tool_denied_for_readonly_mode")
+                    if (not isinstance(tool, str) or tool not in TOOLS or not isinstance(arguments, dict)
+                            or set(value) != {"tool", "arguments"}):
+                        if final_round:
+                            return snapshot("partial", reason="malformed_tool_envelope",
+                                failure_classification="malformed_tool_envelope",
+                                unresolved_questions=["The final model round did not return a valid final answer."])
+                        protocol_feedback = [{"role": "user", "content": json.dumps({
+                            "protocol_error": "malformed_tool_envelope", "instruction":
+                            "No tool call was dispatched. Return either exactly one supported read-only tool envelope with object arguments, or a valid final-answer object."})}]
+                        continue
                     public_call = json.loads(json.dumps(value))
                     if len(json.dumps({"packet_id": "reserved", "omissions": ["tool payload exceeded worker context budget"],
                                        "public_tool_call": value}, ensure_ascii=False).encode()) > 16384:
                         raise ValueError("public_tool_call_exceeded_observation_budget")
                     check()
-                    if request["mode"] == "skill" and not entry_observed() and not proposes_entry(tool, arguments):
+                    if request["mode"] == "skill" and not entry_observed(visible_observations) and not proposes_entry(tool, arguments):
                         result = self.command._packet({"status": "denied", "reason": "skill_entry_required",
                             "accepted": False, "dispatched": False, "required_skill_entry": entry,
                             "corrective_action": "Read the validated installed entry successfully with direct cat "
@@ -509,14 +575,11 @@ class ObserverWorkerPort:
                         result = (self.command.run(**arguments, guard=guard, **({"deadline_epoch": deadline_epoch} if "deadline_epoch" in request else {})) if tool == "command" else self.tools(tool, arguments))
                     observe(result, public_call)
                     continue
+                references = eligible_packet_ids(visible_observations)
                 try:
                     if not isinstance(value.get("answer"), str) or not value["answer"].strip():
                         raise ValueError("final_answer_missing")
                     findings = value.get("findings", [])
-                    references = {o["packet_id"] for o in observations
-                                  if not ((isinstance(o.get("validation_data"), dict)
-                                           and o["validation_data"].get("is_source_evidence") is False)
-                                          or (o.get("status") == "denied" and o.get("dispatched") is False))}
                     if (not isinstance(findings, list) or any(not isinstance(f, dict) or not isinstance(f.get("text"), str)
                             or not isinstance(f.get("evidence_packets"), list) or not f["evidence_packets"]
                             or any(p not in references for p in f["evidence_packets"]) for f in findings)):
@@ -526,15 +589,32 @@ class ObserverWorkerPort:
                         raise ValueError("invalid_unresolved_questions")
                     extra = {}
                     if request["mode"] == "skill":
-                        if not entry_observed():
+                        if not entry_observed(visible_observations):
                             raise ValueError("skill_installed_entry_not_read_agentically")
                         selection = value.get("skill_selection")
-                        self._validate_selection(selection, skill, observe, guard, read_resources(),
+                        self._validate_selection(selection, skill, observe, guard, read_resources(visible_observations),
                             deadline_epoch=deadline_epoch if "deadline_epoch" in request else None)
                         extra["skill_selection"] = selection
                 except (ValueError, TypeError) as error:
                     if request["mode"] != "skill":
-                        raise
+                        classification = str(error)[:80]
+                        if final_round:
+                            return snapshot("partial", reason=classification,
+                                failure_classification=classification,
+                                unresolved_questions=["The final model answer did not meet the required schema or citation rules."])
+                        allowed_ids = sorted(references)
+                        feedback = self.command._packet({"status": "denied",
+                            "reason": "investigate_final_validation_failed",
+                            "failure_classification": classification, "accepted": False,
+                            "validation_data": {"is_source_evidence": False,
+                                "failure_classification": classification,
+                                "allowed_observation_packet_ids": allowed_ids},
+                            "corrective_action": "Correct the final JSON. Provide a nonempty answer, findings with text and "
+                                "evidence_packets containing only allowed outer observation packet IDs (not nested source/tool "
+                                "packet references), and unresolved_questions as a list of strings. Do not cite denied or "
+                                "validation feedback packets. Allowed outer observation packet IDs: " + json.dumps(allowed_ids)}, guard)
+                        observe(feedback)
+                        continue
                     check()
                     feedback = self.command._packet({"status": "denied", "reason": "skill_final_validation_failed",
                         "validation_error": str(error)[:500], "accepted": False,

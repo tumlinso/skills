@@ -8,7 +8,7 @@ import sys
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from test_sk_as1_observer_progress import Backend, example, final, fixture, request
+from test_sk_as1_observer_progress import Backend, example, final, fixture, request, runtime
 
 
 def value(message):
@@ -136,26 +136,120 @@ def test_native_skill_entry_and_reference_calls_replay_before_selection(fixture)
     assert sum(str(entry) == r['path'] for p in packets for r in p.get('source_reads', [])) == 1
 
 
-def test_total_message_request_budget_counts_history_and_system(fixture):
+def test_turn_between_60k_and_90k_retains_all_evidence(fixture):
     *_, worker = fixture
-    observations = [{'packet_id': str(i), 'stdout': 'x' * 14200,
-        'public_tool_call': {'tool': 'command', 'arguments': {'argv': ['printf', 'x' * 1500], 'cwd': '/tmp'}}}
-        for i in range(4)]
-    # The input is <=65536 bytes; expanded roles/protocol still exceed 60000.
-    assert len(json.dumps(request(observations=observations)).encode()) < 65536
+    observations = [{'packet_id': str(i), 'stdout': 'line\n' * 3000,
+        'public_tool_call': {'tool': 'command', 'arguments': {'argv': ['printf', 'x' * 800], 'cwd': '/tmp'}}}
+        for i in range(2)]
+    refresh_context = {'prior_answer': 'retained historical context ' * 900}
+    # This reproduces the former 60KB-only failure while remaining under the
+    # verified 90KB turn contract.
+    assert len(json.dumps(request(observations=observations, refresh_context=refresh_context)).encode()) < 96 * 1024
+    backend = Backend([final()])
+    result = worker(backend).run(request(observations=observations, refresh_context=refresh_context))
+    assert result['status'] == 'completed'
+    turn_bytes = len(json.dumps(backend.turns[0], ensure_ascii=False).encode())
+    assert len(backend.turns) == 1 and 60000 < turn_bytes <= 90000
+    assert result['observations'] == observations
+    contents = [json.loads(m['content']) for m in backend.turns[0]['messages'] if m['role'] == 'user']
+    allowed = next(item['progress']['allowed_observation_packet_ids'] for item in contents
+                   if 'progress' in item and 'allowed_observation_packet_ids' in item['progress'])
+    assert allowed == ['0', '1']
+    assert not any('omitted_retained_observations' in item for item in contents)
+
+
+def test_over_90k_turn_omits_oldest_complete_frames_truthfully(fixture):
+    *_, worker = fixture
+    observations = [{'packet_id': str(i), 'stdout': 'line\n' * 4500,
+        'public_tool_call': {'tool': 'command', 'arguments': {'argv': ['printf', 'x' * 800], 'cwd': '/tmp'}}}
+        for i in range(2)]
+    refresh_context = {'prior_answer': 'retained historical context ' * 900}
+    assert len(json.dumps(request(observations=observations, refresh_context=refresh_context)).encode()) < 96 * 1024
+    omitted_for_test = []
+    def cite_omitted(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        progress = next(item['progress'] for item in values if 'progress' in item
+                        and 'omitted_observation_packet_ids' in item['progress'])
+        omitted = progress['omitted_observation_packet_ids']
+        assert omitted and omitted[0] not in progress['allowed_observation_packet_ids']
+        omitted_for_test.append(omitted[0])
+        return final() | {'findings': [{'text': 'unseen fact', 'evidence_packets': [omitted[0]]}]}
+    def correct(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        rejected = next(item['retained_observation'] for item in values
+                        if isinstance(item, dict) and isinstance(item.get('retained_observation'), dict)
+                        and item['retained_observation'].get('reason') == 'investigate_final_validation_failed')
+        allowed = rejected['validation_data']['allowed_observation_packet_ids']
+        assert rejected['failure_classification'] == 'finding_requires_observed_packet'
+        assert omitted_for_test[0] not in allowed
+        return final() | {'answer': 'omitted citation rejected'}
+    backend = Backend([cite_omitted, correct])
+    result = worker(backend).run(request(observations=observations, refresh_context=refresh_context, max_steps=3))
+    assert result['status'] == 'completed' and result['answer'] == 'omitted citation rejected'
+    assert result['observations'][:2] == observations
+    turn = backend.turns[0]
+    assert len(json.dumps(turn, ensure_ascii=False).encode()) <= runtime.MODEL_TURN_MAX_BYTES
+    assert len(turn['messages']) <= runtime.MODEL_TURN_MAX_MESSAGES
+    contents = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+    omission = next(item['omitted_retained_observations'] for item in contents
+                    if 'omitted_retained_observations' in item)
+    allowed = next(item['progress']['allowed_observation_packet_ids'] for item in contents
+                   if 'progress' in item and 'allowed_observation_packet_ids' in item['progress'])
+    assert omission['count'] > 0 and omission['is_source_evidence'] is False
+    assert len(allowed) + omission['count'] == len(observations)
+    assert set(allowed).isdisjoint(omission['packet_ids'])
+
+
+def test_message_count_cap_prunes_whole_call_result_pairs(fixture):
+    *_, worker = fixture
+    observations = [{'packet_id': f'packet-{i}', 'stdout': f'fact-{i}',
+        'public_tool_call': {'tool': 'command', 'arguments': {'argv': ['pwd'], 'cwd': '/tmp'}}}
+        for i in range(24)]
     backend = Backend([final()])
     result = worker(backend).run(request(observations=observations))
-    assert result['status'] == 'partial' and result['reason'] == 'context_budget'
-    assert not backend.turns and result['observations'] == observations
+    assert result['status'] == 'completed' and result['observations'] == observations
+    turn = backend.turns[0]
+    assert len(turn['messages']) <= 24
+    messages = turn['messages']
+    omission = next(json.loads(m['content'])['omitted_retained_observations'] for m in messages
+                    if m['role'] == 'user' and 'omitted_retained_observations' in json.loads(m['content']))
+    visible_calls = sum(m['role'] == 'assistant' for m in messages)
+    assert visible_calls + omission['count'] == len(observations)
+
+
+def test_oversized_checkpoint_uses_ordered_frame_subset_without_mutating_result(fixture):
+    root, runner, packets, checkpoints, worker = fixture
+    observations = [{'packet_id': f'prior-{i}', 'stdout': 'x' * 25000}
+                    for i in range(4)]
+    call = {'tool': 'search', 'arguments': {'query': 'add a bounded observation'}}
+    backend = Backend([call, final()])
+    port = runtime.ObserverWorkerPort(backend, command=runner,
+        tools=lambda name, args: {'packet_id': 'semantic-packet', 'status': 'ok'},
+        fence=lambda job, attempt: True,
+        checkpoint=lambda job, attempt, frames: checkpoints.append(copy.deepcopy(frames)))
+    # The request plus metadata exceeds 96KiB, the service input ceiling is
+    # larger, and the per-callback checkpoint still gets an ordered bounded suffix.
+    job = request(observations=observations, max_steps=3)
+    job_bytes = len(json.dumps(job, ensure_ascii=False).encode())
+    assert runtime.CHECKPOINT_MAX_BYTES < job_bytes < runtime.JOB_INPUT_MAX_BYTES
+    result = port.run(job)
+    assert result['status'] == 'completed'
+    assert [item['packet_id'] for item in result['observations'][:4]] == [f'prior-{i}' for i in range(4)]
+    assert result['observations'][-1]['packet_id'] == 'semantic-packet'
+    checkpoint = checkpoints[-1]
+    assert len(json.dumps(checkpoint, ensure_ascii=False).encode()) <= runtime.CHECKPOINT_MAX_BYTES
+    assert len(json.dumps(backend.turns[0], ensure_ascii=False).encode()) <= runtime.MODEL_TURN_MAX_BYTES
+    assert checkpoint == result['observations'][-len(checkpoint):]
+    assert all(item in result['observations'] for item in checkpoint)
 
 
 def test_oversized_result_omission_preserves_exact_accepted_call(fixture):
     root, runner, packets, checkpoints, worker = fixture
     call = {'tool': 'command', 'arguments': {'argv': ['/usr/bin/python3', '-c', 'print("x" * 40000)'],
         'cwd': str(root), 'max_output_bytes': 45000}}
-    result = worker(Backend([call])).run(request(max_steps=1))
+    result = worker(Backend([call, final()])).run(request(max_steps=2))
     observation = result['observations'][0]
-    assert result['reason'] == 'step_budget_exhausted'
+    assert result['status'] == 'completed'
     assert observation['public_tool_call'] == call and observation['packet_id']
     assert 'stdout' not in observation and observation['omissions']
     assert len(json.dumps(observation).encode()) <= 32768
@@ -169,8 +263,15 @@ def test_replay_keeps_strict_single_json_and_retained_call(fixture, bad):
     source = root / 'strict.txt'
     source.write_text('strict source\n')
     call = cat(source, root)
-    result = worker(Backend([call, bad])).run(request())
-    assert result['status'] == 'partial' and 'answer' not in result
+    def repaired(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        assert any(item.get('protocol_error') == 'invalid_json_object' for item in values)
+        assert calls_and_results(turn)[0][0] == call
+        return final() | {'answer': 'repaired after strict parse failure',
+            'findings': [{'text': 'strict source retained', 'evidence_packets': ['command-packet-1']}]}
+    result = worker(Backend([call, bad, repaired])).run(request())
+    assert result['status'] == 'completed' and result['answer'] == 'repaired after strict parse failure'
+    assert 'strict source retained' not in json.dumps(result['observations'])
     assert result['observations'][0]['public_tool_call'] == call
     assert len(packets) == 1
 
@@ -208,4 +309,101 @@ def test_argument_mutation_by_adapter_cannot_rewrite_accepted_public_call(fixtur
     assert result['status'] == 'completed'
     assert result['observations'][0]['public_tool_call'] == actual_call
     assert calls_and_results(backend.turns[1])[0][0] == actual_call
+
+
+@pytest.mark.parametrize('bad,classification', [
+    ({'answer': 'unaccepted answer', 'findings': [{'text': 'unsupported',
+      'evidence_packets': ['nested-source-packet']}], 'unresolved_questions': []}, 'finding_requires_observed_packet'),
+    ({'answer': '', 'findings': [], 'unresolved_questions': []}, 'final_answer_missing'),
+    ({'answer': 'unaccepted answer', 'findings': [], 'unresolved_questions': 'not-a-list'}, 'invalid_unresolved_questions'),
+])
+def test_investigate_final_validation_feedback_is_safe_and_correctable(fixture, bad, classification):
+    root, runner, packets, checkpoints, worker = fixture
+    source = root / 'answer.txt'
+    source.write_text('outer broker observation supports the corrected answer\n')
+    call = cat(source, root)
+    correct = {'answer': 'corrected answer', 'findings': [{'text': 'supported fact',
+        'evidence_packets': ['command-packet-1']}], 'unresolved_questions': []}
+    def correct_final(turn):
+        messages = turn['messages']
+        feedback = [json.loads(m['content']) for m in messages if m['role'] == 'user']
+        rejected = next(item['retained_observation'] for item in feedback
+                        if isinstance(item, dict) and isinstance(item.get('retained_observation'), dict)
+                        and item['retained_observation'].get('reason') == 'investigate_final_validation_failed')
+        assert rejected['failure_classification'] == classification
+        assert rejected['validation_data']['is_source_evidence'] is False
+        assert rejected['validation_data']['allowed_observation_packet_ids'] == ['command-packet-1']
+        assert rejected['corrective_action'].find('nested source/tool packet references') >= 0
+        assert rejected['accepted'] is False and 'proposed_final' not in rejected['validation_data']
+        allowed = next(item['progress']['allowed_observation_packet_ids'] for item in feedback
+                       if isinstance(item, dict) and 'progress' in item and 'allowed_observation_packet_ids' in item['progress'])
+        assert allowed == ['command-packet-1']
+        assert 'nested-source-packet' not in json.dumps(messages)
+        return correct
+    backend = Backend([call, bad, correct_final])
+    result = worker(backend).run(request(max_steps=3))
+    assert result['status'] == 'completed' and result['answer'] == 'corrected answer'
+    assert result['findings'] == correct['findings'] and result['unresolved_questions'] == []
+    assert [o['reason'] for o in result['observations'] if o.get('reason')]
+    assert len(backend.turns) == 3 and len(packets) == 2
+    rejection = result['observations'][1]
+    assert rejection['failure_classification'] == classification
+    assert 'unaccepted answer' not in json.dumps(result['observations'])
+
+
+def test_investigate_final_validation_exhaustion_retains_safe_classification(fixture):
+    root, runner, packets, checkpoints, worker = fixture
+    source = root / 'answer.txt'
+    source.write_text('visible fact\n')
+    call = cat(source, root)
+    invalid = {'answer': 'bad', 'findings': [{'text': 'bad cite', 'evidence_packets': ['nested']}],
+               'unresolved_questions': []}
+    result = worker(Backend([call, invalid, invalid])).run(request(max_steps=3))
+    assert result['status'] == 'partial' and result['reason'] == 'finding_requires_observed_packet'
+    assert result['failure_classification'] == 'finding_requires_observed_packet'
+    assert 'answer' not in result and result['findings'] == []
+    assert len(result['observations']) == 2
+    assert result['observations'][-1]['failure_classification'] == 'finding_requires_observed_packet'
+
+
+def test_strict_extra_json_data_is_repaired_without_dispatch(fixture):
+    *_, worker = fixture
+    def repaired(turn):
+        user_values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        feedback = next(item for item in user_values if item.get('protocol_error') == 'invalid_json_object')
+        assert 'Extra data' in feedback['detail']
+        assert 'No tool call was dispatched' in feedback['instruction']
+        assert not any(m['role'] == 'assistant' for m in turn['messages'])
+        return {'answer': 'repaired', 'findings': [], 'unresolved_questions': []}
+    backend = Backend(['{} {}', repaired])
+    result = worker(backend).run(request(max_steps=3))
+    assert result['status'] == 'completed' and result['answer'] == 'repaired'
+    assert result['observations'] == [] and len(backend.turns) == 2
+    assert 'context_budget' not in json.dumps(backend.turns)
+
+
+def test_malformed_parsed_tool_envelope_is_repaired_without_dispatch(fixture):
+    *_, worker = fixture
+    def repaired(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        assert any(item.get('protocol_error') == 'malformed_tool_envelope' for item in values)
+        assert not any(m['role'] == 'assistant' for m in turn['messages'])
+        return {'answer': 'repaired envelope', 'findings': [], 'unresolved_questions': []}
+    result = worker(Backend([{'tool': [], 'arguments': {}}, repaired])).run(request(max_steps=2))
+    assert result['status'] == 'completed' and result['answer'] == 'repaired envelope'
+    assert result['observations'] == []
+
+
+def test_successful_investigate_result_assembles_validated_final_and_observations(fixture):
+    root, runner, packets, checkpoints, worker = fixture
+    source = root / 'assembled.txt'
+    source.write_text('assembled fact\n')
+    call = cat(source, root)
+    valid = {'answer': 'assembled answer', 'findings': [{'text': 'assembled fact',
+        'evidence_packets': ['command-packet-1']}], 'unresolved_questions': []}
+    result = worker(Backend([call, valid])).run(request(max_steps=3))
+    assert result['status'] == 'completed' and result['authoritative'] is False
+    assert result['answer'] == valid['answer'] and result['findings'] == valid['findings']
+    assert result['unresolved_questions'] == [] and result['observations'][0]['packet_id'] == 'command-packet-1'
+    assert checkpoints[-1] == result['observations']
     assert checkpoints[-1] == result['observations']
