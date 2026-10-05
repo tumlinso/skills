@@ -5,6 +5,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import math
 import os
 import signal
 import socket
@@ -261,6 +262,12 @@ class ProductionBackend:
                 raise SupervisorError("owned_residency_recovery_blocked: marker permissions invalid")
             marker = json.loads(path.read_text())
             owner = self.runtime.host.owner(marker["owner_id"])
+            if owner is None:
+                try:
+                    self._recover_orphan_residency(path, marker)
+                except Exception as error:
+                    raise SupervisorError(f"owned_residency_recovery_blocked: {error}") from error
+                continue
             approved = self.profile.get("deployment_policy", {}).get("allowed_gpu_uuids", marker["gpu_uuids"])
             process = marker.get("process")
             if process is None:
@@ -305,6 +312,79 @@ class ProductionBackend:
             except Exception as error:
                 raise SupervisorError(f"owned_residency_recovery_blocked: {error}") from error
         self._recovery_checked = True
+
+    def _recover_orphan_residency(self, path: Path, marker: dict[str, Any]) -> None:
+        """Release only a proven, already quiescent orphan; never signal it."""
+        process = marker["process"]
+        uuids = marker["gpu_uuids"]
+        approved = self.profile.get("deployment_policy", {}).get("allowed_gpu_uuids", [])
+        owner_id = marker["owner_id"]
+        safe_component = lambda value: (isinstance(value, str) and bool(value) and
+            value not in {".", ".."} and "/" not in value and "\\" not in value)
+        valid_hash = lambda value: (isinstance(value, str) and len(value) == 64 and
+            all(char in "0123456789abcdef" for char in value))
+        if not (marker.get("format") == "CORE4-OWNED-RESIDENCY/1" and
+                marker.get("project_root") == str(self.repo_root) and
+                marker.get("service_state_root") == str(self.service_state_root) and
+                valid_hash(marker.get("source_sha256")) and safe_component(owner_id) and
+                safe_component(marker.get("slot_id")) and path == self._marker_path(marker["slot_id"]) and
+                isinstance(process, dict) and type(process.get("pid")) is int and process["pid"] > 0 and
+                process.get("process_group") == process["pid"] and
+                process.get("executable") == str(Path(self.profile["server"]["binary"]).resolve()) and
+                isinstance(process.get("process_start"), str) and bool(process["process_start"]) and
+                isinstance(process.get("boot_id"), str) and bool(process["boot_id"]) and
+                isinstance(uuids, list) and bool(uuids) and all(isinstance(gpu, str) for gpu in uuids) and
+                len(set(uuids)) == len(uuids) and set(uuids) <= set(approved) and
+                set(marker["resource_ids"]) == {f"accelerator:{gpu}" for gpu in uuids}):
+            raise ValueError("orphan_marker_identity_mismatch")
+        # A missing executable or unreadable identity is not proof of absence.
+        try:
+            (Path("/proc") / str(process["pid"])).stat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise ValueError("orphan_process_still_present")
+        started = time.time()
+        observation = self._residency_sample(uuids)
+        observed = observation.get("observed_unix")
+        if (type(observed) not in (int, float) or not math.isfinite(observed) or
+                not started - 5 <= observed <= time.time()):
+            raise ValueError("orphan_quiescence_not_fresh")
+        memory = memory_snapshot(observation, uuids)
+        if not isinstance(observation.get("processes"), list) or observation["processes"]:
+            raise ValueError("orphan_model_still_visible")
+        for gpu in uuids:
+            baseline = marker["memory_baseline"][gpu]
+            if (type(baseline) not in (int, float) or not math.isfinite(baseline) or baseline < 0 or
+                    not math.isfinite(memory[gpu]) or memory[gpu] < 0 or memory[gpu] > baseline + 16):
+                raise ValueError("orphan_model_memory_not_released")
+        lease_root = self.cache.lease_root
+        leases = list(lease_root.glob(f"*/*/{owner_id}.json"))
+        if len(leases) != 1:
+            raise ValueError("orphan_model_lease_proof_unavailable")
+        lease_path = leases[0]
+        if any(part.is_symlink() for part in (lease_root, lease_path.parent.parent, lease_path.parent, lease_path)):
+            raise ValueError("orphan_model_lease_symlink")
+        stat = lease_path.stat()
+        if stat.st_uid != os.getuid() or stat.st_mode & 0o777 != 0o600:
+            raise ValueError("orphan_model_lease_permissions_invalid")
+        candidate_id, payload_sha256 = lease_path.parent.parent.name, lease_path.parent.name
+        if (lease_path.name != f"{owner_id}.json" or
+                not safe_component(candidate_id) or not valid_hash(payload_sha256)):
+            raise ValueError("orphan_model_lease_identity_mismatch")
+        if json.loads(lease_path.read_text()) != {"owner_id": owner_id, "payload_sha256": payload_sha256}:
+            raise ValueError("orphan_model_lease_identity_mismatch")
+        self.cache.verify(candidate_id, payload_sha256, full=False)
+        # Preserve recovery evidence before the native cache lease exit removes
+        # its marker. Historical source hashes authorize no process actions.
+        archive = path.parent / "recovered-orphans" / path.name
+        _private_directory(archive.parent)
+        _atomic_json(archive, {"marker": marker, "observation": observation,
+                              "model_lease": {"candidate_id": candidate_id,
+                                             "payload_sha256": payload_sha256, "owner_id": owner_id}})
+        with self.cache.lease(candidate_id, payload_sha256, owner_id):
+            pass
+        path.unlink()
 
     def _candidate(self, candidate_id: str) -> dict[str, Any]:
         candidate = next((item for item in self.profile.get("candidates", []) if item.get("id") == candidate_id), None)
