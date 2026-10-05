@@ -360,9 +360,46 @@ class ProductionBackend:
                 raise ValueError("orphan_model_memory_not_released")
         lease_root = self.cache.lease_root
         leases = list(lease_root.glob(f"*/*/{owner_id}.json"))
+        archive = path.parent / "recovered-orphans" / path.name
+        record = None
+        if archive.exists() or archive.is_symlink():
+            if archive.is_symlink() or archive.parent.is_symlink() or lease_root.is_symlink():
+                raise ValueError("orphan_archive_symlink")
+            archived_stat = archive.stat()
+            if archived_stat.st_uid != os.getuid() or archived_stat.st_mode & 0o777 != 0o600:
+                raise ValueError("orphan_archive_permissions_invalid")
+            record = json.loads(archive.read_text())
+            proof_sha256 = record.pop("proof_sha256")
+            digest = hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":"),
+                                               allow_nan=False).encode()).hexdigest()
+            if (set(record) != {"format", "phase", "marker", "observation", "model_lease"} or
+                    proof_sha256 != digest or record["format"] != "CORE4-ORPHAN-RECOVERY/1" or
+                    record["phase"] != "native-lease-release" or record["marker"] != marker):
+                raise ValueError("orphan_archive_identity_mismatch")
+            proof = record["model_lease"]
+            candidate_id, payload_sha256 = proof["candidate_id"], proof["payload_sha256"]
+            expected = lease_root / candidate_id / payload_sha256 / f"{owner_id}.json"
+            if (not safe_component(candidate_id) or not valid_hash(payload_sha256) or
+                    proof != {"candidate_id": candidate_id, "payload_sha256": payload_sha256,
+                              "owner_id": owner_id, "lease_root": str(lease_root), "lease_path": str(expected)} or
+                    any(part.is_symlink() for part in (expected.parent.parent, expected.parent, expected))):
+                raise ValueError("orphan_archive_lease_mismatch")
+        if not leases:
+            # Native lease exit may have completed before marker unlink. The
+            # exact private release record plus absence permits only unlink;
+            # it never authorizes recreating a lease or releasing host state.
+            if record is None:
+                raise ValueError("orphan_model_lease_proof_unavailable")
+            if expected.exists():
+                raise ValueError("orphan_archive_lease_mismatch")
+            self.cache.verify(candidate_id, payload_sha256, full=False)
+            path.unlink()
+            return
         if len(leases) != 1:
             raise ValueError("orphan_model_lease_proof_unavailable")
         lease_path = leases[0]
+        if record is not None and lease_path != expected:
+            raise ValueError("orphan_archive_lease_mismatch")
         if any(part.is_symlink() for part in (lease_root, lease_path.parent.parent, lease_path.parent, lease_path)):
             raise ValueError("orphan_model_lease_symlink")
         stat = lease_path.stat()
@@ -377,11 +414,15 @@ class ProductionBackend:
         self.cache.verify(candidate_id, payload_sha256, full=False)
         # Preserve recovery evidence before the native cache lease exit removes
         # its marker. Historical source hashes authorize no process actions.
-        archive = path.parent / "recovered-orphans" / path.name
         _private_directory(archive.parent)
-        _atomic_json(archive, {"marker": marker, "observation": observation,
-                              "model_lease": {"candidate_id": candidate_id,
-                                             "payload_sha256": payload_sha256, "owner_id": owner_id}})
+        record = {"format": "CORE4-ORPHAN-RECOVERY/1", "phase": "native-lease-release",
+                  "marker": marker, "observation": observation,
+                  "model_lease": {"candidate_id": candidate_id, "payload_sha256": payload_sha256,
+                                  "owner_id": owner_id, "lease_root": str(lease_root),
+                                  "lease_path": str(lease_path)}}
+        record["proof_sha256"] = hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":"),
+                                                         allow_nan=False).encode()).hexdigest()
+        _atomic_json(archive, record)
         with self.cache.lease(candidate_id, payload_sha256, owner_id):
             pass
         path.unlink()

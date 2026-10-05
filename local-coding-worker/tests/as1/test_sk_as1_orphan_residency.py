@@ -65,11 +65,11 @@ class OrphanRecoveryTests(unittest.TestCase):
         self.path.write_text(json.dumps(self.marker))
         self.path.chmod(0o600)
 
-    def refuse(self):
+    def refuse(self, *, lease_present=True):
         with self.assertRaisesRegex(SupervisorError, "recovery_blocked"):
             self.backend._recover_residencies()
         self.assertTrue(self.path.exists())
-        self.assertTrue(self.lease_path.exists())
+        self.assertEqual(self.lease_path.exists(), lease_present)
         self.terminate.assert_not_called()
         self.backend.runtime.host.release.assert_not_called()
         self.native_lease.assert_not_called()
@@ -176,6 +176,90 @@ class OrphanRecoveryTests(unittest.TestCase):
         self.lease_path.rename(saved)
         self.lease_path.symlink_to(saved)
         self.refuse()
+
+    def crash_after_lease_exit(self):
+        original_unlink = Path.unlink
+        def interrupted_unlink(path, *args, **kwargs):
+            if path == self.path:
+                raise OSError("simulated crash after native lease exit")
+            return original_unlink(path, *args, **kwargs)
+        with patch.object(Path, "unlink", interrupted_unlink):
+            with self.assertRaisesRegex(SupervisorError, "simulated crash"):
+                self.backend._recover_residencies()
+        self.assertTrue(self.path.exists())
+        self.assertFalse(self.lease_path.exists())
+        self.native_lease.reset_mock()
+        return self.path.parent / "recovered-orphans" / self.path.name
+
+    def test_crash_after_lease_exit_resumes_without_recreating_lease(self):
+        archive = self.crash_after_lease_exit()
+        original_archive = archive.read_bytes()
+        self.backend._observe_residency.reset_mock()
+        self.backend._recover_residencies()
+        self.backend._observe_residency.assert_called_once_with(["GPU-fixture"])
+        self.native_lease.assert_not_called()
+        self.terminate.assert_not_called()
+        self.backend.runtime.host.release.assert_not_called()
+        self.assertFalse(self.path.exists())
+        self.assertFalse(self.lease_path.exists())
+        self.assertEqual(archive.read_bytes(), original_archive)
+
+    def test_crash_resume_repeats_quiescence_and_pid_absence(self):
+        self.crash_after_lease_exit()
+        self.observation["devices"][0]["memory_used_mib"] = 17
+        self.refuse(lease_present=False)
+        self.observation["devices"][0]["memory_used_mib"] = 12
+        original_stat = Path.stat
+        def present_pid(path, *args, **kwargs):
+            if str(path) == "/proc/2147483647":
+                return original_stat(Path("/proc") / str(os.getpid()))
+            return original_stat(path, *args, **kwargs)
+        with patch.object(Path, "stat", present_pid):
+            self.refuse(lease_present=False)
+
+    def test_changed_or_invalid_archive_refuses_even_with_recomputed_digest(self):
+        archive = self.crash_after_lease_exit()
+        original = json.loads(archive.read_text())
+        mutations = [
+            lambda record: record.update(format="unknown"),
+            lambda record: record.update(phase="unrecognized"),
+            lambda record: record["marker"].update(source_sha256="b" * 64),
+            lambda record: record["model_lease"].update(owner_id="foreign"),
+            lambda record: record["model_lease"].update(lease_root="/foreign"),
+            lambda record: record["model_lease"].update(lease_path="/foreign"),
+            lambda record: record.update(extra="ambiguous"),
+        ]
+        for mutate in mutations:
+            with self.subTest(mutation=mutate):
+                record = json.loads(json.dumps(original))
+                record.pop("proof_sha256")
+                mutate(record)
+                record["proof_sha256"] = hashlib.sha256(json.dumps(
+                    record, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+                archive.write_text(json.dumps(record))
+                self.refuse(lease_present=False)
+        archive.write_text(json.dumps({**original, "proof_sha256": "0" * 64}))
+        self.refuse(lease_present=False)
+        archive.write_text("not JSON")
+        self.refuse(lease_present=False)
+
+    def test_crash_resume_rejects_unsafe_archive_and_foreign_present_lease(self):
+        archive = self.crash_after_lease_exit()
+        archive.chmod(0o644)
+        self.refuse(lease_present=False)
+        archive.chmod(0o600)
+        saved = archive.with_suffix(".saved")
+        archive.rename(saved)
+        archive.symlink_to(saved)
+        self.refuse(lease_present=False)
+        archive.unlink()
+        saved.rename(archive)
+        other = self.cache.lease_root / "other" / self.digest / self.lease_path.name
+        other.parent.mkdir(parents=True)
+        other.write_text(json.dumps({"owner_id": "owner-fixture", "payload_sha256": self.digest}))
+        other.chmod(0o600)
+        self.refuse(lease_present=False)
+        self.assertTrue(other.exists())
 
 
 if __name__ == "__main__":
