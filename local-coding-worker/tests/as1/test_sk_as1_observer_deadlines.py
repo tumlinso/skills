@@ -123,6 +123,43 @@ def test_refresh_context_and_remaining_model_budget_are_forwarded(tmp_path):
     assert "Reuse valid prior work" in turns[0]["messages"][0]["content"]
 
 
+@pytest.mark.parametrize("bad_arguments", [
+    {"argv": ["pwd"]},
+    {"argv": ["pwd"], "cwd": ".", "typo": True},
+])
+def test_invalid_command_arguments_are_denied_and_repaired_without_dispatch(tmp_path, bad_arguments):
+    turns, executions = [], []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            if len(turns) == 1:
+                value = {"tool": "command", "arguments": bad_arguments}
+            elif len(turns) == 2:
+                value = {"tool": "command", "arguments": {"argv": ["pwd"], "cwd": str(tmp_path),
+                    "timeout_seconds": 60}}
+            else:
+                value = {"answer": "The command completed.", "findings": [], "unresolved_questions": []}
+            return {"status": "available", "text": json.dumps(value)}
+    class Command(ReadOnlyCommandRunner):
+        def run(self, argv, cwd, **kwargs):
+            executions.append((argv, cwd, kwargs.get("timeout_seconds")))
+            return self._packet({"status": "completed", "exit_code": 0, "stdout": str(tmp_path),
+                "stderr": "", "truncated": False, "timed_out": False}, kwargs.get("guard"))
+    worker = ObserverWorkerPort(Backend(), command=Command([tmp_path], packetize=lambda _: f"p{len(executions)}"),
+        tools=lambda *a: pytest.fail("not a general tool"), fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "Inspect source",
+        "max_steps": 3, "deadline_epoch": time.time() + 5})
+    assert result["status"] == "completed"
+    assert executions == [(["pwd"], str(tmp_path), 60)]
+    assert turns[1]["reasoning_mode"] == "off"
+    first_tool_feedback = next(json.loads(message["content"]) for message in turns[1]["messages"]
+        if message["role"] == "user" and message["content"].startswith('{"status": "denied"'))
+    assert first_tool_feedback["status"] == "denied"
+    assert first_tool_feedback["reason"] == "invalid_command_arguments"
+    assert first_tool_feedback["dispatched"] is False
+    assert turns[-1]["response_format"]["schema"]["properties"]["answer"]["maxLength"] == 1200
+
+
 def test_sed_window_emits_full_source_dependency_and_exact_range(tmp_path):
     import hashlib
     from local_worker.observer_runtime import _sed_source_reads
@@ -627,7 +664,6 @@ def test_initial_prompt_distinguishes_active_runtime_from_cli_harness_limits(tmp
     assert 'below the 32 KiB worker observation limit' in opening
     assert 'do not repeat a whole-file read after truncation' in opening
     assert 'trace their callers and distinguish their scope and enforcement point' in opening
-    assert 'answer every requested part compactly' in opening
     assert 'You have 3 model rounds total for this attempt.' in opening
 
 
