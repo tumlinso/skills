@@ -157,6 +157,8 @@ def test_internal_turn_envelope_grows_without_raising_job_input_or_visible_limit
         "question": "What version does the file report?"})
     assert turns[0]["reasoning_mode"] == "off"
     assert turns[0]["max_tokens"] == 2048
+    # The model answered before the reserved final round, so tool-capable turns
+    # retain the generic object grammar; the closed answer schema is final-only.
     assert turns[0]["response_format"] == {"type": "json_object", "schema": {"type": "object"}}
     assert len(turns[0]["messages"][-1]["content"].encode()) < 16384
 
@@ -392,6 +394,18 @@ def test_final_model_round_synthesizes_or_refuses_more_tools(tmp_path, last_is_t
     assert '2,048-token completion budget' in last_context['instruction']
     assert '1,200 characters' in last_context['instruction']
     assert 'at most three concise items' in last_context['instruction']
+    assert all(turn['response_format'] == {'type': 'json_object', 'schema': {'type': 'object'}}
+        for turn in turns[:-1])
+    final_schema = turns[-1]['response_format']['schema']
+    assert len(json.dumps(final_schema).encode()) < 16384
+    assert final_schema['additionalProperties'] is False
+    assert final_schema['required'] == ['answer', 'findings', 'unresolved_questions']
+    assert 'tool' not in final_schema['properties']
+    assert final_schema['properties']['answer']['maxLength'] == 1200
+    assert final_schema['properties']['findings']['maxItems'] == 3
+    assert final_schema['properties']['findings']['items']['properties']['text']['maxLength'] == 350
+    assert final_schema['properties']['findings']['items']['properties']['evidence_packets']['items']['enum'] == [
+        'packet-1', 'packet-2', 'packet-3', 'packet-4', 'packet-5']
     assert all(turn['deadline_epoch'] == deadline and 0 < turn['timeout_seconds'] <= 5 for turn in turns)
     if last_is_tool:
         assert result['reason'] == 'final_round_requires_answer'
@@ -461,7 +475,9 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
     files = ['SKILL.md', 'map.md', 'architecture.md', 'start.md', 'needs.md']
     for index, name in enumerate(files):
         next_file = files[index + 1] if index + 1 < len(files) else 'none'
-        (tmp_path / name).write_text(f'Read {next_file}; observed guidance {index}.\n')
+        target = tmp_path / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(f'Read {next_file}; observed guidance {index}.\n')
     turns, reads = [], []
     class Command(ReadOnlyCommandRunner):
         def run(self, argv, cwd, **kwargs):
@@ -471,7 +487,8 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
             content = path.read_text()
             return {'packet_id': f'packet-{len(reads)}', 'status': 'completed', 'exit_code': 0,
                 'stdout': content, 'truncated': False,
-                'source_reads': [{'path': str(path), 'content_sha256': hashlib.sha256(content.encode()).hexdigest()}]}
+                'source_reads': [{'path': str(path), 'content_sha256': hashlib.sha256(content.encode()).hexdigest(),
+                                  'line_count': len(content.splitlines())}]}
     class Backend:
         def run_observer_turn(self, request):
             turns.append(request)
@@ -480,13 +497,13 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
                                                         'cwd': str(tmp_path)}}
             else:
                 value = {'answer': 'The read maps provide partial guidance.',
-                    'findings': [{'text': 'Observed guidance 4.', 'evidence_packets': ['packet-5']}],
+                        'findings': [{'text': 'Observed guidance 4.', 'evidence_packets': ['packet-5']}],
                     'unresolved_questions': ['Further implementation details were not read.'],
                     'skill_selection': {'format': 'pc-skill-selection/1', 'selections': [{
                         'skill': 'fixture', 'resource': 'needs.md',
                         'content_sha256': hashlib.sha256((tmp_path / 'needs.md').read_bytes()).hexdigest(),
                         'line_start': 1, 'line_end': 1, 'reason': 'Observed task guidance'}],
-                        'synthesis': 'Observed guidance 4.', 'unresolved': ['Unread details.']}}
+                        'synthesis': 'Observed guidance 4.'}}
             return {'status': 'available', 'text': json.dumps(value)}
     command = Command([tmp_path], packetize=lambda p: 'packet')
     worker = ObserverWorkerPort(Backend(), command=command, tools=lambda *a: pytest.fail('unexpected tool'), fence=lambda *a: True)
@@ -497,10 +514,29 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
     final_context = json.loads(turns[-1]['messages'][-1]['content'])
     assert final_context['final_round'] is True
     assert 'minimum necessary valid resources, at most three' in final_context['instruction']
-    assert all(turn['response_format'] == {'type': 'json_object', 'schema': {'type': 'object'}} for turn in turns)
+    assert all(turn['response_format'] == {'type': 'json_object', 'schema': {'type': 'object'}} for turn in turns[:-1])
+    final_schema = turns[-1]['response_format']['schema']
+    assert len(json.dumps(final_schema).encode()) < 16384
+    assert final_schema['required'] == ['answer', 'findings', 'unresolved_questions', 'skill_selection']
+    assert 'tool' not in final_schema['properties']
+    assert final_schema['properties']['findings']['items']['properties']['evidence_packets']['items']['enum'] == [
+        'packet-1', 'packet-2', 'packet-3', 'packet-4', 'packet-5']
+    selection_schema = final_schema['properties']['skill_selection']
+    assert selection_schema['required'] == ['format', 'selections', 'synthesis']
+    assert 'unresolved' in selection_schema['properties']
+    assert selection_schema['properties']['selections']['maxItems'] == 3
+    item_schema = selection_schema['properties']['selections']['items']
+    assert item_schema['additionalProperties'] is False
+    assert item_schema['required'] == ['skill', 'resource', 'content_sha256', 'line_start', 'line_end', 'reason']
+    assert item_schema['properties']['skill'] == {'type': 'string', 'minLength': 1, 'maxLength': 128}
+    assert item_schema['properties']['resource']['type'] == 'string'
+    assert 'const' not in item_schema['properties']['resource']
+    assert item_schema['properties']['prerequisites']['maxItems'] == 6
+    assert 'const' not in item_schema['properties']['skill']
     assert reads == [*files, 'needs.md']  # Last read is authoritative final validation, not a model-requested call.
     assert result['findings'][0]['evidence_packets'] == ['packet-5']
     assert result['skill_selection']['selections'][0]['resource'] == 'needs.md'
+    assert 'unresolved' not in result['skill_selection']
     assert all('hidden' not in observation for observation in result['observations'])
 
 

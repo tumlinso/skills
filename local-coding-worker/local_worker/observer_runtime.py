@@ -547,9 +547,56 @@ class ObserverWorkerPort:
                         request["question"], mode=request["mode"], first_step=(step == 0),
                         has_protocol_feedback=bool(protocol_feedback),
                         remaining=timeout_seconds)
+                    response_schema = {"type": "object"}
+                    if final_round:
+                        references = sorted(eligible_packet_ids(visible_observations))
+                        findings = {"type": "array", "maxItems": 3, "items": {
+                            "type": "object", "additionalProperties": False,
+                            "required": ["text", "evidence_packets"],
+                            "properties": {
+                                "text": {"type": "string", "minLength": 1, "maxLength": 350},
+                                "evidence_packets": {"type": "array", "minItems": 1, "maxItems": 3,
+                                    "items": {"type": "string", "enum": references}},
+                            }}}
+                        if not references:
+                            findings = {"type": "array", "maxItems": 0}
+                        response_properties = {
+                            "answer": {"type": "string", "minLength": 1, "maxLength": 1200},
+                            "findings": findings,
+                            "unresolved_questions": {"type": "array", "maxItems": 3,
+                                "items": {"type": "string", "maxLength": 250}},
+                        }
+                        response_required = ["answer", "findings", "unresolved_questions"]
+                        if request["mode"] == "skill":
+                            selection_item = {"type": "object", "additionalProperties": False,
+                                "required": ["skill", "resource", "content_sha256", "line_start", "line_end", "reason"],
+                                "properties": {
+                                    "skill": {"type": "string", "minLength": 1, "maxLength": 128},
+                                    "resource": {"type": "string", "minLength": 1, "maxLength": 4096},
+                                    "content_sha256": {"type": "string", "pattern": "^[0-9a-fA-F]{64}$"},
+                                    "line_start": {"type": "integer", "minimum": 1},
+                                    "line_end": {"type": "integer", "minimum": 1},
+                                    "reason": {"type": "string", "minLength": 1, "maxLength": 200},
+                                    "prerequisites": {"type": "array", "maxItems": 6,
+                                        "items": {"type": "string", "maxLength": 512}},
+                                }}
+                            response_properties["skill_selection"] = {
+                                "type": "object", "additionalProperties": False,
+                                "required": ["format", "selections", "synthesis"],
+                                "properties": {
+                                    "format": {"type": "string", "const": "pc-skill-selection/1"},
+                                    "selections": {"type": "array", "minItems": 1, "maxItems": 3,
+                                        "items": selection_item},
+                                    "synthesis": {"type": "string", "maxLength": 600},
+                                    "unresolved": {"type": "array", "maxItems": 3,
+                                        "items": {"type": "string", "maxLength": 250}},
+                                }}
+                            response_required.append("skill_selection")
+                        response_schema = {"type": "object", "additionalProperties": False,
+                            "required": response_required, "properties": response_properties}
                     candidate = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
                         "max_tokens": 2048, "reasoning_mode": reasoning_mode,
-                        "response_format": {"type": "json_object", "schema": {"type": "object"}},
+                        "response_format": {"type": "json_object", "schema": response_schema},
                         "timeout_seconds": timeout_seconds,
                         "deadline_epoch": deadline_epoch,
                         "compute_profile": request.get("compute_profile", "narrow"),
