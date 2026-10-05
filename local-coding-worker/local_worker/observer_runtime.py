@@ -386,6 +386,7 @@ class ObserverWorkerPort:
                             "you decide relevance and reuse from their evidence.")
             initial_context = {k: request[k] for k in ("question", "scope", "hints", "skill", "refresh_context", "log_guidance",
                                                      "inquiry_repositories", "installed_skill_roots") if k in request}
+            protocol_feedback: list[dict[str, str]] = []
             for step in range(max_steps):
                 final_round = step == max_steps - 1
                 check()
@@ -419,6 +420,7 @@ class ObserverWorkerPort:
                         # no accepted model call. Never invent one for them.
                         messages.append({"role": "user", "content": json.dumps(
                             {"retained_observation": observation}, ensure_ascii=False)})
+                messages.extend(protocol_feedback)
                 if observations:
                     continuation = (
                         "Review the retained public observations before acting; "
@@ -465,7 +467,24 @@ class ObserverWorkerPort:
                 text = response.get("text")
                 if not isinstance(text, str) or len(text.encode()) > 16384:
                     raise ValueError("model_output_exceeded_budget")
-                value = json.loads(text)
+                try:
+                    value = json.loads(text)
+                except json.JSONDecodeError as error:
+                    if final_round:
+                        return snapshot("partial", reason="model_output_invalid_json",
+                            unresolved_questions=["The final model round did not return exactly one valid JSON object."])
+                    # Keep protocol repair in this bounded attempt. Do not salvage
+                    # the first object from concatenated output: any trailing text
+                    # makes the whole model response invalid and no action is taken.
+                    protocol_feedback = [
+                        {"role": "assistant", "content": text[:4096]},
+                        {"role": "user", "content": json.dumps({
+                            "protocol_error": "invalid_json_object",
+                            "detail": f"{error.msg} at line {error.lineno}, column {error.colno}",
+                            "instruction": "No tool call was dispatched. Return exactly one JSON object in the required protocol, with no Markdown fence, commentary, or additional object. Continue from the supplied question and retained observations."
+                        }, ensure_ascii=False)},
+                    ]
+                    continue
                 if not isinstance(value, dict):
                     raise ValueError("model_output_not_object")
                 if "tool" in value:

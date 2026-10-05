@@ -304,6 +304,64 @@ def test_final_model_round_synthesizes_or_refuses_more_tools(tmp_path, last_is_t
         assert result['unresolved_questions'] == ['One source remains unverified.']
 
 
+def test_invalid_json_is_repaired_within_same_bounded_session(tmp_path):
+    turns = []
+    invalid = [
+        '{"tool":"search","arguments":{"query":"unused"}}\n{"answer":"second object"}' + "x" * 6000,
+        '```json\n{"answer":"fenced","findings":[]}\n```' + "y" * 6000,
+    ]
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            index = len(turns)
+            if index <= len(invalid):
+                return {"status": "available", "text": invalid[index - 1]}
+            return {"status": "available", "text": json.dumps({"answer": "Recovered.", "findings": []})}
+
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet")
+    worker = ObserverWorkerPort(Backend(), command=runner,
+        tools=lambda *a: pytest.fail("invalid model output must not dispatch a tool"), fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "investigate", "question": "q",
+        "max_steps": 4, "session_id": "borrowed-session"})
+
+    assert result["status"] == "completed" and result["answer"] == "Recovered."
+    assert len(turns) == 3
+    assert all(turn["session_id"] == "borrowed-session" for turn in turns)
+    first_repair = turns[1]["messages"]
+    first_response = next(m["content"] for m in first_repair if m["role"] == "assistant")
+    assert first_response == invalid[0][:4096]
+    assert len(first_response) == 4096
+    assert any("invalid_json_object" in m["content"] and "additional object" in m["content"]
+               for m in first_repair if m["role"] == "user")
+    second_repair = turns[2]["messages"]
+    prior_response = next(m["content"] for m in second_repair if m["role"] == "assistant")
+    assert prior_response == invalid[1][:4096]
+    assert len(prior_response) == 4096
+    assert invalid[0][:128] not in prior_response
+    assert any("invalid_json_object" in m["content"] for m in second_repair if m["role"] == "user")
+
+
+def test_repeated_invalid_json_exhausts_turn_budget_without_dispatch(tmp_path):
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {"status": "available", "text": "not an object"}
+
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: "packet")
+    worker = ObserverWorkerPort(Backend(), command=runner,
+        tools=lambda *a: pytest.fail("invalid model output must not dispatch a tool"), fence=lambda *a: True)
+    result = worker.run({"job_id": "job", "attempt": 1, "mode": "skill", "question": "q",
+        "skill": {"name": "fixture", "root": str(tmp_path)}, "max_steps": 3,
+        "session_id": "borrowed-session"})
+
+    assert len(turns) == 3
+    assert all(turn["session_id"] == "borrowed-session" for turn in turns)
+    assert result["status"] == "partial" and result["reason"] == "model_output_invalid_json"
+    assert result["unresolved_questions"] == ["The final model round did not return exactly one valid JSON object."]
+    assert not result.get("answer") and not result.get("skill_selection")
+
+
 def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp_path):
     import hashlib
     files = ['SKILL.md', 'map.md', 'architecture.md', 'start.md', 'needs.md']
