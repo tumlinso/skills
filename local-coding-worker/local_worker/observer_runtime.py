@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import selectors
@@ -19,6 +20,16 @@ from typing import Any, Callable
 
 TOOLS = frozenset({"command", "log", "overview", "delta", "frontier", "search",
                    "evidence", "impact", "history", "machine"})
+
+
+def remaining_seconds(deadline_epoch):
+    if (isinstance(deadline_epoch, bool) or not isinstance(deadline_epoch, (int, float))
+            or not math.isfinite(deadline_epoch)):
+        raise ValueError("invalid inquiry deadline")
+    remaining = deadline_epoch - time.time()
+    if remaining <= 0:
+        raise TimeoutError("inquiry_deadline_exceeded")
+    return remaining
 
 
 class StaleAttempt(RuntimeError):
@@ -61,7 +72,7 @@ class ReadOnlyCommandRunner:
             return {"status": "failed", "reason": "packetization_failed"}
         return {**payload, "packet_id": packet_id}
 
-    def run(self, argv, cwd, timeout_seconds=10, max_output_bytes=8192, *, guard=None):
+    def run(self, argv, cwd, timeout_seconds=10, max_output_bytes=8192, *, guard=None, deadline_epoch=None):
         if (not isinstance(argv, list) or not argv or len(argv) > 128 or
                 any(not isinstance(s, str) or not s or "\0" in s for s in argv) or
                 sum(len(s.encode()) for s in argv) > 32768 or not isinstance(cwd, str) or
@@ -69,6 +80,9 @@ class ReadOnlyCommandRunner:
                 not 0 < timeout_seconds <= 60 or isinstance(max_output_bytes, bool) or
                 not isinstance(max_output_bytes, int) or not 1 <= max_output_bytes <= 65536):
             raise ValueError("command requires bounded argv, cwd, timeout and output")
+        timeout_seconds = min(float(timeout_seconds), 10.0)
+        if deadline_epoch is not None:
+            timeout_seconds = min(timeout_seconds, remaining_seconds(deadline_epoch))
         started = time.monotonic()
         working = Path(cwd).resolve()
         payload = {"status": "denied", "exit_code": None, "stdout": "", "stderr": "",
@@ -196,7 +210,7 @@ class ObserverWorkerPort:
 
     def run(self, request: dict[str, Any]) -> dict[str, Any]:
         allowed = {"job_id", "attempt", "mode", "question", "scope", "hints", "observations", "skill",
-                   "max_steps", "session_id", "compute_profile", "parallelism"}
+                   "max_steps", "session_id", "compute_profile", "parallelism", "deadline_epoch", "refresh_context", "log_guidance"}
         if not isinstance(request, dict) or set(request) - allowed:
             raise ValueError("invalid observer job request")
         job_id, attempt = request.get("job_id"), request.get("attempt")
@@ -212,6 +226,8 @@ class ObserverWorkerPort:
                 any(not isinstance(o, dict) or not isinstance(o.get("packet_id"), str) for o in observations)
                 or len(json.dumps(request, ensure_ascii=False).encode()) > 65536):
             raise ValueError("job inputs exceed bounded evidence context")
+        deadline_epoch = request.get("deadline_epoch", time.time() + 300)
+        remaining_seconds(deadline_epoch)
         base = {"job_id": job_id, "attempt": attempt, "authoritative": False}
         guard = lambda: bool(self.fence(job_id, attempt))
         def check():
@@ -303,7 +319,7 @@ class ObserverWorkerPort:
                 ". Evidence identity does not prove entailment. "
                 "Examples describe the response grammar. Choose commands that advance the supplied question; "
                 "do not repeatedly copy the example command."
-                " Command arguments support argv, cwd, optional timeout_seconds (greater than 0, at most 60), "
+                " Command arguments support argv, cwd, optional timeout_seconds (greater than 0, at most 10), "
                 "and optional max_output_bytes (integer 1..65536, default 8192). Choose a bounded output "
                 "limit sufficient for needed source reads; truncated output does not prove the full source."
             )
@@ -330,9 +346,14 @@ class ObserverWorkerPort:
                 "Use additional commands/tools only to obtain missing evidence; do not reread retained sources "
                 "unless their evidence is incomplete, stale, or otherwise needs verification."
             )
-            initial_context = {k: request[k] for k in ("question", "scope", "hints", "skill") if k in request}
+            instruction += (" Refresh context contains prior answer, findings, evidence and changed sources. "
+                            "Reuse valid prior work and recheck changed sources before citing it. "
+                            "Use log to inspect up to 50 recent answers and five lexical candidates; "
+                            "you decide relevance and reuse from their evidence.")
+            initial_context = {k: request[k] for k in ("question", "scope", "hints", "skill", "refresh_context", "log_guidance") if k in request}
             for step in range(max_steps):
                 check()
+                remaining_seconds(deadline_epoch)
                 session = request.get("session_id")
                 if session and callable(getattr(self.backend, "preemption_status", None)):
                     status = self.backend.preemption_status(session)
@@ -379,7 +400,8 @@ class ObserverWorkerPort:
                     messages.append({"role": "user", "content": json.dumps(
                         {"progress": progress, "continuation": continuation}, ensure_ascii=False)})
                 turn = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
-                    "max_tokens": 2048, "timeout_seconds": 90,
+                    "max_tokens": 2048, "timeout_seconds": min(60.0, remaining_seconds(deadline_epoch)),
+                    "deadline_epoch": deadline_epoch,
                     "compute_profile": request.get("compute_profile", "narrow"),
                     "parallelism": request.get("parallelism", "default")}
                 if session:
@@ -388,6 +410,7 @@ class ObserverWorkerPort:
                     return snapshot("partial", reason="context_budget", unresolved_questions=["Select retained evidence before resuming"])
                 response = self.backend.run_observer_turn(turn)
                 check()
+                remaining_seconds(deadline_epoch)
                 if not isinstance(response, dict):
                     raise ValueError("local_backend_invalid_response")
                 if response.get("status") != "available":
@@ -415,7 +438,7 @@ class ObserverWorkerPort:
                             "corrective_action": "Read the validated installed entry successfully with direct cat "
                                                  "before other commands/tools; failed or truncated reads are insufficient."}, guard)
                     else:
-                        result = (self.command.run(**arguments, guard=guard) if tool == "command" else self.tools(tool, arguments))
+                        result = (self.command.run(**arguments, guard=guard, **({"deadline_epoch": deadline_epoch} if "deadline_epoch" in request else {})) if tool == "command" else self.tools(tool, arguments))
                     observe(result, public_call)
                     continue
                 try:
@@ -438,7 +461,8 @@ class ObserverWorkerPort:
                         if not entry_observed():
                             raise ValueError("skill_installed_entry_not_read_agentically")
                         selection = value.get("skill_selection")
-                        self._validate_selection(selection, skill, observe, guard, read_resources())
+                        self._validate_selection(selection, skill, observe, guard, read_resources(),
+                            deadline_epoch=deadline_epoch if "deadline_epoch" in request else None)
                         extra["skill_selection"] = selection
                 except (ValueError, TypeError) as error:
                     if request["mode"] != "skill":
@@ -466,7 +490,7 @@ class ObserverWorkerPort:
                 return {**base, "status": "stale_attempt", "reason": "attempt_superseded"}
             return snapshot("partial", reason=str(error)[:500], unresolved_questions=["Retry from retained observations"])
 
-    def _validate_selection(self, selection, skill, observe, guard, reads):
+    def _validate_selection(self, selection, skill, observe, guard, reads, *, deadline_epoch=None):
         if (not isinstance(selection, dict) or selection.get("format") != "pc-skill-selection/1"
                 or not isinstance(selection.get("synthesis"), str) or not isinstance(selection.get("selections"), list)
                 or not 1 <= len(selection["selections"]) <= 12):
@@ -485,7 +509,8 @@ class ObserverWorkerPort:
                 raise ValueError("skill_selected_resource_not_read_agentically")
             # Read exact bytes inside the same sandbox. Hash/ranges are source
             # validation; they are not a model-created proof of entailment.
-            result = self.command.run(["cat", str(path)], str(root), max_output_bytes=65536, guard=guard)
+            result = self.command.run(["cat", str(path)], str(root), max_output_bytes=65536, guard=guard,
+                **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}))
             observe(result)
             if result.get("exit_code") != 0 or result.get("truncated"):
                 raise ValueError("skill_resource_unavailable_or_oversized")

@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import time
+import threading
 import urllib.error
 import urllib.request
 import uuid
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ..service import AdapterError
+from ..observer_runtime import remaining_seconds
 from ..residency import process_identity, terminate_owned
 
 
@@ -70,9 +72,9 @@ class LlamaCppServerAdapter:
         self._servers: dict[str, dict[str, Any]] = {}
         self._supported_flags: set[str] | None = None
 
-    def _flags(self, binary: str) -> set[str]:
+    def _flags(self, binary: str, deadline_epoch=None) -> set[str]:
         if self._supported_flags is None:
-            result = self.help_runner([binary, "--help"], capture_output=True, text=True, timeout=10, check=False)
+            result = self.help_runner([binary, "--help"], capture_output=True, text=True, timeout=min(10, remaining_seconds(deadline_epoch)) if deadline_epoch is not None else 10, check=False)
             text = f"{getattr(result, 'stdout', '')}\n{getattr(result, 'stderr', '')}"
             self._supported_flags = {word.rstrip(",=") for word in text.split() if word.startswith("--")}
         return self._supported_flags
@@ -93,6 +95,9 @@ class LlamaCppServerAdapter:
         }
 
     def start(self, context: dict[str, Any]) -> str:
+        deadline_epoch = context.get("deadline_epoch")
+        if deadline_epoch is not None:
+            remaining_seconds(deadline_epoch)
         binary = self._resolved_binary()
         if binary is None:
             raise AdapterError("llama-server binary is unavailable")
@@ -113,7 +118,7 @@ class LlamaCppServerAdapter:
         profile = dict(context.get("service_profile") or {})
         if profile and profile.get("format") != "CORE4-MODEL-SERVICE/2":
             raise AdapterError("unsupported model-service profile format")
-        flags = self._flags(binary)
+        flags = self._flags(binary, deadline_epoch)
         argv = [binary, "--model", str(model), "--host", host, "--port", str(port)]
         options = {
             "--ctx-size": profile.get("context_size", context.get("ctx_size")),
@@ -141,12 +146,18 @@ class LlamaCppServerAdapter:
         gpu_uuids = profile.get("allocated_gpu_uuids") or context.get("allocated_gpu_uuids")
         if gpu_uuids:
             environment["CUDA_VISIBLE_DEVICES"] = ",".join(str(item) for item in gpu_uuids)
+        if deadline_epoch is not None:
+            try:
+                remaining_seconds(deadline_epoch)
+            except TimeoutError:
+                log_stream.close()
+                raise
         process = self.process_factory(argv, stdout=log_stream, stderr=subprocess.STDOUT, text=True,
                                        env=environment, start_new_session=True)
         handle = str(uuid.uuid4())
         self._servers[handle] = {
             "process": process, "base_url": f"http://{host}:{port}", "accepting": True,
-            "evicted": False, "canceled": set(), "log_stream": log_stream, "log_path": str(log_path),
+            "evicted": False, "canceled": set(), "active_requests": set(), "log_stream": log_stream, "log_path": str(log_path),
             "profile": profile,
             "usage": {"runs": 0, "prompt_tokens": 0, "completion_tokens": 0, "duration_ms": 0.0},
         }
@@ -165,22 +176,42 @@ class LlamaCppServerAdapter:
                 failure.owned_handle = handle
                 raise failure from error
         timeout = float(profile.get("startup_timeout_seconds", context.get("startup_timeout_seconds", 0)))
+        if deadline_epoch is not None:
+            try:
+                remaining = remaining_seconds(deadline_epoch)
+            except TimeoutError:
+                self._startup_evict(handle)
+                raise
+            timeout = min(timeout, remaining) if timeout > 0 else remaining
         if timeout > 0:
             deadline = time.monotonic() + timeout
-            while True:
-                if process.poll() is not None:
-                    self._startup_evict(handle)
-                    raise AdapterError(f"llama-server exited during startup; log: {log_path}")
-                try:
-                    status, _ = self.transport("GET", f"http://{host}:{port}/health", None, 2.0)
-                except (OSError, urllib.error.URLError):
-                    status = 0
-                if status == 200:
-                    break
-                if time.monotonic() >= deadline:
-                    self._startup_evict(handle)
-                    raise AdapterError(f"llama-server startup timed out; log: {log_path}")
-                self.sleeper(min(0.1, timeout))
+            timer = threading.Timer(timeout, self._startup_evict, args=(handle,)) if deadline_epoch is not None else None
+            if timer is not None:
+                timer.daemon = True
+                timer.start()
+            try:
+                while True:
+                    if process.poll() is not None:
+                        self._startup_evict(handle)
+                        raise AdapterError(f"llama-server exited during startup; log: {log_path}")
+                    if time.monotonic() >= deadline:
+                        self._startup_evict(handle)
+                        raise AdapterError("llama-server startup timed out")
+                    try:
+                        status, _ = self.transport("GET", f"http://{host}:{port}/health", None, min(2.0, deadline - time.monotonic()))
+                    except (OSError, urllib.error.URLError):
+                        status = 0
+                    if status == 200 and time.monotonic() < deadline:
+                        break
+                    if time.monotonic() >= deadline:
+                        self._startup_evict(handle)
+                        raise AdapterError(f"llama-server startup timed out; log: {log_path}")
+                    self.sleeper(min(0.1, max(0, deadline - time.monotonic())))
+            finally:
+                if timer is not None:
+                    timer.cancel()
+                    timer.join()
+
         return handle
 
     def _startup_evict(self, handle: str) -> None:
@@ -268,7 +299,32 @@ class LlamaCppServerAdapter:
         timeout = request.get("timeout_seconds", 600)
         if isinstance(timeout, bool) or not isinstance(timeout, (int, float)) or not 0 < timeout <= 3600:
             raise AdapterError("llama.cpp timeout_seconds must be between 0 and 3600")
-        status, body = self.transport("POST", server["base_url"] + "/v1/chat/completions", payload, float(timeout))
+        deadline_epoch = request.get("deadline_epoch")
+        timer = None
+        if deadline_epoch is not None:
+            timeout = min(float(timeout), 60.0, remaining_seconds(deadline_epoch))
+        server.setdefault("active_requests", set()).add(request_id)
+        if deadline_epoch is not None:
+            # This handle belongs to the exclusive inquiry session. Stop its
+            # model operation at the hard bound, then wait for transport to end.
+            timer = threading.Timer(timeout, self.cancel, args=(handle, request_id))
+            timer.daemon = True
+            timer.start()
+        try:
+            status, body = self.transport("POST", server["base_url"] + "/v1/chat/completions", payload, float(timeout))
+        except (OSError, urllib.error.URLError) as error:
+            if deadline_epoch is not None:
+                self.cancel(handle, request_id)
+                raise AdapterError("observer_model_turn_timed_out") from error
+            raise
+        finally:
+            if timer is not None:
+                timer.cancel()
+                timer.join()
+            server["active_requests"].discard(request_id)
+        if deadline_epoch is not None and (request_id in server["canceled"] or time.time() >= deadline_epoch):
+            self.evict(handle)
+            raise AdapterError("observer_model_turn_timed_out")
         duration = (time.perf_counter() - started) * 1000
         if status != 200:
             raise AdapterError(f"llama.cpp completion failed with HTTP {status}")
@@ -310,6 +366,8 @@ class LlamaCppServerAdapter:
         server = self._server(handle)
         if request_id:
             server["canceled"].add(request_id)
+            if request_id in server.get("active_requests", ()):
+                self.evict(handle)
             return {"canceled": True, "request_id": request_id}
         return {"canceled": False, "reason": "request_id_required"}
 
@@ -319,19 +377,20 @@ class LlamaCppServerAdapter:
 
     def evict(self, handle: str) -> dict[str, Any]:
         server = self._server(handle)
-        process = server["process"]
-        if process.poll() is None:
-            identity = server.get("termination_identity")
-            if identity is None:
-                raise AdapterError("owned_process_identity_unavailable")
-            self.owned_terminator(identity)
-            process.wait(timeout=10)
-        if process.poll() is None:
-            raise AdapterError("model_process_not_quiescent")
-        server["log_stream"].close()
-        server["accepting"] = False
-        server["evicted"] = True
-        return {"evicted": True}
+        with server.setdefault("eviction_lock", threading.RLock()):
+            process = server["process"]
+            if process.poll() is None:
+                identity = server.get("termination_identity")
+                if identity is None:
+                    raise AdapterError("owned_process_identity_unavailable")
+                self.owned_terminator(identity)
+                process.wait(timeout=10)
+            if process.poll() is None:
+                raise AdapterError("model_process_not_quiescent")
+            server["log_stream"].close()
+            server["accepting"] = False
+            server["evicted"] = True
+            return {"evicted": True}
 
     def quiescent(self, handle: str) -> bool:
         server = self._server(handle)

@@ -21,6 +21,7 @@ from typing import Any, Protocol
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 
+from .observer_runtime import remaining_seconds
 from .model_cache import ModelCache
 from .residency import memory_snapshot, observe_residency, process_identity, terminate_owned
 from .servers import LlamaCppServerAdapter
@@ -355,8 +356,8 @@ class ProductionBackend:
                 slot.parallelism == parallelism and
                 slot.endpoint_descriptor.get("model_id") == selected["candidate_id"])
 
-    def _version(self, binary: str) -> str:
-        result = subprocess.run([binary, "--version"], capture_output=True, text=True, timeout=30, check=False)
+    def _version(self, binary: str, deadline_epoch=None) -> str:
+        result = subprocess.run([binary, "--version"], capture_output=True, text=True, timeout=min(30, remaining_seconds(deadline_epoch)) if deadline_epoch is not None else 30, check=False)
         return (result.stdout + result.stderr)[-8000:]
 
     def _free_port(self, base: int) -> int:
@@ -568,7 +569,9 @@ class ProductionBackend:
         }
 
     @_pool_synchronized
-    def warm(self, admission_id: str | None = None, compute_profile: str = "narrow", parallelism: str = "default") -> dict[str, Any]:
+    def warm(self, admission_id: str | None = None, compute_profile: str = "narrow", parallelism: str = "default", *, deadline_epoch=None) -> dict[str, Any]:
+        if deadline_epoch is not None:
+            remaining_seconds(deadline_epoch)
         if compute_profile not in {"narrow", "wide"}:
             raise SupervisorError("compute_profile_invalid")
         resolved_parallelism = self._resolved_parallelism(compute_profile, parallelism)
@@ -591,7 +594,7 @@ class ProductionBackend:
                     raise SupervisorError("resource_unavailable: admitted model slot is no longer usable; retryable=false")
                 return self._lease(slot, reused=True)
             return self._start_slot(admission=admission, compute_profile=admission.compute_profile,
-                                    resolved_parallelism=admission.parallelism)
+                                    resolved_parallelism=admission.parallelism, deadline_epoch=deadline_epoch)
         bound_slots = {item.slot_id for item in self._admissions.values() if item.slot_id is not None}
         for slot in sorted(self._slots.values(), key=lambda item: item.slot_id):
             if slot.slot_id not in bound_slots and slot.service_lease_id is None and self._slot_matches_profile(slot, compute_profile, resolved_parallelism) and self._healthy(slot):
@@ -609,10 +612,10 @@ class ProductionBackend:
                     return self._lease(slot, reused=True)
             if len(self._slots) >= self.max_slots:
                 raise SupervisorError("resource_unavailable: all model service slots are leased; retryable=true")
-            return self._start_slot(compute_profile=compute_profile, resolved_parallelism=resolved_parallelism)
+            return self._start_slot(compute_profile=compute_profile, resolved_parallelism=resolved_parallelism, deadline_epoch=deadline_epoch)
 
     def _start_slot(self, *, compute_profile: str, resolved_parallelism: str,
-                    admission: _Admission | None = None) -> dict[str, Any]:
+                    admission: _Admission | None = None, deadline_epoch=None) -> dict[str, Any]:
         active = self._model_for_profile(compute_profile)
         self.cache.verify(str(active["candidate_id"]), str(active["payload_sha256"]), full=False)
         candidate = self._candidate(str(active["candidate_id"]))
@@ -649,7 +652,7 @@ class ProductionBackend:
         server = self.profile["server"]
         port = self._free_port(int(server["base_port"]))
         binary = str(server["binary"])
-        version = self._version(binary)
+        version = self._version(binary, deadline_epoch) if deadline_epoch is not None else self._version(binary)
         service_profile = {
             "format": "CORE4-MODEL-SERVICE/2", "model_sha256": active["payload_sha256"],
             "compute_profile": compute_profile,
@@ -707,6 +710,7 @@ class ProductionBackend:
                 "repo_root": str(self.repo_root), "model_path": str(model_path), "port": port,
                 "service_profile": service_profile,
                 "on_spawn": record_spawn,
+                **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}),
             })
             owned_descriptor = getattr(self.adapter, "owned_process_descriptor", self.adapter.describe)
             server_info = owned_descriptor(handle)
@@ -808,7 +812,9 @@ class ProductionBackend:
 
     @_pool_synchronized
     def open_observer_sessions(self, count: int, *, compute_profile: str,
-                               parallelism: str) -> dict[str, Any]:
+                               parallelism: str, deadline_epoch=None) -> dict[str, Any]:
+        if deadline_epoch is not None:
+            remaining_seconds(deadline_epoch)
         if count not in {1, 2} or compute_profile != "narrow":
             raise SupervisorError("observer_sessions_require_one_or_two_narrow_sessions")
         admissions: list[str] = []
@@ -816,9 +822,11 @@ class ProductionBackend:
         try:
             # Reserve both disjoint islands before either model is started.
             for _ in range(count):
+                if deadline_epoch is not None:
+                    remaining_seconds(deadline_epoch)
                 admissions.append(str(self.admit(compute_profile, parallelism)["admission_id"]))
             for admission_id in list(admissions):
-                leases.append(self.warm(admission_id))
+                leases.append(self.warm(admission_id, **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {})))
                 admissions.remove(admission_id)
         except Exception:
             for lease in leases:
@@ -922,12 +930,13 @@ class ProductionBackend:
         try:
             if not isinstance(request, dict):
                 raise SupervisorError("investigator_turn_invalid_request")
-            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id"}
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id", "deadline_epoch"}
             if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/2":
                 raise SupervisorError("investigator_turn_invalid_request")
             messages = request.get("messages")
             max_tokens = request.get("max_tokens")
             timeout_seconds = request.get("timeout_seconds")
+            deadline_epoch = request.get("deadline_epoch")
             compute_profile = request.get("compute_profile", "wide")
             parallelism = request.get("parallelism", "default")
             session_id = request.get("session_id")
@@ -935,10 +944,12 @@ class ProductionBackend:
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
                     not isinstance(timeout_seconds, (int, float)) or
-                    not 1 <= float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
+                    not 0 < float(timeout_seconds) <= 90 or compute_profile not in {"narrow", "wide"} or
                     parallelism not in {"default", "layer", "tensor"} or
                     (session_id is not None and (not isinstance(session_id, str) or len(session_id) > 128))):
                 raise SupervisorError("investigator_turn_invalid_request")
+            if deadline_epoch is not None:
+                timeout_seconds = min(float(timeout_seconds), 60.0, remaining_seconds(deadline_epoch))
             self._resolved_parallelism(str(compute_profile), str(parallelism))
             normalized: list[dict[str, str]] = []
             for message in messages:
@@ -958,7 +969,7 @@ class ProductionBackend:
                 try:
                     if session_id is None:
                         admission = self.admit(str(compute_profile), str(parallelism))
-                        lease = self.warm(str(admission["admission_id"]))
+                        lease = self.warm(str(admission["admission_id"]), **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}))
                     else:
                         with self._pool_lock:
                             slot_id = self._leases.get(session_id)
@@ -973,6 +984,7 @@ class ProductionBackend:
                         "messages": normalized,
                         "max_tokens": max_tokens,
                         "timeout_seconds": float(timeout_seconds),
+                        **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}),
                     })
                     if not isinstance(raw, dict) or not isinstance(raw.get("text"), str):
                         raise SupervisorError("investigator_provider_malformed_output")
@@ -996,7 +1008,7 @@ class ProductionBackend:
                                 self.cancel_admission(admission_id)
             finally:
                 self._analysis_capacity.release()
-        except (SupervisorError, AdapterError) as error:
+        except (SupervisorError, AdapterError, TimeoutError, ValueError) as error:
             return {"status": "unavailable", "authoritative": False, "provider": "llama-server",
                     "reason": str(error)[:500], "fallback": "project_control_read_broker"}
 
