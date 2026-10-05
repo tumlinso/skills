@@ -323,8 +323,32 @@ class ProductionBackend:
                 raise SupervisorError("owned_residency_recovery_blocked: marker permissions invalid")
             marker = json.loads(path.read_text())
             owner = self.runtime.host.owner(marker["owner_id"])
-            if owner is None:
+            if owner is None or owner.get("state") == "released":
                 try:
+                    if owner is not None:
+                        # Native release retains its verified terminal owner
+                        # row. Its immutable reservation metadata must match
+                        # this marker before treating the residency as orphaned.
+                        metadata = json.loads(owner["residency_metadata_json"])
+                        process = marker["process"]
+                        if not (owner.get("id") == marker["owner_id"] and
+                                owner.get("residency_release_verified") == 1 and
+                                owner.get("residency_protected") == 0 and
+                                owner.get("owner_kind") == "service" and
+                                str(owner.get("service_id", "")).startswith("core4-local-") and
+                                owner["project_root"] == str(self.repo_root) and
+                                owner["pid"] == process["pid"] and
+                                owner["process_start"] == process["process_start"] and
+                                owner["resources"] == [] and metadata["phase"] == "spawned" and
+                                metadata["model_pid"] == process["pid"] and
+                                metadata["process_start"] == process["process_start"] and
+                                metadata["origin"] == marker["origin"] and
+                                metadata["baseline"] == marker["memory_baseline"] and
+                                metadata["resource_ids"] == sorted(marker["resource_ids"]) and
+                                metadata["generation"] == marker["generation"] and
+                                metadata["residency_capability_sha256"] ==
+                                hashlib.sha256(marker["residency_capability"].encode()).hexdigest()):
+                            raise ValueError("released_owner_identity_mismatch")
                     self._recover_orphan_residency(path, marker)
                 except Exception as error:
                     raise SupervisorError(f"owned_residency_recovery_blocked: {error}") from error

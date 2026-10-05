@@ -92,6 +92,50 @@ class OrphanRecoveryTests(unittest.TestCase):
         self.write_marker()
         self.refuse()
 
+    def released_owner(self):
+        self.marker.update(generation="generation-fixture", residency_capability="b" * 64)
+        self.write_marker()
+        return {"id": self.marker["owner_id"], "state": "released",
+            "residency_release_verified": 1, "residency_protected": 0,
+            "owner_kind": "service", "service_id": "core4-local-fixture",
+            "project_root": str(self.backend.repo_root), "pid": self.marker["process"]["pid"],
+            "process_start": self.marker["process"]["process_start"], "resources": [],
+            "residency_metadata_json": json.dumps({"phase": "spawned",
+                "model_pid": self.marker["process"]["pid"],
+                "process_start": self.marker["process"]["process_start"],
+                "origin": self.marker["origin"], "baseline": self.marker["memory_baseline"],
+                "resource_ids": sorted(self.marker["resource_ids"]),
+                "generation": self.marker["generation"], "residency_capability_sha256":
+                    hashlib.sha256(self.marker["residency_capability"].encode()).hexdigest()})}
+
+    def test_exact_native_verified_released_owner_recovers_cache_only(self):
+        self.backend.runtime.host.owner.return_value = self.released_owner()
+        self.backend._recover_residencies()
+        self.native_lease.assert_called_once_with("fixture", self.digest, "owner-fixture")
+        self.assertFalse(self.path.exists())
+        self.assertFalse(self.lease_path.exists())
+        self.terminate.assert_not_called()
+        self.backend.runtime.host.release.assert_not_called()
+
+    def test_released_owner_unverified_or_mismatched_refuses(self):
+        original = self.released_owner()
+        for key, value in (("id", "foreign"), ("residency_release_verified", 0), ("residency_protected", 1),
+                           ("pid", 123), ("process_start", "foreign"),
+                           ("project_root", "/foreign"), ("resources", ["accelerator:GPU-fixture"]),
+                           ("owner_kind", "background"), ("service_id", "foreign"),
+                           ("state", "stale"), ("state", "failed"), ("state", "active")):
+            with self.subTest(key=key, value=value):
+                self.backend.runtime.host.owner.return_value = {**original, key: value}
+                self.refuse()
+        metadata = json.loads(original["residency_metadata_json"])
+        for key, value in (("generation", "foreign"), ("origin", {}), ("baseline", {}),
+                           ("resource_ids", []), ("residency_capability_sha256", "f" * 64),
+                           ("phase", "reserved"), ("model_pid", 123), ("process_start", "foreign")):
+            with self.subTest(metadata=key):
+                self.backend.runtime.host.owner.return_value = {**original,
+                    "residency_metadata_json": json.dumps({**metadata, key: value})}
+                self.refuse()
+
     def test_native_accelerator_and_nvlink_reservation_recovers(self):
         uuids = ["GPU-fixture", "GPU-second"]
         self.backend.profile["deployment_policy"]["allowed_gpu_uuids"] = uuids
