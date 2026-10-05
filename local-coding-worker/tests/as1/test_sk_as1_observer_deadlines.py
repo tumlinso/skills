@@ -123,6 +123,45 @@ def test_refresh_context_and_remaining_model_budget_are_forwarded(tmp_path):
     assert "Reuse valid prior work" in turns[0]["messages"][0]["content"]
 
 
+def test_sed_window_emits_full_source_dependency_and_exact_range(tmp_path):
+    import hashlib
+    from local_worker.observer_runtime import _sed_source_reads
+    path = tmp_path / "source.py"
+    content = "alpha\r\nbeta\r\ngamma\r\nlast"
+    path.write_bytes(content.encode("utf-8"))
+    proof = _sed_source_reads(["sed", "-n", "2,3p", str(path)], str(tmp_path),
+        lambda candidate: candidate == path, "beta\r\ngamma\r\n", status="completed",
+        truncated=False, encoding_loss=False)
+    assert proof == [{"path": str(path), "content_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        "line_count": 4, "method": "direct_sed_lines", "line_ranges": [{"start": 2, "end": 3}]}]
+
+
+def test_sed_window_proof_rejects_tampering_unsupported_syntax_and_untrusted_files(tmp_path):
+    from local_worker.observer_runtime import _sed_source_reads
+    path = tmp_path / "source.py"
+    path.write_text("one\ntwo\n", encoding="utf-8")
+    allows = lambda candidate: candidate == path
+    common = {"status": "completed", "truncated": False, "encoding_loss": False}
+    assert _sed_source_reads(["sed", "-n", "1,1p", str(path)], str(tmp_path), allows,
+        "tampered\n", **common) is None
+    assert _sed_source_reads(["sed", "-n", "1,1p;d", str(path)], str(tmp_path), allows,
+        "one\n", **common) is None
+    assert _sed_source_reads(["sed", "-n", "1,1p", str(path)], str(tmp_path), lambda _: False,
+        "one\n", **common) is None
+
+
+def test_sed_window_proof_rejects_non_utf8_source_and_truncated_output(tmp_path):
+    from local_worker.observer_runtime import _sed_source_reads
+    path = tmp_path / "source.py"
+    path.write_bytes(b"one\n\xff\n")
+    read = lambda candidate: candidate == path
+    assert _sed_source_reads(["sed", "-n", "1,1p", str(path)], str(tmp_path), read,
+        "one\n", status="completed", truncated=False, encoding_loss=False) is None
+    path.write_text("one\n", encoding="utf-8")
+    assert _sed_source_reads(["sed", "-n", "1,1p", str(path)], str(tmp_path), read,
+        "one\n", status="completed", truncated=True, encoding_loss=False) is None
+
+
 @pytest.mark.parametrize(("question", "mode"), [
     ("What version does the file report?", "off"),
     ("Why do the sources disagree, and how do they compare?", "auto"),
@@ -580,6 +619,15 @@ def test_initial_prompt_distinguishes_active_runtime_from_cli_harness_limits(tmp
     assert '[harnesses].qwen_* are separate CLI harness limits, not the public observer contract' in opening
     assert 'refinement_contexts are calibration candidates, not proof of the active context' in opening
     assert 'Do not infer public observer limits from those harnesses' in opening
+    assert 'first batch a narrow search for the relevant definitions and callers' in opening
+    assert 'include the adjacent adapter/provider implementation' in opening
+    assert 'src/project_control/as1_jobs.py from the permitted Project Control inquiry repository' in opening
+    assert "sed -n 'START,ENDp' PATH" in opening
+    assert 'grep/search only to locate lines, not as final source proof' in opening
+    assert 'below the 32 KiB worker observation limit' in opening
+    assert 'do not repeat a whole-file read after truncation' in opening
+    assert 'trace their callers and distinguish their scope and enforcement point' in opening
+    assert 'answer every requested part compactly' in opening
     assert 'You have 3 model rounds total for this attempt.' in opening
 
 
