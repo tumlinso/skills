@@ -365,3 +365,58 @@ def test_initial_prompt_announces_actual_round_budget_and_reserved_final(tmp_pat
     assert f'You have {budget} model rounds total for this attempt.' in opening
     assert 'Reserve the final round for final JSON synthesis of the evidence gathered so far' in opening
     assert 'no further command or tool calls are permitted on that final round' in opening
+
+
+def test_argument_schemas_are_available_on_first_model_turn(tmp_path):
+    turns = []
+    schemas = {'log': {'type': 'object', 'properties': {'query': {'type': 'string'}}, 'additionalProperties': False},
+               'evidence': {'type': 'object', 'properties': {'subject': {'type': 'string'}}, 'required': ['subject']}}
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {'status': 'available', 'text': json.dumps({'answer': 'No additional tools needed.', 'findings': []})}
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=lambda *a: pytest.fail('unexpected tool'), fence=lambda *a: True)
+    worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'q', 'tool_argument_schemas': schemas})
+    opening = turns[0]['messages'][0]['content']
+    assert json.dumps(schemas, separators=(',', ':')) in opening
+    assert 'Answer promptly once gathered evidence suffices' in opening
+    assert 'Log is optional' in opening
+    assert len(json.dumps(turns[0]).encode()) < 60000
+
+
+def test_invalid_tool_argument_feedback_consumes_one_round_and_is_not_evidence(tmp_path):
+    turns, calls = [], []
+    retained = {'packet_id': 'source-1', 'source': 'Observed source fact'}
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            if len(turns) == 1:
+                value = {'tool': 'log', 'arguments': {'offset': 0}}
+            else:
+                assert any('invalid_tool_arguments' in m['content'] for m in request['messages'])
+                value = {'answer': 'The retained source supports the answer.',
+                    'findings': [{'text': 'Observed source fact', 'evidence_packets': ['source-1']}]}
+            return {'status': 'available', 'text': json.dumps(value)}
+    def tools(name, arguments):
+        calls.append((name, arguments))
+        return {'packet_id': 'validation-1', 'status': 'denied', 'reason': 'invalid_tool_arguments',
+            'accepted': False, 'dispatched': False, 'tool': name, 'validation_error': 'offset is unsupported',
+            'validation_data': {'is_source_evidence': False},
+            'corrective_action': 'Use the advertised argument schema and retained evidence.'}
+    runner = ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=tools, fence=lambda *a: True)
+    result = worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'q', 'max_steps': 2,
+        'observations': [retained], 'tool_argument_schemas': {'log': {'type': 'object', 'additionalProperties': False}}})
+    assert result['status'] == 'completed'
+    assert len(turns) == 2 and len(calls) == 1
+    assert result['findings'][0]['evidence_packets'] == ['source-1']
+    assert result['observations'][-1]['validation_data']['is_source_evidence'] is False
+
+
+@pytest.mark.parametrize('schemas', [{'mutation': {}}, {'log': []}])
+def test_schema_metadata_cannot_add_tools_or_invalid_contracts(tmp_path, schemas):
+    worker = ObserverWorkerPort(None, command=ReadOnlyCommandRunner([tmp_path], packetize=lambda p: 'packet'),
+                                tools=lambda *a: None, fence=lambda *a: True)
+    with pytest.raises(ValueError, match='invalid tool argument schemas'):
+        worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'q', 'tool_argument_schemas': schemas})
