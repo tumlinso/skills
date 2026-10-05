@@ -158,6 +158,32 @@ def _http_json(url: str, timeout: float = 2.0) -> tuple[int, dict[str, Any]]:
         return 0, {}
 
 
+def _validate_response_format(value: Any) -> dict[str, Any]:
+    """Copy and bound a JSON-object schema before forwarding it to the adapter."""
+    if (not isinstance(value, dict) or set(value) != {"type", "schema"} or
+            value.get("type") != "json_object" or not isinstance(value.get("schema"), dict) or
+            value["schema"].get("type") != "object"):
+        raise SupervisorError("investigator_turn_response_format_invalid")
+    try:
+        encoded = json.dumps(value["schema"], ensure_ascii=False, allow_nan=False)
+        if len(encoded.encode("utf-8")) > 16 * 1024:
+            raise ValueError("schema too large")
+        schema = json.loads(encoded)
+        pending = [schema]
+        while pending:
+            node = pending.pop()
+            if isinstance(node, dict):
+                if "$ref" in node and (not isinstance(node["$ref"], str) or
+                                        not node["$ref"].startswith("#/")):
+                    raise ValueError("external schema reference")
+                pending.extend(node.values())
+            elif isinstance(node, list):
+                pending.extend(node)
+    except (TypeError, ValueError, RecursionError):
+        raise SupervisorError("investigator_turn_response_format_invalid") from None
+    return {"type": "json_object", "schema": schema}
+
+
 class Backend(Protocol):
     def status(self) -> dict[str, Any]: ...
     def admit(self) -> dict[str, Any]: ...
@@ -1207,7 +1233,7 @@ class ProductionBackend:
         try:
             if not isinstance(request, dict):
                 raise SupervisorError("investigator_turn_invalid_request")
-            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id", "deadline_epoch", "reasoning_mode"}
+            allowed = {"format", "messages", "max_tokens", "timeout_seconds", "compute_profile", "parallelism", "session_id", "deadline_epoch", "reasoning_mode", "response_format"}
             if set(request) - allowed or request.get("format") != "PC-LOCAL-INVESTIGATOR-TURN/2":
                 raise SupervisorError("investigator_turn_invalid_request")
             messages = request.get("messages")
@@ -1218,6 +1244,8 @@ class ProductionBackend:
             parallelism = request.get("parallelism", "default")
             session_id = request.get("session_id")
             reasoning_mode = request.get("reasoning_mode", "auto")
+            response_format = (_validate_response_format(request["response_format"])
+                               if "response_format" in request else None)
             if (not isinstance(messages, list) or not 1 <= len(messages) <= 24 or
                     isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or
                     not 1 <= max_tokens <= 2048 or isinstance(timeout_seconds, bool) or
@@ -1267,6 +1295,7 @@ class ProductionBackend:
                         "observer_generation": dict(self.profile.get("observer_generation", {})),
                         "reasoning_mode": reasoning_mode,
                         "reasoning_state_key": service_lease_id,
+                        **({"response_format": response_format} if response_format is not None else {}),
                         **({"deadline_epoch": deadline_epoch} if deadline_epoch is not None else {}),
                     })
                     if not isinstance(raw, dict) or not isinstance(raw.get("text"), str):

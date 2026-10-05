@@ -520,13 +520,25 @@ class ObserverWorkerPort:
                         messages.append({"role": "user", "content": json.dumps(
                             {"progress": turn_progress, "continuation": continuation}, ensure_ascii=False)})
                     if final_round:
+                        synthesis_limits = (
+                            "Keep the complete visible JSON within the configured 2,048-token completion budget. "
+                            "Keep answer to at most 1,200 characters and findings to at most three concise items; "
+                            "do not repeat the same details in answer and findings. Cite only allowed outer observation "
+                            "packet IDs."
+                        )
+                        if request["mode"] == "skill":
+                            synthesis_limits += (
+                                " In skill_selection, include only the minimum necessary valid resources, at most three; "
+                                "keep synthesis concise and do not copy source excerpts into it."
+                            )
                         messages.append({"role": "user", "content": json.dumps({
                             "final_round": True,
                             "instruction": "This is the final permitted model round. Return final JSON only; "
                                 "no further command or tool calls will be dispatched. Synthesize the visible source "
                                 "evidence with allowed observed packet citations. Include the complete skill_selection "
                                 "when in skill mode. State incomplete or unverified work in unresolved_questions "
-                                "so the answer is explicitly partial; do not invent missing evidence or resources."})})
+                                "so the answer is explicitly partial; do not invent missing evidence or resources. "
+                                + synthesis_limits})})
                     return messages
                 messages = build_messages()
                 def model_turn():
@@ -537,6 +549,7 @@ class ObserverWorkerPort:
                         remaining=timeout_seconds)
                     candidate = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": messages,
                         "max_tokens": 2048, "reasoning_mode": reasoning_mode,
+                        "response_format": {"type": "json_object", "schema": {"type": "object"}},
                         "timeout_seconds": timeout_seconds,
                         "deadline_epoch": deadline_epoch,
                         "compute_profile": request.get("compute_profile", "narrow"),

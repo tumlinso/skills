@@ -823,6 +823,35 @@ class ServicePoolTests(unittest.TestCase):
         self.assertEqual((service.starts, runtime.host.owners), (0, {}))
         backend.close()
 
+    def test_observer_turn_validates_and_forwards_bounded_json_object_schema(self):
+        backend, runtime, service = self.backend()
+        base = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [
+            {"role": "user", "content": "Return an object."}],
+            "max_tokens": 2048, "timeout_seconds": 20, "compute_profile": "narrow"}
+        invalid_formats = [
+            {"type": "json_object", "schema": {"type": "object"}, "extra": True},
+            {"type": "json_schema", "schema": {"type": "object"}},
+            {"type": "json_object", "schema": {"type": "array"}},
+            {"type": "json_object", "schema": {"type": "object", "$ref": "https://example.test/schema.json"}},
+            {"type": "json_object", "schema": {"type": "object", "description": "x" * (16 * 1024)}},
+            {"type": "json_object", "schema": {"type": "object", "const": float("nan")}},
+        ]
+        for response_format in invalid_formats:
+            result = backend.run_observer_turn({**base, "response_format": response_format})
+            self.assertEqual((result["status"], result["reason"]),
+                             ("unavailable", "investigator_turn_response_format_invalid"))
+        self.assertEqual((service.starts, runtime.host.owners), (0, {}))
+
+        response_format = {"type": "json_object", "schema": {
+            "type": "object", "properties": {"answer": {"$ref": "#/definitions/Answer"}}}}
+        result = backend.run_observer_turn({**base, "response_format": response_format})
+        self.assertEqual(result["status"], "available")
+        forwarded = service.requests[-1][2]["response_format"]
+        self.assertEqual(forwarded, response_format)
+        self.assertEqual(service.requests[-1][2]["max_tokens"], 2048)
+        self.assertEqual(backend.status()["active_leases"], 0)
+        backend.close()
+
     def test_observer_turn_forwards_only_text_messages_and_releases_lease(self):
         backend, _, service = self.backend()
         request = {"format": "PC-LOCAL-INVESTIGATOR-TURN/2", "messages": [

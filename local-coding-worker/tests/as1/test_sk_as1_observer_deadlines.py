@@ -117,6 +117,7 @@ def test_refresh_context_and_remaining_model_budget_are_forwarded(tmp_path):
     assert result["status"] == "completed"
     assert turns[0]["deadline_epoch"] == deadline
     assert 0 < turns[0]["timeout_seconds"] <= 5
+    assert turns[0]["response_format"] == {"type": "json_object", "schema": {"type": "object"}}
     assert json.loads(turns[0]["messages"][1]["content"])["refresh_context"] == refresh
     assert "Reuse valid prior work" in turns[0]["messages"][0]["content"]
 
@@ -156,6 +157,7 @@ def test_internal_turn_envelope_grows_without_raising_job_input_or_visible_limit
         "question": "What version does the file report?"})
     assert turns[0]["reasoning_mode"] == "off"
     assert turns[0]["max_tokens"] == 2048
+    assert turns[0]["response_format"] == {"type": "json_object", "schema": {"type": "object"}}
     assert len(turns[0]["messages"][-1]["content"].encode()) < 16384
 
     never_called = type("NeverCalled", (), {"run_observer_turn": lambda *_: pytest.fail("oversized trusted input dispatched")})()
@@ -387,6 +389,9 @@ def test_final_model_round_synthesizes_or_refuses_more_tools(tmp_path, last_is_t
     last_context = json.loads(turns[-1]['messages'][-1]['content'])
     assert last_context['final_round'] is True
     assert 'Return final JSON only' in last_context['instruction']
+    assert '2,048-token completion budget' in last_context['instruction']
+    assert '1,200 characters' in last_context['instruction']
+    assert 'at most three concise items' in last_context['instruction']
     assert all(turn['deadline_epoch'] == deadline and 0 < turn['timeout_seconds'] <= 5 for turn in turns)
     if last_is_tool:
         assert result['reason'] == 'final_round_requires_answer'
@@ -489,6 +494,10 @@ def test_skill_final_round_reuses_agentically_read_maps_and_validates_source(tmp
         'skill': {'name': 'fixture', 'root': str(tmp_path)}, 'max_steps': 6, 'deadline_epoch': time.time() + 5})
     assert result['status'] == 'partial'
     assert len(turns) == 6
+    final_context = json.loads(turns[-1]['messages'][-1]['content'])
+    assert final_context['final_round'] is True
+    assert 'minimum necessary valid resources, at most three' in final_context['instruction']
+    assert all(turn['response_format'] == {'type': 'json_object', 'schema': {'type': 'object'}} for turn in turns)
     assert reads == [*files, 'needs.md']  # Last read is authoritative final validation, not a model-requested call.
     assert result['findings'][0]['evidence_packets'] == ['packet-5']
     assert result['skill_selection']['selections'][0]['resource'] == 'needs.md'
