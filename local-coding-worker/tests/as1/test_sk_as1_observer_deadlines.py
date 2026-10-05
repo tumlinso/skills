@@ -218,3 +218,50 @@ def test_active_turn_cannot_release_dispatch_session(tmp_path):
     slot.active_turns = 0
     backend.close_observer_session(lease["service_lease_id"])
     backend.close()
+
+
+def test_project_and_installed_skill_readmes_are_labeled_separately(tmp_path):
+    project_root, skills_root = tmp_path / 'project', tmp_path / 'skills'
+    project_root.mkdir()
+    skills_root.mkdir()
+    (project_root / 'README.md').write_text('Project interval: 17 seconds.')
+    (skills_root / 'README.md').write_text('Installed skill integration guide.')
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {'status': 'available', 'text': json.dumps({'answer': 'context inspected', 'findings': []})}
+    # Reverse root order proves project targeting does not rely on mount order.
+    runner = ReadOnlyCommandRunner([skills_root, project_root], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=lambda *a: None, fence=lambda *a: True)
+    repositories = [{'project': 'p', 'repository': 'main', 'root': str(project_root)}]
+    worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate',
+        'question': 'What interval does the project README document?',
+        'inquiry_repositories': repositories, 'installed_skill_roots': [str(skills_root)]})
+    context = json.loads(turns[0]['messages'][1]['content'])
+    instruction = turns[0]['messages'][0]['content']
+    assert context['inquiry_repositories'] == repositories
+    assert context['installed_skill_roots'] == [str(skills_root)]
+    assert 'broker-selected authoritative question targets' in instruction
+    assert 'a similarly named file under an installed skill root is not project evidence' in instruction
+    command_grammar = json.dumps({'tool': 'command', 'arguments': {'argv': ['pwd'], 'cwd': str(project_root)}})
+    assert command_grammar in instruction
+    assert '17 seconds' not in instruction  # Context labels do not manufacture source evidence.
+
+
+def test_repository_labels_do_not_grant_unmounted_source_access(tmp_path):
+    mounted, outside = tmp_path / 'mounted', tmp_path / 'outside'
+    mounted.mkdir()
+    outside.mkdir()
+    turns = []
+    class Backend:
+        def run_observer_turn(self, request):
+            turns.append(request)
+            return {'status': 'available', 'text': json.dumps({'answer': 'context inspected', 'findings': []})}
+    runner = ReadOnlyCommandRunner([mounted], packetize=lambda p: 'packet')
+    worker = ObserverWorkerPort(Backend(), command=runner, tools=lambda *a: None, fence=lambda *a: True)
+    worker.run({'job_id': 'job', 'attempt': 1, 'mode': 'investigate', 'question': 'Inspect source',
+        'inquiry_repositories': [{'project': 'p', 'repository': 'main', 'root': str(outside)}],
+        'installed_skill_roots': [str(outside)]})
+    assert not runner.allows(outside)
+    assert json.dumps({'tool': 'command', 'arguments': {'argv': ['pwd'], 'cwd': str(mounted)}}) in turns[0]['messages'][0]['content']
