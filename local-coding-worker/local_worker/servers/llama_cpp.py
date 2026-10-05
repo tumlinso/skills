@@ -472,9 +472,10 @@ class LlamaCppServerAdapter:
         return body
 
     def _template_prompt(self, server: dict[str, Any], messages: list[dict[str, Any]], *, thinking: bool,
-                         deadline: float) -> str:
+                         deadline: float, preserve_thinking: bool = False) -> str:
         body = self._llama_call(server, "/apply-template", {
-            "messages": messages, "chat_template_kwargs": {"enable_thinking": thinking}}, deadline)
+            "messages": messages, "chat_template_kwargs": {
+                "enable_thinking": thinking, "preserve_thinking": preserve_thinking}}, deadline)
         prompt = body.get("prompt")
         if not isinstance(prompt, str):
             raise AdapterError("llama.cpp_template_invalid")
@@ -595,12 +596,14 @@ class LlamaCppServerAdapter:
                 augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
                 if not use_thinking:
                     augmented = copy.deepcopy(messages) if not policy["preserve_reasoning"] else augmented
-                prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline)
+                prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline,
+                    preserve_thinking=policy["preserve_reasoning"])
                 if use_thinking and not prompt.rstrip().endswith("<think>"):
                     use_thinking = False
                     turn_reason_cap = 0
                     augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
-                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline,
+                        preserve_thinking=policy["preserve_reasoning"])
                 prompt_ids = self._tokenize(server, prompt, deadline)
                 prompt_count = len(prompt_ids)
                 # Template rendering and tokenization consume the same turn budget as inference.
@@ -609,7 +612,8 @@ class LlamaCppServerAdapter:
                 if turn_reason_cap <= 0 and use_thinking:
                     use_thinking = False
                     augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
-                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                    prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline,
+                        preserve_thinking=policy["preserve_reasoning"])
                     prompt_ids = self._tokenize(server, prompt, deadline)
                     prompt_count = len(prompt_ids)
                 ctx_size = server.get("effective_context_size", server["profile"].get("context_size"))
@@ -619,7 +623,8 @@ class LlamaCppServerAdapter:
                     while base_required > ctx_size and history:
                         history.pop(0)
                         augmented = self._messages_with_reasoning(messages, history)
-                        prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline)
+                        prompt = self._template_prompt(server, augmented, thinking=use_thinking, deadline=deadline,
+                            preserve_thinking=policy["preserve_reasoning"])
                         prompt_ids = self._tokenize(server, prompt, deadline)
                         prompt_count = len(prompt_ids)
                         base_required = prompt_count + (len(close_ids) if use_thinking else 0) + max_tokens
@@ -631,7 +636,8 @@ class LlamaCppServerAdapter:
                             use_thinking = False
                             turn_reason_cap = 0
                             augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
-                            prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                            prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline,
+                                preserve_thinking=policy["preserve_reasoning"])
                             prompt_ids = self._tokenize(server, prompt, deadline)
                             prompt_count = len(prompt_ids)
                             if prompt_count + max_tokens > ctx_size:
@@ -643,7 +649,8 @@ class LlamaCppServerAdapter:
                         use_thinking = False
                         turn_reason_cap = 0
                         augmented = self._messages_with_reasoning(messages, history) if policy["preserve_reasoning"] else copy.deepcopy(messages)
-                        prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline)
+                        prompt = self._template_prompt(server, augmented, thinking=False, deadline=deadline,
+                            preserve_thinking=policy["preserve_reasoning"])
                         prompt_ids = self._tokenize(server, prompt, deadline)
                         prompt_count = len(prompt_ids)
                         if isinstance(ctx_size, int) and ctx_size > 0 and prompt_count + max_tokens > ctx_size:

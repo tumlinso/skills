@@ -216,9 +216,11 @@ class LlamaCppServerTests(unittest.TestCase):
 
     def test_observer_reasoning_history_is_inquiry_local_and_clearable(self):
         rendered = []
+        template_kwargs = []
         def transport(method, url, payload, timeout):
             if url.endswith("/apply-template"):
                 rendered.append(payload["messages"])
+                template_kwargs.append(payload["chat_template_kwargs"])
                 return 200, {"prompt": "SYS <think>" if payload["chat_template_kwargs"]["enable_thinking"] else "SYS <think></think>"}
             if url.endswith("/tokenize"):
                 return 200, {"tokens": list(range(len(payload["content"].split())))}
@@ -233,9 +235,11 @@ class LlamaCppServerTests(unittest.TestCase):
             {"role": "assistant", "content": "answer"}, {"role": "user", "content": "q2"}],
             "max_tokens": 16, "reasoning_state_key": "lease-a", "observer_generation": policy})
         self.assertIn("<think>private thought</think>answer", json.dumps(rendered[-1]))
+        self.assertTrue(template_kwargs[-1]["preserve_thinking"])
         adapter.run("fixture", {"messages": [{"role": "user", "content": "another"}], "max_tokens": 16,
             "reasoning_state_key": "lease-b", "observer_generation": policy})
         self.assertNotIn("private thought", json.dumps(rendered[-1]))
+        self.assertTrue(template_kwargs[-1]["preserve_thinking"])
         adapter.clear_reasoning("fixture", "lease-a")
         adapter.run("fixture", {"messages": [{"role": "user", "content": "q1"},
             {"role": "assistant", "content": "answer"}, {"role": "user", "content": "q3"}],
@@ -267,8 +271,10 @@ class LlamaCppServerTests(unittest.TestCase):
         self.assertEqual(completion["text"], "ok")
 
     def test_observer_output_byte_cap_fails_without_truncating(self):
+        template_kwargs = []
         def transport(method, url, payload, timeout):
             if url.endswith("/apply-template"):
+                template_kwargs.append(payload["chat_template_kwargs"])
                 return 200, {"prompt": "SYS <think></think>"}
             if url.endswith("/tokenize"):
                 return 200, {"tokens": list(range(len(payload["content"].split())))}
@@ -278,6 +284,7 @@ class LlamaCppServerTests(unittest.TestCase):
             adapter.run("fixture", {"messages": [{"role": "user", "content": "q"}], "max_tokens": 16,
                 "reasoning_mode": "off", "reasoning_state_key": "lease-a",
                 "observer_generation": {"preserve_reasoning": False}})
+        self.assertFalse(template_kwargs[-1]["preserve_thinking"])
 
     def test_observer_answer_rejects_leaked_thinking_tags_without_returning_content(self):
         def transport(method, url, payload, timeout):
