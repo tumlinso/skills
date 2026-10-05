@@ -1,0 +1,107 @@
+{
+  "actual_live_receipt": {
+    "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/release/live-receipt.json",
+    "sha256": "6578ec5a5d72ba052414c958056507a02c4e1e4c10e47228779759377fdba72c",
+    "status": "passed"
+  },
+  "candidate": {
+    "manifest_sha256": "0a968d2456e5a576ef0fc74c05b0543f4479c27385caa800e083018f507bbc34",
+    "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005"
+  },
+  "epics": {
+    "project-control": {
+      "final_revision": 904,
+      "required_child_closure_gates": 10,
+      "run_status": "completed",
+      "status": "done",
+      "task": "PC-AS1-0000"
+    },
+    "skills": {
+      "disposition": "validated",
+      "final_revision": 1008,
+      "required_child_closure_gates": 14,
+      "run": "SK-AS1-RUN-1",
+      "run_status": "completed",
+      "status": "done",
+      "task": "SK-AS1-0000"
+    }
+  },
+  "format": "skills-as1-release-completion-summary/1",
+  "functional_source_pins": {
+    "pc": "3905649ff9b03e3acec4211553a52cf2389489e9",
+    "skills": "269646d2da7452adfb5750bfe9b7a3068f7ee828",
+    "worker_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf"
+  },
+  "native_pc_release": {
+    "gate_id_prefix": "c539f1bc",
+    "required_cases": [
+      "REL-01",
+      "REL-02",
+      "REL-03"
+    ],
+    "status": "passed",
+    "task_done_revision": 882
+  },
+  "native_skills_qualification": {
+    "gate_id": "47985492-fd1a-471f-bf6d-e178507dcd20",
+    "report": {
+      "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/47985492-fd1a-471f-bf6d-e178507dcd20/stdout.txt",
+      "sha256": "a1b77aabf62efcb9674d5a1b59e2cecb503b403e2f3d7c6f0e90ba949f34f723"
+    },
+    "status": "passed"
+  },
+  "native_skills_release": {
+    "gate_id": "fe9930e7-b3a0-46a2-9292-46ebfab162a3",
+    "original_stdout": {
+      "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/fe9930e7-b3a0-46a2-9292-46ebfab162a3/stdout.txt",
+      "sha256": "8aeec4733bd2a90d612a5fdadd294ff351fdc983f4b80a7ecb62c760cb5ba3ee"
+    },
+    "required_cases": [
+      "PIN-01",
+      "PIN-02"
+    ],
+    "status": "passed",
+    "task_done_revision": 978
+  },
+  "native_visibility_limitation": "Large Skills finish_task responses can exceed the existing 8192-byte workflow response budget and return workflow_response_too_large after successful native completion, including release and epic closure on the new runtime. Root verified persisted receipts/task/run outcomes without rerunning successful gates. Observer job checkpoint/restart correction is separate.",
+  "observed_release_effects": {
+    "actual_cutover_rollback_sequence": [
+      "new",
+      "old",
+      "new"
+    ],
+    "live_registration": "project-control",
+    "protected_gpu_devices": [
+      0,
+      2
+    ],
+    "protected_service_and_process_identities_preserved": true,
+    "rollback_mode": "pause_dispatcher_preserve_forward_store",
+    "rollback_store_scope": "isolated_native_fixture",
+    "todo_database_restorations": []
+  },
+  "paired_manifest": {
+    "path": "integrations/as1-paired-release.json",
+    "sha256": "48066ce72a6432150181f0a1b4af533c4f3bd16b6cb4a4a021e5b48b2ca5ddcd",
+    "status": "passed"
+  },
+  "publication_policy": "Sanitized metadata and native gate stdout hash/reference only. Raw inference archives, private stores, credentials and database material excluded.",
+  "qualification_limits": {
+    "biological_or_broad_performance_validation": false,
+    "historic_skill_reuse": "Native model-owned entry/maps traversal plus exact canonical selected source/hash/range/excerpt and explicitly labelled non-authoritative synthesis only. No semantic entailment or useful synthesis verification. Original failed receipt remains unchanged.",
+    "historic_skill_reuse_limitations": [
+      "Narrative fusion claim references wrong line; exact frontend line24 is Split instead when:.",
+      "Frontend entailment_verified false and partial synthesis_budget."
+    ],
+    "partial_reason": "finding_requires_observed_packet",
+    "q14_queued_terminal_counts": {
+      "completed": 2,
+      "partial": 1
+    }
+  },
+  "skills_real_proof": {
+    "path": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/sqa-real/as1-paired-3905649-269646d-20261005-q14/receipt.json",
+    "sha256": "b7418afb156af547fa0419c8dc2f5914f920e599fca99f7c0250691e8747f5b2"
+  },
+  "status": "release_and_epics_completed"
+}
