@@ -1335,6 +1335,8 @@ class SupervisorServer:
         self._stop_event = threading.Event()
         self._threads: set[threading.Thread] = set()
         self._threads_lock = threading.Lock()
+        self._borrowers: dict[str, dict[str, Any]] = {}
+        self._borrowers_lock = threading.Lock()
         self._process_start = process_identity(os.getpid())["process_start"]
         self._source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         self.runtime_identity, self.runtime_context = bind_canonical_runtime(
@@ -1391,7 +1393,11 @@ class SupervisorServer:
             if operation == "observer-close":
                 if not isinstance(request.get("session_id"), str) or not 1 <= len(request["session_id"]) <= 128:
                     raise SupervisorError("supervisor_observer_parameters_invalid")
-                return self.backend.close_observer_session(request["session_id"])
+                with self._borrowers_lock:
+                    result = self.backend.close_observer_session(request["session_id"])
+                    if result.get("released") is True:
+                        self._borrowers.pop(request["session_id"], None)
+                    return result
             key = "packet" if operation == "observer-analyze" else "request"
             if not isinstance(request.get(key), dict):
                 raise SupervisorError("supervisor_observer_parameters_invalid")
@@ -1436,29 +1442,93 @@ class SupervisorServer:
         raise SupervisorError(f"unknown supervisor operation: {operation!r}")
 
     def _serve_connection(self, connection: socket.socket) -> None:
+        opened: list[str] = []
+        delivered = False
         try:
             with connection:
                 try:
-                    _check_peer_uid(connection)
+                    peer_pid = _check_peer_uid(connection)
                     request = _read_rpc_frame(connection, timeout=10)
+                    borrower = None
+                    if request.get("operation") == "observer-open":
+                        borrower = {"pid": peer_pid, "process_start": process_identity(peer_pid)["process_start"],
+                                    "deadline_epoch": min(time.time() + 300,
+                                        request.get("deadline_epoch") or time.time() + 300)}
                     response = {"ok": True, "data": self._dispatch(request)}
+                    if borrower is not None:
+                        opened = list(response["data"]["session_ids"])
+                        with self._borrowers_lock:
+                            known = getattr(self.backend, "_leases", None)
+                            if known is not None:
+                                self._borrowers = {session_id: record for session_id, record in self._borrowers.items()
+                                                   if session_id in known}
+                            for session_id in opened:
+                                self._borrowers[session_id] = dict(borrower)
                     encoded = _rpc_frame(response)
                 except Exception as error:
-                    encoded = _rpc_frame({"ok": False, "error": str(error)[:1000]})
+                    response = {"ok": False, "error": str(error)[:1000]}
+                    encoded = _rpc_frame(response)
                 try:
                     connection.settimeout(10)
                     connection.sendall(encoded)
+                    delivered = response["ok"]
                 except (OSError, TimeoutError):
                     pass  # An accepted turn survives a frontend disconnect.
         finally:
+            if not delivered:
+                for session_id in opened:
+                    self._release_borrower(session_id, undelivered=True)
             self._connections.release()
             with self._threads_lock:
                 self._threads.discard(threading.current_thread())
+
+    def _release_borrower(self, session_id: str, *, undelivered: bool = False) -> None:
+        with self._borrowers_lock:
+            borrower = self._borrowers.get(session_id)
+            if borrower is None:
+                return
+            if undelivered:
+                borrower["undelivered"] = True
+            try:
+                result = self.backend.close_observer_session(session_id)
+            except Exception:
+                # Active turns and failed native cleanup retain their exact
+                # session for a later housekeeping retry, never pool eviction.
+                if session_id not in getattr(self.backend, "_leases", {session_id: True}):
+                    self._borrowers.pop(session_id, None)
+                return
+            if result.get("released") is True:
+                self._borrowers.pop(session_id, None)
+
+    def _reap_borrowers(self) -> None:
+        with self._borrowers_lock:
+            borrowers = [(session_id, dict(borrower)) for session_id, borrower in self._borrowers.items()]
+        for session_id, borrower in borrowers:
+            if session_id not in getattr(self.backend, "_leases", {session_id: True}):
+                with self._borrowers_lock:
+                    self._borrowers.pop(session_id, None)
+                continue
+            expired = time.time() >= borrower["deadline_epoch"] or borrower.get("undelivered", False)
+            if not expired:
+                try:
+                    expired = process_identity(borrower["pid"])["process_start"] != borrower["process_start"]
+                except FileNotFoundError:
+                    try:
+                        (Path("/proc") / str(borrower["pid"])).stat()
+                    except FileNotFoundError:
+                        expired = True
+                    except OSError:
+                        pass
+                except (OSError, ValueError):
+                    pass  # Unknown presence is not proof of a dead borrower.
+            if expired:
+                self._release_borrower(session_id)
 
     def _housekeeping(self) -> None:
         while not self._stop_event.is_set():
             try:
                 self.backend.poll()
+                self._reap_borrowers()
                 status = self._observer_status() if self.observer_only else self.backend.status()
                 _atomic_json(self.state_path, status)
             except Exception as error:

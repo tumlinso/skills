@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import socket
 import struct
+import subprocess
 import sys
 import tempfile
 import threading
@@ -290,6 +291,119 @@ class CentralSupervisorTests(unittest.TestCase):
         self.assertEqual(self.backend._slots, {})
         self.assertFalse(self.server.socket_path.exists())
         self.assertEqual(self.failures, [])
+
+    def wait_for_leases(self, count):
+        deadline = time.monotonic() + 3
+        while time.monotonic() < deadline:
+            status = self.client.observer_status()
+            if status["active_leases"] == count:
+                return status
+            time.sleep(.01)
+        self.fail(f"expected {count} leases, got {status}")
+
+    def test_lost_open_response_releases_only_new_session_and_reuses_warm_pid(self):
+        other = self.client.open_observer_sessions(1)["session_ids"][0]
+        opened, disconnected = threading.Event(), threading.Event()
+        self.addCleanup(disconnected.set)
+        captured = {}
+        original_dispatch = self.server._dispatch
+        def delayed_response(request):
+            result = original_dispatch(request)
+            if request.get("operation") == "observer-open":
+                captured.update(result)
+                opened.set()
+                disconnected.wait(timeout=2)
+            return result
+        with patch.object(self.server, "_dispatch", side_effect=delayed_response):
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as connection:
+                connection.connect(str(self.server.socket_path))
+                connection.sendall(b'{"operation":"observer-open","count":1}\n')
+                self.assertTrue(opened.wait(timeout=2))
+            disconnected.set()
+            status = self.wait_for_leases(1)
+            self.assertIn(other, self.backend._leases)
+        lost = captured["session_ids"][0]
+        self.assertNotIn(lost, self.backend._leases)
+        self.assertNotIn(lost, self.server._borrowers)
+        self.assertEqual(len(status["slots"]), 2)
+        idle_pid = next(slot["server_pid"] for slot in status["slots"] if not slot["leased"])
+        replacement = self.new_client().open_observer_sessions(1)["session_ids"][0]
+        replacement_status = self.client.observer_status()
+        self.assertEqual(next(slot["server_pid"] for slot in replacement_status["slots"]
+                              if slot["service_lease_id"] == replacement), idle_pid)
+        self.assertEqual(self.service.starts, 2)
+
+    def test_delivered_session_dead_client_process_reclaimed_without_evicting_model(self):
+        script = """import socket,sys,json
+with socket.socket(socket.AF_UNIX,socket.SOCK_STREAM) as connection:
+ connection.connect(sys.argv[1])
+ connection.sendall(b'{"operation":"observer-open","count":1}\\n')
+ data=b''
+ while b'\\n' not in data: data+=connection.recv(4096)
+ print(data.decode().strip(),flush=True)
+"""
+        result = subprocess.run([sys.executable, "-c", script, str(self.server.socket_path)],
+                                capture_output=True, text=True, timeout=3)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        reply = json.loads(result.stdout)
+        self.assertTrue(reply["ok"], reply)
+        session_id = reply["data"]["session_ids"][0]
+        idle = self.wait_for_leases(0)
+        self.assertNotIn(session_id, self.server._borrowers)
+        self.assertTrue(idle["running"])
+        pid = idle["slots"][0]["server_pid"]
+        self.new_client().open_observer_sessions(1)
+        self.assertEqual(self.client.observer_status()["slots"][0]["server_pid"], pid)
+        self.assertEqual(self.service.starts, 1)
+
+    def test_borrower_deadline_is_bounded_and_active_turn_defers_only_its_release(self):
+        sessions = self.client.open_observer_sessions(2)["session_ids"]
+        before = self.client.observer_status()
+        for session_id in sessions:
+            borrower = self.server._borrowers[session_id]
+            self.assertEqual(borrower["pid"], os.getpid())
+            self.assertEqual(borrower["process_start"], process_identity(os.getpid())["process_start"])
+            self.assertLessEqual(borrower["deadline_epoch"] - time.time(), 300)
+            self.assertGreater(borrower["deadline_epoch"] - time.time(), 290)
+        slot = self.backend._slots[self.backend._leases[sessions[0]]]
+        with self.backend._pool_lock:
+            slot.active_turns += 1
+        with self.server._borrowers_lock:
+            self.server._borrowers[sessions[0]]["deadline_epoch"] = time.time() - 1
+        with patch.object(self.backend, "evict", side_effect=AssertionError("no pool eviction")):
+            self.server._reap_borrowers()
+            self.assertIn(sessions[0], self.backend._leases)
+            self.assertIn(sessions[0], self.server._borrowers)
+            with self.backend._pool_lock:
+                slot.active_turns -= 1
+            self.server._reap_borrowers()
+        after = self.client.observer_status()
+        self.assertNotIn(sessions[0], self.backend._leases)
+        self.assertIn(sessions[1], self.backend._leases)
+        self.assertEqual({item["server_pid"] for item in before["slots"]},
+                         {item["server_pid"] for item in after["slots"]})
+        self.assertEqual(after["active_leases"], 1)
+
+    def test_requested_deadline_bounds_session_and_unknown_process_proof_retains_it(self):
+        deadline = time.time() + 10
+        session_id = self.client.open_observer_sessions(1, deadline_epoch=deadline)["session_ids"][0]
+        self.assertEqual(self.server._borrowers[session_id]["deadline_epoch"], deadline)
+        with patch("local_worker.supervisor.process_identity", side_effect=PermissionError("unknown borrower")):
+            self.server._reap_borrowers()
+        self.assertIn(session_id, self.backend._leases)
+        with self.server._borrowers_lock:
+            self.server._borrowers[session_id]["deadline_epoch"] = time.time() - 1
+        self.server._reap_borrowers()
+        self.assertNotIn(session_id, self.backend._leases)
+        self.assertTrue(self.client.observer_status()["running"])
+
+    def test_native_completed_leases_do_not_accumulate_stale_borrower_records(self):
+        session_id = self.client.open_observer_sessions(1)["session_ids"][0]
+        self.backend.close_observer_session(session_id)
+        self.client.open_observer_sessions(1)
+        self.assertNotIn(session_id, self.server._borrowers)
+        self.assertEqual(len(self.server._borrowers), 1)
+        self.assertEqual(self.service.starts, 1)
 
 
 if __name__ == "__main__":

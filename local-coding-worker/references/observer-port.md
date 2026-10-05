@@ -13,6 +13,20 @@ each RPC already owns and closes its own short-lived Unix connection. Explicit
 `close_observer_session(session_id, deadline_epoch=...)` releases only that
 session and preserves the existing 900-second idle warm residency.
 
+Each exclusive observer session is borrowed by the connecting frontend process
+identified by Unix peer PID and process start, with the requested absolute
+deadline capped at 300 seconds (300 seconds when omitted). An undeliverable
+open response releases only the sessions created by that request. Housekeeping
+also releases that exact session when its borrower process is proven gone or
+replaced, or its deadline expires. Unknown process presence retains the session
+until expiry. Active turns defer release until native session cleanup succeeds;
+the server does not evict the pool or cancel another client's accepted work.
+Verified session release keeps healthy model PIDs warm for later borrowers.
+The borrower is the persistent HTTP/MCP frontend process, not an individual
+HTTP request caller: a request disconnect does not cancel an accepted job.
+Sessions remain exclusive; no logical multiplexing or shared active model
+lease is introduced.
+
 The explicit JSON RPC methods are:
 
 | Client method | Operation | Parameters |
