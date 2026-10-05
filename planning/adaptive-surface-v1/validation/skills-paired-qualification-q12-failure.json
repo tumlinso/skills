@@ -1,0 +1,706 @@
+{
+  "attempt": "q12",
+  "attempt_after": 2,
+  "attempt_before": 1,
+  "checkpoint_observations_have_public_calls": false,
+  "cleanup_checks": {
+    "approved_vram_zero": true,
+    "exact_approved_devices": true,
+    "no_approved_apps": true,
+    "no_owned_leases": true,
+    "no_owned_slots": true,
+    "observation_available": true,
+    "protected_start_identity_preserved": true,
+    "unrelated_preserved": true
+  },
+  "completed_actual_effects": [
+    "Three genuine accepted busy queued jobs.",
+    "Actual source checkpoint and between-turn preemption yielding.",
+    "Host-global foreground CUDA allocation and owned model eviction with physical quiescence.",
+    "Fresh dispatcher and new model PID.",
+    "Poll/exact lookup without model starts while evicted.",
+    "Genuine private pending rollback snapshot."
+  ],
+  "final_findings": [
+    {
+      "evidence_packets": [
+        "pkt_a2a5d9cb061d4698add73eaf24af593a"
+      ],
+      "text": "The function calculate_total takes a value and returns it plus 1"
+    }
+  ],
+  "format": "as1-paired-failed-attempt-diagnostic/1",
+  "limits": [
+    "No full SQA or release acceptance.",
+    "Checkpoint public-call replay needs root-owned product correction; no fabricated transcript or relaxed no-reread assertion.",
+    "Original failed Q12 receipt unchanged.",
+    "Reused Q11 narrative remains explicitly unverified."
+  ],
+  "metrics": {
+    "real_turn_count": 13,
+    "total_active_seconds": 19.439672374013753,
+    "total_visible_output_bytes": 2825,
+    "total_visible_request_bytes": 91758,
+    "usage": [
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1620,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1685
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2020,
+        "prompt_tokens_details": {
+          "cached_tokens": 1573
+        },
+        "total_tokens": 2081
+      },
+      {
+        "completion_tokens": 60,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1664
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2213,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2274
+      },
+      {
+        "completion_tokens": 91,
+        "prompt_tokens": 2657,
+        "prompt_tokens_details": {
+          "cached_tokens": 2082
+        },
+        "total_tokens": 2748
+      },
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 1669
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2001,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2062
+      },
+      {
+        "completion_tokens": 97,
+        "prompt_tokens": 2445,
+        "prompt_tokens_details": {
+          "cached_tokens": 1870
+        },
+        "total_tokens": 2542
+      },
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 1669
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2001,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2062
+      },
+      {
+        "completion_tokens": 97,
+        "prompt_tokens": 2446,
+        "prompt_tokens_details": {
+          "cached_tokens": 1870
+        },
+        "total_tokens": 2543
+      },
+      {
+        "completion_tokens": 70,
+        "prompt_tokens": 2340,
+        "prompt_tokens_details": {
+          "cached_tokens": 527
+        },
+        "total_tokens": 2410
+      },
+      {
+        "completion_tokens": 78,
+        "prompt_tokens": 2783,
+        "prompt_tokens_details": {
+          "cached_tokens": 2209
+        },
+        "total_tokens": 2861
+      }
+    ]
+  },
+  "model_pids": [
+    530504,
+    530975
+  ],
+  "native_queued_results_supplemental": [
+    {
+      "job": {
+        "attempt": 1,
+        "created_at": "2026-10-05T00:02:09.531224+00:00",
+        "evidence_packets": [
+          "pkt_07aee10496364dd7b717516cc908f9a6",
+          "pkt_1e1e7397f818498ebb724af51596b2f2"
+        ],
+        "findings": [
+          {
+            "evidence_packets": [
+              "pkt_1e1e7397f818498ebb724af51596b2f2"
+            ],
+            "text": "The README.md file documents the fixture purpose as 'source-bound observer qualification'."
+          }
+        ],
+        "format": "pc-job/1",
+        "hints": [
+          "fern-birch"
+        ],
+        "job_id": "job_b8a6d695893e4693897fc3e4285fab47",
+        "mode": "investigate",
+        "project": "sqa",
+        "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+        "request_id": "queue-0",
+        "result_packet": "pkt_b254b1047ae54486b45270fbcca1ae93",
+        "scope": {
+          "principal": "sqa-real",
+          "profile": "observer",
+          "project": "sqa"
+        },
+        "skill": null,
+        "status": "completed",
+        "unresolved_questions": []
+      },
+      "observations": [
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.029311,
+          "exit_code": 0,
+          "packet_id": "pkt_07aee10496364dd7b717516cc908f9a6",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "status": "completed",
+          "stderr": "",
+          "stdout": "total 20\ndrwx------ 4 1000 1000 4096 Oct  5 00:01 .\ndrwx------ 3 1000 1000   60 Oct  5 00:03 ..\ndrwxrwxr-x 8 1000 1000 4096 Oct  5 00:02 .git\ndrwxrwxr-x 3 1000 1000 4096 Oct  5 00:01 .todo-orchestrator\n-rw-rw-r-- 1 1000 1000   60 Oct  5 00:01 README.md\n-rw-rw-r-- 1 1000 1000   49 Oct  5 00:01 module.py\n",
+          "timed_out": false,
+          "truncated": false
+        },
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.028592,
+          "exit_code": 0,
+          "packet_id": "pkt_1e1e7397f818498ebb724af51596b2f2",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "source_reads": [
+            {
+              "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+              "line_count": 2,
+              "method": "direct_cat",
+              "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project/README.md"
+            }
+          ],
+          "status": "completed",
+          "stderr": "",
+          "stdout": "# SQA fixture\nPurpose: source-bound observer qualification.\n",
+          "timed_out": false,
+          "truncated": false
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "job": {
+        "attempt": 1,
+        "created_at": "2026-10-05T00:02:09.556853+00:00",
+        "evidence_packets": [
+          "pkt_c9a6d1e126df4859afeed7e8c68f3f87",
+          "pkt_073b4b9f00fc49bab301b02a562f7319"
+        ],
+        "findings": [],
+        "format": "pc-job/1",
+        "hints": [
+          "fern-birch"
+        ],
+        "job_id": "job_a2936aac35a74e3b993f526ef1024f48",
+        "mode": "investigate",
+        "project": "sqa",
+        "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+        "request_id": "queue-1",
+        "result_packet": "pkt_87a9553a90a94731991cee4d7da2c30c",
+        "scope": {
+          "principal": "sqa-real",
+          "profile": "observer",
+          "project": "sqa"
+        },
+        "skill": null,
+        "status": "partial",
+        "unresolved_questions": [
+          "Retry from retained observations"
+        ]
+      },
+      "observations": [
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.029124,
+          "exit_code": 0,
+          "packet_id": "pkt_c9a6d1e126df4859afeed7e8c68f3f87",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "status": "completed",
+          "stderr": "",
+          "stdout": "./README.md\n",
+          "timed_out": false,
+          "truncated": false
+        },
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.026257,
+          "exit_code": 0,
+          "packet_id": "pkt_073b4b9f00fc49bab301b02a562f7319",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "source_reads": [
+            {
+              "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+              "line_count": 2,
+              "method": "direct_cat",
+              "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project/README.md"
+            }
+          ],
+          "status": "completed",
+          "stderr": "",
+          "stdout": "# SQA fixture\nPurpose: source-bound observer qualification.\n",
+          "timed_out": false,
+          "truncated": false
+        }
+      ],
+      "status": "ok"
+    },
+    {
+      "job": {
+        "attempt": 1,
+        "created_at": "2026-10-05T00:02:09.582806+00:00",
+        "evidence_packets": [
+          "pkt_238cc56c882e4ddc8138459de77bb47a",
+          "pkt_32240168943744dfa10b6e04f7e26502"
+        ],
+        "findings": [],
+        "format": "pc-job/1",
+        "hints": [
+          "fern-birch"
+        ],
+        "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784",
+        "mode": "investigate",
+        "project": "sqa",
+        "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+        "request_id": "queue-2",
+        "result_packet": "pkt_26d5c3cdcc0a4011ac4cb109c261ea46",
+        "scope": {
+          "principal": "sqa-real",
+          "profile": "observer",
+          "project": "sqa"
+        },
+        "skill": null,
+        "status": "partial",
+        "unresolved_questions": [
+          "Retry from retained observations"
+        ]
+      },
+      "observations": [
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.03277,
+          "exit_code": 0,
+          "packet_id": "pkt_238cc56c882e4ddc8138459de77bb47a",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "status": "completed",
+          "stderr": "",
+          "stdout": "./README.md\n",
+          "timed_out": false,
+          "truncated": false
+        },
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.023893,
+          "exit_code": 0,
+          "packet_id": "pkt_32240168943744dfa10b6e04f7e26502",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "source_reads": [
+            {
+              "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+              "line_count": 2,
+              "method": "direct_cat",
+              "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project/README.md"
+            }
+          ],
+          "status": "completed",
+          "stderr": "",
+          "stdout": "# SQA fixture\nPurpose: source-bound observer qualification.\n",
+          "timed_out": false,
+          "truncated": false
+        }
+      ],
+      "status": "ok"
+    }
+  ],
+  "phase_order": [
+    "hash_bound_Q11_skill_provenance_reuse",
+    "busy_queue_preemption_restart"
+  ],
+  "receipt": {
+    "path": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/sqa-real/as1-paired-6d1a732-269646d-20261004-q12/receipt.json",
+    "sha256": "55ac4af6aeda016594208f033edc84185b57432933372ad7962434f9f1471df7"
+  },
+  "required_failure": "Resumed scout reread unchanged module.py and cited new packet instead of preserved checkpoint packet.",
+  "retained_source_packet": "pkt_cbacd5ccb10945c3bd30b6dd6ee778f6",
+  "reused_skill_proof": {
+    "actual_prior_model_turns": 8,
+    "format": "as1-reused-native-skill-proof/1",
+    "limitations": [
+      "Q11 narrative claimed fusion text on selected line24; actual quote is line8. Finding is unverified and not entailed by selected excerpt.",
+      "Frontend partial synthesis_budget retained; no useful verified synthesis claim.",
+      "Original Q11 failed helper receipt remains unchanged; final-map-only assertion is not an AS1 requirement."
+    ],
+    "new_skill_model_calls": 0,
+    "original_helper_receipt_status": "failed",
+    "qualified_scope": [
+      "worker-owned native entry/maps traversal",
+      "exact canonical selected resource/hash/range/excerpt",
+      "labelled non-authoritative synthesis"
+    ],
+    "required_read_order": [
+      0,
+      1,
+      2
+    ],
+    "semantic_finding_verified": false,
+    "source_artifacts_sha256": {
+      "approval.json": "17ce8bdcc44abcf6dbb849ce68182e8495802a25428a4e5043f4798f90dbc201",
+      "cleanup.json": "71f5bd7ad17e62a2517c4f2629182cf34c03858197ed5a11c2361f34cabd8d23",
+      "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+      "failure.json": "08d1b1fa12b3ca81e5d753b18474cf6ac9920513e2a5bb44f21e38b93a6f47a4",
+      "phase_order.json": "f3c005be03baa45ed630b656fbd8d097a4c375be88f5253a38aadd3939571f8b",
+      "sessions.json": "6f1aef169a6150320c37db6d9b99389702b8c951f1d2b26d42d545462d6563e1",
+      "skill.json": "cb3f22a12df00faa1f7045cc251c971206132ed64188f24423752cabe167d161",
+      "skill_admission.json": "59a395d9d88dd89402737df1ce7c608eaebcfda06271913388dd71c0a3e65ae7",
+      "skill_job.json": "f77d2519c94e08028b60393c48f0dffade0353a326926339c2f9b4cfd1d23ffc",
+      "source_identity.json": "eb7ac08b0650b46fd84672615f648499c011a040273441de70f2b38fa05f411a",
+      "turns.json": "437cac51257a4404bc50d62cc324ea83e6e51cae4e96f10dfc4fa676064a48b2"
+    },
+    "source_receipt": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/sqa-real/as1-paired-6d1a732-269646d-20261004-q11/receipt.json",
+    "source_receipt_sha256": "202507e5d42822d3434d03097d257b83b1b199903b51744486cf3a7e841f98d1"
+  },
+  "rollback_fixture": {
+    "accepted_native_replies": [
+      {
+        "accepted": true,
+        "job_id": "job_b8a6d695893e4693897fc3e4285fab47",
+        "message": "Accepted. Continue other work and poll this ID later.",
+        "poll": {
+          "job_id": "job_b8a6d695893e4693897fc3e4285fab47"
+        },
+        "retry": false,
+        "status": "queued"
+      },
+      {
+        "accepted": true,
+        "job_id": "job_a2936aac35a74e3b993f526ef1024f48",
+        "message": "Accepted. Continue other work and poll this ID later.",
+        "poll": {
+          "job_id": "job_a2936aac35a74e3b993f526ef1024f48"
+        },
+        "retry": false,
+        "status": "queued"
+      },
+      {
+        "accepted": true,
+        "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784",
+        "message": "Queue busy. Your question is queued. Do not wait; continue reasoning or other useful work and ask again later using this ID.",
+        "poll": {
+          "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784"
+        },
+        "retry": false,
+        "status": "queued"
+      }
+    ],
+    "access_scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "actual_backend_observation": {
+      "active_admissions": 0,
+      "active_leases": 0,
+      "capacity": 1,
+      "clients": 0,
+      "draining": false,
+      "format": "CORE4-OBSERVER-STATUS/1",
+      "healthy": false,
+      "running": false,
+      "slots": []
+    },
+    "db_sha256": {
+      "jobs": "9873ce512655df69194968e81b764c5c646b24cf5633788095fad19bc3e536e9",
+      "packets": "71b1aa0293be67f425b35ef483efe428fd2b41c0e0018ab62c211fe1ac3f6093"
+    },
+    "dispatcher": "stopped_never_started_in_snapshot",
+    "forward_packet_ids": [
+      "pkt_c3e9cd9721cf4b9786c3e4a43d1376b4",
+      "pkt_cbacd5ccb10945c3bd30b6dd6ee778f6"
+    ],
+    "jobs_directory": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/rollback-fixture/jobs",
+    "kind": "isolated_native_fixture",
+    "launch_probe_instruction": "Open the snapshot through native JobService and SQLitePacketStore with this scope; do not start its dispatcher during new-old-new rollback probes.",
+    "model_starts_added": 0,
+    "origin": "coherent snapshot of actual admitted busy native jobs after verified physical eviction",
+    "packets_directory": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/rollback-fixture/packets",
+    "pending_jobs": [
+      {
+        "job": {
+          "attempt": 0,
+          "created_at": "2026-10-05T00:02:09.531224+00:00",
+          "evidence_packets": [],
+          "findings": [],
+          "format": "pc-job/1",
+          "hints": [
+            "fern-birch"
+          ],
+          "job_id": "job_b8a6d695893e4693897fc3e4285fab47",
+          "mode": "investigate",
+          "project": "sqa",
+          "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+          "request_id": "queue-0",
+          "result_packet": null,
+          "scope": {
+            "principal": "sqa-real",
+            "profile": "observer",
+            "project": "sqa"
+          },
+          "skill": null,
+          "status": "queued",
+          "unresolved_questions": []
+        },
+        "observations": [],
+        "status": "ok"
+      },
+      {
+        "job": {
+          "attempt": 0,
+          "created_at": "2026-10-05T00:02:09.556853+00:00",
+          "evidence_packets": [],
+          "findings": [],
+          "format": "pc-job/1",
+          "hints": [
+            "fern-birch"
+          ],
+          "job_id": "job_a2936aac35a74e3b993f526ef1024f48",
+          "mode": "investigate",
+          "project": "sqa",
+          "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+          "request_id": "queue-1",
+          "result_packet": null,
+          "scope": {
+            "principal": "sqa-real",
+            "profile": "observer",
+            "project": "sqa"
+          },
+          "skill": null,
+          "status": "queued",
+          "unresolved_questions": []
+        },
+        "observations": [],
+        "status": "ok"
+      },
+      {
+        "job": {
+          "attempt": 0,
+          "created_at": "2026-10-05T00:02:09.582806+00:00",
+          "evidence_packets": [],
+          "findings": [],
+          "format": "pc-job/1",
+          "hints": [
+            "fern-birch"
+          ],
+          "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784",
+          "mode": "investigate",
+          "project": "sqa",
+          "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file README.md directly with cat, then state its documented fixture purpose with one cited finding. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project.",
+          "request_id": "queue-2",
+          "result_packet": null,
+          "scope": {
+            "principal": "sqa-real",
+            "profile": "observer",
+            "project": "sqa"
+          },
+          "skill": null,
+          "status": "queued",
+          "unresolved_questions": []
+        },
+        "observations": [],
+        "status": "ok"
+      }
+    ],
+    "yielded_scout": {
+      "job": {
+        "attempt": 1,
+        "created_at": "2026-10-05T00:01:48.607014+00:00",
+        "evidence_packets": [
+          "pkt_0a328c753f2e4c24a5abc17e3c75f412",
+          "pkt_cbacd5ccb10945c3bd30b6dd6ee778f6"
+        ],
+        "findings": [],
+        "format": "pc-job/1",
+        "hints": [
+          "fern-birch"
+        ],
+        "job_id": "job_31106b90a6864888afdb056ceda8ba8c",
+        "mode": "investigate",
+        "project": "sqa",
+        "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file module.py directly with cat, then explain calculate_total using one finding citing its observed packet. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project. Reuse retained verified observations after reconnect instead of reading an unchanged file again.",
+        "request_id": "scout",
+        "result_packet": null,
+        "scope": {
+          "principal": "sqa-real",
+          "profile": "observer",
+          "project": "sqa"
+        },
+        "skill": null,
+        "status": "yielding",
+        "unresolved_questions": []
+      },
+      "observations": [
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.030869,
+          "exit_code": 0,
+          "packet_id": "pkt_0a328c753f2e4c24a5abc17e3c75f412",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "status": "completed",
+          "stderr": "",
+          "stdout": "./module.py\n",
+          "timed_out": false,
+          "truncated": false
+        },
+        {
+          "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+          "duration_seconds": 0.02855,
+          "exit_code": 0,
+          "packet_id": "pkt_cbacd5ccb10945c3bd30b6dd6ee778f6",
+          "scope": {
+            "external": true,
+            "provenance": "coarse_volatile",
+            "roots": [
+              "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project",
+              "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+            ]
+          },
+          "source_reads": [
+            {
+              "content_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331",
+              "line_count": 2,
+              "method": "direct_cat",
+              "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/project/module.py"
+            }
+          ],
+          "status": "completed",
+          "stderr": "",
+          "stdout": "def calculate_total(value):\n    return value + 1\n",
+          "timed_out": false,
+          "truncated": false
+        }
+      ],
+      "status": "ok"
+    }
+  },
+  "rollback_fixture_native_probe": {
+    "all_forward_packet_lookups": "ok",
+    "backend_started": false,
+    "dispatcher_started": false,
+    "pending_statuses": [
+      "queued",
+      "queued",
+      "queued"
+    ]
+  },
+  "root_claim": "SKclaim966",
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004",
+    "fixture_commit": "40eff6e8f59dfc7673dd406812c470600881379f",
+    "helper_sha256": "26d202eb381a11600004e690b338fee8d86fcb77e8143d127fa37cf6bbb500a6",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
+    "pc_commit": "6d1a7324acd2d2297ea3bf4fa3471d25ac67e2be",
+    "release_sha256": "e971d0390f8fecbe3955aa12d33076aaf2c3d35d2876d155d5d99deeb03311bc",
+    "skills_commit": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
+  },
+  "source_reread_counts": {
+    "after": 2,
+    "before": 1
+  },
+  "status": "failed",
+  "task": "SK-AS1-QUALIFY"
+}
