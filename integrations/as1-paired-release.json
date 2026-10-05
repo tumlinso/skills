@@ -6,15 +6,15 @@
   "evidence": {
     "live_release": {
       "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/release/live-receipt.json",
-      "sha256": null
+      "sha256": "6578ec5a5d72ba052414c958056507a02c4e1e4c10e47228779759377fdba72c"
     },
     "skills_qualification": {
-      "path": null,
-      "sha256": null
+      "path": "/home/tumlinson/.agents/skills/.git/todo-orchestrator/460468fe-ee72-4a64-a565-87cfec640d0c/evidence/47985492-fd1a-471f-bf6d-e178507dcd20/stdout.txt",
+      "sha256": "a1b77aabf62efcb9674d5a1b59e2cecb503b403e2f3d7c6f0e90ba949f34f723"
     },
     "skills_real_proof": {
-      "path": null,
-      "sha256": null
+      "path": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/sqa-real/as1-paired-3905649-269646d-20261005-q14/receipt.json",
+      "sha256": "b7418afb156af547fa0419c8dc2f5914f920e599fca99f7c0250691e8747f5b2"
     }
   },
   "format": "skills-as1-paired-release/1",
@@ -31,5 +31,5 @@
     "project_control": "3905649ff9b03e3acec4211553a52cf2389489e9",
     "skills": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
   },
-  "status": "pending"
+  "status": "passed"
 }

@@ -3,16 +3,16 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # SK-AS1-RELEASE: Pin the qualified standalone release in Skills
 
-Task revision: `966`; current project revision is in `todo-status.md`.
+Task revision: `978`; current project revision is in `todo-status.md`.
 
 ## Objective
 Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
 
 ## State
-- Lifecycle: `planned`
-- Execution: `ready`
+- Lifecycle: `done`
+- Execution: `closed`
 - Parallel policy: `serial`
-- Result: `-`
+- Result: `validated`
 
 ## Next Action
 Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.

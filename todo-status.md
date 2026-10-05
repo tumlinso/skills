@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `966`
+Project revision: `1008`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -87,8 +87,8 @@ Project revision: `966`
 - `SK-AS1-OBSERVER-CONVERSATION` | status: done | execution: closed | next: Record actual accepted public tool-call JSON in observations and replay assistant call/user result conversation from durable checkpoints; bounded no hidden reasoning, no forced source rereads or routing policy. Qualify short actual read-answer before full paired journey.
 - `SK-AS1-OBSERVER-ENTRY` | status: done | execution: closed | next: Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.
 - `SK-AS1-OBSERVER-PROGRESS` | status: done | execution: closed | next: Use native trusted runner roots for executable command example, terminal partial with unresolved reason on step budget exhaustion, actual installed-port fixtures and preemption regression; return qualified source pin for PCbroker.
-- `SK-AS1-QUALIFY` | status: in_progress | execution: claimed | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-RELEASE` | status: planned | execution: ready | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-QUALIFY` | status: done | execution: closed | next: Read SK-AS1-QUALIFY in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
+- `SK-AS1-RELEASE` | status: done | execution: closed | next: Read SK-AS1-RELEASE in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-ROUTING` | status: done | execution: closed | next: Read SK-AS1-ROUTING in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-RUNTIME` | status: done | execution: closed | next: Read SK-AS1-RUNTIME in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-SEMANTIC-PORT` | status: done | execution: closed | next: Implement the trusted startup verifier port and meaningful disposable-authority source, freshness and authorization tests; root owns acceptance and cross-authority consumption.
@@ -109,6 +109,6 @@ Project revision: `966`
 - `CWM-06` | status: done | execution: closed | next: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 - `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
-- `SK-AS1-0000` | status: planned | execution: inactive | next: Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.
+- `SK-AS1-0000` | status: done | execution: closed | next: Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.
 - `SK-PCE2-0000` | status: planned | execution: inactive | next: Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.
 <!-- todo-orchestrator:v2-managed:end -->

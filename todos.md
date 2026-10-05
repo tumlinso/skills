@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Orchestrator v2 Projection
 
-Project revision: `966`
+Project revision: `1008`
 
 ## Workstreams
 - `SK-WF2-0000` | kind: epic | status: superseded | parent: - | objective: Close the aggregate only after all local child tasks, including the ordinary coordinator, have completed successfully and final evidence is coherent. The existing native aggregate readiness rule provides the child-completion check; no prerequisite points from a child back to this epic.
@@ -87,8 +87,8 @@ Project revision: `966`
 - `SK-AS1-OBSERVER-CONVERSATION` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair confirmed actual-model continuation nonprogress by replaying only public tool calls and packetized results as bounded conversation history, without hidden reasoning or semantic skill routing.
 - `SK-AS1-OBSERVER-ENTRY` | kind: task | status: done | parent: SK-AS1-0000 | objective: Recover from an observed pre-entry listing without aborting the skill job; enforce authoritative SKILL.md before resource access, preserving native agentic navigation and honest public-call provenance.
 - `SK-AS1-OBSERVER-PROGRESS` | kind: task | status: done | parent: SK-AS1-0000 | objective: Repair actual model placeholder anchoring and nonprogress retries while preserving strict single-object parsing, trusted sandbox roots, source authority, and recoverable foreground eviction.
-- `SK-AS1-QUALIFY` | kind: task | status: in_progress | parent: SK-AS1-0000 | objective: Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
-- `SK-AS1-RELEASE` | kind: task | status: planned | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
+- `SK-AS1-QUALIFY` | kind: task | status: done | parent: SK-AS1-0000 | objective: Produce a paired Skills qualification receipt usable by Project Control without merging authorities.
+- `SK-AS1-RELEASE` | kind: task | status: done | parent: SK-AS1-0000 | objective: Finish paired packaging by pinning the qualified standalone Project Control commit and publishing a bound release receipt.
 - `SK-AS1-ROUTING` | kind: task | status: done | parent: SK-AS1-0000 | objective: Update instruction routing for native agents and the observer adapter without rewriting technical skill content.
 - `SK-AS1-RUNTIME` | kind: task | status: done | parent: SK-AS1-0000 | objective: Reuse the model supervisor in investigator/skill modes without tying persistent jobs to GPU or child coding authority.
 - `SK-AS1-SEMANTIC-PORT` | kind: task | status: done | parent: SK-AS1-0000 | objective: Add startup-only foreign source verification and genuine identical-plan no-op behavior required by PC-AS1-CONTROL without expanding filesystem or workflow authority.
@@ -109,6 +109,6 @@ Project revision: `966`
 - `CWM-06` | kind: validation_task | status: done | parent: - | objective: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | kind: epic | status: done | parent: - | objective: Roll up ENGINES acceptance, preserving independent ctxpp/CUDA behavior and legacy semantic evidence. No separate donor parity campaign.
 - `SK-WF2A-ENGINES` | kind: task | status: done | parent: - | objective: Against a pinned Project Control CORE candidate, rewire only needed Todo-runtime consumers and CLI guidance to the unified core. Keep ctxpp standalone; remove the X-mode shape rejection while retaining reservations/preemption. Support the optional tool-less local-analysis path only by cheap reuse. Return one candidate-bound compatibility receipt.
-- `SK-AS1-0000` | kind: epic | status: planned | parent: - | objective: Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.
+- `SK-AS1-0000` | kind: epic | status: done | parent: - | objective: Aggregate verified local outcomes only; never a coordinator claim or prerequisite of its children.
 - `SK-PCE2-0000` | kind: epic | status: planned | parent: - | objective: Aggregate verified local outcomes only; this is not a coordinator seat or a prerequisite of its children.
 <!-- todo-orchestrator:v2-managed:end -->
