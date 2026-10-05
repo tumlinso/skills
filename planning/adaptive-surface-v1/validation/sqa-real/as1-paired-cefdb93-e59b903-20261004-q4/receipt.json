@@ -1,0 +1,411 @@
+{
+  "artifacts": {
+    "approval.json": "e13226093985ad3d1c0de3d9da65a63e51ea006a9ed0b925475990b13bfaedde",
+    "busy_admissions.json": "171cc58fff89e62be1081aa3992adca803da9659d42f4a792c50af34e896b2fd",
+    "checkpoint_before.json": "354e333785e06d309a406a913e3774b6ee7bcd9ba2a3bd75abe5e0c79b42b869",
+    "checkpoint_yielded.json": "24e8a957f308fd54b49abc5974434482a74ecc3c5e5bde1642350389af72a04a",
+    "cleanup.json": "72e2243cb8820ca800165a7ea5343afed5d11dead274d8ba0271d5a7d902d726",
+    "exact_after_eviction.json": "f2e7f4f72441e66a5856d16f88dd105ae4129371b62c56c8005bed35cd0ff9a3",
+    "failure.json": "bc1c177413b3f6354d02ebb840d7878ba8a249fe81dd718e6a2066de2d4406de",
+    "foreground.json": "4afec92e64f4a1e7515c0a54b3ef8f4332aa62852810bc964d1e96dd4d852d85",
+    "poll_after_eviction.json": "24e8a957f308fd54b49abc5974434482a74ecc3c5e5bde1642350389af72a04a",
+    "poll_starts_no_model.json": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "scout.json": "dbc74af14abd4dfd4ca17be5da7fe7bd266a945fae2956f469a17a89754e2ec3",
+    "scout_admission.json": "abf1ce7a5e10644bf756c7b4d01033aaf5a1db506a20144e9506511c0105e441",
+    "sessions.json": "df73cc7414be08a7bab3bc639c89e662888d1987ebfae8daf1871346870cbd5b",
+    "source_identity.json": "7a317594884bc57813cacd84122202d26b3578a5826ecbfc3ca9307d7a97efb5",
+    "turns.json": "bdd8644992a2b23a63bc5c5d1f422ff565270c2f8b11808a95da6c92aabe5d61",
+    "useful_while_busy.json": "750f995ad0f666755f51b78654d7edb5b6747cb86803cd1fd4775f260d9c5bd2"
+  },
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791152608.1203287,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791152524.8648593,
+          "processes": []
+        },
+        "owned_pid": 509531,
+        "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-d22c0cd39a52:402fe0a6-f9e8-47b3-a7b9-95596a09bff4",
+        "process_released": true,
+        "released": true
+      },
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791152605.4399617,
+          "processes": []
+        },
+        "owned_pid": 510113,
+        "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-aee56446277e:5647a863-c7b7-408c-9aa7-397bb555d43c",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "completed": false,
+  "format": "as1-paired-realproof/1",
+  "inference_artifact": "turns.json",
+  "journeys": {
+    "checkpoint": {
+      "artifact": "checkpoint.json",
+      "status": "failed"
+    },
+    "eviction": {
+      "artifact": "eviction.json",
+      "status": "failed"
+    },
+    "poll": {
+      "artifact": "poll.json",
+      "status": "failed"
+    },
+    "restart": {
+      "artifact": "restart.json",
+      "status": "failed"
+    },
+    "scout": {
+      "artifact": "scout.json",
+      "status": "failed"
+    },
+    "skill": {
+      "artifact": "skill.json",
+      "status": "failed"
+    }
+  },
+  "metrics": {
+    "real_turn_count": 25,
+    "total_active_seconds": 27.73599406100402,
+    "total_visible_output_bytes": 4624,
+    "total_visible_request_bytes": 182316,
+    "usage": [
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 1436,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1491
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 1420,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1475
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 1770,
+        "prompt_tokens_details": {
+          "cached_tokens": 1413
+        },
+        "total_tokens": 1834
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 2118,
+        "prompt_tokens_details": {
+          "cached_tokens": 1763
+        },
+        "total_tokens": 2173
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2464,
+        "prompt_tokens_details": {
+          "cached_tokens": 2111
+        },
+        "total_tokens": 2528
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2815,
+        "prompt_tokens_details": {
+          "cached_tokens": 2457
+        },
+        "total_tokens": 2879
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 3167,
+        "prompt_tokens_details": {
+          "cached_tokens": 2808
+        },
+        "total_tokens": 3231
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 1420,
+        "prompt_tokens_details": {
+          "cached_tokens": 1413
+        },
+        "total_tokens": 1475
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 1772,
+        "prompt_tokens_details": {
+          "cached_tokens": 1413
+        },
+        "total_tokens": 1836
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2123,
+        "prompt_tokens_details": {
+          "cached_tokens": 1765
+        },
+        "total_tokens": 2187
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2474,
+        "prompt_tokens_details": {
+          "cached_tokens": 2116
+        },
+        "total_tokens": 2538
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2828,
+        "prompt_tokens_details": {
+          "cached_tokens": 2467
+        },
+        "total_tokens": 2892
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 3180,
+        "prompt_tokens_details": {
+          "cached_tokens": 2821
+        },
+        "total_tokens": 3244
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 1420,
+        "prompt_tokens_details": {
+          "cached_tokens": 1413
+        },
+        "total_tokens": 1475
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 1766,
+        "prompt_tokens_details": {
+          "cached_tokens": 1413
+        },
+        "total_tokens": 1830
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2113,
+        "prompt_tokens_details": {
+          "cached_tokens": 1759
+        },
+        "total_tokens": 2177
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 2464,
+        "prompt_tokens_details": {
+          "cached_tokens": 2106
+        },
+        "total_tokens": 2519
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2812,
+        "prompt_tokens_details": {
+          "cached_tokens": 2457
+        },
+        "total_tokens": 2876
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 3164,
+        "prompt_tokens_details": {
+          "cached_tokens": 2805
+        },
+        "total_tokens": 3228
+      },
+      {
+        "completion_tokens": 69,
+        "prompt_tokens": 1791,
+        "prompt_tokens_details": {
+          "cached_tokens": 385
+        },
+        "total_tokens": 1860
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 2143,
+        "prompt_tokens_details": {
+          "cached_tokens": 1784
+        },
+        "total_tokens": 2198
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 2497,
+        "prompt_tokens_details": {
+          "cached_tokens": 2136
+        },
+        "total_tokens": 2552
+      },
+      {
+        "completion_tokens": 64,
+        "prompt_tokens": 2851,
+        "prompt_tokens_details": {
+          "cached_tokens": 2490
+        },
+        "total_tokens": 2915
+      },
+      {
+        "completion_tokens": 69,
+        "prompt_tokens": 3206,
+        "prompt_tokens_details": {
+          "cached_tokens": 2844
+        },
+        "total_tokens": 3275
+      },
+      {
+        "completion_tokens": 55,
+        "prompt_tokens": 3555,
+        "prompt_tokens_details": {
+          "cached_tokens": 3199
+        },
+        "total_tokens": 3610
+      }
+    ]
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-cefdb93-e59b903-20261004",
+    "fixture_commit": "1b60304a0f83d8cc0c7f344cd40122de1ae04957",
+    "helper_sha256": "59107c62d909142b6fd276cc139e3cd29de57a0a4b3cf7694e30054f148d7a9e",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "0cb31c565e02a5aa524ba6cff8af0a35f94246385fac53d692260573e519336b",
+    "pc_commit": "cefdb9389b9e948102bc972e2b38addf8eefa80f",
+    "release_sha256": "d8a2dba92af6251e410f7a3c7597f9d964f05919308cfb64228a2e4c1c188ebd",
+    "skills_commit": "e59b903d4603781bac907ee46b0327dfc403fb1e"
+  },
+  "status": "failed"
+}

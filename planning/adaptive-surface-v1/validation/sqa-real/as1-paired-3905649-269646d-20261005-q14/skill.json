@@ -1,0 +1,48 @@
+{
+  "alias": "iris-kite",
+  "attempt": 1,
+  "continuation": {
+    "detail": "extended",
+    "job_id": "job_6790d1548b0349d1852a2d4375ca1a74"
+  },
+  "excerpts": [
+    {
+      "authority": "direct original text",
+      "content": "Split instead when:\n",
+      "content_sha256": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32",
+      "id": "excerpt_0",
+      "line_end": 24,
+      "line_start": 24,
+      "prerequisites": [],
+      "reason": "This excerpt directly addresses V100 optimization by specifying fusion strategy when HBM writes occur, which is the core optimization challenge on V100",
+      "resource": "references/architectures/volta/native-v100-extreme.md",
+      "selection": 0,
+      "skill": "cuda",
+      "verbatim": true
+    }
+  ],
+  "freshness": {
+    "basis": "selected full-file hashes checked during this assembly only",
+    "checked_at": "2026-10-04T23:56:26.773156+00:00",
+    "max_age_seconds": 0
+  },
+  "job_id": "job_6790d1548b0349d1852a2d4375ca1a74",
+  "omissions": [
+    {
+      "continuation": "worker selection retained in job result",
+      "reason": "synthesis_budget"
+    }
+  ],
+  "packet_id": "pkt_158c70dc332549678627bd05f392d7b2",
+  "retained_dependencies": [],
+  "status": "partial",
+  "synthesis": {
+    "entailment_verified": false,
+    "excerpt_refs": [
+      "excerpt_0"
+    ],
+    "label": "local-agent synthesis; not authoritative source text",
+    "text": "The"
+  },
+  "unresolved": []
+}

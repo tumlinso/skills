@@ -1,0 +1,324 @@
+{
+  "artifacts": {
+    "approval.json": "17ce8bdcc44abcf6dbb849ce68182e8495802a25428a4e5043f4798f90dbc201",
+    "busy_admissions.json": "a9f1a953abf070f643866b583a7525913dfd6840028d48ddf2d65b417df2f218",
+    "checkpoint_before.json": "349099febdcd689d96a1ab01329ccf6f55569a653d89c498ec20dcee568a0d53",
+    "checkpoint_session.json": "5817ed45bc4414ad93c7bc058c401429fcf21e90815e88ac9fceaeb8c2fe7933",
+    "checkpoint_yielded.json": "40afeef076e7066e44e6ed2111860ebff15c9760e2e433524974825c74d46ed0",
+    "cleanup.json": "dec6f09664b988ed68d3213861511b8f6f7e03f6528b53c2c771196506041c80",
+    "exact_after_eviction.json": "7b78c361b4fbc44e31aaa350973d6bffc7a7e8230ffa7d33182c9d4f1e768857",
+    "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+    "failure.json": "08d1b1fa12b3ca81e5d753b18474cf6ac9920513e2a5bb44f21e38b93a6f47a4",
+    "foreground.json": "7fe64792c5151a6ce6c55b943433e4e85b9dfbf75cffbfffd4af15c43b0aedea",
+    "phase_order.json": "0e5c19c0d152f1f7e2d783b5f3d3dbdde75d9e71f7e31065f38326bb7140d1d9",
+    "poll_after_eviction.json": "40afeef076e7066e44e6ed2111860ebff15c9760e2e433524974825c74d46ed0",
+    "poll_starts_no_model.json": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "reused_skill_proof.json": "1d3d54e01e382b40baa68b0bfbeddec898bb05c56fe0be0d4aa8dab5999fd8de",
+    "rollback_fixture.json": "8ece8cdfb4e7b46fb236f285e97d949bf349165e751ac1781baa962b16cede85",
+    "scout.json": "431aab1ab764318e545fa13654fb91c3bac080d5bfd037f8e23e6212805c0c41",
+    "scout_admission.json": "9fd38334170b72e6298134650702793c43e0bedb31a494ca36679b241866df71",
+    "sessions.json": "55d51595f0c5cafbef2f67bc9de2ba64e83cc11e1bf1e72f87687a9906806a81",
+    "skill.json": "cb3f22a12df00faa1f7045cc251c971206132ed64188f24423752cabe167d161",
+    "skill_admission.json": "59a395d9d88dd89402737df1ce7c608eaebcfda06271913388dd71c0a3e65ae7",
+    "skill_job.json": "f77d2519c94e08028b60393c48f0dffade0353a326926339c2f9b4cfd1d23ffc",
+    "skill_metrics.json": "ceeec0cce262ada6a76719691b8532d1ee545597ad08f7899d9bb187f611625d",
+    "source_identity.json": "1d2350079acd5b3349b3a1b7dda2f71fd036a79167453d1613c4473ae39a4ab9",
+    "turns.json": "1686feed2e79d5544896a622528a0c5c829aa9727d38c8b8c7f435f52e8c2cd9",
+    "useful_while_busy.json": "cce38a2b256633d24072ababd8aeb88f41c0d39a6218942af5bffa7985bc1781"
+  },
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791158604.036594,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791158530.8840637,
+          "processes": []
+        },
+        "owned_pid": 530504,
+        "owner_id": "service:e383ba1ac3299394:core4-local-model-slot-ea4490c4b16a:7f975865-5fa4-4a48-976e-ab585412a848",
+        "process_released": true,
+        "released": true
+      },
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791158601.31598,
+          "processes": []
+        },
+        "owned_pid": 530975,
+        "owner_id": "service:e383ba1ac3299394:core4-local-model-slot-df8227f43776:2c93e414-44d6-4ffc-8ce0-824ad786599a",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "completed": false,
+  "format": "as1-paired-realproof/1",
+  "inference_artifact": "turns.json",
+  "journeys": {
+    "checkpoint": {
+      "artifact": "checkpoint.json",
+      "status": "failed"
+    },
+    "eviction": {
+      "artifact": "eviction.json",
+      "status": "failed"
+    },
+    "poll": {
+      "artifact": "poll.json",
+      "status": "failed"
+    },
+    "restart": {
+      "artifact": "restart.json",
+      "status": "failed"
+    },
+    "scout": {
+      "artifact": "scout.json",
+      "status": "failed"
+    },
+    "skill": {
+      "artifact": "skill.json",
+      "status": "failed"
+    }
+  },
+  "metrics": {
+    "real_turn_count": 13,
+    "total_active_seconds": 19.439672374013753,
+    "total_visible_output_bytes": 2825,
+    "total_visible_request_bytes": 91758,
+    "usage": [
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1620,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1685
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2020,
+        "prompt_tokens_details": {
+          "cached_tokens": 1573
+        },
+        "total_tokens": 2081
+      },
+      {
+        "completion_tokens": 60,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1664
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2213,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2274
+      },
+      {
+        "completion_tokens": 91,
+        "prompt_tokens": 2657,
+        "prompt_tokens_details": {
+          "cached_tokens": 2082
+        },
+        "total_tokens": 2748
+      },
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 1669
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2001,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2062
+      },
+      {
+        "completion_tokens": 97,
+        "prompt_tokens": 2445,
+        "prompt_tokens_details": {
+          "cached_tokens": 1870
+        },
+        "total_tokens": 2542
+      },
+      {
+        "completion_tokens": 65,
+        "prompt_tokens": 1604,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 1669
+      },
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 2001,
+        "prompt_tokens_details": {
+          "cached_tokens": 1557
+        },
+        "total_tokens": 2062
+      },
+      {
+        "completion_tokens": 97,
+        "prompt_tokens": 2446,
+        "prompt_tokens_details": {
+          "cached_tokens": 1870
+        },
+        "total_tokens": 2543
+      },
+      {
+        "completion_tokens": 70,
+        "prompt_tokens": 2340,
+        "prompt_tokens_details": {
+          "cached_tokens": 527
+        },
+        "total_tokens": 2410
+      },
+      {
+        "completion_tokens": 78,
+        "prompt_tokens": 2783,
+        "prompt_tokens_details": {
+          "cached_tokens": 2209
+        },
+        "total_tokens": 2861
+      }
+    ]
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004",
+    "fixture_commit": "40eff6e8f59dfc7673dd406812c470600881379f",
+    "helper_sha256": "26d202eb381a11600004e690b338fee8d86fcb77e8143d127fa37cf6bbb500a6",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
+    "pc_commit": "6d1a7324acd2d2297ea3bf4fa3471d25ac67e2be",
+    "release_sha256": "e971d0390f8fecbe3955aa12d33076aaf2c3d35d2876d155d5d99deeb03311bc",
+    "skills_commit": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
+  },
+  "status": "failed"
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "accepted": true,
+    "job_id": "job_b8a6d695893e4693897fc3e4285fab47",
+    "message": "Accepted. Continue other work and poll this ID later.",
+    "poll": {
+      "job_id": "job_b8a6d695893e4693897fc3e4285fab47"
+    },
+    "retry": false,
+    "status": "queued"
+  },
+  {
+    "accepted": true,
+    "job_id": "job_a2936aac35a74e3b993f526ef1024f48",
+    "message": "Accepted. Continue other work and poll this ID later.",
+    "poll": {
+      "job_id": "job_a2936aac35a74e3b993f526ef1024f48"
+    },
+    "retry": false,
+    "status": "queued"
+  },
+  {
+    "accepted": true,
+    "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784",
+    "message": "Queue busy. Your question is queued. Do not wait; continue reasoning or other useful work and ask again later using this ID.",
+    "poll": {
+      "job_id": "job_6d753c3ccfc14e26a33d2ae37279f784"
+    },
+    "retry": false,
+    "status": "queued"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "base_url": "http://127.0.0.1:8081/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:0220473be640221e:core4-local-model-slot-d84bea24f060:7a96d1a5-97d6-4a2a-b477-6f9fb1f0661f",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": false,
+    "server_pid": 520212,
+    "service_lease_id": "ff5108cd-0330-4f66-b548-cf3b298b1578",
+    "slot_id": "slot-d84bea24f060",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  }
+]

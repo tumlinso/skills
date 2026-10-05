@@ -1,0 +1,14 @@
+{
+  "after_attempt": 2,
+  "before_attempt": 1,
+  "dispatcher_after": {
+    "dispatcher": "running",
+    "durable": true,
+    "last_error": null
+  },
+  "dispatcher_before": "stopped",
+  "model_after_pid": 541242,
+  "model_before_pid": 540747,
+  "model_reloaded_independently": true,
+  "same_durable_db": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q14/jobs/jobs.sqlite3"
+}

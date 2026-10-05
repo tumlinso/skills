@@ -1,0 +1,4 @@
+{
+  "reason": "'NoneType' object has no attribute 'payload'",
+  "type": "AttributeError"
+}

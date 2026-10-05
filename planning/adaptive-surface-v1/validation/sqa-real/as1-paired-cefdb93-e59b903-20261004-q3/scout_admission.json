@@ -1,0 +1,10 @@
+{
+  "accepted": true,
+  "job_id": "job_1a291870b99b426b85adc1933e8091ab",
+  "message": "Accepted. Continue other work and poll this ID later.",
+  "poll": {
+    "job_id": "job_1a291870b99b426b85adc1933e8091ab"
+  },
+  "retry": false,
+  "status": "queued"
+}

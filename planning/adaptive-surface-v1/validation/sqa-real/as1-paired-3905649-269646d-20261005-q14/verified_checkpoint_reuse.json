@@ -1,0 +1,11 @@
+{
+  "after_attempt": 2,
+  "before_attempt": 1,
+  "no_repeated_source_read": true,
+  "preserved_observations": true,
+  "retained_packet_ids": [
+    "pkt_2952525bea4b49e58ed1d06e456a2728",
+    "pkt_01ad762dbe644904a373e1026dec8662"
+  ],
+  "unchanged_source_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331"
+}

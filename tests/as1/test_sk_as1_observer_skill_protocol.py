@@ -162,15 +162,20 @@ def test_invalid_final_feedback_cannot_checkpoint_after_supersession(fixture, su
     assert len(packets) == (2 if supersede == 'during_packet_commit' else 1)
 
 
-def test_multiple_json_finals_remain_parser_failure_without_validation_retry(fixture):
+def test_multiple_json_finals_are_repaired_whole_without_salvaging_prefix(fixture):
     root, runner, packets, checkpoints, worker = fixture
     entry, resource = prepare(root)
     retained = retained_entry(runner, entry, root)
-    backend = Backend([json.dumps(final()) + '\n' + json.dumps(final())])
-    result = worker(backend).run(skill_request(root, observations=[retained]))
-    assert result['status'] == 'partial' and result['reason'].startswith('Extra data')
-    assert len(backend.turns) == len(packets) == 1 and not checkpoints
-    assert result['observations'] == [retained]
+    extra_data = json.dumps(final()) + '\n' + json.dumps(final())
+    resource_call = cat(resource, root)
+    backend = Backend([extra_data, resource_call, skill_final(root)])
+    result = worker(backend).run(skill_request(root, observations=[retained], max_steps=3))
+    assert result['status'] == 'completed'
+    assert len(backend.turns) == 3 and len(packets) == 3
+    assert result['observations'][0] == retained
+    assert result['observations'][1]['public_tool_call'] == resource_call
+    first_feedback = [json.loads(m['content']) for m in backend.turns[1]['messages'] if m['role'] == 'user']
+    assert any(item.get('protocol_error') == 'invalid_json_object' for item in first_feedback)
 
 
 def test_rejected_final_packet_cannot_support_finding_even_after_resume(fixture):
@@ -200,7 +205,7 @@ def test_entry_denial_packet_cannot_support_source_finding_after_resume(fixture)
     from test_sk_as1_observer_entry import listing
     root, runner, packets, checkpoints, worker = fixture
     entry, resource = prepare(root)
-    denied = worker(Backend([listing(root)])).run(skill_request(root, max_steps=1))['observations'][0]
+    denied = worker(Backend([listing(root), final()])).run(skill_request(root, max_steps=2))['observations'][0]
     assert denied['accepted'] is False and denied['dispatched'] is False
     observed = retained_entry(runner, entry, root)
     invented = skill_final(root, 'SKILL.md')

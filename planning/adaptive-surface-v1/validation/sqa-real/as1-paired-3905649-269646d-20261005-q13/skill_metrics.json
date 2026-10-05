@@ -1,0 +1,7 @@
+{
+  "actual_reused_model_turns": 8,
+  "new_model_turns": 0,
+  "semantic_finding_verified": false,
+  "source_receipt_sha256": "202507e5d42822d3434d03097d257b83b1b199903b51744486cf3a7e841f98d1",
+  "status": "passed_for_source_provenance_only"
+}

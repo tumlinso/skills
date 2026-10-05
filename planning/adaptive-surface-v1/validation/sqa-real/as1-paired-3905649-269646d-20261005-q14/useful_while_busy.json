@@ -1,0 +1,56 @@
+{
+  "coverage": {
+    "complete": true,
+    "context_project_uuid": null,
+    "context_revision": null,
+    "observed_at": "2026-10-04T00:00:00Z",
+    "omissions": [],
+    "semantic_revision": 0
+  },
+  "data": {
+    "files": [
+      {
+        "content": "# SQA fixture\nPurpose: source-bound observer qualification.\n",
+        "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+        "exact": true,
+        "line_end": 2,
+        "line_start": 1,
+        "path": "README.md",
+        "revision": null,
+        "status": "ok"
+      },
+      {
+        "content": "def calculate_total(value):\n    return value + 1\n",
+        "content_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331",
+        "exact": true,
+        "line_end": 2,
+        "line_start": 1,
+        "path": "module.py",
+        "revision": null,
+        "status": "ok"
+      }
+    ],
+    "repository": "source",
+    "revision": null
+  },
+  "packet": "pkt_7a8a47c9d98f4de1a328bc601349469f",
+  "sources": [
+    {
+      "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+      "line_end": 2,
+      "line_start": 1,
+      "path": "README.md",
+      "project": "sqa",
+      "repository": "source"
+    },
+    {
+      "content_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331",
+      "line_end": 2,
+      "line_start": 1,
+      "path": "module.py",
+      "project": "sqa",
+      "repository": "source"
+    }
+  ],
+  "status": "ok"
+}

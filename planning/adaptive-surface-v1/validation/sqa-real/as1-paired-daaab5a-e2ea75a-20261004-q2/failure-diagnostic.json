@@ -1,0 +1,201 @@
+{
+  "all_outputs_repeat_literal_example": true,
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791151045.753167,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791151043.0748951,
+          "processes": []
+        },
+        "owned_pid": 498964,
+        "owner_id": "service:99bb899d176fbb79:core4-local-model-slot-b480b870b272:ffbf4330-c72b-4bcd-bdab-da32ce0d282e",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "counterevidence": "q1 real scout completed with retained module source evidence at attempt2 after owned model eviction/reload; exact-one-object added to user prompt in q2; no universal model-failure claim.",
+  "coverage_limits": "q2 never reached module checkpoint; real skill journey remains unexecuted. No productsource changed.",
+  "format": "as1-real-journey-failure/1",
+  "job": {
+    "attempt": 7,
+    "created_at": "2026-10-04T21:55:28.122350+00:00",
+    "evidence_packets": [
+      "pkt_825cfa9708c4402a92f75c25ae83f445",
+      "pkt_1546742f0cf74450a3b729ca34b74f73",
+      "pkt_da245460a4c24ca2ba4a57d4c57fd1b0",
+      "pkt_8d95f5f732d345a0a6dc3bb99bd26eb5",
+      "pkt_aa92385eddfe450989e0dd2ff764e59b",
+      "pkt_829fe060c9d249d1a7841742f07f7f0f",
+      "pkt_675a318412e44623be5066f7d294f46b",
+      "pkt_51df83cfc49f4ce49e4624155d2c6453",
+      "pkt_463c765fc8444a65b3a5732cdb03114d",
+      "pkt_5fb26de545e543a19034c7a7af7e098a",
+      "pkt_79f55541017c475bb27fb03e41e3101c",
+      "pkt_46c5d24647ae4d7b96ab10e421c6190f",
+      "pkt_0f50e38ece78433aa849438c2c2bd4ad",
+      "pkt_972e05ff06374ba9967e64472558125c",
+      "pkt_30837be108d34dbc8e5b304a0231c936",
+      "pkt_6fd77bc96ede4428bce08bbb45d91707",
+      "pkt_7e080cb154ed4f6da78e4902780e04be",
+      "pkt_ee9b2257c89b4b87b43cc2fee2ddfa5b",
+      "pkt_50c6109da98045b5a6c368c7fcff2e07",
+      "pkt_89d4d88602724442aebaf5609f4d50c9",
+      "pkt_c6b65986a526454c86893f4b8e2a28e4",
+      "pkt_318feb45e80944228b117bf0deab6e73",
+      "pkt_1273fe07c34c429987fc903afa13d012",
+      "pkt_1108f206352f4224a9bc7e8b2ddb21ee",
+      "pkt_23c0c9e4df8346bda95e9b5bb0aef2ce",
+      "pkt_68b93a9c27894e838f414b3a4ad2c128",
+      "pkt_959681a67c3c4769b9fffa1e51623e2d",
+      "pkt_09830f95bf294618b9739d5585765de1",
+      "pkt_9e18271990084f7190da55ae837fb848",
+      "pkt_a77cb0c932dd482b99cf4b2dadefa96e",
+      "pkt_4e0f4655d21f4a8e8697787f089fc1c9",
+      "pkt_e4ea49b1819544d8af654c300bf51514",
+      "pkt_abfa990ee6494c2cb1239b12c0effc83",
+      "pkt_f95da6c4c9ed45df89889c3357e0af4b"
+    ],
+    "findings": [],
+    "format": "pc-job/1",
+    "hints": [
+      "elm-pine"
+    ],
+    "job_id": "job_cff95d277acc4559907856d69084a09a",
+    "mode": "investigate",
+    "project": "sqa",
+    "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Use command with direct cat to read /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q2/project/module.py in cwd /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q2/project. Explain calculate_total using one finding citing its observed packet. Reuse retained verified observations after reconnect instead of reading an unchanged file again.",
+    "request_id": "scout",
+    "result_packet": null,
+    "scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "skill": null,
+    "status": "cancelled",
+    "unresolved_questions": []
+  },
+  "native_example_ref": "runtime-skills/local-coding-worker/local_worker/observer_runtime.py:256",
+  "native_retry_refs": [
+    "project_control/as1_jobs.py:257",
+    "project_control/as1_jobs.py:266",
+    "project_control/as1_jobs.py:412",
+    "project_control/as1_jobs.py:428",
+    "runtime-skills/local-coding-worker/local_worker/observer_runtime.py:334"
+  ],
+  "receipt_sha256": "3967bde4036333ba90a4a2d6e615d5549335d2927b55c51e0c4a9b49500e7401",
+  "repeated_output": "{\"tool\":\"command\",\"arguments\":{\"argv\":[\"pwd\"],\"cwd\":\"allowed path\"}}",
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004",
+    "fixture_commit": "ab4f6d54934a982dce2ed3232d70f7ffb7d81559",
+    "helper_sha256": "3b6479c11768214a39c8dd7a63d7373c6463b0aeef8af60049a7cbb58ff47c1a",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "99ebb05632b7768403e103bc32bb5f04885c86662272cef14bf83fb25e57ce8b",
+    "pc_commit": "daaab5aeb800390c529edfe976db03ad28c5b850",
+    "release_sha256": "f0aa9d267ccf4c5ad83f397a3c4c70e2329ce1b38d310ae31bcb96ca7caf92ad",
+    "skills_commit": "e2ea75a550f876ba0bd8836c0d1d47fd5aa13f7e"
+  },
+  "status": "failed",
+  "stop_action": "SIGINT to exact owned helper PID498843; native JobService.cancel fenced only owned q2 job; finally ownedbackend cleanup; helper exit130.",
+  "turn_count": 35
+}

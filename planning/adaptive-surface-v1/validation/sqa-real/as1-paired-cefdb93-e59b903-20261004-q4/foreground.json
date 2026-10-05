@@ -1,0 +1,46 @@
+{
+  "cleanup_receipts": [
+    {
+      "gpu_uuids": [
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      ],
+      "memory_baseline": {
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+      },
+      "memory_released": true,
+      "observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791152524.8648593,
+        "processes": []
+      },
+      "owned_pid": 509531,
+      "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-d22c0cd39a52:402fe0a6-f9e8-47b3-a7b9-95596a09bff4",
+      "process_released": true,
+      "released": true
+    }
+  ],
+  "result": {
+    "classification": "decision-result",
+    "evidence_id": "c9c3351c-1a8b-4df3-8537-e72cdc9ee93a",
+    "lease_receipt": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-cefdb93-e59b903-q4/controller/.todo-orchestrator/runtime/background-artifacts/foreground/fb2f3ee0-5545-4d6b-8ab5-970aa8e20c63/lease.json",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded",
+    "stderr_path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-cefdb93-e59b903-q4/controller/.todo-orchestrator/runtime/background-artifacts/foreground/fb2f3ee0-5545-4d6b-8ab5-970aa8e20c63/foreground.stderr.txt",
+    "stdout_path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-cefdb93-e59b903-q4/controller/.todo-orchestrator/runtime/background-artifacts/foreground/fb2f3ee0-5545-4d6b-8ab5-970aa8e20c63/foreground.stdout.txt"
+  },
+  "stderr": ""
+}

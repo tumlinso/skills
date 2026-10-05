@@ -1,0 +1,25 @@
+{
+  "_storage_root": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q14/controller",
+  "argv": [
+    "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005/bin/python",
+    "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005/runtime-skills/cuda/scripts/qualify_observer_residency.py",
+    "--foreground-check"
+  ],
+  "paths": [],
+  "preempt_grace_seconds": 90,
+  "project_root": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q14/project",
+  "recipe": "baseline",
+  "resources": {
+    "cpu_threads": 0,
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "gpus": 2,
+    "isolate_nvlink_domain": false,
+    "isolate_pcie_root": false,
+    "ram_bytes": 0
+  },
+  "schema_version": 1,
+  "timeout": 60
+}

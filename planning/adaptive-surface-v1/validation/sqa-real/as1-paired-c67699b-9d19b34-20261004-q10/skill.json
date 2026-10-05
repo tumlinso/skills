@@ -1,0 +1,8 @@
+{
+  "job_id": "job_de161a7024d64307ac84112e2a5ba5c8",
+  "reason": "1 validation error for SkillSelection\n  Input should be a valid dictionary or instance of SkillSelection [type=model_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type",
+  "status": "partial",
+  "unresolved": [
+    "Retry from retained observations"
+  ]
+}

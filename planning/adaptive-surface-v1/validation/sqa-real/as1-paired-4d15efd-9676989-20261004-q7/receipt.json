@@ -1,0 +1,199 @@
+{
+  "artifacts": {
+    "approval.json": "63b5e0c310a2de6759cb34f100f9c0a2ad28663a245c7e2692b8a26c863bb9cb",
+    "cleanup.json": "0df56307f9eaeafa617e4ea411ffa55b06b59586398f9e94d951f15984af4365",
+    "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+    "failure.json": "08d1b1fa12b3ca81e5d753b18474cf6ac9920513e2a5bb44f21e38b93a6f47a4",
+    "phase_order.json": "95447a0485df4c9176c1edfb9fc93a395567ad05179d927516bf76247ff707bd",
+    "preflight.json": "2092a7e6531fdc0f5483cae26d8b337d2245954fe89733e3bcc01f427d0e4c95",
+    "preflight_admission.json": "aa693bb076f299daf1ebd833469e9cab961712aca3dd1db9a5d635d9d3de60a4",
+    "sessions.json": "c5d2ee808f8aaf8387d18e62dd3ffcf7deb5480def9a89f5724e565684017a6b",
+    "source_identity.json": "4b6c6659b4b4ebc771eccc1c0fe520c6dff83ef0648d61e9c101a1f49d880ccc",
+    "turns.json": "d3e0105ecca7f7fa7bd7fd2f4b82f3033142ae56ca6eaedd90dcd5d67db74680"
+  },
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791155155.129522,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791155152.4100177,
+          "processes": []
+        },
+        "owned_pid": 520715,
+        "owner_id": "service:f99e0533d6c43015:core4-local-model-slot-3f270dc10d92:11b015ce-4f6b-4174-b673-165e23c6bad8",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "completed": false,
+  "format": "as1-paired-realproof/1",
+  "inference_artifact": "turns.json",
+  "journeys": {
+    "checkpoint": {
+      "artifact": "checkpoint.json",
+      "status": "failed"
+    },
+    "eviction": {
+      "artifact": "eviction.json",
+      "status": "failed"
+    },
+    "poll": {
+      "artifact": "poll.json",
+      "status": "failed"
+    },
+    "restart": {
+      "artifact": "restart.json",
+      "status": "failed"
+    },
+    "scout": {
+      "artifact": "scout.json",
+      "status": "failed"
+    },
+    "skill": {
+      "artifact": "skill.json",
+      "status": "failed"
+    }
+  },
+  "metrics": {
+    "real_turn_count": 3,
+    "total_active_seconds": 4.770550308006932,
+    "total_visible_output_bytes": 602,
+    "total_visible_request_bytes": 20440,
+    "usage": [
+      {
+        "completion_tokens": 62,
+        "prompt_tokens": 1586,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1648
+      },
+      {
+        "completion_tokens": 58,
+        "prompt_tokens": 1971,
+        "prompt_tokens_details": {
+          "cached_tokens": 1539
+        },
+        "total_tokens": 2029
+      },
+      {
+        "completion_tokens": 82,
+        "prompt_tokens": 2404,
+        "prompt_tokens_details": {
+          "cached_tokens": 1840
+        },
+        "total_tokens": 2486
+      }
+    ]
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004",
+    "fixture_commit": "9870863698c0304bfb6e0b7336bbc99225f33607",
+    "helper_sha256": "93e74a4f7719e9ad2275fcea902c190c318d545b865d2623ce4dd60f23c55d15",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "695981a69882c951487814425809659ec0abdccd428e329153a8acd6ce94d8e1",
+    "pc_commit": "4d15efd8343718b685b402d8a2a56359cb163cdf",
+    "release_sha256": "9245e2cbea232f333823bb62c42d1e86afcae50797d244c027ae29b76946530a",
+    "skills_commit": "9676989b4cbb64da007789f5594b03d9f7b182c8"
+  },
+  "status": "failed"
+}

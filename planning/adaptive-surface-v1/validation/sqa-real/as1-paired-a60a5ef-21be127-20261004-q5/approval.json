@@ -1,0 +1,12 @@
+{
+  "authorized": true,
+  "format": "as1-sqa-root-approval/1",
+  "prior_q4_receipt_sha256": "d470ad46708cb2fb5a2d6cd1836b9eb7a91cb1cdd6b6c26a29570bada9a0d9ce",
+  "resource_ids": [
+    "accelerator:GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+    "accelerator:GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+  ],
+  "root_claim": "SKclaim948",
+  "run_id": "SK-AS1-RUN-1",
+  "sequencing": "Root-approved HostCoordinator active-service admission and protected residency before model load; actual CUDA foreground admission independently preempts the owned model; no conflicting foreground lease during inference."
+}

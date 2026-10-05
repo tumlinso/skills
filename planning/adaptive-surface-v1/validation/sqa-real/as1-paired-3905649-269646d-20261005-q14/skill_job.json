@@ -1,0 +1,311 @@
+{
+  "job": {
+    "attempt": 1,
+    "created_at": "2026-10-04T23:55:42.834496+00:00",
+    "evidence_packets": [
+      "pkt_dc3b854cc0f04dba962b3a945f4e9ed7",
+      "pkt_cfac332b3bd5479ba86544e02d2967db",
+      "pkt_9db144f38b8a46958189aa19779521d9",
+      "pkt_c65264bff52d4d9f9c26a971f0307f4a",
+      "pkt_0d74bd618e92412684c72cf68b056805",
+      "pkt_cde1a242333b42f09938d400fbf2a45f",
+      "pkt_0dee74b1e4974e2189f406cb54589317",
+      "pkt_a8dcdfdd79714c70bf91b91a671dad3c"
+    ],
+    "findings": [
+      {
+        "evidence_packets": [
+          "pkt_0dee74b1e4974e2189f406cb54589317"
+        ],
+        "text": "For CUDA on V100, the installed entry and legacy routing map lead through Volta architecture. The key excerpt is from 'references/architectures/volta/native-v100-extreme.md' which states 'Fuse aggressively when the alternative writes intermediates back to HBM'. This directly answers the question about V100 optimization strategies."
+      }
+    ],
+    "format": "pc-job/1",
+    "hints": [],
+    "job_id": "job_6790d1548b0349d1852a2d4375ca1a74",
+    "mode": "skill",
+    "project": "sqa",
+    "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer, never consecutive objects. For CUDA on V100, read the installed entry and follow its legacy routing map into Volta, including references/legacy-skill-router.md and references/architectures/volta/router.md. Obtain exact native command observations of the relevant map resources. Select one modest exact excerpt from a visited map whose resource hash and line range are verified by your command evidence. Keep synthesis tiny, cite packets for findings, and name unvisited prerequisites as unresolved rather than inventing completeness.",
+    "request_id": "skill",
+    "result_packet": "pkt_509c0befd7c9436092aa33522cfdb563",
+    "scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "skill": "cuda",
+    "status": "completed",
+    "unresolved_questions": []
+  },
+  "observations": [
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.029829,
+      "exit_code": 0,
+      "packet_id": "pkt_dc3b854cc0f04dba962b3a945f4e9ed7",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "0e130b7d8a92441a2dbdfa1256baa3345d66c444bdf74eed500cf62cffde61a4",
+          "line_count": 88,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/SKILL.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "---\nname: cuda\ndescription: Primary CUDA skill for datacenter NVIDIA GPUs. Use for CUDA build, profiling, debugging, optimization, architecture and toolchain work, benchmarks, resource-aware execution, sparse/scientific workloads, Torch extensions, and CPU-to-CUDA porting across Volta, Ampere, Hopper, and Blackwell.\n---\n\n# CUDA\n\n## Repository workflow\n\nFor substantial repository work, use the `project-control` Codex profile.\nInvoke this skill only for the bounded CUDA operation and scope authorized by\nProject Control, when the user explicitly requests CUDA maintenance, or while\nProject Control itself is being debugged. MCP startup never imports GPU\nlibraries, starts a model, reserves a GPU, scans a repository, or runs a\nbenchmark.\n\nThe model owns the CUDA question: define the workload, success metric, important\noperation or symbol, and concrete optimization hypothesis. It also decides\nalgorithm, representation, fusion, precision, specialization, library versus\ncustom ownership, source edits, and whether evidence blocks the next decision.\n\nUse one high-level controller call:\n\n```bash\npython <skill-dir>/scripts/cuda_controller.py inspect --project <repo> --json\npython <skill-dir>/scripts/cuda_controller.py run --spec <spec.json|-> --json\npython <skill-dir>/scripts/cuda_controller.py background arm --spec <spec.json|-> --json\npython <skill-dir>/scripts/cuda_controller.py background enqueue --spec <spec.json|-> --json\n```\n\nArming is explicit and persistent. Once armed, relevant todo completion,\ncheckpoint, and handoff events wake private correctness/benchmark work without\npolling or changing todo output. An explicit `run` is foreground work: it\npreempts conflicting background activity and reserves its GPUs atomically.\nCampaign state stays project-local; physical GPU, profiler, interference-domain,\nand host-pressure interlocks are host-global.\nKeep builds in `benchmark.build_argv`; they run without a GPU lease. Background\ncorrectness repeats, fails fast, and skips only its dependent measurement chain,\nso unrelated watches keep using available devices. Comparable benchmark and\nprofiler timing remains serialized through the host mutex.\nUse `background backfill --spec ...` once for project-supplied historical\ntask/source-revision/benchmark mappings; it never rewrites todo history.\nRead `references/controller-background-contract.md` only when authoring these\ncontroller specs.\n\nRetrieve only what the current decision needs:\n\n```bash\npython <skill-dir>/scripts/cuda_controller.py evidence <id> --focus <topic> --json\n```\n\nFor guidance, native coder, mutator and scout agents read this installed\n`SKILL.md` through filesystem/command access, then follow\n`references/legacy-skill-router.md` to the architecture and narrow workload\nroute. For V100 circuit questions, also follow the nested\n`references/architectures/volta/v100_atlas/START_HERE.md` and `NEED_INDEX.md`;\nretain prerequisites and evidence/uncertainty links. Do not inject an overview\nor send native roles through observer read/skill adapters.\n\nCUDA is the mandatory primary skill for actual GPU resource work. Use the\nexisting controller foreground `run` interlock for testing/profiling/inference\nand coordinated GPU admission; environment masks alone are not reservations.\nThe observer's target public adapter is `skill(query?, skill?, hints?, ...)`.\nIts agent reads installed instructions and maps; `skill_context` graphs and\nindexes only accelerate navigation and never replace skill routing authority.\nProject Control owns access, durability, freshness, direct authoritative reads\nand provenance. Public alias retirement and deployed profile qualification\nremain PC-SURFACE/API-03/API-04 consumer checks, not claims made by this guidance.\nThe controller `guide` command remains a direct compatibility fallback.\nPublish materially applied routes with source identity alongside the ordinary\ncontext/handoff, following `../integrations/native-skill-routing.md`.\nEvidence summaries point to authoritative raw artifacts. Generated context views\nare read-only; edit canonical source only. The controller uses\ncpp-context-compiler for small semantic source slices and falls back to\n`split_cuda_translation_unit.py` when semantic retrieval is unavailable.\nFor accepted changes, prefer a performance-intent ctxpp task packet carrying\nchanged paths plus task and campaign identity before the slice/TU fallback.\n\nHealthy background results remain silent. Correctness failures, material\nregressions, missed targets, serious variance/contamination, and relevant\nbottlenecks are ranked and bounded. The model interprets conflicting evidence\nand decides promotion.\n\nPTX/SASS remains explicit-request-only. Existing scripts, architecture labels,\nroutes, `ok`/`partial`/`rerun`, benchmark contracts, debug capture behavior,\nand legacy mutex remain direct compatibility fallbacks. The complete prior\nrouter and all substantive guidance remain available in\n`references/legacy-skill-router.md` and the existing reference tree.\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.030516,
+      "exit_code": 0,
+      "packet_id": "pkt_cfac332b3bd5479ba86544e02d2967db",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "2d5d7dbb0fef393b3b87e3e62fd0c49444341e714f0260f410c083673420c26d",
+          "line_count": 161,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/legacy-skill-router.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "---\nname: cuda\ndescription: Primary CUDA skill for datacenter NVIDIA GPUs. Use for CUDA build, profiling, debugging, low-level optimization, kernel-structure decisions, memory fit, topology, host-device pipeline work, Tensor Core routing, request-only PTX guidance, CPU-to-CUDA porting, sparse scientific workloads, Torch extensions, and benchmark design on Volta/V100, Ampere/A100, Hopper/H100, Blackwell/B100-B200, and GB200 NVL72 deployments. Prefer this over the legacy `cuda-v100` shim for all active CUDA work.\n---\n\n# CUDA\n\nPublic router for datacenter CUDA work.\n\nUse `cuda`, not `cuda-v100`, unless the user explicitly asks for the legacy\nlabel.\n\nIf the user is choosing a model family for the native Volta machine, route\nthrough `v100-model-design` first, then return here for implementation.\n\nRoute in this order:\n\n1. choose system when topology or deployment shape matters\n2. choose architecture family\n3. choose one bottleneck route\n4. read one micro-router\n5. read a deep manual only if the micro-router still says unresolved\n\nProfiler and benchmark artifacts come first. Read summaries before raw logs.\n\n## System First\n\n| If the task sounds like... | Start here |\n| --- | --- |\n| \"this is my current V100 box\", \"optimize for my 4xV100 host\", \"benchmark on the native machine\" | `references/systems/native.md` |\n| \"this will deploy on GB200 NVL72\", \"Grace-Blackwell topology\", \"deployment collectives\" | `references/systems/gb200-nvl72.md` |\n\n## Architecture Second\n\n| If the task sounds like... | Start here |\n| --- | --- |\n| \"V100\", \"Volta\", \"sm_70\", \"native path\" | `references/architectures/volta/router.md` |\n| \"A100\", \"Ampere\", \"sm_80\", \"TF32\", \"`cp.async`\", \"structured sparsity\" | `references/architectures/ampere/router.md` |\n| \"H100\", \"Hopper\", \"sm_90\", \"TMA\", \"thread block clusters\", \"FP8\" | `references/architectures/hopper/router.md` |\n| \"B100\", \"B200\", \"Blackwell\", \"sm_100\", \"FP4\", \"GB200 deployment\" | `references/architectures/blackwell/router.md` |\n\n## Common Doctrine\n\nLoad these only for cross-family structure questions.\n\n- `references/common/code-organization.md` for one-kernel-per-TU rules, dense\n  machine-facing comments, low-level dump hygiene, and generated-code layout.\n- `references/common/diagnostics-workflow.md` for summary-first profiling,\n  debugging, sanitizer, and dump-filtering workflows.\n- `references/common/compute-libraries.md` for choosing host-launched CUDA\n  libraries, MathDx in-kernel device extensions, CUTLASS, CUB/CCCL, NCCL,\n  NVSHMEM, or custom CUDA.\n\n## Ground Rules\n\n1. Optimize for the actual architecture.\n   - Check Tensor Core eligibility before accepting a regular FP path.\n   - Prefer Tensor Core-capable libraries when the mapping is clean.\n   - Prefer custom CUDA when fusion removes HBM traffic, launch trains, or\n     forced library glue.\n   - On Volta custom-op work, escalate earlier to owned Tensor Core kernels\n     once the mapping is stable and HBM-pass removal or fused tile ownership is\n     the real win.\n2. Keep builds and artifacts narrow.\n   - Build only the target architecture while tuning.\n   - Keep one hot kernel per TU when dump or profiler work is likely.\n   - Use family-local build helpers instead of fat binaries.\n3. Prefer script-backed diagnostics.\n   - `nsys` for timeline, overlap, pipeline, topology, launch trains.\n   - `ncu` for one representative hot kernel.\n   - `compute-sanitizer` before `cuda-gdb` for memory, race, sync, init.\n   - Filter dumps before reading them.\n4. PTX stays request-only.\n   - Do not route into PTX unless explicitly asked.\n   - Isolate the hot path first.\n   - Dump only the relevant symbol or micro-primitive.\n\n## Scripts\n\nPrefer scripts over raw artifact reading.\n\n### Shared\n\n- `scripts/common/recommend_cuda_route.py` maps benchmark or profiler summaries\n  to one narrow next route and reference path.\n- `scripts/common/emit_arch_build_matrix.py` emits narrow `nvcc` gencode flags.\n- `scripts/common/check_single_kernel_tu.py` checks whether a TU is safe for\n  low-level inspection or needs splitting.\n- `scripts/common/filter_objdump_sections.py` keeps only the relevant symbol and\n  memory or branch lines from objdump-style dumps.\n- `scripts/common/summarize_cuda_diagnostics.py` merges compact profiler,\n  benchmark, debugger, and dump summaries into one short report.\n\n### Profiling\n\n- `scripts/profile_nsys.sh`\n- `scripts/profile_ncu.sh`\n- `scripts/combine_benchmark_summaries.py`\n\n### Crash\n\n- `scripts/debug_crash.sh`\n- `scripts/debug_compute_sanitizer.sh`\n- `scripts/debug_cuda_gdb.sh`\n\n### Low-Level\n\n- `scripts/dump_ptx_hotspot.sh`\n- `scripts/split_cuda_translation_unit.py`\n\n### Build\n\n- `scripts/architectures/volta/emit_gencode.py`\n- `scripts/architectures/volta/emit_profile_build.py`\n- `scripts/architectures/volta/summarize_ptxas_verbose.py`\n- `scripts/architectures/volta/summarize_sass_hotspot.py`\n- `scripts/architectures/volta/gen_native_bench_matrix.py`\n- `scripts/architectures/ampere/emit_gencode.py`\n- `scripts/architectures/hopper/emit_gencode.py`\n- `scripts/architectures/blackwell/emit_gencode.py`\n- `scripts/systems/native/emit_native_build_flags.py`\n- `scripts/systems/gb200-nvl72/emit_gb200_build_flags.py`\n\n## Output Requirements\n\nBe explicit about:\n\n- which system route was chosen and why\n- which architecture family was chosen and why\n- which micro-router was chosen and why\n- whether the workload is Tensor Core-eligible and why\n- whether the chosen route is Tensor Core-capable library-backed, Tensor\n  Core-capable custom-kernel, or regular custom-kernel\n- whether the workload is limited by PCIe, HBM traffic, occupancy, register\n  pressure, launch count, branch behavior, or communication topology\n- whether the code is still CPU-centric and what decomposition change is needed\n  before low-level tuning\n- whether the binary should be architecture-specific for the current step\n- whether the hot path is already isolated enough for PTX, SASS, or objdump work\n- which memory tier should hold the critical intermediates\n- whether fusion is required, optional, or now too expensive\n- whether the answer came from compact summaries or required raw-artifact\n  inspection\n- which reference informed the recommendation\n\n## Hard Constraints\n\n- Do not let general multi-architecture guidance weaken the native Volta route.\n- Do not treat H200 as a separate architecture route in this first pass.\n- Do not recommend consumer-GPU doctrine when the user said datacenter cards.\n- Do not inflate routing by loading broad manuals before a micro-router or\n  script-backed summary has failed.\n- Do not collapse everything into one fat binary when narrow builds would make\n  tuning or debugging easier.\n- Do not fall back to a regular FP kernel for dense or blocked math before\n  checking whether a Tensor Core-capable path should own it.\n- Do not treat all divergence as wrong; compare it against extra launches,\n  memory traffic, and specialization cost.\n- Do not use PTX to skip higher-level decomposition, layout, or fusion choices.\n- Do not port CPU-centric code literally to CUDA when the real win requires a\n  new boundary or layout.\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.031386,
+      "exit_code": 0,
+      "packet_id": "pkt_9db144f38b8a46958189aa19779521d9",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "3ea24c6f691113be2bfa956a21e14873c87d9ed7c4b4cc4df8b2b2e0589fc363",
+          "line_count": 66,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/architectures/volta/router.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "# Volta Router\n\nAssume **Tesla V100 16 GB, `sm_70`**, usually on the native 4xV100 host.\n\nUse this route for native Volta behavior, V100-specific tuning, or `sm_70`\nimplementation questions.\n\nRoute narrowly. Read one row, then one micro-router, then one deep manual only\nif still unresolved.\n\nIf benchmark or profiler summaries already exist, run\n`scripts/common/recommend_cuda_route.py --arch volta ...` before opening more\ndocs.\n\nNative topology:\n\n- fast pair: `0 <-> 2`\n- fast pair: `1 <-> 3`\n- worst steady-state paths: `0 <-> 3`, `1 <-> 2`\n\nRules:\n\n1. Prefer native Volta paths, not generic CUDA median doctrine.\n2. Treat repeated HBM passes as a first-class loss.\n3. Use summaries before raw reports.\n4. Keep the build narrow to `sm_70`.\n\n## Choose Your Path\n\n| If the task sounds like... | Start here | Then load only if needed |\n| --- | --- | --- |\n| \"make native V100 faster\", \"mixed glue-heavy path\", \"not sure which native loss dominates\" | `references/architectures/volta/routes/native.md` | `references/architectures/volta/native-v100-extreme.md` |\n| \"fuse or split\", \"divergence vs launches\", \"specialize or bin\", \"graphs vs fusion\" | `references/architectures/volta/routes/fusion.md` | `references/addendum-kernel-mechanics.md`, `references/roofline-launch-bound-patterns.md` |\n| \"one kernel is hot\", \"Nsight Compute limiter\", \"register pressure\", \"spills\", \"shared memory too high\" | `references/architectures/volta/routes/hot-kernel.md` | `references/addendum-kernel-roofline-lab.md`, `references/architectures/volta/register-pressure-and-occupancy.md`, `references/v100_cuda_cpp_optimize.md` |\n| \"cuBLAS\", \"cuSPARSE\", \"cuDNN\", \"CUTLASS\", \"CUB\", \"NVIDIA library\", \"library or custom CUDA\" | `references/common/compute-libraries.md` | `references/architectures/volta/routes/tensor.md`, `references/v100_cuda_cpp_optimize.md` |\n| \"Tensor Cores\", \"WMMA\", \"CUTLASS\", \"dense blocked custom op\", \"Tensor Cores not firing\" | `references/architectures/volta/routes/tensor.md` | `references/addendum-tensor-core-routing.md`, `references/volta-tensor-core-low-level.md` |\n| \"PyTorch C++/CUDA op\", \"extension boundary\", \"custom op on V100\" | `references/architectures/volta/routes/torch-op.md` | `references/addendum-torch-extensions.md`, `references/torch-extension-playbook.md` |\n| \"benchmark loop\", \"profile-build\", \"summary-first benchmarking\", \"standardize benchmarks\" | `references/architectures/volta/routes/benchmark.md` | `references/architectures/volta/native-benchmark-loop.md`, `references/benchmark-standardization.md` |\n| \"it does not fit\", \"buffers exploded\", \"batch collapsed\" | `references/addendum-memory-budgeting.md` | `references/memory-accounting.md`, `references/memory-fit-strategy.md`, `references/v100_programming_guide.md` |\n| \"GPU is idle\", \"HtoD dominates\", \"pipeline starving device\" | `references/addendum-host-device-pipeline.md` | `references/pipeline-bottlenecks.md`, `references/pipeline-overlap-rules.md`, `references/v100_profiling_interpretation.md` |\n| \"DDP or NCCL is slow\", \"which ranks go where\", \"multi-GPU scaling is bad\" | `references/addendum-ddp-topology.md` | `references/ddp-topology-playbook.md`, `references/v100_programming_guide.md` |\n| \"it crashes\", \"illegal memory access\", \"compute-sanitizer\", \"cuda-gdb\" | `references/addendum-crash-debugging.md` | `references/compute-sanitizer-playbook.md`, `references/cuda-gdb-playbook.md`, `references/crash-signature-map.md` |\n| \"How do I port CPU-centric code to CUDA?\" | `references/addendum-cpu-porting.md` | `references/cpu-porting-decision-tree.md`, `references/cpu-to-cuda-rewrite-patterns.md`, `references/cpu-porting-sparse-bio.md` |\n| \"I explicitly want PTX guidance\", \"show me PTX or SASS\" | `references/addendum-ptx-routing.md` | `references/architectures/volta/sass-and-ptx-triage.md`, `references/ptx-volta-extreme.md` |\n| \"Should this use NVHPC, OpenACC, OpenMP target, or stdpar?\" | `references/addendum-nvhpc-cpp.md` | `references/nvhpc-tradeoffs.md`, `references/v100_cuda_cpp_optimize.md` |\n| \"This is sparse omics or bio data\" | `references/addendum-bio-data-layouts.md` | `references/v100_bioinformatics_guide.md` |\n| \"I need a general V100 path\" | `references/architectures/volta/routes/native.md` | `references/v100_programming_guide.md` |\n\n## Scripts\n\n- `scripts/common/recommend_cuda_route.py`: map benchmark or profiler summaries to one next route\n- `scripts/profile_nsys.sh`: timeline and setup summary\n- `scripts/profile_ncu.sh`: hot-kernel counter summary\n- `scripts/debug_crash.sh`, `scripts/debug_compute_sanitizer.sh`, `scripts/debug_cuda_gdb.sh`: crash triage\n- `scripts/dump_ptx_hotspot.sh`, `scripts/split_cuda_translation_unit.py`: explicit PTX/SASS isolation\n- `scripts/architectures/volta/emit_profile_build.py`, `scripts/architectures/volta/summarize_ptxas_verbose.py`, `scripts/architectures/volta/summarize_sass_hotspot.py`, `scripts/architectures/volta/gen_native_bench_matrix.py`: narrow Volta helpers\n\n## Output\n\nBe explicit about:\n\n- whether the route assumed native V100 `sm_70`\n- which micro-router owned the first decision\n- whether benchmark, `nsys`, `ncu`, or dump evidence drove the call\n- whether the path stays library-backed, fused custom CUDA, CUTLASS, WMMA, or another owner\n- whether HBM traffic, launch trains, register pressure, Tensor routing, or topology dominated first\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "coverage": {
+        "complete": false,
+        "context_project_uuid": null,
+        "context_revision": null,
+        "observed_at": "2026-10-04T00:00:00Z",
+        "omissions": [
+          {
+            "reason": "semantic_context_extension_unavailable"
+          }
+        ],
+        "semantic_revision": 0
+      },
+      "data": {
+        "coverage": "registered_graph_source_symbol_lexical_live; not impact closure",
+        "notes": [],
+        "scope": {
+          "external": true,
+          "provenance": "coarse_volatile",
+          "roots": [
+            "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+            "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+          ]
+        },
+        "semantic": {
+          "clusters": [],
+          "next_inspection_targets": [
+            {
+              "kind": "source_context",
+              "reason": "no_current_query_connected_evidence",
+              "target": "V100 CUDA optimization Volta architecture"
+            }
+          ],
+          "no_strong_architectural_match": true,
+          "question": "V100 CUDA optimization Volta architecture",
+          "risks_and_contradictions": [
+            {
+              "authority_label": "missing_evidence",
+              "kind": "missing_operational_authority",
+              "reason": "todo_workflow_semantic_unavailable"
+            }
+          ]
+        },
+        "skill_uses": [],
+        "source": [
+          {
+            "live_fallback": [],
+            "origin": "lexical_candidate",
+            "paths": [],
+            "repository": "source",
+            "source": {
+              "continuation_cursor": null,
+              "counts": {
+                "considered": 1,
+                "returned": 1
+              },
+              "repository": "source",
+              "result_items": {
+                "considered": 0,
+                "returned": 0
+              },
+              "source_commit": "64a6c217fa10dd38a2c03b24432f41644affdd42",
+              "source_freshness": "working_tree",
+              "source_selector": "working_tree",
+              "targets": [
+                {
+                  "kind": "text",
+                  "matches": [],
+                  "source": "private_lexical_index",
+                  "target": "V100 CUDA optimization Volta architecture"
+                }
+              ],
+              "workflow_mapping": [],
+              "worktree": {
+                "branch": "main",
+                "dirty": false,
+                "id": "wt-8eab7ee2ae8c7a34"
+              }
+            }
+          }
+        ]
+      },
+      "packet": "pkt_f207d706650a4ff18bb748623e05e302",
+      "packet_id": "pkt_c65264bff52d4d9f9c26a971f0307f4a",
+      "sources": [],
+      "status": "partial"
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.030884,
+      "exit_code": 0,
+      "packet_id": "pkt_0d74bd618e92412684c72cf68b056805",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "status": "completed",
+      "stderr": "",
+      "stdout": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/architectures/volta/routes/:\nbenchmark.md\nfusion.md\nhot-kernel.md\nnative.md\ntensor.md\ntorch-op.md\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.028579,
+      "exit_code": 0,
+      "packet_id": "pkt_cde1a242333b42f09938d400fbf2a45f",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "7a49dbab92e432b7162152c30e83515d9e006741c41e24b1208675d8e22f14b0",
+          "line_count": 14,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/architectures/volta/routes/native.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "# Volta Native Route\n\nUse for generic native-V100 optimization when the bottleneck is not yet locked.\n\nDo first:\n\n1. If `summary.json` artifacts already exist, run `scripts/common/recommend_cuda_route.py --arch volta ...` and load only the returned route.\n2. If the loss is repeated HBM passes or launch trains, load `references/architectures/volta/routes/fusion.md`.\n3. If one steady-state kernel is already dominant, load `references/architectures/volta/routes/hot-kernel.md`.\n4. If dense or blocked math should be on Tensor Cores, load `references/architectures/volta/routes/tensor.md`.\n5. If the issue is pipeline, topology, memory fit, or crash class, stop here and switch to the matching small addendum.\n\nLoad `references/architectures/volta/native-v100-extreme.md` only when the path\nis still mixed after the route is classified.\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.030864,
+      "exit_code": 0,
+      "packet_id": "pkt_0dee74b1e4974e2189f406cb54589317",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32",
+          "line_count": 68,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/architectures/volta/native-v100-extreme.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "# Native V100 Extreme Optimization\n\nUse this route when the goal is to make the native V100 path better than the\nold `cuda-v100` compatibility shim.\n\n## Native Volta Doctrine\n\n1. Fuse aggressively when the alternative writes intermediates back to HBM.\n2. Keep sparse and glue-heavy paths custom early.\n3. Split only when registers, occupancy, or a library boundary force it.\n4. Build `sm_70` only while doing deep native tuning.\n5. Keep one hot kernel per TU when deep inspection is likely.\n6. Summarize ptxas and SASS signals before reading raw dumps.\n\n## Fusion Bias\n\nFuse on Volta when:\n\n- extra passes would round-trip through HBM\n- launch count is a visible limiter\n- the working set is irregular enough that library handoff adds overhead\n- the intermediate state can stay in registers or shared memory\n\nSplit instead when:\n\n- register pressure causes sustained spill or occupancy collapse\n- one stage clearly belongs to cuBLAS, cuSPARSE, cuDNN, or NCCL\n- synchronization boundaries already exist\n- the fused kernel becomes too wide to inspect or benchmark sanely\n\n## Code Shape Rules\n\n- One hot kernel per `.cu` when profiler or dump work is expected.\n- Put lane-role contracts, fragment layouts, and iterator invariants in narrow\n  headers.\n- Use short comments only to point at behavior-sensitive files or constraints.\n- Record accepted performance incursions explicitly.\n\n## Memory And Branch Notes\n\nFor every serious native kernel, record:\n\n- which intermediates stay in registers\n- which intermediates stay in shared memory\n- which values intentionally round-trip through HBM\n- whether divergence is intentional and cheaper than specialization\n- where branch shape changes with row bins, tile classes, or sparse structure\n\n## Native Debug And Dump Loop\n\n1. Run `scripts/common/check_single_kernel_tu.py`.\n2. Split with `scripts/split_cuda_translation_unit.py` if needed.\n3. Emit a narrow profile build with `scripts/architectures/volta/emit_profile_build.py`.\n4. Profile representative runs first.\n5. Dump PTX or SASS only on the isolated kernel.\n6. Summarize ptxas chatter with `scripts/architectures/volta/summarize_ptxas_verbose.py`.\n7. Summarize filtered SASS with `scripts/architectures/volta/summarize_sass_hotspot.py`.\n8. Filter objdump-style output with `scripts/common/filter_objdump_sections.py` only if the summaries still leave the decision unclear.\n\n## Load Next\n\n- `references/addendum-kernel-mechanics.md`\n- `references/addendum-kernel-roofline-lab.md`\n- `references/addendum-ptx-routing.md`\n- `references/common/code-organization.md`\n- `references/architectures/volta/fusion-and-specialization.md`\n- `references/architectures/volta/register-pressure-and-occupancy.md`\n- `references/architectures/volta/native-benchmark-loop.md`\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda",
+      "duration_seconds": 0.030373,
+      "exit_code": 0,
+      "packet_id": "pkt_a8dcdfdd79714c70bf91b91a671dad3c",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q11/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32",
+          "line_count": 68,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004/runtime-skills/cuda/references/architectures/volta/native-v100-extreme.md"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "# Native V100 Extreme Optimization\n\nUse this route when the goal is to make the native V100 path better than the\nold `cuda-v100` compatibility shim.\n\n## Native Volta Doctrine\n\n1. Fuse aggressively when the alternative writes intermediates back to HBM.\n2. Keep sparse and glue-heavy paths custom early.\n3. Split only when registers, occupancy, or a library boundary force it.\n4. Build `sm_70` only while doing deep native tuning.\n5. Keep one hot kernel per TU when deep inspection is likely.\n6. Summarize ptxas and SASS signals before reading raw dumps.\n\n## Fusion Bias\n\nFuse on Volta when:\n\n- extra passes would round-trip through HBM\n- launch count is a visible limiter\n- the working set is irregular enough that library handoff adds overhead\n- the intermediate state can stay in registers or shared memory\n\nSplit instead when:\n\n- register pressure causes sustained spill or occupancy collapse\n- one stage clearly belongs to cuBLAS, cuSPARSE, cuDNN, or NCCL\n- synchronization boundaries already exist\n- the fused kernel becomes too wide to inspect or benchmark sanely\n\n## Code Shape Rules\n\n- One hot kernel per `.cu` when profiler or dump work is expected.\n- Put lane-role contracts, fragment layouts, and iterator invariants in narrow\n  headers.\n- Use short comments only to point at behavior-sensitive files or constraints.\n- Record accepted performance incursions explicitly.\n\n## Memory And Branch Notes\n\nFor every serious native kernel, record:\n\n- which intermediates stay in registers\n- which intermediates stay in shared memory\n- which values intentionally round-trip through HBM\n- whether divergence is intentional and cheaper than specialization\n- where branch shape changes with row bins, tile classes, or sparse structure\n\n## Native Debug And Dump Loop\n\n1. Run `scripts/common/check_single_kernel_tu.py`.\n2. Split with `scripts/split_cuda_translation_unit.py` if needed.\n3. Emit a narrow profile build with `scripts/architectures/volta/emit_profile_build.py`.\n4. Profile representative runs first.\n5. Dump PTX or SASS only on the isolated kernel.\n6. Summarize ptxas chatter with `scripts/architectures/volta/summarize_ptxas_verbose.py`.\n7. Summarize filtered SASS with `scripts/architectures/volta/summarize_sass_hotspot.py`.\n8. Filter objdump-style output with `scripts/common/filter_objdump_sections.py` only if the summaries still leave the decision unclear.\n\n## Load Next\n\n- `references/addendum-kernel-mechanics.md`\n- `references/addendum-kernel-roofline-lab.md`\n- `references/addendum-ptx-routing.md`\n- `references/common/code-organization.md`\n- `references/architectures/volta/fusion-and-specialization.md`\n- `references/architectures/volta/register-pressure-and-occupancy.md`\n- `references/architectures/volta/native-benchmark-loop.md`\n",
+      "timed_out": false,
+      "truncated": false
+    }
+  ],
+  "status": "ok"
+}

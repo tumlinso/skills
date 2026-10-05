@@ -1,0 +1,312 @@
+{
+  "attempt": "q5",
+  "cleanup_checks": {
+    "approved_vram_zero": true,
+    "exact_approved_devices": true,
+    "no_approved_apps": true,
+    "no_owned_leases": true,
+    "no_owned_slots": true,
+    "observation_available": true,
+    "protected_start_identity_preserved": true,
+    "unrelated_preserved": true
+  },
+  "cleanup_errors": [],
+  "confirmed": [
+    "Installed stage-aware continuation instruction and progress are present in captured native requests.",
+    "Captured requests contain exact native command stdout, source hashes and packet IDs for already-read files.",
+    "Model repeatedly requests the same direct cat instead of final evidence-backed answer.",
+    "Six-step exhaustion returns terminal partial results and does not retry unboundedly.",
+    "Initial source checkpoint, actual host-global foreground preemption and independent model/dispatcher reload executed.",
+    "All approved device/process/lease and protected service identity cleanup checks passed."
+  ],
+  "counterevidence": [
+    "Q1 earlier source generated a correct source-cited resumed scout answer, so this is not a general claim that the approved model cannot answer.",
+    "Current source fixed placeholder roots and terminal budget semantics.",
+    "Provider transport forwards normalized captured system/user messages; current issue is not demonstrated missing messages."
+  ],
+  "coverage": "Read-only private disposable broker DB and captured executed native turn artifacts; no canonical Todo read/write for this diagnostic.",
+  "format": "as1-sqa-real-failure-diagnostic/1",
+  "helper_backup": "planning/adaptive-surface-v1/scripts/qualify_real_journeys_q5.py",
+  "inferences": [
+    "Tool-first grammar examples and stateless system/user JSON conversation framing may bias repeated tool selection; not confirmed causal explanation."
+  ],
+  "metrics": {
+    "real_turn_count": 26,
+    "total_active_seconds": 35.81429867697443,
+    "total_visible_output_bytes": 4631,
+    "total_visible_request_bytes": 213648,
+    "usage": [
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 1554,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1615
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 1852,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 1909
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 71,
+        "prompt_tokens": 1970,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2041
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2328,
+        "prompt_tokens_details": {
+          "cached_tokens": 1939
+        },
+        "total_tokens": 2385
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2688,
+        "prompt_tokens_details": {
+          "cached_tokens": 2297
+        },
+        "total_tokens": 2745
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3046,
+        "prompt_tokens_details": {
+          "cached_tokens": 2657
+        },
+        "total_tokens": 3103
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3404,
+        "prompt_tokens_details": {
+          "cached_tokens": 3015
+        },
+        "total_tokens": 3461
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 1537
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1969,
+        "prompt_tokens_details": {
+          "cached_tokens": 1638
+        },
+        "total_tokens": 2035
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2328,
+        "prompt_tokens_details": {
+          "cached_tokens": 1938
+        },
+        "total_tokens": 2385
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2689,
+        "prompt_tokens_details": {
+          "cached_tokens": 2297
+        },
+        "total_tokens": 2746
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3048,
+        "prompt_tokens_details": {
+          "cached_tokens": 2658
+        },
+        "total_tokens": 3105
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3405,
+        "prompt_tokens_details": {
+          "cached_tokens": 3017
+        },
+        "total_tokens": 3462
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 1537
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 1971,
+        "prompt_tokens_details": {
+          "cached_tokens": 1638
+        },
+        "total_tokens": 2028
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 2326,
+        "prompt_tokens_details": {
+          "cached_tokens": 1940
+        },
+        "total_tokens": 2392
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2678,
+        "prompt_tokens_details": {
+          "cached_tokens": 2295
+        },
+        "total_tokens": 2735
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3036,
+        "prompt_tokens_details": {
+          "cached_tokens": 2647
+        },
+        "total_tokens": 3093
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 3393,
+        "prompt_tokens_details": {
+          "cached_tokens": 3005
+        },
+        "total_tokens": 3459
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2216,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2273
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2579,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2636
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2943,
+        "prompt_tokens_details": {
+          "cached_tokens": 2548
+        },
+        "total_tokens": 3000
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3306,
+        "prompt_tokens_details": {
+          "cached_tokens": 2912
+        },
+        "total_tokens": 3363
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3664,
+        "prompt_tokens_details": {
+          "cached_tokens": 3275
+        },
+        "total_tokens": 3721
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 4025,
+        "prompt_tokens_details": {
+          "cached_tokens": 3633
+        },
+        "total_tokens": 4082
+      }
+    ]
+  },
+  "native_jobs": [
+    {
+      "attempt": 2,
+      "evidence_packet_count": 8,
+      "job_id": "job_cc465d3ac7fd4654b5fe29429f81fd9d",
+      "mode": "investigate",
+      "status": "partial",
+      "unresolved_questions": [
+        "The command/tool step budget was exhausted before an answer was produced; which retained observations resolve the supplied question, and what remains unverified?"
+      ]
+    },
+    {
+      "attempt": 1,
+      "evidence_packet_count": 6,
+      "job_id": "job_74d6e05160394afbbf2151ce0396d1a8",
+      "mode": "investigate",
+      "status": "partial",
+      "unresolved_questions": [
+        "The command/tool step budget was exhausted before an answer was produced; which retained observations resolve the supplied question, and what remains unverified?"
+      ]
+    },
+    {
+      "attempt": 1,
+      "evidence_packet_count": 6,
+      "job_id": "job_65c15c958dbd475f842453e80123cc5c",
+      "mode": "investigate",
+      "status": "partial",
+      "unresolved_questions": [
+        "The command/tool step budget was exhausted before an answer was produced; which retained observations resolve the supplied question, and what remains unverified?"
+      ]
+    },
+    {
+      "attempt": 1,
+      "evidence_packet_count": 6,
+      "job_id": "job_f9030576c74348efbd014c1f1e5eb10a",
+      "mode": "investigate",
+      "status": "partial",
+      "unresolved_questions": [
+        "The command/tool step budget was exhausted before an answer was produced; which retained observations resolve the supplied question, and what remains unverified?"
+      ]
+    }
+  ],
+  "owned_initial_pid": 513338,
+  "owned_reloaded_pid": 513843,
+  "real_turn_count": 26,
+  "recorded_at": "2026-10-04T22:41:36.597319+00:00",
+  "remaining": [
+    "Real queue/scout completion with no repeated source reads.",
+    "Real skill entry/maps/Volta routing and exact authoritative excerpts.",
+    "Full SQA acceptance and native gate."
+  ],
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-a60a5ef-21be127-20261004",
+    "fixture_commit": "8c3aa259dd36a9c00f40c768bb58222bc75893b0",
+    "helper_sha256": "aab340fec45e04aad36b36bd85784dc1d24e6c70aa4da88fbd38d51509699925",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "76f82d2ad6f0972df3c7016b60c30884fde72974fc1929fe029887541e935e3a",
+    "pc_commit": "a60a5ef737295b5aeb5df5e9c3a591e09a620177",
+    "release_sha256": "837f3becf7d38f8997fcf3f36f43b083641de0f11c49eabe82ce0cd802f0655d",
+    "skills_commit": "21be127240c4fd91616a26c5ce1c1ada6aed23df"
+  },
+  "source_runtime_sha256": "76f82d2ad6f0972df3c7016b60c30884fde72974fc1929fe029887541e935e3a"
+}

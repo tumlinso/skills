@@ -31,12 +31,14 @@ def test_initial_cat_then_continuation_can_finish_without_source_reread(fixture)
     source = root / 'answer.txt'
     source.write_text('The public source value is 42.\n')
     def initial(turn):
-        assert context(turn)['progress'] == {'stage': 'initial', 'observation_count': 0, 'remaining_steps': 6}
+        assert context(turn)['progress'] == {'stage': 'initial', 'observation_count': 0, 'remaining_steps': 6,
+            'allowed_observation_packet_ids': [], 'omitted_observation_packet_ids': []}
         assert 'Start with command for source/files/Git relevant' in turn['messages'][1]['content']
         return {'tool': 'command', 'arguments': {'argv': ['cat', str(source)], 'cwd': str(root)}}
     def continuation(turn):
         public = context(turn)
-        assert public['progress'] == {'stage': 'continuation', 'observation_count': 1, 'remaining_steps': 5}
+        assert public['progress'] == {'stage': 'continuation', 'observation_count': 1, 'remaining_steps': 5,
+            'allowed_observation_packet_ids': ['command-packet-1'], 'omitted_observation_packet_ids': []}
         instruction = turn['messages'][0]['content']
         assert 'Start with command' not in instruction
         assert 'If sufficient, return final JSON now' in instruction
@@ -135,10 +137,15 @@ def test_skill_initial_example_reads_exact_entry_then_follows_native_maps(fixtur
 
 @pytest.mark.parametrize('bad', [json.dumps(final()) + '\n' + json.dumps(final()),
                                '```json\n' + json.dumps(final()) + '\n```'])
-def test_continuation_does_not_relax_single_json_parser(fixture, bad):
+def test_continuation_repairs_invalid_whole_json_without_salvage(fixture, bad):
     *_, worker = fixture
-    result = worker(Backend([bad])).run(request(observations=[{'packet_id': 'retained-public-packet'}]))
-    assert result['status'] == 'partial' and 'answer' not in result
+    def repair(turn):
+        assert any(json.loads(m['content']).get('protocol_error') == 'invalid_json_object'
+                   for m in turn['messages'] if m['role'] == 'user')
+        assert not any(m['role'] == 'assistant' for m in turn['messages'])
+        return final() | {'answer': 'strict repair'}
+    result = worker(Backend([bad, repair])).run(request(observations=[{'packet_id': 'retained-public-packet'}]))
+    assert result['status'] == 'completed' and result['answer'] == 'strict repair'
     assert result['observations'] == [{'packet_id': 'retained-public-packet'}]
 
 

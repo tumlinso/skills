@@ -1,0 +1,112 @@
+{
+  "checks": {
+    "approved_vram_zero": true,
+    "exact_approved_devices": true,
+    "no_approved_apps": true,
+    "no_owned_leases": true,
+    "no_owned_slots": true,
+    "observation_available": true,
+    "protected_start_identity_preserved": true,
+    "unrelated_preserved": true
+  },
+  "errors": [],
+  "observation": {
+    "available": true,
+    "devices": [
+      {
+        "memory_used_mib": 0.0,
+        "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+      },
+      {
+        "memory_used_mib": 0.0,
+        "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      }
+    ],
+    "observed_unix": 1791155736.36457,
+    "processes": []
+  },
+  "protected_identity_after": {
+    "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+    "processes": {
+      "2348": {
+        "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+        "start_ticks": 1735
+      },
+      "32750": {
+        "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+        "start_ticks": 637666
+      }
+    }
+  },
+  "protected_identity_before": {
+    "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+    "processes": {
+      "2348": {
+        "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+        "start_ticks": 1735
+      },
+      "32750": {
+        "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+        "start_ticks": 637666
+      }
+    }
+  },
+  "receipts": [
+    {
+      "gpu_uuids": [
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      ],
+      "memory_baseline": {
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+      },
+      "memory_released": true,
+      "observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791155733.6731148,
+        "processes": []
+      },
+      "owned_pid": 522533,
+      "owner_id": "service:4c02683dda1d9e2d:core4-local-model-slot-a3bd31a3b881:8b40530e-300a-46aa-907b-83807e14aa0e",
+      "process_released": true,
+      "released": true
+    }
+  ],
+  "remaining_owned_leases": [],
+  "remaining_slots": [],
+  "unrelated_after": [
+    [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      32750,
+      "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+    ],
+    [
+      "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      32750,
+      "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+    ]
+  ],
+  "unrelated_before": [
+    [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      32750,
+      "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+    ],
+    [
+      "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+      32750,
+      "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+    ]
+  ]
+}

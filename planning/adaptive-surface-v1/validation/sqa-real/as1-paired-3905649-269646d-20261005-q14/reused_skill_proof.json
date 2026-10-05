@@ -1,0 +1,38 @@
+{
+  "actual_prior_model_turns": 8,
+  "format": "as1-reused-native-skill-proof/1",
+  "limitations": [
+    "Q11 narrative claimed fusion text on selected line24; actual quote is line8. Finding is unverified and not entailed by selected excerpt.",
+    "Frontend partial synthesis_budget retained; no useful verified synthesis claim.",
+    "Original Q11 failed helper receipt remains unchanged; final-map-only assertion is not an AS1 requirement."
+  ],
+  "new_skill_model_calls": 0,
+  "original_helper_receipt_status": "failed",
+  "qualified_scope": [
+    "worker-owned native entry/maps traversal",
+    "exact canonical selected resource/hash/range/excerpt",
+    "labelled non-authoritative synthesis"
+  ],
+  "required_read_order": [
+    0,
+    1,
+    2
+  ],
+  "semantic_finding_verified": false,
+  "source_artifacts_sha256": {
+    "approval.json": "17ce8bdcc44abcf6dbb849ce68182e8495802a25428a4e5043f4798f90dbc201",
+    "cleanup.json": "71f5bd7ad17e62a2517c4f2629182cf34c03858197ed5a11c2361f34cabd8d23",
+    "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+    "failure.json": "08d1b1fa12b3ca81e5d753b18474cf6ac9920513e2a5bb44f21e38b93a6f47a4",
+    "phase_order.json": "f3c005be03baa45ed630b656fbd8d097a4c375be88f5253a38aadd3939571f8b",
+    "sessions.json": "6f1aef169a6150320c37db6d9b99389702b8c951f1d2b26d42d545462d6563e1",
+    "skill.json": "cb3f22a12df00faa1f7045cc251c971206132ed64188f24423752cabe167d161",
+    "skill_admission.json": "59a395d9d88dd89402737df1ce7c608eaebcfda06271913388dd71c0a3e65ae7",
+    "skill_job.json": "f77d2519c94e08028b60393c48f0dffade0353a326926339c2f9b4cfd1d23ffc",
+    "source_identity.json": "eb7ac08b0650b46fd84672615f648499c011a040273441de70f2b38fa05f411a",
+    "turns.json": "437cac51257a4404bc50d62cc324ea83e6e51cae4e96f10dfc4fa676064a48b2"
+  },
+  "source_equivalence_artifact": "skill_source_equivalence.json",
+  "source_receipt": "/home/tumlinson/.agents/skills/planning/adaptive-surface-v1/validation/sqa-real/as1-paired-6d1a732-269646d-20261004-q11/receipt.json",
+  "source_receipt_sha256": "202507e5d42822d3434d03097d257b83b1b199903b51744486cf3a7e841f98d1"
+}

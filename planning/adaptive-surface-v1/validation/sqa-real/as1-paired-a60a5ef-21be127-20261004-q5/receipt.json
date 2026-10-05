@@ -1,0 +1,420 @@
+{
+  "artifacts": {
+    "approval.json": "f5b4088a5111172e84002de1a6413373d56ba8458bd6509e101f4bf2e2cae96b",
+    "busy_admissions.json": "48346098ae9974347aa53025bbbbd378c14d626d509365c940f8acc835db985b",
+    "checkpoint_before.json": "3f9749aa4e5f7e76eae50ceb8fb9ffea27c1b16830c26456965323e5c5cfa146",
+    "checkpoint_yielded.json": "c5f52ac1bcaa202beaf195713d948175ea0407b4c474d7be7ccac114bf6c26b9",
+    "cleanup.json": "c2b62f0a9fad22d700080cbd2d65393670ac03061f0918658156a2e55b105709",
+    "exact_after_eviction.json": "58515bfba957bb71cfb678663126ce025d685fa881b47bf5e79c84591c6c151a",
+    "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+    "failure.json": "bc9ed33ff8c556b284bf2b8cf7c160d9ce9f21564e3f703613018b0dddf77f00",
+    "foreground.json": "e0cef94d38190fc130342489d70842635e8974bede3ab31226dd1feaaed1d837",
+    "poll_after_eviction.json": "c5f52ac1bcaa202beaf195713d948175ea0407b4c474d7be7ccac114bf6c26b9",
+    "poll_starts_no_model.json": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "scout.json": "fe844cc07a27944076b13d368f869f06ee419009bc994efe2fe557007d6598ac",
+    "scout_admission.json": "de70510c1230858a6c1a4faa9c96d2afe32feb21d22156c38e891660228d072c",
+    "sessions.json": "28d50c4865cc134cbd628583102a15759ab91f62585f64bd545d72e4d9e4e6dd",
+    "source_identity.json": "fde1e132654d2f46c1e1b833f0109e8337ba39fb5eaf2f958acae0bfacd70d49",
+    "turns.json": "5e250f6d188942ad352f32de1597f28c4e646d6753a96fbccea1f6c812ff207e",
+    "useful_while_busy.json": "641f1c034dbdb268f8e8a176acb08b084fec6caf39e67ec45a3a63cd043c0000"
+  },
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791153530.974543,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791153442.3996096,
+          "processes": []
+        },
+        "owned_pid": 513338,
+        "owner_id": "service:9f8cf9d00bc0b913:core4-local-model-slot-bcdef8319b58:7991a723-e37b-4726-bad8-2cd7c247730c",
+        "process_released": true,
+        "released": true
+      },
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791153528.2844315,
+          "processes": []
+        },
+        "owned_pid": 513843,
+        "owner_id": "service:9f8cf9d00bc0b913:core4-local-model-slot-834c93e131bd:6a3a942e-3f2c-4000-af00-9e9cedf8c366",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "completed": false,
+  "format": "as1-paired-realproof/1",
+  "inference_artifact": "turns.json",
+  "journeys": {
+    "checkpoint": {
+      "artifact": "checkpoint.json",
+      "status": "failed"
+    },
+    "eviction": {
+      "artifact": "eviction.json",
+      "status": "failed"
+    },
+    "poll": {
+      "artifact": "poll.json",
+      "status": "failed"
+    },
+    "restart": {
+      "artifact": "restart.json",
+      "status": "failed"
+    },
+    "scout": {
+      "artifact": "scout.json",
+      "status": "failed"
+    },
+    "skill": {
+      "artifact": "skill.json",
+      "status": "failed"
+    }
+  },
+  "metrics": {
+    "real_turn_count": 26,
+    "total_active_seconds": 35.81429867697443,
+    "total_visible_output_bytes": 4631,
+    "total_visible_request_bytes": 213648,
+    "usage": [
+      {
+        "completion_tokens": 61,
+        "prompt_tokens": 1554,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1615
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 1852,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 1909
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 71,
+        "prompt_tokens": 1970,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2041
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2328,
+        "prompt_tokens_details": {
+          "cached_tokens": 1939
+        },
+        "total_tokens": 2385
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2688,
+        "prompt_tokens_details": {
+          "cached_tokens": 2297
+        },
+        "total_tokens": 2745
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3046,
+        "prompt_tokens_details": {
+          "cached_tokens": 2657
+        },
+        "total_tokens": 3103
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3404,
+        "prompt_tokens_details": {
+          "cached_tokens": 3015
+        },
+        "total_tokens": 3461
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 1537
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1969,
+        "prompt_tokens_details": {
+          "cached_tokens": 1638
+        },
+        "total_tokens": 2035
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2328,
+        "prompt_tokens_details": {
+          "cached_tokens": 1938
+        },
+        "total_tokens": 2385
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2689,
+        "prompt_tokens_details": {
+          "cached_tokens": 2297
+        },
+        "total_tokens": 2746
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3048,
+        "prompt_tokens_details": {
+          "cached_tokens": 2658
+        },
+        "total_tokens": 3105
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3405,
+        "prompt_tokens_details": {
+          "cached_tokens": 3017
+        },
+        "total_tokens": 3462
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 1538,
+        "prompt_tokens_details": {
+          "cached_tokens": 1537
+        },
+        "total_tokens": 1604
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 1971,
+        "prompt_tokens_details": {
+          "cached_tokens": 1638
+        },
+        "total_tokens": 2028
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 2326,
+        "prompt_tokens_details": {
+          "cached_tokens": 1940
+        },
+        "total_tokens": 2392
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2678,
+        "prompt_tokens_details": {
+          "cached_tokens": 2295
+        },
+        "total_tokens": 2735
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3036,
+        "prompt_tokens_details": {
+          "cached_tokens": 2647
+        },
+        "total_tokens": 3093
+      },
+      {
+        "completion_tokens": 66,
+        "prompt_tokens": 3393,
+        "prompt_tokens_details": {
+          "cached_tokens": 3005
+        },
+        "total_tokens": 3459
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2216,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2273
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2579,
+        "prompt_tokens_details": {
+          "cached_tokens": 386
+        },
+        "total_tokens": 2636
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 2943,
+        "prompt_tokens_details": {
+          "cached_tokens": 2548
+        },
+        "total_tokens": 3000
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3306,
+        "prompt_tokens_details": {
+          "cached_tokens": 2912
+        },
+        "total_tokens": 3363
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 3664,
+        "prompt_tokens_details": {
+          "cached_tokens": 3275
+        },
+        "total_tokens": 3721
+      },
+      {
+        "completion_tokens": 57,
+        "prompt_tokens": 4025,
+        "prompt_tokens_details": {
+          "cached_tokens": 3633
+        },
+        "total_tokens": 4082
+      }
+    ]
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-a60a5ef-21be127-20261004",
+    "fixture_commit": "8c3aa259dd36a9c00f40c768bb58222bc75893b0",
+    "helper_sha256": "aab340fec45e04aad36b36bd85784dc1d24e6c70aa4da88fbd38d51509699925",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "76f82d2ad6f0972df3c7016b60c30884fde72974fc1929fe029887541e935e3a",
+    "pc_commit": "a60a5ef737295b5aeb5df5e9c3a591e09a620177",
+    "release_sha256": "837f3becf7d38f8997fcf3f36f43b083641de0f11c49eabe82ce0cd802f0655d",
+    "skills_commit": "21be127240c4fd91616a26c5ce1c1ada6aed23df"
+  },
+  "status": "failed"
+}

@@ -1,0 +1,210 @@
+{
+  "artifacts": {
+    "approval.json": "63b5e0c310a2de6759cb34f100f9c0a2ad28663a245c7e2692b8a26c863bb9cb",
+    "cleanup.json": "8d1c1322ed440fc7a954f368137705c8c6f2f3880cb853b89feee33aaa0a4ff1",
+    "execution_policy.json": "d11da682bffd846ce0e7ff3891bbb72990af77fdeab8b2ee49e1624afb8aaacb",
+    "failure.json": "27ade6812fefe89a6c0e500f6368d5e313b5a5ed95dc9c370e649b81a6262cb5",
+    "phase_order.json": "7e4ad7fa19d8e6b27489d1c2b8b3d1a499e757b77ba7fb7e234ab3d18635bad6",
+    "preflight.json": "05ca026628431b3d9f5d7b51d2dc2939586b243f2878dc9200f9aeff985fbc75",
+    "preflight_admission.json": "f30b3d3b0eab692d89272fabdf89a32d7bf2f521c6a8c0edfd50faa370fd9e47",
+    "preflight_metrics.json": "4c0738e270670370a0ebeec8ab832f500e7e9cf5984d44d76f59918f59d16bf5",
+    "sessions.json": "3bf5697f6d7107090e91a5f30213592306e7063a45d9223e408f9cf01d3f0c26",
+    "skill_admission.json": "8939f902772b5a53c6afd35486726d2451b45fcee5c83f376663bb5fdf6dc980",
+    "skill_job.json": "32a88b620f20a85121ba3c8f4819b59d69fde2c1115b6753c6724a523ccc33dc",
+    "source_identity.json": "255f87c1a70f783a9d8ac48ca3e7756c97556b6b73d4429e8bb8a1e233d654b9",
+    "turns.json": "c2d19f9877df783105fda91eba8067937822766d44dd8d6e67e6e86f06439587"
+  },
+  "cleanup": {
+    "checks": {
+      "approved_vram_zero": true,
+      "exact_approved_devices": true,
+      "no_approved_apps": true,
+      "no_owned_leases": true,
+      "no_owned_slots": true,
+      "observation_available": true,
+      "protected_start_identity_preserved": true,
+      "unrelated_preserved": true
+    },
+    "errors": [],
+    "observation": {
+      "available": true,
+      "devices": [
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+        },
+        {
+          "memory_used_mib": 0.0,
+          "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        }
+      ],
+      "observed_unix": 1791155736.36457,
+      "processes": []
+    },
+    "protected_identity_after": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "protected_identity_before": {
+      "boot_id": "45e898d0-d03c-4b47-97c8-e83206b92992",
+      "processes": {
+        "2348": {
+          "cmdline_sha256": "00df46aa0f800ca43f8b000ffb3a3bf3d417a9cf683aff55774cba3f9c1c3fdb",
+          "start_ticks": 1735
+        },
+        "32750": {
+          "cmdline_sha256": "1dd873fd0d9d12d014f64156d7ed4714ec3fff8ce710fae4c443d8268a1247ef",
+          "start_ticks": 637666
+        }
+      }
+    },
+    "receipts": [
+      {
+        "gpu_uuids": [
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+        ],
+        "memory_baseline": {
+          "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+          "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+        },
+        "memory_released": true,
+        "observation": {
+          "available": true,
+          "devices": [
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+            },
+            {
+              "memory_used_mib": 0.0,
+              "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+            }
+          ],
+          "observed_unix": 1791155733.6731148,
+          "processes": []
+        },
+        "owned_pid": 522533,
+        "owner_id": "service:4c02683dda1d9e2d:core4-local-model-slot-a3bd31a3b881:8b40530e-300a-46aa-907b-83807e14aa0e",
+        "process_released": true,
+        "released": true
+      }
+    ],
+    "remaining_owned_leases": [],
+    "remaining_slots": [],
+    "unrelated_after": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ],
+    "unrelated_before": [
+      [
+        "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ],
+      [
+        "GPU-d745da9c-7649-8334-41f1-483afa6f3206",
+        32750,
+        "/home/tumlinson/Software/llama.cpp/build/bin/llama-server"
+      ]
+    ]
+  },
+  "completed": false,
+  "format": "as1-paired-realproof/1",
+  "inference_artifact": "turns.json",
+  "journeys": {
+    "checkpoint": {
+      "artifact": "checkpoint.json",
+      "status": "failed"
+    },
+    "eviction": {
+      "artifact": "eviction.json",
+      "status": "failed"
+    },
+    "poll": {
+      "artifact": "poll.json",
+      "status": "failed"
+    },
+    "restart": {
+      "artifact": "restart.json",
+      "status": "failed"
+    },
+    "scout": {
+      "artifact": "scout.json",
+      "status": "failed"
+    },
+    "skill": {
+      "artifact": "skill.json",
+      "status": "failed"
+    }
+  },
+  "metrics": {
+    "real_turn_count": 4,
+    "total_active_seconds": 7.168577535012446,
+    "total_visible_output_bytes": 986,
+    "total_visible_request_bytes": 25841,
+    "usage": [
+      {
+        "completion_tokens": 62,
+        "prompt_tokens": 1589,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1651
+      },
+      {
+        "completion_tokens": 58,
+        "prompt_tokens": 1975,
+        "prompt_tokens_details": {
+          "cached_tokens": 1542
+        },
+        "total_tokens": 2033
+      },
+      {
+        "completion_tokens": 105,
+        "prompt_tokens": 2404,
+        "prompt_tokens_details": {
+          "cached_tokens": 1844
+        },
+        "total_tokens": 2509
+      },
+      {
+        "completion_tokens": 117,
+        "prompt_tokens": 1233,
+        "prompt_tokens_details": {
+          "cached_tokens": 202
+        },
+        "total_tokens": 1350
+      }
+    ]
+  },
+  "source_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004",
+    "fixture_commit": "43478a039463c611a1de4593cb19d5d22e1432a1",
+    "helper_sha256": "2612a3387d95ad54b5b9ab970fa4da9990fdae7d780e553100ba6e14aceaf28d",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "695981a69882c951487814425809659ec0abdccd428e329153a8acd6ce94d8e1",
+    "pc_commit": "4d15efd8343718b685b402d8a2a56359cb163cdf",
+    "release_sha256": "9245e2cbea232f333823bb62c42d1e86afcae50797d244c027ae29b76946530a",
+    "skills_commit": "9676989b4cbb64da007789f5594b03d9f7b182c8"
+  },
+  "status": "failed"
+}

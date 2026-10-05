@@ -328,17 +328,13 @@ def test_invalid_json_is_repaired_within_same_bounded_session(tmp_path):
     assert len(turns) == 3
     assert all(turn["session_id"] == "borrowed-session" for turn in turns)
     first_repair = turns[1]["messages"]
-    first_response = next(m["content"] for m in first_repair if m["role"] == "assistant")
-    assert first_response == invalid[0][:4096]
-    assert len(first_response) == 4096
+    assert not any(m["role"] == "assistant" for m in first_repair)
     assert any("invalid_json_object" in m["content"] and "additional object" in m["content"]
                for m in first_repair if m["role"] == "user")
     second_repair = turns[2]["messages"]
-    prior_response = next(m["content"] for m in second_repair if m["role"] == "assistant")
-    assert prior_response == invalid[1][:4096]
-    assert len(prior_response) == 4096
-    assert invalid[0][:128] not in prior_response
     assert any("invalid_json_object" in m["content"] for m in second_repair if m["role"] == "user")
+    assert all(not any(raw[:128] in m["content"] for m in turn["messages"])
+               for raw, turn in zip(invalid, turns[1:]))
 
 
 def test_repeated_invalid_json_exhausts_turn_budget_without_dispatch(tmp_path):

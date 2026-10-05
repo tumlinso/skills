@@ -1,0 +1,38 @@
+{
+  "coverage": {
+    "complete": true,
+    "context_project_uuid": null,
+    "context_revision": null,
+    "observed_at": "2026-10-04T00:00:00Z",
+    "omissions": [],
+    "semantic_revision": 0
+  },
+  "data": {
+    "files": [
+      {
+        "content": "# SQA fixture\nPurpose: source-bound observer qualification.\n",
+        "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+        "exact": true,
+        "line_end": 2,
+        "line_start": 1,
+        "path": "README.md",
+        "revision": null,
+        "status": "ok"
+      }
+    ],
+    "repository": "source",
+    "revision": null
+  },
+  "packet": "pkt_17c487d609c0435fa907f477c14f1cef",
+  "sources": [
+    {
+      "content_sha256": "17f5c3b35c452b8bad4d99fffe8aefd14292980039e6b71adb243a9c154448e0",
+      "line_end": 2,
+      "line_start": 1,
+      "path": "README.md",
+      "project": "sqa",
+      "repository": "source"
+    }
+  ],
+  "status": "ok"
+}

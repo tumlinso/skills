@@ -1,0 +1,52 @@
+{
+  "job": {
+    "attempt": 1,
+    "created_at": "2026-10-05T00:44:39.137382+00:00",
+    "evidence_packets": [
+      "pkt_f52471cb16c24b5789b25867d3ccb808"
+    ],
+    "findings": [],
+    "format": "pc-job/1",
+    "hints": [
+      "cedar-oak"
+    ],
+    "job_id": "job_fc80c98c799b40299a3ff69e4005836d",
+    "mode": "investigate",
+    "project": "sqa",
+    "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file module.py directly with cat, then explain calculate_total using one finding citing its observed packet. No discovery or search is needed for this known file. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q13/project. Reuse retained verified observations after reconnect instead of reading an unchanged file again.",
+    "request_id": "scout",
+    "result_packet": "pkt_7aee95aaddd246ca8c0d6492dda861df",
+    "scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "skill": null,
+    "status": "partial",
+    "unresolved_questions": [
+      "Retry from retained observations"
+    ]
+  },
+  "observations": [
+    {
+      "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q13/project",
+      "duration_seconds": 0.028595,
+      "exit_code": 0,
+      "packet_id": "pkt_f52471cb16c24b5789b25867d3ccb808",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-3905649-269646d-q13/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005/runtime-skills"
+        ]
+      },
+      "status": "completed",
+      "stderr": "",
+      "stdout": "./module.py\n",
+      "timed_out": false,
+      "truncated": false
+    }
+  ],
+  "status": "ok"
+}

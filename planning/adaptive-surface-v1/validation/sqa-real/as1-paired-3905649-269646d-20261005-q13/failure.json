@@ -1,0 +1,4 @@
+{
+  "reason": "scout ended before required source checkpoint: partial",
+  "type": "RuntimeError"
+}

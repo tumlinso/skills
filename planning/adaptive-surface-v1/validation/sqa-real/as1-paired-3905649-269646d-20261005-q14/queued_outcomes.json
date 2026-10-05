@@ -1,0 +1,49 @@
+{
+  "outcomes": [
+    {
+      "accepted_findings": [
+        {
+          "evidence_packets": [
+            "pkt_42c70b127dc64020961ccebe23411285"
+          ],
+          "text": "The README.md file documents the fixture purpose as 'source-bound observer qualification'."
+        }
+      ],
+      "job_id": "job_978ca1e926c1438db94a910987e503b7",
+      "reason": null,
+      "result_packet": "pkt_7d286e6335ed4cf89c2a41d1c56c17ef",
+      "status": "completed",
+      "unresolved_questions": []
+    },
+    {
+      "accepted_findings": [
+        {
+          "evidence_packets": [
+            "pkt_98bcf7be163e4fb7905aa93feb106933"
+          ],
+          "text": "The README.md file states the purpose of the fixture as 'source-bound observer qualification'."
+        }
+      ],
+      "job_id": "job_3f32cb61714c408e861782570f1ef1b6",
+      "reason": null,
+      "result_packet": "pkt_60b593c9d523485ba9b934f1da54cd91",
+      "status": "completed",
+      "unresolved_questions": []
+    },
+    {
+      "accepted_findings": [],
+      "job_id": "job_18a855b1a6a444f7b778006652f010a3",
+      "reason": "finding_requires_observed_packet",
+      "result_packet": "pkt_18b7d95df96846d087ef73c4d2e9debc",
+      "status": "partial",
+      "unresolved_questions": [
+        "Retry from retained observations"
+      ]
+    }
+  ],
+  "scope": "Durable admission/draining/poll correctness; partial candidate answers are not verified findings.",
+  "status_counts": {
+    "completed": 2,
+    "partial": 1
+  }
+}

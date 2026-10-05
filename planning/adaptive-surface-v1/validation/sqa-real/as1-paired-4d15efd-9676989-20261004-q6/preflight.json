@@ -1,0 +1,85 @@
+{
+  "job": {
+    "attempt": 1,
+    "created_at": "2026-10-04T23:02:33.789074+00:00",
+    "evidence_packets": [
+      "pkt_6072fa17ed71441fae9fd7ae1cdd8c1b",
+      "pkt_f8932f6dbffd4425ab5259dff1587d48"
+    ],
+    "findings": [
+      {
+        "evidence_packets": [
+          "pkt_f8932f6dbffd4425ab5259dff1587d48"
+        ],
+        "text": "The function 'calculate_total' in module.py takes a value and returns that value incremented by 1."
+      }
+    ],
+    "format": "pc-job/1",
+    "hints": [
+      "moss-kite"
+    ],
+    "job_id": "job_0d39e06793944f9e8bbf5fb0a8e01ac4",
+    "mode": "investigate",
+    "project": "sqa",
+    "question": "Each turn must contain exactly ONE JSON object: one tool call OR one final answer. Never emit consecutive JSON objects. Once the requested file is present in observed command evidence, answer from that evidence with one cited finding; do not repeat the read or call search unnecessarily. Read the known file module.py directly with cat, then explain calculate_total with one finding citing the observed packet. No discovery is needed. Your trusted current project directory is /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project.",
+    "request_id": "preflight",
+    "result_packet": "pkt_847353e8060041faa454e363bb92b7ca",
+    "scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "skill": null,
+    "status": "completed",
+    "unresolved_questions": []
+  },
+  "observations": [
+    {
+      "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project",
+      "duration_seconds": 0.030559,
+      "exit_code": 0,
+      "packet_id": "pkt_6072fa17ed71441fae9fd7ae1cdd8c1b",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004/runtime-skills"
+        ]
+      },
+      "status": "completed",
+      "stderr": "",
+      "stdout": "./module.py\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project",
+      "duration_seconds": 0.028451,
+      "exit_code": 0,
+      "packet_id": "pkt_f8932f6dbffd4425ab5259dff1587d48",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project",
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004/runtime-skills"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331",
+          "line_count": 2,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-4d15efd-9676989-q6/project/module.py"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "def calculate_total(value):\n    return value + 1\n",
+      "timed_out": false,
+      "truncated": false
+    }
+  ],
+  "status": "ok"
+}

@@ -1,0 +1,5 @@
+{
+  "basis": "Root-authorized supported native request budget 1..12 for multi-resource skill routing; native model, parser, sandbox and broker remain authoritative.",
+  "investigation_max_steps": 6,
+  "skill_max_steps": 12
+}

@@ -65,9 +65,9 @@ def test_repeated_entry_refusal_uses_original_six_steps_and_terminates(fixture):
     with patch.object(runner, 'run', wraps=runner.run) as dispatched:
         result = worker(backend).run(skill_request(root))
     assert not dispatched.called
-    assert result['status'] == 'partial' and result['reason'] == 'step_budget_exhausted'
+    assert result['status'] == 'partial' and result['reason'] == 'final_round_requires_answer'
     assert result['unresolved_questions'] and 'skill_selection' not in result
-    assert len(backend.turns) == len(packets) == len(checkpoints) == len(result['observations']) == 6
+    assert len(backend.turns) == 6 and len(packets) == len(checkpoints) == len(result['observations']) == 5
     assert all(observation['status'] == 'denied' and observation['dispatched'] is False
                and 'source_reads' not in observation for observation in result['observations'])
 
@@ -81,8 +81,8 @@ def test_semantic_call_and_downstream_cat_cannot_run_before_entry(fixture):
     with patch.object(runner, 'run', wraps=runner.run) as dispatched:
         result = worker(Backend(proposals)).run(skill_request(root, max_steps=2))
     assert not dispatched.called
-    assert result['reason'] == 'step_budget_exhausted'
-    assert [observation['public_tool_call'] for observation in result['observations']] == proposals
+    assert result['reason'] == 'final_round_requires_answer'
+    assert [observation['public_tool_call'] for observation in result['observations']] == proposals[:1]
     assert all(observation['reason'] == 'skill_entry_required' for observation in result['observations'])
 
 
@@ -115,7 +115,7 @@ def test_failed_or_truncated_entry_cannot_route_or_finalize_and_is_retained(fixt
         previous = calls_and_results(turn)[0][1]
         assert 'source_reads' not in previous
         assert previous['truncated'] if failure == 'truncated' else previous['status'] == 'failed'
-        assert 'Failed or truncated entry observations do not satisfy' in turn['messages'][-1]['content']
+        assert 'Failed, truncated or omitted entry observations do not satisfy' in turn['messages'][-1]['content']
         return cat(resource, root)
     backend = Backend([proposed, blocked_route, skill_final(root)])
     with patch.object(runner, 'run', wraps=runner.run) as dispatched:

@@ -1,0 +1,306 @@
+{
+  "current_phase_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005",
+    "fixture_commit": "27a93966e01bedcdb9a8832dc826b813fa031a0c",
+    "helper_sha256": "09fe8409d54768c8b399f2fade73d01953c14bff3fb877d95e599f09a6279cf6",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
+    "pc_commit": "3905649ff9b03e3acec4211553a52cf2389489e9",
+    "release_sha256": "0a968d2456e5a576ef0fc74c05b0543f4479c27385caa800e083018f507bbc34",
+    "skills_commit": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
+  },
+  "format": "as1-skill-source-equivalence/1",
+  "historical_phase_identity": {
+    "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004",
+    "fixture_commit": "64a6c217fa10dd38a2c03b24432f41644affdd42",
+    "helper_sha256": "f96b9c86f859dfdb5695714194f87ff5500d8f019ba252cc3d91292e5e9ee9e4",
+    "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "observer_runtime_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
+    "pc_commit": "6d1a7324acd2d2297ea3bf4fa3471d25ac67e2be",
+    "release_sha256": "e971d0390f8fecbe3955aa12d33076aaf2c3d35d2876d155d5d99deeb03311bc",
+    "skills_commit": "269646d2da7452adfb5750bfe9b7a3068f7ee828"
+  },
+  "qualified_change": "Root-qualified PC JobService durable checkpoint public-call ledger only; no historical skill phase is claimed executed in the new candidate.",
+  "qualified_factory_callback_equivalence": {
+    "current": {
+      "adapter_ast_sha256": "f10d3d71ddcb15a1e09cc297c38ff32b4b94369ca7382a6d2e10061cdfac3d82",
+      "adapter_source": [
+        "scope = dict(job.scope)",
+        "def fence(job_id, attempt):\n            return (job_id == job.job_id and attempt == job.attempt\n                    and service.fence(job_id, attempt, access_scope=scope))",
+        "def checkpoint(job_id, attempt, observations):\n            if job_id != job.job_id or attempt != job.attempt:\n                raise RuntimeError('stale_attempt')\n            service.checkpoint(job_id, attempt, observations, access_scope=scope)"
+      ],
+      "callbacks": {
+        "checkpoint": {
+          "ast_sha256": "14890bb06f15ad4cb1b5b4d6b2e667addb0da169e3ebdb610870837ec920f996",
+          "source": "checkpoint"
+        },
+        "fence": {
+          "ast_sha256": "5cfcb5ee4d935f1d3c60009facd91d2d461823dd896aab304a473012ef3ecefc",
+          "source": "fence"
+        }
+      },
+      "full_factory_ast_sha256": "485296949414b4409320428d4d1bc3fc2fe5890a91e0fb85c75152ecf362a47c",
+      "normalized_factory_ast_sha256": "1754896f42f8fbda59f8511f868d774d039edea6cb698061c222c6af7ee0d9d2"
+    },
+    "historical": {
+      "adapter_ast_sha256": "ad2e13b69c4fc1fda46413f740f426fc1793cfc6d6da8d226ba619f1aef48be7",
+      "adapter_source": [],
+      "callbacks": {
+        "checkpoint": {
+          "ast_sha256": "01cc56e70000c292a6c5126fd13e1e40be0c1d3fe3c31d9c795f1f84ea5508fe",
+          "source": "service.checkpoint"
+        },
+        "fence": {
+          "ast_sha256": "557857c8464435ff087d20b6c321e06a4664a8808c500a31f000e5d0553d64d1",
+          "source": "service.fence"
+        }
+      },
+      "full_factory_ast_sha256": "3384e0928b22f741deea50bcf99a3f7ac26911e88999c271c81653018c1c683b",
+      "normalized_factory_ast_sha256": "1754896f42f8fbda59f8511f868d774d039edea6cb698061c222c6af7ee0d9d2"
+    },
+    "normalization_scope": "Only root-qualified new scope/fence/checkpoint adapter block and two ObserverWorkerPort callback expressions; all other factory AST identical.",
+    "qualified_as1_jobs_sha256": "592ae8e5576eb94dc5a2d64c5c35ad358a8bbb552bc8c6a57eebc299c69201ad",
+    "qualified_evidence": {
+      "affected_surface_regressions": {
+        "data": {
+          "cases": {
+            "API-04": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_surface.py::test_composed_producers_lazy_startup_packets_and_native_worker"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_surface.py::test_public_jobs_use_actual_installed_worker_and_shared_service"
+              }
+            ]
+          },
+          "pytest_exitstatus": 0
+        },
+        "path": "/tmp/pc-as1-checkpoint-surface-cases.json",
+        "sha256": "ca0e18788c7fa5ca1532a778db0e8be9c60310d1a5669d863f5fd383de8ea8fe"
+      },
+      "independent_static_review": {
+        "data": {
+          "blocking_findings": [],
+          "evidence_refs": [
+            "as1_jobs.py:80-89",
+            "as1_jobs.py:239-263",
+            "as1_jobs.py:346-395"
+          ],
+          "format": "as1-independent-static-review/1",
+          "limits": [
+            "Tests inspected, never executed by reviewer.",
+            "Actual-call provenance relies on qualified private WorkerPort.",
+            "Concurrency/crash injection was not independently qualified."
+          ],
+          "provenance": "Root persisted exact conclusions returned by configured reviewer; reviewer role forbids file edits.",
+          "reviewer": "/root/checkpoint_conversation_review",
+          "reviewer_tests_executed": false,
+          "source_sha256": "592ae8e5576eb94dc5a2d64c5c35ad358a8bbb552bc8c6a57eebc299c69201ad",
+          "status": "clean",
+          "test_sha256": "15d96592a78b7a09f89afbdc97e633bcda529c9546e7ccdb2a5fdef3b0802648"
+        },
+        "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/qualification/checkpoint-review.json",
+        "sha256": "dc47cef517fa3becae155494938560e129555eb0402b38a00106911a84530287"
+      },
+      "native_checkpoint_regressions": {
+        "data": {
+          "cases": {
+            "JOB-01": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_native_command_checkpoint_reopen_replays_call_packet_without_reread"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_admission_and_process_lived_dispatch_after_disconnect"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_progress_regressions_bind_child_source_without_changing_parent_deployment"
+              }
+            ],
+            "JOB-02": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_soft_threshold_hard_limit_storage_failure_and_unavailable_dispatch"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_unicode_storage_cap_counts_real_utf8_bytes"
+              }
+            ],
+            "JOB-03": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_scoped_idempotency_exact_lookup_related_questions_and_no_gpu_poll"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_concurrent_request_id_admission_and_gpu_free_stopped_lookup"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_expired_old_terminal_does_not_block_drain_or_request_id_retry"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[installed-port]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[legacy-producer]"
+              }
+            ],
+            "JOB-04": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_native_command_checkpoint_reopen_replays_call_packet_without_reread"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_payload_scope_generation_and_expired_lease_fences"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_cross_job_copy_legacy_and_crash_gap"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_bounds_exact_call_privacy_and_oversized_payload_omission"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_same_database_cross_caller_and_bound_native_identity"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_invalid_checkpoint_atomicity_preserves_prior_frames_and_lease"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_real_sqlite_restart_eviction_cancellation_and_fenced_late_writes"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_running_cancel_closes_owned_session_and_rejects_late_checkpoint"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[installed-port]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[legacy-producer]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_recoverable_yields_resume_same_job_from_retained_observation[yielding-foreground_preemption]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_recoverable_yields_resume_same_job_from_retained_observation[yielding-session_unavailable]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_recoverable_yields_resume_same_job_from_retained_observation[queued_after_eviction-session_evicted]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_progress_regressions_bind_child_source_without_changing_parent_deployment"
+              }
+            ],
+            "JOB-05": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_native_command_checkpoint_reopen_replays_call_packet_without_reread"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_payload_scope_generation_and_expired_lease_fences"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_cross_job_copy_legacy_and_crash_gap"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_checkpoint_bounds_exact_call_privacy_and_oversized_payload_omission"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_same_database_cross_caller_and_bound_native_identity"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_invalid_checkpoint_atomicity_preserves_prior_frames_and_lease"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_log_revalidates_retained_evidence_and_outbox_crash_replay"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_hints_are_scoped_and_pinned_before_admission_reply"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_expired_old_terminal_does_not_block_drain_or_request_id_retry"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[installed-port]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_step_budget_is_terminal_with_retained_source_and_idempotent_restart[legacy-producer]"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_progress_regressions_bind_child_source_without_changing_parent_deployment"
+              }
+            ],
+            "JOB-06": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_checkpoint_conversation.py::test_native_command_checkpoint_reopen_replays_call_packet_without_reread"
+              },
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_actual_port_shared_tools_no_injection_and_agentic_registered_skill"
+              }
+            ],
+            "JOB-07": [
+              {
+                "outcome": "passed",
+                "test": "tests/as1/test_pc_as1_jobs.py::test_actual_sandbox_network_write_credentials_output_cleanup_and_provenance"
+              }
+            ]
+          },
+          "pytest_exitstatus": 0
+        },
+        "path": "/tmp/pc-as1-checkpoint-cases.json",
+        "sha256": "0c88b29b514d8a2edcf7c8c77047189c7a554e117f95f45757b4a11f0fe7f8dd"
+      }
+    }
+  },
+  "semantic_finding_verified": false,
+  "unchanged_pc_modules_sha256": {
+    "as1_skill.py": "0231a72b370318486e990a28de890e48a0ecfc8f48eb55814a3d373a17339a8a",
+    "as1_surface.py": "f4921fd9fe7bbf784b3e610de0b4f1ba2a3156cccda7ed35b44400ebb84d62c3",
+    "profiles.py": "41dfde9faf3d78bd570a92917ced8d9fd604329dfc109292d356ac3860b4c3d0"
+  },
+  "unchanged_skill_inputs_sha256": {
+    "cuda/SKILL.md": "0e130b7d8a92441a2dbdfa1256baa3345d66c444bdf74eed500cf62cffde61a4",
+    "cuda/references/architectures/volta/native-v100-extreme.md": "9780bc908470626b5a44d2f1666dc14edf4b986ca6eb56bafef89067885abc32",
+    "cuda/references/architectures/volta/router.md": "3ea24c6f691113be2bfa956a21e14873c87d9ed7c4b4cc4df8b2b2e0589fc363",
+    "cuda/references/architectures/volta/routes/native.md": "7a49dbab92e432b7162152c30e83515d9e006741c41e24b1208675d8e22f14b0",
+    "cuda/references/legacy-skill-router.md": "2d5d7dbb0fef393b3b87e3e62fd0c49444341e714f0260f410c083673420c26d",
+    "integrations/native-skill-catalog.json": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+    "integrations/native-skill-routing.md": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+    "local-coding-worker/local_worker/observer_runtime.py": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "cleanup_receipts": [
+    {
+      "gpu_uuids": [
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+      ],
+      "memory_baseline": {
+        "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a": 0.0,
+        "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505": 0.0
+      },
+      "memory_released": true,
+      "observation": {
+        "available": true,
+        "devices": [
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505"
+          },
+          {
+            "memory_used_mib": 0.0,
+            "uuid": "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+          }
+        ],
+        "observed_unix": 1791158530.8840637,
+        "processes": []
+      },
+      "owned_pid": 530504,
+      "owner_id": "service:e383ba1ac3299394:core4-local-model-slot-ea4490c4b16a:7f975865-5fa4-4a48-976e-ab585412a848",
+      "process_released": true,
+      "released": true
+    }
+  ],
+  "result": {
+    "classification": "decision-result",
+    "evidence_id": "0ab60928-47a4-4554-a2bd-45e302ac0d0b",
+    "lease_receipt": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/controller/.todo-orchestrator/runtime/background-artifacts/foreground/1d72bb00-b082-4ad7-ae7b-54ab38884332/lease.json",
+    "message": "No action-worthy result; evidence stored.",
+    "ok": true,
+    "returncode": 0,
+    "status": "succeeded",
+    "stderr_path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/controller/.todo-orchestrator/runtime/background-artifacts/foreground/1d72bb00-b082-4ad7-ae7b-54ab38884332/foreground.stderr.txt",
+    "stdout_path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/private-6d1a732-269646d-q12/controller/.todo-orchestrator/runtime/background-artifacts/foreground/1d72bb00-b082-4ad7-ae7b-54ab38884332/foreground.stdout.txt"
+  },
+  "stderr": ""
+}

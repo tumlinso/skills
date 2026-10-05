@@ -1,0 +1,85 @@
+{
+  "job": {
+    "attempt": 2,
+    "created_at": "2026-10-04T21:52:16.321530+00:00",
+    "evidence_packets": [
+      "pkt_b5fa4245cc96468f98b3126ec184c030",
+      "pkt_a1cd396d9c8a41dfb2813338f4e7e105"
+    ],
+    "findings": [
+      {
+        "evidence_packets": [
+          "pkt_a1cd396d9c8a41dfb2813338f4e7e105"
+        ],
+        "text": "The function `calculate_total` is defined to take a parameter `value` and return `value + 1`."
+      }
+    ],
+    "format": "pc-job/1",
+    "hints": [
+      "kite-dawn"
+    ],
+    "job_id": "job_c6f57350fd6341ea89ddca6bde3074a5",
+    "mode": "investigate",
+    "project": "sqa",
+    "question": "Use command with direct cat to read /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project/module.py in cwd /home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project. Explain calculate_total using one finding citing its observed packet. Reuse retained verified observations after reconnect instead of reading an unchanged file again.",
+    "request_id": "scout",
+    "result_packet": "pkt_65bc0ef6be034ae09d5cf74d2f1ee0ed",
+    "scope": {
+      "principal": "sqa-real",
+      "profile": "observer",
+      "project": "sqa"
+    },
+    "skill": null,
+    "status": "completed",
+    "unresolved_questions": []
+  },
+  "observations": [
+    {
+      "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project",
+      "duration_seconds": 0.031926,
+      "exit_code": 0,
+      "packet_id": "pkt_b5fa4245cc96468f98b3126ec184c030",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004/runtime-skills",
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project"
+        ]
+      },
+      "status": "completed",
+      "stderr": "",
+      "stdout": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project\n",
+      "timed_out": false,
+      "truncated": false
+    },
+    {
+      "cwd": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project",
+      "duration_seconds": 0.030312,
+      "exit_code": 0,
+      "packet_id": "pkt_a1cd396d9c8a41dfb2813338f4e7e105",
+      "scope": {
+        "external": true,
+        "provenance": "coarse_volatile",
+        "roots": [
+          "/home/tumlinson/.local/share/project-control/candidates/as1-paired-daaab5a-e2ea75a-20261004/runtime-skills",
+          "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project"
+        ]
+      },
+      "source_reads": [
+        {
+          "content_sha256": "185786c0cf30b2c243293185ea01490213e12452b3eb402f0ffa3e3a39b23331",
+          "line_count": 2,
+          "method": "direct_cat",
+          "path": "/home/tumlinson/.local/state/project-control/as1-bootstrap/sqa/sqa-daaab5a-e2ea75a-q1/project/module.py"
+        }
+      ],
+      "status": "completed",
+      "stderr": "",
+      "stdout": "def calculate_total(value):\n    return value + 1\n",
+      "timed_out": false,
+      "truncated": false
+    }
+  ],
+  "status": "ok"
+}

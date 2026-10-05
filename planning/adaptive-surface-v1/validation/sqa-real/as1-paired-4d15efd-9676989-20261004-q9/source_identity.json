@@ -1,0 +1,11 @@
+{
+  "candidate_root": "/home/tumlinson/.local/share/project-control/candidates/as1-paired-4d15efd-9676989-20261004",
+  "fixture_commit": "43478a039463c611a1de4593cb19d5d22e1432a1",
+  "helper_sha256": "2612a3387d95ad54b5b9ab970fa4da9990fdae7d780e553100ba6e14aceaf28d",
+  "native_catalog_sha256": "d1b054bdd6f38a54fb197f15b8abeb4f35ea23fe53aaeabcdd4d0d1fa34aadf7",
+  "native_routing_sha256": "153b4b75da688822e5f961a8f05711d3af6acdc770ce4f975247b425d271b239",
+  "observer_runtime_sha256": "695981a69882c951487814425809659ec0abdccd428e329153a8acd6ce94d8e1",
+  "pc_commit": "4d15efd8343718b685b402d8a2a56359cb163cdf",
+  "release_sha256": "9245e2cbea232f333823bb62c42d1e86afcae50797d244c027ae29b76946530a",
+  "skills_commit": "9676989b4cbb64da007789f5594b03d9f7b182c8"
+}

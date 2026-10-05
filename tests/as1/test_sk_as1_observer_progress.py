@@ -129,12 +129,13 @@ def test_six_command_turns_are_terminal_partial_with_retained_observations(fixtu
     backend = Backend([command] * 6)
     result = worker(backend).run(request(observations=[{'packet_id': 'prior-packet'}]))
     assert result['status'] == 'partial'
-    assert result['reason'] == 'step_budget_exhausted'
+    assert result['reason'] == 'final_round_requires_answer'
     assert result['authoritative'] is False
     assert result['unresolved_questions']
-    assert 'what remains unverified' in result['unresolved_questions'][0]
-    assert len(backend.turns) == len(packets) == len(checkpoints) == 6
-    assert len(result['observations']) == 7
+    assert 'no additional tool was dispatched' in result['unresolved_questions'][0]
+    assert len(backend.turns) == 6
+    assert len(packets) == len(checkpoints) == 5
+    assert len(result['observations']) == 6
     assert result['observations'][0]['packet_id'] == 'prior-packet'
     assert checkpoints[-1] == result['observations']
     assert all(observation['source_reads'] for observation in result['observations'][1:])
@@ -182,12 +183,16 @@ def test_superseded_turn_cannot_publish_a_command(fixture):
 
 @pytest.mark.parametrize('output', [json.dumps(final()) + '\n' + json.dumps(final()),
                                     '```json\n' + json.dumps(final()) + '\n```'])
-def test_multi_json_and_fences_remain_rejected(fixture, output):
+def test_multi_json_and_fences_are_repaired_as_whole_response(fixture, output):
     root, runner, packets, checkpoints, worker = fixture
-    result = worker(Backend([output])).run(request())
-    assert result['status'] == 'partial'
-    assert 'answer' not in result
-    assert result['unresolved_questions'] and not packets and not checkpoints
+    def repair(turn):
+        feedback = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        assert any(item.get('protocol_error') == 'invalid_json_object' for item in feedback)
+        assert not any(m['role'] == 'assistant' for m in turn['messages'])
+        return final() | {'answer': 'repaired whole response'}
+    result = worker(Backend([output, repair])).run(request(max_steps=2))
+    assert result['status'] == 'completed' and result['answer'] == 'repaired whole response'
+    assert not packets and not checkpoints and result['observations'] == []
 
 
 def test_eviction_retains_recoverable_state(fixture):

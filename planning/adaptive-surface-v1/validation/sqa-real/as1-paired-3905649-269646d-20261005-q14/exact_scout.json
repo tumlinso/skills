@@ -1,0 +1,29 @@
+{
+  "coverage": {
+    "complete": false,
+    "context_project_uuid": null,
+    "context_revision": null,
+    "observed_at": "2026-10-05T00:47:50Z",
+    "omissions": [
+      {
+        "reason": "response_budget",
+        "unit": "utf8_bytes"
+      }
+    ],
+    "semantic_revision": null
+  },
+  "data": {
+    "continuation": {
+      "detail": "extended",
+      "query": {
+        "kind": "packet",
+        "target": "pkt_97f04fbd766a475b94572c3780d8d4d6"
+      },
+      "tool": "search"
+    },
+    "needed_bytes": 3657
+  },
+  "packet": "pkt_97f04fbd766a475b94572c3780d8d4d6",
+  "sources": [],
+  "status": "partial"
+}

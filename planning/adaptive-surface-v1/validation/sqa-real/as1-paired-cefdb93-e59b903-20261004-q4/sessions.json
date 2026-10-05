@@ -1,0 +1,137 @@
+[
+  {
+    "base_url": "http://127.0.0.1:8081/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-d22c0cd39a52:402fe0a6-f9e8-47b3-a7b9-95596a09bff4",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": false,
+    "server_pid": 509531,
+    "service_lease_id": "2fbdbc22-7bdd-470a-b3fd-13726a55b776",
+    "slot_id": "slot-d22c0cd39a52",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  },
+  {
+    "base_url": "http://127.0.0.1:8083/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-aee56446277e:5647a863-c7b7-408c-9aa7-397bb555d43c",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": false,
+    "server_pid": 510113,
+    "service_lease_id": "ba90c78a-097d-4c3f-ab6b-e062aae903e2",
+    "slot_id": "slot-aee56446277e",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  },
+  {
+    "base_url": "http://127.0.0.1:8083/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-aee56446277e:5647a863-c7b7-408c-9aa7-397bb555d43c",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": true,
+    "server_pid": 510113,
+    "service_lease_id": "14a3b4ee-e85c-4cc2-bba1-99a6928f1d68",
+    "slot_id": "slot-aee56446277e",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  },
+  {
+    "base_url": "http://127.0.0.1:8083/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-aee56446277e:5647a863-c7b7-408c-9aa7-397bb555d43c",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": true,
+    "server_pid": 510113,
+    "service_lease_id": "3b88e795-2447-40ff-b00c-e2df8d12a8a1",
+    "slot_id": "slot-aee56446277e",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  },
+  {
+    "base_url": "http://127.0.0.1:8083/v1",
+    "compatibility_key": "588c2f08a6ec1fc6ae6d80e721a8c548852ad06620d460e2c979bf023b9942dd",
+    "compute_profile": "narrow",
+    "format": "CORE4-MODEL-ENDPOINT/1",
+    "gpu_uuids": [
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a"
+    ],
+    "model_id": "qwen3-coder-30b-a3b-instruct-q4-k-m",
+    "model_sha256": "fadc3e5f8d42bf7e894a785b05082e47daee4df26680389817e2093056f088ad",
+    "owner_id": "service:9f349235cdd1cb42:core4-local-model-slot-aee56446277e:5647a863-c7b7-408c-9aa7-397bb555d43c",
+    "p2p_enabled": true,
+    "parallelism": "layer",
+    "reused": true,
+    "server_pid": 510113,
+    "service_lease_id": "de04a1ca-70bb-4826-8a4d-76fa74563502",
+    "slot_id": "slot-aee56446277e",
+    "topology_order": {
+      "gpu_count": 2,
+      "nvlink_island_count": 1,
+      "nvlink_island_sizes": [
+        2
+      ],
+      "pair_adjacent": true
+    }
+  }
+]
