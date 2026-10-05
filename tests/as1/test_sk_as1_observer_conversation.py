@@ -351,6 +351,55 @@ def test_investigate_final_validation_feedback_is_safe_and_correctable(fixture, 
     assert 'unaccepted answer' not in json.dumps(result['observations'])
 
 
+def test_broker_omitted_packet_ids_are_visible_non_evidence_and_never_citable(fixture):
+    *_, worker = fixture
+    current = {'packet_id': 'currently-included', 'status': 'completed', 'stdout': 'visible current frame'}
+    omitted = ['broker-dropped-packet']
+    def invalid_citation(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        marker = next(item['broker_omitted_retained_observations'] for item in values
+                      if 'broker_omitted_retained_observations' in item)
+        progress = next(item['progress'] for item in values if 'progress' in item)
+        assert marker == {'count': 1, 'packet_ids': omitted, 'is_source_evidence': False}
+        assert progress['input_omitted_observation_packet_ids'] == omitted
+        assert progress['allowed_observation_packet_ids'] == ['currently-included']
+        return {'answer': 'unaccepted', 'findings': [{'text': 'unseen',
+            'evidence_packets': ['broker-dropped-packet']}], 'unresolved_questions': []}
+    def corrected(turn):
+        values = [json.loads(m['content']) for m in turn['messages'] if m['role'] == 'user']
+        rejection = next(item['retained_observation'] for item in values
+                         if isinstance(item, dict) and isinstance(item.get('retained_observation'), dict)
+                         and item['retained_observation'].get('reason') == 'investigate_final_validation_failed')
+        assert rejection['failure_classification'] == 'finding_requires_observed_packet'
+        assert rejection['validation_data']['allowed_observation_packet_ids'] == ['currently-included']
+        marker = next(item['broker_omitted_retained_observations'] for item in values
+                      if 'broker_omitted_retained_observations' in item)
+        assert marker['packet_ids'] == omitted and marker['is_source_evidence'] is False
+        return {'answer': 'current evidence only', 'findings': [{'text': 'visible fact',
+            'evidence_packets': ['currently-included']}], 'unresolved_questions': []}
+    result = worker(Backend([invalid_citation, corrected])).run(request(max_steps=2,
+        observations=[current], omitted_observation_packet_ids=omitted))
+    assert result['status'] == 'completed' and result['answer'] == 'current evidence only'
+    assert result['findings'][0]['evidence_packets'] == ['currently-included']
+    assert 'omitted_observation_packet_ids' not in result
+
+
+@pytest.mark.parametrize('omitted,observations', [
+    (['same', 'same'], [{'packet_id': 'included'}]),
+    (['same'], [{'packet_id': 'same'}]),
+    ([''], []),
+    (['x' * 257], []),
+    ([{}], []),
+])
+def test_broker_omitted_packet_id_input_is_bounded_and_collision_free(fixture, omitted, observations):
+    *_, worker = fixture
+    backend = Backend([final()])
+    with pytest.raises(ValueError, match='omitted observation packet ID'):
+        worker(backend).run(request(observations=observations,
+            omitted_observation_packet_ids=omitted))
+    assert not backend.turns
+
+
 def test_investigate_final_validation_exhaustion_retains_safe_classification(fixture):
     root, runner, packets, checkpoints, worker = fixture
     source = root / 'answer.txt'

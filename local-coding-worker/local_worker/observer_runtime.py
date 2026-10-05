@@ -215,7 +215,8 @@ class ObserverWorkerPort:
     def run(self, request: dict[str, Any]) -> dict[str, Any]:
         allowed = {"job_id", "attempt", "mode", "question", "scope", "hints", "observations", "skill",
                    "max_steps", "session_id", "compute_profile", "parallelism", "deadline_epoch", "refresh_context", "log_guidance",
-                   "inquiry_repositories", "installed_skill_roots", "tool_argument_schemas"}
+                   "inquiry_repositories", "installed_skill_roots", "tool_argument_schemas",
+                   "omitted_observation_packet_ids"}
         if not isinstance(request, dict) or set(request) - allowed:
             raise ValueError("invalid observer job request")
         job_id, attempt = request.get("job_id"), request.get("attempt")
@@ -240,12 +241,21 @@ class ObserverWorkerPort:
                 any(not isinstance(value, str) or not value for value in installed_skill_roots)):
             raise ValueError("invalid inquiry repository context")
         observations = json.loads(json.dumps(request.get("observations", [])))
+        input_omitted_packet_ids = request.get("omitted_observation_packet_ids", [])
         if (not isinstance(observations, list) or len(observations) > 24 or
                 any(not isinstance(o, dict) or not isinstance(o.get("packet_id"), str)
                     or not o["packet_id"] or len(o["packet_id"].encode()) > 256
                     or len(json.dumps(o, ensure_ascii=False).encode()) > 32768 for o in observations)
                 or len(json.dumps(request, ensure_ascii=False).encode()) > JOB_INPUT_MAX_BYTES):
             raise ValueError("job inputs exceed bounded evidence context")
+        if (not isinstance(input_omitted_packet_ids, list) or len(input_omitted_packet_ids) > 24
+                or any(not isinstance(packet_id, str) or not packet_id
+                       or len(packet_id.encode()) > 256 for packet_id in input_omitted_packet_ids)
+                or len(set(input_omitted_packet_ids)) != len(input_omitted_packet_ids)):
+            raise ValueError("invalid omitted observation packet IDs")
+        included_packet_ids = {observation["packet_id"] for observation in observations}
+        if included_packet_ids.intersection(input_omitted_packet_ids):
+            raise ValueError("omitted observation packet ID collides with included observation")
         deadline_epoch = request.get("deadline_epoch", time.time() + 300)
         remaining_seconds(deadline_epoch)
         base = {"job_id": job_id, "attempt": attempt, "authoritative": False}
@@ -433,7 +443,8 @@ class ObserverWorkerPort:
                 def build_messages():
                     visible_ids = sorted(eligible_packet_ids(visible_observations))
                     turn_progress = {**progress, "allowed_observation_packet_ids": visible_ids,
-                                     "omitted_observation_packet_ids": omitted_packet_ids}
+                                     "omitted_observation_packet_ids": omitted_packet_ids,
+                                     "input_omitted_observation_packet_ids": input_omitted_packet_ids}
                     first_user = (initial_context if observations else {**initial_context,
                         "instruction": "Start with command for source/files/Git relevant to the question."})
                     messages = [{"role": "system", "content": instruction},
@@ -458,6 +469,11 @@ class ObserverWorkerPort:
                             "omitted_retained_observations": {"count": len(omitted_packet_ids),
                                 "packet_ids": omitted_packet_ids, "is_source_evidence": False},
                             "instruction": "These complete observations were omitted from this model turn to fit the request limit. Their IDs are not allowed citations and their contents cannot support findings or source selections."}, ensure_ascii=False)})
+                    if input_omitted_packet_ids:
+                        messages.append({"role": "user", "content": json.dumps({
+                            "broker_omitted_retained_observations": {"count": len(input_omitted_packet_ids),
+                                "packet_ids": input_omitted_packet_ids, "is_source_evidence": False},
+                            "instruction": "The broker omitted these complete prior observation frames from this job input because of its input-size bound. Their IDs identify unavailable frames only; do not cite them or treat them as source, finding, or skill-selection proof."}, ensure_ascii=False)})
                     messages.extend(protocol_feedback)
                     if observations:
                         continuation = (
