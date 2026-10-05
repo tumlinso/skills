@@ -16,10 +16,10 @@ import subprocess
 import pytest
 
 SKILLS = Path(__file__).resolve().parents[2]
-PC_COMMIT = os.environ.get('AS1_SQA_PC_COMMIT', '6d1a7324acd2d2297ea3bf4fa3471d25ac67e2be')
+PC_COMMIT = os.environ.get('AS1_SQA_PC_COMMIT', '3905649ff9b03e3acec4211553a52cf2389489e9')
 SK_COMMIT = os.environ.get('AS1_SQA_SK_COMMIT', '269646d2da7452adfb5750bfe9b7a3068f7ee828')
-CANDIDATE = Path(os.environ.get('AS1_SQA_CANDIDATE', '/home/tumlinson/.local/share/project-control/candidates/as1-paired-6d1a732-269646d-20261004'))
-PROOF = Path(os.environ.get('AS1_SQA_PROOF', str(SKILLS / 'planning/adaptive-surface-v1/validation/sqa-real' / (CANDIDATE.name + '-q12') / 'receipt.json')))
+CANDIDATE = Path(os.environ.get('AS1_SQA_CANDIDATE', '/home/tumlinson/.local/share/project-control/candidates/as1-paired-3905649-269646d-20261005'))
+PROOF = Path(os.environ.get('AS1_SQA_PROOF', str(SKILLS / 'planning/adaptive-surface-v1/validation/sqa-real' / (CANDIDATE.name + '-q14') / 'receipt.json')))
 
 
 def sha(path):
@@ -130,11 +130,55 @@ def test_real_scout_skill_eviction_proof_is_bound_to_exact_candidate(tmp_path):
     assert set(equivalence['unchanged_pc_modules_sha256']) == {'as1_skill.py', 'profiles.py', 'as1_surface.py'}
     for relative, expected in equivalence['unchanged_pc_modules_sha256'].items():
         assert sha(historical_pc / relative) == sha(current_pc / relative) == expected
-    def factory_ast(path):
-        tree = ast.parse(path.read_text())
+    factory_binding = equivalence['qualified_factory_callback_equivalence']
+    assert sha(current_pc / 'as1_jobs.py') == factory_binding['qualified_as1_jobs_sha256'] == '592ae8e5576eb94dc5a2d64c5c35ad358a8bbb552bc8c6a57eebc299c69201ad'
+    def factory_ast(path, protective_adapter):
+        text = path.read_text(); tree = ast.parse(text)
         node = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == 'TrustedObserverFactory')
-        return hashlib.sha256(ast.dump(node, include_attributes=False).encode()).hexdigest()
-    assert factory_ast(historical_pc / 'as1_jobs.py') == factory_ast(current_pc / 'as1_jobs.py') == equivalence['unchanged_trusted_observer_factory_ast_sha256']
+        original = ast.dump(node, include_attributes=False)
+        method = next(item for item in node.body if isinstance(item, ast.FunctionDef) and item.name == '__call__')
+        block = []
+        if protective_adapter:
+            assert isinstance(method.body[-1], ast.Return)
+            block = method.body[-4:-1]
+            assert len(block) == 3 and isinstance(block[0], ast.Assign)
+            assert [target.id for target in block[0].targets] == ['scope']
+            assert isinstance(block[1], ast.FunctionDef) and block[1].name == 'fence'
+            assert isinstance(block[2], ast.FunctionDef) and block[2].name == 'checkpoint'
+            del method.body[-4:-1]
+        block_ast = ast.dump(ast.Module(body=block, type_ignores=[]), include_attributes=False)
+        constructors = [item for item in ast.walk(node) if isinstance(item, ast.Call)
+                        and isinstance(item.func, ast.Attribute) and item.func.attr == 'ObserverWorkerPort']
+        assert len(constructors) == 1
+        callbacks = {}
+        for keyword in constructors[0].keywords:
+            if keyword.arg in ('fence', 'checkpoint'):
+                callbacks[keyword.arg] = {'source': ast.unparse(keyword.value),
+                                         'ast_sha256': hashlib.sha256(ast.dump(keyword.value, include_attributes=False).encode()).hexdigest()}
+                keyword.value = ast.Name(id='QUALIFIED_' + keyword.arg.upper() + '_CALLBACK', ctx=ast.Load())
+        assert set(callbacks) == {'fence', 'checkpoint'}
+        return {'full_factory_ast_sha256': hashlib.sha256(original.encode()).hexdigest(),
+                'normalized_factory_ast_sha256': hashlib.sha256(ast.dump(node, include_attributes=False).encode()).hexdigest(),
+                'adapter_source': [ast.get_source_segment(text, item) for item in block],
+                'adapter_ast_sha256': hashlib.sha256(block_ast.encode()).hexdigest(), 'callbacks': callbacks}
+    historical_factory = factory_ast(historical_pc / 'as1_jobs.py', False)
+    current_factory = factory_ast(current_pc / 'as1_jobs.py', True)
+    assert historical_factory == factory_binding['historical']
+    assert current_factory == factory_binding['current']
+    assert historical_factory['normalized_factory_ast_sha256'] == current_factory['normalized_factory_ast_sha256']
+    evidence = factory_binding['qualified_evidence']
+    assert set(evidence) == {'native_checkpoint_regressions', 'affected_surface_regressions', 'independent_static_review'}
+    for label, item in evidence.items():
+        assert sha(Path(item['path'])) == item['sha256']
+        assert json.loads(Path(item['path']).read_text()) == item['data']
+        if label.endswith('regressions'):
+            report = item['data']
+            assert report['pytest_exitstatus'] == 0
+            assert all(row['outcome'] == 'passed' for rows in report['cases'].values() for row in rows)
+            assert len({row['test'] for rows in report['cases'].values() for row in rows}) == (24 if label == 'native_checkpoint_regressions' else 2)
+        else:
+            assert item['data']['status'] == 'clean' and not item['data']['blocking_findings']
+            assert item['data']['source_sha256'] == factory_binding['qualified_as1_jobs_sha256']
     for relative, expected in equivalence['unchanged_skill_inputs_sha256'].items():
         assert sha(historical_skills / relative) == sha(CANDIDATE / 'runtime-skills' / relative) == expected
     assert original['artifacts'] == reuse['source_artifacts_sha256']
