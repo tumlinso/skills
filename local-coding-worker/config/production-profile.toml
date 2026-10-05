@@ -50,7 +50,6 @@ reason = "Measured 32K Q4 services passed the dual-island memory, isolation, hot
 
 [compute_profiles]
 narrow = "qwen3-coder-30b-a3b-instruct-q4-k-m"
-wide = "qwen3-coder-next-q4-k-m"
 
 [[candidates]]
 id = "qwen3-coder-30b-a3b-instruct-q4-k-m"
