@@ -1,88 +1,84 @@
 ---
 name: cuda
-description: Primary CUDA skill for datacenter NVIDIA GPUs. Use for CUDA build, profiling, debugging, optimization, architecture and toolchain work, benchmarks, resource-aware execution, sparse/scientific workloads, Torch extensions, and CPU-to-CUDA porting across Volta, Ampere, Hopper, and Blackwell.
+description: CUDA programming, porting, correctness, profiling, and optimization on datacenter NVIDIA GPUs. Covers Volta, Ampere, Hopper, Blackwell, sparse/scientific workloads, Torch extensions, and topology-aware execution with host GPU interlocks.
 ---
 
 # CUDA
 
-## Repository workflow
+Use the workload, target GPU, numerical contract, and evidence to choose the
+next reference. **The agent is the semantic router.** Read one focused guide
+for the current decision; open its deeper material only when needed. Paths
+below are relative to this skill. Use `rg --files` and `rg -n` for discovery
+or to locate a heading in a long manual.
 
-For substantial repository work, use the `project-control` Codex profile.
-Invoke this skill only for the bounded CUDA operation and scope authorized by
-Project Control, when the user explicitly requests CUDA maintenance, or while
-Project Control itself is being debugged. MCP startup never imports GPU
-libraries, starts a model, reserves a GPU, scans a repository, or runs a
-benchmark.
+## Working method
 
-The model owns the CUDA question: define the workload, success metric, important
-operation or symbol, and concrete optimization hypothesis. It also decides
-algorithm, representation, fusion, precision, specialization, library versus
-custom ownership, source edits, and whether evidence blocks the next decision.
+1. Define the operation, representative shapes/data, layouts, dtypes, numerical
+   tolerances, and success metric. Separate resident kernel time from transfers,
+   setup, and end-to-end time; preserve a correctness oracle.
+2. Choose ownership and decomposition before instruction tuning. Check library
+   and Tensor Core eligibility for dense/blocked work; account for packing and
+   precision costs. For irregular work, choose layout and thread/warp ownership.
+   Fusion must save launches or traffic without losing the gain to spills,
+   synchronization, or expensive divergence. Graphs do not remove HBM passes.
+3. Establish correct, representative behavior. Read compact evidence before
+   raw artifacts. Use Nsight Systems for timeline/overlap/launch/communication
+   questions, then Nsight Compute for an identified hot kernel. Use sanitizers
+   for memory, race, initialization, or synchronization failures.
+4. Change a lever justified by the limiter; compare the same workload and
+   measurement protocol. Keep builds narrow to the target architecture during
+   tuning. Report correctness, end-to-end effect, evidence limits, and the next
+   unresolved decision. Profiler replay timings are not throughput results.
 
-Use one high-level controller call:
+## Choose the current decision
 
-```bash
-python <skill-dir>/scripts/cuda_controller.py inspect --project <repo> --json
-python <skill-dir>/scripts/cuda_controller.py run --spec <spec.json|-> --json
-python <skill-dir>/scripts/cuda_controller.py background arm --spec <spec.json|-> --json
-python <skill-dir>/scripts/cuda_controller.py background enqueue --spec <spec.json|-> --json
-```
+| Question | Focused reference |
+| --- | --- |
+| Library, kernel building blocks, or custom CUDA? | [Compute libraries](references/common/compute-libraries.md) |
+| Fuse, split, specialize, branch, or change memory tier? | [Kernel mechanics](references/common/kernel-mechanics.md) |
+| CPU algorithm needs GPU decomposition/layout | [CPU porting](references/workloads/cpu-porting.md) |
+| Sparse scientific/omics formats and ownership | [Sparse workloads](references/workloads/sparse-bio.md) |
+| Hot kernel, roofline, registers, stalls | [Hot-kernel tuning](references/profiling/hot-kernel.md) |
+| Measurement setup or benchmark contract | [Diagnostics](references/profiling/diagnostics-workflow.md), [benchmarks](references/profiling/benchmark-standardization.md) |
+| Crash, illegal access, race, sync, device assert | [Crash debugging](references/debugging/crash-debugging.md) |
+| Allocation budget or workload does not fit | [Memory budgeting](references/systems/memory-budgeting.md) |
+| Host-device transfers or GPU starvation | [Host-device pipeline](references/systems/host-device-pipeline.md) |
+| Multi-GPU placement, NCCL, DDP | [Topology and DDP](references/systems/ddp-topology.md) |
+| PyTorch C++/CUDA op, stream/binding/autograd boundary | [Torch extensions](references/specialized/torch-extensions.md) |
+| NVHPC, OpenACC, OpenMP target, stdpar | [NVHPC choices](references/specialized/nvhpc.md) |
+| Explicit PTX/SASS request after isolating a hot path | [Low-level inspection](references/low-level/ptx.md) |
 
-Arming is explicit and persistent. Once armed, relevant todo completion,
-checkpoint, and handoff events wake private correctness/benchmark work without
-polling or changing todo output. An explicit `run` is foreground work: it
-preempts conflicting background activity and reserves its GPUs atomically.
-Campaign state stays project-local; physical GPU, profiler, interference-domain,
-and host-pressure interlocks are host-global.
-Keep builds in `benchmark.build_argv`; they run without a GPU lease. Background
-correctness repeats, fails fast, and skips only its dependent measurement chain,
-so unrelated watches keep using available devices. Comparable benchmark and
-profiler timing remains serialized through the host mutex.
-Use `background backfill --spec ...` once for project-supplied historical
-task/source-revision/benchmark mappings; it never rewrites todo history.
-Read `references/controller-background-contract.md` only when authoring these
-controller specs.
+## Apply the relevant architecture or system
 
-Retrieve only what the current decision needs:
+Read the matching family overlay when its constraints affect the decision;
+do not load other families. Shared guides identify their Volta-specific rules.
 
-```bash
-python <skill-dir>/scripts/cuda_controller.py evidence <id> --focus <topic> --json
-```
+| Target | Architecture guidance |
+| --- | --- |
+| V100 / Volta / `sm_70` | [Volta](references/architectures/volta/router.md); [Tensor Core decisions](references/architectures/volta/tensor-cores.md) for dense/blocked math |
+| A100 / Ampere / `sm_80` | [Ampere](references/architectures/ampere/router.md) |
+| H100/H200 / Hopper / `sm_90` | [Hopper](references/architectures/hopper/router.md) |
+| B100/B200 / Blackwell | [Blackwell](references/architectures/blackwell/router.md) |
 
-For guidance, native coder, mutator and scout agents read this installed
-`SKILL.md` through filesystem/command access, then follow
-`references/legacy-skill-router.md` to the architecture and narrow workload
-route. For V100 circuit questions, also follow the nested
-`references/architectures/volta/v100_atlas/START_HERE.md` and `NEED_INDEX.md`;
-retain prerequisites and evidence/uncertainty links. Do not inject an overview
-or send native roles through observer read/skill adapters.
+For this host, read [native system constraints](references/systems/native.md).
+For Grace-Blackwell deployment, read [GB200 NVL72](references/systems/gb200-nvl72.md).
+Discover current topology and device identity; recorded physical indices are
+examples, not placement authority.
 
-CUDA is the mandatory primary skill for actual GPU resource work. Use the
-existing controller foreground `run` interlock for testing/profiling/inference
-and coordinated GPU admission; environment masks alone are not reservations.
-The observer's target public adapter is `skill(query?, skill?, hints?, ...)`.
-Its agent reads installed instructions and maps; `skill_context` graphs and
-indexes only accelerate navigation and never replace skill routing authority.
-Project Control owns access, durability, freshness, direct authoritative reads
-and provenance. Public alias retirement and deployed profile qualification
-remain PC-SURFACE/API-03/API-04 consumer checks, not claims made by this guidance.
-The controller `guide` command remains a direct compatibility fallback.
-Publish materially applied routes with source identity alongside the ordinary
-context/handoff, following `../integrations/native-skill-routing.md`.
-Evidence summaries point to authoritative raw artifacts. Generated context views
-are read-only; edit canonical source only. The controller uses
-cpp-context-compiler for small semantic source slices and falls back to
-`split_cuda_translation_unit.py` when semantic retrieval is unavailable.
-For accepted changes, prefer a performance-intent ctxpp task packet carrying
-changed paths plus task and campaign identity before the slice/TU fallback.
+## Execute on the shared host
 
-Healthy background results remain silent. Correctness failures, material
-regressions, missed targets, serious variance/contamination, and relevant
-bottlenecks are ranked and bounded. The model interprets conflicting evidence
-and decides promotion.
+For substantial repository work, use Project Control's task scope and lifecycle.
+This skill supports bounded CUDA work authorized there, explicitly requested
+CUDA maintenance, or Project Control debugging.
 
-PTX/SASS remains explicit-request-only. Existing scripts, architecture labels,
-routes, `ok`/`partial`/`rerun`, benchmark contracts, debug capture behavior,
-and legacy mutex remain direct compatibility fallbacks. The complete prior
-router and all substantive guidance remain available in
-`references/legacy-skill-router.md` and the existing reference tree.
+Before running GPU work, read [host execution](references/execution/host-execution.md).
+Use `scripts/cuda_controller.py run --spec <spec.json|-> --json` for foreground
+execution. It owns reservations, foreground preemption, quiescence, profiler
+and timing interlocks. Device visibility or the benchmark mutex alone does not
+replace it. Background campaigns require explicit persistent arming; their
+specification is in the linked execution reference.
+
+Keep evidence transforms, build helpers, and source-context compilation in
+`scripts/`. Use their compact outputs to inform judgment. PTX/SASS stays
+explicit-request-only; isolate the relevant symbol before dumping. For source
+layout and dump preparation, read [code organization](references/common/code-organization.md).

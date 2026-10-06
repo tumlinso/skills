@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "checks": 3642,
-  "errors": [],
-  "validation_scope": "local artifact integrity and CPU semantic-record presence; not GPU performance",
-  "gpu_measured": false,
-  "cuda_compiled": false
-}

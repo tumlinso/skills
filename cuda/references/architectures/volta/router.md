@@ -1,66 +1,47 @@
 # Volta Router
 
-Assume **Tesla V100 16 GB, `sm_70`**, usually on the native 4xV100 host.
+Assume **Tesla V100 16 GB, `sm_70`**, usually on the native 4xV100 host. Use
+this route for V100-specific tuning, native Volta behavior, or `sm_70`
+implementation questions. Keep builds narrow to `sm_70`, prefer native
+measurements over generic CUDA medians, and treat repeated HBM passes as a
+first-class loss.
 
-Use this route for native Volta behavior, V100-specific tuning, or `sm_70`
-implementation questions.
+The recorded native-host profile has fast pairs `0 <-> 2` and `1 <-> 3`, with
+`0 <-> 3` and `1 <-> 2` the worst steady-state paths. Revalidate runtime
+topology before applying rank placement; controller admission and interlock
+rules govern GPU use. Read benchmark and profiler summaries before raw reports,
+then follow the authored route table below.
 
-Route narrowly. Read one row, then one micro-router, then one deep manual only
-if still unresolved.
+## Architecture-specific routes
 
-If benchmark or profiler summaries already exist, run
-`scripts/common/recommend_cuda_route.py --arch volta ...` before opening more
-docs.
+| Problem | Route and decision cue |
+| --- | --- |
+| Mixed native path, bottleneck not yet classified | [Native V100 guide](native-v100-extreme.md). If loss is repeated HBM traffic or launch trains, continue to [fusion and specialization](fusion-and-specialization.md); if one kernel dominates, use [hot-kernel profiling](../../profiling/hot-kernel.md); if dense blocked math fits, check [Tensor Core routing](tensor-cores.md). Load the deep guide only after classification remains mixed. |
+| Fuse, split, specialize, bin, or use graphs | [Fusion and specialization](fusion-and-specialization.md). Bias toward fusion when splitting rereads or rewrites full tensors through HBM; moderate divergence can be cheaper than launch trains and extra passes. Split for spills, occupancy collapse, or stable workload classes. Use CUDA Graphs after obvious fusion and grouping opportunities. Consult [common kernel mechanics](../../common/kernel-mechanics.md) or [launch-bound patterns](../../profiling/roofline-launch-bound-patterns.md) only if the tradeoff remains unclear. |
+| One hot kernel, `ncu` limiter, spills, or occupancy | Classify with [hot-kernel profiling](../../profiling/hot-kernel.md) first. If memory-bound, fix bytes or fusion depth before instruction tuning; if compute-path mismatch, switch to [Tensor Core routing](tensor-cores.md); for register/shared-memory limits, use [register pressure and occupancy](register-pressure-and-occupancy.md), then [V100 optimization mechanics](optimization-guide.md) for the specific lever. |
+| Tensor Core eligibility or weak Tensor Core activity | Start with [Tensor Core routing](tensor-cores.md): check eligibility before owning a regular FP kernel and keep a clean library path if it expresses the op. For custom-op fusion/layout ownership, consider CUTLASS or WMMA; load [low-level Tensor Core mechanics](tensor-core-low-level.md) only when that path is already correct but still too slow or glue-heavy. |
+| PyTorch C++/CUDA extension | Keep Python thin and the real boundary in C++/CUDA. Check Tensor Core ownership for dense math, reconsider the op boundary when it is only repeated library launches, and switch to [crash triage](../../debugging/crash-debugging.md) when it fails. Continue with [extension guidance](../../specialized/torch-extensions.md) and its [build and binding playbook](../../specialized/torch-extension-playbook.md); return here for Tensor Core or HBM-heavy fusion choices. |
+| Benchmark design and evidence | Keep outputs structured and read `summary.txt` or `combined_summary.txt` before raw artifacts. Use [native benchmark loop](native-benchmark-loop.md), then [benchmark standardization](../../profiling/benchmark-standardization.md) for contract or summary shape; use [Volta profiling interpretation](profiling-interpretation.md) if measurement validity remains weak. |
 
-Native topology:
+## Shared problem classes
 
-- fast pair: `0 <-> 2`
-- fast pair: `1 <-> 3`
-- worst steady-state paths: `0 <-> 3`, `1 <-> 2`
+For system-level dense-library choices, Tensor Core shape engineering,
+communication strategy, and the V100 priority order, open the
+[Volta programming guide](programming-guide.md) when that broad decision is
+needed; keep it closed for routine kernel triage.
 
-Rules:
+Use the skill's shared guides for [memory fit](../../systems/memory-budgeting.md),
+[host-device pipeline](../../systems/host-device-pipeline.md),
+[DDP topology](../../systems/ddp-topology.md), [crash debugging](../../debugging/crash-debugging.md),
+[CPU porting](../../workloads/cpu-porting.md), [PTX/SASS](../../low-level/ptx.md),
+[NVHPC](../../specialized/nvhpc.md), and [sparse bioinformatics](../../workloads/sparse-bio.md).
+Only when PTX/SASS work is explicitly requested, and after the hot symbol is
+isolated, use [Volta PTX guidance](ptx-extreme.md) or [SASS/PTX triage](sass-and-ptx-triage.md).
 
-1. Prefer native Volta paths, not generic CUDA median doctrine.
-2. Treat repeated HBM passes as a first-class loss.
-3. Use summaries before raw reports.
-4. Keep the build narrow to `sm_70`.
+## Reporting the route
 
-## Choose Your Path
-
-| If the task sounds like... | Start here | Then load only if needed |
-| --- | --- | --- |
-| "make native V100 faster", "mixed glue-heavy path", "not sure which native loss dominates" | `references/architectures/volta/routes/native.md` | `references/architectures/volta/native-v100-extreme.md` |
-| "fuse or split", "divergence vs launches", "specialize or bin", "graphs vs fusion" | `references/architectures/volta/routes/fusion.md` | `references/addendum-kernel-mechanics.md`, `references/roofline-launch-bound-patterns.md` |
-| "one kernel is hot", "Nsight Compute limiter", "register pressure", "spills", "shared memory too high" | `references/architectures/volta/routes/hot-kernel.md` | `references/addendum-kernel-roofline-lab.md`, `references/architectures/volta/register-pressure-and-occupancy.md`, `references/v100_cuda_cpp_optimize.md` |
-| "cuBLAS", "cuSPARSE", "cuDNN", "CUTLASS", "CUB", "NVIDIA library", "library or custom CUDA" | `references/common/compute-libraries.md` | `references/architectures/volta/routes/tensor.md`, `references/v100_cuda_cpp_optimize.md` |
-| "Tensor Cores", "WMMA", "CUTLASS", "dense blocked custom op", "Tensor Cores not firing" | `references/architectures/volta/routes/tensor.md` | `references/addendum-tensor-core-routing.md`, `references/volta-tensor-core-low-level.md` |
-| "PyTorch C++/CUDA op", "extension boundary", "custom op on V100" | `references/architectures/volta/routes/torch-op.md` | `references/addendum-torch-extensions.md`, `references/torch-extension-playbook.md` |
-| "benchmark loop", "profile-build", "summary-first benchmarking", "standardize benchmarks" | `references/architectures/volta/routes/benchmark.md` | `references/architectures/volta/native-benchmark-loop.md`, `references/benchmark-standardization.md` |
-| "it does not fit", "buffers exploded", "batch collapsed" | `references/addendum-memory-budgeting.md` | `references/memory-accounting.md`, `references/memory-fit-strategy.md`, `references/v100_programming_guide.md` |
-| "GPU is idle", "HtoD dominates", "pipeline starving device" | `references/addendum-host-device-pipeline.md` | `references/pipeline-bottlenecks.md`, `references/pipeline-overlap-rules.md`, `references/v100_profiling_interpretation.md` |
-| "DDP or NCCL is slow", "which ranks go where", "multi-GPU scaling is bad" | `references/addendum-ddp-topology.md` | `references/ddp-topology-playbook.md`, `references/v100_programming_guide.md` |
-| "it crashes", "illegal memory access", "compute-sanitizer", "cuda-gdb" | `references/addendum-crash-debugging.md` | `references/compute-sanitizer-playbook.md`, `references/cuda-gdb-playbook.md`, `references/crash-signature-map.md` |
-| "How do I port CPU-centric code to CUDA?" | `references/addendum-cpu-porting.md` | `references/cpu-porting-decision-tree.md`, `references/cpu-to-cuda-rewrite-patterns.md`, `references/cpu-porting-sparse-bio.md` |
-| "I explicitly want PTX guidance", "show me PTX or SASS" | `references/addendum-ptx-routing.md` | `references/architectures/volta/sass-and-ptx-triage.md`, `references/ptx-volta-extreme.md` |
-| "Should this use NVHPC, OpenACC, OpenMP target, or stdpar?" | `references/addendum-nvhpc-cpp.md` | `references/nvhpc-tradeoffs.md`, `references/v100_cuda_cpp_optimize.md` |
-| "This is sparse omics or bio data" | `references/addendum-bio-data-layouts.md` | `references/v100_bioinformatics_guide.md` |
-| "I need a general V100 path" | `references/architectures/volta/routes/native.md` | `references/v100_programming_guide.md` |
-
-## Scripts
-
-- `scripts/common/recommend_cuda_route.py`: map benchmark or profiler summaries to one next route
-- `scripts/profile_nsys.sh`: timeline and setup summary
-- `scripts/profile_ncu.sh`: hot-kernel counter summary
-- `scripts/debug_crash.sh`, `scripts/debug_compute_sanitizer.sh`, `scripts/debug_cuda_gdb.sh`: crash triage
-- `scripts/dump_ptx_hotspot.sh`, `scripts/split_cuda_translation_unit.py`: explicit PTX/SASS isolation
-- `scripts/architectures/volta/emit_profile_build.py`, `scripts/architectures/volta/summarize_ptxas_verbose.py`, `scripts/architectures/volta/summarize_sass_hotspot.py`, `scripts/architectures/volta/gen_native_bench_matrix.py`: narrow Volta helpers
-
-## Output
-
-Be explicit about:
-
-- whether the route assumed native V100 `sm_70`
-- which micro-router owned the first decision
-- whether benchmark, `nsys`, `ncu`, or dump evidence drove the call
-- whether the path stays library-backed, fused custom CUDA, CUTLASS, WMMA, or another owner
-- whether HBM traffic, launch trains, register pressure, Tensor routing, or topology dominated first
+State whether the route assumed native `sm_70`, which evidence drove the call
+(benchmark, Nsight Systems, Nsight Compute, or a focused dump), and which owner
+remains appropriate: library, fused custom CUDA, CUTLASS, WMMA, or another
+implementation. Name the first dominant loss among HBM traffic, launch trains,
+register pressure, Tensor Core routing, and topology.
