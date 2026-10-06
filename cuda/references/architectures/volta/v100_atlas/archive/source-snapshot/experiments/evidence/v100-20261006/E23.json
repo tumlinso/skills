@@ -1,0 +1,394 @@
+{
+  "correctness": {
+    "executed_cases": 4,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E23",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 4,
+          "size": 4096
+        },
+        {
+          "iterations": 16,
+          "size": 65536
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_memory"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E23-memcheck-0/artifacts",
+    "controller/E23-memcheck-0/lease_receipt.json",
+    "controller/E23-memcheck-0/stderr_path.txt",
+    "controller/E23-memcheck-0/stdout_path.txt",
+    "controller/E23-ncu-0/artifacts",
+    "controller/E23-ncu-0/lease_receipt.json",
+    "controller/E23-ncu-0/stderr_path.txt",
+    "controller/E23-ncu-0/stdout_path.txt",
+    "controller/E23-nsys-0/artifacts",
+    "controller/E23-nsys-0/lease_receipt.json",
+    "controller/E23-nsys-0/stderr_path.txt",
+    "controller/E23-nsys-0/stdout_path.txt",
+    "controller/E23-timing-0/artifacts",
+    "controller/E23-timing-0/lease_receipt.json",
+    "controller/E23-timing-0/stderr_path.txt",
+    "controller/E23-timing-0/stdout_path.txt",
+    "controller/E23-timing-1/artifacts",
+    "controller/E23-timing-1/lease_receipt.json",
+    "controller/E23-timing-1/stderr_path.txt",
+    "controller/E23-timing-1/stdout_path.txt",
+    "controller/E23-verify-0/artifacts",
+    "controller/E23-verify-0/lease_receipt.json",
+    "controller/E23-verify-0/stderr_path.txt",
+    "controller/E23-verify-0/stdout_path.txt",
+    "controller/E23-verify-1/artifacts",
+    "controller/E23-verify-1/lease_receipt.json",
+    "controller/E23-verify-1/stderr_path.txt",
+    "controller/E23-verify-1/stdout_path.txt"
+  ],
+  "result_summary": "4 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "accesses": "2097152",
+        "allocation_granularity_bytes": "2097152",
+        "device": "0",
+        "elements": "524288",
+        "logical_domain_bytes": "2097152",
+        "repeats": "30",
+        "requested_elements": "4096",
+        "setup_scope": "ring allocation, host initialization, host-to-device copy, and synchronization; excluded from kernel timing",
+        "warmup": "5"
+      },
+      "experiment": "E23",
+      "limitations": [
+        "The ring baseline includes modulo address generation and is not an isolated address-generation instruction benchmark."
+      ],
+      "metrics": {
+        "checksum": 549756862464,
+        "device_ms_median": 264.81048583984375,
+        "device_ms_p95": 264.8330383300781,
+        "median_ms": 264.81048583984375,
+        "p95_ms": 264.8330383300781,
+        "setup_wall_ms": 1.804433,
+        "setup_wall_ms_median": 1.804433,
+        "setup_wall_ms_p95": 1.804433
+      },
+      "raw_sample_counts": {
+        "device_ms": 30,
+        "setup_wall_ms": 1
+      },
+      "status": "GPU_RUN",
+      "variant": "ring_modulo_baseline"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "accesses": "2097152",
+        "aliases": "2 fixed mappings of one allocation",
+        "allocation_granularity_bytes": "2097152",
+        "device": "0",
+        "logical_domain_bytes": "2097152",
+        "logical_domain_elements": "524288",
+        "mapped_bytes_per_alias": "2097152",
+        "mapping_changes_during_access": "false",
+        "repeats": "30",
+        "setup_scope": "VMM address reservation, physical allocation, two mappings, access permissions, initialization, and synchronization; excluded from kernel timing",
+        "warmup": "5"
+      },
+      "experiment": "E23",
+      "limitations": [
+        "The two fixed aliases share one physical allocation; only kernel-separated accesses are used and no mapping changes while accesses are live.",
+        "VMM granularity is not assumed to equal hardware translation-page size; timings do not establish TLB capacity or physical address bits."
+      ],
+      "metrics": {
+        "checksum": 549756862464,
+        "device_ms_median": 51.989505767822266,
+        "device_ms_p95": 51.99564743041992,
+        "median_ms": 51.989505767822266,
+        "p95_ms": 51.99564743041992,
+        "setup_wall_ms": 0.416146,
+        "setup_wall_ms_median": 0.416146,
+        "setup_wall_ms_p95": 0.416146
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/62f94b98-c63b-4c7f-bfbc-f56c4823dd16/ncu/run/raw.csv",
+          "raw_csv_bytes": 60663,
+          "raw_csv_rows": 28,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/62f94b98-c63b-4c7f-bfbc-f56c4823dd16/ncu/run/report.ncu-rep",
+          "report_bytes": 414662,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.0007694614584685417,
+              "name": "<unnamed>::ring_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 29.999999999999996,
+              "samples": 13,
+              "share_pct": 82.76429026849415,
+              "sm_pct": 0.04994392304579929,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.0007694614584685417,
+                "name": "<unnamed>::ring_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 29.999999999999996,
+                "samples": 13,
+                "share_pct": 82.76429026849415,
+                "sm_pct": 0.04994392304579929,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.003641463619948214,
+                "name": "<unnamed>::alias_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 27.999999999999993,
+                "samples": 13,
+                "share_pct": 17.23563534426895,
+                "sm_pct": 0.0342639232820307,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.04394499999999999,
+                "name": "<unnamed>::fill_values(unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 1,
+                "share_pct": 7.438723691474005e-05,
+                "sm_pct": 15.008821,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/384eb147-5a5b-43f7-9912-15c0a3addece/nsys/run/report.nsys-rep",
+          "report_bytes": 260774,
+          "sqlite_activity_counts": {
+            "kernels": 71,
+            "memcpy": 3,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 74,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/384eb147-5a5b-43f7-9912-15c0a3addece/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 71.0,
+              "launch_pct": 0.013408287091494487,
+              "malloc_free_pct": 0.005992007342501446,
+              "memcpy_memset_pct": 0.0033496145760976235
+            },
+            "bottleneck_hints": [],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": false,
+            "next_step": "Use the paired Nsight Compute run on the hottest steady-state kernel.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "CUDA kernel rows were exported and the run looks representative enough for first-pass timeline decisions."
+            ],
+            "recommended_route": "hot-kernel",
+            "recommended_route_reason": "Timeline is usable and the next question is kernel-local cause.",
+            "status": "ok",
+            "steady_state_timing_valid": true,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 264787.766,
+                "instances": 35,
+                "name": "<unnamed>::ring_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)",
+                "time_pct": 83.6,
+                "total_ms": 9267.571811
+              },
+              {
+                "avg_us": 51940.9464,
+                "instances": 35,
+                "name": "<unnamed>::alias_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)",
+                "time_pct": 16.4,
+                "total_ms": 1817.933124
+              },
+              {
+                "avg_us": 2.816,
+                "instances": 1,
+                "name": "<unnamed>::fill_values(unsigned int *, unsigned long)",
+                "time_pct": 0.0,
+                "total_ms": 0.002816
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "device_ms": 30,
+        "setup_wall_ms": 1
+      },
+      "status": "GPU_RUN",
+      "variant": "vmm_fixed_alias_window"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "accesses": "8388608",
+        "allocation_granularity_bytes": "2097152",
+        "device": "0",
+        "elements": "524288",
+        "logical_domain_bytes": "2097152",
+        "repeats": "30",
+        "requested_elements": "65536",
+        "setup_scope": "ring allocation, host initialization, host-to-device copy, and synchronization; excluded from kernel timing",
+        "warmup": "5"
+      },
+      "experiment": "E23",
+      "limitations": [
+        "The ring baseline includes modulo address generation and is not an isolated address-generation instruction benchmark."
+      ],
+      "metrics": {
+        "checksum": 2199027449856,
+        "device_ms_median": 1059.114013671875,
+        "device_ms_p95": 1059.134521484375,
+        "median_ms": 1059.114013671875,
+        "p95_ms": 1059.134521484375,
+        "setup_wall_ms": 1.790649,
+        "setup_wall_ms_median": 1.790649,
+        "setup_wall_ms_p95": 1.790649
+      },
+      "raw_sample_counts": {
+        "device_ms": 30,
+        "setup_wall_ms": 1
+      },
+      "status": "GPU_RUN",
+      "variant": "ring_modulo_baseline"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "accesses": "8388608",
+        "aliases": "2 fixed mappings of one allocation",
+        "allocation_granularity_bytes": "2097152",
+        "device": "0",
+        "logical_domain_bytes": "2097152",
+        "logical_domain_elements": "524288",
+        "mapped_bytes_per_alias": "2097152",
+        "mapping_changes_during_access": "false",
+        "repeats": "30",
+        "setup_scope": "VMM address reservation, physical allocation, two mappings, access permissions, initialization, and synchronization; excluded from kernel timing",
+        "warmup": "5"
+      },
+      "experiment": "E23",
+      "limitations": [
+        "The two fixed aliases share one physical allocation; only kernel-separated accesses are used and no mapping changes while accesses are live.",
+        "VMM granularity is not assumed to equal hardware translation-page size; timings do not establish TLB capacity or physical address bits."
+      ],
+      "metrics": {
+        "checksum": 2199027449856,
+        "device_ms_median": 207.76754760742188,
+        "device_ms_p95": 207.77574157714844,
+        "median_ms": 207.76754760742188,
+        "p95_ms": 207.77574157714844,
+        "setup_wall_ms": 0.401618,
+        "setup_wall_ms_median": 0.401618,
+        "setup_wall_ms_p95": 0.401618
+      },
+      "raw_sample_counts": {
+        "device_ms": 30,
+        "setup_wall_ms": 1
+      },
+      "status": "GPU_RUN",
+      "variant": "vmm_fixed_alias_window"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

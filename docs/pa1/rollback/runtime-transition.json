@@ -1,0 +1,626 @@
+{
+  "add": [
+    "local-coding-worker/local_worker/__init__.py"
+  ],
+  "authority_exclusion_source_inventory_sha256": "d522eb5f138c31b5caa773fd9d3daa256a647f85dff068f54a9efe9e6b2ad904",
+  "candidate_hashes": {
+    "local-coding-worker/SKILL.md": "c089c2e69a2e8af1bf4df1b3b3d8dc4b2ce5d9ee6cff62674e7494f94a03b925",
+    "local-coding-worker/config/host-profile.example.toml": "08019499e1366613770ea2e288ccb112eaeb24932af07148931370bb45230bc9",
+    "local-coding-worker/config/production-profile.toml": "63697155efb09d3c832c589a6fdc4f6334d580eead127289b99b3f5d6a5e9cdc",
+    "local-coding-worker/local_worker/__init__.py": "a706310698114be05d2c9df75cfd8dc27db3d43e6a1e9d38842f338bb370a0a9",
+    "local-coding-worker/references/adapter-contract.md": "0f704fd917e5909475957ee5f1c604633d48dbcf99a85733025a2a8782a8aef9",
+    "local-coding-worker/references/integration-contract.md": "31db9c27dc63628d89f8d72c8c89f420d6fc90c97b08804145cbad172c68a6fb",
+    "local-coding-worker/references/model-cache.md": "0eae8aafaa153f117a46f55b536c600dd5beee5e47a0929fd3a0e5bdf984c598",
+    "local-coding-worker/references/observer-port.md": "78725d2dd390c7c3c67b1ce186d6a375ab35e228f7eb0d9657345390e9623821",
+    "local-coding-worker/references/read-only-contract.md": "b5af517719d1266759cd37ea645fd5ce5bf967c059e5181682cd4fddf5cb1c83",
+    "local-coding-worker/references/resource-policy.md": "9555ee56d319a36b30e81d44dd3b28359e10230b5c199dec095ac940f417ed31",
+    "local-coding-worker/references/writable-work-contract.md": "d0cec0d0e360937a56ea70bef8b0d14c09a051749270e2f784742bf99bf08490",
+    "local-coding-worker/schemas/delegation-spec-v1.schema.json": "0bce2d3f971ff2fcb00deb27454443192ce0cf2f3b82a0c298729915c6708601",
+    "local-coding-worker/schemas/delegation-spec-v2.schema.json": "f8cffccce765ef8c6e5a5313eeea449f84a979bf6cb724c5f4ffc83a71f2db2c",
+    "local-coding-worker/schemas/harness-policy-v2.schema.json": "ab60fd1695c05d5242705c105aee89579bae1f56b160f51a81d194c6a42d9cb5",
+    "local-coding-worker/schemas/model-cache-v1.schema.json": "1015e2252c22fd947ca7d7e385bbdbf2ca1062179462f01cbe61b235f3cd079b",
+    "local-coding-worker/schemas/model-outcome-v1.schema.json": "34288bc8ace0c8257f68e1198a92d0e43e60c6e1d8f78aa875fc7ab57bc2f113",
+    "local-coding-worker/schemas/model-service-profile-v2.schema.json": "adabf34d117c1b576a4a15bf39ff82dcf38a9681cecb7d6f08231412bd90f86c",
+    "local-coding-worker/schemas/worker-result-v1.schema.json": "c4bf35ee4df32bc84deefdf6c111e2fa4f2ab2bb155f9f4a84ce608540d1a2da",
+    "local-coding-worker/schemas/worker-result-v2.schema.json": "8d94c67d3237a54a84678593f2c064339ff34b825d4e36daa4f4329f280c0638",
+    "local-coding-worker/scripts/inspect_host.py": "617ad9cbf01d695b05303c1975946ced9483e772c8c9ed47e3833aadc70e7945",
+    "local-coding-worker/scripts/local_worker.py": "97cdf6be686525da07976384b7272b70725af77d7bae57649d45700daa9e8f29",
+    "local-coding-worker/scripts/worker_core.py": "9f5e92104196e031334c725f32886233fcaa64f7734637c6c5bd31ab8afd6eaa"
+  },
+  "candidate_modes": {
+    "local-coding-worker/SKILL.md": "0600",
+    "local-coding-worker/config/host-profile.example.toml": "0664",
+    "local-coding-worker/config/production-profile.toml": "0664",
+    "local-coding-worker/local_worker/__init__.py": "0664",
+    "local-coding-worker/references/adapter-contract.md": "0664",
+    "local-coding-worker/references/integration-contract.md": "0664",
+    "local-coding-worker/references/model-cache.md": "0664",
+    "local-coding-worker/references/observer-port.md": "0664",
+    "local-coding-worker/references/read-only-contract.md": "0664",
+    "local-coding-worker/references/resource-policy.md": "0664",
+    "local-coding-worker/references/writable-work-contract.md": "0664",
+    "local-coding-worker/schemas/delegation-spec-v1.schema.json": "0664",
+    "local-coding-worker/schemas/delegation-spec-v2.schema.json": "0664",
+    "local-coding-worker/schemas/harness-policy-v2.schema.json": "0664",
+    "local-coding-worker/schemas/model-cache-v1.schema.json": "0664",
+    "local-coding-worker/schemas/model-outcome-v1.schema.json": "0664",
+    "local-coding-worker/schemas/model-service-profile-v2.schema.json": "0664",
+    "local-coding-worker/schemas/worker-result-v1.schema.json": "0664",
+    "local-coding-worker/schemas/worker-result-v2.schema.json": "0664",
+    "local-coding-worker/scripts/inspect_host.py": "0664",
+    "local-coding-worker/scripts/local_worker.py": "0775",
+    "local-coding-worker/scripts/worker_core.py": "0664"
+  },
+  "excluded_unportable_bytecode": [
+    {
+      "bytes": 57867,
+      "path": "local-coding-worker/evals/__pycache__/host_bakeoff.cpython-313.pyc",
+      "sha256": "3cd3d32570f97930597359f9dd30b96659221eed907891ac374097f8bd6665d6"
+    },
+    {
+      "bytes": 19263,
+      "path": "local-coding-worker/evals/__pycache__/model_staging.cpython-313.pyc",
+      "sha256": "38de6e2cab979ab68481a5c6a14e97690375676f5c0394ad32303a80855c4fda"
+    },
+    {
+      "bytes": 341,
+      "path": "local-coding-worker/local_worker/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "ecc80d28a5b3da75c26fd1f7569052bb11bb6b9a9e7aafccf0983f57943eb3c1"
+    },
+    {
+      "bytes": 13748,
+      "path": "local-coding-worker/local_worker/__pycache__/acceptance.cpython-313.pyc",
+      "sha256": "d8d0ea75453f53f37d67ee4793c4d3ec19d9c50411c50ea4f67d7eff3de27ed9"
+    },
+    {
+      "bytes": 4692,
+      "path": "local-coding-worker/local_worker/__pycache__/canonical_runtime.cpython-313.pyc",
+      "sha256": "2b42b8e0fd9abf1fb16a81b013255a7f6d6710ac052c79b4fccd4785ec9b1ca3"
+    },
+    {
+      "bytes": 79452,
+      "path": "local-coding-worker/local_worker/__pycache__/controller.cpython-313.pyc",
+      "sha256": "d44d8c6aa64e60213b09f86a50d12d0d0dccce5b3cefa2f98d58c068dbe67661"
+    },
+    {
+      "bytes": 19012,
+      "path": "local-coding-worker/local_worker/__pycache__/model_cache.cpython-313.pyc",
+      "sha256": "a3f19f21bb31d69a146fbc225bca6a2d88fb41c0e7db25f88f8bbabdc41fb05c"
+    },
+    {
+      "bytes": 74505,
+      "path": "local-coding-worker/local_worker/__pycache__/observer_runtime.cpython-313.pyc",
+      "sha256": "00cf018a5b80b6df7a4d276afb76f8d6b1778fc04a424cce518942fe8809d4c3"
+    },
+    {
+      "bytes": 3946,
+      "path": "local-coding-worker/local_worker/__pycache__/policy.cpython-313.pyc",
+      "sha256": "4c226312c809fc7dee7cb9b9cbc9b95550a4c92867300e9fd67ec34f39cb5eee"
+    },
+    {
+      "bytes": 120450,
+      "path": "local-coding-worker/local_worker/__pycache__/production_checks.cpython-313.pyc",
+      "sha256": "bc221141de045cf018845f78aa4779141d07b130d51460a6c81ea8f67944f854"
+    },
+    {
+      "bytes": 7583,
+      "path": "local-coding-worker/local_worker/__pycache__/residency.cpython-313.pyc",
+      "sha256": "f08125eff52a09a4cbab966f13cdd61d0e4265f262f711fdc08a34a10fee00f8"
+    },
+    {
+      "bytes": 9624,
+      "path": "local-coding-worker/local_worker/__pycache__/result_validation.cpython-313.pyc",
+      "sha256": "9bb28240fb4a74bfecbf382d4d7439228585e495a7eeac7eb10f0daf27b63ebe"
+    },
+    {
+      "bytes": 1783,
+      "path": "local-coding-worker/local_worker/__pycache__/reviewer.cpython-313.pyc",
+      "sha256": "63cd8b5206b4bdd6ce747579f0867522a84f766d2d24ac7f7e051b99ae2f5d28"
+    },
+    {
+      "bytes": 18639,
+      "path": "local-coding-worker/local_worker/__pycache__/service.cpython-313.pyc",
+      "sha256": "3686590ad2a5f6f53ed0326dcd122d65618d0070d7268e672ba34615d7eb4659"
+    },
+    {
+      "bytes": 148935,
+      "path": "local-coding-worker/local_worker/__pycache__/supervisor.cpython-313.pyc",
+      "sha256": "dca32d32f8db958170bc4025ebebfebe1651e97b3f2285ee37107e19710b3233"
+    },
+    {
+      "bytes": 9318,
+      "path": "local-coding-worker/local_worker/__pycache__/telemetry.cpython-313.pyc",
+      "sha256": "b805b1b8e47777abf288f6de94069988b9c83e449d47f4ff141116cc9aa2a7bb"
+    },
+    {
+      "bytes": 4090,
+      "path": "local-coding-worker/local_worker/__pycache__/verification.cpython-313.pyc",
+      "sha256": "e81f50f218f8b77d9b842c3b67b16f557a46917f082944e8d4c2ccf281127dd5"
+    },
+    {
+      "bytes": 11928,
+      "path": "local-coding-worker/local_worker/__pycache__/workspace.cpython-313.pyc",
+      "sha256": "2aac7e413d64194fe7ec772941284f7e5c68e772742fb42003555aa88210dc2e"
+    },
+    {
+      "bytes": 322,
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "67769485e198c0f9bb2f42e250751d8b6b58a312c45ec81cb1db60bf9c8e1bbe"
+    },
+    {
+      "bytes": 12941,
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/base.cpython-313.pyc",
+      "sha256": "bcc34d7b342cca82a4247dd1bb8a098c2eac196833bf2380354a23f0cb57f58d"
+    },
+    {
+      "bytes": 3269,
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/codex_cli.cpython-313.pyc",
+      "sha256": "6436df34e277b5a3489123d6d056f9d9edc4367ae46a16f802e823b1b252b61c"
+    },
+    {
+      "bytes": 20911,
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/qwen_code.cpython-313.pyc",
+      "sha256": "a190f0f9bedb655d170a1d7fbf6c9d2a1e007c513e638d19ab5b9e6890d07758"
+    },
+    {
+      "bytes": 266,
+      "path": "local-coding-worker/local_worker/servers/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "7ea76508746228ff7ea464c7ac2df560fbc947802ac66d98b4e3ab83420c2773"
+    },
+    {
+      "bytes": 62307,
+      "path": "local-coding-worker/local_worker/servers/__pycache__/llama_cpp.cpython-313.pyc",
+      "sha256": "66d9bc0ac609429af454cb143fae05335e3ef23746a128afaabefb7fc7140ab1"
+    },
+    {
+      "bytes": 11389,
+      "path": "local-coding-worker/scripts/__pycache__/inspect_host.cpython-313.pyc",
+      "sha256": "0a0481ffa2b2382325acf17a6f354212e2dc6d027b642e9666a080efd13c9fbd"
+    },
+    {
+      "bytes": 24036,
+      "path": "local-coding-worker/scripts/__pycache__/local_worker.cpython-313.pyc",
+      "sha256": "b41edfc93e44be57ed673f2e86d61d55a9ebe62149347c4f080278b78508601f"
+    },
+    {
+      "bytes": 29394,
+      "path": "local-coding-worker/scripts/__pycache__/worker_core.cpython-313.pyc",
+      "sha256": "0effd9795e5f480efbc374bb73229887bfcf33d54d5ef2ee3ea56fe7af2d2eae"
+    },
+    {
+      "bytes": 13823,
+      "path": "local-coding-worker/tests/__pycache__/test_adapters.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "66fe3cd96726a13ca8e9b64465e24f531bb143549aa9d0df310a5b80c80ae6cb"
+    },
+    {
+      "bytes": 13710,
+      "path": "local-coding-worker/tests/__pycache__/test_adapters.cpython-313.pyc",
+      "sha256": "22f28eadf82551d39abfe9483a0850659d4f569e9b678b6d578e8f6c7d31fefb"
+    },
+    {
+      "bytes": 4616,
+      "path": "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "1f30a8a932787e893b99dfd953c64ab1c468f41747a6962e4201c9da2df67223"
+    },
+    {
+      "bytes": 4503,
+      "path": "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313.pyc",
+      "sha256": "08269e1d042905f6766d71fca17075f9376e466749f8e91291d16af7688eca24"
+    },
+    {
+      "bytes": 48705,
+      "path": "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "294306d27d9d79a87a21a59df2cfd08b139572651f9b97f24817ce48ce15f884"
+    },
+    {
+      "bytes": 48592,
+      "path": "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313.pyc",
+      "sha256": "f09eb7657dfb018c15175ef9596ca4795cfc16e2b3c5f09777200e35f9a1516f"
+    },
+    {
+      "bytes": 12578,
+      "path": "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "2b627796f6a65914a229831e5d2c1b9278d7f0a398427d0ca41c4e2d533d64cc"
+    },
+    {
+      "bytes": 12464,
+      "path": "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313.pyc",
+      "sha256": "8e3d2aee801463a7199772dd9ba55f387d82ddf66849f1fd3a23d5b7f530af8c"
+    },
+    {
+      "bytes": 6959,
+      "path": "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "594968cb9dba1dca256f717968c53b3ccde5b5053426ea99d95116d2eef93fd5"
+    },
+    {
+      "bytes": 6113,
+      "path": "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313.pyc",
+      "sha256": "27ab4a22767e8ad2504aa0e0bc17869c898e4c247b57f7b286c1ac1e118d6d71"
+    },
+    {
+      "bytes": 14945,
+      "path": "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "6d22d4b6d96e96492706c3d421f6c3263d4fa30998036dec4125f03ce376c841"
+    },
+    {
+      "bytes": 37846,
+      "path": "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313.pyc",
+      "sha256": "3fc233b142667b94b825941a070ec9870ec512d06e8dfcc21760a43546d3a236"
+    },
+    {
+      "bytes": 10751,
+      "path": "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "696e9ab16aa655ccf4764c6ba9f76a98a264094361f96892a2cbf7047ed29cf9"
+    },
+    {
+      "bytes": 10638,
+      "path": "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313.pyc",
+      "sha256": "a4ce40d19565e36e2565acfadfb64118a1412731ec920ee9209b826faebb3eea"
+    },
+    {
+      "bytes": 11081,
+      "path": "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "58458dc188862e7d00fec5898ddd327144fd2179905b4781449a60b51cf3558c"
+    },
+    {
+      "bytes": 10236,
+      "path": "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313.pyc",
+      "sha256": "b3a7131e3e9ea94017b64634b897e64421e28ec9c2239541874ce4e4ce2af2ce"
+    },
+    {
+      "bytes": 7248,
+      "path": "local-coding-worker/tests/__pycache__/test_policy.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "6132c266ee36c52a443a4931f3ca17a9560028ce445ad1c6b4dd6a8624a4eff6"
+    },
+    {
+      "bytes": 7104,
+      "path": "local-coding-worker/tests/__pycache__/test_policy.cpython-313.pyc",
+      "sha256": "c3ca07078bfe296f0c13f2a84e99dbb619d8508082506d6f34cec88273e8e90b"
+    },
+    {
+      "bytes": 19095,
+      "path": "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "e54c5147049f7fd9af4314687d26de3d52834fa219976d3af46289ea1116e88e"
+    },
+    {
+      "bytes": 17971,
+      "path": "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313.pyc",
+      "sha256": "4179e207522ee62d7a8bf78dabb2b9bf88a4f777bddb2bb35ef614b43b018eeb"
+    },
+    {
+      "bytes": 9363,
+      "path": "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "dcefffa4a65d6ecbb70d0db72beb01e001f101c4821f491e4a9bad9875b32d2f"
+    },
+    {
+      "bytes": 9250,
+      "path": "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313.pyc",
+      "sha256": "c41cf585ea1826cc454ce974d7d06936803a0a1c26443772c755734d65957de6"
+    },
+    {
+      "bytes": 14070,
+      "path": "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "1cd7edf6909fc767d74a32db2c22e6b7a1d29a703094277f761cbb55f9825074"
+    },
+    {
+      "bytes": 13957,
+      "path": "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313.pyc",
+      "sha256": "4c0b37c3e4fe49844de7128990e36af89a1a65e1bb384e5bf4e4245fba585ce4"
+    },
+    {
+      "bytes": 18108,
+      "path": "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "3cf517bcbbf00faa710b169075ba606a94a0a51357bb786b6b7f572742fa0e17"
+    },
+    {
+      "bytes": 17995,
+      "path": "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313.pyc",
+      "sha256": "61145411d48dfdae27984116295ac7ae85344fde8a10831d032b90fe29132139"
+    },
+    {
+      "bytes": 13588,
+      "path": "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "8e85d9ca954770aca33250da55b7567668233e00dac65ae424455df29180a6c7"
+    },
+    {
+      "bytes": 13475,
+      "path": "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313.pyc",
+      "sha256": "0e27392dcf16889e1c5c6973e7acc1aea4c1d342ec932054d3c456dc46f682e2"
+    },
+    {
+      "bytes": 5985,
+      "path": "local-coding-worker/tests/__pycache__/test_service.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "bb5a3cf88ffbf4b51e19850abe34f4fbf20a2e7f2f0b157ad15cc9c477af45d7"
+    },
+    {
+      "bytes": 5841,
+      "path": "local-coding-worker/tests/__pycache__/test_service.cpython-313.pyc",
+      "sha256": "7e4b65c9a741ec55ef15973f5ce41e4e6ac8dd38a74a40a798608112205cbf85"
+    },
+    {
+      "bytes": 86246,
+      "path": "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "125e38a6192100d2e14266396d816b6bec647cc806b7f43ff285736c4551ce2d"
+    },
+    {
+      "bytes": 86133,
+      "path": "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313.pyc",
+      "sha256": "8237c50f22a2b923f6b966aced972b8ce97e3beea7cd2c550db144e9197c851c"
+    },
+    {
+      "bytes": 2487,
+      "path": "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "c7dff96bfead4e9bbe93e37dfe54ab3e3c9ac6753d4c6ec71fd8225bc40d15e7"
+    },
+    {
+      "bytes": 2343,
+      "path": "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313.pyc",
+      "sha256": "6fa902afe98067443d43a92bee16d3f5a29aa5c9faaabe8c16a34be99e3997ba"
+    },
+    {
+      "bytes": 11377,
+      "path": "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "a4b07996b3095809e074f54da7bbfb52378ba05c45fae884f3960e913ee9e9c1"
+    },
+    {
+      "bytes": 11233,
+      "path": "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313.pyc",
+      "sha256": "59d58dd5f09852b648b65cdcd417034794aed121d5e5cae9beb60e5083fb84f5"
+    },
+    {
+      "bytes": 44661,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "e957f86b1ddbac0de92ea619080afa9df77b9749e412dd183b1b77d3f737f265"
+    },
+    {
+      "bytes": 44547,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313.pyc",
+      "sha256": "d33bde6303f96468118c4817ee1f7ae4187722a659200cd85bc36609550cb858"
+    },
+    {
+      "bytes": 162890,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "c2e2f7be58647b4ca9666fd73fb8770ddcd989a5c3e1aa2ddc7432b8c441c74c"
+    },
+    {
+      "bytes": 59060,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313.pyc",
+      "sha256": "6741f1d1a0d6dd9daafaf11f1b7a6b17a2540ca417f1616b0f91870e6797c377"
+    },
+    {
+      "bytes": 34201,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "a844f0275d2d6a5d64c9e46e7cd866ff87154b22af3c89e8b8315a8cdee13db6"
+    },
+    {
+      "bytes": 24986,
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313.pyc",
+      "sha256": "c3923868ac4437aa1153d6870936cfd6c06177bbcf3897763dd13d6faf8fabcc"
+    }
+  ],
+  "format": "pa1-skills-runtime-transition-candidate/1",
+  "independent_authorities_preserved": [
+    {
+      "id": "todo-orchestrator",
+      "operation": "outside candidate tree; no copies, forwarders, imports, or authority grants",
+      "supplier_path": "/home/tumlinson/.agents/skills/todo-orchestrator/"
+    },
+    {
+      "id": "cuda",
+      "operation": "outside candidate tree; no copies, forwarders, imports, or authority grants",
+      "supplier_path": "/home/tumlinson/.agents/skills/cuda/"
+    },
+    {
+      "id": "cpp-context-compiler",
+      "operation": "outside candidate tree; no copies, forwarders, imports, or authority grants",
+      "supplier_path": "/home/tumlinson/.agents/skills/cpp-context-compiler/"
+    }
+  ],
+  "limitations": [
+    "No live Skills source was changed.",
+    "Candidate import requires project_control.runtime_binding to be importable from the process environment.",
+    "Qualification must cover canonical receiver updates concurrent with this staging.",
+    "Existing tests, evals, agent descriptor, and production release snapshots are outside this candidate map."
+  ],
+  "preserve_outside_scope": [
+    "agents/openai.yaml",
+    "tests/**",
+    "evals/**",
+    "agents/**"
+  ],
+  "receiver": {
+    "expected_manifest_sha256_from_runtime_handoff": "2c95c74a24983bbf08f388aed3722a2caf16823b526f05b3ab714cce9c3e9d5a",
+    "integration_rule": "re-fetch current receiver manifest and qualification evidence immediately before root integration; do not pin this preliminary value",
+    "observation_rule": "Read-only source identity re-fetched from the Project Control receiver manifest and local_runtime_identity during staged transition-test refresh; apply must still re-read current identity and source evidence.",
+    "observed_current_file_count": 42,
+    "observed_current_fingerprint": "1860a5d64662da3379d8f9b4823813321ed6cf1f7a78fbb7c5b66cbcd3d684cb",
+    "observed_current_manifest_sha256": "576aaf8b80d58df9040e2c3d6058e95a7252227890068b4b9d49c0c0f88add4a",
+    "observed_current_source_commit": "1b1026845d3fff5a27ad539a386b24649ba48f68+PC-PA1-FRAMES-working-tree-2026-10-06",
+    "root": "/home/tumlinson/project-control/src/project_control/local_runtime"
+  },
+  "remove": [
+    "local-coding-worker/local_worker/acceptance.py",
+    "local-coding-worker/local_worker/canonical_runtime.py",
+    "local-coding-worker/local_worker/controller.py",
+    "local-coding-worker/local_worker/harnesses/__init__.py",
+    "local-coding-worker/local_worker/harnesses/base.py",
+    "local-coding-worker/local_worker/harnesses/codex_cli.py",
+    "local-coding-worker/local_worker/harnesses/qwen_code.py",
+    "local-coding-worker/local_worker/model_cache.py",
+    "local-coding-worker/local_worker/observer_runtime.py",
+    "local-coding-worker/local_worker/policy.py",
+    "local-coding-worker/local_worker/production_checks.py",
+    "local-coding-worker/local_worker/residency.py",
+    "local-coding-worker/local_worker/result_validation.py",
+    "local-coding-worker/local_worker/reviewer.py",
+    "local-coding-worker/local_worker/servers/__init__.py",
+    "local-coding-worker/local_worker/servers/llama_cpp.py",
+    "local-coding-worker/local_worker/service.py",
+    "local-coding-worker/local_worker/supervisor.py",
+    "local-coding-worker/local_worker/telemetry.py",
+    "local-coding-worker/local_worker/verification.py",
+    "local-coding-worker/local_worker/workspace.py"
+  ],
+  "replace": [
+    "local-coding-worker/SKILL.md",
+    "local-coding-worker/config/host-profile.example.toml",
+    "local-coding-worker/config/production-profile.toml",
+    "local-coding-worker/references/adapter-contract.md",
+    "local-coding-worker/references/integration-contract.md",
+    "local-coding-worker/references/model-cache.md",
+    "local-coding-worker/references/observer-port.md",
+    "local-coding-worker/references/read-only-contract.md",
+    "local-coding-worker/references/resource-policy.md",
+    "local-coding-worker/references/writable-work-contract.md",
+    "local-coding-worker/schemas/delegation-spec-v1.schema.json",
+    "local-coding-worker/schemas/delegation-spec-v2.schema.json",
+    "local-coding-worker/schemas/harness-policy-v2.schema.json",
+    "local-coding-worker/schemas/model-cache-v1.schema.json",
+    "local-coding-worker/schemas/model-outcome-v1.schema.json",
+    "local-coding-worker/schemas/model-service-profile-v2.schema.json",
+    "local-coding-worker/schemas/worker-result-v1.schema.json",
+    "local-coding-worker/schemas/worker-result-v2.schema.json",
+    "local-coding-worker/scripts/inspect_host.py",
+    "local-coding-worker/scripts/local_worker.py",
+    "local-coding-worker/scripts/worker_core.py"
+  ],
+  "rollback_archive": "rollback/local-coding-worker-portable.tar.gz",
+  "rollback_archive_sha256": "91ed6ba26758f026ac2d4a57a378eb0f5382539232453ff1f362df8fdddeb099",
+  "rollback_provenance": "rollback/provenance.json",
+  "schema_retirement": {
+    "live_contracts": "Consumers must load the hash-verified receiver schemas under project_control/local_runtime/schemas; no schema is weakened or permissive by default.",
+    "negative_test": "tests/assistance/test_lcw_transition.py::SkillsTransitionTests.test_retired_schema_stubs_reject_and_receiver_contracts_still_validate",
+    "standard_schema_behavior": "Every legacy schema stub includes `not: {}` under Draft 2020-12; a standard validator rejects every instance. Navigation metadata alone is not relied upon for rejection."
+  },
+  "source_commit": "95818340006dd50ef233d7c67ddca2da8eb08bc4",
+  "source_files_verified": 149,
+  "source_hashes": {
+    "local-coding-worker/SKILL.md": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+    "local-coding-worker/config/host-profile.example.toml": "d17d6740ebb6ef314a7fc9f70ba9acca2ce8df5a417e8d2352e524ebb4dbdee1",
+    "local-coding-worker/config/production-profile.toml": "3010144cb2b002f310e62d4e5a2005c4531c555b8166233cfef2f306b700d35d",
+    "local-coding-worker/local_worker/acceptance.py": "847cc37102f27a6888684c35e3f4f97a24ff4cad0ca6cc1c63eb0c73efa927a4",
+    "local-coding-worker/local_worker/canonical_runtime.py": "35d3783c2fa4dab306ca35d0b821ba66a6a31fc6ddae522f12fbf1d3e729931c",
+    "local-coding-worker/local_worker/controller.py": "5c324dcd80ae5fcf643faee0e5655cad6fd314184ed9d779f3196ddc643f4932",
+    "local-coding-worker/local_worker/harnesses/__init__.py": "a8f23d0b7fdd6e22ee61b5780ab528ff89b914d31f9a1fd8f1cf52423864b4f0",
+    "local-coding-worker/local_worker/harnesses/base.py": "033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc",
+    "local-coding-worker/local_worker/harnesses/codex_cli.py": "3d4f705c583d8911c20b9fb2b612ec1dac68766cfab0fa08ddaaa47555c2ae7f",
+    "local-coding-worker/local_worker/harnesses/qwen_code.py": "b11bbed7fce1789f2fa949de69d35494a5767f597fa351a980254f37d4b57439",
+    "local-coding-worker/local_worker/model_cache.py": "992ba090a7fe3d58446bb6aab63162ec8d3e1072ba4a9a51b5129b55d7985b4e",
+    "local-coding-worker/local_worker/observer_runtime.py": "d3a65e54aaf4a6f0c6d38621d521ee0402aba749da4bf2a543c0df75550e580f",
+    "local-coding-worker/local_worker/policy.py": "b97fa777b7eb4a94586973097e99c1839ab17419b50fb53177ae40e8c06d2188",
+    "local-coding-worker/local_worker/production_checks.py": "16c13ad85ddf7c23d49f5884081850d5a0a97347711bf139d498be266e036140",
+    "local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+    "local-coding-worker/local_worker/result_validation.py": "d3be0925b78ec1b0f4e7dd2010061bccea440f8a00b30c79ad62bcb45b710c1c",
+    "local-coding-worker/local_worker/reviewer.py": "5cfe1aa05fa843176a991ef5acb6c3684300f13e377281e98b79d760c8061695",
+    "local-coding-worker/local_worker/servers/__init__.py": "6aec6eb256204704bf4c7b92d4ef73c1f78867a06c21832221c39349e9ea3189",
+    "local-coding-worker/local_worker/servers/llama_cpp.py": "fdf1bf991a53e85b2352aba20909eb6718d418afa19348b866df6e61cca1e26a",
+    "local-coding-worker/local_worker/service.py": "5950a45aeaa8091133f623ecdb5f74c71b7683e54eba67d4f2d54c488b3577eb",
+    "local-coding-worker/local_worker/supervisor.py": "eb35174dd67338720ae78490cf5cdf33e08f371c68eadfbdac0f930c479489bf",
+    "local-coding-worker/local_worker/telemetry.py": "9f7ef60a4e6bce81f6f05c355470bb901dd88d43ae62344aac830d5634e074db",
+    "local-coding-worker/local_worker/verification.py": "0acd92c78432ea3d999d2f138c852921dcd0fe5f56e37a2be9ecfb1934ecbcc8",
+    "local-coding-worker/local_worker/workspace.py": "8889483626e8ce4312538b1149ccb7844b003252b60772d08aa0f73948e3ea64",
+    "local-coding-worker/references/adapter-contract.md": "61ae2ebb8d386e0da9a601ff08cf3f25d020dd5afcd0e6ed439937865280b60e",
+    "local-coding-worker/references/integration-contract.md": "1a4153c4f8884b5d0df805bd84f516500d41a280ca2a756ccdd18684b1111b63",
+    "local-coding-worker/references/model-cache.md": "484c6d24114280356400075e44ef3c153f460d7f96563d83a18f471c2105e192",
+    "local-coding-worker/references/observer-port.md": "750d21ed01c875736016c7797a1adb6839df77998d1db746f4c57430112cf58d",
+    "local-coding-worker/references/read-only-contract.md": "5bd1b93811a36760e8eb1567c9ea0dcb60dcf3f0507e6b18fcda78947537808e",
+    "local-coding-worker/references/resource-policy.md": "4cbbee350f50c29bed91574fd99f1fc0553f2ac9a75a5891c3eb6f60874fed80",
+    "local-coding-worker/references/writable-work-contract.md": "aee083f610b44f198ad2d853932338fa16a4d05b84ecda35d68bcf2d35f18bea",
+    "local-coding-worker/schemas/delegation-spec-v1.schema.json": "293bad80ee73a94f7769a50ced850b01cb0efb1b9cf5c8767aa73f69eb1d1120",
+    "local-coding-worker/schemas/delegation-spec-v2.schema.json": "c09f538c6e60d474177e5c9f0b633014c7ae9a16fbcdb44a1b0c8e06be4ff601",
+    "local-coding-worker/schemas/harness-policy-v2.schema.json": "04d4a7cf2faa1548a74784c08f99920c0129db0f295a0f41931dc9cd3892c662",
+    "local-coding-worker/schemas/model-cache-v1.schema.json": "2012f04ee622d4c2cfa65c075af7e4c5980a62c1c3807ed6f7215d535e9a4a34",
+    "local-coding-worker/schemas/model-outcome-v1.schema.json": "1bf55b1c7e69d7cf5af0cc3cd58f7016f9059a15400af22f184e2336ae977a5d",
+    "local-coding-worker/schemas/model-service-profile-v2.schema.json": "9864bca7c16b40c7772905c0d6be4ceacad2233fb520166f6b24f0c45cc542ed",
+    "local-coding-worker/schemas/worker-result-v1.schema.json": "89add717dd38cf9a9e1fd27a46a81c715ba1aef41dae566cf3c81b65003a8b93",
+    "local-coding-worker/schemas/worker-result-v2.schema.json": "fd8bfd5b4495345aabe8a49e450b786a8a36895738059fb2983ae70a0fb0130d",
+    "local-coding-worker/scripts/inspect_host.py": "77a654d9fbc03724a7914024c845f3617cbc6c252c6b683fd6a0cd5064c10417",
+    "local-coding-worker/scripts/local_worker.py": "c1ff1558c1d64ad12bfb2234b44f34aafaa2f2f71d4c31c76c3a508fe2f83ee6",
+    "local-coding-worker/scripts/worker_core.py": "a0bcd9995d13bf2b490be82956cb89b7d4b679e5fab2e281e9cf2b8049261cbb"
+  },
+  "source_inventory_path": "/home/tumlinson/.agents/skills/docs/pa1/runtime-handoff.json",
+  "source_inventory_sha256": "d522eb5f138c31b5caa773fd9d3daa256a647f85dff068f54a9efe9e6b2ad904",
+  "source_modes": {
+    "local-coding-worker/SKILL.md": "0600",
+    "local-coding-worker/config/host-profile.example.toml": "0664",
+    "local-coding-worker/config/production-profile.toml": "0664",
+    "local-coding-worker/local_worker/acceptance.py": "0664",
+    "local-coding-worker/local_worker/canonical_runtime.py": "0600",
+    "local-coding-worker/local_worker/controller.py": "0664",
+    "local-coding-worker/local_worker/harnesses/__init__.py": "0664",
+    "local-coding-worker/local_worker/harnesses/base.py": "0664",
+    "local-coding-worker/local_worker/harnesses/codex_cli.py": "0664",
+    "local-coding-worker/local_worker/harnesses/qwen_code.py": "0664",
+    "local-coding-worker/local_worker/model_cache.py": "0664",
+    "local-coding-worker/local_worker/observer_runtime.py": "0664",
+    "local-coding-worker/local_worker/policy.py": "0664",
+    "local-coding-worker/local_worker/production_checks.py": "0664",
+    "local-coding-worker/local_worker/residency.py": "0664",
+    "local-coding-worker/local_worker/result_validation.py": "0664",
+    "local-coding-worker/local_worker/reviewer.py": "0664",
+    "local-coding-worker/local_worker/servers/__init__.py": "0664",
+    "local-coding-worker/local_worker/servers/llama_cpp.py": "0600",
+    "local-coding-worker/local_worker/service.py": "0664",
+    "local-coding-worker/local_worker/supervisor.py": "0600",
+    "local-coding-worker/local_worker/telemetry.py": "0664",
+    "local-coding-worker/local_worker/verification.py": "0664",
+    "local-coding-worker/local_worker/workspace.py": "0664",
+    "local-coding-worker/references/adapter-contract.md": "0664",
+    "local-coding-worker/references/integration-contract.md": "0664",
+    "local-coding-worker/references/model-cache.md": "0664",
+    "local-coding-worker/references/observer-port.md": "0664",
+    "local-coding-worker/references/read-only-contract.md": "0664",
+    "local-coding-worker/references/resource-policy.md": "0664",
+    "local-coding-worker/references/writable-work-contract.md": "0664",
+    "local-coding-worker/schemas/delegation-spec-v1.schema.json": "0664",
+    "local-coding-worker/schemas/delegation-spec-v2.schema.json": "0664",
+    "local-coding-worker/schemas/harness-policy-v2.schema.json": "0664",
+    "local-coding-worker/schemas/model-cache-v1.schema.json": "0664",
+    "local-coding-worker/schemas/model-outcome-v1.schema.json": "0664",
+    "local-coding-worker/schemas/model-service-profile-v2.schema.json": "0664",
+    "local-coding-worker/schemas/worker-result-v1.schema.json": "0664",
+    "local-coding-worker/schemas/worker-result-v2.schema.json": "0664",
+    "local-coding-worker/scripts/inspect_host.py": "0664",
+    "local-coding-worker/scripts/local_worker.py": "0775",
+    "local-coding-worker/scripts/worker_core.py": "0664"
+  },
+  "source_root": "/home/tumlinson/.agents/skills",
+  "source_scoped_files": 42,
+  "source_skill": "/home/tumlinson/.agents/skills/local-coding-worker",
+  "unconverted_caller_limits": {
+    "cli_boundary": {
+      "denial": "LOCAL-CODING-WORKER-ERROR/1; exit code 2; no environment/profile/source override",
+      "denied_commands": [
+        "run",
+        "integrate",
+        "delegate",
+        "collect",
+        "_delegate-worker",
+        "self-test",
+        "host-check",
+        "evaluate",
+        "release-check",
+        "service operations other than status",
+        "model-cache install/activate/remove"
+      ],
+      "qualification": "Transition tests must verify denial through the legacy Skills CLI after the final receiver manifest refresh.",
+      "remaining_routes": [
+        "observer",
+        "status",
+        "inspection",
+        "service status",
+        "policy validate",
+        "model-cache inspect/list/verify"
+      ],
+      "status": "receiver-owned unconditional command guard; forwarders inherit it by binding the canonical receiver"
+    },
+    "historical_tests_preserved_outside_operations": [
+      "local-coding-worker/tests/test_read_only_mvp.py:94-97 reads properties from legacy delegation-spec-v1 and worker-result-v1 schema paths",
+      "local-coding-worker/tests/test_read_only_mvp.py:98-103 exercises legacy eligible CLI",
+      "local-coding-worker/tests/test_read_only_mvp.py:105-115 exercises legacy run CLI",
+      "local-coding-worker/tests/test_core4_integration.py:493-502 covers writable maintenance behavior"
+    ],
+    "treatment": "These historical supplier tests are unchanged and outside the exact add/replace/remove map. Their supplier originals are preserved in the rollback archive. They are not evidence for the receiver acceptance suite; tests that inspect legacy schema properties are expected to fail against fail-closed stubs until their owners port them to receiver schemas.",
+    "unknown_callers": "The inventory found 42 consumer files with 120 source references. This transition does not edit caller files outside the mapped local-coding-worker paths. Any unlisted external caller of legacy schema paths will fail closed and must migrate to the receiver schema."
+  }
+}

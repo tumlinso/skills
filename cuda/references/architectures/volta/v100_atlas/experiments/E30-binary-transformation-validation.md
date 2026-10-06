@@ -2,7 +2,7 @@
 
 > Does an edited cubin preserve semantics and improve the intended bottleneck?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** NOT_RUN (subset: restricted original binary-transformation hypothesis). **Original protocol status:** NOT_RUN_ON_GPU ([archived E30 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E30.md)). **Depth:** 4.
 **Read when:** experiment, binary, transformation, validation.
 **Prerequisites:** R12. **Evidence:** S04 S05 S11.
 
@@ -23,3 +23,18 @@
 **Related:** C17 C34 M48.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The final campaign record reports 0 cases and no correctness result for E30. No edited cubin was executed. E37 compares documented PTX BoolOp spellings with CUDA source expressions; that source-level comparison does not validate binary edits, relocations, or transformed-binary behavior.
+
+Primary scope: no edited-binary implementation was exercised. The adjacent [documented PTX/source comparison in run_e37](../benchmarks/native/logic.cu#L795) does not test cubin transformation.
+
+[Measured summary](evidence/v100-20261006/E30.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** this campaign supplies no semantic-preservation or speed result for edited cubins.
+- **Design implication (inference):** any future transformation needs a pinned toolchain, original/edited hashes, relocation and def/use checks, and differential execution before bottleneck-specific timing.
+- **Does not establish:** legality of binary rewriting or a gain under variable memory latency/resource pressure.
+- **Original protocol gaps:** no boundary-input, resource-pressure, memory-latency, or compiler-baseline sweep ran; the original-vs-edited differential comparison is absent.

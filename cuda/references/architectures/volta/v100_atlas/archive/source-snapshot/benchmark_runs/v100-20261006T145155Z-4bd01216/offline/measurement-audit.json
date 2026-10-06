@@ -1,0 +1,816 @@
+{
+  "E39_matched_full_path": [],
+  "campaign_key": "7beacfbd95e0d2b8f9725c7ba1477122f16bc1eb686a6a7c94dbf6c7e266794b",
+  "coverage": {
+    "all40_present": false,
+    "expected": 40,
+    "extra": [],
+    "missing": [
+      "E25",
+      "E26",
+      "E27",
+      "E28",
+      "E29",
+      "E30",
+      "E31",
+      "E32",
+      "E33",
+      "E34",
+      "E35",
+      "E36",
+      "E37",
+      "E38",
+      "E39"
+    ],
+    "records_present": 25
+  },
+  "identity_checks": {
+    "binaries_match_build_record": true,
+    "binaries_match_run": true,
+    "build_configure_rc": 0,
+    "build_rc": 0,
+    "campaign_key_valid": true,
+    "current_machine_matches_run": true,
+    "current_tools_match_run": true,
+    "git_head": "f223c51dcfacab602e9bc68b3e65cc75730dc7f8",
+    "machine_record_hash_valid": true,
+    "matrix_matches_run": true,
+    "source_matches_run": true,
+    "tool_record_hash_valid": true
+  },
+  "limitations": [
+    "Incremental snapshot; repeat after controller completion."
+  ],
+  "profile_evidence_failures": [],
+  "profiling": {
+    "ncu": [
+      {
+        "child": "E02-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 840,
+        "counter_valid": true,
+        "csv_rows": 85,
+        "report_bytes": 1101220,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E03-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 560,
+        "counter_valid": true,
+        "csv_rows": 57,
+        "report_bytes": 791041,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E05-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 3220,
+        "counter_valid": true,
+        "csv_rows": 323,
+        "report_bytes": 3734944,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E06-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 700,
+        "counter_valid": true,
+        "csv_rows": 71,
+        "report_bytes": 946928,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E07-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 780,
+        "counter_valid": true,
+        "csv_rows": 79,
+        "report_bytes": 977342,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E08-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 2600,
+        "counter_valid": true,
+        "csv_rows": 261,
+        "report_bytes": 2991315,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E09-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 280,
+        "counter_valid": true,
+        "csv_rows": 29,
+        "report_bytes": 424315,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E10-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 140,
+        "counter_valid": true,
+        "csv_rows": 15,
+        "report_bytes": 269909,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E11-ncu-2",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 810,
+        "counter_valid": true,
+        "csv_rows": 82,
+        "report_bytes": 1006879,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E12-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 280,
+        "counter_valid": true,
+        "csv_rows": 29,
+        "report_bytes": 424273,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E13-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 1490,
+        "counter_valid": true,
+        "csv_rows": 150,
+        "report_bytes": 1805928,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E23-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 270,
+        "counter_valid": true,
+        "csv_rows": 28,
+        "report_bytes": 414662,
+        "valid": true,
+        "wrapper_status": "ok"
+      },
+      {
+        "child": "E24-ncu-0",
+        "counter_names": [
+          "dram__throughput.avg.pct_of_peak_sustained_elapsed",
+          "dram__throughput.max.pct_of_peak_sustained_elapsed",
+          "dram__throughput.min.pct_of_peak_sustained_elapsed",
+          "dram__throughput.sum.pct_of_peak_sustained_elapsed",
+          "launch__registers_per_thread",
+          "launch__registers_per_thread_allocated",
+          "sm__throughput.avg.pct_of_peak_sustained_elapsed",
+          "sm__throughput.max.pct_of_peak_sustained_elapsed",
+          "sm__throughput.min.pct_of_peak_sustained_elapsed",
+          "sm__throughput.sum.pct_of_peak_sustained_elapsed"
+        ],
+        "counter_numeric_cells": 2080,
+        "counter_valid": true,
+        "csv_rows": 209,
+        "report_bytes": 2403871,
+        "valid": true,
+        "wrapper_status": "ok"
+      }
+    ],
+    "nsys": [
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 216,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 6
+        },
+        "child": "E02-nsys-0",
+        "report_bytes": 268041,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 216,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 6,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 811,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 192
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 144,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 8
+        },
+        "child": "E03-nsys-0",
+        "report_bytes": 260237,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 144,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 8,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 541,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 128
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 828,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 27,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 12
+        },
+        "child": "E05-nsys-0",
+        "report_bytes": 333081,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 828,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 27,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 12,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 3088,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 736
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 180,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 6
+        },
+        "child": "E06-nsys-0",
+        "report_bytes": 263484,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 180,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 6,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 673,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 160
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 210,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 1
+        },
+        "child": "E07-nsys-0",
+        "report_bytes": 265106,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 210,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 1,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 721,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 159
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 700,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10
+        },
+        "child": "E08-nsys-0",
+        "report_bytes": 284749,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 700,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 1206,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 155
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10
+        },
+        "child": "E09-nsys-0",
+        "report_bytes": 252181,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 10,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 294,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 64
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 36,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3
+        },
+        "child": "E10-nsys-0",
+        "report_bytes": 248523,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 36,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 143,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 32
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 213,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 252
+        },
+        "child": "E11-nsys-2",
+        "report_bytes": 277164,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 213,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 252,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 962,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 291
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 8
+        },
+        "child": "E12-nsys-0",
+        "report_bytes": 251596,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 8,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 292,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 64
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 391,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 1075
+        },
+        "child": "E13-nsys-0",
+        "report_bytes": 355377,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 391,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 1075,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 2664,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 849
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 216,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3
+        },
+        "child": "E14-nsys-0",
+        "report_bytes": 261221,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 216,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 511,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 93
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 107,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 37
+        },
+        "child": "E15-nsys-0",
+        "report_bytes": 261485,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 107,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 37,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 495,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 202
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 5,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 108
+        },
+        "child": "E16-nsys-0",
+        "report_bytes": 259750,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_GRAPH_TRACE": 36,
+          "CUPTI_ACTIVITY_KIND_KERNEL": 72,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 5,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 108,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 523,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 94
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "partial",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 140,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 280
+        },
+        "child": "E17-nsys-0",
+        "report_bytes": 277482,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 140,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 280,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 971,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 370
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 140,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 41
+        },
+        "child": "E18-nsys-0",
+        "report_bytes": 277060,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 140,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 41,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 680,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 224
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 210,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 9,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 147
+        },
+        "child": "E19-nsys-0",
+        "report_bytes": 287278,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 210,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 9,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 147,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 872,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 405
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 110
+        },
+        "child": "E20-nsys-0",
+        "report_bytes": 270638,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 110,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 358,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 235
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": true,
+        "wrapper_status": "rerun",
+        "wrapper_trace_valid": false
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 110
+        },
+        "child": "E20-nsys-1",
+        "report_bytes": 270823,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 110,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 358,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 235
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": true,
+        "wrapper_status": "rerun",
+        "wrapper_trace_valid": false
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 36
+        },
+        "child": "E21-nsys-0",
+        "report_bytes": 247836,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 36,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 143,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 100
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": true,
+        "wrapper_status": "rerun",
+        "wrapper_trace_valid": false
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 144,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 5,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 108
+        },
+        "child": "E22-nsys-0",
+        "report_bytes": 279678,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 144,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 5,
+          "CUPTI_ACTIVITY_KIND_MEMSET": 108,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 1102,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 455
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 71,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3
+        },
+        "child": "E23-nsys-0",
+        "report_bytes": 260774,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 71,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 3,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 284,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 64
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      },
+      {
+        "actual_gpu_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 560,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 281
+        },
+        "child": "E24-nsys-0",
+        "report_bytes": 297225,
+        "sqlite_activity_rows": {
+          "CUPTI_ACTIVITY_KIND_KERNEL": 560,
+          "CUPTI_ACTIVITY_KIND_MEMCPY": 281,
+          "CUPTI_ACTIVITY_KIND_RUNTIME": 1252,
+          "CUPTI_ACTIVITY_KIND_SYNCHRONIZATION": 464
+        },
+        "valid": true,
+        "wrapper_raw_disagrees": false,
+        "wrapper_status": "ok",
+        "wrapper_trace_valid": true
+      }
+    ]
+  },
+  "reason_gaps": [],
+  "run_dir": "/home/tumlinson/gpu_circuit_bending_atlas/benchmark_runs/v100-20261006T145155Z-4bd01216",
+  "snapshot_utc": "2026-10-06T15:08:15.832844+00:00",
+  "statuses": {
+    "COMPILED_ONLY": 0,
+    "CPU_ONLY": 2,
+    "GPU_RUN": 22,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 1,
+    "REJECTED": 0
+  },
+  "timing": {
+    "controller_receipt_issues": [],
+    "gpu_cases": 235,
+    "median_mismatches": [],
+    "metric_summary_mismatches": [],
+    "nonfinite_vectors": [],
+    "p95_mismatches": [],
+    "raw_stdout_case_signatures_extra": 2,
+    "raw_stdout_case_signatures_missing": 0,
+    "timing_vectors": 279,
+    "vectors_under_30": []
+  },
+  "unsupported_dispositions": [
+    {
+      "experiment": "E20",
+      "reason": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "experiment": "E20",
+      "reason": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "experiment": "E20",
+      "reason": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "experiment": "E20",
+      "reason": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "experiment": "E21",
+      "reason": [
+        "set_mempolicy bind unavailable: Invalid argument"
+      ],
+      "status": "NOT_RUN",
+      "variant": "numa_node_1"
+    },
+    {
+      "experiment": "E21",
+      "reason": [
+        "set_mempolicy bind unavailable: Invalid argument"
+      ],
+      "status": "NOT_RUN",
+      "variant": "numa_node_1"
+    }
+  ]
+}

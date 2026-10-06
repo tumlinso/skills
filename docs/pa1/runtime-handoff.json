@@ -1,0 +1,2855 @@
+{
+  "format": "pa1-runtime-handoff/1",
+  "observed_at_utc": "2026-10-06T16:26:53.013125+00:00",
+  "source_commit": "95818340006dd50ef233d7c67ddca2da8eb08bc4",
+  "source_root": "/home/tumlinson/.agents/skills",
+  "source_identity": {
+    "skills/local-coding-worker/.pytest_cache/.gitignore": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+    "skills/local-coding-worker/.pytest_cache/CACHEDIR.TAG": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+    "skills/local-coding-worker/.pytest_cache/README.md": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+    "skills/local-coding-worker/.pytest_cache/v/cache/lastfailed": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "skills/local-coding-worker/.pytest_cache/v/cache/nodeids": "ede08140013087bbd1ccd30d9d5943bc02f2bae82799c3ee112b6b5fc0b658a8",
+    "skills/local-coding-worker/SKILL.md": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+    "skills/local-coding-worker/agents/openai.yaml": "c9a0b25f12fcc2f65ebd2421251b34cd3156e672a571ba1ba08476e176a4b620",
+    "skills/local-coding-worker/config/host-profile.example.toml": "d17d6740ebb6ef314a7fc9f70ba9acca2ce8df5a417e8d2352e524ebb4dbdee1",
+    "skills/local-coding-worker/config/production-profile.toml": "3010144cb2b002f310e62d4e5a2005c4531c555b8166233cfef2f306b700d35d",
+    "skills/local-coding-worker/evals/__pycache__/host_bakeoff.cpython-313.pyc": "3cd3d32570f97930597359f9dd30b96659221eed907891ac374097f8bd6665d6",
+    "skills/local-coding-worker/evals/__pycache__/model_staging.cpython-313.pyc": "38de6e2cab979ab68481a5c6a14e97690375676f5c0394ad32303a80855c4fda",
+    "skills/local-coding-worker/evals/acquisition_request.json": "0999b356bde4c495ea97455767899919fa385a987d2bbe01e3460301661cda6e",
+    "skills/local-coding-worker/evals/host_bakeoff.py": "98509062adc306660dc1dd1ca8b9c5ddac7cd6f5b5d5d770411697c008bdf2fd",
+    "skills/local-coding-worker/evals/model_staging.py": "97f16118f7cf536538e07c55cc640de622094221e888f2c3d0422e7fffb0de14",
+    "skills/local-coding-worker/evals/results/compact/dual-island-release.json": "8c36249e34529a6122e51c8faa725d335a00f22d7acaa8536ae572cd76d28b95",
+    "skills/local-coding-worker/evals/results/compact/focused-comparison.json": "f788933a594d10300ff6771c9c9ac309cfe0cae7ffdefff98378b2f92473114c",
+    "skills/local-coding-worker/evals/results/compact/host-readonly.json": "8b048b5443eb9edbbcf7b36ac8070bb90ea238b2d2ea8af0b34e03d211588697",
+    "skills/local-coding-worker/evals/results/compact/host-service.json": "fa0b83a53a15f975c52c5320955a9b547a5664420fbf780cba4ea55f2d5a4cfe",
+    "skills/local-coding-worker/evals/results/compact/host-writable.json": "7ba67a7097f93775470231080935444772ebc5e77c26aa2593a6ad0935d0b526",
+    "skills/local-coding-worker/evals/results/compact/integrated-evaluation.json": "12b74fe3b89d3a7948167169d148369670c2f9617bfe7adfb17adb981c305d65",
+    "skills/local-coding-worker/evals/results/compact/meaningful-evaluation.json": "bc20cb9980dd6b6711677837690edc61dd1d6c0403a3e90c48185eee044bdc7c",
+    "skills/local-coding-worker/evals/tasks/core4-host-tasks.json": "6689f897dd776d58e45a1c50638abf7a7b83f595d00c9b0045a83294f71b18a0",
+    "skills/local-coding-worker/local_worker/__pycache__/__init__.cpython-313.pyc": "ecc80d28a5b3da75c26fd1f7569052bb11bb6b9a9e7aafccf0983f57943eb3c1",
+    "skills/local-coding-worker/local_worker/__pycache__/acceptance.cpython-313.pyc": "d8d0ea75453f53f37d67ee4793c4d3ec19d9c50411c50ea4f67d7eff3de27ed9",
+    "skills/local-coding-worker/local_worker/__pycache__/canonical_runtime.cpython-313.pyc": "2b42b8e0fd9abf1fb16a81b013255a7f6d6710ac052c79b4fccd4785ec9b1ca3",
+    "skills/local-coding-worker/local_worker/__pycache__/controller.cpython-313.pyc": "d44d8c6aa64e60213b09f86a50d12d0d0dccce5b3cefa2f98d58c068dbe67661",
+    "skills/local-coding-worker/local_worker/__pycache__/model_cache.cpython-313.pyc": "a3f19f21bb31d69a146fbc225bca6a2d88fb41c0e7db25f88f8bbabdc41fb05c",
+    "skills/local-coding-worker/local_worker/__pycache__/observer_runtime.cpython-313.pyc": "00cf018a5b80b6df7a4d276afb76f8d6b1778fc04a424cce518942fe8809d4c3",
+    "skills/local-coding-worker/local_worker/__pycache__/policy.cpython-313.pyc": "4c226312c809fc7dee7cb9b9cbc9b95550a4c92867300e9fd67ec34f39cb5eee",
+    "skills/local-coding-worker/local_worker/__pycache__/production_checks.cpython-313.pyc": "bc221141de045cf018845f78aa4779141d07b130d51460a6c81ea8f67944f854",
+    "skills/local-coding-worker/local_worker/__pycache__/residency.cpython-313.pyc": "f08125eff52a09a4cbab966f13cdd61d0e4265f262f711fdc08a34a10fee00f8",
+    "skills/local-coding-worker/local_worker/__pycache__/result_validation.cpython-313.pyc": "9bb28240fb4a74bfecbf382d4d7439228585e495a7eeac7eb10f0daf27b63ebe",
+    "skills/local-coding-worker/local_worker/__pycache__/reviewer.cpython-313.pyc": "63cd8b5206b4bdd6ce747579f0867522a84f766d2d24ac7f7e051b99ae2f5d28",
+    "skills/local-coding-worker/local_worker/__pycache__/service.cpython-313.pyc": "3686590ad2a5f6f53ed0326dcd122d65618d0070d7268e672ba34615d7eb4659",
+    "skills/local-coding-worker/local_worker/__pycache__/supervisor.cpython-313.pyc": "dca32d32f8db958170bc4025ebebfebe1651e97b3f2285ee37107e19710b3233",
+    "skills/local-coding-worker/local_worker/__pycache__/telemetry.cpython-313.pyc": "b805b1b8e47777abf288f6de94069988b9c83e449d47f4ff141116cc9aa2a7bb",
+    "skills/local-coding-worker/local_worker/__pycache__/verification.cpython-313.pyc": "e81f50f218f8b77d9b842c3b67b16f557a46917f082944e8d4c2ccf281127dd5",
+    "skills/local-coding-worker/local_worker/__pycache__/workspace.cpython-313.pyc": "2aac7e413d64194fe7ec772941284f7e5c68e772742fb42003555aa88210dc2e",
+    "skills/local-coding-worker/local_worker/acceptance.py": "847cc37102f27a6888684c35e3f4f97a24ff4cad0ca6cc1c63eb0c73efa927a4",
+    "skills/local-coding-worker/local_worker/canonical_runtime.py": "35d3783c2fa4dab306ca35d0b821ba66a6a31fc6ddae522f12fbf1d3e729931c",
+    "skills/local-coding-worker/local_worker/controller.py": "5c324dcd80ae5fcf643faee0e5655cad6fd314184ed9d779f3196ddc643f4932",
+    "skills/local-coding-worker/local_worker/harnesses/__init__.py": "a8f23d0b7fdd6e22ee61b5780ab528ff89b914d31f9a1fd8f1cf52423864b4f0",
+    "skills/local-coding-worker/local_worker/harnesses/__pycache__/__init__.cpython-313.pyc": "67769485e198c0f9bb2f42e250751d8b6b58a312c45ec81cb1db60bf9c8e1bbe",
+    "skills/local-coding-worker/local_worker/harnesses/__pycache__/base.cpython-313.pyc": "bcc34d7b342cca82a4247dd1bb8a098c2eac196833bf2380354a23f0cb57f58d",
+    "skills/local-coding-worker/local_worker/harnesses/__pycache__/codex_cli.cpython-313.pyc": "6436df34e277b5a3489123d6d056f9d9edc4367ae46a16f802e823b1b252b61c",
+    "skills/local-coding-worker/local_worker/harnesses/__pycache__/qwen_code.cpython-313.pyc": "a190f0f9bedb655d170a1d7fbf6c9d2a1e007c513e638d19ab5b9e6890d07758",
+    "skills/local-coding-worker/local_worker/harnesses/base.py": "033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc",
+    "skills/local-coding-worker/local_worker/harnesses/codex_cli.py": "3d4f705c583d8911c20b9fb2b612ec1dac68766cfab0fa08ddaaa47555c2ae7f",
+    "skills/local-coding-worker/local_worker/harnesses/qwen_code.py": "b11bbed7fce1789f2fa949de69d35494a5767f597fa351a980254f37d4b57439",
+    "skills/local-coding-worker/local_worker/model_cache.py": "992ba090a7fe3d58446bb6aab63162ec8d3e1072ba4a9a51b5129b55d7985b4e",
+    "skills/local-coding-worker/local_worker/observer_runtime.py": "d3a65e54aaf4a6f0c6d38621d521ee0402aba749da4bf2a543c0df75550e580f",
+    "skills/local-coding-worker/local_worker/policy.py": "b97fa777b7eb4a94586973097e99c1839ab17419b50fb53177ae40e8c06d2188",
+    "skills/local-coding-worker/local_worker/production_checks.py": "16c13ad85ddf7c23d49f5884081850d5a0a97347711bf139d498be266e036140",
+    "skills/local-coding-worker/local_worker/residency.py": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+    "skills/local-coding-worker/local_worker/result_validation.py": "d3be0925b78ec1b0f4e7dd2010061bccea440f8a00b30c79ad62bcb45b710c1c",
+    "skills/local-coding-worker/local_worker/reviewer.py": "5cfe1aa05fa843176a991ef5acb6c3684300f13e377281e98b79d760c8061695",
+    "skills/local-coding-worker/local_worker/servers/__init__.py": "6aec6eb256204704bf4c7b92d4ef73c1f78867a06c21832221c39349e9ea3189",
+    "skills/local-coding-worker/local_worker/servers/__pycache__/__init__.cpython-313.pyc": "7ea76508746228ff7ea464c7ac2df560fbc947802ac66d98b4e3ab83420c2773",
+    "skills/local-coding-worker/local_worker/servers/__pycache__/llama_cpp.cpython-313.pyc": "66d9bc0ac609429af454cb143fae05335e3ef23746a128afaabefb7fc7140ab1",
+    "skills/local-coding-worker/local_worker/servers/llama_cpp.py": "fdf1bf991a53e85b2352aba20909eb6718d418afa19348b866df6e61cca1e26a",
+    "skills/local-coding-worker/local_worker/service.py": "5950a45aeaa8091133f623ecdb5f74c71b7683e54eba67d4f2d54c488b3577eb",
+    "skills/local-coding-worker/local_worker/supervisor.py": "eb35174dd67338720ae78490cf5cdf33e08f371c68eadfbdac0f930c479489bf",
+    "skills/local-coding-worker/local_worker/telemetry.py": "9f7ef60a4e6bce81f6f05c355470bb901dd88d43ae62344aac830d5634e074db",
+    "skills/local-coding-worker/local_worker/verification.py": "0acd92c78432ea3d999d2f138c852921dcd0fe5f56e37a2be9ecfb1934ecbcc8",
+    "skills/local-coding-worker/local_worker/workspace.py": "8889483626e8ce4312538b1149ccb7844b003252b60772d08aa0f73948e3ea64",
+    "skills/local-coding-worker/references/adapter-contract.md": "61ae2ebb8d386e0da9a601ff08cf3f25d020dd5afcd0e6ed439937865280b60e",
+    "skills/local-coding-worker/references/integration-contract.md": "1a4153c4f8884b5d0df805bd84f516500d41a280ca2a756ccdd18684b1111b63",
+    "skills/local-coding-worker/references/model-cache.md": "484c6d24114280356400075e44ef3c153f460d7f96563d83a18f471c2105e192",
+    "skills/local-coding-worker/references/observer-port.md": "750d21ed01c875736016c7797a1adb6839df77998d1db746f4c57430112cf58d",
+    "skills/local-coding-worker/references/read-only-contract.md": "5bd1b93811a36760e8eb1567c9ea0dcb60dcf3f0507e6b18fcda78947537808e",
+    "skills/local-coding-worker/references/resource-policy.md": "4cbbee350f50c29bed91574fd99f1fc0553f2ac9a75a5891c3eb6f60874fed80",
+    "skills/local-coding-worker/references/writable-work-contract.md": "aee083f610b44f198ad2d853932338fa16a4d05b84ecda35d68bcf2d35f18bea",
+    "skills/local-coding-worker/schemas/delegation-spec-v1.schema.json": "293bad80ee73a94f7769a50ced850b01cb0efb1b9cf5c8767aa73f69eb1d1120",
+    "skills/local-coding-worker/schemas/delegation-spec-v2.schema.json": "c09f538c6e60d474177e5c9f0b633014c7ae9a16fbcdb44a1b0c8e06be4ff601",
+    "skills/local-coding-worker/schemas/harness-policy-v2.schema.json": "04d4a7cf2faa1548a74784c08f99920c0129db0f295a0f41931dc9cd3892c662",
+    "skills/local-coding-worker/schemas/model-cache-v1.schema.json": "2012f04ee622d4c2cfa65c075af7e4c5980a62c1c3807ed6f7215d535e9a4a34",
+    "skills/local-coding-worker/schemas/model-outcome-v1.schema.json": "1bf55b1c7e69d7cf5af0cc3cd58f7016f9059a15400af22f184e2336ae977a5d",
+    "skills/local-coding-worker/schemas/model-service-profile-v2.schema.json": "9864bca7c16b40c7772905c0d6be4ceacad2233fb520166f6b24f0c45cc542ed",
+    "skills/local-coding-worker/schemas/worker-result-v1.schema.json": "89add717dd38cf9a9e1fd27a46a81c715ba1aef41dae566cf3c81b65003a8b93",
+    "skills/local-coding-worker/schemas/worker-result-v2.schema.json": "fd8bfd5b4495345aabe8a49e450b786a8a36895738059fb2983ae70a0fb0130d",
+    "skills/local-coding-worker/scripts/__pycache__/inspect_host.cpython-313.pyc": "0a0481ffa2b2382325acf17a6f354212e2dc6d027b642e9666a080efd13c9fbd",
+    "skills/local-coding-worker/scripts/__pycache__/local_worker.cpython-313.pyc": "b41edfc93e44be57ed673f2e86d61d55a9ebe62149347c4f080278b78508601f",
+    "skills/local-coding-worker/scripts/__pycache__/worker_core.cpython-313.pyc": "0effd9795e5f480efbc374bb73229887bfcf33d54d5ef2ee3ea56fe7af2d2eae",
+    "skills/local-coding-worker/scripts/inspect_host.py": "77a654d9fbc03724a7914024c845f3617cbc6c252c6b683fd6a0cd5064c10417",
+    "skills/local-coding-worker/scripts/local_worker.py": "c1ff1558c1d64ad12bfb2234b44f34aafaa2f2f71d4c31c76c3a508fe2f83ee6",
+    "skills/local-coding-worker/scripts/worker_core.py": "a0bcd9995d13bf2b490be82956cb89b7d4b679e5fab2e281e9cf2b8049261cbb",
+    "skills/local-coding-worker/tests/__pycache__/test_adapters.cpython-313-pytest-9.1.1.pyc": "66fe3cd96726a13ca8e9b64465e24f531bb143549aa9d0df310a5b80c80ae6cb",
+    "skills/local-coding-worker/tests/__pycache__/test_adapters.cpython-313.pyc": "22f28eadf82551d39abfe9483a0850659d4f569e9b678b6d578e8f6c7d31fefb",
+    "skills/local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313-pytest-9.1.1.pyc": "1f30a8a932787e893b99dfd953c64ab1c468f41747a6962e4201c9da2df67223",
+    "skills/local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313.pyc": "08269e1d042905f6766d71fca17075f9376e466749f8e91291d16af7688eca24",
+    "skills/local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313-pytest-9.1.1.pyc": "294306d27d9d79a87a21a59df2cfd08b139572651f9b97f24817ce48ce15f884",
+    "skills/local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313.pyc": "f09eb7657dfb018c15175ef9596ca4795cfc16e2b3c5f09777200e35f9a1516f",
+    "skills/local-coding-worker/tests/__pycache__/test_harnesses.cpython-313-pytest-9.1.1.pyc": "2b627796f6a65914a229831e5d2c1b9278d7f0a398427d0ca41c4e2d533d64cc",
+    "skills/local-coding-worker/tests/__pycache__/test_harnesses.cpython-313.pyc": "8e3d2aee801463a7199772dd9ba55f387d82ddf66849f1fd3a23d5b7f530af8c",
+    "skills/local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313-pytest-9.1.1.pyc": "594968cb9dba1dca256f717968c53b3ccde5b5053426ea99d95116d2eef93fd5",
+    "skills/local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313.pyc": "27ab4a22767e8ad2504aa0e0bc17869c898e4c247b57f7b286c1ac1e118d6d71",
+    "skills/local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313-pytest-9.1.1.pyc": "6d22d4b6d96e96492706c3d421f6c3263d4fa30998036dec4125f03ce376c841",
+    "skills/local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313.pyc": "3fc233b142667b94b825941a070ec9870ec512d06e8dfcc21760a43546d3a236",
+    "skills/local-coding-worker/tests/__pycache__/test_model_cache.cpython-313-pytest-9.1.1.pyc": "696e9ab16aa655ccf4764c6ba9f76a98a264094361f96892a2cbf7047ed29cf9",
+    "skills/local-coding-worker/tests/__pycache__/test_model_cache.cpython-313.pyc": "a4ce40d19565e36e2565acfadfb64118a1412731ec920ee9209b826faebb3eea",
+    "skills/local-coding-worker/tests/__pycache__/test_model_staging.cpython-313-pytest-9.1.1.pyc": "58458dc188862e7d00fec5898ddd327144fd2179905b4781449a60b51cf3558c",
+    "skills/local-coding-worker/tests/__pycache__/test_model_staging.cpython-313.pyc": "b3a7131e3e9ea94017b64634b897e64421e28ec9c2239541874ce4e4ce2af2ce",
+    "skills/local-coding-worker/tests/__pycache__/test_policy.cpython-313-pytest-9.1.1.pyc": "6132c266ee36c52a443a4931f3ca17a9560028ce445ad1c6b4dd6a8624a4eff6",
+    "skills/local-coding-worker/tests/__pycache__/test_policy.cpython-313.pyc": "c3ca07078bfe296f0c13f2a84e99dbb619d8508082506d6f34cec88273e8e90b",
+    "skills/local-coding-worker/tests/__pycache__/test_production_integration.cpython-313-pytest-9.1.1.pyc": "e54c5147049f7fd9af4314687d26de3d52834fa219976d3af46289ea1116e88e",
+    "skills/local-coding-worker/tests/__pycache__/test_production_integration.cpython-313.pyc": "4179e207522ee62d7a8bf78dabb2b9bf88a4f777bddb2bb35ef614b43b018eeb",
+    "skills/local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313-pytest-9.1.1.pyc": "dcefffa4a65d6ecbb70d0db72beb01e001f101c4821f491e4a9bad9875b32d2f",
+    "skills/local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313.pyc": "c41cf585ea1826cc454ce974d7d06936803a0a1c26443772c755734d65957de6",
+    "skills/local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313-pytest-9.1.1.pyc": "1cd7edf6909fc767d74a32db2c22e6b7a1d29a703094277f761cbb55f9825074",
+    "skills/local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313.pyc": "4c0b37c3e4fe49844de7128990e36af89a1a65e1bb384e5bf4e4245fba585ce4",
+    "skills/local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313-pytest-9.1.1.pyc": "3cf517bcbbf00faa710b169075ba606a94a0a51357bb786b6b7f572742fa0e17",
+    "skills/local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313.pyc": "61145411d48dfdae27984116295ac7ae85344fde8a10831d032b90fe29132139",
+    "skills/local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313-pytest-9.1.1.pyc": "8e85d9ca954770aca33250da55b7567668233e00dac65ae424455df29180a6c7",
+    "skills/local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313.pyc": "0e27392dcf16889e1c5c6973e7acc1aea4c1d342ec932054d3c456dc46f682e2",
+    "skills/local-coding-worker/tests/__pycache__/test_service.cpython-313-pytest-9.1.1.pyc": "bb5a3cf88ffbf4b51e19850abe34f4fbf20a2e7f2f0b157ad15cc9c477af45d7",
+    "skills/local-coding-worker/tests/__pycache__/test_service.cpython-313.pyc": "7e4b65c9a741ec55ef15973f5ce41e4e6ac8dd38a74a40a798608112205cbf85",
+    "skills/local-coding-worker/tests/__pycache__/test_supervisor.cpython-313-pytest-9.1.1.pyc": "125e38a6192100d2e14266396d816b6bec647cc806b7f43ff285736c4551ce2d",
+    "skills/local-coding-worker/tests/__pycache__/test_supervisor.cpython-313.pyc": "8237c50f22a2b923f6b966aced972b8ce97e3beea7cd2c550db144e9197c851c",
+    "skills/local-coding-worker/tests/__pycache__/test_telemetry.cpython-313-pytest-9.1.1.pyc": "c7dff96bfead4e9bbe93e37dfe54ab3e3c9ac6753d4c6ec71fd8225bc40d15e7",
+    "skills/local-coding-worker/tests/__pycache__/test_telemetry.cpython-313.pyc": "6fa902afe98067443d43a92bee16d3f5a29aa5c9faaabe8c16a34be99e3997ba",
+    "skills/local-coding-worker/tests/__pycache__/test_writable_work.cpython-313-pytest-9.1.1.pyc": "a4b07996b3095809e074f54da7bbfb52378ba05c45fae884f3960e913ee9e9c1",
+    "skills/local-coding-worker/tests/__pycache__/test_writable_work.cpython-313.pyc": "59d58dd5f09852b648b65cdcd417034794aed121d5e5cae9beb60e5083fb84f5",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313-pytest-9.1.1.pyc": "e957f86b1ddbac0de92ea619080afa9df77b9749e412dd183b1b77d3f737f265",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313.pyc": "d33bde6303f96468118c4817ee1f7ae4187722a659200cd85bc36609550cb858",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313-pytest-9.1.1.pyc": "c2e2f7be58647b4ca9666fd73fb8770ddcd989a5c3e1aa2ddc7432b8c441c74c",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313.pyc": "6741f1d1a0d6dd9daafaf11f1b7a6b17a2540ca417f1616b0f91870e6797c377",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313-pytest-9.1.1.pyc": "a844f0275d2d6a5d64c9e46e7cd866ff87154b22af3c89e8b8315a8cdee13db6",
+    "skills/local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313.pyc": "c3923868ac4437aa1153d6870936cfd6c06177bbcf3897763dd13d6faf8fabcc",
+    "skills/local-coding-worker/tests/as1/test_sk_as1_central_supervisor.py": "44eccf460bbbb716c2dcfd614951da042c834aedb70910f9f0db7e22c437336f",
+    "skills/local-coding-worker/tests/as1/test_sk_as1_observer_deadlines.py": "e04dcf7651f47eb7f4f536499a55099c75400d5e234edcab0518f50cc208f778",
+    "skills/local-coding-worker/tests/as1/test_sk_as1_orphan_residency.py": "2ace06088fad6a99b57a2cf27e37daef2e02c3066b8ebd7039ddb12e40e2ce27",
+    "skills/local-coding-worker/tests/test_adapters.py": "cc1b07885ffa0159471ceebbbdf25ca53da33afe1425af8f497429a9928d7d23",
+    "skills/local-coding-worker/tests/test_canonical_runtime.py": "b5aa0b8f6634e08805695a8e99a026aa18bc128fde3bf2cdfa49dd739c47f65a",
+    "skills/local-coding-worker/tests/test_core4_integration.py": "e5dbcab618e2cfae1e3dd19efe5602382711db1ab84d1db02a9dc389d1b02317",
+    "skills/local-coding-worker/tests/test_harnesses.py": "5b3e0ea0cfc6f85c9745d05c065e5a5ca5ee82445668280d7fb687b57378ccfc",
+    "skills/local-coding-worker/tests/test_host_manifest.py": "f01bffac681b6fea02a3e637850d357cdf87a4fa40b517eb1e3eb72a88bf6565",
+    "skills/local-coding-worker/tests/test_llama_cpp_server.py": "336a79747c519e5cc1742486c59368ab1ad16811a92b08c308318f916c542da0",
+    "skills/local-coding-worker/tests/test_model_cache.py": "07417f9bdd412dd93f303c1407f56cd1252ec0f869ce8e4918a97d20f22f6903",
+    "skills/local-coding-worker/tests/test_model_staging.py": "efe3821ced40fd61252483335f93f27e98afc078c353f7654ffa12ab0848dd60",
+    "skills/local-coding-worker/tests/test_policy.py": "82c9fe9ddc03794155a22c32ee877e4d8fb2ea955eede9e531c5741cae9b505a",
+    "skills/local-coding-worker/tests/test_production_integration.py": "69c4581f8ea6da70f19f230a8c8cad66869c190288f915a73c958dfcdb7905a3",
+    "skills/local-coding-worker/tests/test_qwen_binding.py": "e12a4fb5f3a33019eeea47dad57f9298bc84c4a526a634af5d5a49a9df158988",
+    "skills/local-coding-worker/tests/test_read_only_mvp.py": "0cd96ccc72b625288069219538e90ba4a4cb0ca9df1a9642eeaa43dd58fc1278",
+    "skills/local-coding-worker/tests/test_residency_recovery.py": "fd0486d69593b7f0fe15f4ed36b8917bb882eaf501c772b2158ff4af4426866c",
+    "skills/local-coding-worker/tests/test_resource_policy.py": "5bf1a1a9c1d44351519b93204f0faf8415d9a31b2fa63a64cd86edc1dd6096ca",
+    "skills/local-coding-worker/tests/test_service.py": "f659f1d7927a6ca95db72b8e0c1c3ad69052b11f0fff0c57f89978a5accae914",
+    "skills/local-coding-worker/tests/test_supervisor.py": "23e7f9cbf38f31e7bac391bc3a92c060b511b719f679cd80b45b5496cd4a3d65",
+    "skills/local-coding-worker/tests/test_telemetry.py": "586a66fe7fc8eee67e6445d1039e2528d61f12a892054bb537efe8b64d7bf114",
+    "skills/local-coding-worker/tests/test_writable_work.py": "bfe867f931b629ec599a84a5441d0cce072f68a392fef166857a60a2a72973af",
+    "skills/integrations/as1_release.py": "82643ace13deda0c6a6fb5ad83a084e8e666e057edae04f528aec2d192fb45d6",
+    "skills/integrations/coding-workflow-mcp/.pytest_cache/v/cache/nodeids": "ed14a519aa6ec60bc2d03f7c7f7338c400eea962eecf06a9d2d2d2791309438d",
+    "skills/integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/backend.py": "eacff3a81dae1acfd294a72310fbe70d91d08e6304a37509a2bc4026a9fe7480",
+    "skills/integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/migration.py": "dbbba3f4dee2fe5c9a5e92dde55d14b58b159ea8ddcfd3907089ec0f1d6dbc4b",
+    "skills/integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py": "ed19b3109b13d064958f537d8c09a835df0719293c32cc13ee0c38a7f8d55784",
+    "skills/integrations/coding-workflow-mcp/tests/test_delegation_preflight.py": "13b8121c5d9a61d19f819cc2708fed5360897847189e79743990b07cae7a5c7b",
+    "skills/integrations/coding-workflow-mcp/tests/test_live_contract.py": "bb5597fdc36545d3f02f763d254f7e1bd998bc37da1bdbac724502cb4d56643f",
+    "skills/integrations/coding-workflow-mcp/tests/test_protocol.py": "cd1653e24545c36036eb2755308c679f9d8f098f19f84d0aa7e8b6613d07acf8",
+    "skills/integrations/native-skill-catalog.json": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3",
+    "skills/planning/adaptive-surface-v1/validation/skills-runtime-source-qualification.json": "def5b35058d0566fa844399ac9db3cbb759545a3e33b125cee21ec53fa357c82",
+    "skills/tests/as1/sqa_candidate_journeys.py": "8563e8b504f73385b9311f54e22003ae1db914b8eba484570d5ccc832d11e7d0",
+    "skills/tests/as1/test_sk_as1_gpu.py": "e5c5f62f6d073521830e7bb04fb152d450185d8ba9efc66fe680760443f191cf",
+    "skills/tests/as1/test_sk_as1_gpu_host_guards.py": "90207a1e3d653916ab3c913359a90e6d9e65feef5cb1d18f973262388de32bbb",
+    "skills/tests/as1/test_sk_as1_observer_conversation.py": "6e502f0d3dd808702a063de7f0f87c54ec2a55a7126163a67906949f2525de0e",
+    "skills/tests/as1/test_sk_as1_observer_progress.py": "407c651771d5555760818db7049773bb93abe54438894a1bdf63a0fdeccaf4a7",
+    "skills/tests/as1/test_sk_as1_qualify.py": "aa97923f8e3a69dae511c685bb68897e9178c7e59f1ef6d7225254e1a51114f8",
+    "skills/tests/as1/test_sk_as1_routing.py": "3e8cfdb51472ea015caf490ea411703ce28122050160aed6fd67d4dc3391c07d",
+    "skills/tests/as1/test_sk_as1_runtime.py": "321bec4a99d4c00902ee729026624d80819b3421547eb04f1d6b1c9526e32601",
+    "project-control/docs/as1-deployment.md": "6f393d9a16dd0ffefda64548d2c29e357ec3d8416cd0df54bf857047bfd782fb",
+    "project-control/docs/as1-skill.md": "465e38e98069fd1297310e0dec273c61e92052cb0ada449862090048f60e4d43",
+    "project-control/src/project_control/adapters/local_worker.py": "4ec72ebc335809a65d3e482501b2fd4dab9424fe58395a964dd368cd6f4ca1d9",
+    "project-control/src/project_control/as1_jobs.py": "a5abe172087e909a89011e5f0aca7cf3630801c2eccd7eb1508487ab6b837d01",
+    "project-control/src/project_control/as1_skill.py": "2e55aecefc53fad13ef758ad1b0e33e9391d6034099ffbbfd6a5ec5d1cae63dc",
+    "project-control/src/project_control/as1_surface.py": "e2572466013be29c43ee8823f05a6c4a02d38af595846e1f727b4b34698609c9",
+    "project-control/src/project_control/cli.py": "096dd38542d1bacf6ff035583fa35141214ebf220efd09411ebdbbe4a4cd6435",
+    "project-control/src/project_control/models.py": "8a84d6d4aaa9927eb01aa01067f5130367247bafc6f6335a6caf8637fd0bff67",
+    "project-control/src/project_control/observer_analysis.py": "2e42e3b11d11c921488446521c748c0070da4e2c79e8a2323f08a9380f175664",
+    "project-control/src/project_control/services/agents.py": "490f5e9ec4c1f6dbaf8689133d4e0070bb4a8f729f1d8ab1d082e5051eb631c9",
+    "project-control/src/project_control/services/frontier.py": "4c51f6c78d74d540126855f5ea064e23cdd8254dd0b51fd96a4709d4802f32e2",
+    "project-control/src/project_control/services/performance.py": "54ee186420c1daadbb6c82cf5a942154c780493edc98297637698d54ef29792e",
+    "project-control/src/project_control/snapshot.py": "d66adbfb2799eb8444aaeeac10a44c91600df13ee7a38d1d4ef3f78af8dace54",
+    "project-control/tests/as1/test_pc_as1_central_inference.py": "71c637eb46dad641e2870f3c29ce426dcd6ab11f765f84067cadcd47f2436e4e",
+    "project-control/tests/as1/test_pc_as1_deployment.py": "7ba1332c89ade43c2c00dc558e782a34f1d7131465f09e113fd6f4d67e670d44",
+    "project-control/tests/as1/test_pc_as1_inquiry_cache.py": "16531785dcc676847d847487cf2414fe7e22ac609b72a76f26f09fec1aba522d",
+    "project-control/tests/as1/test_pc_as1_jobs.py": "5322902a179ad2bf7d9edb30540c2c2016e39768ddc1ff87ba103bdd4d681996",
+    "project-control/tests/as1/test_pc_as1_qualify.py": "3dc0858cb4c0d46aa929c59c0c70e459b441efe140a0c1bd133646ae2ea07159",
+    "project-control/tests/as1/test_pc_as1_runtime_cache_epoch.py": "5454b6491ae6e90eb881b5d82badeec03623a7e39dd66b2f561f35a6fc315a9d",
+    "project-control/tests/as1/test_pc_as1_skill.py": "794797776b27fffe832546c60d8c10cf15a1c73165fdda97b4dd9f15c768be99",
+    "project-control/tests/as1/test_pc_as1_surface.py": "66002b45ae4b64d4e2de53ff3295b911d55d9a994e509a9a721cf06d384c91cc",
+    "project-control/tests/test_installer.py": "4656b3fbee8bae87fe325d996321a44bbb6efe3a9b22406b3b12f24ff4a1df38",
+    "project-control/tests/test_observer_analysis_registry.py": "afac2d0fff3b9ffb104f0a344c02fd2049740bff466a6747a0572e5fcd4f99d8",
+    "project-control/tests/test_readonly_audit.py": "636d738a9f26e5c28b485c37d844669ef15aa5b362be6c662d4e18737cc88929",
+    "docs/pa1/runtime-ownership.md": "98d8fa66634e2e688c8c1dcc39748b8c1ec09acc67da34df8923589e17547b99"
+  },
+  "supplier_files": [
+    {
+      "path": "local-coding-worker/.pytest_cache/.gitignore",
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/.pytest_cache/CACHEDIR.TAG",
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/.pytest_cache/README.md",
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/.pytest_cache/v/cache/lastfailed",
+      "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "bytes": 2,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/.pytest_cache/v/cache/nodeids",
+      "sha256": "ede08140013087bbd1ccd30d9d5943bc02f2bae82799c3ee112b6b5fc0b658a8",
+      "bytes": 7646,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/SKILL.md",
+      "sha256": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+      "bytes": 6002,
+      "git_status": "  ",
+      "head_blob": "a47ed066a13cdf37a2a98956dcdc14b8164fe117",
+      "transfer_set": "catalog-compatibility",
+      "disposition": "retain supplier entrypoint until receiver parity; later one-way forwarding only"
+    },
+    {
+      "path": "local-coding-worker/agents/openai.yaml",
+      "sha256": "c9a0b25f12fcc2f65ebd2421251b34cd3156e672a571ba1ba08476e176a4b620",
+      "bytes": 313,
+      "git_status": "  ",
+      "head_blob": "cee6a3296b03da55370e27aec38809a4802f47db",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/config/host-profile.example.toml",
+      "sha256": "d17d6740ebb6ef314a7fc9f70ba9acca2ce8df5a417e8d2352e524ebb4dbdee1",
+      "bytes": 911,
+      "git_status": "  ",
+      "head_blob": "9ce59a3dc5b457408a9adccd9c3900f04aaec2f9",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/config/production-profile.toml",
+      "sha256": "3010144cb2b002f310e62d4e5a2005c4531c555b8166233cfef2f306b700d35d",
+      "bytes": 3861,
+      "git_status": "  ",
+      "head_blob": "43956b34c1a837c6352d4c9a6978fe179f6b5e2a",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/evals/__pycache__/host_bakeoff.cpython-313.pyc",
+      "sha256": "3cd3d32570f97930597359f9dd30b96659221eed907891ac374097f8bd6665d6",
+      "bytes": 57867,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/__pycache__/model_staging.cpython-313.pyc",
+      "sha256": "38de6e2cab979ab68481a5c6a14e97690375676f5c0394ad32303a80855c4fda",
+      "bytes": 19263,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/acquisition_request.json",
+      "sha256": "0999b356bde4c495ea97455767899919fa385a987d2bbe01e3460301661cda6e",
+      "bytes": 11002,
+      "git_status": "  ",
+      "head_blob": "3333ca03259788382bbc8498a5cd8adb65b1edb2",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/host_bakeoff.py",
+      "sha256": "98509062adc306660dc1dd1ca8b9c5ddac7cd6f5b5d5d770411697c008bdf2fd",
+      "bytes": 37832,
+      "git_status": "  ",
+      "head_blob": "8b3646edae846157478ce18807445b58b7617c61",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/model_staging.py",
+      "sha256": "97f16118f7cf536538e07c55cc640de622094221e888f2c3d0422e7fffb0de14",
+      "bytes": 12330,
+      "git_status": "  ",
+      "head_blob": "33c4d8ecb32bf0323e0f7cc2cdb32894bdf8df87",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/dual-island-release.json",
+      "sha256": "8c36249e34529a6122e51c8faa725d335a00f22d7acaa8536ae572cd76d28b95",
+      "bytes": 602,
+      "git_status": "  ",
+      "head_blob": "3989cf31e3ffe29cf029edad50edd4d59c8518d3",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/focused-comparison.json",
+      "sha256": "f788933a594d10300ff6771c9c9ac309cfe0cae7ffdefff98378b2f92473114c",
+      "bytes": 4035,
+      "git_status": "  ",
+      "head_blob": "a4ce67d8874a40fe6fb779627c63c348fa86a47f",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/host-readonly.json",
+      "sha256": "8b048b5443eb9edbbcf7b36ac8070bb90ea238b2d2ea8af0b34e03d211588697",
+      "bytes": 1737,
+      "git_status": "  ",
+      "head_blob": "2253efd54a94e8f35484dfcf3cedac6c3f017f65",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/host-service.json",
+      "sha256": "fa0b83a53a15f975c52c5320955a9b547a5664420fbf780cba4ea55f2d5a4cfe",
+      "bytes": 1166,
+      "git_status": "  ",
+      "head_blob": "95d2b98cf1c485342274563f57ab421219bd0f0c",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/host-writable.json",
+      "sha256": "7ba67a7097f93775470231080935444772ebc5e77c26aa2593a6ad0935d0b526",
+      "bytes": 1410,
+      "git_status": "  ",
+      "head_blob": "097cee22e08b37227aff3ad6a3e15e5213066169",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/integrated-evaluation.json",
+      "sha256": "12b74fe3b89d3a7948167169d148369670c2f9617bfe7adfb17adb981c305d65",
+      "bytes": 5623,
+      "git_status": "  ",
+      "head_blob": "7fc6f0d9fe054bb84e9a80722788799cd07723ac",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/results/compact/meaningful-evaluation.json",
+      "sha256": "bc20cb9980dd6b6711677837690edc61dd1d6c0403a3e90c48185eee044bdc7c",
+      "bytes": 7581,
+      "git_status": "  ",
+      "head_blob": "953cd50cd794f2a0574d46d88b790eabb447a6ae",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/evals/tasks/core4-host-tasks.json",
+      "sha256": "6689f897dd776d58e45a1c50638abf7a7b83f595d00c9b0045a83294f71b18a0",
+      "bytes": 1488,
+      "git_status": "  ",
+      "head_blob": "691bf009b7b6af0c4f2977393dfc4eea662002ab",
+      "transfer_set": "historical-evidence",
+      "disposition": "preserve supplier evidence; not runtime-transfer authorization"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "ecc80d28a5b3da75c26fd1f7569052bb11bb6b9a9e7aafccf0983f57943eb3c1",
+      "bytes": 341,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/acceptance.cpython-313.pyc",
+      "sha256": "d8d0ea75453f53f37d67ee4793c4d3ec19d9c50411c50ea4f67d7eff3de27ed9",
+      "bytes": 13748,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/canonical_runtime.cpython-313.pyc",
+      "sha256": "2b42b8e0fd9abf1fb16a81b013255a7f6d6710ac052c79b4fccd4785ec9b1ca3",
+      "bytes": 4692,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/controller.cpython-313.pyc",
+      "sha256": "d44d8c6aa64e60213b09f86a50d12d0d0dccce5b3cefa2f98d58c068dbe67661",
+      "bytes": 79452,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/model_cache.cpython-313.pyc",
+      "sha256": "a3f19f21bb31d69a146fbc225bca6a2d88fb41c0e7db25f88f8bbabdc41fb05c",
+      "bytes": 19012,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/observer_runtime.cpython-313.pyc",
+      "sha256": "00cf018a5b80b6df7a4d276afb76f8d6b1778fc04a424cce518942fe8809d4c3",
+      "bytes": 74505,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/policy.cpython-313.pyc",
+      "sha256": "4c226312c809fc7dee7cb9b9cbc9b95550a4c92867300e9fd67ec34f39cb5eee",
+      "bytes": 3946,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/production_checks.cpython-313.pyc",
+      "sha256": "bc221141de045cf018845f78aa4779141d07b130d51460a6c81ea8f67944f854",
+      "bytes": 120450,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/residency.cpython-313.pyc",
+      "sha256": "f08125eff52a09a4cbab966f13cdd61d0e4265f262f711fdc08a34a10fee00f8",
+      "bytes": 7583,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/result_validation.cpython-313.pyc",
+      "sha256": "9bb28240fb4a74bfecbf382d4d7439228585e495a7eeac7eb10f0daf27b63ebe",
+      "bytes": 9624,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/reviewer.cpython-313.pyc",
+      "sha256": "63cd8b5206b4bdd6ce747579f0867522a84f766d2d24ac7f7e051b99ae2f5d28",
+      "bytes": 1783,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/service.cpython-313.pyc",
+      "sha256": "3686590ad2a5f6f53ed0326dcd122d65618d0070d7268e672ba34615d7eb4659",
+      "bytes": 18639,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/supervisor.cpython-313.pyc",
+      "sha256": "dca32d32f8db958170bc4025ebebfebe1651e97b3f2285ee37107e19710b3233",
+      "bytes": 148935,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/telemetry.cpython-313.pyc",
+      "sha256": "b805b1b8e47777abf288f6de94069988b9c83e449d47f4ff141116cc9aa2a7bb",
+      "bytes": 9318,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/verification.cpython-313.pyc",
+      "sha256": "e81f50f218f8b77d9b842c3b67b16f557a46917f082944e8d4c2ccf281127dd5",
+      "bytes": 4090,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/__pycache__/workspace.cpython-313.pyc",
+      "sha256": "2aac7e413d64194fe7ec772941284f7e5c68e772742fb42003555aa88210dc2e",
+      "bytes": 11928,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/acceptance.py",
+      "sha256": "847cc37102f27a6888684c35e3f4f97a24ff4cad0ca6cc1c63eb0c73efa927a4",
+      "bytes": 8843,
+      "git_status": "  ",
+      "head_blob": "f115ea8a91abc92f5f5c9987cc01bc6df7700eec",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/canonical_runtime.py",
+      "sha256": "35d3783c2fa4dab306ca35d0b821ba66a6a31fc6ddae522f12fbf1d3e729931c",
+      "bytes": 2828,
+      "git_status": "  ",
+      "head_blob": "4bbe7a57d6da63b7e6f28ca28facfc87720d7b44",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/controller.py",
+      "sha256": "5c324dcd80ae5fcf643faee0e5655cad6fd314184ed9d779f3196ddc643f4932",
+      "bytes": 60638,
+      "git_status": "  ",
+      "head_blob": "d68d24a347d05fc7fff086615c535083615db549",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/__init__.py",
+      "sha256": "a8f23d0b7fdd6e22ee61b5780ab528ff89b914d31f9a1fd8f1cf52423864b4f0",
+      "bytes": 128,
+      "git_status": "  ",
+      "head_blob": "399fe4bc766268166567c3a44ef6da276658f18e",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "67769485e198c0f9bb2f42e250751d8b6b58a312c45ec81cb1db60bf9c8e1bbe",
+      "bytes": 322,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/base.cpython-313.pyc",
+      "sha256": "bcc34d7b342cca82a4247dd1bb8a098c2eac196833bf2380354a23f0cb57f58d",
+      "bytes": 12941,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/codex_cli.cpython-313.pyc",
+      "sha256": "6436df34e277b5a3489123d6d056f9d9edc4367ae46a16f802e823b1b252b61c",
+      "bytes": 3269,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/__pycache__/qwen_code.cpython-313.pyc",
+      "sha256": "a190f0f9bedb655d170a1d7fbf6c9d2a1e007c513e638d19ab5b9e6890d07758",
+      "bytes": 20911,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/base.py",
+      "sha256": "033bc4ab94dd0697c45f68fbc423e43ae09969229ed6f570760c8f470b2671bc",
+      "bytes": 8195,
+      "git_status": "  ",
+      "head_blob": "25b3e552e52b617474390cd24930607d1b9eb2f5",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/codex_cli.py",
+      "sha256": "3d4f705c583d8911c20b9fb2b612ec1dac68766cfab0fa08ddaaa47555c2ae7f",
+      "bytes": 1632,
+      "git_status": "  ",
+      "head_blob": "cca16895f990f0b8d8defaff6335a7dfc4247109",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/harnesses/qwen_code.py",
+      "sha256": "b11bbed7fce1789f2fa949de69d35494a5767f597fa351a980254f37d4b57439",
+      "bytes": 15269,
+      "git_status": "  ",
+      "head_blob": "fa9411d0c54dd08b378bcb44fa3e593373181f09",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/model_cache.py",
+      "sha256": "992ba090a7fe3d58446bb6aab63162ec8d3e1072ba4a9a51b5129b55d7985b4e",
+      "bytes": 11988,
+      "git_status": "  ",
+      "head_blob": "2b7311c0579e3ad844b1b806a42c84379da1a19b",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/observer_runtime.py",
+      "sha256": "d3a65e54aaf4a6f0c6d38621d521ee0402aba749da4bf2a543c0df75550e580f",
+      "bytes": 66868,
+      "git_status": "  ",
+      "head_blob": "643adc237be963b27777a7aa6238213f0d70624a",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/policy.py",
+      "sha256": "b97fa777b7eb4a94586973097e99c1839ab17419b50fb53177ae40e8c06d2188",
+      "bytes": 2638,
+      "git_status": "  ",
+      "head_blob": "d0c1e14189c25535dfa5d836bed70004761970e4",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/production_checks.py",
+      "sha256": "16c13ad85ddf7c23d49f5884081850d5a0a97347711bf139d498be266e036140",
+      "bytes": 99396,
+      "git_status": "  ",
+      "head_blob": "a6101ff31756667f2eb4b4b14e81befad6d65a1c",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/residency.py",
+      "sha256": "6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce",
+      "bytes": 4652,
+      "git_status": "  ",
+      "head_blob": "08e73062fff13a5bf53b954084c0992d24a28edc",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/result_validation.py",
+      "sha256": "d3be0925b78ec1b0f4e7dd2010061bccea440f8a00b30c79ad62bcb45b710c1c",
+      "bytes": 6453,
+      "git_status": "  ",
+      "head_blob": "4390358ed5b591a70b4fbb61f86a151bbed538b7",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/reviewer.py",
+      "sha256": "5cfe1aa05fa843176a991ef5acb6c3684300f13e377281e98b79d760c8061695",
+      "bytes": 1340,
+      "git_status": "  ",
+      "head_blob": "5d18a68caad8ebd0cd2dfd61200ed2e8f81516fa",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/servers/__init__.py",
+      "sha256": "6aec6eb256204704bf4c7b92d4ef73c1f78867a06c21832221c39349e9ea3189",
+      "bytes": 82,
+      "git_status": "  ",
+      "head_blob": "a744369c7ecd68da820dcf649f995cc78a0a538b",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/servers/__pycache__/__init__.cpython-313.pyc",
+      "sha256": "7ea76508746228ff7ea464c7ac2df560fbc947802ac66d98b4e3ab83420c2773",
+      "bytes": 266,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/servers/__pycache__/llama_cpp.cpython-313.pyc",
+      "sha256": "66d9bc0ac609429af454cb143fae05335e3ef23746a128afaabefb7fc7140ab1",
+      "bytes": 62307,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/servers/llama_cpp.py",
+      "sha256": "fdf1bf991a53e85b2352aba20909eb6718d418afa19348b866df6e61cca1e26a",
+      "bytes": 52695,
+      "git_status": "  ",
+      "head_blob": "86a066040bfd9e3f8036c07e018a0e7139d15044",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/service.py",
+      "sha256": "5950a45aeaa8091133f623ecdb5f74c71b7683e54eba67d4f2d54c488b3577eb",
+      "bytes": 11128,
+      "git_status": "  ",
+      "head_blob": "2c83dbbfe5e9ce17a1552c78562b9ed35eda7e13",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/supervisor.py",
+      "sha256": "eb35174dd67338720ae78490cf5cdf33e08f371c68eadfbdac0f930c479489bf",
+      "bytes": 111614,
+      "git_status": "  ",
+      "head_blob": "944a0719ad6df5f64422719f42bdedfbfc33b019",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/telemetry.py",
+      "sha256": "9f7ef60a4e6bce81f6f05c355470bb901dd88d43ae62344aac830d5634e074db",
+      "bytes": 5516,
+      "git_status": "  ",
+      "head_blob": "2b746c8341e8ad8b2004ad3ef57f83ec818652b4",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/verification.py",
+      "sha256": "0acd92c78432ea3d999d2f138c852921dcd0fe5f56e37a2be9ecfb1934ecbcc8",
+      "bytes": 2513,
+      "git_status": "  ",
+      "head_blob": "9fb74cd3458b32bb8a4df12cb96b84c5270a87a1",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/local_worker/workspace.py",
+      "sha256": "8889483626e8ce4312538b1149ccb7844b003252b60772d08aa0f73948e3ea64",
+      "bytes": 8204,
+      "git_status": "  ",
+      "head_blob": "2cf5b5650d1c13bf3283bdaddeab60b01352abba",
+      "transfer_set": "runtime-source",
+      "disposition": "candidate for receiver ownership after parity; retain supplier original until coordinated retirement"
+    },
+    {
+      "path": "local-coding-worker/references/adapter-contract.md",
+      "sha256": "61ae2ebb8d386e0da9a601ff08cf3f25d020dd5afcd0e6ed439937865280b60e",
+      "bytes": 1150,
+      "git_status": "  ",
+      "head_blob": "fb7c97ce8c5fb12a8c247566d221636fd7849d6c",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/integration-contract.md",
+      "sha256": "1a4153c4f8884b5d0df805bd84f516500d41a280ca2a756ccdd18684b1111b63",
+      "bytes": 2636,
+      "git_status": "  ",
+      "head_blob": "4dced1d8821fc6425bd35ee45211201bee48d4f4",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/model-cache.md",
+      "sha256": "484c6d24114280356400075e44ef3c153f460d7f96563d83a18f471c2105e192",
+      "bytes": 1888,
+      "git_status": "  ",
+      "head_blob": "bb41e4b306f18d45e18bea4ecf928c8c9c2a6665",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/observer-port.md",
+      "sha256": "750d21ed01c875736016c7797a1adb6839df77998d1db746f4c57430112cf58d",
+      "bytes": 11965,
+      "git_status": "  ",
+      "head_blob": "955e9347397d42adb19ad412d07c257887d08d19",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/read-only-contract.md",
+      "sha256": "5bd1b93811a36760e8eb1567c9ea0dcb60dcf3f0507e6b18fcda78947537808e",
+      "bytes": 2639,
+      "git_status": "  ",
+      "head_blob": "0659a8f726c93656f64c03dde6723066d86b3a86",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/resource-policy.md",
+      "sha256": "4cbbee350f50c29bed91574fd99f1fc0553f2ac9a75a5891c3eb6f60874fed80",
+      "bytes": 3144,
+      "git_status": "  ",
+      "head_blob": "928bae4c6ca97b3402eb7de661aeb694852955a7",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/references/writable-work-contract.md",
+      "sha256": "aee083f610b44f198ad2d853932338fa16a4d05b84ecda35d68bcf2d35f18bea",
+      "bytes": 2365,
+      "git_status": "  ",
+      "head_blob": "826903d2a12b29b33c480938ef5d6f33f47ecbc4",
+      "transfer_set": "authority-contracts",
+      "disposition": "candidate guidance/contracts for receiver review; preserve source provenance"
+    },
+    {
+      "path": "local-coding-worker/schemas/delegation-spec-v1.schema.json",
+      "sha256": "293bad80ee73a94f7769a50ced850b01cb0efb1b9cf5c8767aa73f69eb1d1120",
+      "bytes": 1294,
+      "git_status": "  ",
+      "head_blob": "9a3cdfcc891df05884bc89112a5ee115bc015295",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/delegation-spec-v2.schema.json",
+      "sha256": "c09f538c6e60d474177e5c9f0b633014c7ae9a16fbcdb44a1b0c8e06be4ff601",
+      "bytes": 1783,
+      "git_status": "  ",
+      "head_blob": "dd76e35c68e9411af494647fa4a0915858ccd8cd",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/harness-policy-v2.schema.json",
+      "sha256": "04d4a7cf2faa1548a74784c08f99920c0129db0f295a0f41931dc9cd3892c662",
+      "bytes": 826,
+      "git_status": "  ",
+      "head_blob": "9a7e4003f1fd52ec20c49f5ff58f25f7ee8c4d9f",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/model-cache-v1.schema.json",
+      "sha256": "2012f04ee622d4c2cfa65c075af7e4c5980a62c1c3807ed6f7215d535e9a4a34",
+      "bytes": 976,
+      "git_status": "  ",
+      "head_blob": "38bdb2992f04770bd9de9f3c86192cbf0447a597",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/model-outcome-v1.schema.json",
+      "sha256": "1bf55b1c7e69d7cf5af0cc3cd58f7016f9059a15400af22f184e2336ae977a5d",
+      "bytes": 1370,
+      "git_status": "  ",
+      "head_blob": "b22328ae8a5f471e2df605505c09dc6180ebecb1",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/model-service-profile-v2.schema.json",
+      "sha256": "9864bca7c16b40c7772905c0d6be4ceacad2233fb520166f6b24f0c45cc542ed",
+      "bytes": 1268,
+      "git_status": "  ",
+      "head_blob": "584b867f3e55402f8baf5433fbe42f07797e3e53",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/worker-result-v1.schema.json",
+      "sha256": "89add717dd38cf9a9e1fd27a46a81c715ba1aef41dae566cf3c81b65003a8b93",
+      "bytes": 1606,
+      "git_status": "  ",
+      "head_blob": "dcc4d129921080c5f20f556c581ea5a170396806",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/schemas/worker-result-v2.schema.json",
+      "sha256": "fd8bfd5b4495345aabe8a49e450b786a8a36895738059fb2983ae70a0fb0130d",
+      "bytes": 1100,
+      "git_status": "  ",
+      "head_blob": "ad71533b7ea6f9eef1296820b7793b9d2aa1a592",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/__pycache__/inspect_host.cpython-313.pyc",
+      "sha256": "0a0481ffa2b2382325acf17a6f354212e2dc6d027b642e9666a080efd13c9fbd",
+      "bytes": 11389,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/__pycache__/local_worker.cpython-313.pyc",
+      "sha256": "b41edfc93e44be57ed673f2e86d61d55a9ebe62149347c4f080278b78508601f",
+      "bytes": 24036,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/__pycache__/worker_core.cpython-313.pyc",
+      "sha256": "0effd9795e5f480efbc374bb73229887bfcf33d54d5ef2ee3ea56fe7af2d2eae",
+      "bytes": 29394,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/inspect_host.py",
+      "sha256": "77a654d9fbc03724a7914024c845f3617cbc6c252c6b683fd6a0cd5064c10417",
+      "bytes": 7301,
+      "git_status": "  ",
+      "head_blob": "ffc7fe7ee3729e208b8e420d38e6d96428fd787a",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/local_worker.py",
+      "sha256": "c1ff1558c1d64ad12bfb2234b44f34aafaa2f2f71d4c31c76c3a508fe2f83ee6",
+      "bytes": 18478,
+      "git_status": "  ",
+      "head_blob": "02f2b5c7862a58b66c6cde85af02d9d0f38e6788",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/scripts/worker_core.py",
+      "sha256": "a0bcd9995d13bf2b490be82956cb89b7d4b679e5fab2e281e9cf2b8049261cbb",
+      "bytes": 20020,
+      "git_status": "  ",
+      "head_blob": "b96423273d51b3eebe964d98363796a401bafba5",
+      "transfer_set": "runtime-support",
+      "disposition": "candidate for receiver ownership; inspect runtime-root assumptions before moving"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_adapters.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "66fe3cd96726a13ca8e9b64465e24f531bb143549aa9d0df310a5b80c80ae6cb",
+      "bytes": 13823,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_adapters.cpython-313.pyc",
+      "sha256": "22f28eadf82551d39abfe9483a0850659d4f569e9b678b6d578e8f6c7d31fefb",
+      "bytes": 13710,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "1f30a8a932787e893b99dfd953c64ab1c468f41747a6962e4201c9da2df67223",
+      "bytes": 4616,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313.pyc",
+      "sha256": "08269e1d042905f6766d71fca17075f9376e466749f8e91291d16af7688eca24",
+      "bytes": 4503,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "294306d27d9d79a87a21a59df2cfd08b139572651f9b97f24817ce48ce15f884",
+      "bytes": 48705,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313.pyc",
+      "sha256": "f09eb7657dfb018c15175ef9596ca4795cfc16e2b3c5f09777200e35f9a1516f",
+      "bytes": 48592,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "2b627796f6a65914a229831e5d2c1b9278d7f0a398427d0ca41c4e2d533d64cc",
+      "bytes": 12578,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313.pyc",
+      "sha256": "8e3d2aee801463a7199772dd9ba55f387d82ddf66849f1fd3a23d5b7f530af8c",
+      "bytes": 12464,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "594968cb9dba1dca256f717968c53b3ccde5b5053426ea99d95116d2eef93fd5",
+      "bytes": 6959,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313.pyc",
+      "sha256": "27ab4a22767e8ad2504aa0e0bc17869c898e4c247b57f7b286c1ac1e118d6d71",
+      "bytes": 6113,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "6d22d4b6d96e96492706c3d421f6c3263d4fa30998036dec4125f03ce376c841",
+      "bytes": 14945,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313.pyc",
+      "sha256": "3fc233b142667b94b825941a070ec9870ec512d06e8dfcc21760a43546d3a236",
+      "bytes": 37846,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "696e9ab16aa655ccf4764c6ba9f76a98a264094361f96892a2cbf7047ed29cf9",
+      "bytes": 10751,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313.pyc",
+      "sha256": "a4ce40d19565e36e2565acfadfb64118a1412731ec920ee9209b826faebb3eea",
+      "bytes": 10638,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "58458dc188862e7d00fec5898ddd327144fd2179905b4781449a60b51cf3558c",
+      "bytes": 11081,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313.pyc",
+      "sha256": "b3a7131e3e9ea94017b64634b897e64421e28ec9c2239541874ce4e4ce2af2ce",
+      "bytes": 10236,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_policy.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "6132c266ee36c52a443a4931f3ca17a9560028ce445ad1c6b4dd6a8624a4eff6",
+      "bytes": 7248,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_policy.cpython-313.pyc",
+      "sha256": "c3ca07078bfe296f0c13f2a84e99dbb619d8508082506d6f34cec88273e8e90b",
+      "bytes": 7104,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "e54c5147049f7fd9af4314687d26de3d52834fa219976d3af46289ea1116e88e",
+      "bytes": 19095,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313.pyc",
+      "sha256": "4179e207522ee62d7a8bf78dabb2b9bf88a4f777bddb2bb35ef614b43b018eeb",
+      "bytes": 17971,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "dcefffa4a65d6ecbb70d0db72beb01e001f101c4821f491e4a9bad9875b32d2f",
+      "bytes": 9363,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313.pyc",
+      "sha256": "c41cf585ea1826cc454ce974d7d06936803a0a1c26443772c755734d65957de6",
+      "bytes": 9250,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "1cd7edf6909fc767d74a32db2c22e6b7a1d29a703094277f761cbb55f9825074",
+      "bytes": 14070,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313.pyc",
+      "sha256": "4c0b37c3e4fe49844de7128990e36af89a1a65e1bb384e5bf4e4245fba585ce4",
+      "bytes": 13957,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "3cf517bcbbf00faa710b169075ba606a94a0a51357bb786b6b7f572742fa0e17",
+      "bytes": 18108,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313.pyc",
+      "sha256": "61145411d48dfdae27984116295ac7ae85344fde8a10831d032b90fe29132139",
+      "bytes": 17995,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "8e85d9ca954770aca33250da55b7567668233e00dac65ae424455df29180a6c7",
+      "bytes": 13588,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313.pyc",
+      "sha256": "0e27392dcf16889e1c5c6973e7acc1aea4c1d342ec932054d3c456dc46f682e2",
+      "bytes": 13475,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_service.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "bb5a3cf88ffbf4b51e19850abe34f4fbf20a2e7f2f0b157ad15cc9c477af45d7",
+      "bytes": 5985,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_service.cpython-313.pyc",
+      "sha256": "7e4b65c9a741ec55ef15973f5ce41e4e6ac8dd38a74a40a798608112205cbf85",
+      "bytes": 5841,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "125e38a6192100d2e14266396d816b6bec647cc806b7f43ff285736c4551ce2d",
+      "bytes": 86246,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313.pyc",
+      "sha256": "8237c50f22a2b923f6b966aced972b8ce97e3beea7cd2c550db144e9197c851c",
+      "bytes": 86133,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "c7dff96bfead4e9bbe93e37dfe54ab3e3c9ac6753d4c6ec71fd8225bc40d15e7",
+      "bytes": 2487,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313.pyc",
+      "sha256": "6fa902afe98067443d43a92bee16d3f5a29aa5c9faaabe8c16a34be99e3997ba",
+      "bytes": 2343,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "a4b07996b3095809e074f54da7bbfb52378ba05c45fae884f3960e913ee9e9c1",
+      "bytes": 11377,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313.pyc",
+      "sha256": "59d58dd5f09852b648b65cdcd417034794aed121d5e5cae9beb60e5083fb84f5",
+      "bytes": 11233,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "e957f86b1ddbac0de92ea619080afa9df77b9749e412dd183b1b77d3f737f265",
+      "bytes": 44661,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313.pyc",
+      "sha256": "d33bde6303f96468118c4817ee1f7ae4187722a659200cd85bc36609550cb858",
+      "bytes": 44547,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "c2e2f7be58647b4ca9666fd73fb8770ddcd989a5c3e1aa2ddc7432b8c441c74c",
+      "bytes": 162890,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313.pyc",
+      "sha256": "6741f1d1a0d6dd9daafaf11f1b7a6b17a2540ca417f1616b0f91870e6797c377",
+      "bytes": 59060,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313-pytest-9.1.1.pyc",
+      "sha256": "a844f0275d2d6a5d64c9e46e7cd866ff87154b22af3c89e8b8315a8cdee13db6",
+      "bytes": 34201,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313.pyc",
+      "sha256": "c3923868ac4437aa1153d6870936cfd6c06177bbcf3897763dd13d6faf8fabcc",
+      "bytes": 24986,
+      "git_status": "  ",
+      "head_blob": null,
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/test_sk_as1_central_supervisor.py",
+      "sha256": "44eccf460bbbb716c2dcfd614951da042c834aedb70910f9f0db7e22c437336f",
+      "bytes": 21931,
+      "git_status": "  ",
+      "head_blob": "40a50623cb295d1c70287c8a338f0994fc401443",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/test_sk_as1_observer_deadlines.py",
+      "sha256": "e04dcf7651f47eb7f4f536499a55099c75400d5e234edcab0518f50cc208f778",
+      "bytes": 40792,
+      "git_status": "  ",
+      "head_blob": "75bda35360aa6dba2bf341d419610443a6bdca5d",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/as1/test_sk_as1_orphan_residency.py",
+      "sha256": "2ace06088fad6a99b57a2cf27e37daef2e02c3066b8ebd7039ddb12e40e2ce27",
+      "bytes": 18522,
+      "git_status": "  ",
+      "head_blob": "01e13f7b206fac680dbe417616aef97f9e6d693e",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_adapters.py",
+      "sha256": "cc1b07885ffa0159471ceebbbdf25ca53da33afe1425af8f497429a9928d7d23",
+      "bytes": 7907,
+      "git_status": "  ",
+      "head_blob": "8aaf9419d68d70abd3d17466fffbe7bd6e2d1b5f",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_canonical_runtime.py",
+      "sha256": "b5aa0b8f6634e08805695a8e99a026aa18bc128fde3bf2cdfa49dd739c47f65a",
+      "bytes": 2077,
+      "git_status": "  ",
+      "head_blob": "96e59216c4850ec21008fb66debf781f4494dbfb",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_core4_integration.py",
+      "sha256": "e5dbcab618e2cfae1e3dd19efe5602382711db1ab84d1db02a9dc389d1b02317",
+      "bytes": 32837,
+      "git_status": "  ",
+      "head_blob": "9704162a0522176e12f70e0b025140fb846bf830",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_harnesses.py",
+      "sha256": "5b3e0ea0cfc6f85c9745d05c065e5a5ca5ee82445668280d7fb687b57378ccfc",
+      "bytes": 7898,
+      "git_status": "  ",
+      "head_blob": "96ddc6d26e0eeee9ef613b08bdf7edfac3509a7a",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_host_manifest.py",
+      "sha256": "f01bffac681b6fea02a3e637850d357cdf87a4fa40b517eb1e3eb72a88bf6565",
+      "bytes": 3232,
+      "git_status": "  ",
+      "head_blob": "51b3b579a85d181eef13aa8f30950467e37a7155",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_llama_cpp_server.py",
+      "sha256": "336a79747c519e5cc1742486c59368ab1ad16811a92b08c308318f916c542da0",
+      "bytes": 27626,
+      "git_status": "  ",
+      "head_blob": "ab37e7e6b74d47023f753d5d272e4d9da13ccffe",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_model_cache.py",
+      "sha256": "07417f9bdd412dd93f303c1407f56cd1252ec0f869ce8e4918a97d20f22f6903",
+      "bytes": 4967,
+      "git_status": "  ",
+      "head_blob": "b77fe87ba942087db6a1b21dde641ac3678a801d",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_model_staging.py",
+      "sha256": "efe3821ced40fd61252483335f93f27e98afc078c353f7654ffa12ab0848dd60",
+      "bytes": 5061,
+      "git_status": "  ",
+      "head_blob": "394e7b486004418bf481d6196af17b5f599aa8bc",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_policy.py",
+      "sha256": "82c9fe9ddc03794155a22c32ee877e4d8fb2ea955eede9e531c5741cae9b505a",
+      "bytes": 4417,
+      "git_status": "  ",
+      "head_blob": "f94339bc47910437e5bbd7cad89d904ff6def18c",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_production_integration.py",
+      "sha256": "69c4581f8ea6da70f19f230a8c8cad66869c190288f915a73c958dfcdb7905a3",
+      "bytes": 10644,
+      "git_status": "  ",
+      "head_blob": "efaadfa946add9194870f8f4bb4c97bbbbb30384",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_qwen_binding.py",
+      "sha256": "e12a4fb5f3a33019eeea47dad57f9298bc84c4a526a634af5d5a49a9df158988",
+      "bytes": 5816,
+      "git_status": "  ",
+      "head_blob": "617683394d9a3643983dbccbd6201626042e0f7a",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_read_only_mvp.py",
+      "sha256": "0cd96ccc72b625288069219538e90ba4a4cb0ca9df1a9642eeaa43dd58fc1278",
+      "bytes": 8130,
+      "git_status": "  ",
+      "head_blob": "34708ea5b726d8d9e2529a85946b3c412c265573",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_residency_recovery.py",
+      "sha256": "fd0486d69593b7f0fe15f4ed36b8917bb882eaf501c772b2158ff4af4426866c",
+      "bytes": 8221,
+      "git_status": "  ",
+      "head_blob": "34d7ae7c30bf5b546a4e3c57bbe5e16c99c56802",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_resource_policy.py",
+      "sha256": "5bf1a1a9c1d44351519b93204f0faf8415d9a31b2fa63a64cd86edc1dd6096ca",
+      "bytes": 7133,
+      "git_status": "  ",
+      "head_blob": "1162608f53167ccfd1c9024b33d0a86fad94f3b0",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_service.py",
+      "sha256": "f659f1d7927a6ca95db72b8e0c1c3ad69052b11f0fff0c57f89978a5accae914",
+      "bytes": 2422,
+      "git_status": "  ",
+      "head_blob": "9328c5b55b4fe69fce07523c538ff7a685346c35",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_supervisor.py",
+      "sha256": "23e7f9cbf38f31e7bac391bc3a92c060b511b719f679cd80b45b5496cd4a3d65",
+      "bytes": 52217,
+      "git_status": "  ",
+      "head_blob": "5c34886ec8622baa276a47f6edfc704c06bb5694",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_telemetry.py",
+      "sha256": "586a66fe7fc8eee67e6445d1039e2528d61f12a892054bb537efe8b64d7bf114",
+      "bytes": 1278,
+      "git_status": "  ",
+      "head_blob": "67d4b5de25a91708792094f0424c875a5ff80bb2",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    },
+    {
+      "path": "local-coding-worker/tests/test_writable_work.py",
+      "sha256": "bfe867f931b629ec599a84a5441d0cce072f68a392fef166857a60a2a72973af",
+      "bytes": 6656,
+      "git_status": "  ",
+      "head_blob": "c890dceef129ff981a656edd44762496b0a1ee54",
+      "transfer_set": "source-tests",
+      "disposition": "candidate source tests; classify hardware-dependent tests separately and do not claim device qualification"
+    }
+  ],
+  "receiver_files": [
+    {
+      "path": "docs/pa1/runtime-ownership.md",
+      "sha256": "98d8fa66634e2e688c8c1dcc39748b8c1ec09acc67da34df8923589e17547b99",
+      "role": "canonical receiver contract; this artifact records source evidence only and does not implement the transition"
+    }
+  ],
+  "consumers": [
+    {
+      "repository": "skills",
+      "path": "integrations/as1_release.py",
+      "sha256": "82643ace13deda0c6a6fb5ad83a084e8e666e057edae04f528aec2d192fb45d6",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 52,
+          "symbol": "assert sha(candidate / 'runtime-skills/local-coding-worker/local_worker/observer_runtime.py') == release['pins']['observer_runtime_sha256']",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/.pytest_cache/v/cache/nodeids",
+      "sha256": "ed14a519aa6ec60bc2d03f7c7f7338c400eea962eecf06a9d2d2d2791309438d",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 163,
+          "symbol": "\"tests/test_live_contract.py::LivePublicContractTests::test_focused_local_worker_admission_suites_pass\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 164,
+          "symbol": "\"tests/test_live_contract.py::LivePublicContractTests::test_local_worker_has_atomic_admission_before_child_contract\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 172,
+          "symbol": "\"tests/test_protocol.py::ProtocolTests::test_local_worker_guidance_keeps_children_subordinate\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/backend.py",
+      "sha256": "eacff3a81dae1acfd294a72310fbe70d91d08e6304a37509a2bc4026a9fe7480",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 21,
+          "symbol": "\"worker\": Path(\"local-coding-worker/scripts/local_worker.py\"),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 144,
+          "symbol": "lock_root = common.resolve() / \"local-coding-worker/locks\"",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 535,
+          "symbol": "\"reason\": \"local_worker_admission_contract_missing_no_child_no_scope_guarantee\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 540,
+          "symbol": "\"reason\": response.get(\"reason\", \"all_local_worker_slots_busy\"),",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 561,
+          "symbol": "\"reason\": \"local_worker_public_admission_delegate_contract_unavailable\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/build/lib/coding_workflow_mcp/migration.py",
+      "sha256": "dbbba3f4dee2fe5c9a5e92dde55d14b58b159ea8ddcfd3907089ec0f1d6dbc4b",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 21,
+          "symbol": "local-coding-worker unless coding-workflow returns an explicit bounded fallback",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/scripts/live_two_readonly_smoke.py",
+      "sha256": "ed19b3109b13d064958f537d8c09a835df0719293c32cc13ee0c38a7f8d55784",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 166,
+          "symbol": "for path in sorted((fixture / \".git/local-coding-worker/executions\").glob(\"*/worker-result.json\")):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/tests/test_delegation_preflight.py",
+      "sha256": "13b8121c5d9a61d19f819cc2708fed5360897847189e79743990b07cae7a5c7b",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 11,
+          "symbol": "def test_local_worker_remains_subordinate_adapter_not_backend(self) -> None:",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 14,
+          "symbol": "child_skill = (root / \"local-coding-worker\" / \"SKILL.md\").read_text(encoding=\"utf-8\")",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/tests/test_live_contract.py",
+      "sha256": "bb5597fdc36545d3f02f763d254f7e1bd998bc37da1bdbac724502cb4d56643f",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 13,
+          "symbol": "\"local-coding-worker/scripts/local_worker.py\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/coding-workflow-mcp/tests/test_protocol.py",
+      "sha256": "cd1653e24545c36036eb2755308c679f9d8f098f19f84d0aa7e8b6613d07acf8",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 32,
+          "symbol": "def test_local_worker_guidance_keeps_children_subordinate(self) -> None:",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        },
+        {
+          "line": 34,
+          "symbol": "skill = (package.parents[1] / \"local-coding-worker\" / \"SKILL.md\").read_text(encoding=\"utf-8\")",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "retain and test canonical/legacy binding equality; no alias split or receiver cycle"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "integrations/native-skill-catalog.json",
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3",
+      "git_status": " M",
+      "references": [
+        {
+          "line": 125,
+          "symbol": "\"name\": \"local-coding-worker\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "preserve the dirty catalog; after parity, coordinated one-way entry forwarding to PC receiver"
+        },
+        {
+          "line": 126,
+          "symbol": "\"entry\": \"local-coding-worker/SKILL.md\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "preserve the dirty catalog; after parity, coordinated one-way entry forwarding to PC receiver"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "planning/adaptive-surface-v1/validation/skills-runtime-source-qualification.json",
+      "sha256": "def5b35058d0566fa844399ac9db3cbb759545a3e33b125cee21ec53fa357c82",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 11,
+          "symbol": "\"local-coding-worker/local_worker/observer_runtime.py\": \"99ebb05632b7768403e103bc32bb5f04885c86662272cef14bf83fb25e57ce8b\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        },
+        {
+          "line": 12,
+          "symbol": "\"local-coding-worker/SKILL.md\": \"b0f809864d239b1a6b8d7ba9c925efd4173253c7a95b6bf1f5f5fd3f9833c184\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        },
+        {
+          "line": 13,
+          "symbol": "\"local-coding-worker/references/observer-port.md\": \"22a6960c4b3c24ccad7f660312ac6fcfe3928e09caef354fb7a6d25765d91aa9\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        },
+        {
+          "line": 162,
+          "symbol": "\"local-coding-worker/local_worker/residency.py\": \"6e89de37be86b4427f1ce40673ead5b15a376b66f90004a03b5033ccdcef46ce\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        },
+        {
+          "line": 163,
+          "symbol": "\"local-coding-worker/local_worker/servers/llama_cpp.py\": \"0799bdbe4b40a23a85a15ded39d14f683b9405b1c92ee8e535127e3f890287a0\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        },
+        {
+          "line": 164,
+          "symbol": "\"local-coding-worker/local_worker/supervisor.py\": \"7a98ff795ab50dd2343ec9ce8d9e1c0761bf4ccfe44047f1a5da8ebea26be214\",",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "refresh source-bound release/qualification evidence against exact current source before claiming parity"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/sqa_candidate_journeys.py",
+      "sha256": "8563e8b504f73385b9311f54e22003ae1db914b8eba484570d5ccc832d11e7d0",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 52,
+          "symbol": "observer_package = identity.skills_root / 'local-coding-worker/local_worker'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 54,
+          "symbol": "SKILLS, SK_COMMIT, 'local-coding-worker/local_worker')",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 57,
+          "symbol": "observer_runtime = 'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 129,
+          "symbol": "for name in ('cuda', 'cpp-context-compiler', 'todo-orchestrator', 'local-coding-worker'):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_gpu.py",
+      "sha256": "e5c5f62f6d073521830e7bb04fb152d450185d8ba9efc66fe680760443f191cf",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 25,
+          "symbol": "for directory in (SKILLS / 'todo-orchestrator', SKILLS / 'local-coding-worker'):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 30,
+          "symbol": "from local_worker.observer_runtime import ObserverWorkerPort, ReadOnlyCommandRunner",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 33,
+          "symbol": "'as1_gpu_model_fixtures', SKILLS / 'local-coding-worker/tests/test_supervisor.py')",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 144,
+          "symbol": "('local_worker.supervisor', SKILLS / 'local-coding-worker/local_worker/supervisor.py'),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 145,
+          "symbol": "('local_worker.observer_runtime', SKILLS / 'local-coding-worker/local_worker/observer_runtime.py'),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 454,
+          "symbol": "for relative in ('local-coding-worker/local_worker/supervisor.py',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 457,
+          "symbol": "'cuda/scripts/cuda_controller.py', 'local-coding-worker/local_worker/residency.py',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 458,
+          "symbol": "'local-coding-worker/local_worker/servers/llama_cpp.py',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_gpu_host_guards.py",
+      "sha256": "90207a1e3d653916ab3c913359a90e6d9e65feef5cb1d18f973262388de32bbb",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 163,
+          "symbol": "sys.path.insert(0, str(SKILLS / 'local-coding-worker'))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 164,
+          "symbol": "from local_worker.supervisor import ProductionBackend",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 168,
+          "symbol": "with patch('local_worker.supervisor.time.time', return_value=time.time() - 10):",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_observer_conversation.py",
+      "sha256": "6e502f0d3dd808702a063de7f0f87c54ec2a55a7126163a67906949f2525de0e",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 298,
+          "symbol": "from local_worker.observer_runtime import ObserverWorkerPort",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_observer_progress.py",
+      "sha256": "407c651771d5555760818db7049773bb93abe54438894a1bdf63a0fdeccaf4a7",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 15,
+          "symbol": "sys.path.insert(0, str(SKILLS / 'local-coding-worker'))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 16,
+          "symbol": "import local_worker.observer_runtime as runtime",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 18,
+          "symbol": "SOURCE = SKILLS / 'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 216,
+          "symbol": "PYTHONPATH=str(SKILLS / 'local-coding-worker'))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_qualify.py",
+      "sha256": "aa97923f8e3a69dae511c685bb68897e9178c7e59f1ef6d7225254e1a51114f8",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 78,
+          "symbol": "for key, relative in (('observer_runtime_sha256', 'local-coding-worker/local_worker/observer_runtime.py'),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_routing.py",
+      "sha256": "3e8cfdb51472ea015caf490ea411703ce28122050160aed6fd67d4dc3391c07d",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 31,
+          "symbol": "for name in ('cuda', 'cpp-context-compiler', 'local-coding-worker', 'todo-orchestrator'):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "skills",
+      "path": "tests/as1/test_sk_as1_runtime.py",
+      "sha256": "321bec4a99d4c00902ee729026624d80819b3421547eb04f1d6b1c9526e32601",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 26,
+          "symbol": "SKILLS / 'local-coding-worker', SKILLS / 'integrations/coding-workflow-mcp'):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 29,
+          "symbol": "from local_worker.observer_runtime import ObserverWorkerPort, ReadOnlyCommandRunner",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 210,
+          "symbol": "with patch('local_worker.observer_runtime.subprocess.Popen', side_effect=launch_and_supersede):",
+          "kind": "module-identity-import",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 292,
+          "symbol": "fixture_path = SKILLS / 'local-coding-worker/tests/test_supervisor.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        },
+        {
+          "line": 405,
+          "symbol": "protocol = WorkflowProtocol(WorkflowKernel(locator=locator, local_worker_adapter=CandidateFixture()), locator)",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "update source binding or test fixture only in coordinated receiver/retirement transition"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "docs/as1-deployment.md",
+      "sha256": "6f393d9a16dd0ffefda64548d2c29e357ec3d8416cd0df54bf857047bfd782fb",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 23,
+          "symbol": "bound frozen `local-coding-worker/config/production-profile.toml`, retains its",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "docs/as1-skill.md",
+      "sha256": "465e38e98069fd1297310e0dec273c61e92052cb0ada449862090048f60e4d43",
+      "git_status": " M",
+      "references": [
+        {
+          "line": 55,
+          "symbol": "A query without a skill dispatches the registered `local-coding-worker` entry as",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/adapters/local_worker.py",
+      "sha256": "4ec72ebc335809a65d3e482501b2fd4dab9424fe58395a964dd368cd6f4ca1d9",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 30,
+          "symbol": "return {\"status\": \"unavailable\", \"source\": \"supervisor_state\", \"warnings\": [\"local_worker_state_unavailable\"]}",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 33,
+          "symbol": "return {\"status\": \"partial\", \"source\": \"supervisor_state\", \"warnings\": [\"local_worker_state_oversized\"]}",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 37,
+          "symbol": "return {\"status\": \"partial\", \"source\": \"supervisor_state\", \"warnings\": [\"local_worker_state_invalid\"]}",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/as1_jobs.py",
+      "sha256": "a5abe172087e909a89011e5f0aca7cf3630801c2eccd7eb1508487ab6b837d01",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 88,
+          "symbol": "path = self.root / 'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/as1_skill.py",
+      "sha256": "2e55aecefc53fad13ef758ad1b0e33e9391d6034099ffbbfd6a5ec5d1cae63dc",
+      "git_status": " M",
+      "references": [
+        {
+          "line": 159,
+          "symbol": "def __init__(self, jobs, *, skills_root, catalog=None, discovery_skill='local-coding-worker',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/as1_surface.py",
+      "sha256": "e2572466013be29c43ee8823f05a6c4a02d38af595846e1f727b4b34698609c9",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 86,
+          "symbol": "'local-coding-worker/config/production-profile.toml',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 87,
+          "symbol": "'local-coding-worker/local_worker/servers/llama_cpp.py',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 88,
+          "symbol": "'local-coding-worker/local_worker/supervisor.py',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/cli.py",
+      "sha256": "096dd38542d1bacf6ff035583fa35141214ebf220efd09411ebdbbe4a4cd6435",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 344,
+          "symbol": "\"local_worker_observation_adapter\": {",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 346,
+          "symbol": "\"reason\": \"observer_only_local_worker_adapter\",",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 383,
+          "symbol": "\"local_worker\": {",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 384,
+          "symbol": "\"status\": snapshot.local_worker.get(\"status\", \"unavailable\"),",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/models.py",
+      "sha256": "8a84d6d4aaa9927eb01aa01067f5130367247bafc6f6335a6caf8637fd0bff67",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 487,
+          "symbol": "local_worker: dict[str, Any] = Field(default_factory=dict)",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/observer_analysis.py",
+      "sha256": "2e42e3b11d11c921488446521c748c0070da4e2c79e8a2323f08a9380f175664",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 120,
+          "symbol": "module = importlib.import_module(\"local_worker.supervisor\")",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 125,
+          "symbol": "\"local-coding-worker\").resolve()",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/services/agents.py",
+      "sha256": "490f5e9ec4c1f6dbaf8689133d4e0070bb4a8f729f1d8ab1d082e5051eb631c9",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 75,
+          "symbol": "local_services = observer_backend or snapshot.local_worker",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 76,
+          "symbol": "if observer_backend is not None and snapshot.local_worker.get(\"status\") == \"ok\":",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 79,
+          "symbol": "\"daemon_supervisor\": snapshot.local_worker,",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 83,
+          "symbol": "local_status = (observer_backend or snapshot.local_worker).get(\"status\")",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 93,
+          "symbol": "if item != \"local_worker_state_unavailable\"]",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/services/frontier.py",
+      "sha256": "4c51f6c78d74d540126855f5ea064e23cdd8254dd0b51fd96a4709d4802f32e2",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 159,
+          "symbol": "\"local_worker_suitability\": [{",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 171,
+          "symbol": "\"integration_queue\", \"recovery_needed\", \"critical_path\", \"local_worker_suitability\"):",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/services/performance.py",
+      "sha256": "54ee186420c1daadbb6c82cf5a942154c780493edc98297637698d54ef29792e",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 132,
+          "symbol": "\"local_worker_capacity\": snapshot.local_worker,",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "src/project_control/snapshot.py",
+      "sha256": "d66adbfb2799eb8444aaeeac10a44c91600df13ee7a38d1d4ef3f78af8dace54",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 9,
+          "symbol": "from .adapters.local_worker import LocalWorkerReadAdapter",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 156,
+          "symbol": "local_worker=worker,",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_central_inference.py",
+      "sha256": "71c637eb46dad641e2870f3c29ce426dcd6ab11f765f84067cadcd47f2436e4e",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 22,
+          "symbol": "source = tmp_path / 'skills/local-coding-worker/local_worker/supervisor.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 123,
+          "symbol": "skill = root / 'local-coding-worker'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 126,
+          "symbol": "return root, importlib.import_module('local_worker.supervisor')",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 180,
+          "symbol": "import local_worker.supervisor as module",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 193,
+          "symbol": "PYTHONPATH=os.pathsep.join([str(skills / 'local-coding-worker'), str(Path(__file__).resolve().parents[2] / 'src')]))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_deployment.py",
+      "sha256": "7ba1332c89ade43c2c00dc558e782a34f1d7131465f09e113fd6f4d67e670d44",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 17,
+          "symbol": "root = tmp_path / 'skills' / 'local-coding-worker'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 18,
+          "symbol": "(root / 'local_worker').mkdir(parents=True)",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 26,
+          "symbol": "source = root / 'local_worker/supervisor.py'",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 44,
+          "symbol": "assert name == 'local_worker.supervisor'",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 64,
+          "symbol": "assert imports == ['local_worker.supervisor'] and len(calls) == 1",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 108,
+          "symbol": "native.__file__ = '/ambient/local_worker/supervisor.py'",
+          "kind": "status-or-policy-consumer",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_inquiry_cache.py",
+      "sha256": "16531785dcc676847d847487cf2414fe7e22ac609b72a76f26f09fec1aba522d",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 46,
+          "symbol": "source = SKILLS/'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_jobs.py",
+      "sha256": "5322902a179ad2bf7d9edb30540c2c2016e39768ddc1ff87ba103bdd4d681996",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 246,
+          "symbol": "source = SKILLS/'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 552,
+          "symbol": "native=pathlib.Path(os.environ['PROJECT_CONTROL_SKILLS_ROOT'])/'local-coding-worker/local_worker/observer_runtime.py'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_qualify.py",
+      "sha256": "3dc0858cb4c0d46aa929c59c0c70e459b441efe140a0c1bd133646ae2ea07159",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 295,
+          "symbol": "assert entry['source_hashes']['local-coding-worker/local_worker/observer_runtime.py']==entry['qualified_observer_runtime_sha256']",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 300,
+          "symbol": "assert protocol['source_hashes']['local-coding-worker/local_worker/observer_runtime.py']==protocol['qualified_observer_runtime_sha256']",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_runtime_cache_epoch.py",
+      "sha256": "5454b6491ae6e90eb881b5d82badeec03623a7e39dd66b2f561f35a6fc315a9d",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 65,
+          "symbol": "'local-coding-worker/config/production-profile.toml': b'model = \"qwen\"\\n',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 66,
+          "symbol": "'local-coding-worker/local_worker/servers/llama_cpp.py': b'adapter-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 67,
+          "symbol": "'local-coding-worker/local_worker/supervisor.py': b'supervisor-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 83,
+          "symbol": "(root / 'local-coding-worker/local_worker/servers/llama_cpp.py').write_bytes(b'adapter-v2')",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 91,
+          "symbol": "'local-coding-worker/config/production-profile.toml': b'model = \"qwen\"\\n',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 92,
+          "symbol": "'local-coding-worker/local_worker/servers/llama_cpp.py': b'adapter-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 93,
+          "symbol": "'local-coding-worker/local_worker/supervisor.py': b'supervisor-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 115,
+          "symbol": "'local-coding-worker/config/production-profile.toml': b'model = \"qwen\"\\n',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 116,
+          "symbol": "'local-coding-worker/local_worker/servers/llama_cpp.py': b'adapter-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 117,
+          "symbol": "'local-coding-worker/local_worker/supervisor.py': b'supervisor-v1',",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_skill.py",
+      "sha256": "794797776b27fffe832546c60d8c10cf15a1c73165fdda97b4dd9f15c768be99",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 81,
+          "symbol": "for name in ('local-coding-worker', 'fixture', 'prerequisite'):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 97,
+          "symbol": "trusted = TrustedObserverFactory(INSTALLED, digest(INSTALLED/'local-coding-worker/local_worker/observer_runtime.py'),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 114,
+          "symbol": "backend = Turns([command(root/'local-coding-worker/SKILL.md'),",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 120,
+          "symbol": "assert {e['name'] for e in catalog['skills']} == {'fixture', 'prerequisite', 'local-coding-worker'}",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 153,
+          "symbol": "assert rows['local-coding-worker']['status'] == 'unregistered'",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/as1/test_pc_as1_surface.py",
+      "sha256": "66002b45ae4b64d4e2de53ff3295b911d55d9a994e509a9a721cf06d384c91cc",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 246,
+          "symbol": "assert worker.command.allows(trusted.root / 'local-coding-worker/SKILL.md')",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/test_installer.py",
+      "sha256": "4656b3fbee8bae87fe325d996321a44bbb6efe3a9b22406b3b12f24ff4a1df38",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 95,
+          "symbol": "for name in (\"todo-orchestrator\", \"cuda\", \"cpp-context-compiler\", \"local-coding-worker\"):",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 179,
+          "symbol": "(skills / \"local-coding-worker\" / \"local_worker\").mkdir(parents=True)",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 180,
+          "symbol": "(skills / \"local-coding-worker\" / \"local_worker\" / \"supervisor.py\").write_text(\"# frozen\\n\")",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 193,
+          "symbol": "self.assertEqual(pth.read_text().strip(), str(destination / \"runtime-skills/local-coding-worker\"))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 195,
+          "symbol": "self.assertEqual(release[\"observer_analysis_binding\"][\"path\"], str(destination / \"runtime-skills/local-coding-worker\"))",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/test_observer_analysis_registry.py",
+      "sha256": "afac2d0fff3b9ffb104f0a344c02fd2049740bff466a6747a0572e5fcd4f99d8",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 23,
+          "symbol": "source = Path(os.environ[\"PROJECT_CONTROL_SKILLS_ROOT\"]) / \"local-coding-worker/local_worker/supervisor.py\"",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 129,
+          "symbol": "module_root = skills / \"local-coding-worker\" / \"local_worker\"",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 162,
+          "symbol": "module_root = skills / \"local-coding-worker\" / \"local_worker\"",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        },
+        {
+          "line": 231,
+          "symbol": "module_root = base / \"skills/local-coding-worker/local_worker\"",
+          "kind": "supplier-path-or-entrypoint",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    },
+    {
+      "repository": "project-control",
+      "path": "tests/test_readonly_audit.py",
+      "sha256": "636d738a9f26e5c28b485c37d844669ef15aa5b362be6c662d4e18737cc88929",
+      "git_status": "  ",
+      "references": [
+        {
+          "line": 84,
+          "symbol": "workers = subprocess.run([\"pgrep\", \"-af\", \"local_worker.*supervisor\"], text=True, capture_output=True).stdout",
+          "kind": "module-identity-import",
+          "required_transition": "rebind exact source path to PC-owned local_runtime while keeping local_worker.* import identity; do not alter independent domain authority"
+        }
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "todo-orchestrator",
+      "path": "todo-orchestrator/",
+      "authority": "independent Todo semantic and workflow authority",
+      "disposition": "explicitly excluded from supplier transfer; only use supported Project Control workflow APIs and configured integration"
+    },
+    {
+      "id": "cuda",
+      "path": "cuda/",
+      "authority": "independent CUDA resource and hardware qualification authority",
+      "disposition": "explicitly excluded; local worker adapters may call approved CUDA controller interfaces but may not absorb its grants/controller"
+    },
+    {
+      "id": "cpp-context-compiler",
+      "path": "cpp-context-compiler/",
+      "authority": "independent ctxpp context compilation/tool authority",
+      "disposition": "explicitly excluded; replace Skills-root discovery with explicitly configured domain-tool root at receiver"
+    }
+  ],
+  "allowed_transfer_sets": [
+    {
+      "id": "runtime-source",
+      "description": "Existing local_worker Python implementation, preserving the local_worker.* module identity.",
+      "paths": [
+        "local-coding-worker/local_worker/__pycache__/__init__.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/acceptance.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/canonical_runtime.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/controller.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/model_cache.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/observer_runtime.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/policy.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/production_checks.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/residency.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/result_validation.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/reviewer.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/service.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/supervisor.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/telemetry.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/verification.cpython-313.pyc",
+        "local-coding-worker/local_worker/__pycache__/workspace.cpython-313.pyc",
+        "local-coding-worker/local_worker/acceptance.py",
+        "local-coding-worker/local_worker/canonical_runtime.py",
+        "local-coding-worker/local_worker/controller.py",
+        "local-coding-worker/local_worker/harnesses/__init__.py",
+        "local-coding-worker/local_worker/harnesses/__pycache__/__init__.cpython-313.pyc",
+        "local-coding-worker/local_worker/harnesses/__pycache__/base.cpython-313.pyc",
+        "local-coding-worker/local_worker/harnesses/__pycache__/codex_cli.cpython-313.pyc",
+        "local-coding-worker/local_worker/harnesses/__pycache__/qwen_code.cpython-313.pyc",
+        "local-coding-worker/local_worker/harnesses/base.py",
+        "local-coding-worker/local_worker/harnesses/codex_cli.py",
+        "local-coding-worker/local_worker/harnesses/qwen_code.py",
+        "local-coding-worker/local_worker/model_cache.py",
+        "local-coding-worker/local_worker/observer_runtime.py",
+        "local-coding-worker/local_worker/policy.py",
+        "local-coding-worker/local_worker/production_checks.py",
+        "local-coding-worker/local_worker/residency.py",
+        "local-coding-worker/local_worker/result_validation.py",
+        "local-coding-worker/local_worker/reviewer.py",
+        "local-coding-worker/local_worker/servers/__init__.py",
+        "local-coding-worker/local_worker/servers/__pycache__/__init__.cpython-313.pyc",
+        "local-coding-worker/local_worker/servers/__pycache__/llama_cpp.cpython-313.pyc",
+        "local-coding-worker/local_worker/servers/llama_cpp.py",
+        "local-coding-worker/local_worker/service.py",
+        "local-coding-worker/local_worker/supervisor.py",
+        "local-coding-worker/local_worker/telemetry.py",
+        "local-coding-worker/local_worker/verification.py",
+        "local-coding-worker/local_worker/workspace.py"
+      ]
+    },
+    {
+      "id": "runtime-support",
+      "description": "Runtime configuration, JSON schemas, agent descriptor, CLI/worker scripts, and packaging metadata required by the implementation.",
+      "paths": [
+        "local-coding-worker/agents/openai.yaml",
+        "local-coding-worker/config/host-profile.example.toml",
+        "local-coding-worker/config/production-profile.toml",
+        "local-coding-worker/schemas/delegation-spec-v1.schema.json",
+        "local-coding-worker/schemas/delegation-spec-v2.schema.json",
+        "local-coding-worker/schemas/harness-policy-v2.schema.json",
+        "local-coding-worker/schemas/model-cache-v1.schema.json",
+        "local-coding-worker/schemas/model-outcome-v1.schema.json",
+        "local-coding-worker/schemas/model-service-profile-v2.schema.json",
+        "local-coding-worker/schemas/worker-result-v1.schema.json",
+        "local-coding-worker/schemas/worker-result-v2.schema.json",
+        "local-coding-worker/scripts/__pycache__/inspect_host.cpython-313.pyc",
+        "local-coding-worker/scripts/__pycache__/local_worker.cpython-313.pyc",
+        "local-coding-worker/scripts/__pycache__/worker_core.cpython-313.pyc",
+        "local-coding-worker/scripts/inspect_host.py",
+        "local-coding-worker/scripts/local_worker.py",
+        "local-coding-worker/scripts/worker_core.py"
+      ]
+    },
+    {
+      "id": "authority-contracts",
+      "description": "Local worker references that specify observer, resource, adapter, and writable-work boundaries.",
+      "paths": [
+        "local-coding-worker/references/adapter-contract.md",
+        "local-coding-worker/references/integration-contract.md",
+        "local-coding-worker/references/model-cache.md",
+        "local-coding-worker/references/observer-port.md",
+        "local-coding-worker/references/read-only-contract.md",
+        "local-coding-worker/references/resource-policy.md",
+        "local-coding-worker/references/writable-work-contract.md"
+      ]
+    },
+    {
+      "id": "source-tests",
+      "description": "Tests that exercise the supplier implementation; host/device-specific suites still require their own qualification gate.",
+      "paths": [
+        "local-coding-worker/tests/__pycache__/test_adapters.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_adapters.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_canonical_runtime.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_core4_integration.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_harnesses.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_host_manifest.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_llama_cpp_server.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_model_cache.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_model_staging.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_policy.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_policy.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_production_integration.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_qwen_binding.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_read_only_mvp.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_residency_recovery.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_resource_policy.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_service.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_service.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_supervisor.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_telemetry.cpython-313.pyc",
+        "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/__pycache__/test_writable_work.cpython-313.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_central_supervisor.cpython-313.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_observer_deadlines.cpython-313.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313-pytest-9.1.1.pyc",
+        "local-coding-worker/tests/as1/__pycache__/test_sk_as1_orphan_residency.cpython-313.pyc",
+        "local-coding-worker/tests/as1/test_sk_as1_central_supervisor.py",
+        "local-coding-worker/tests/as1/test_sk_as1_observer_deadlines.py",
+        "local-coding-worker/tests/as1/test_sk_as1_orphan_residency.py",
+        "local-coding-worker/tests/test_adapters.py",
+        "local-coding-worker/tests/test_canonical_runtime.py",
+        "local-coding-worker/tests/test_core4_integration.py",
+        "local-coding-worker/tests/test_harnesses.py",
+        "local-coding-worker/tests/test_host_manifest.py",
+        "local-coding-worker/tests/test_llama_cpp_server.py",
+        "local-coding-worker/tests/test_model_cache.py",
+        "local-coding-worker/tests/test_model_staging.py",
+        "local-coding-worker/tests/test_policy.py",
+        "local-coding-worker/tests/test_production_integration.py",
+        "local-coding-worker/tests/test_qwen_binding.py",
+        "local-coding-worker/tests/test_read_only_mvp.py",
+        "local-coding-worker/tests/test_residency_recovery.py",
+        "local-coding-worker/tests/test_resource_policy.py",
+        "local-coding-worker/tests/test_service.py",
+        "local-coding-worker/tests/test_supervisor.py",
+        "local-coding-worker/tests/test_telemetry.py",
+        "local-coding-worker/tests/test_writable_work.py"
+      ]
+    },
+    {
+      "id": "catalog-compatibility",
+      "description": "The current Skills skill entrypoint, retained through receiver parity and then eligible only for one-way forwarding.",
+      "paths": [
+        "local-coding-worker/SKILL.md"
+      ]
+    }
+  ],
+  "baseline_dirty_hashes": [
+    {
+      "path": "skills/integrations/native-skill-catalog.json",
+      "git_status": " M",
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    },
+    {
+      "path": "project-control/docs/as1-skill.md",
+      "git_status": " M",
+      "sha256": "465e38e98069fd1297310e0dec273c61e92052cb0ada449862090048f60e4d43",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    },
+    {
+      "path": "project-control/src/project_control/as1_skill.py",
+      "git_status": " M",
+      "sha256": "2e55aecefc53fad13ef758ad1b0e33e9391d6034099ffbbfd6a5ec5d1cae63dc",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    },
+    {
+      "path": "project-control/src/project_control/assistance/__init__.py",
+      "git_status": "??",
+      "sha256": "dd42abd16e1a4b85868d46fe029da93b37ebff90afacdf9b80a969cf01e867f0",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    },
+    {
+      "path": "project-control/src/project_control/assistance/evaluation.py",
+      "git_status": "??",
+      "sha256": "c229b8ee9db614bd284b5d2e61d58eb6afd7440d5e702bdfffd7f75b487a9ba2",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    },
+    {
+      "path": "project-control/src/project_control/assistance/quality.py",
+      "git_status": "??",
+      "sha256": "d3ae496a3f1a3b6a528a17d1dbd95fd70a3045cbf3a781d41cb5edf59d6046e8",
+      "preservation_rule": "preserve exact observed working-tree bytes; this inventory does not authorize changes"
+    }
+  ],
+  "stale_release": {
+    "manifest_path": "integrations/as1-paired-release.json",
+    "manifest_sha256": "48066ce72a6432150181f0a1b4af533c4f3bd16b6cb4a4a021e5b48b2ca5ddcd",
+    "release_id": "3905649ff9b03e3acec4211553a52cf2389489e9:269646d2da7452adfb5750bfe9b7a3068f7ee828",
+    "pinned_path": "local-coding-worker/local_worker/observer_runtime.py",
+    "pinned_sha256": "ac6b0eca766863617bdeed4257e690fb89ce583cdb4199328e8234f42cff09bf",
+    "current_path": "local-coding-worker/local_worker/observer_runtime.py",
+    "current_sha256": "d3a65e54aaf4a6f0c6d38621d521ee0402aba749da4bf2a543c0df75550e580f",
+    "matches": false,
+    "qualification_record_path": "planning/adaptive-surface-v1/validation/skills-runtime-source-qualification.json",
+    "qualification_record_sha256": "def5b35058d0566fa844399ac9db3cbb759545a3e33b125cee21ec53fa357c82",
+    "qualification_record_observer_runtime_sha256": "99ebb05632b7768403e103bc32bb5f04885c86662272cef14bf83fb25e57ce8b",
+    "qualification_record_matches_current": false,
+    "qualification": "historical status cannot establish current source qualification; rerun source-bound tests and refresh release pins after receiver parity"
+  },
+  "handoff_constraints": {
+    "scope": "hashed supplier inventory and receiver handoff evidence only",
+    "no_supplier_retirement_or_repointing": true,
+    "source_tree_is_preserved": true,
+    "dirty_catalog_path": "skills/integrations/native-skill-catalog.json",
+    "dirty_catalog_must_remain_untouched": true,
+    "module_identity": "local_worker.* remains the single canonical runtime import identity after receiver adoption",
+    "legacy_transition": "after receiver parity and root coordination, old Skills entrypoints may forward one-way into receiver; no receiver-to-Skills-to-receiver dependency cycle",
+    "production_binding": "current production service binding remains frozen until separately source-qualified candidate promotion",
+    "device_computation_or_inference": "not performed by this inventory task and not authorized by this artifact"
+  }
+}

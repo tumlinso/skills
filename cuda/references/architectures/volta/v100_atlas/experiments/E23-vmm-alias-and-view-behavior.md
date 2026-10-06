@@ -2,7 +2,7 @@
 
 > Can a legal view remove address work without hidden coherence or translation cost?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E23.md)). **Depth:** 4.
 **Read when:** experiment, vmm, alias, and, view, behavior.
 **Prerequisites:** R12. **Evidence:** S18 S31.
 
@@ -23,3 +23,16 @@
 **Related:** C29 M40 R08.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Four correctness-valid GPU cases compare the ring expression sum += values[i % n] with two fixed aliases over one logical domain. For both selected requests (4,096 and 65,536 elements), VMM allocation granularity is 2 MiB, yielding the same 524,288-element logical domain in both variants and sizes. The two access counts are 2,097,152 and 8,388,608; each case preserves its matching checksum. Each device walk has 30 timing samples. Ring and alias medians are 264.810/51.990 ms and 1,059.114/207.768 ms, respectively (about 5.1× for each access-count pair). One setup_wall_ms observation per case is 1.804/1.791 ms for ring and 0.416/0.402 ms for aliases, separate from device timing. Alias views share one allocation; accesses use separate kernels and no mapping changes while accesses are live.
+
+[Measured summary](evidence/v100-20261006/E23.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md) · [memory.cu: alias_walk and ring_walk](../benchmarks/native/memory.cu#L87)
+
+## Meaning through representation and execution
+
+- **Supports:** A device-walk difference between two fixed aliases and the tested serial modulo ring under matched logical work and access count.
+- **Design implication (inference):** Periodic address geometry can be expressed as a fixed virtual view, potentially removing explicit modulo work when setup is amortized; the measured gain remains specific to the serial modulo comparison.
+- **Does not establish:** That modulo alone caused the full difference, a TLB or address-translation mechanism, dynamic remapping benefit, concurrent-alias coherence, or general random-access throughput.
+- **Original protocol gaps:** VMM granularity collapsed both requested sizes to the same 2 MiB domain, so the planned working-set/view-size sweep was not realized. The original two-segment/optimized ring alternative and power-of-two mask baseline were not tested; the measured gain is against the serial modulo ring only.

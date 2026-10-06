@@ -1,0 +1,215 @@
+{
+  "files": {
+    "apply_retire.py": {
+      "bytes": 10239,
+      "mode": "0664",
+      "sha256": "fe41a49a06bfb4832628092a85682e39dd85102a20f827090661b2bd9887d55e"
+    },
+    "apply_supplemental.py": {
+      "bytes": 7621,
+      "mode": "0664",
+      "sha256": "e7e1ddcd3d5b979a8472c9da9ae2a09159cbd0cf3ab858cca53ea445624e2946"
+    },
+    "consumer-restore-manifest.json": {
+      "bytes": 1477,
+      "mode": "0664",
+      "sha256": "dd6c0c0ff34995792ebcb5593c47676b958dabd3a8b95c329627d8d3fc97d96f"
+    },
+    "consumers/cuda/scripts/qualify_observer_residency.py": {
+      "bytes": 18068,
+      "mode": "0664",
+      "sha256": "495ac9ffce5482dc831a4ee9195d3bcd4aac05bb5f698830456345bf613cc222"
+    },
+    "consumers/integrations/as1_release.py": {
+      "bytes": 14851,
+      "mode": "0664",
+      "sha256": "907cc845bca068f84e74af661d9a0bfe9660cb3adb37a90bf9f539093c51c9b6"
+    },
+    "consumers/integrations/native-skill-catalog.json": {
+      "bytes": 4196,
+      "mode": "0664",
+      "sha256": "a958436708614e76616be408804c088e19d3d4ce2a8e152ec2d40cd0700cad9e"
+    },
+    "consumers/provenance/consumer-stage.json": {
+      "bytes": 2363,
+      "mode": "0664",
+      "sha256": "359b70c93504fa474a3857086b484a9ac165dc4f1d205826b2170b9de9628ca7"
+    },
+    "consumers/provenance/native-skill-catalog.baseline.json": {
+      "bytes": 4196,
+      "mode": "0664",
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+    },
+    "restore_retire.py": {
+      "bytes": 5407,
+      "mode": "0664",
+      "sha256": "1c9707b07d8372d497bf49d7afabc0fc264d0a82442bd25841c10a05d1a7d20a"
+    },
+    "restore_supplemental.py": {
+      "bytes": 2859,
+      "mode": "0664",
+      "sha256": "320ffc8b1c838934420bf8c202bccb82fe7088decb7a6b8c38a6fa27e6e275d8"
+    },
+    "rollback-preimages/cuda/scripts/qualify_observer_residency.py": {
+      "bytes": 17419,
+      "mode": "0664",
+      "sha256": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4"
+    },
+    "rollback-preimages/integrations/as1_release.py": {
+      "bytes": 7374,
+      "mode": "0664",
+      "sha256": "82643ace13deda0c6a6fb5ad83a084e8e666e057edae04f528aec2d192fb45d6"
+    },
+    "rollback-preimages/integrations/native-skill-catalog.json": {
+      "bytes": 4196,
+      "mode": "0664",
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+    },
+    "rollback/local-coding-worker-portable.tar.gz": {
+      "bytes": 210999,
+      "mode": "0664",
+      "sha256": "91ed6ba26758f026ac2d4a57a378eb0f5382539232453ff1f362df8fdddeb099"
+    },
+    "rollback/provenance.json": {
+      "bytes": 30106,
+      "mode": "0664",
+      "sha256": "1f0466c8013d04e183cc5267d1b3005f4eb5ad1ce42ee7ed49da3af7a83cc36c"
+    },
+    "runtime-transition.json": {
+      "bytes": 35337,
+      "mode": "0664",
+      "sha256": "4ee36eb664a23e1a9ba3cfcc393cf5853f4034d861e49f38fe217c9004addf9c"
+    },
+    "runtime/local-coding-worker/SKILL.md": {
+      "bytes": 1892,
+      "mode": "0664",
+      "sha256": "c089c2e69a2e8af1bf4df1b3b3d8dc4b2ce5d9ee6cff62674e7494f94a03b925"
+    },
+    "runtime/local-coding-worker/config/host-profile.example.toml": {
+      "bytes": 126,
+      "mode": "0664",
+      "sha256": "08019499e1366613770ea2e288ccb112eaeb24932af07148931370bb45230bc9"
+    },
+    "runtime/local-coding-worker/config/production-profile.toml": {
+      "bytes": 124,
+      "mode": "0664",
+      "sha256": "63697155efb09d3c832c589a6fdc4f6334d580eead127289b99b3f5d6a5e9cdc"
+    },
+    "runtime/local-coding-worker/local_worker/__init__.py": {
+      "bytes": 1747,
+      "mode": "0664",
+      "sha256": "a706310698114be05d2c9df75cfd8dc27db3d43e6a1e9d38842f338bb370a0a9"
+    },
+    "runtime/local-coding-worker/references/adapter-contract.md": {
+      "bytes": 314,
+      "mode": "0664",
+      "sha256": "0f704fd917e5909475957ee5f1c604633d48dbcf99a85733025a2a8782a8aef9"
+    },
+    "runtime/local-coding-worker/references/integration-contract.md": {
+      "bytes": 318,
+      "mode": "0664",
+      "sha256": "31db9c27dc63628d89f8d72c8c89f420d6fc90c97b08804145cbad172c68a6fb"
+    },
+    "runtime/local-coding-worker/references/model-cache.md": {
+      "bytes": 309,
+      "mode": "0664",
+      "sha256": "0eae8aafaa153f117a46f55b536c600dd5beee5e47a0929fd3a0e5bdf984c598"
+    },
+    "runtime/local-coding-worker/references/observer-port.md": {
+      "bytes": 311,
+      "mode": "0664",
+      "sha256": "78725d2dd390c7c3c67b1ce186d6a375ab35e228f7eb0d9657345390e9623821"
+    },
+    "runtime/local-coding-worker/references/read-only-contract.md": {
+      "bytes": 316,
+      "mode": "0664",
+      "sha256": "b5af517719d1266759cd37ea645fd5ce5bf967c059e5181682cd4fddf5cb1c83"
+    },
+    "runtime/local-coding-worker/references/resource-policy.md": {
+      "bytes": 313,
+      "mode": "0664",
+      "sha256": "9555ee56d319a36b30e81d44dd3b28359e10230b5c199dec095ac940f417ed31"
+    },
+    "runtime/local-coding-worker/references/writable-work-contract.md": {
+      "bytes": 320,
+      "mode": "0664",
+      "sha256": "d0cec0d0e360937a56ea70bef8b0d14c09a051749270e2f784742bf99bf08490"
+    },
+    "runtime/local-coding-worker/schemas/delegation-spec-v1.schema.json": {
+      "bytes": 405,
+      "mode": "0664",
+      "sha256": "0bce2d3f971ff2fcb00deb27454443192ce0cf2f3b82a0c298729915c6708601"
+    },
+    "runtime/local-coding-worker/schemas/delegation-spec-v2.schema.json": {
+      "bytes": 405,
+      "mode": "0664",
+      "sha256": "f8cffccce765ef8c6e5a5313eeea449f84a979bf6cb724c5f4ffc83a71f2db2c"
+    },
+    "runtime/local-coding-worker/schemas/harness-policy-v2.schema.json": {
+      "bytes": 404,
+      "mode": "0664",
+      "sha256": "ab60fd1695c05d5242705c105aee89579bae1f56b160f51a81d194c6a42d9cb5"
+    },
+    "runtime/local-coding-worker/schemas/model-cache-v1.schema.json": {
+      "bytes": 401,
+      "mode": "0664",
+      "sha256": "1015e2252c22fd947ca7d7e385bbdbf2ca1062179462f01cbe61b235f3cd079b"
+    },
+    "runtime/local-coding-worker/schemas/model-outcome-v1.schema.json": {
+      "bytes": 403,
+      "mode": "0664",
+      "sha256": "34288bc8ace0c8257f68e1198a92d0e43e60c6e1d8f78aa875fc7ab57bc2f113"
+    },
+    "runtime/local-coding-worker/schemas/model-service-profile-v2.schema.json": {
+      "bytes": 411,
+      "mode": "0664",
+      "sha256": "adabf34d117c1b576a4a15bf39ff82dcf38a9681cecb7d6f08231412bd90f86c"
+    },
+    "runtime/local-coding-worker/schemas/worker-result-v1.schema.json": {
+      "bytes": 403,
+      "mode": "0664",
+      "sha256": "c4bf35ee4df32bc84deefdf6c111e2fa4f2ab2bb155f9f4a84ce608540d1a2da"
+    },
+    "runtime/local-coding-worker/schemas/worker-result-v2.schema.json": {
+      "bytes": 403,
+      "mode": "0664",
+      "sha256": "8d94c67d3237a54a84678593f2c064339ff34b825d4e36daa4f4329f280c0638"
+    },
+    "runtime/local-coding-worker/scripts/inspect_host.py": {
+      "bytes": 333,
+      "mode": "0664",
+      "sha256": "617ad9cbf01d695b05303c1975946ced9483e772c8c9ed47e3833aadc70e7945"
+    },
+    "runtime/local-coding-worker/scripts/local_worker.py": {
+      "bytes": 325,
+      "mode": "0664",
+      "sha256": "97cdf6be686525da07976384b7272b70725af77d7bae57649d45700daa9e8f29"
+    },
+    "runtime/local-coding-worker/scripts/worker_core.py": {
+      "bytes": 1821,
+      "mode": "0664",
+      "sha256": "9f5e92104196e031334c725f32886233fcaa64f7734637c6c5bd31ab8afd6eaa"
+    },
+    "source-inventory.json": {
+      "bytes": 159106,
+      "mode": "0664",
+      "sha256": "d522eb5f138c31b5caa773fd9d3daa256a647f85dff068f54a9efe9e6b2ad904"
+    },
+    "tests/assistance/test_lcw_transition.py": {
+      "bytes": 26198,
+      "mode": "0664",
+      "sha256": "e5431e561dac6686c29a71c334ba011e6a58e0f20a6d529663383cf45dab6ee3"
+    },
+    "tests/transition-test-receipt.json": {
+      "bytes": 4409,
+      "mode": "0664",
+      "sha256": "1e93610d1ec139a742aeb1ddb7ed526c169416904dc70038655951223f29215c"
+    },
+    "transition_common.py": {
+      "bytes": 12859,
+      "mode": "0664",
+      "sha256": "8b48cbe3b87600f3868ac65798d7a24ef1ec6414d507d1691307aa18e709f3dc"
+    }
+  },
+  "format": "pa1-skills-operator-bundle/1"
+}

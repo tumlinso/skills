@@ -38,3 +38,7 @@
 Read S03 for an exact ISA/target contract; S04 for historical empirical microarchitecture; S12/S15 for copy-engine fields versus observed commands; S27 for QMD fields; S20 for tensor numerical caveats; S16 for ATS/MMU implementation. These are different evidence classes.
 
 Do not read every source just because a card lists it. Resolve the claim that could change the design. Mandatory correctness dependencies remain mandatory even when performance evidence can be deferred.
+
+## Full card catalog
+
+Use the [complete card and resource catalog](CARD_CATALOG.md) when a direct card ID is already known.

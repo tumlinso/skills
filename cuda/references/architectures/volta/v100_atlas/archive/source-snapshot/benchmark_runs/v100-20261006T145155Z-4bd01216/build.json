@@ -1,0 +1,21 @@
+{
+  "binary_sha256": {
+    "atlas_composition": "e44d92ec61db940f5504a01926b822b235008e92f49992657f8d977c70adf154",
+    "atlas_logic": "99d3a42c628a7720849297a365b6f08d65b7ca368cf7340e7e3a59a756b2c2fe",
+    "atlas_memory": "c908f070d623bbce01ee60ded6b2f193c69a68e76795804c746414fa655567a0",
+    "atlas_sync": "69bade8ead6a6fa83ce4d4e3a38ab85c58ea10237a4013232b67ff6b9db57aff",
+    "atlas_tensor": "0349c8e6d685e494192dc21dd76f6c5017e7861e90d1209b5a8f34147cb853c2",
+    "atlas_transport": "143338029450d477dcab72afb7441a57be9d1b7ea9e32c5e34476e0faf0eedbc",
+    "atlas_transport_cdp": "fdf1cc0eb53e6606b5e1c30bf22b1d3e4179dbc3c32db2afeda412e484304e2a"
+  },
+  "build": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "[  8%] Built target atlas_capability\n[ 26%] Built target atlas_logic\n[ 34%] Built target atlas_memory\n[ 47%] Built target atlas_sync\n[ 60%] Built target atlas_tensor\n[ 73%] Built target atlas_composition\n[ 86%] Built target atlas_transport\n[100%] Built target atlas_transport_cdp"
+  },
+  "configure": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "-- Configuring done (0.1s)\n-- Generating done (0.0s)\n-- Build files have been written to: /home/tumlinson/gpu_circuit_bending_atlas/build"
+  }
+}

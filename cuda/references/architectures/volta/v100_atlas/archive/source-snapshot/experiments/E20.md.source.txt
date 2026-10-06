@@ -1,0 +1,38 @@
+# E20 — Actual NVLink routing and saturation
+
+> Which links carry the traffic, and where does it saturate?
+
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E20.md)). **Depth:** 4.
+**Read when:** experiment, actual, nvlink, routing, and, saturation.
+**Prerequisites:** R12. **Evidence:** S02 S36 S26.
+
+**Question:** Which links carry the traffic, and where does it saturate?
+
+**Minimal setup:** Inventory link connectivity and run directed pair transfers with available link/PCIe telemetry.
+
+**Sweep:** One-way, two-way, multiple streams, all pair combinations and concurrent owner compute.
+
+**Discriminating observation:** Measured directional bandwidth and interference tied to the actual topology.
+
+**Baseline:** Each isolated direct pair and supported alternative staging path.
+
+**Confounders / correctness:** Bidirectional aggregates cannot be compared with one-way payload rates; counters may include protocol traffic.
+
+**Access gate:** No assumed multi-hop forwarding or six-links-per-pair topology.
+
+**Related:** R07 C23 M22.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The matrix covers all 12 directed GPU pairs. Eight directed paths allow direct peer access and four are skipped because CUDA reports no direct access. The run records 4 MiB one-way and simultaneous two-way cases for supported pairs (16 measured cases plus four skips). One-way payload rates are 111.9–114.7 GB/s for physical pairs 0↔2 and 1↔3, and 5.16–5.17 GB/s for pairs 0↔1 and 2↔3. Bidirectional aggregate payload rates are reported separately from one-way rates. The copy timing is the complete selected transfer interval; no independent link counter was collected.
+
+[Measured summary](evidence/v100-20261006/E20.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md) · [transport.cu: directed peer-copy path](../benchmarks/native/transport.cu#L774)
+
+## Meaning through representation and execution
+
+- **Supports:** Pair-specific payload-rate observations and CUDA's direct-access eligibility for the twelve tested directions.
+- **Design implication (inference):** The faster and slower pair groups are consistent with the observed NVLink placement, which makes topology-aware pair selection a reasonable hypothesis to measure.
+- **Does not establish:** Physical route for each payload, link saturation, multi-hop forwarding, or scientific graph-partition quality. Aggregate bidirectional rates cannot be compared to one-way payload rates.
+- **Original protocol gaps:** Multiple-stream saturation and concurrent owner compute were not tested; the four ineligible directions have no direct-copy performance result.

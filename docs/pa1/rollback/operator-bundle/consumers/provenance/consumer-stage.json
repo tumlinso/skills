@@ -1,0 +1,42 @@
+{
+  "candidate_probe_isolation": {
+    "ambient_pythonpath": "excluded",
+    "bytecode_writes": "disabled with -B",
+    "environment": "minimal PATH plus release manifest/digest only",
+    "flags": [
+      "-I",
+      "-S"
+    ],
+    "module_origin_check": "must equal candidate site-packages/project_control/runtime_binding.py",
+    "receiver_discovery": "deduplicates lib/lib64 aliases by strict resolved manifest path; distinct receivers rejected"
+  },
+  "catalog_baseline_copy": {
+    "path": "/tmp/pa1-sk-retire/consumers/provenance/native-skill-catalog.baseline.json",
+    "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+  },
+  "changes": {
+    "cuda/scripts/qualify_observer_residency.py": {
+      "source_sha256": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4",
+      "staged_sha256": "495ac9ffce5482dc831a4ee9195d3bcd4aac05bb5f698830456345bf613cc222"
+    },
+    "integrations/as1_release.py": {
+      "source_sha256": "82643ace13deda0c6a6fb5ad83a084e8e666e057edae04f528aec2d192fb45d6",
+      "staged_sha256": "907cc845bca068f84e74af661d9a0bfe9660cb3adb37a90bf9f539093c51c9b6"
+    },
+    "integrations/native-skill-catalog.json": {
+      "new_skill_sha256": "c089c2e69a2e8af1bf4df1b3b3d8dc4b2ce5d9ee6cff62674e7494f94a03b925",
+      "old_skill_sha256": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+      "source_sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3",
+      "staged_sha256": "a958436708614e76616be408804c088e19d3d4ce2a8e152ec2d40cd0700cad9e",
+      "target_entry": "local-coding-worker",
+      "target_token_only": true
+    }
+  },
+  "external_source_changed": false,
+  "format": "pa1-sk-consumer-stage/1",
+  "public_api_compatibility": "validate_identity returns only the candidate Path; validate_release uses the private _validate_identity pair",
+  "source_gate_validation": "all release and proof checks use explicit ReleaseValidationError conditions; embedded live consumer executes pinned exact source in a normal isolated child so pytest assertions remain active under -O",
+  "source_root": "/home/tumlinson/.agents/skills",
+  "staged_root": "/tmp/pa1-sk-retire/consumers",
+  "validation": "catalog differs from captured dirty baseline by exactly the local-coding-worker SKILL sha256 token; reverting token restores baseline byte-for-byte"
+}

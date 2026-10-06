@@ -1,0 +1,425 @@
+# V100 benchmark campaign evidence
+
+Run `v100-20261006T145155Z-4bd01216` · mode `full` · campaign key `7beacfbd95e0d2b8f9725c7ba1477122f16bc1eb686a6a7c94dbf6c7e266794b`.
+
+Campaign complete: **True**; selected scope complete: **True**.
+
+Disposition counts: COMPILED_ONLY 0, CPU_ONLY 6, GPU_RUN 29, INCONCLUSIVE 0, NOT_RUN 5, REJECTED 0.
+Correctness: 35 passed, 0 failed, 5 unknown/not run. Do not read this as an aggregate pass when any item is unknown or failed.
+
+## Acceptance evidence and interpretation
+
+Source commit: `f223c51dcfacab602e9bc68b3e65cc75730dc7f8` (also pushed to `origin/main`). The original atlas manifest verifies unchanged. [CPU acceptance](offline/CPU-ACCEPTANCE.md), [result-schema validation](offline/result-schema-validation.json), and the [final independent review findings and root acceptance](offline/FINAL-ACCEPTANCE.md) provide separate acceptance evidence. Raw measurements, controller receipts, and profiler files remain local.
+
+E39 covers 22 matched size/reuse/input cells, with 30 complete-path samples for each of the three representations. Native arithmetic generally wins. The automatically listed bitplane crossover is a median ordering of 0.492209 ms versus 0.492591 ms (about 0.08%) at size 65,536 and reuse 8; this small difference must not be treated as an established performance crossover. Nibble lookup has no observed complete-path crossover. Allocation remains outside the timed path. The E11 packed AND+POPC implementation has the lowest complete-path median at every tested universe; representation preparation dominates the tensor alternatives here.
+
+E33 independently selects 7,739 serial and 8,297 interleaved complete native events inside verified stable intervals. Stable-event median times are 15.508480 ms and 14.522368 ms, respectively; telemetry-derived energy estimates are approximately 28.95 kJ and 29.04 kJ over their respective stable intervals. Energy per reported work unit is 1.78360e-11 J and 1.66883e-11 J. These are read-only sensor estimates from sequential synthetic runs, not calibrated wall-plug measurements or a randomized policy comparison. The full resident-run event vectors remain available; the primary median/p95 uses only complete events within the stable interval. Sampling variation, sensor granularity, and thermal/order effects limit interpretation. Energy below sensor resolution remains unknown.
+
+E20 accounts for all twelve directed pairs: eight permit public direct peer access and four do not. E21 records `set_mempolicy bind unavailable: Invalid argument` for node 1. The supported subcases have measurements and captures; unsupported subcases retain explicit `NOT_RUN` reasons. E04 and E27–E30 retain their original restricted hypotheses and were not run. Public neighboring tests do not validate those hypotheses.
+
+Profiler replay supplies counters, while unprofiled timings supply performance samples. E31 concurrency and E33 steady-state behavior have separate diagnostic timelines; their replay limitations remain explicit. The copy-only E20/E21 timelines contain actual CUDA memcpy rows despite the installed wrapper's kernel-only negative classification. No machine setting was changed. Final read-only cleanup checks found all GPUs idle in Default compute mode with 300 W power limits and no surviving campaign MPS process.
+
+## E39 complete-path representation comparison
+
+Rows require correctness-passing GPU cases. A ratio is shown only when both native and candidate cases passed for the same size, reuse count, and input pattern. Full path includes the module's stated transfers and encode/decode work; device allocation remains outside the timed path.
+
+| Size | Reuse | Pattern | Seed | Partial group | Variant | Resident median ms | Full-path median ms | Full-path p95 ms | Full/resident | N |
+|---:|---:|---|---:|---:|---|---:|---:|---:|---:|---:|
+| 1 | 1 | carry-heavy | 20261006 | 1 | native | 0.00512 | 0.0355555 | 0.0366 | 6.94 | 30 |
+| 1 | 1 | carry-heavy | 20261006 | 1 | bitplane | 0.006144 | 0.0420235 | 0.047415 | 6.84 | 30 |
+| 1 | 1 | carry-heavy | 20261006 | 1 | nibble512 | 0.006144 | 0.0361325 | 0.039581 | 5.88 | 30 |
+| 31 | 1 | carry-heavy | 20261006 | 31 | native | 0.00512 | 0.0374975 | 0.0537 | 7.32 | 30 |
+| 31 | 1 | carry-heavy | 20261006 | 31 | bitplane | 0.006144 | 0.0441255 | 0.058755 | 7.18 | 30 |
+| 31 | 1 | carry-heavy | 20261006 | 31 | nibble512 | 0.005632 | 0.0378015 | 0.041643 | 6.71 | 30 |
+| 31 | 8 | carry-heavy | 20261006 | 31 | native | 0.00512 | 0.036048 | 0.037161 | 7.04 | 30 |
+| 31 | 8 | carry-heavy | 20261006 | 31 | bitplane | 0.01024 | 0.046772 | 0.052783 | 4.57 | 30 |
+| 31 | 8 | carry-heavy | 20261006 | 31 | nibble512 | 0.007168 | 0.039 | 0.056842 | 5.44 | 30 |
+| 31 | 64 | carry-heavy | 20261006 | 31 | native | 0.00512 | 0.035751 | 0.05349 | 6.98 | 30 |
+| 31 | 64 | carry-heavy | 20261006 | 31 | bitplane | 0.0512 | 0.087308 | 0.103865 | 1.71 | 30 |
+| 31 | 64 | carry-heavy | 20261006 | 31 | nibble512 | 0.02048 | 0.051218 | 0.068688 | 2.5 | 30 |
+| 32 | 1 | alternating | 20261006 | 0 | native | 0.00512 | 0.0363475 | 0.03711 | 7.1 | 30 |
+| 32 | 1 | alternating | 20261006 | 0 | bitplane | 0.006144 | 0.042468 | 0.060485 | 6.91 | 30 |
+| 32 | 1 | alternating | 20261006 | 0 | nibble512 | 0.00512 | 0.0369735 | 0.058785 | 7.22 | 30 |
+| 32 | 8 | alternating | 20261006 | 0 | native | 0.00512 | 0.0352375 | 0.04166 | 6.88 | 30 |
+| 32 | 8 | alternating | 20261006 | 0 | bitplane | 0.01024 | 0.0463715 | 0.050685 | 4.53 | 30 |
+| 32 | 8 | alternating | 20261006 | 0 | nibble512 | 0.007168 | 0.038023 | 0.03985 | 5.3 | 30 |
+| 32 | 64 | alternating | 20261006 | 0 | native | 0.00512 | 0.0392255 | 0.04017 | 7.66 | 30 |
+| 32 | 64 | alternating | 20261006 | 0 | bitplane | 0.059392 | 0.099138 | 0.103503 | 1.67 | 30 |
+| 32 | 64 | alternating | 20261006 | 0 | nibble512 | 0.026624 | 0.061215 | 0.066996 | 2.3 | 30 |
+| 33 | 1 | carry-heavy | 20261006 | 1 | native | 0.00512 | 0.036615 | 0.0392 | 7.15 | 30 |
+| 33 | 1 | carry-heavy | 20261006 | 1 | bitplane | 0.006144 | 0.0431265 | 0.046871 | 7.02 | 30 |
+| 33 | 1 | carry-heavy | 20261006 | 1 | nibble512 | 0.00512 | 0.037137 | 0.041607 | 7.25 | 30 |
+| 33 | 8 | carry-heavy | 20261006 | 1 | native | 0.004096 | 0.036124 | 0.052841 | 8.82 | 30 |
+| 33 | 8 | carry-heavy | 20261006 | 1 | bitplane | 0.01024 | 0.046963 | 0.051045 | 4.59 | 30 |
+| 33 | 8 | carry-heavy | 20261006 | 1 | nibble512 | 0.007168 | 0.0379105 | 0.042346 | 5.29 | 30 |
+| 33 | 64 | carry-heavy | 20261006 | 1 | native | 0.00512 | 0.037229 | 0.052353 | 7.27 | 30 |
+| 33 | 64 | carry-heavy | 20261006 | 1 | bitplane | 0.059392 | 0.096712 | 0.11332 | 1.63 | 30 |
+| 33 | 64 | carry-heavy | 20261006 | 1 | nibble512 | 0.023552 | 0.057701 | 0.084481 | 2.45 | 30 |
+| 1023 | 1 | random | 20261006 | 31 | native | 0.00512 | 0.044418 | 0.06249 | 8.68 | 30 |
+| 1023 | 1 | random | 20261006 | 31 | bitplane | 0.006144 | 0.050997 | 0.091259 | 8.3 | 30 |
+| 1023 | 1 | random | 20261006 | 31 | nibble512 | 0.008192 | 0.0472955 | 0.092302 | 5.77 | 30 |
+| 1023 | 8 | random | 20261006 | 31 | native | 0.00512 | 0.047076 | 0.081913 | 9.19 | 30 |
+| 1023 | 8 | random | 20261006 | 31 | bitplane | 0.01024 | 0.0552445 | 0.060865 | 5.39 | 30 |
+| 1023 | 8 | random | 20261006 | 31 | nibble512 | 0.02048 | 0.0603265 | 0.06332 | 2.95 | 30 |
+| 1023 | 64 | random | 20261006 | 31 | native | 0.00512 | 0.0441655 | 0.063404 | 8.63 | 30 |
+| 1023 | 64 | random | 20261006 | 31 | bitplane | 0.060416 | 0.105333 | 0.119674 | 1.74 | 30 |
+| 1023 | 64 | random | 20261006 | 31 | nibble512 | 0.1536 | 0.193906 | 0.223063 | 1.26 | 30 |
+| 1024 | 1 | random | 20261006 | 0 | native | 0.00512 | 0.045797 | 0.083202 | 8.94 | 30 |
+| 1024 | 1 | random | 20261006 | 0 | bitplane | 0.006144 | 0.051845 | 0.089988 | 8.44 | 30 |
+| 1024 | 1 | random | 20261006 | 0 | nibble512 | 0.008192 | 0.0469865 | 0.070213 | 5.74 | 30 |
+| 1024 | 8 | random | 20261006 | 0 | native | 0.00512 | 0.0447245 | 0.076074 | 8.74 | 30 |
+| 1024 | 8 | random | 20261006 | 0 | bitplane | 0.01024 | 0.0610765 | 0.084281 | 5.96 | 30 |
+| 1024 | 8 | random | 20261006 | 0 | nibble512 | 0.021504 | 0.063535 | 0.094004 | 2.95 | 30 |
+| 1024 | 64 | random | 20261006 | 0 | native | 0.00512 | 0.0443565 | 0.066107 | 8.66 | 30 |
+| 1024 | 64 | random | 20261006 | 0 | bitplane | 0.060416 | 0.105459 | 0.133545 | 1.75 | 30 |
+| 1024 | 64 | random | 20261006 | 0 | nibble512 | 0.1536 | 0.192692 | 0.193919 | 1.25 | 30 |
+| 65536 | 1 | random | 20261006 | 0 | native | 0.006144 | 0.473863 | 0.479741 | 77.1 | 30 |
+| 65536 | 1 | random | 20261006 | 0 | bitplane | 0.008192 | 0.490397 | 0.501927 | 59.9 | 30 |
+| 65536 | 1 | random | 20261006 | 0 | nibble512 | 0.017408 | 0.490208 | 0.503775 | 28.2 | 30 |
+| 65536 | 8 | random | 20261006 | 0 | native | 0.00512 | 0.492591 | 0.571304 | 96.2 | 30 |
+| 65536 | 8 | random | 20261006 | 0 | bitplane | 0.018432 | 0.492209 | 0.5064 | 26.7 | 30 |
+| 65536 | 8 | random | 20261006 | 0 | nibble512 | 0.079872 | 0.572683 | 0.668871 | 7.17 | 30 |
+| 65536 | 64 | random | 20261006 | 0 | native | 0.007168 | 0.477299 | 0.506622 | 66.6 | 30 |
+| 65536 | 64 | random | 20261006 | 0 | bitplane | 0.119808 | 0.607433 | 0.63067 | 5.07 | 30 |
+| 65536 | 64 | random | 20261006 | 0 | nibble512 | 0.689664 | 1.16211 | 1.18713 | 1.69 | 30 |
+| 1048576 | 1 | carry-heavy | 20261006 | 0 | native | 0.03072 | 5.2617 | 5.462 | 171 | 30 |
+| 1048576 | 1 | carry-heavy | 20261006 | 0 | bitplane | 0.03072 | 5.40055 | 5.67882 | 176 | 30 |
+| 1048576 | 1 | carry-heavy | 20261006 | 0 | nibble512 | 0.031744 | 5.31383 | 5.53277 | 167 | 30 |
+| 1048576 | 8 | carry-heavy | 20261006 | 0 | native | 0.03072 | 5.31301 | 5.59109 | 173 | 30 |
+| 1048576 | 8 | carry-heavy | 20261006 | 0 | bitplane | 0.161792 | 5.56436 | 5.93566 | 34.4 | 30 |
+| 1048576 | 8 | carry-heavy | 20261006 | 0 | nibble512 | 0.059392 | 5.34153 | 5.53969 | 89.9 | 30 |
+| 1048576 | 64 | carry-heavy | 20261006 | 0 | native | 0.033792 | 5.30356 | 5.46538 | 157 | 30 |
+| 1048576 | 64 | carry-heavy | 20261006 | 0 | bitplane | 1.24211 | 7.08519 | 7.34262 | 5.7 | 30 |
+| 1048576 | 64 | carry-heavy | 20261006 | 0 | nibble512 | 0.397312 | 5.64172 | 5.80182 | 14.2 | 30 |
+
+Observed first full-path crossover by representation:
+- `bitplane` first beat native at size 65536, reuse 8, pattern `random` (1× native/candidate time).
+- `nibble512`: no full-path crossover observed in valid matched cases.
+
+## E11 tensor versus bitset complete path
+
+Comparisons require a correctness-passing packed AND+POPC baseline and candidate at the same tested universe. Ratios are baseline/candidate; encoding, transfer, kernel, and materialization follow each case's `complete_path_contract`.
+
+| Universe | Variant | Full-path median ms | Packed baseline ms | Baseline/candidate | N |
+|---:|---|---:|---:|---:|---:|
+| 16 | packed_and_popc | 0.014809 | 0.014809 | 1 | 30 |
+| 16 | dp4a | 0.0155625 | 0.014809 | 0.952 | 30 |
+| 16 | fp16_wmma | 0.0206255 | 0.014809 | 0.718 | 30 |
+| 256 | packed_and_popc | 0.015186 | 0.015186 | 1 | 30 |
+| 256 | dp4a | 0.0428095 | 0.015186 | 0.355 | 30 |
+| 256 | fp16_wmma | 0.047218 | 0.015186 | 0.322 | 30 |
+| 1024 | packed_and_popc | 0.0167465 | 0.0167465 | 1 | 30 |
+| 1024 | dp4a | 0.120421 | 0.0167465 | 0.139 | 30 |
+| 1024 | fp16_wmma | 0.126273 | 0.0167465 | 0.133 | 30 |
+
+## E20 directed peer transfer rates
+
+Rates are payload GB/s from validated cases; bidirectional aggregates include two payload directions. They do not prove physical link routing.
+
+| Source | Destination | Bytes | Direction | Payload GB/s | Valid |
+|---:|---:|---:|---|---:|---:|
+| 0 | 1 | 4194304 | one-way | 5.17089 | True |
+| 0 | 1 | 4194304 | bidirectional aggregate | 8.61142 | True |
+| 0 | 2 | 4194304 | one-way | 114.652 | True |
+| 0 | 2 | 4194304 | bidirectional aggregate | 201.848 | True |
+| 1 | 0 | 4194304 | one-way | 5.16972 | True |
+| 1 | 0 | 4194304 | bidirectional aggregate | 8.57307 | True |
+| 1 | 3 | 4194304 | one-way | 113.184 | True |
+| 1 | 3 | 4194304 | bidirectional aggregate | 201.286 | True |
+| 2 | 0 | 4194304 | one-way | 112.525 | True |
+| 2 | 0 | 4194304 | bidirectional aggregate | 204.693 | True |
+| 2 | 3 | 4194304 | one-way | 5.1623 | True |
+| 2 | 3 | 4194304 | bidirectional aggregate | 8.63807 | True |
+| 3 | 1 | 4194304 | one-way | 111.899 | True |
+| 3 | 1 | 4194304 | bidirectional aggregate | 200.43 | True |
+| 3 | 2 | 4194304 | one-way | 5.16839 | True |
+| 3 | 2 | 4194304 | bidirectional aggregate | 8.60461 | True |
+
+## Profiler evidence
+
+Each entry below is backed by a validated receipt. Nsys supplies timeline evidence; NCU replay supplies kernel counters and is not used for throughput.
+
+- **E02 / independent_add_8 / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E02-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::loop_control_clock_kernel(unsigned long *, int, unsigned int)` (class mixed, share 17.689920388611526%).
+  - Hot kernel: `void <unnamed>::independent_add_kernel<8>(unsigned int *, int)` (class mixed, share 16.85332613682364%).
+  - Hot kernel: `void <unnamed>::independent_add_kernel<4>(unsigned int *, int)` (class mixed, share 16.4215355552557%).
+  - Reported hints: `mixed`.
+- **E02 / independent_add_8 / nsys:** GPU activity present=True; SQLite kernel rows=216, memcpy rows=6, memset rows=0; analysis status `partial`. [raw report](controller/E02-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `void <unnamed>::independent_add_kernel<(int)2>(unsigned int *, int)` (36 instances, average 2.1929000000000003 us).
+  - Hot kernel: `<unnamed>::loop_control_clock_kernel(unsigned long *, int, unsigned int)` (36 instances, average 2.1084 us).
+  - Hot kernel: `void <unnamed>::independent_add_kernel<(int)8>(unsigned int *, int)` (36 instances, average 1.9662 us).
+  - Reported hints: `allocator-churn`.
+- **E03 / interleaved / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E03-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)` (class mixed, share 100.0%).
+  - Reported hints: `mixed`.
+- **E03 / interleaved / nsys:** GPU activity present=True; SQLite kernel rows=144, memcpy rows=8, memset rows=0; analysis status `partial`. [raw report](controller/E03-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)` (144 instances, average 1.5551 us).
+  - Reported hints: `allocator-churn`.
+- **E05 / rank_select_small_masks / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E05-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::constant_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)` (class mixed, share 18.127094876530556%).
+  - Hot kernel: `<unnamed>::cached_global_lookup_kernel(unsigned int *, unsigned long, const unsigned int *, int, unsigned int, bool)` (class mixed, share 18.127094876530542%).
+  - Hot kernel: `<unnamed>::shared_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)` (class mixed, share 16.03392844927833%).
+  - Reported hints: `mixed`.
+- **E05 / rank_select_small_masks / nsys:** GPU activity present=True; SQLite kernel rows=828, memcpy rows=27, memset rows=12; analysis status `partial`. [raw report](controller/E05-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::constant_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)` (144 instances, average 1.796 us).
+  - Hot kernel: `<unnamed>::cached_global_lookup_kernel(unsigned int *, unsigned long, const unsigned int *, int, unsigned int, bool)` (144 instances, average 1.5962 us).
+  - Hot kernel: `<unnamed>::shuffle_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)` (144 instances, average 1.524 us).
+  - Reported hints: `allocator-churn`.
+- **E06 / shuffle_tile / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E06-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::shared_bank_kernel(unsigned int *, int, int)` (class mixed, share 64.71996170416467%).
+  - Hot kernel: `<unnamed>::shared_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)` (class mixed, share 17.999042604116802%).
+  - Hot kernel: `<unnamed>::shuffle_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)` (class mixed, share 17.280995691718527%).
+  - Reported hints: `mixed`.
+- **E06 / shuffle_tile / nsys:** GPU activity present=True; SQLite kernel rows=180, memcpy rows=6, memset rows=0; analysis status `partial`. [raw report](controller/E06-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::shared_bank_kernel(unsigned int *, int, int)` (108 instances, average 1.7110999999999998 us).
+  - Hot kernel: `<unnamed>::shared_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)` (36 instances, average 1.4550999999999998 us).
+  - Hot kernel: `<unnamed>::shuffle_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)` (36 instances, average 1.4071 us).
+  - Reported hints: `allocator-churn`.
+- **E07 / chase_cold_displaced / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E07-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::pointer_chase(const unsigned int *, unsigned int, unsigned long, unsigned int *)` (class mixed, share 98.7341277312748%).
+  - Hot kernel: `<unnamed>::displace_cache(unsigned int *, unsigned long)` (class memory-bound, share 1.0632305870864593%).
+  - Hot kernel: `<unnamed>::stream_load(const unsigned int *, unsigned long, unsigned long, unsigned long, unsigned long *)` (class mixed, share 0.20264168163874888%).
+  - Reported hints: `mixed`.
+- **E07 / chase_cold_displaced / nsys:** GPU activity present=True; SQLite kernel rows=210, memcpy rows=10, memset rows=1; analysis status `ok`. [raw report](controller/E07-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::pointer_chase(const unsigned int *, unsigned int, unsigned long, unsigned int *)` (105 instances, average 845.3219 us).
+  - Hot kernel: `<unnamed>::displace_cache(unsigned int *, unsigned long)` (35 instances, average 33.802699999999994 us).
+  - Hot kernel: `<unnamed>::stream_load(const unsigned int *, unsigned long, unsigned long, unsigned long, unsigned long *)` (70 instances, average 1.7050999999999998 us).
+- **E08 / footprint_256p / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E08-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::footprint_walk(const unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned long *)` (class mixed, share 100.0%).
+  - Reported hints: `mixed`.
+- **E08 / footprint_256p / nsys:** GPU activity present=True; SQLite kernel rows=700, memcpy rows=10, memset rows=0; analysis status `ok`. [raw report](controller/E08-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::footprint_walk(const unsigned int *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned long *)` (700 instances, average 113.30239999999999 us).
+- **E09 / wmma_one_hot_lane_fragment / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E09-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)` (class mixed, share 55.658436213991784%).
+  - Hot kernel: `<unnamed>::ptx_mma_lane_map(const __half *, const __half *, float *, int *, int *)` (class mixed, share 44.341563786008216%).
+  - Reported hints: `mixed`.
+- **E09 / wmma_one_hot_lane_fragment / nsys:** GPU activity present=True; SQLite kernel rows=72, memcpy rows=10, memset rows=0; analysis status `partial`. [raw report](controller/E09-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)` (36 instances, average 1.7458 us).
+  - Hot kernel: `<unnamed>::ptx_mma_lane_map(const __half *, const __half *, float *, int *, int *)` (36 instances, average 1.6907 us).
+  - Reported hints: `allocator-churn`, `launch-overhead`.
+- **E10 / wmma_numerical_fingerprint / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E10-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)` (class mixed, share 100.0%).
+  - Reported hints: `mixed`.
+- **E10 / wmma_numerical_fingerprint / nsys:** GPU activity present=True; SQLite kernel rows=36, memcpy rows=3, memset rows=0; analysis status `partial`. [raw report](controller/E10-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)` (36 instances, average 1.7289 us).
+  - Reported hints: `allocator-churn`, `launch-overhead`.
+- **E11 / fp16_wmma / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E11-ncu-2/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::tensor_pairs(const __half *, const __half *, float *, int, int)` (class mixed, share 53.907044620351115%).
+  - Hot kernel: `<unnamed>::dp4a_pairs(const unsigned int *, unsigned int *, int, int)` (class mixed, share 36.019104055189494%).
+  - Hot kernel: `<unnamed>::bitset_pairs(const unsigned int *, unsigned int *, int, int)` (class mixed, share 10.073851324459383%).
+  - Reported hints: `mixed`.
+- **E11 / fp16_wmma / nsys:** GPU activity present=True; SQLite kernel rows=213, memcpy rows=252, memset rows=0; analysis status `partial`. [raw report](controller/E11-nsys-2/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::dp4a_pairs(const unsigned int *, unsigned int *, int, int)` (71 instances, average 16.7647 us).
+  - Hot kernel: `<unnamed>::tensor_pairs(const __half *, const __half *, float *, int, int)` (71 instances, average 16.371299999999998 us).
+  - Hot kernel: `<unnamed>::bitset_pairs(const unsigned int *, unsigned int *, int, int)` (71 instances, average 3.6241 us).
+  - Reported hints: `host-device-traffic`.
+- **E12 / fp16_wmma / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E12-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::tensor_transform(const __half *, const __half *, float *, int, int)` (class mixed, share 52.0301832554797%).
+  - Hot kernel: `<unnamed>::butterfly_transform(const float *, float *, int, int)` (class mixed, share 47.969816744520294%).
+  - Reported hints: `mixed`.
+- **E12 / fp16_wmma / nsys:** GPU activity present=True; SQLite kernel rows=72, memcpy rows=8, memset rows=0; analysis status `partial`. [raw report](controller/E12-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::tensor_transform(const __half *, const __half *, float *, int, int)` (36 instances, average 1.7138 us).
+  - Hot kernel: `<unnamed>::butterfly_transform(const float *, float *, int, int)` (36 instances, average 1.6702000000000001 us).
+  - Reported hints: `allocator-churn`, `launch-overhead`.
+- **E13 / nibble512 / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E13-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::decode_bitplanes(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 23.972472710014248%).
+  - Hot kernel: `<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (class mixed, share 23.33175130517323%).
+  - Hot kernel: `<unnamed>::encode_bitplanes(const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 23.17513051732321%).
+  - Reported hints: `mixed`.
+- **E13 / nibble512 / nsys:** GPU activity present=True; SQLite kernel rows=391, memcpy rows=1075, memset rows=0; analysis status `partial`. [raw report](controller/E13-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (71 instances, average 4.3793999999999995 us).
+  - Hot kernel: `<unnamed>::decode_bitplanes(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (106 instances, average 1.9064 us).
+  - Hot kernel: `<unnamed>::bitplane_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (71 instances, average 2.3238000000000003 us).
+  - Reported hints: `host-device-traffic`.
+- **E14 / spread_16 / nsys:** GPU activity present=True; SQLite kernel rows=216, memcpy rows=3, memset rows=0; analysis status `partial`. [raw report](controller/E14-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::zero_u64(unsigned long long *, int)` (108 instances, average 1.1202999999999999 us).
+  - Hot kernel: `<unnamed>::atomic_spread(unsigned long long *, int, int)` (36 instances, average 1.3342 us).
+  - Hot kernel: `<unnamed>::atomic_warp_aggregate(unsigned long long *, int)` (36 instances, average 1.3102 us).
+  - Reported hints: `allocator-churn`, `launch-overhead`.
+- **E15 / event_phased_baseline / nsys:** GPU activity present=True; SQLite kernel rows=107, memcpy rows=37, memset rows=0; analysis status `ok`. [raw report](controller/E15-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::publication_litmus(<unnamed>::Published *, unsigned long long, unsigned int, unsigned long long)` (35 instances, average 1.877 us).
+  - Hot kernel: `<unnamed>::consume_phase(const <unnamed>::Published *, unsigned long long, int *)` (36 instances, average 1.5617999999999999 us).
+  - Hot kernel: `<unnamed>::publish_phase(<unnamed>::Published *, unsigned long long)` (36 instances, average 1.3849 us).
+  - Reported hints: `launch-overhead`.
+- **E16 / graph_replay / nsys:** GPU activity present=True; SQLite kernel rows=72, memcpy rows=5, memset rows=108; analysis status `partial`. [raw report](controller/E16-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::resident_work(unsigned long long *, int, int, int *)` (36 instances, average 7.9066 us).
+  - Hot kernel: `<unnamed>::batched_work(unsigned long long *, int)` (36 instances, average 1.4089 us).
+  - Reported hints: `host-device-traffic`.
+- **E17 / pinned_two_slot_h2d_compute_d2h_pipeline / nsys:** GPU activity present=True; SQLite kernel rows=140, memcpy rows=280, memset rows=0; analysis status `ok`. [raw report](controller/E17-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `atlas::<unnamed>::increment_kernel(unsigned int *, const unsigned int *, unsigned long)` (140 instances, average 1.5917999999999999 us).
+- **E18 / peer_stage_then_local_chain / nsys:** GPU activity present=True; SQLite kernel rows=140, memcpy rows=41, memset rows=0; analysis status `ok`. [raw report](controller/E18-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `atlas::<unnamed>::chain_kernel(const unsigned int *, unsigned int *, unsigned long, int, unsigned int)` (105 instances, average 212.99579999999997 us).
+  - Hot kernel: `atlas::<unnamed>::independent_kernel(const unsigned int *, unsigned int *, unsigned long, int)` (35 instances, average 5.2096 us).
+- **E19 / host_staged_completion_handshake / nsys:** GPU activity present=True; SQLite kernel rows=210, memcpy rows=9, memset rows=147; analysis status `ok`. [raw report](controller/E19-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `atlas::<unnamed>::peer_atomic_producer(unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned long long)` (35 instances, average 329.41540000000003 us).
+  - Hot kernel: `atlas::<unnamed>::peer_atomic_consumer(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned long long)` (35 instances, average 312.4921 us).
+  - Hot kernel: `atlas::<unnamed>::marker_kernel(unsigned int *)` (140 instances, average 1.4638 us).
+- **E20 / directed_peer_copy_bidirectional / nsys:** GPU activity present=True; SQLite kernel rows=0, memcpy rows=110, memset rows=0; analysis status `rerun`. [raw report](controller/E20-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Reported hints: `missing-kernel-trace`.
+- **E20 / directed_peer_copy_bidirectional / nsys:** GPU activity present=True; SQLite kernel rows=0, memcpy rows=110, memset rows=0; analysis status `rerun`. [raw report](controller/E20-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Reported hints: `missing-kernel-trace`.
+- **E21 / numa_node_1 / nsys:** GPU activity present=True; SQLite kernel rows=0, memcpy rows=36, memset rows=0; analysis status `rerun`. [raw report](controller/E21-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Reported hints: `missing-kernel-trace`.
+- **E22 / stream_memop_64 / nsys:** GPU activity present=True; SQLite kernel rows=144, memcpy rows=5, memset rows=108; analysis status `ok`. [raw report](controller/E22-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::memop_consume32(const unsigned int *, unsigned int, int *)` (72 instances, average 1.5044000000000002 us).
+  - Hot kernel: `<unnamed>::memop_consume64(const unsigned long long *, unsigned long long, int *)` (36 instances, average 1.5030999999999999 us).
+  - Hot kernel: `<unnamed>::memop_write32(unsigned int *, unsigned int)` (36 instances, average 1.3538 us).
+  - Reported hints: `launch-overhead`.
+- **E23 / vmm_fixed_alias_window / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E23-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::ring_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)` (class mixed, share 82.76429026849415%).
+  - Hot kernel: `<unnamed>::alias_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)` (class mixed, share 17.23563534426895%).
+  - Hot kernel: `<unnamed>::fill_values(unsigned int *, unsigned long)` (class mixed, share 7.438723691474005e-05%).
+  - Reported hints: `mixed`.
+- **E23 / vmm_fixed_alias_window / nsys:** GPU activity present=True; SQLite kernel rows=71, memcpy rows=3, memset rows=0; analysis status `ok`. [raw report](controller/E23-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::ring_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)` (35 instances, average 264787.766 us).
+  - Hot kernel: `<unnamed>::alias_walk(const unsigned int *, unsigned long, unsigned long, unsigned long *)` (35 instances, average 51940.9464 us).
+  - Hot kernel: `<unnamed>::fill_values(unsigned int *, unsigned long)` (1 instances, average 2.816 us).
+- **E24 / explicit_device_copy / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E24-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::reduce_u32(const unsigned int *, unsigned long, unsigned long *)` (class mixed, share 100.0%).
+  - Reported hints: `mixed`.
+- **E24 / explicit_device_copy / nsys:** GPU activity present=True; SQLite kernel rows=560, memcpy rows=281, memset rows=0; analysis status `ok`. [raw report](controller/E24-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::reduce_u32(const unsigned int *, unsigned long, unsigned long *)` (560 instances, average 114.41810000000001 us).
+- **E25 / offline_oracle / nsys:** GPU activity present=True; SQLite kernel rows=2248, memcpy rows=9, memset rows=0; analysis status `ok`. [raw report](controller/E25-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::phase_serial_grid(const int *, int *, int)` (1396 instances, average 1.378 us).
+  - Hot kernel: `<unnamed>::phase_parallel_grid(const int *, int *, int)` (852 instances, average 1.3627 us).
+  - Reported hints: `launch-overhead`.
+- **E26 / texture_linear / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E26-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::evaluate_sinf(const float *, float *, unsigned long, bool)` (class mixed, share 45.4192546583851%).
+  - Hot kernel: `<unnamed>::evaluate_texture(const float *, float *, unsigned long, unsigned long long, unsigned int)` (class mixed, share 31.152950310559007%).
+  - Hot kernel: `<unnamed>::evaluate_lut(const float *, float *, unsigned long, const float *, unsigned int)` (class mixed, share 23.4277950310559%).
+  - Reported hints: `mixed`.
+- **E26 / texture_linear / nsys:** GPU activity present=True; SQLite kernel rows=140, memcpy rows=10, memset rows=0; analysis status `ok`. [raw report](controller/E26-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::evaluate_sinf(const float *, float *, unsigned long, bool)` (70 instances, average 1.5209000000000001 us).
+  - Hot kernel: `<unnamed>::evaluate_texture(const float *, float *, unsigned long, unsigned long long, unsigned int)` (35 instances, average 2.0178 us).
+  - Hot kernel: `<unnamed>::evaluate_lut(const float *, float *, unsigned long, const float *, unsigned int)` (35 instances, average 1.6677 us).
+  - Reported hints: `launch-overhead`.
+- **E31 / single_client_baseline / nsys:** GPU activity present=True; SQLite kernel rows=180, memcpy rows=10, memset rows=0; analysis status `partial`. [raw report](controller/E31-nsys-host/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)` (180 instances, average 5.7745 us).
+  - Reported hints: `allocator-churn`.
+- **E32 / host_enqueued_kernel_pipeline / nsys:** GPU activity present=True; SQLite kernel rows=280, memcpy rows=3, memset rows=0; analysis status `partial`. [raw report](controller/E32-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `atlas::<unnamed>::increment_inplace_kernel(unsigned int *, unsigned long)` (280 instances, average 1.5087000000000002 us).
+  - Reported hints: `allocator-churn`.
+- **E32 / device_side_child_launch_pipeline / nsys:** GPU activity present=True; SQLite kernel rows=35, memcpy rows=4, memset rows=36; analysis status `partial`. [raw report](controller/E32-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `atlas::<unnamed>::cdp_stage_parent(unsigned int *, unsigned long, int, int *)` (35 instances, average 87.7452 us).
+  - Reported hints: `allocator-churn`.
+- **E33 / serial / nsys:** GPU activity present=True; SQLite kernel rows=1002, memcpy rows=64, memset rows=0; analysis status `partial`. [raw report](controller/E33-nsys-host/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)` (1002 instances, average 5.2832 us).
+  - Reported hints: `allocator-churn`.
+- **E37 / cuda_expression_parity / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E37-ncu-0/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::lop3_expression_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 35.630203847258116%).
+  - Hot kernel: `<unnamed>::lop3_boolop_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 32.271030720643125%).
+  - Hot kernel: `<unnamed>::lop3_and_boolop_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 32.098765432098766%).
+  - Reported hints: `mixed`.
+- **E37 / cuda_expression_parity / nsys:** GPU activity present=True; SQLite kernel rows=108, memcpy rows=10, memset rows=0; analysis status `partial`. [raw report](controller/E37-nsys-0/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::lop3_expression_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (36 instances, average 1.6436 us).
+  - Hot kernel: `<unnamed>::lop3_boolop_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (36 instances, average 1.4809 us).
+  - Hot kernel: `<unnamed>::lop3_and_boolop_kernel(const unsigned int *, const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)` (36 instances, average 1.4578 us).
+  - Reported hints: `allocator-churn`.
+- **E39 / nibble512 / ncu:** counter_valid=True; analysis status `ok`. [raw report](controller/E39-ncu-20/artifacts/ncu/run/report.ncu-rep)
+  - Hot kernel: `<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (class compute-heavy, share 83.27591979887292%).
+  - Hot kernel: `<unnamed>::bitplane_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (class compute-heavy, share 13.978020169459777%).
+  - Hot kernel: `<unnamed>::encode_bitplanes(const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned long)` (class mixed, share 1.2347693337949115%).
+  - Reported hints: `compute-heavy`.
+- **E39 / nibble512 / nsys:** GPU activity present=True; SQLite kernel rows=391, memcpy rows=1075, memset rows=0; analysis status `partial`. [raw report](controller/E39-nsys-20/artifacts/nsys/run/report.nsys-rep)
+  - Timeline evidence scope: `timeline and setup behavior`; throughput remains sourced from the unprofiled benchmark samples.
+  - Hot kernel: `<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (71 instances, average 611.4702 us).
+  - Hot kernel: `<unnamed>::bitplane_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)` (71 instances, average 105.97619999999999 us).
+  - Hot kernel: `<unnamed>::encode_bitplanes(const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned long)` (72 instances, average 7.5324 us).
+  - Reported hints: `host-device-traffic`.
+
+## Host diagnostics
+
+- **E20 / directed_peer_copy** `NOT_RUN`: CUDA reports no direct peer access for this directed pair. [Captured JSON](controller/E20-verify-2/artifacts/foreground.stdout.txt)
+- **E20 / directed_peer_copy** `NOT_RUN`: CUDA reports no direct peer access for this directed pair. [Captured JSON](controller/E20-verify-4/artifacts/foreground.stdout.txt)
+- **E20 / directed_peer_copy** `NOT_RUN`: CUDA reports no direct peer access for this directed pair. [Captured JSON](controller/E20-verify-7/artifacts/foreground.stdout.txt)
+- **E20 / directed_peer_copy** `NOT_RUN`: CUDA reports no direct peer access for this directed pair. [Captured JSON](controller/E20-verify-9/artifacts/foreground.stdout.txt)
+- **E21 / numa_node_1** `NOT_RUN`: set_mempolicy bind unavailable: Invalid argument. [Captured JSON](controller/E21-timing-0/artifacts/foreground.stdout.txt)
+- **E21 / numa_node_1** `NOT_RUN`: set_mempolicy bind unavailable: Invalid argument. [Captured JSON](controller/E21-timing-1/artifacts/foreground.stdout.txt)
+- **E21 / numa_node_1** `NOT_RUN`: set_mempolicy bind unavailable: Invalid argument. [Captured JSON](controller/E21-verify-0/artifacts/foreground.stdout.txt)
+- **E21 / numa_node_1** `NOT_RUN`: set_mempolicy bind unavailable: Invalid argument. [Captured JSON](controller/E21-verify-1/artifacts/foreground.stdout.txt)
+- E36 toolchain qualification: `COMPILED_ONLY` — Image listing is metadata inspection; no conclusion about runtime operator coverage is implied..
+
+## E00–E39 dispositions
+
+These links point to the original protocol writeups and preserve their authoring provenance; measured evidence is recorded separately in this run's results and raw artifacts.
+
+| Experiment | Status | Correctness | Cases | First limitation |
+|---|---|---|---:|---|
+| [E00](../../experiments/E00.md) | CPU_ONLY | True | 1 | — |
+| [E01](../../experiments/E01.md) | CPU_ONLY | True | 1 | — |
+| [E02](../../experiments/E02.md) | GPU_RUN | True | 18 | — |
+| [E03](../../experiments/E03.md) | GPU_RUN | True | 8 | — |
+| [E04](../../experiments/E04.md) | NOT_RUN | unknown | 0 | The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis. |
+| [E05](../../experiments/E05.md) | GPU_RUN | True | 69 | — |
+| [E06](../../experiments/E06.md) | GPU_RUN | True | 15 | — |
+| [E07](../../experiments/E07.md) | GPU_RUN | True | 15 | — |
+| [E08](../../experiments/E08.md) | GPU_RUN | True | 15 | — |
+| [E09](../../experiments/E09.md) | GPU_RUN | True | 2 | — |
+| [E10](../../experiments/E10.md) | GPU_RUN | True | 2 | — |
+| [E11](../../experiments/E11.md) | GPU_RUN | True | 9 | — |
+| [E12](../../experiments/E12.md) | GPU_RUN | True | 4 | — |
+| [E13](../../experiments/E13.md) | GPU_RUN | True | 9 | — |
+| [E14](../../experiments/E14.md) | GPU_RUN | True | 6 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E15](../../experiments/E15.md) | GPU_RUN | True | 4 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E16](../../experiments/E16.md) | GPU_RUN | True | 6 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E17](../../experiments/E17.md) | GPU_RUN | True | 6 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E18](../../experiments/E18.md) | GPU_RUN | True | 8 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E19](../../experiments/E19.md) | GPU_RUN | True | 3 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E20](../../experiments/E20.md) | GPU_RUN | True | 20 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E21](../../experiments/E21.md) | GPU_RUN | True | 4 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E22](../../experiments/E22.md) | GPU_RUN | True | 6 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E23](../../experiments/E23.md) | GPU_RUN | True | 4 | — |
+| [E24](../../experiments/E24.md) | GPU_RUN | True | 8 | — |
+| [E25](../../experiments/E25.md) | GPU_RUN | True | 8 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E26](../../experiments/E26.md) | GPU_RUN | True | 8 | — |
+| [E27](../../experiments/E27.md) | NOT_RUN | unknown | 0 | The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis. |
+| [E28](../../experiments/E28.md) | NOT_RUN | unknown | 0 | The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis. |
+| [E29](../../experiments/E29.md) | NOT_RUN | unknown | 0 | The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis. |
+| [E30](../../experiments/E30.md) | NOT_RUN | unknown | 0 | The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis. |
+| [E31](../../experiments/E31.md) | GPU_RUN | True | 3 | — |
+| [E32](../../experiments/E32.md) | GPU_RUN | True | 6 | Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload. |
+| [E33](../../experiments/E33.md) | GPU_RUN | True | 2 | Nsight Systems used a separate smoke-mode diagnostic burst; it does not establish steady-state energy or timing. |
+| [E34](../../experiments/E34.md) | CPU_ONLY | True | 1 | — |
+| [E35](../../experiments/E35.md) | CPU_ONLY | True | 1 | — |
+| [E36](../../experiments/E36.md) | CPU_ONLY | True | 1 | — |
+| [E37](../../experiments/E37.md) | GPU_RUN | True | 9 | — |
+| [E38](../../experiments/E38.md) | CPU_ONLY | True | 5 | — |
+| [E39](../../experiments/E39.md) | GPU_RUN | True | 66 | — |
+
+Structured evidence: [results.json](results.json), [run_config.json](run_config.json), [summary.json](summary.json).
+
+Independent E39 uncertainty check: the 10,000-resample unpaired 95% bootstrap interval for the bitplane-minus-native median difference at size 65,536/reuse 8 is **−0.010072 to +0.008283 ms**, crossing zero. This supports no established crossover. This interval describes sampling variation within this run; it is not a bound on between-run or machine variation.
+
+## Project Control bookkeeping
+
+Workspace registration under `circuit-bending-atlas` is complete. Benchmark execution, correctness, profiling, and artifact acceptance are complete. The native Project Control task closure remains administratively blocked: `finish_task` returns `capability_claim_inactive`, `next_task` returns `idle/no_actionable_work`, and owner recovery inspection refuses the first-class dispatch as live. A read-only semantic snapshot still reports the task in progress with a stale/unobservable dispatch heartbeat. No authority or recovery guard was bypassed. The authorized original lane/session or operator must restore a valid capability and close this bookkeeping record. [Recorded responses](offline/project-control-bookkeeping.json).

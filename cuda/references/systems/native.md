@@ -8,6 +8,8 @@ skill cleaner.
 
 ## Native Topology
 
+These ordinals describe the recorded native profile, not permanent device identity or execution authority. Rediscover GPU UUIDs and fabric topology at runtime before selecting devices, placing ranks, or applying pair-local assumptions.
+
 - fast NVLink pair: `GPU0 <-> GPU2`
 - fast NVLink pair: `GPU1 <-> GPU3`
 - acceptable leader exchange: `GPU0 <-> GPU1` and `GPU2 <-> GPU3`
@@ -38,7 +40,7 @@ skill cleaner.
 
 ## Load Next
 
-- `references/architectures/volta/router.md` for architecture routing.
-- `references/common/code-organization.md` when generated code layout matters.
-- `references/common/diagnostics-workflow.md` when the first issue is
+- [router](../architectures/volta/router.md) for architecture routing.
+- [code organization](../common/code-organization.md) when generated code layout matters.
+- [diagnostics workflow](../profiling/diagnostics-workflow.md) when the first issue is
   measurement or debugging surface quality.

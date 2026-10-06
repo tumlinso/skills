@@ -2,7 +2,7 @@
 
 > Which attractive interpretation is actually unsupported or algebraically wrong?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** CPU_ONLY (subset: offline falsification-rule checks). **Original protocol status:** NOT_RUN_ON_GPU ([archived E38 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E38.md)). **Depth:** 4.
 **Read when:** experiment, negative-space, falsification.
 **Prerequisites:** R12. **Evidence:** S03 S12 S27 S30.
 
@@ -23,3 +23,18 @@
 **Related:** R00 R04 R09 C39.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Five CPU_ONLY checks evaluated claims about partial-warp tensor-core participation, DMA array reduction, automatic peer coherence, generic semiring MMA on sm70, and whether header/mnemonic presence proves an undocumented opcode. No GPU experiment was run.
+
+Primary scope: host [run_e38](../scripts/atlas_host.py#L222) records the [offline falsifier results](evidence/v100-20261006/E38-raw-host-records.md).
+
+[Measured summary](evidence/v100-20261006/E38.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** these five claims were checked against the recorded source/contract evidence and rejected or qualified as stated in the evidence.
+- **Design implication (inference):** perform interface and algebra checks before proposing a hardware experiment for an attractive capability claim.
+- **Does not establish:** empirical silicon behavior, physical impossibility, or a new scientific operator/representation.
+- **Original protocol gaps:** these are prerequisite falsification checks; no supported equivalent performance baseline or hardware experiment was part of this subcase.

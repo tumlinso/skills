@@ -1,0 +1,79 @@
+{
+  "command": "python /tmp/pa1-sk-retire/tests/assistance/test_lcw_transition.py",
+  "coverage": [
+    "legacy and receiver imports share canonical local_worker module identity",
+    "foreign preloaded local_worker submodules fail closed",
+    "receiver source drift fails through the legacy entrypoint",
+    "installed legacy import rejects a release without local_runtime_binding",
+    "legacy CLI scripts forward only after binding",
+    "worker_core resolves to the receiver-owned source",
+    "forwarded run, integrate, delegate, and delegate --collect commands are denied before handler sentinels can execute",
+    "rollback archive hashes and transition scope preserve independent Todo, CUDA, and ctxpp roots",
+    "native Skills catalog delta preserves every other entry and top-level value",
+    "retired Skills schemas reject representative instances under Draft 2020-12 while receiver delegation contracts accept valid fixtures",
+    "candidate release validates receiver manifest and fingerprint pins under PYTHONPATH shadowing",
+    "public validate_identity returns its historical Path result and supports Path.name",
+    "python -O retains failed pytest, failed/missing SQA, stale receiver fingerprint, and proof fingerprint rejection"
+  ],
+  "evidence": {
+    "catalog": {
+      "path": "/tmp/pa1-sk-retire/consumers/integrations/native-skill-catalog.json",
+      "sha256": "a958436708614e76616be408804c088e19d3d4ce2a8e152ec2d40cd0700cad9e"
+    },
+    "catalog_baseline": {
+      "path": "/tmp/pa1-sk-retire/consumers/provenance/native-skill-catalog.baseline.json",
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+    },
+    "receiver_manifest": {
+      "file_count": 42,
+      "fingerprint": "1860a5d64662da3379d8f9b4823813321ed6cf1f7a78fbb7c5b66cbcd3d684cb",
+      "path": "/home/tumlinson/project-control/src/project_control/local_runtime/receiver-manifest.json",
+      "sha256": "576aaf8b80d58df9040e2c3d6058e95a7252227890068b4b9d49c0c0f88add4a"
+    },
+    "release_consumer": {
+      "path": "/tmp/pa1-sk-retire/consumers/integrations/as1_release.py",
+      "sha256": "907cc845bca068f84e74af661d9a0bfe9660cb3adb37a90bf9f539093c51c9b6"
+    },
+    "rollback_archive": {
+      "path": "/tmp/pa1-sk-retire/rollback/local-coding-worker-portable.tar.gz",
+      "sha256": "91ed6ba26758f026ac2d4a57a378eb0f5382539232453ff1f362df8fdddeb099"
+    },
+    "rollback_provenance": {
+      "path": "/tmp/pa1-sk-retire/rollback/provenance.json",
+      "sha256": "1f0466c8013d04e183cc5267d1b3005f4eb5ad1ce42ee7ed49da3af7a83cc36c"
+    },
+    "transition": {
+      "path": "/tmp/pa1-sk-retire/runtime-transition.json",
+      "sha256": "4ee36eb664a23e1a9ba3cfcc393cf5853f4034d861e49f38fe217c9004addf9c"
+    }
+  },
+  "format": "pa1-skills-transition-tests/1",
+  "limits": [
+    "No model, service, or GPU inference was started; installed-candidate probes validated source pins only.",
+    "Historical supplier tests such as local-coding-worker/tests/test_read_only_mvp.py assert the retired schema properties and eligible/run interface; they are preserved as supplier evidence and are not transition qualification for the demand-only forwarder contract.",
+    "This refresh validated the current source receiver identity only; it is not installed release qualification or live worker/model/device qualification."
+  ],
+  "result": {
+    "elapsed_seconds": 2.452,
+    "errors": 0,
+    "failures": 0,
+    "py_compile": "passed",
+    "tests_run": 12
+  },
+  "staging_overrides": {
+    "PA1_CATALOG_BASELINE": "/tmp/pa1-sk-retire/consumers/provenance/native-skill-catalog.baseline.json",
+    "PA1_CATALOG_PATH": "/tmp/pa1-sk-retire/consumers/integrations/native-skill-catalog.json",
+    "PA1_LEGACY_ROOT": "/tmp/pa1-sk-retire/runtime/local-coding-worker",
+    "PA1_PC_ROOT": "/home/tumlinson/project-control",
+    "PA1_RECEIVER_ROOT": "/home/tumlinson/project-control/src/project_control/local_runtime",
+    "PA1_RELEASE_CONSUMER": "/tmp/pa1-sk-retire/consumers/integrations/as1_release.py",
+    "PA1_ROLLBACK_ROOT": "/tmp/pa1-sk-retire/rollback",
+    "PA1_SKILLS_ROOT": "/home/tumlinson/.agents/skills",
+    "PA1_TRANSITION_PATH": "/tmp/pa1-sk-retire/runtime-transition.json"
+  },
+  "status": "passed_staged_candidate",
+  "test_file": {
+    "path": "tests/assistance/test_lcw_transition.py",
+    "sha256": "e5431e561dac6686c29a71c334ba011e6a58e0f20a6d529663383cf45dab6ee3"
+  }
+}

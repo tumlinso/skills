@@ -59,10 +59,10 @@ For every serious native kernel, record:
 
 ## Load Next
 
-- `references/addendum-kernel-mechanics.md`
-- `references/addendum-kernel-roofline-lab.md`
-- `references/addendum-ptx-routing.md`
-- `references/common/code-organization.md`
-- `references/architectures/volta/fusion-and-specialization.md`
-- `references/architectures/volta/register-pressure-and-occupancy.md`
-- `references/architectures/volta/native-benchmark-loop.md`
+- [kernel mechanics](../../common/kernel-mechanics.md)
+- [hot kernel](../../profiling/hot-kernel.md)
+- [ptx](../../low-level/ptx.md)
+- [code organization](../../common/code-organization.md)
+- [fusion and specialization](fusion-and-specialization.md)
+- [register pressure and occupancy](register-pressure-and-occupancy.md)
+- [native benchmark loop](native-benchmark-loop.md)

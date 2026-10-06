@@ -2,7 +2,7 @@
 
 > Does operand delivery limit this hot sequence?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** NOT_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
 **Read when:** experiment, register, bank, and, operand-reuse, effects.
 **Prerequisites:** R12. **Evidence:** S04 S05 S11.
 
@@ -23,3 +23,15 @@
 **Related:** C17 M12 M13.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The final campaign contains zero E04 cases (`NOT_RUN`). No E04 outputs or timing samples exist. The restricted register-bank/source-reuse experiment was not dispatched. Implementation boundary: [the execution guide records the restricted E04 gate](../benchmarks/EXECUTION.md#L43). [Measured summary](evidence/v100-20261006/E04.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: No empirical E04 conclusion; adjacent tests do not substitute for this experiment.
+- Design implication (inference): Keep register-bank and operand-reuse effects as open hypotheses pending the required controlled run.
+- Does not establish: Any bank conflict, reuse benefit, occupancy change or causal counter explanation.
+- Original protocol gaps: Restricted B-level edits, controlled operand assignments, binary/resource preservation checks, and dependency-matched schedules were not run.

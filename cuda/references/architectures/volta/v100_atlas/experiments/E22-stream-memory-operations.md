@@ -2,7 +2,7 @@
 
 > Which wait/write semantics are reachable and useful on the installed stack?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E22.md)). **Depth:** 4.
 **Read when:** experiment, stream, memory, operations.
 **Prerequisites:** R12. **Evidence:** S17 S42.
 
@@ -23,3 +23,16 @@
 **Related:** C22 C27 M31.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Six correctness-valid GPU cases compare 32-bit and 64-bit stream-memory operations with an event baseline at two selected workload sizes. The stream-memory path records a CUDA-visible event before its consumer wait and uses a bounded host completion wait. Complete host-measured medians are 1.121–1.140 ms for the stream-memory variants and 1.136–1.141 ms for the event baseline; p95 values span 1.152–1.180 ms. The reported intervals include the selected stream/event sequence and host completion waiting.
+
+[Measured summary](evidence/v100-20261006/E22.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md) · [sync.cu: memop consume/write and event edge](../benchmarks/native/sync.cu#L144)
+
+## Meaning through representation and execution
+
+- **Supports:** Reachability and measured completion of the tested 32/64-bit value protocols under the installed stack and their explicit event ordering.
+- **Design implication (inference):** When an event dependency is already required, include it in the comparison because it is part of the protocol's cost and ordering.
+- **Does not establish:** A material end-to-end win over the event path, standalone wait-instruction latency, or autonomous fabric progress.
+- **Original protocol gaps:** Capability/width combinations, remote flush behavior, batching, and wrap-bound sweeps beyond the selected cases were not measured.

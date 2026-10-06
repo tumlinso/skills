@@ -2,7 +2,7 @@
 
 > Which supported submission mechanism best matches task granularity?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN (subset: bounded finite host/graph/device-side launch pipeline subcase). **Original protocol status:** NOT_RUN_ON_GPU ([archived E32 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E32.md)). **Depth:** 4.
 **Read when:** experiment, launch, graphs, and, cdp.
 **Prerequisites:** R12. **Evidence:** S30 S32 S06.
 
@@ -23,3 +23,18 @@
 **Related:** M32 M33 C25 C28.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Six correctness-passing cases covered sizes 4,096 with 8 stages and 65,536 with 64 stages. Median pipeline times (graph/host-enqueued/device-side child launch) were 0.013312/0.019456/0.099328 ms and 0.113664/0.161280/0.682496 ms, respectively. Nsight Compute replay was omitted for this synchronization/progress-sensitive workload.
+
+Primary scope: [run_e32](../benchmarks/native/transport.cu#L938) implements the host-enqueued, instantiated-graph, and finite child-grid paths.
+
+[Measured summary](evidence/v100-20261006/E32.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** for these two fixed sizes/stage counts, graph replay had the lowest and device-side child launch the highest median of the three tested methods.
+- **Design implication (inference):** choose submission mechanisms against actual stage granularity and launch count; these two observations can guide a targeted follow-up matrix.
+- **Does not establish:** behavior for recursive/dynamic execution, runtime-varying graph parameters, other synchronization patterns, or a general launch-method ranking.
+- **Original protocol gaps:** parameter updates, broader task-size/repetition sweeps, dependency structures, and full host-overhead/device-idle-gap analysis were not covered.

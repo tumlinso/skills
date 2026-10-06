@@ -1,0 +1,207 @@
+{
+  "correctness": {
+    "executed_cases": 3,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E31",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "ncu_replay_safe": false,
+      "nsys_eligible": true,
+      "profile_timeout": 360,
+      "resource_group": "single",
+      "runner": "host",
+      "timeout": 360
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E31-host/artifacts",
+    "controller/E31-host/lease_receipt.json",
+    "controller/E31-host/stderr_path.txt",
+    "controller/E31-host/stdout_path.txt",
+    "controller/E31-nsys-host/artifacts",
+    "controller/E31-nsys-host/lease_receipt.json",
+    "controller/E31-nsys-host/stderr_path.txt",
+    "controller/E31-nsys-host/stdout_path.txt"
+  ],
+  "result_summary": "3 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clients": 1,
+        "device": 0,
+        "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "iterations": 256,
+        "size": 65536
+      },
+      "experiment": "E31",
+      "limitations": [
+        "CUDA profiling/replay is intentionally not used for process-interference samples."
+      ],
+      "metrics": {
+        "elapsed_ms_median": 0.009216000325977802,
+        "elapsed_ms_p95": 0.010239999741315842,
+        "median_ms": 0.009216000325977802,
+        "p95_ms": 0.010239999741315842
+      },
+      "profiles": {
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/8503b6ab-82f3-4b95-9ddd-24c5111ceaa6/nsys/run/report.nsys-rep",
+          "report_bytes": 916482,
+          "sqlite_activity_counts": {
+            "kernels": 180,
+            "memcpy": 10,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 190,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/8503b6ab-82f3-4b95-9ddd-24c5111ceaa6/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 180.0,
+              "launch_pct": 0.43223681755213783,
+              "malloc_free_pct": 99.27571526173581,
+              "memcpy_memset_pct": 0.0986629510049323
+            },
+            "bottleneck_hints": [
+              "allocator-churn"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Warm allocations out of the measured loop or lengthen the steady-state phase, then rerun if timing matters.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator churn dominates the timeline (99.3% of CUDA API time in malloc/free). This run is not a clean steady-state throughput measurement."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 5.7745,
+                "instances": 180,
+                "name": "<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)",
+                "time_pct": 100.0,
+                "total_ms": 1.039413
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "elapsed_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "single_client_baseline"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clients": 2,
+        "device": 0,
+        "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "independent_contexts": true
+      },
+      "experiment": "E31",
+      "limitations": [
+        "Concurrent client latency is interference-sensitive and is not a scheduler fairness guarantee."
+      ],
+      "metrics": {
+        "client_elapsed_ms_median": 0.009216000325977802,
+        "client_elapsed_ms_p95": 0.010239999741315842,
+        "median_ms": 0.009216000325977802,
+        "p95_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "client_elapsed_ms": 60
+      },
+      "status": "GPU_RUN",
+      "variant": "two_separate_contexts"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clients": 2,
+        "device": 0,
+        "gpu_uuid": "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+        "private_pipe": "/tmp/atlas-mps-sl9qzoju",
+        "server_pids": [
+          590139
+        ]
+      },
+      "experiment": "E31",
+      "limitations": [
+        "Private MPS client timing only; MPS scheduler fairness and fault isolation are not established.",
+        "Counter replay is omitted for concurrent clients."
+      ],
+      "metrics": {
+        "client_elapsed_ms_median": 0.009216000325977802,
+        "client_elapsed_ms_p95": 0.01740800030529499,
+        "median_ms": 0.009216000325977802,
+        "p95_ms": 0.01740800030529499
+      },
+      "raw_sample_counts": {
+        "client_elapsed_ms": 60
+      },
+      "status": "GPU_RUN",
+      "variant": "two_private_mps_clients"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

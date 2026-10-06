@@ -2,7 +2,7 @@
 
 > Which dependency and resource limits govern an exact sm70 instruction form?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
 **Read when:** experiment, instruction, latency, versus, throughput.
 **Prerequisites:** R12. **Evidence:** S01 S04 S05 S03.
 
@@ -23,3 +23,15 @@
 **Related:** R02 M16 M17 M47.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The measured unit was consumed uint32 modular addition in one dependent chain or 1/2/4/8 independent accumulators, with a separate `clock64` loop-control case. Eighteen GPU cases passed at iteration counts 32, 256 and 1,024; each event-time case used 30 samples after five warmups. At 1,024 iterations, dependent-add median/p95 were 0.025600/0.025600 ms; independent-8 were 0.027648/0.028672 ms. Event timing includes loop counter, compare and branch; clock reads add work and are not an empty-loop baseline. Implementation: [`run_e02`](../benchmarks/native/logic.cu#L129), [`run_independent`](../benchmarks/native/logic.cu#L103). [Measured summary](evidence/v100-20261006/E02.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: Correctness and whole-kernel timing for the tested integer-add schedule forms and compiled sm_70 loop body.
+- Design implication (inference): Treat dependency count and loop-control cost as part of any follow-up schedule comparison.
+- Does not establish: An isolated single-instruction latency or throughput constant, nor behavior for other instruction families.
+- Original protocol gaps: Other operand forms, memory/SFU/conversion operations, warp-count and register-pressure sweeps, and an executable empty-loop control were not measured.

@@ -1,0 +1,35 @@
+{
+  "add": {
+    "docs/pa1/consumer-stage.json": {
+      "sha256": "359b70c93504fa474a3857086b484a9ac165dc4f1d205826b2170b9de9628ca7"
+    },
+    "docs/pa1/native-skill-catalog.baseline.json": {
+      "sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+    },
+    "docs/pa1/transition-test-receipt.json": {
+      "sha256": "1e93610d1ec139a742aeb1ddb7ed526c169416904dc70038655951223f29215c"
+    },
+    "tests/assistance/test_lcw_transition.py": {
+      "sha256": "e5431e561dac6686c29a71c334ba011e6a58e0f20a6d529663383cf45dab6ee3"
+    }
+  },
+  "format": "pa1-skills-consumer-restore/1",
+  "replace": {
+    "cuda/scripts/qualify_observer_residency.py": {
+      "candidate_sha256": "495ac9ffce5482dc831a4ee9195d3bcd4aac05bb5f698830456345bf613cc222",
+      "source_mode": "0664",
+      "source_sha256": "c3f976e2d8ed3ad7dcec4be97ebcb25a2d65246b3c200b7c2e925248554d31a4"
+    },
+    "integrations/as1_release.py": {
+      "candidate_sha256": "907cc845bca068f84e74af661d9a0bfe9660cb3adb37a90bf9f539093c51c9b6",
+      "source_mode": "0664",
+      "source_sha256": "82643ace13deda0c6a6fb5ad83a084e8e666e057edae04f528aec2d192fb45d6"
+    },
+    "integrations/native-skill-catalog.json": {
+      "candidate_sha256": "a958436708614e76616be408804c088e19d3d4ce2a8e152ec2d40cd0700cad9e",
+      "source_mode": "0664",
+      "source_sha256": "453f904d15bf1d27d95687ca75a3e5c7b40f72af8cf954d9a6f4ba78ea60e6c3"
+    }
+  },
+  "source_root": "/home/tumlinson/.agents/skills"
+}

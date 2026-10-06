@@ -1,0 +1,148 @@
+{
+  "scope": "standalone installed Skills root only; navigation metadata, not routing authority",
+  "entries": [
+    {
+      "name": "cpp-context-compiler",
+      "entry": "cpp-context-compiler/SKILL.md",
+      "sha256": "ad6a88ce98bab68d27372d5858e35ba2eeacfac2ff5a9c579882165bfabc7660",
+      "status": "accessible",
+      "routes": [
+        {
+          "path": "references/retrieval.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/authoring.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/topology.md",
+          "status": "accessible"
+        }
+      ]
+    },
+    {
+      "name": "cuda",
+      "entry": "cuda/SKILL.md",
+      "sha256": "f2dcb1d158c0987e36f1350de0b09fa7bc0ca346924b6f8745779c4b79ec226b",
+      "status": "accessible",
+      "routes": [
+        {
+          "path": "references/common/compute-libraries.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/common/kernel-mechanics.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/workloads/cpu-porting.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/workloads/sparse-bio.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/profiling/hot-kernel.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/profiling/diagnostics-workflow.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/profiling/benchmark-standardization.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/debugging/crash-debugging.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/systems/memory-budgeting.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/systems/host-device-pipeline.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/systems/ddp-topology.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/specialized/torch-extensions.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/specialized/nvhpc.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/low-level/ptx.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/architectures/volta/router.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/architectures/volta/tensor-cores.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/architectures/ampere/router.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/architectures/hopper/router.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/architectures/blackwell/router.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/systems/native.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/systems/gb200-nvl72.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/execution/host-execution.md",
+          "status": "accessible"
+        },
+        {
+          "path": "references/common/code-organization.md",
+          "status": "accessible"
+        }
+      ]
+    },
+    {
+      "name": "local-coding-worker",
+      "entry": "local-coding-worker/SKILL.md",
+      "sha256": "76942813b74d053afe290724878bd9d24fd1ab2e5e14b685c1ab1fc08b9c5c27",
+      "status": "accessible",
+      "routes": [
+        {
+          "path": "references/observer-port.md",
+          "status": "accessible"
+        }
+      ]
+    },
+    {
+      "name": "todo-orchestrator",
+      "entry": "todo-orchestrator/SKILL.md",
+      "sha256": "0947d87f4ee1d0335460e14423ea712a68d52d8c1503e04dc21927c877a29ddb",
+      "status": "accessible",
+      "routes": []
+    }
+  ],
+  "external_dependencies": [],
+  "unsupported": [
+    "Unregistered external skill roots are not included; no inferred MANIFEST default coverage."
+  ]
+}

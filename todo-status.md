@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1011`
+Project revision: `1031`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -83,7 +83,7 @@ Project revision: `1011`
 - `PCU-SK-32` | status: done | execution: closed | next: Install the validated candidate, make project-control the sole Codex MCP, switch observer service to the pin, verify health/shared authority, and automatically restore prior state on failure; exclude downstream migration and deletion.
 - `SK-AS1-CAPABILITY-PUBLICATION` | status: done | execution: closed | next: Implement authenticated opaque-handle semantic publication with canonical in-transaction role, active claim, ownership and source checks, disposable native fixtures, root-reviewed boundary, and paired PC surface handoff.
 - `SK-AS1-GPU` | status: done | execution: closed | next: Read SK-AS1-GPU in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
-- `SK-AS1-INQUIRY-CACHE` | status: in_progress | execution: claimed | next: Implement assigned scoped changes with Codex subagents, root integration and acceptance.
+- `SK-AS1-INQUIRY-CACHE` | status: attention_required | execution: attention_required | next: Implement assigned scoped changes with Codex subagents, root integration and acceptance.
 - `SK-AS1-OBSERVER-CONTINUATION` | status: done | execution: closed | next: Use retained public observations as continuation state; initial command recommendation only before first observations; exact installed entry example; model decides evidence sufficiency and native skill references. Test initial/continuation/resumed states and immutable bounds, then paired real inference.
 - `SK-AS1-OBSERVER-CONVERSATION` | status: done | execution: closed | next: Record actual accepted public tool-call JSON in observations and replay assistant call/user result conversation from durable checkpoints; bounded no hidden reasoning, no forced source rereads or routing policy. Qualify short actual read-answer before full paired journey.
 - `SK-AS1-OBSERVER-ENTRY` | status: done | execution: closed | next: Reject pre-entry calls before dispatch with packetized actionable feedback; model reads exact installed entry and follows its own references. Preserve bounded attempts, strict JSON, roots, source verification, preemption.
@@ -96,10 +96,13 @@ Project revision: `1011`
 - `SK-AS1-SEMANTICS` | status: done | execution: closed | next: Read SK-AS1-SEMANTICS in planning/adaptive-surface-v1/planning/outcomes.json. Verify producer receipts and pass every required case.
 - `SK-AS1-SOURCE-FENCE` | status: done | execution: closed | next: Route all anchored source verification through the startup-owned verifier when present, qualify local/foreign denial and no-verifier fallback in disposable fixtures, and return source-bound receipt for PC CONTROL.
 - `SK-AS1-SOURCE-FRESHNESS` | status: done | execution: closed | next: Correct the reproduced source-backed local orientation freshness regression and qualify paired PC control against exact final source.
+- `SK-MOM-RECOVERY-001` | status: planned | execution: ready | next: Fix the concrete moments producer completion/recovery blocker without accepting material dirt or modifying global installed runtime. Qualify the fix and use it only through the reviewed development maintenance CLI.
+- `SK-PA1-HANDOFF` | status: done | execution: closed | next: Inventory runtime files, policies, consumers and source identities required for Project Control ownership; preserve active Skills edits and domain guidance. Produce an auditable handoff without enabling dormant coding or deleting the supplier prematurely.
 - `SK-PCE2-COLLABORATE` | status: planned | execution: ready | next: Read SK-PCE2-COLLABORATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-MAINTAIN` | status: planned | execution: ready | next: Read SK-PCE2-MAINTAIN in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `SK-PCE2-OPERATE` | status: in_progress | execution: idle | next: Read SK-PCE2-OPERATE in planning/pce2/machine/outcomes.json; use the source anchors and choose an economical implementation.
 - `WFU-30` | status: done | execution: closed | next: Run all existing and new unit/integration suites and execute the complete disposable parallel-run dogfood scenario with machine-readable evidence, including lane serialization, parent-mediated local delegation, rendezvous, workspace integration/conflict, recovery, bounded context, and secret exclusion.
+- `SK-PA1-RETIRE` | status: done | execution: closed | next: After receiver parity, repoint authorized consumers and catalog/bootstrap guidance, keep one canonical runtime, and retain historical/dormant coding material with truthful status. Preserve Todo/CUDA/ctxpp behavior and verified release identities.
 - `CWM-01` | status: done | execution: closed | next: Build the official-SDK stdio server skeleton, public-CLI backend, compact normalization, secure concurrent capability store, and bounded diagnostics.
 - `CWM-02` | status: done | execution: closed | next: Implement next_task, inspect_task, delegate_task, collect_delegation, and finish_task with concise schemas, server instructions, annotations, secret redaction, and strict output budgets.
 - `CWM-03` | status: done | execution: closed | next: Using fake public backends, prove two local slots, immediate fallback for additional Codex agents, no child/scope on unavailable admission, nonblocking collection, and later slot reuse.
@@ -110,6 +113,8 @@ Project revision: `1011`
 - `CWM-06` | status: done | execution: closed | next: Run the complete small MCP suite, validate exact five-tool discovery through stdio and Codex, enforce schema/output budgets, produce compact release evidence, install the server, and leave a clean integration branch ready to merge.
 - `SK-WF2A-0000` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 - `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
+- `SK-PA1-0000` | status: done | execution: closed | next: Aggregate the verified outcome results; this record is not an initial coordinator gate. Complete last after the outcome and cross-authority evidence is accepted.
 - `SK-AS1-0000` | status: done | execution: closed | next: Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.
+- `SK-CUDA-ATLAS-MERGE` | status: planned | execution: ready | next: Import and verify atlas content, implement atlas-local sync and integration checks, update only the declared skill/index files, and record source identity plus validation evidence.
 - `SK-PCE2-0000` | status: planned | execution: inactive | next: Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.
 <!-- todo-orchestrator:v2-managed:end -->

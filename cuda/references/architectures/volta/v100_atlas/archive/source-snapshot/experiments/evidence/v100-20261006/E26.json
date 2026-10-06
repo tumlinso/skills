@@ -1,0 +1,518 @@
+{
+  "correctness": {
+    "executed_cases": 8,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E26",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 8,
+          "size": 4096
+        },
+        {
+          "iterations": 32,
+          "size": 65536
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_memory"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E26-memcheck-0/artifacts",
+    "controller/E26-memcheck-0/lease_receipt.json",
+    "controller/E26-memcheck-0/stderr_path.txt",
+    "controller/E26-memcheck-0/stdout_path.txt",
+    "controller/E26-ncu-0/artifacts",
+    "controller/E26-ncu-0/lease_receipt.json",
+    "controller/E26-ncu-0/stderr_path.txt",
+    "controller/E26-ncu-0/stdout_path.txt",
+    "controller/E26-nsys-0/artifacts",
+    "controller/E26-nsys-0/lease_receipt.json",
+    "controller/E26-nsys-0/stderr_path.txt",
+    "controller/E26-nsys-0/stdout_path.txt",
+    "controller/E26-timing-0/artifacts",
+    "controller/E26-timing-0/lease_receipt.json",
+    "controller/E26-timing-0/stderr_path.txt",
+    "controller/E26-timing-0/stdout_path.txt",
+    "controller/E26-timing-1/artifacts",
+    "controller/E26-timing-1/lease_receipt.json",
+    "controller/E26-timing-1/stderr_path.txt",
+    "controller/E26-timing-1/stdout_path.txt",
+    "controller/E26-verify-0/artifacts",
+    "controller/E26-verify-0/lease_receipt.json",
+    "controller/E26-verify-0/stderr_path.txt",
+    "controller/E26-verify-0/stdout_path.txt",
+    "controller/E26-verify-1/artifacts",
+    "controller/E26-verify-1/lease_receipt.json",
+    "controller/E26-verify-1/stderr_path.txt",
+    "controller/E26-verify-1/stdout_path.txt"
+  ],
+  "result_summary": "8 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000002",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "4097",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.005119999870657921,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 4097,
+        "max_absolute_error_vs_cpu_double": 7.649371125406645e-08,
+        "median_ms": 0.005119999870657921,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 1.9847297463641226e-08
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "sinf_reference"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000002",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "4097",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.005119999870657921,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 4097,
+        "max_absolute_error_vs_cpu_double": 3.0180998888962307e-07,
+        "median_ms": 0.005119999870657921,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 8.971399031603459e-08
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "sfu_sinf"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000100",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "4097",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.005119999870657921,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 4097,
+        "max_absolute_error_vs_cpu_double": 4.742426511938902e-06,
+        "median_ms": 0.005119999870657921,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 2.4183740300133433e-06
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "manual_linear_table"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000100",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "4097",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.006144000217318535,
+        "device_ms_p95": 0.013344000093638897,
+        "evaluations": 4097,
+        "max_absolute_error_vs_cpu_double": 4.718050865659684e-06,
+        "median_ms": 0.006144000217318535,
+        "p95_ms": 0.013344000093638897,
+        "rms_error_vs_cpu_double": 2.417679300535252e-06
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/20f550d5-8660-4f94-985e-db73621ab3b1/ncu/run/raw.csv",
+          "raw_csv_bytes": 105379,
+          "raw_csv_rows": 53,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/20f550d5-8660-4f94-985e-db73621ab3b1/ncu/run/report.ncu-rep",
+          "report_bytes": 690770,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.7419286247863246,
+              "name": "<unnamed>::evaluate_sinf(const float *, float *, unsigned long, bool)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 20.0,
+              "samples": 26,
+              "share_pct": 45.4192546583851,
+              "sm_pct": 0.46464541367521356,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.7419286247863246,
+                "name": "<unnamed>::evaluate_sinf(const float *, float *, unsigned long, bool)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 20.0,
+                "samples": 26,
+                "share_pct": 45.4192546583851,
+                "sm_pct": 0.46464541367521356,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 1.042441370093458,
+                "name": "<unnamed>::evaluate_texture(const float *, float *, unsigned long, unsigned long long, unsigned int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 24.000000000000004,
+                "samples": 13,
+                "share_pct": 31.152950310559007,
+                "sm_pct": 0.48262455264797516,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.8436244001657,
+                "name": "<unnamed>::evaluate_lut(const float *, float *, unsigned long, const float *, unsigned int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 24.000000000000004,
+                "samples": 13,
+                "share_pct": 23.4277950310559,
+                "sm_pct": 0.5796964730737364,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ec7520a5-7630-4bb4-bbf7-92ec5021857f/nsys/run/report.nsys-rep",
+          "report_bytes": 259176,
+          "sqlite_activity_counts": {
+            "kernels": 140,
+            "memcpy": 10,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 150,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ec7520a5-7630-4bb4-bbf7-92ec5021857f/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 140.0,
+              "launch_pct": 36.8667523153334,
+              "malloc_free_pct": 19.709373652214598,
+              "memcpy_memset_pct": 5.3527978310465745
+            },
+            "bottleneck_hints": [
+              "launch-overhead"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": false,
+            "next_step": "Use the paired Nsight Compute run on the hottest steady-state kernel.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Kernel launches are visible (36.9% of CUDA API time). If the kernels are individually short, consider fusion or CUDA Graph capture."
+            ],
+            "recommended_route": "graphs",
+            "recommended_route_reason": "Short stable kernels suggest graphs or grouped launches after fusion triage.",
+            "status": "ok",
+            "steady_state_timing_valid": true,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.5209000000000001,
+                "instances": 70,
+                "name": "<unnamed>::evaluate_sinf(const float *, float *, unsigned long, bool)",
+                "time_pct": 45.2,
+                "total_ms": 0.106463
+              },
+              {
+                "avg_us": 2.0178,
+                "instances": 35,
+                "name": "<unnamed>::evaluate_texture(const float *, float *, unsigned long, unsigned long long, unsigned int)",
+                "time_pct": 30.0,
+                "total_ms": 0.070623
+              },
+              {
+                "avg_us": 1.6677,
+                "instances": 35,
+                "name": "<unnamed>::evaluate_lut(const float *, float *, unsigned long, const float *, unsigned int)",
+                "time_pct": 24.8,
+                "total_ms": 0.058368
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "texture_linear"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000002",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "65536",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.006144000217318535,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 65536,
+        "max_absolute_error_vs_cpu_double": 7.597678486348514e-08,
+        "median_ms": 0.006144000217318535,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 2.0307433184215677e-08
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "sinf_reference"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000002",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "65536",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.005119999870657921,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 65536,
+        "max_absolute_error_vs_cpu_double": 3.398721484249023e-07,
+        "median_ms": 0.005119999870657921,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 9.572235030101378e-08
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "sfu_sinf"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000100",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "65536",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.006144000217318535,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 65536,
+        "max_absolute_error_vs_cpu_double": 4.748357217088106e-06,
+        "median_ms": 0.006144000217318535,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 2.428079022401315e-06
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "manual_linear_table"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "absolute_error_tolerance": "0.000100",
+        "device": "0",
+        "domain": "[-pi, pi] inclusive",
+        "input_points": "65536",
+        "repeats": "30",
+        "table_samples": "1025",
+        "warmup": "5"
+      },
+      "experiment": "E26",
+      "limitations": [
+        "The finite uniform corpus includes endpoints and extrema but is not a proof of the global error bound or derivative error.",
+        "Texture interpolation reflects the CUDA texture-object path only; graphics-engine access is not assumed.",
+        "The CPU double-precision sine is the oracle; measured error includes input conversion to float."
+      ],
+      "metrics": {
+        "device_ms_median": 0.006144000217318535,
+        "device_ms_p95": 0.006144000217318535,
+        "evaluations": 65536,
+        "max_absolute_error_vs_cpu_double": 1.2549568368935837e-05,
+        "median_ms": 0.006144000217318535,
+        "p95_ms": 0.006144000217318535,
+        "rms_error_vs_cpu_double": 5.571417248082407e-06
+      },
+      "raw_sample_counts": {
+        "device_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "texture_linear"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

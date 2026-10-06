@@ -1,0 +1,887 @@
+{
+  "correctness": {
+    "executed_cases": 18,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E02",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 32,
+          "size": 1024
+        },
+        {
+          "iterations": 256,
+          "size": 65536
+        },
+        {
+          "iterations": 1024,
+          "size": 262144
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_logic"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E02-memcheck-0/artifacts",
+    "controller/E02-memcheck-0/lease_receipt.json",
+    "controller/E02-memcheck-0/stderr_path.txt",
+    "controller/E02-memcheck-0/stdout_path.txt",
+    "controller/E02-ncu-0/artifacts",
+    "controller/E02-ncu-0/lease_receipt.json",
+    "controller/E02-ncu-0/stderr_path.txt",
+    "controller/E02-ncu-0/stdout_path.txt",
+    "controller/E02-nsys-0/artifacts",
+    "controller/E02-nsys-0/lease_receipt.json",
+    "controller/E02-nsys-0/stderr_path.txt",
+    "controller/E02-nsys-0/stdout_path.txt",
+    "controller/E02-timing-0/artifacts",
+    "controller/E02-timing-0/lease_receipt.json",
+    "controller/E02-timing-0/stderr_path.txt",
+    "controller/E02-timing-0/stdout_path.txt",
+    "controller/E02-timing-1/artifacts",
+    "controller/E02-timing-1/lease_receipt.json",
+    "controller/E02-timing-1/stderr_path.txt",
+    "controller/E02-timing-1/stdout_path.txt",
+    "controller/E02-timing-2/artifacts",
+    "controller/E02-timing-2/lease_receipt.json",
+    "controller/E02-timing-2/stderr_path.txt",
+    "controller/E02-timing-2/stdout_path.txt",
+    "controller/E02-verify-0/artifacts",
+    "controller/E02-verify-0/lease_receipt.json",
+    "controller/E02-verify-0/stderr_path.txt",
+    "controller/E02-verify-0/stdout_path.txt",
+    "controller/E02-verify-1/artifacts",
+    "controller/E02-verify-1/lease_receipt.json",
+    "controller/E02-verify-1/stderr_path.txt",
+    "controller/E02-verify-1/stdout_path.txt",
+    "controller/E02-verify-2/artifacts",
+    "controller/E02-verify-2/lease_receipt.json",
+    "controller/E02-verify-2/stderr_path.txt",
+    "controller/E02-verify-2/stdout_path.txt"
+  ],
+  "result_summary": "18 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "uint32 modular addition; serial dependent chain consumed",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "One integer add instruction form; no memory, SFU, conversion or register-pressure sweep.",
+        "sm_70 SASS loop body retains one dependent IADD3 per iteration plus loop-counter IADD3, ISETP compare and conditional BRA; event timing is a whole-kernel chain measurement, not isolated single-add latency. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "dependent_add"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clock_reads_per_thread": "32",
+        "device": "0",
+        "iterations": "32",
+        "launched_threads": "1024",
+        "logical_threads": "1024",
+        "purpose": "clock-read loop-control characterization; not a pure empty-loop baseline",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "per-iteration clock64 samples; every launch thread's clock delta is checked for progress and boundedness",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Clock reads add an instruction and observer work to each loop; this is not an empty-loop or directly subtractable add-latency baseline."
+      ],
+      "metrics": {
+        "clock64_max_delta_cycles": 1054,
+        "clock64_median_delta_cycles": 1054,
+        "clock64_min_delta_cycles": 1054,
+        "clock64_progress_failures": 0,
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "loop_control_clock_read"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "1",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_1"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "2",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "4",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_4"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "8",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1024",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1024,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/5be7f4d0-fc5c-48a4-994d-626123c8d50c/ncu/run/raw.csv",
+          "raw_csv_bytes": 160518,
+          "raw_csv_rows": 85,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/5be7f4d0-fc5c-48a4-994d-626123c8d50c/ncu/run/report.ncu-rep",
+          "report_bytes": 1101220,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.053957073226544625,
+              "name": "<unnamed>::loop_control_clock_kernel(unsigned long *, int, unsigned int)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 16.0,
+              "samples": 14,
+              "share_pct": 17.689920388611526,
+              "sm_pct": 0.863217406559878,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.053957073226544625,
+                "name": "<unnamed>::loop_control_clock_kernel(unsigned long *, int, unsigned int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 17.689920388611526,
+                "sm_pct": 0.863217406559878,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.0566906060848679,
+                "name": "void <unnamed>::independent_add_kernel<8>(unsigned int *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 16.85332613682364,
+                "sm_pct": 1.8288386757405928,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.058385084634346746,
+                "name": "void <unnamed>::independent_add_kernel<4>(unsigned int *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 16.4215355552557,
+                "sm_pct": 1.1317544083812654,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.04799501070840198,
+                "name": "void <unnamed>::independent_add_kernel<2>(unsigned int *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 16.381055188233706,
+                "sm_pct": 0.7598447981878091,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.048242273701566384,
+                "name": "<unnamed>::dependent_add_kernel(unsigned int *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 16.367561732559707,
+                "sm_pct": 0.5729017922506183,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/64c37130-451d-47ec-af75-b3731c06eb6d/nsys/run/report.nsys-rep",
+          "report_bytes": 268041,
+          "sqlite_activity_counts": {
+            "kernels": 216,
+            "memcpy": 6,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 222,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/64c37130-451d-47ec-af75-b3731c06eb6d/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 216.0,
+              "launch_pct": 0.9901296401321129,
+              "malloc_free_pct": 97.9728151367641,
+              "memcpy_memset_pct": 0.06500900370874442
+            },
+            "bottleneck_hints": [
+              "allocator-churn"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Warm allocations out of the measured loop or lengthen the steady-state phase, then rerun if timing matters.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator churn dominates the timeline (98.0% of CUDA API time in malloc/free). This run is not a clean steady-state throughput measurement."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 2.1929000000000003,
+                "instances": 36,
+                "name": "void <unnamed>::independent_add_kernel<(int)2>(unsigned int *, int)",
+                "time_pct": 18.4,
+                "total_ms": 0.078944
+              },
+              {
+                "avg_us": 2.1084,
+                "instances": 36,
+                "name": "<unnamed>::loop_control_clock_kernel(unsigned long *, int, unsigned int)",
+                "time_pct": 17.7,
+                "total_ms": 0.075903
+              },
+              {
+                "avg_us": 1.9662,
+                "instances": 36,
+                "name": "void <unnamed>::independent_add_kernel<(int)8>(unsigned int *, int)",
+                "time_pct": 16.5,
+                "total_ms": 0.070783
+              },
+              {
+                "avg_us": 1.8898,
+                "instances": 36,
+                "name": "<unnamed>::dependent_add_kernel(unsigned int *, int)",
+                "time_pct": 15.9,
+                "total_ms": 0.068031
+              },
+              {
+                "avg_us": 1.8773,
+                "instances": 36,
+                "name": "void <unnamed>::independent_add_kernel<(int)4>(unsigned int *, int)",
+                "time_pct": 15.8,
+                "total_ms": 0.067584
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "256",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; serial dependent chain consumed",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "One integer add instruction form; no memory, SFU, conversion or register-pressure sweep.",
+        "sm_70 SASS loop body retains one dependent IADD3 per iteration plus loop-counter IADD3, ISETP compare and conditional BRA; event timing is a whole-kernel chain measurement, not isolated single-add latency. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.010239999741315842,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.010239999741315842,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "dependent_add"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clock_reads_per_thread": "256",
+        "device": "0",
+        "iterations": "256",
+        "launched_threads": "4096",
+        "logical_threads": "4096",
+        "purpose": "clock-read loop-control characterization; not a pure empty-loop baseline",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "per-iteration clock64 samples; every launch thread's clock delta is checked for progress and boundedness",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Clock reads add an instruction and observer work to each loop; this is not an empty-loop or directly subtractable add-latency baseline."
+      ],
+      "metrics": {
+        "clock64_max_delta_cycles": 8670,
+        "clock64_median_delta_cycles": 8670,
+        "clock64_min_delta_cycles": 8670,
+        "clock64_progress_failures": 0,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.011264000087976456,
+        "event_ms_p95": 0.011264000087976456,
+        "median_event_ms": 0.011264000087976456,
+        "p95_event_ms": 0.011264000087976456
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "loop_control_clock_read"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "1",
+        "device": "0",
+        "iterations": "256",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.010239999741315842,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.010239999741315842,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_1"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "2",
+        "device": "0",
+        "iterations": "256",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.010239999741315842,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.010239999741315842,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "4",
+        "device": "0",
+        "iterations": "256",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.010239999741315842,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.010239999741315842,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_4"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "8",
+        "device": "0",
+        "iterations": "256",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.010239999741315842,
+        "event_ms_p95": 0.011264000087976456,
+        "median_event_ms": 0.010239999741315842,
+        "p95_event_ms": 0.011264000087976456
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1024",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; serial dependent chain consumed",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "One integer add instruction form; no memory, SFU, conversion or register-pressure sweep.",
+        "sm_70 SASS loop body retains one dependent IADD3 per iteration plus loop-counter IADD3, ISETP compare and conditional BRA; event timing is a whole-kernel chain measurement, not isolated single-add latency. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.025599999353289604,
+        "event_ms_p95": 0.025599999353289604,
+        "median_event_ms": 0.025599999353289604,
+        "p95_event_ms": 0.025599999353289604
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "dependent_add"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "clock_reads_per_thread": "1024",
+        "device": "0",
+        "iterations": "1024",
+        "launched_threads": "4096",
+        "logical_threads": "4096",
+        "purpose": "clock-read loop-control characterization; not a pure empty-loop baseline",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "per-iteration clock64 samples; every launch thread's clock delta is checked for progress and boundedness",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Clock reads add an instruction and observer work to each loop; this is not an empty-loop or directly subtractable add-latency baseline."
+      ],
+      "metrics": {
+        "clock64_max_delta_cycles": 34782,
+        "clock64_median_delta_cycles": 34782,
+        "clock64_min_delta_cycles": 34782,
+        "clock64_progress_failures": 0,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.03174399957060814,
+        "event_ms_p95": 0.03174399957060814,
+        "median_event_ms": 0.03174399957060814,
+        "p95_event_ms": 0.03174399957060814
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "loop_control_clock_read"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "1",
+        "device": "0",
+        "iterations": "1024",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.025599999353289604,
+        "event_ms_p95": 0.025599999353289604,
+        "median_event_ms": 0.025599999353289604,
+        "p95_event_ms": 0.025599999353289604
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_1"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "2",
+        "device": "0",
+        "iterations": "1024",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.025599999353289604,
+        "event_ms_p95": 0.025599999353289604,
+        "median_event_ms": 0.025599999353289604,
+        "p95_event_ms": 0.025599999353289604
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "4",
+        "device": "0",
+        "iterations": "1024",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.025599999353289604,
+        "event_ms_p95": 0.025599999353289604,
+        "median_event_ms": 0.025599999353289604,
+        "p95_event_ms": 0.025599999353289604
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_4"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "chains": "8",
+        "device": "0",
+        "iterations": "1024",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular addition; all accumulators consumed by sum",
+        "warmup": "5"
+      },
+      "experiment": "E02",
+      "limitations": [
+        "Single add form and fixed 128-thread blocks only; operand forms, register-pressure and warp-count sweep remain unimplemented.",
+        "sm_70 SASS loop body retains N independent IADD3 updates plus loop-counter IADD3, ISETP compare and conditional BRA; event timing includes this control work and does not subtract an executable empty-loop baseline. Static @!PT SHFL.IDX placeholder is unconditionally predicated off."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.027648000046610832,
+        "event_ms_p95": 0.028672000393271446,
+        "median_event_ms": 0.027648000046610832,
+        "p95_event_ms": 0.028672000393271446
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "independent_add_8"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

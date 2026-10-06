@@ -1,0 +1,552 @@
+{
+  "correctness": {
+    "executed_cases": 8,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E03",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 16,
+          "size": 4096
+        },
+        {
+          "iterations": 256,
+          "size": 65536
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_logic"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E03-memcheck-0/artifacts",
+    "controller/E03-memcheck-0/lease_receipt.json",
+    "controller/E03-memcheck-0/stderr_path.txt",
+    "controller/E03-memcheck-0/stdout_path.txt",
+    "controller/E03-ncu-0/artifacts",
+    "controller/E03-ncu-0/lease_receipt.json",
+    "controller/E03-ncu-0/stderr_path.txt",
+    "controller/E03-ncu-0/stdout_path.txt",
+    "controller/E03-nsys-0/artifacts",
+    "controller/E03-nsys-0/lease_receipt.json",
+    "controller/E03-nsys-0/stderr_path.txt",
+    "controller/E03-nsys-0/stdout_path.txt",
+    "controller/E03-timing-0/artifacts",
+    "controller/E03-timing-0/lease_receipt.json",
+    "controller/E03-timing-0/stderr_path.txt",
+    "controller/E03-timing-0/stdout_path.txt",
+    "controller/E03-timing-1/artifacts",
+    "controller/E03-timing-1/lease_receipt.json",
+    "controller/E03-timing-1/stderr_path.txt",
+    "controller/E03-timing-1/stdout_path.txt",
+    "controller/E03-verify-0/artifacts",
+    "controller/E03-verify-0/lease_receipt.json",
+    "controller/E03-verify-0/stderr_path.txt",
+    "controller/E03-verify-0/stdout_path.txt",
+    "controller/E03-verify-1/artifacts",
+    "controller/E03-verify-1/lease_receipt.json",
+    "controller/E03-verify-1/stderr_path.txt",
+    "controller/E03-verify-1/stdout_path.txt"
+  ],
+  "result_summary": "8 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "0",
+        "integer_work": "16",
+        "iterations": "16",
+        "launched_fp_work_units": "0",
+        "launched_integer_work_units": "65536",
+        "launched_threads": "4096",
+        "launched_total_work_units": "65536",
+        "logical_threads": "4096",
+        "repeats": "30",
+        "requested_size": "4096",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 16,
+        "actual_launched_threads": 4096,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "launched_fp_work_units": 0,
+        "launched_integer_work_units": 65536,
+        "launched_total_work_units": 65536,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "int_isolated"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "16",
+        "integer_work": "0",
+        "iterations": "16",
+        "launched_fp_work_units": "65536",
+        "launched_integer_work_units": "0",
+        "launched_threads": "4096",
+        "launched_total_work_units": "65536",
+        "logical_threads": "4096",
+        "repeats": "30",
+        "requested_size": "4096",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 16,
+        "actual_launched_threads": 4096,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "launched_fp_work_units": 65536,
+        "launched_integer_work_units": 0,
+        "launched_total_work_units": 65536,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "fp_isolated"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "16",
+        "integer_work": "16",
+        "iterations": "16",
+        "launched_fp_work_units": "65536",
+        "launched_integer_work_units": "65536",
+        "launched_threads": "4096",
+        "launched_total_work_units": "131072",
+        "logical_threads": "4096",
+        "repeats": "30",
+        "requested_size": "4096",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 16,
+        "actual_launched_threads": 4096,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.01945599913597107,
+        "launched_fp_work_units": 65536,
+        "launched_integer_work_units": 65536,
+        "launched_total_work_units": 131072,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.01945599913597107
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "serial"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "16",
+        "integer_work": "16",
+        "iterations": "16",
+        "launched_fp_work_units": "65536",
+        "launched_integer_work_units": "65536",
+        "launched_threads": "4096",
+        "launched_total_work_units": "131072",
+        "logical_threads": "4096",
+        "repeats": "30",
+        "requested_size": "4096",
+        "seed": "20261006",
+        "size": "4096",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 16,
+        "actual_launched_threads": 4096,
+        "correctness_checked_threads": 4096,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "launched_fp_work_units": 65536,
+        "launched_integer_work_units": 65536,
+        "launched_total_work_units": 131072,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/676134f3-525b-4cd6-abb1-4960e189ef5d/ncu/run/raw.csv",
+          "raw_csv_bytes": 110958,
+          "raw_csv_rows": 57,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/676134f3-525b-4cd6-abb1-4960e189ef5d/ncu/run/report.ncu-rep",
+          "report_bytes": 791041,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.11593395024104682,
+              "name": "<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 16.0,
+              "samples": 56,
+              "share_pct": 100.0,
+              "sm_pct": 0.6879503507231406,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.11593395024104682,
+                "name": "<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 56,
+                "share_pct": 100.0,
+                "sm_pct": 0.6879503507231406,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/d0e2aed4-4504-433f-9289-7d375e0460e4/nsys/run/report.nsys-rep",
+          "report_bytes": 260237,
+          "sqlite_activity_counts": {
+            "kernels": 144,
+            "memcpy": 8,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 152,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/d0e2aed4-4504-433f-9289-7d375e0460e4/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 144.0,
+              "launch_pct": 0.7438535549760183,
+              "malloc_free_pct": 98.48691906561555,
+              "memcpy_memset_pct": 0.0943043245532217
+            },
+            "bottleneck_hints": [
+              "allocator-churn"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Warm allocations out of the measured loop or lengthen the steady-state phase, then rerun if timing matters.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator churn dominates the timeline (98.5% of CUDA API time in malloc/free). This run is not a clean steady-state throughput measurement."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.5551,
+                "instances": 144,
+                "name": "<unnamed>::pipeline_kernel(unsigned int *, float *, int, int)",
+                "time_pct": 100.0,
+                "total_ms": 0.223936
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "interleaved"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "0",
+        "integer_work": "256",
+        "iterations": "256",
+        "launched_fp_work_units": "0",
+        "launched_integer_work_units": "16777216",
+        "launched_threads": "65536",
+        "launched_total_work_units": "16777216",
+        "logical_threads": "65536",
+        "repeats": "30",
+        "requested_size": "65536",
+        "seed": "20261006",
+        "size": "65536",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 256,
+        "actual_launched_threads": 65536,
+        "correctness_checked_threads": 65536,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.0071680000983178616,
+        "launched_fp_work_units": 0,
+        "launched_integer_work_units": 16777216,
+        "launched_total_work_units": 16777216,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.0071680000983178616
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "int_isolated"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "256",
+        "integer_work": "0",
+        "iterations": "256",
+        "launched_fp_work_units": "16777216",
+        "launched_integer_work_units": "0",
+        "launched_threads": "65536",
+        "launched_total_work_units": "16777216",
+        "logical_threads": "65536",
+        "repeats": "30",
+        "requested_size": "65536",
+        "seed": "20261006",
+        "size": "65536",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 256,
+        "actual_launched_threads": 65536,
+        "correctness_checked_threads": 65536,
+        "event_ms_median": 0.008191999979317188,
+        "event_ms_p95": 0.01945599913597107,
+        "launched_fp_work_units": 16777216,
+        "launched_integer_work_units": 0,
+        "launched_total_work_units": 16777216,
+        "median_event_ms": 0.008191999979317188,
+        "p95_event_ms": 0.01945599913597107
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "fp_isolated"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "256",
+        "integer_work": "256",
+        "iterations": "256",
+        "launched_fp_work_units": "16777216",
+        "launched_integer_work_units": "16777216",
+        "launched_threads": "65536",
+        "launched_total_work_units": "33554432",
+        "logical_threads": "65536",
+        "repeats": "30",
+        "requested_size": "65536",
+        "seed": "20261006",
+        "size": "65536",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 256,
+        "actual_launched_threads": 65536,
+        "correctness_checked_threads": 65536,
+        "event_ms_median": 0.009216000325977802,
+        "event_ms_p95": 0.009216000325977802,
+        "launched_fp_work_units": 16777216,
+        "launched_integer_work_units": 16777216,
+        "launched_total_work_units": 33554432,
+        "median_event_ms": 0.009216000325977802,
+        "p95_event_ms": 0.009216000325977802
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "serial"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "fp_work": "256",
+        "integer_work": "256",
+        "iterations": "256",
+        "launched_fp_work_units": "16777216",
+        "launched_integer_work_units": "16777216",
+        "launched_threads": "65536",
+        "launched_total_work_units": "33554432",
+        "logical_threads": "65536",
+        "repeats": "30",
+        "requested_size": "65536",
+        "seed": "20261006",
+        "size": "65536",
+        "verification": "uint32 modular adds and IEEE single-precision fmaf; both results retained",
+        "warmup": "5"
+      },
+      "experiment": "E03",
+      "limitations": [
+        "Representative integer-add plus FP32-FMA only; tensor, conversion, load and work-ratio/live-register sweeps remain unimplemented."
+      ],
+      "metrics": {
+        "actual_iterations_per_working_thread": 256,
+        "actual_launched_threads": 65536,
+        "correctness_checked_threads": 65536,
+        "event_ms_median": 0.008191999979317188,
+        "event_ms_p95": 0.009216000325977802,
+        "launched_fp_work_units": 16777216,
+        "launched_integer_work_units": 16777216,
+        "launched_total_work_units": 33554432,
+        "median_event_ms": 0.008191999979317188,
+        "p95_event_ms": 0.009216000325977802
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "interleaved"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

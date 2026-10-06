@@ -1,0 +1,737 @@
+{
+  "schema_version": 1,
+  "seed": 20261006,
+  "sweeps": {
+    "smoke": {
+      "size": 4096,
+      "iterations": 8,
+      "warmups": 0,
+      "repeats": 1
+    },
+    "full": {
+      "size": 65536,
+      "iterations": 128,
+      "warmups": 5,
+      "repeats": 30
+    }
+  },
+  "notes": [
+    "Full mode uses the same finite case matrix for each experiment; module-specific cases below add boundary sizes and declared reuse points.",
+    "Smoke mode runs one deterministic verification case and is a correctness diagnostic, not a performance result.",
+    "All random inputs use the fixed campaign seed. Sizes include warp/tile boundaries and nonmultiples where module contracts permit."
+  ],
+  "experiments": {
+    "E00": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E01": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E02": {
+      "target": "atlas_logic",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 1024,
+          "iterations": 32
+        },
+        {
+          "size": 65536,
+          "iterations": 256
+        },
+        {
+          "size": 262144,
+          "iterations": 1024
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E03": {
+      "target": "atlas_logic",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 16
+        },
+        {
+          "size": 65536,
+          "iterations": 256
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E05": {
+      "target": "atlas_logic",
+      "sanitizer": "shared",
+      "cases": [
+        {
+          "size": 31,
+          "iterations": 8
+        },
+        {
+          "size": 32,
+          "iterations": 8
+        },
+        {
+          "size": 65,
+          "iterations": 8
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E06": {
+      "target": "atlas_logic",
+      "sanitizer": "shared",
+      "cases": [
+        {
+          "size": 31,
+          "iterations": 8
+        },
+        {
+          "size": 64,
+          "iterations": 16
+        },
+        {
+          "size": 1025,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E07": {
+      "target": "atlas_memory",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 8
+        },
+        {
+          "size": 65536,
+          "iterations": 32
+        },
+        {
+          "size": 1048576,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E08": {
+      "target": "atlas_memory",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4
+        },
+        {
+          "size": 65536,
+          "iterations": 4
+        },
+        {
+          "size": 262144,
+          "iterations": 4
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E09": {
+      "target": "atlas_tensor",
+      "sanitizer": "tensor",
+      "depends_on": [
+        "E01"
+      ],
+      "cases": [
+        {
+          "size": 16,
+          "iterations": 1
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E10": {
+      "target": "atlas_tensor",
+      "sanitizer": "tensor",
+      "depends_on": [
+        "E01"
+      ],
+      "cases": [
+        {
+          "size": 16,
+          "iterations": 1
+        },
+        {
+          "size": 256,
+          "iterations": 8
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E11": {
+      "target": "atlas_tensor",
+      "sanitizer": "tensor",
+      "depends_on": [
+        "E10"
+      ],
+      "cases": [
+        {
+          "size": 16,
+          "iterations": 1
+        },
+        {
+          "size": 256,
+          "iterations": 8
+        },
+        {
+          "size": 1024,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E12": {
+      "target": "atlas_tensor",
+      "sanitizer": "tensor",
+      "depends_on": [
+        "E09",
+        "E10"
+      ],
+      "cases": [
+        {
+          "size": 16,
+          "iterations": 1
+        },
+        {
+          "size": 256,
+          "iterations": 8
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E13": {
+      "target": "atlas_composition",
+      "sanitizer": "ordinary",
+      "depends_on": [
+        "E01"
+      ],
+      "cases": [
+        {
+          "size": 31,
+          "iterations": 1
+        },
+        {
+          "size": 1024,
+          "iterations": 8
+        },
+        {
+          "size": 65536,
+          "iterations": 64
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E14": {
+      "target": "atlas_sync",
+      "sanitizer": "sync",
+      "cases": [
+        {
+          "size": 32,
+          "iterations": 8
+        },
+        {
+          "size": 1024,
+          "iterations": 64
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E15": {
+      "target": "atlas_sync",
+      "sanitizer": "sync",
+      "cases": [
+        {
+          "size": 2,
+          "iterations": 8
+        },
+        {
+          "size": 31,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E16": {
+      "target": "atlas_sync",
+      "sanitizer": "sync",
+      "cases": [
+        {
+          "size": 32,
+          "iterations": 8
+        },
+        {
+          "size": 256,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E17": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4
+        },
+        {
+          "size": 1048576,
+          "iterations": 16
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E18": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "resource_group": "pair",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4,
+          "device": 0,
+          "peer": 1
+        },
+        {
+          "size": 262144,
+          "iterations": 32,
+          "device": 0,
+          "peer": 1
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E19": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "resource_group": "pair",
+      "cases": [
+        {
+          "size": 32,
+          "iterations": 64,
+          "device": 0,
+          "peer": 1
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E20": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "resource_group": "all",
+      "cases": [
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 0,
+          "peer": 1
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 0,
+          "peer": 2
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 0,
+          "peer": 3
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 1,
+          "peer": 0
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 1,
+          "peer": 2
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 1,
+          "peer": 3
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 2,
+          "peer": 0
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 2,
+          "peer": 1
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 2,
+          "peer": 3
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 3,
+          "peer": 0
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 3,
+          "peer": 1
+        },
+        {
+          "size": 1048576,
+          "iterations": 16,
+          "device": 3,
+          "peer": 2
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": false,
+      "profile_case_indices": [0, 1]
+    },
+    "E21": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4
+        },
+        {
+          "size": 1048576,
+          "iterations": 16
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E22": {
+      "target": "atlas_sync",
+      "sanitizer": "sync",
+      "cases": [
+        {
+          "size": 32,
+          "iterations": 8
+        },
+        {
+          "size": 1024,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E23": {
+      "target": "atlas_memory",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4
+        },
+        {
+          "size": 65536,
+          "iterations": 16
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E24": {
+      "target": "atlas_memory",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 4
+        },
+        {
+          "size": 65536,
+          "iterations": 16
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E25": {
+      "target": "atlas_sync",
+      "sanitizer": "sync",
+      "cases": [
+        {
+          "size": 32,
+          "iterations": 8
+        },
+        {
+          "size": 1024,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true
+    },
+    "E26": {
+      "target": "atlas_memory",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 8
+        },
+        {
+          "size": 65536,
+          "iterations": 32
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E31": {
+      "runner": "host",
+      "resource_group": "single",
+      "timeout": 360,
+      "profile_timeout": 360,
+      "nsys_eligible": true,
+      "ncu_replay_safe": false
+    },
+    "E32": {
+      "target": "atlas_transport",
+      "sanitizer": "communication",
+      "cases": [
+        {
+          "size": 4096,
+          "iterations": 8,
+          "variant": "host_enqueued_kernel_pipeline"
+        },
+        {
+          "size": 4096,
+          "iterations": 8,
+          "variant": "cuda_graph_replay_pipeline"
+        },
+        {
+          "size": 4096,
+          "iterations": 8,
+          "variant": "device_side_child_launch_pipeline",
+          "target": "atlas_transport_cdp",
+          "sanitizer": "cdp"
+        },
+        {
+          "size": 65536,
+          "iterations": 64,
+          "variant": "host_enqueued_kernel_pipeline"
+        },
+        {
+          "size": 65536,
+          "iterations": 64,
+          "variant": "cuda_graph_replay_pipeline"
+        },
+        {
+          "size": 65536,
+          "iterations": 64,
+          "variant": "device_side_child_launch_pipeline",
+          "target": "atlas_transport_cdp",
+          "sanitizer": "cdp"
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": false,
+      "profile_case_indices": [0, 2]
+    },
+    "E33": {
+      "runner": "host",
+      "resource_group": "single",
+      "timeout": 360,
+      "profile_timeout": 360,
+      "nsys_eligible": true,
+      "ncu_replay_safe": false
+    },
+    "E34": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E35": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E36": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E37": {
+      "target": "atlas_logic",
+      "sanitizer": "ordinary",
+      "cases": [
+        {
+          "size": 1,
+          "iterations": 1
+        },
+        {
+          "size": 32,
+          "iterations": 32
+        },
+        {
+          "size": 1024,
+          "iterations": 256
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true
+    },
+    "E38": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "E39": {
+      "target": "atlas_composition",
+      "sanitizer": "ordinary",
+      "timeout": 300,
+      "profile_timeout": 300,
+      "depends_on": [
+        "E01"
+      ],
+      "cases": [
+        {
+          "size": 1,
+          "iterations": 1,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 31,
+          "iterations": 1,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 32,
+          "iterations": 1,
+          "pattern": "alternating"
+        },
+        {
+          "size": 33,
+          "iterations": 1,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 1023,
+          "iterations": 1,
+          "pattern": "random"
+        },
+        {
+          "size": 1024,
+          "iterations": 1,
+          "pattern": "random"
+        },
+        {
+          "size": 65536,
+          "iterations": 1,
+          "pattern": "random"
+        },
+        {
+          "size": 1048576,
+          "iterations": 1,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 31,
+          "iterations": 8,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 32,
+          "iterations": 8,
+          "pattern": "alternating"
+        },
+        {
+          "size": 33,
+          "iterations": 8,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 1023,
+          "iterations": 8,
+          "pattern": "random"
+        },
+        {
+          "size": 1024,
+          "iterations": 8,
+          "pattern": "random"
+        },
+        {
+          "size": 65536,
+          "iterations": 8,
+          "pattern": "random"
+        },
+        {
+          "size": 1048576,
+          "iterations": 8,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 31,
+          "iterations": 64,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 32,
+          "iterations": 64,
+          "pattern": "alternating"
+        },
+        {
+          "size": 33,
+          "iterations": 64,
+          "pattern": "carry-heavy"
+        },
+        {
+          "size": 1023,
+          "iterations": 64,
+          "pattern": "random"
+        },
+        {
+          "size": 1024,
+          "iterations": 64,
+          "pattern": "random"
+        },
+        {
+          "size": 65536,
+          "iterations": 64,
+          "pattern": "random"
+        },
+        {
+          "size": 1048576,
+          "iterations": 64,
+          "pattern": "carry-heavy"
+        }
+      ],
+      "nsys_eligible": true,
+      "ncu_replay_safe": true,
+      "profile_case_indices": [20]
+    }
+  }
+}

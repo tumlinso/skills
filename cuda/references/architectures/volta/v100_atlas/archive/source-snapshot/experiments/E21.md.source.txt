@@ -1,0 +1,38 @@
+# E21 — Host NUMA ingress
+
+> Can locality remove cross-socket traffic or supply independent host paths?
+
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E21.md)). **Depth:** 4.
+**Read when:** experiment, host, numa, ingress.
+**Prerequisites:** R12. **Evidence:** S30 S33 S36.
+
+**Question:** Can locality remove cross-socket traffic or supply independent host paths?
+
+**Minimal setup:** Place and verify host pages on each NUMA node, register/pin them, then transfer to each GPU with controlled producer affinity.
+
+**Sweep:** Local/remote pages, individual/simultaneous directions and mapped versus staged access.
+
+**Discriminating observation:** Latency/bandwidth differences explained by page placement and root topology.
+
+**Baseline:** Conventional pinned transfers with verified local placement.
+
+**Confounders / correctness:** Pinning and thread affinity do not prove page locality; existing data may originate remotely.
+
+**Access gate:** Read-only topology inspection and supported OS allocation/registration.
+
+**Related:** C23 M43 M44.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Four selected cases cover two transfer sizes from pinned host memory to GPU 0. Both 16 KiB and 4 MiB transfers from NUMA node 0 pass after move_pages verifies the page placement; the H2D medians are 0.0118 and 0.688 ms. Both node-1 bind attempts return Invalid argument and are recorded as NOT_RUN. The available measurements therefore contain one verified host node, not a local/remote comparison.
+
+[Measured summary](evidence/v100-20261006/E21.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md) · [transport.cu: run_e21 placement verification](../benchmarks/native/transport.cu#L844)
+
+## Meaning through representation and execution
+
+- **Supports:** Page-verified pinned transfers from node 0 to GPU 0 at the two selected byte counts.
+- **Design implication (inference):** Placement checks must accompany NUMA transfer measurements because policy intent or pinning alone does not identify where pages reside.
+- **Does not establish:** A locality benefit, cross-socket penalty, or independent host ingress path; node 1 has no measured rate.
+- **Original protocol gaps:** The local-versus-remote pages, producer-affinity, simultaneous-direction, and mapped-versus-staged comparisons remain unavailable after the node-1 bind failure.

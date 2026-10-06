@@ -2,7 +2,7 @@
 
 > Is there a usable restricted descriptor dependency beyond public graph execution?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** NOT_RUN (subset: restricted original descriptor-dependency hypothesis). **Original protocol status:** NOT_RUN_ON_GPU ([archived E29 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E29.md)). **Depth:** 4.
 **Read when:** experiment, dependent, qmd, minimal, experiment.
 **Prerequisites:** R12. **Evidence:** S27 S13 S40.
 
@@ -23,3 +23,18 @@
 **Related:** C28 M39 R09.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The final campaign record reports 0 cases and no correctness result for E29. No restricted descriptor dependency or low-level command generator ran. The E32 public CUDA Graph and device-side child-launch cases are distinct submission mechanisms and do not validate QMD ownership, reference counts, cache visibility, release, or affinity semantics.
+
+Primary scope: no QMD dependency implementation was exercised. The adjacent [public graph and child-launch variants in run_e32](../benchmarks/native/transport.cu#L938) do not validate restricted descriptor semantics.
+
+[Measured summary](evidence/v100-20261006/E29.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** the restricted E29 hypothesis remains unmeasured.
+- **Design implication (inference):** resolve descriptor ownership, units, reference counts, cache visibility, and completion behavior before attempting even one bounded dependency/release relation.
+- **Does not establish:** arbitrary dynamic graph execution, circular dependencies, or SM affinity.
+- **Original protocol gaps:** no two-descriptor execution or total-cost comparison against instantiated graphs/batched launches ran; the original gate’s executable low-level command generator was absent.

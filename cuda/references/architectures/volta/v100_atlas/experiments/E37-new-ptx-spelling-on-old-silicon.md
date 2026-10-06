@@ -2,7 +2,7 @@
 
 > Does lop3.BoolOp expose useful sm70 code beyond the compiler baseline?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN (subset: bounded documented PTX BoolOp truth-function qualification). **Original protocol status:** NOT_RUN_ON_GPU ([archived E37 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E37.md)). **Depth:** 4.
 **Read when:** experiment, new, ptx, spelling, on, old, silicon.
 **Prerequisites:** R12. **Evidence:** S03 S05 S06.
 
@@ -23,3 +23,18 @@
 **Related:** M01 R04 C00.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Nine correctness-passing cases covered three variants: parity using `lop3.or.b32` versus a CUDA expression, majority using `lop3.and.b32`, and the expression baseline. Each checked all 16 assignments to the four Boolean inputs and 48 seeded full-width operand cases (64 output words total).
+
+Primary scope: [run_e37](../benchmarks/native/logic.cu#L795) tests the documented BoolOp forms against the source-expression oracle.
+
+[Measured summary](evidence/v100-20261006/E37.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** documented truth-function and predicate correctness for these variants, input cases, compiler, and sm70 run.
+- **Design implication (inference):** compare generated paths only after pinning an equivalent Boolean function and checking its truth table.
+- **Does not establish:** a new scientific representation, a hidden-instruction advantage, or a useful gain in a broader workload.
+- **Original protocol gaps:** the full 256 LUT immediates, broad expression/liveness sweep, and a general predicate-path improvement were not established; native-code inspection is bounded to the recorded captures.

@@ -2,7 +2,7 @@
 
 > Which installed artifacts actually execute native sm70 paths?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** CPU_ONLY (subset: metadata qualification with one compiled-only subcase). **Original protocol status:** NOT_RUN_ON_GPU ([archived E36 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E36.md)). **Depth:** 4.
 **Read when:** experiment, toolchain, and, library, compatibility.
 **Prerequisites:** R12. **Evidence:** S06 S05 S32 S41.
 
@@ -23,3 +23,18 @@
 **Related:** R10 M45 M48.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The overall result is CPU_ONLY. Its single toolchain/native-image qualification subcase is COMPILED_ONLY and reports eight binaries; image metadata was inspected, without a runtime operator-coverage test.
+
+Primary scope: host [run_e36](../scripts/atlas_host.py#L182) writes the [toolchain/native-image record](evidence/v100-20261006/E36-raw-host-records.md).
+
+[Measured summary](evidence/v100-20261006/E36.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** the recorded toolchain/image metadata and the stated compiled-only qualification.
+- **Design implication (inference):** use metadata inspection to select artifacts and targets for runtime qualification.
+- **Does not establish:** that a library operator dispatches to an sm70 image or that any runtime native path executed.
+- **Original protocol gaps:** compiler-version/PTX-cubin selection and required-library operator sweeps against a preserved known-working runtime baseline were not run.

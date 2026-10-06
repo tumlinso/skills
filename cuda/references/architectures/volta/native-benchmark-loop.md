@@ -1,5 +1,8 @@
 # Native V100 Benchmark Loop
 
+For shared-host GPU execution, use [controller admission](../../execution/host-execution.md).
+The benchmark mutex and profiling wrappers below operate inside the admitted run.
+
 Use this route when the question is how to benchmark, profile, and recompile on
 the native V100 host without losing signal inside wide binaries or noisy logs.
 

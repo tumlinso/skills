@@ -2,7 +2,7 @@
 
 > Are performance or correctness observations confounded by hardware errors or recovery?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** CPU_ONLY (subset: read-only RAS/platform-status observation). **Original protocol status:** NOT_RUN_ON_GPU ([archived E34 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E34.md)). **Depth:** 4.
 **Read when:** experiment, ras, contamination, audit.
 **Prerequisites:** R12. **Evidence:** S02 S28 S36.
 
@@ -23,3 +23,18 @@
 **Related:** R13 M51.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The final campaign records one CPU_ONLY `read_only_ras_status` observation. No GPU workload or fault injection was run.
+
+Primary scope: host [run_e34](../scripts/atlas_host.py#L158) records the read-only [RAS status evidence](evidence/v100-20261006/E34-raw-host-records.md).
+
+[Measured summary](evidence/v100-20261006/E34.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** a bounded software-visible RAS snapshot for annotating the campaign host/device state.
+- **Design implication (inference):** record available health signals alongside performance samples so observed status can qualify their context.
+- **Does not establish:** a device-wide error rate, reliability, repair behavior, or perfect hardware health.
+- **Original protocol gaps:** no before/after repeated benchmark health comparison, existing-health stratification, or fault/recovery study was performed.

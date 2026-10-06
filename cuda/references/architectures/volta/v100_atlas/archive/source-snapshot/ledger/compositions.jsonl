@@ -1,0 +1,40 @@
+{"id": "C00", "requires": ["M01", "M06", "R15"], "sources": ["S03", "S05"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C01", "requires": ["M01", "M02", "M06"], "sources": ["S03", "S08"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C02", "requires": ["M06", "M04"], "sources": ["S03", "S10"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C03", "requires": ["M03", "M04", "M14"], "sources": ["S03", "S08", "S10"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C04", "requires": ["M05", "M02", "M29", "R06"], "sources": ["S03", "S10", "S30"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C05", "requires": ["M01", "M02", "M04", "M14"], "sources": ["S03", "S08", "S10"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C06", "requires": ["M01", "M06", "M07", "M14"], "sources": ["S03", "S08"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C07", "requires": ["M09", "M11", "R15"], "sources": ["S03", "S08"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C08", "requires": ["M08", "M09", "R15"], "sources": ["S03", "S08"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C09", "requires": ["M11", "M16", "R15"], "sources": ["S01", "S03"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C10", "requires": ["M24", "M25", "R05", "R15"], "sources": ["S03", "S22", "S23"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C11", "requires": ["M26", "M08", "M02", "R15"], "sources": ["S03", "S19", "S20"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C12", "requires": ["M26", "M27", "R05", "R15"], "sources": ["S19", "S03"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C13", "requires": ["M27", "M25", "R05", "R15"], "sources": ["S24", "S03", "S23"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C14", "requires": ["M28", "M02", "R15"], "sources": ["S20", "S21"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C15", "requires": ["M28", "M09", "R15"], "sources": ["S21", "S20"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C16", "requires": ["M25", "M18", "M04", "R05"], "sources": ["S07", "S22", "S23"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C17", "requires": ["M12", "M13", "R02", "R10"], "sources": ["S04", "S05", "S11"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C18", "requires": ["M16", "M08", "M11", "R14"], "sources": ["S01", "S04"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C19", "requires": ["M15", "M16", "M19", "M36", "R06"], "sources": ["S01", "S30", "S15"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C20", "requires": ["M34", "M35", "M30", "R06", "R07"], "sources": ["S02", "S25", "S26"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C21", "requires": ["M06", "M34", "M35", "R07"], "sources": ["S02", "S25", "S26"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C22", "requires": ["M29", "M31", "M35", "R06"], "sources": ["S17", "S25", "S30", "S42"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C23", "requires": ["M43", "M36", "M34", "R07"], "sources": ["S30", "S33", "S36"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C24", "requires": ["M29", "M21", "M30", "R06"], "sources": ["S03", "S30"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C25", "requires": ["M30", "M15", "M14", "M17", "R06"], "sources": ["S30", "S01"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C26", "requires": ["M37", "M36", "R09"], "sources": ["S12", "S15"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C27", "requires": ["M38", "M31", "R09", "R06"], "sources": ["S12", "S15", "S17"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C28", "requires": ["M39", "M38", "M33", "R09", "R06"], "sources": ["S27", "S13", "S40"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C29", "requires": ["M40", "R08", "R06"], "sources": ["S18", "S31"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C30", "requires": ["M41", "M42", "R08"], "sources": ["S16", "S28", "S29"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C31", "requires": ["M23", "M10", "R15"], "sources": ["S30", "S03"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C32", "requires": ["M46", "M42", "M47", "R11", "R12"], "sources": ["S34", "S35", "S36", "S29"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C33", "requires": ["M52", "M46", "R11", "R13"], "sources": ["S02", "S36"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C34", "requires": ["M17", "M30", "M33", "R02"], "sources": ["S04", "S05", "S30"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C35", "requires": ["M02", "M04", "M14", "R01"], "sources": ["S03", "S10"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C36", "requires": ["M18", "M25", "M22", "R05"], "sources": ["S22", "S23", "S30"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C37", "requires": ["M01", "M02", "M06", "R15"], "sources": ["S03", "S08"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C38", "requires": ["M22", "M21", "R03", "R12"], "sources": ["S04", "S30"], "status": "original hypothesis; no local GPU measurement"}
+{"id": "C39", "requires": ["R00", "R11", "R14", "R15"], "sources": [], "status": "original hypothesis; no local GPU measurement"}

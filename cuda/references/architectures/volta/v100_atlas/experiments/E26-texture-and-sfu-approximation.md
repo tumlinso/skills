@@ -2,7 +2,7 @@
 
 > Can a specialized arithmetic path meet a useful error/performance contract?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E26.md)). **Depth:** 4.
 **Read when:** experiment, texture, and, sfu, approximation.
 **Prerequisites:** R12. **Evidence:** S30 S03.
 
@@ -23,3 +23,16 @@
 **Related:** C31 M10 M23.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Eight correctness-valid GPU cases compare sinf reference, SFU sinf, manual linear-table interpolation, and texture-object interpolation over finite uniform sets of 4,097 and 65,536 inputs in [-pi, pi]. Each device timing uses 30 samples. The SFU path's maximum absolute error versus the CPU double oracle is 3.02e-7 and 3.40e-7 at the two sizes, under a configured 2e-6 tolerance. At 65,536 inputs, manual-table and texture-object maxima are 4.75e-6 and 1.25e-5 under a configured 1e-4 tolerance. Device medians are 5.12–6.14 microseconds; the 4,097-input texture p95 is 13.344 microseconds. The error values are observed finite-sample maximum absolute differences and RMS differences versus the CPU double oracle; input conversion to float is included.
+
+[Measured summary](evidence/v100-20261006/E26.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md) · [memory.cu: evaluate_sinf, evaluate_lut, and evaluate_texture](../benchmarks/native/memory.cu#L117)
+
+## Meaning through representation and execution
+
+- **Supports:** The configured pointwise tolerance checks and measured error/time values for the finite inputs and implemented CUDA arithmetic/table paths.
+- **Design implication (inference):** Approximation choices can be compared on measured error and device time only for the same domain, sample set, and accepted tolerance.
+- **Does not establish:** A formal global error bound, derivative accuracy, or behavior outside the tested domain and points. A finite sample's maximum observed error is not a proof of the worst case. A screen-and-refine decision path is a broader atlas/design inference, not part of this original card or run.
+- **Original protocol gaps:** The planned polynomial baseline, wider table-spacing/format sweeps, derivative-extreme and exceptional-value cases, and additional boundary tests remain unmeasured.

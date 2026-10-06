@@ -2,7 +2,7 @@
 
 > Are the proposed word circuits and layout equations actually equivalent?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** CPU_ONLY. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
 **Read when:** experiment, algebra, and, encoding, checks.
 **Prerequisites:** R12. **Evidence:** original synthesis; see linked mechanisms.
 
@@ -23,3 +23,15 @@
 **Related:** C00 C01 C02 C03 C05 C06 C07 C37.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The host semantic suite passed 31,094 assertions in 15 test groups against CPU reference identities. It produced no GPU outputs or timing samples. Implementation: [`semantic_checks.py`](../source-tools/semantic_checks.py#L1), invoked by the host runner. [Measured summary](evidence/v100-20261006/E01.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: The tested Boolean/routing identities and finite boundary cases agree with their CPU references.
+- Design implication (inference): Use these identities as input-level rejection checks before spending effort on a GPU encoding.
+- Does not establish: GPU participation, memory ordering, progress, Volta tensor rounding, instruction lowering or GPU numerical equivalence.
+- Original protocol gaps: GPU execution and the full set of new-composition randomized/boundary checks remain untested.

@@ -2,7 +2,7 @@
 
 > Which layout and synchronization phase actually reduces complete movement cost?
 
-**Status:** NOT_RUN_ON_GPU. **Depth:** 4.
+**Status:** GPU_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
 **Read when:** experiment, shared, banks, and, phase, pipelines.
 **Prerequisites:** R12. **Evidence:** S01 S30.
 
@@ -23,3 +23,15 @@
 **Related:** C16 C19 C36 M18 M19.
 
 **Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The measured units were shared broadcast, same-bank conflict, padded-bank control, shared-tile exchange and shuffle-tile exchange. Fifteen GPU cases passed: bank patterns at work sizes 128/1,152 with 8/16/32 iterations, and one-tile shared/shuffle comparisons at sizes 128/1,025. Median event times were mostly 0.005120 ms; p95 values varied across cases. The result contains output checks and event timings, not a causal bank-counter measurement. Implementation: [`run_e06`](../benchmarks/native/logic.cu#L694). [Measured summary](evidence/v100-20261006/E06.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: Correctness for the tested shared-memory patterns and fixed-permutation shared/shuffle tile paths.
+- Design implication (inference): Compare movement alternatives with the semantic permutation held constant and include producer-to-consumer work.
+- Does not establish: A robust whole-pipeline winner or a bank-counter cause for timing variation.
+- Original protocol gaps: The full stride/swizzle/padding/payload/barrier/carveout sweep and broader producer-consumer phase measurements were not run.

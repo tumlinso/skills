@@ -1,0 +1,974 @@
+{
+  "accounted_experiments": [
+    "E00",
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E20",
+    "E21",
+    "E22",
+    "E23",
+    "E24",
+    "E25",
+    "E26",
+    "E27",
+    "E28",
+    "E29",
+    "E30",
+    "E31",
+    "E32",
+    "E33",
+    "E34",
+    "E35",
+    "E36",
+    "E37",
+    "E38",
+    "E39"
+  ],
+  "campaign_key": "7beacfbd95e0d2b8f9725c7ba1477122f16bc1eb686a6a7c94dbf6c7e266794b",
+  "controller_runtime": {
+    "/home/tumlinson/.agents/skills/cuda/SKILL.md": {
+      "exists": true,
+      "sha256": "f2dcb1d158c0987e36f1350de0b09fa7bc0ca346924b6f8745779c4b79ec226b"
+    },
+    "/home/tumlinson/.agents/skills/cuda/cuda_toolchain.py": {
+      "exists": false,
+      "sha256": "missing"
+    },
+    "/home/tumlinson/.agents/skills/cuda/scripts/cuda_controller.py": {
+      "exists": true,
+      "sha256": "07fd3704bdb441479c8accd75075e83fbccec824fd8d0b6e73f5e1df0c344959"
+    },
+    "/home/tumlinson/.agents/skills/cuda/scripts/debug_compute_sanitizer.sh": {
+      "exists": true,
+      "sha256": "760fa5fe343e34ba331f7463d692607f7bb911bddcddb264a95a04a9493e2320"
+    },
+    "/home/tumlinson/.agents/skills/cuda/scripts/profile_ncu.sh": {
+      "exists": true,
+      "sha256": "6ab3f96e359d7c47def9a11f6ba90693210c1a9446e615b5d5ec872012181d61"
+    },
+    "/home/tumlinson/.agents/skills/cuda/scripts/profile_nsys.sh": {
+      "exists": true,
+      "sha256": "14ebe945ea7ef8f27b5d8f952916772094bdd3c7b675ddd9417302dcf6850b46"
+    },
+    "/home/tumlinson/.agents/skills/cuda/scripts/with_benchmark_mutex.sh": {
+      "exists": true,
+      "sha256": "5fd7a1d8b4e78e0e129790159ca0af068707dcc30835c9958be790dc73ed5519"
+    }
+  },
+  "experiments": [
+    "E00",
+    "E01",
+    "E02",
+    "E03",
+    "E04",
+    "E05",
+    "E06",
+    "E07",
+    "E08",
+    "E09",
+    "E10",
+    "E11",
+    "E12",
+    "E13",
+    "E14",
+    "E15",
+    "E16",
+    "E17",
+    "E18",
+    "E19",
+    "E20",
+    "E21",
+    "E22",
+    "E23",
+    "E24",
+    "E25",
+    "E26",
+    "E27",
+    "E28",
+    "E29",
+    "E30",
+    "E31",
+    "E32",
+    "E33",
+    "E34",
+    "E35",
+    "E36",
+    "E37",
+    "E38",
+    "E39"
+  ],
+  "identity": {
+    "binaries": {
+      "atlas_composition": "e44d92ec61db940f5504a01926b822b235008e92f49992657f8d977c70adf154",
+      "atlas_logic": "99d3a42c628a7720849297a365b6f08d65b7ca368cf7340e7e3a59a756b2c2fe",
+      "atlas_memory": "c908f070d623bbce01ee60ded6b2f193c69a68e76795804c746414fa655567a0",
+      "atlas_sync": "69bade8ead6a6fa83ce4d4e3a38ab85c58ea10237a4013232b67ff6b9db57aff",
+      "atlas_tensor": "0349c8e6d685e494192dc21dd76f6c5017e7861e90d1209b5a8f34147cb853c2",
+      "atlas_transport": "143338029450d477dcab72afb7441a57be9d1b7ea9e32c5e34476e0faf0eedbc",
+      "atlas_transport_cdp": "fdf1cc0eb53e6606b5e1c30bf22b1d3e4179dbc3c32db2afeda412e484304e2a"
+    },
+    "experiments": [
+      "E00",
+      "E01",
+      "E02",
+      "E03",
+      "E04",
+      "E05",
+      "E06",
+      "E07",
+      "E08",
+      "E09",
+      "E10",
+      "E11",
+      "E12",
+      "E13",
+      "E14",
+      "E15",
+      "E16",
+      "E17",
+      "E18",
+      "E19",
+      "E20",
+      "E21",
+      "E22",
+      "E23",
+      "E24",
+      "E25",
+      "E26",
+      "E27",
+      "E28",
+      "E29",
+      "E30",
+      "E31",
+      "E32",
+      "E33",
+      "E34",
+      "E35",
+      "E36",
+      "E37",
+      "E38",
+      "E39"
+    ],
+    "machine_sha256": "1c45412a8c628df6cba7cbd488d366002371066cd53f37a1195832aea1adfee2",
+    "matrix_sha256": "e45c394dc35fef6cb119bcc1f049fe963f64557b9b81b9b6a2bea2a4eb7d29ba",
+    "mode": "full",
+    "profiles": "focused",
+    "source": {
+      "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+      "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+    },
+    "tools_sha256": "2ec885695c43b877609d1e3ace2efa84de995c45236ce8343d2c42aa022cc1ad"
+  },
+  "machine": {
+    "cuda_visible_devices": null,
+    "gpu_inventory": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "0, GPU-21131915-1488-23af-38dd-1743ae1f5cc8, Tesla V100-SXM2-16GB, 7.0, 580.173.02, 00000000:02:00.0, 88.00.4F.00.09\n1, GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505, Tesla V100-SXM2-16GB, 7.0, 580.173.02, 00000000:03:00.0, 88.00.13.00.02\n2, GPU-d745da9c-7649-8334-41f1-483afa6f3206, Tesla V100-SXM2-16GB, 7.0, 580.173.02, 00000000:83:00.0, 88.00.4F.00.09\n3, GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a, Tesla V100-SXM2-16GB, 7.0, 580.173.02, 00000000:84:00.0, 88.00.13.00.02"
+    },
+    "host": "testlsserver",
+    "system": "Linux-6.8.0-142-generic-x86_64-with-glibc2.39",
+    "topology": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tPHB\tNV6\tSYS\t0-19,40-59\t0\t\tN/A\nGPU1\tPHB\t X \tSYS\tNV6\t0-19,40-59\t0\t\tN/A\nGPU2\tNV6\tSYS\t X \tPHB\t20-39,60-79\t1\t\tN/A\nGPU3\tSYS\tNV6\tPHB\t X \t20-39,60-79\t1\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks"
+    }
+  },
+  "matrix": {
+    "experiments": {
+      "E00": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E01": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E02": {
+        "cases": [
+          {
+            "iterations": 32,
+            "size": 1024
+          },
+          {
+            "iterations": 256,
+            "size": 65536
+          },
+          {
+            "iterations": 1024,
+            "size": 262144
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_logic"
+      },
+      "E03": {
+        "cases": [
+          {
+            "iterations": 16,
+            "size": 4096
+          },
+          {
+            "iterations": 256,
+            "size": 65536
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_logic"
+      },
+      "E05": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 31
+          },
+          {
+            "iterations": 8,
+            "size": 32
+          },
+          {
+            "iterations": 8,
+            "size": 65
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "shared",
+        "target": "atlas_logic"
+      },
+      "E06": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 31
+          },
+          {
+            "iterations": 16,
+            "size": 64
+          },
+          {
+            "iterations": 32,
+            "size": 1025
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "shared",
+        "target": "atlas_logic"
+      },
+      "E07": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 4096
+          },
+          {
+            "iterations": 32,
+            "size": 65536
+          },
+          {
+            "iterations": 32,
+            "size": 1048576
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_memory"
+      },
+      "E08": {
+        "cases": [
+          {
+            "iterations": 4,
+            "size": 4096
+          },
+          {
+            "iterations": 4,
+            "size": 65536
+          },
+          {
+            "iterations": 4,
+            "size": 262144
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_memory"
+      },
+      "E09": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 16
+          }
+        ],
+        "depends_on": [
+          "E01"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "tensor",
+        "target": "atlas_tensor"
+      },
+      "E10": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 16
+          },
+          {
+            "iterations": 8,
+            "size": 256
+          }
+        ],
+        "depends_on": [
+          "E01"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "tensor",
+        "target": "atlas_tensor"
+      },
+      "E11": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 16
+          },
+          {
+            "iterations": 8,
+            "size": 256
+          },
+          {
+            "iterations": 32,
+            "size": 1024
+          }
+        ],
+        "depends_on": [
+          "E10"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "tensor",
+        "target": "atlas_tensor"
+      },
+      "E12": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 16
+          },
+          {
+            "iterations": 8,
+            "size": 256
+          }
+        ],
+        "depends_on": [
+          "E09",
+          "E10"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "tensor",
+        "target": "atlas_tensor"
+      },
+      "E13": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 31
+          },
+          {
+            "iterations": 8,
+            "size": 1024
+          },
+          {
+            "iterations": 64,
+            "size": 65536
+          }
+        ],
+        "depends_on": [
+          "E01"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_composition"
+      },
+      "E14": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 32
+          },
+          {
+            "iterations": 64,
+            "size": 1024
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "sync",
+        "target": "atlas_sync"
+      },
+      "E15": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 2
+          },
+          {
+            "iterations": 32,
+            "size": 31
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "sync",
+        "target": "atlas_sync"
+      },
+      "E16": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 32
+          },
+          {
+            "iterations": 32,
+            "size": 256
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "sync",
+        "target": "atlas_sync"
+      },
+      "E17": {
+        "cases": [
+          {
+            "iterations": 4,
+            "size": 4096
+          },
+          {
+            "iterations": 16,
+            "size": 1048576
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E18": {
+        "cases": [
+          {
+            "device": 0,
+            "iterations": 4,
+            "peer": 1,
+            "size": 4096
+          },
+          {
+            "device": 0,
+            "iterations": 32,
+            "peer": 1,
+            "size": 262144
+          }
+        ],
+        "nsys_eligible": true,
+        "resource_group": "pair",
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E19": {
+        "cases": [
+          {
+            "device": 0,
+            "iterations": 64,
+            "peer": 1,
+            "size": 32
+          }
+        ],
+        "nsys_eligible": true,
+        "resource_group": "pair",
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E20": {
+        "cases": [
+          {
+            "device": 0,
+            "iterations": 16,
+            "peer": 1,
+            "size": 1048576
+          },
+          {
+            "device": 0,
+            "iterations": 16,
+            "peer": 2,
+            "size": 1048576
+          },
+          {
+            "device": 0,
+            "iterations": 16,
+            "peer": 3,
+            "size": 1048576
+          },
+          {
+            "device": 1,
+            "iterations": 16,
+            "peer": 0,
+            "size": 1048576
+          },
+          {
+            "device": 1,
+            "iterations": 16,
+            "peer": 2,
+            "size": 1048576
+          },
+          {
+            "device": 1,
+            "iterations": 16,
+            "peer": 3,
+            "size": 1048576
+          },
+          {
+            "device": 2,
+            "iterations": 16,
+            "peer": 0,
+            "size": 1048576
+          },
+          {
+            "device": 2,
+            "iterations": 16,
+            "peer": 1,
+            "size": 1048576
+          },
+          {
+            "device": 2,
+            "iterations": 16,
+            "peer": 3,
+            "size": 1048576
+          },
+          {
+            "device": 3,
+            "iterations": 16,
+            "peer": 0,
+            "size": 1048576
+          },
+          {
+            "device": 3,
+            "iterations": 16,
+            "peer": 1,
+            "size": 1048576
+          },
+          {
+            "device": 3,
+            "iterations": 16,
+            "peer": 2,
+            "size": 1048576
+          }
+        ],
+        "ncu_replay_safe": false,
+        "nsys_eligible": true,
+        "profile_case_indices": [
+          0,
+          1
+        ],
+        "resource_group": "all",
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E21": {
+        "cases": [
+          {
+            "iterations": 4,
+            "size": 4096
+          },
+          {
+            "iterations": 16,
+            "size": 1048576
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E22": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 32
+          },
+          {
+            "iterations": 32,
+            "size": 1024
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "sync",
+        "target": "atlas_sync"
+      },
+      "E23": {
+        "cases": [
+          {
+            "iterations": 4,
+            "size": 4096
+          },
+          {
+            "iterations": 16,
+            "size": 65536
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_memory"
+      },
+      "E24": {
+        "cases": [
+          {
+            "iterations": 4,
+            "size": 4096
+          },
+          {
+            "iterations": 16,
+            "size": 65536
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_memory"
+      },
+      "E25": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 32
+          },
+          {
+            "iterations": 32,
+            "size": 1024
+          }
+        ],
+        "nsys_eligible": true,
+        "sanitizer": "sync",
+        "target": "atlas_sync"
+      },
+      "E26": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 4096
+          },
+          {
+            "iterations": 32,
+            "size": 65536
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_memory"
+      },
+      "E31": {
+        "ncu_replay_safe": false,
+        "nsys_eligible": true,
+        "profile_timeout": 360,
+        "resource_group": "single",
+        "runner": "host",
+        "timeout": 360
+      },
+      "E32": {
+        "cases": [
+          {
+            "iterations": 8,
+            "size": 4096,
+            "variant": "host_enqueued_kernel_pipeline"
+          },
+          {
+            "iterations": 8,
+            "size": 4096,
+            "variant": "cuda_graph_replay_pipeline"
+          },
+          {
+            "iterations": 8,
+            "sanitizer": "cdp",
+            "size": 4096,
+            "target": "atlas_transport_cdp",
+            "variant": "device_side_child_launch_pipeline"
+          },
+          {
+            "iterations": 64,
+            "size": 65536,
+            "variant": "host_enqueued_kernel_pipeline"
+          },
+          {
+            "iterations": 64,
+            "size": 65536,
+            "variant": "cuda_graph_replay_pipeline"
+          },
+          {
+            "iterations": 64,
+            "sanitizer": "cdp",
+            "size": 65536,
+            "target": "atlas_transport_cdp",
+            "variant": "device_side_child_launch_pipeline"
+          }
+        ],
+        "ncu_replay_safe": false,
+        "nsys_eligible": true,
+        "profile_case_indices": [
+          0,
+          2
+        ],
+        "sanitizer": "communication",
+        "target": "atlas_transport"
+      },
+      "E33": {
+        "ncu_replay_safe": false,
+        "nsys_eligible": true,
+        "profile_timeout": 360,
+        "resource_group": "single",
+        "runner": "host",
+        "timeout": 360
+      },
+      "E34": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E35": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E36": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E37": {
+        "cases": [
+          {
+            "iterations": 1,
+            "size": 1
+          },
+          {
+            "iterations": 32,
+            "size": 32
+          },
+          {
+            "iterations": 256,
+            "size": 1024
+          }
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "sanitizer": "ordinary",
+        "target": "atlas_logic"
+      },
+      "E38": {
+        "runner": "host",
+        "timeout": 120
+      },
+      "E39": {
+        "cases": [
+          {
+            "iterations": 1,
+            "pattern": "carry-heavy",
+            "size": 1
+          },
+          {
+            "iterations": 1,
+            "pattern": "carry-heavy",
+            "size": 31
+          },
+          {
+            "iterations": 1,
+            "pattern": "alternating",
+            "size": 32
+          },
+          {
+            "iterations": 1,
+            "pattern": "carry-heavy",
+            "size": 33
+          },
+          {
+            "iterations": 1,
+            "pattern": "random",
+            "size": 1023
+          },
+          {
+            "iterations": 1,
+            "pattern": "random",
+            "size": 1024
+          },
+          {
+            "iterations": 1,
+            "pattern": "random",
+            "size": 65536
+          },
+          {
+            "iterations": 1,
+            "pattern": "carry-heavy",
+            "size": 1048576
+          },
+          {
+            "iterations": 8,
+            "pattern": "carry-heavy",
+            "size": 31
+          },
+          {
+            "iterations": 8,
+            "pattern": "alternating",
+            "size": 32
+          },
+          {
+            "iterations": 8,
+            "pattern": "carry-heavy",
+            "size": 33
+          },
+          {
+            "iterations": 8,
+            "pattern": "random",
+            "size": 1023
+          },
+          {
+            "iterations": 8,
+            "pattern": "random",
+            "size": 1024
+          },
+          {
+            "iterations": 8,
+            "pattern": "random",
+            "size": 65536
+          },
+          {
+            "iterations": 8,
+            "pattern": "carry-heavy",
+            "size": 1048576
+          },
+          {
+            "iterations": 64,
+            "pattern": "carry-heavy",
+            "size": 31
+          },
+          {
+            "iterations": 64,
+            "pattern": "alternating",
+            "size": 32
+          },
+          {
+            "iterations": 64,
+            "pattern": "carry-heavy",
+            "size": 33
+          },
+          {
+            "iterations": 64,
+            "pattern": "random",
+            "size": 1023
+          },
+          {
+            "iterations": 64,
+            "pattern": "random",
+            "size": 1024
+          },
+          {
+            "iterations": 64,
+            "pattern": "random",
+            "size": 65536
+          },
+          {
+            "iterations": 64,
+            "pattern": "carry-heavy",
+            "size": 1048576
+          }
+        ],
+        "depends_on": [
+          "E01"
+        ],
+        "ncu_replay_safe": true,
+        "nsys_eligible": true,
+        "profile_case_indices": [
+          20
+        ],
+        "profile_timeout": 300,
+        "sanitizer": "ordinary",
+        "target": "atlas_composition",
+        "timeout": 300
+      }
+    },
+    "notes": [
+      "Full mode uses the same finite case matrix for each experiment; module-specific cases below add boundary sizes and declared reuse points.",
+      "Smoke mode runs one deterministic verification case and is a correctness diagnostic, not a performance result.",
+      "All random inputs use the fixed campaign seed. Sizes include warp/tile boundaries and nonmultiples where module contracts permit."
+    ],
+    "schema_version": 1,
+    "seed": 20261006,
+    "sweeps": {
+      "full": {
+        "iterations": 128,
+        "repeats": 30,
+        "size": 65536,
+        "warmups": 5
+      },
+      "smoke": {
+        "iterations": 8,
+        "repeats": 1,
+        "size": 4096,
+        "warmups": 0
+      }
+    }
+  },
+  "mode": "full",
+  "profiles": "focused",
+  "run_id": "4bd01216-ed48-4202-aa17-c9598237e269",
+  "schema_version": 1,
+  "source": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "started_utc": "2026-10-06T14:51:55.310411+00:00",
+  "tools": {
+    "compute_sanitizer": {
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+    },
+    "ncu": {
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+    },
+    "nsys": {
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+    },
+    "nvcc": {
+      "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+    }
+  }
+}
