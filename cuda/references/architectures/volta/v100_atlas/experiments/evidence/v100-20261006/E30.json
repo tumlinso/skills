@@ -1,0 +1,19 @@
+{
+  "correctness": {
+    "executed_cases": 0,
+    "valid": null
+  },
+  "date": "2026-10-06",
+  "experiment": "E30",
+  "hardware": {},
+  "limitations": [
+    "The protocol requires restricted register/binary/command-level control; public CUDA interfaces do not exercise that hypothesis."
+  ],
+  "protocol": {},
+  "raw_artifacts": [],
+  "result_summary": "0 case(s); no executed correctness result",
+  "samples": [],
+  "software": {},
+  "source_hashes": {},
+  "status": "NOT_RUN"
+}

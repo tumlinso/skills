@@ -1,0 +1,2497 @@
+{
+  "correctness": {
+    "executed_cases": 69,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E05",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 8,
+          "size": 31
+        },
+        {
+          "iterations": 8,
+          "size": 32
+        },
+        {
+          "iterations": 8,
+          "size": 65
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "shared",
+      "target": "atlas_logic"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E05-memcheck-0/artifacts",
+    "controller/E05-memcheck-0/lease_receipt.json",
+    "controller/E05-memcheck-0/stderr_path.txt",
+    "controller/E05-memcheck-0/stdout_path.txt",
+    "controller/E05-ncu-0/artifacts",
+    "controller/E05-ncu-0/lease_receipt.json",
+    "controller/E05-ncu-0/stderr_path.txt",
+    "controller/E05-ncu-0/stdout_path.txt",
+    "controller/E05-nsys-0/artifacts",
+    "controller/E05-nsys-0/lease_receipt.json",
+    "controller/E05-nsys-0/stderr_path.txt",
+    "controller/E05-nsys-0/stdout_path.txt",
+    "controller/E05-racecheck-0/artifacts",
+    "controller/E05-racecheck-0/lease_receipt.json",
+    "controller/E05-racecheck-0/stderr_path.txt",
+    "controller/E05-racecheck-0/stdout_path.txt",
+    "controller/E05-synccheck-0/artifacts",
+    "controller/E05-synccheck-0/lease_receipt.json",
+    "controller/E05-synccheck-0/stderr_path.txt",
+    "controller/E05-synccheck-0/stdout_path.txt",
+    "controller/E05-timing-0/artifacts",
+    "controller/E05-timing-0/lease_receipt.json",
+    "controller/E05-timing-0/stderr_path.txt",
+    "controller/E05-timing-0/stdout_path.txt",
+    "controller/E05-timing-1/artifacts",
+    "controller/E05-timing-1/lease_receipt.json",
+    "controller/E05-timing-1/stderr_path.txt",
+    "controller/E05-timing-1/stdout_path.txt",
+    "controller/E05-timing-2/artifacts",
+    "controller/E05-timing-2/lease_receipt.json",
+    "controller/E05-timing-2/stderr_path.txt",
+    "controller/E05-timing-2/stdout_path.txt",
+    "controller/E05-verify-0/artifacts",
+    "controller/E05-verify-0/lease_receipt.json",
+    "controller/E05-verify-0/stderr_path.txt",
+    "controller/E05-verify-0/stdout_path.txt",
+    "controller/E05-verify-1/artifacts",
+    "controller/E05-verify-1/lease_receipt.json",
+    "controller/E05-verify-1/stderr_path.txt",
+    "controller/E05-verify-1/stdout_path.txt",
+    "controller/E05-verify-2/artifacts",
+    "controller/E05-verify-2/lease_receipt.json",
+    "controller/E05-verify-2/stderr_path.txt",
+    "controller/E05-verify-2/stdout_path.txt"
+  ],
+  "result_summary": "69 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.020479999482631683,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.020479999482631683
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.01945599913597107,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.01945599913597107
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 31,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "31",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "exhaustive_masks": "all 256 membership masks over low eight warp lanes",
+        "iterations": "1",
+        "partial_warp_widths": "1,7,17,31,32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "8352",
+        "verification": "rank equals popcount of preceding mask members; selected value matches CPU ordinal selection",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Selection uses a public ballot plus software ordinal scan; no payload shuffle, multiword selection, mask-size performance sweep or alternative instruction lowering is tested."
+      ],
+      "metrics": {
+        "correctness_checked_active_lanes": 1112,
+        "empty_membership_masks": 1,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.0071680000983178616,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.0071680000983178616
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/4a3d3d6f-c47b-400e-a761-c3bb0bc1b282/ncu/run/raw.csv",
+          "raw_csv_bytes": 597475,
+          "raw_csv_rows": 323,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/4a3d3d6f-c47b-400e-a761-c3bb0bc1b282/ncu/run/report.ncu-rep",
+          "report_bytes": 3734944,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.08200778735849047,
+              "name": "<unnamed>::constant_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 16.0,
+              "samples": 56,
+              "share_pct": 18.127094876530556,
+              "sm_pct": 0.018330126415094322,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.08200778735849047,
+                "name": "<unnamed>::constant_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 56,
+                "share_pct": 18.127094876530556,
+                "sm_pct": 0.018330126415094322,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.07524767981132077,
+                "name": "<unnamed>::cached_global_lookup_kernel(unsigned int *, unsigned long, const unsigned int *, int, unsigned int, bool)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 56,
+                "share_pct": 18.127094876530542,
+                "sm_pct": 0.016578232264150942,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.09279148592150176,
+                "name": "<unnamed>::shared_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 56,
+                "share_pct": 16.03392844927833,
+                "sm_pct": 0.019196646117747445,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.08512832995817746,
+                "name": "<unnamed>::shuffle_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 24.000000000000025,
+                "samples": 56,
+                "share_pct": 15.537998495109097,
+                "sm_pct": 0.019510180057230903,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.06263515328656796,
+                "name": "<unnamed>::match_group_atomic_kernel(const unsigned int *, unsigned int *, unsigned long, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 23.999999999999996,
+                "samples": 42,
+                "share_pct": 13.164375128257742,
+                "sm_pct": 0.009551513120290988,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ec4ce128-8ced-48bb-8d15-f030b6cc08c6/nsys/run/report.nsys-rep",
+          "report_bytes": 333081,
+          "sqlite_activity_counts": {
+            "kernels": 828,
+            "memcpy": 27,
+            "memset": 12
+          },
+          "sqlite_activity_rows": 867,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ec4ce128-8ced-48bb-8d15-f030b6cc08c6/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 828.0,
+              "launch_pct": 2.0093957550792383,
+              "malloc_free_pct": 93.68989494999293,
+              "memcpy_memset_pct": 0.6687438992102566
+            },
+            "bottleneck_hints": [
+              "allocator-churn"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Warm allocations out of the measured loop or lengthen the steady-state phase, then rerun if timing matters.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator churn dominates the timeline (93.7% of CUDA API time in malloc/free). This run is not a clean steady-state throughput measurement."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.796,
+                "instances": 144,
+                "name": "<unnamed>::constant_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "time_pct": 18.5,
+                "total_ms": 0.258621
+              },
+              {
+                "avg_us": 1.5962,
+                "instances": 144,
+                "name": "<unnamed>::cached_global_lookup_kernel(unsigned int *, unsigned long, const unsigned int *, int, unsigned int, bool)",
+                "time_pct": 16.4,
+                "total_ms": 0.229853
+              },
+              {
+                "avg_us": 1.524,
+                "instances": 144,
+                "name": "<unnamed>::shuffle_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "time_pct": 15.7,
+                "total_ms": 0.219454
+              },
+              {
+                "avg_us": 1.4336,
+                "instances": 144,
+                "name": "<unnamed>::shared_lookup_kernel(unsigned int *, unsigned long, int, unsigned int, bool)",
+                "time_pct": 14.8,
+                "total_ms": 0.206432
+              },
+              {
+                "avg_us": 1.7306,
+                "instances": 108,
+                "name": "<unnamed>::match_group_atomic_kernel(const unsigned int *, unsigned int *, unsigned long, int)",
+                "time_pct": 13.4,
+                "total_ms": 0.186909
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "rank_select_small_masks"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.021503999829292297,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.021503999829292297
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.018432000651955605,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.018432000651955605
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 32,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.021503999829292297,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.021503999829292297
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.020479999482631683,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.020479999482631683
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "32",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "exhaustive_masks": "all 256 membership masks over low eight warp lanes",
+        "iterations": "1",
+        "partial_warp_widths": "1,7,17,31,32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "8352",
+        "verification": "rank equals popcount of preceding mask members; selected value matches CPU ordinal selection",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Selection uses a public ballot plus software ordinal scan; no payload shuffle, multiword selection, mask-size performance sweep or alternative instruction lowering is tested."
+      ],
+      "metrics": {
+        "correctness_checked_active_lanes": 1112,
+        "empty_membership_masks": 1,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.0071680000983178616,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.0071680000983178616
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "rank_select_small_masks"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.0071680000983178616,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.0071680000983178616
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "8",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.016383999958634377,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.016383999958634377
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "uniform",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_uniform_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005632000043988228,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005632000043988228,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "constant_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "global_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "query_distribution": "diverse",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "table_size": "32",
+        "verification": "lookup equals CPU table value for every output lane; every lane participates in full-mask shuffle",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Fixed 32-lane warp table, 8/32-entry tables and two query distributions only; shared/constant setup and break-even reuse sweep are incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 65,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_cached_diverse_t32"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.01945599913597107,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.01945599913597107
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "2",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 2,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.016383999958634377,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.016383999958634377
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k2"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 8,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.020479999482631683,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.020479999482631683
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k8"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.018432000651955605,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.018432000651955605
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "per_lane_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "key_cardinality": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "65",
+        "verification": "histogram exactly matches host counts; partial final warp excluded by explicit ballot membership",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Aggregated atomic baseline only; mask rank/select, payload widths, multiword selection and contention/uniformity sweeps remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_bins": 16,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "match_group_atomic_k16"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "exhaustive_masks": "all 256 membership masks over low eight warp lanes",
+        "iterations": "1",
+        "partial_warp_widths": "1,7,17,31,32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "8352",
+        "verification": "rank equals popcount of preceding mask members; selected value matches CPU ordinal selection",
+        "warmup": "5"
+      },
+      "experiment": "E05",
+      "limitations": [
+        "Selection uses a public ballot plus software ordinal scan; no payload shuffle, multiword selection, mask-size performance sweep or alternative instruction lowering is tested."
+      ],
+      "metrics": {
+        "correctness_checked_active_lanes": 1112,
+        "empty_membership_masks": 1,
+        "event_ms_median": 0.006144000217318535,
+        "event_ms_p95": 0.0071680000983178616,
+        "median_event_ms": 0.006144000217318535,
+        "p95_event_ms": 0.0071680000983178616
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "rank_select_small_masks"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

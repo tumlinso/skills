@@ -1,0 +1,367 @@
+{
+  "correctness": {
+    "executed_cases": 2,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E10",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 1,
+          "size": 16
+        },
+        {
+          "iterations": 8,
+          "size": 256
+        }
+      ],
+      "depends_on": [
+        "E01"
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "tensor",
+      "target": "atlas_tensor"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E10-memcheck-0/artifacts",
+    "controller/E10-memcheck-0/lease_receipt.json",
+    "controller/E10-memcheck-0/stderr_path.txt",
+    "controller/E10-memcheck-0/stdout_path.txt",
+    "controller/E10-ncu-0/artifacts",
+    "controller/E10-ncu-0/lease_receipt.json",
+    "controller/E10-ncu-0/stderr_path.txt",
+    "controller/E10-ncu-0/stdout_path.txt",
+    "controller/E10-nsys-0/artifacts",
+    "controller/E10-nsys-0/lease_receipt.json",
+    "controller/E10-nsys-0/stderr_path.txt",
+    "controller/E10-nsys-0/stdout_path.txt",
+    "controller/E10-racecheck-0/artifacts",
+    "controller/E10-racecheck-0/lease_receipt.json",
+    "controller/E10-racecheck-0/stderr_path.txt",
+    "controller/E10-racecheck-0/stdout_path.txt",
+    "controller/E10-synccheck-0/artifacts",
+    "controller/E10-synccheck-0/lease_receipt.json",
+    "controller/E10-synccheck-0/stderr_path.txt",
+    "controller/E10-synccheck-0/stdout_path.txt",
+    "controller/E10-timing-0/artifacts",
+    "controller/E10-timing-0/lease_receipt.json",
+    "controller/E10-timing-0/stderr_path.txt",
+    "controller/E10-timing-0/stdout_path.txt",
+    "controller/E10-timing-1/artifacts",
+    "controller/E10-timing-1/lease_receipt.json",
+    "controller/E10-timing-1/stderr_path.txt",
+    "controller/E10-timing-1/stdout_path.txt",
+    "controller/E10-verify-0/artifacts",
+    "controller/E10-verify-0/lease_receipt.json",
+    "controller/E10-verify-0/stderr_path.txt",
+    "controller/E10-verify-0/stdout_path.txt",
+    "controller/E10-verify-1/artifacts",
+    "controller/E10-verify-1/lease_receipt.json",
+    "controller/E10-verify-1/stderr_path.txt",
+    "controller/E10-verify-1/stdout_path.txt"
+  ],
+  "result_summary": "2 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "architecture_gate": "sm_70_or_newer",
+        "bound": "case-level diagnostic gamma16*sum(abs(products)) for FP32 accumulation; not a claimed guarantee for proprietary tensor ordering or subnormal handling",
+        "case_names": "cancellation_order,large_exponent_gap,halfway_tie,subnormal_inputs,signed_zeros,bounded_integer_count,high_low_residual,large_first_placement",
+        "corpus": "cancellation_order, large_exponent_gap, halfway_tie, subnormal_inputs, signed_zeros, bounded_integer_count, high_low_residual, large_first_placement",
+        "device": "0",
+        "iterations": "1",
+        "reference": "long-double exact-input sum and explicit scalar FP32 FMA order for each distinct dot product",
+        "size": "16"
+      },
+      "experiment": "E10",
+      "limitations": [
+        "A targeted numerical fingerprint is evidence for this exact form and corpus only; it does not prove arbitrary FMA equivalence."
+      ],
+      "metrics": {
+        "case_0_actual": 0.000244140625,
+        "case_0_fp32_gamma_bound": 0.24987840675839879,
+        "case_0_placement": 0,
+        "case_0_reference": 0.000244140625,
+        "case_0_within_bound": 1,
+        "case_1_actual": 16777216,
+        "case_1_fp32_gamma_bound": 32.000062942624936,
+        "case_1_placement": 1,
+        "case_1_reference": 16777217,
+        "case_1_within_bound": 1,
+        "case_2_actual": 1,
+        "case_2_fp32_gamma_bound": 1.9073523844853005e-06,
+        "case_2_placement": 2,
+        "case_2_reference": 1.0000000596046448,
+        "case_2_within_bound": 1,
+        "case_3_actual": 2.384185791015625e-07,
+        "case_3_fp32_gamma_bound": 4.547482182498565e-13,
+        "case_3_placement": 3,
+        "case_3_reference": 2.384185791015625e-07,
+        "case_3_within_bound": 1,
+        "case_4_actual": 0,
+        "case_4_fp32_gamma_bound": 0,
+        "case_4_placement": 4,
+        "case_4_reference": 0,
+        "case_4_within_bound": 1,
+        "case_5_actual": 16,
+        "case_5_fp32_gamma_bound": 3.0517636332771936e-05,
+        "case_5_placement": 5,
+        "case_5_reference": 16,
+        "case_5_within_bound": 1,
+        "case_6_actual": 5.960464477539063e-08,
+        "case_6_fp32_gamma_bound": 3.8147046552835465e-06,
+        "case_6_placement": 6,
+        "case_6_reference": 5.960464477539063e-08,
+        "case_6_within_bound": 1,
+        "case_7_actual": -16777216,
+        "case_7_fp32_gamma_bound": 32.00006294262505,
+        "case_7_placement": 7,
+        "case_7_reference": -16777214.99999994,
+        "case_7_within_bound": 1,
+        "equal_outputs_vs_long_double_cast": 7,
+        "kernel_ms_median": 0.005119999870657921,
+        "kernel_ms_p95": 0.006144000217318535,
+        "max_abs_delta_vs_serial_fma": 1,
+        "max_abs_error_vs_long_double": 1.0000000596046448,
+        "max_relative_error_vs_long_double": 5.960465188081862e-08,
+        "output_count": 8
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/2d628b38-db75-48fe-84d7-6113cc8d2dd0/ncu/run/raw.csv",
+          "raw_csv_bytes": 36814,
+          "raw_csv_rows": 15,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/2d628b38-db75-48fe-84d7-6113cc8d2dd0/ncu/run/report.ncu-rep",
+          "report_bytes": 269909,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.3851014851485148,
+              "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 40.0,
+              "samples": 14,
+              "share_pct": 100.0,
+              "sm_pct": 0.06223569966996699,
+              "tensor_pct": 0.01827108646864686
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.3851014851485148,
+                "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 40.0,
+                "samples": 14,
+                "share_pct": 100.0,
+                "sm_pct": 0.06223569966996699,
+                "tensor_pct": 0.01827108646864686
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ba6f6469-56e0-40bc-b015-82638819ce20/nsys/run/report.nsys-rep",
+          "report_bytes": 248523,
+          "sqlite_activity_counts": {
+            "kernels": 36,
+            "memcpy": 3,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 39,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ba6f6469-56e0-40bc-b015-82638819ce20/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 36.0,
+              "launch_pct": 33.95054095826893,
+              "malloc_free_pct": 23.043573891332777,
+              "memcpy_memset_pct": 3.4275353703483535
+            },
+            "bottleneck_hints": [
+              "allocator-churn",
+              "launch-overhead"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Lengthen the steady-state phase or reduce setup work further, then rerun.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator setup is still too large relative to the steady-state window (23.0% of CUDA API time). This run is weak evidence for end-to-end timing.",
+              "Kernel launches are visible (34.0% of CUDA API time). If the kernels are individually short, consider fusion or CUDA Graph capture."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.7289,
+                "instances": 36,
+                "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+                "time_pct": 100.0,
+                "total_ms": 0.062239
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "kernel_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "wmma_numerical_fingerprint"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "architecture_gate": "sm_70_or_newer",
+        "bound": "case-level diagnostic gamma16*sum(abs(products)) for FP32 accumulation; not a claimed guarantee for proprietary tensor ordering or subnormal handling",
+        "case_names": "cancellation_order,large_exponent_gap,halfway_tie,subnormal_inputs,signed_zeros,bounded_integer_count,high_low_residual,large_first_placement",
+        "corpus": "cancellation_order, large_exponent_gap, halfway_tie, subnormal_inputs, signed_zeros, bounded_integer_count, high_low_residual, large_first_placement",
+        "device": "0",
+        "iterations": "8",
+        "reference": "long-double exact-input sum and explicit scalar FP32 FMA order for each distinct dot product",
+        "size": "256"
+      },
+      "experiment": "E10",
+      "limitations": [
+        "A targeted numerical fingerprint is evidence for this exact form and corpus only; it does not prove arbitrary FMA equivalence."
+      ],
+      "metrics": {
+        "case_0_actual": 0.000244140625,
+        "case_0_fp32_gamma_bound": 15.992431554942016,
+        "case_0_placement": 0,
+        "case_0_reference": 0.001953125,
+        "case_0_within_bound": 1,
+        "case_1_actual": 134217728,
+        "case_1_fp32_gamma_bound": 2048.0313725490196,
+        "case_1_placement": 1,
+        "case_1_reference": 134217736,
+        "case_1_within_bound": 1,
+        "case_2_actual": 8,
+        "case_2_fp32_gamma_bound": 0.00012207218244964,
+        "case_2_placement": 2,
+        "case_2_reference": 8.000000476837158,
+        "case_2_within_bound": 1,
+        "case_3_actual": 1.9073486328125e-06,
+        "case_3_fp32_gamma_bound": 2.910427455271992e-11,
+        "case_3_placement": 3,
+        "case_3_reference": 1.9073486328125e-06,
+        "case_3_within_bound": 1,
+        "case_4_actual": 0,
+        "case_4_fp32_gamma_bound": 0,
+        "case_4_placement": 4,
+        "case_4_reference": 0,
+        "case_4_within_bound": 1,
+        "case_5_actual": 128,
+        "case_5_fp32_gamma_bound": 0.001953154802777142,
+        "case_5_placement": 5,
+        "case_5_reference": 128,
+        "case_5_within_bound": 1,
+        "case_6_actual": 5.960464477539063e-08,
+        "case_6_fp32_gamma_bound": 0.0002441443576232114,
+        "case_6_placement": 6,
+        "case_6_reference": 4.76837158203125e-07,
+        "case_6_within_bound": 1,
+        "case_7_actual": -134217728,
+        "case_7_fp32_gamma_bound": 2048.031372549027,
+        "case_7_placement": 7,
+        "case_7_reference": -134217719.99999952,
+        "case_7_within_bound": 1,
+        "equal_outputs_vs_long_double_cast": 5,
+        "kernel_ms_median": 0.005119999870657921,
+        "kernel_ms_p95": 0.006144000217318535,
+        "max_abs_delta_vs_serial_fma": 5.960464477539063e-08,
+        "max_abs_error_vs_long_double": 8.000000476837158,
+        "max_relative_error_vs_long_double": 0.875,
+        "output_count": 8
+      },
+      "raw_sample_counts": {
+        "kernel_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "wmma_numerical_fingerprint"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

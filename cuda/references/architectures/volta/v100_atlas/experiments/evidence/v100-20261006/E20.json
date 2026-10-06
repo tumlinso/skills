@@ -1,0 +1,812 @@
+{
+  "correctness": {
+    "executed_cases": 16,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E20",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      "GPU-6c1cac7f-a360-0aef-ba98-2828bfd1db1a",
+      "GPU-cf22c41f-5b58-77b1-3535-8fadd1ca6505",
+      "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+    ]
+  },
+  "limitations": [
+    "Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload.",
+    "Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload.",
+    "directed_peer_copy: CUDA reports no direct peer access for this directed pair",
+    "directed_peer_copy: CUDA reports no direct peer access for this directed pair",
+    "directed_peer_copy: CUDA reports no direct peer access for this directed pair",
+    "directed_peer_copy: CUDA reports no direct peer access for this directed pair"
+  ],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "device": 0,
+          "iterations": 16,
+          "peer": 1,
+          "size": 1048576
+        },
+        {
+          "device": 0,
+          "iterations": 16,
+          "peer": 2,
+          "size": 1048576
+        },
+        {
+          "device": 0,
+          "iterations": 16,
+          "peer": 3,
+          "size": 1048576
+        },
+        {
+          "device": 1,
+          "iterations": 16,
+          "peer": 0,
+          "size": 1048576
+        },
+        {
+          "device": 1,
+          "iterations": 16,
+          "peer": 2,
+          "size": 1048576
+        },
+        {
+          "device": 1,
+          "iterations": 16,
+          "peer": 3,
+          "size": 1048576
+        },
+        {
+          "device": 2,
+          "iterations": 16,
+          "peer": 0,
+          "size": 1048576
+        },
+        {
+          "device": 2,
+          "iterations": 16,
+          "peer": 1,
+          "size": 1048576
+        },
+        {
+          "device": 2,
+          "iterations": 16,
+          "peer": 3,
+          "size": 1048576
+        },
+        {
+          "device": 3,
+          "iterations": 16,
+          "peer": 0,
+          "size": 1048576
+        },
+        {
+          "device": 3,
+          "iterations": 16,
+          "peer": 1,
+          "size": 1048576
+        },
+        {
+          "device": 3,
+          "iterations": 16,
+          "peer": 2,
+          "size": 1048576
+        }
+      ],
+      "ncu_replay_safe": false,
+      "nsys_eligible": true,
+      "profile_case_indices": [
+        0,
+        1
+      ],
+      "resource_group": "all",
+      "sanitizer": "communication",
+      "target": "atlas_transport"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E20-memcheck-0/artifacts",
+    "controller/E20-memcheck-0/lease_receipt.json",
+    "controller/E20-memcheck-0/stderr_path.txt",
+    "controller/E20-memcheck-0/stdout_path.txt",
+    "controller/E20-nsys-0/artifacts",
+    "controller/E20-nsys-0/lease_receipt.json",
+    "controller/E20-nsys-0/stderr_path.txt",
+    "controller/E20-nsys-0/stdout_path.txt",
+    "controller/E20-nsys-1/artifacts",
+    "controller/E20-nsys-1/lease_receipt.json",
+    "controller/E20-nsys-1/stderr_path.txt",
+    "controller/E20-nsys-1/stdout_path.txt",
+    "controller/E20-racecheck-0/artifacts",
+    "controller/E20-racecheck-0/lease_receipt.json",
+    "controller/E20-racecheck-0/stderr_path.txt",
+    "controller/E20-racecheck-0/stdout_path.txt",
+    "controller/E20-synccheck-0/artifacts",
+    "controller/E20-synccheck-0/lease_receipt.json",
+    "controller/E20-synccheck-0/stderr_path.txt",
+    "controller/E20-synccheck-0/stdout_path.txt",
+    "controller/E20-timing-0/artifacts",
+    "controller/E20-timing-0/lease_receipt.json",
+    "controller/E20-timing-0/stderr_path.txt",
+    "controller/E20-timing-0/stdout_path.txt",
+    "controller/E20-timing-1/artifacts",
+    "controller/E20-timing-1/lease_receipt.json",
+    "controller/E20-timing-1/stderr_path.txt",
+    "controller/E20-timing-1/stdout_path.txt",
+    "controller/E20-timing-10/artifacts",
+    "controller/E20-timing-10/lease_receipt.json",
+    "controller/E20-timing-10/stderr_path.txt",
+    "controller/E20-timing-10/stdout_path.txt",
+    "controller/E20-timing-11/artifacts",
+    "controller/E20-timing-11/lease_receipt.json",
+    "controller/E20-timing-11/stderr_path.txt",
+    "controller/E20-timing-11/stdout_path.txt",
+    "controller/E20-timing-3/artifacts",
+    "controller/E20-timing-3/lease_receipt.json",
+    "controller/E20-timing-3/stderr_path.txt",
+    "controller/E20-timing-3/stdout_path.txt",
+    "controller/E20-timing-5/artifacts",
+    "controller/E20-timing-5/lease_receipt.json",
+    "controller/E20-timing-5/stderr_path.txt",
+    "controller/E20-timing-5/stdout_path.txt",
+    "controller/E20-timing-6/artifacts",
+    "controller/E20-timing-6/lease_receipt.json",
+    "controller/E20-timing-6/stderr_path.txt",
+    "controller/E20-timing-6/stdout_path.txt",
+    "controller/E20-timing-8/artifacts",
+    "controller/E20-timing-8/lease_receipt.json",
+    "controller/E20-timing-8/stderr_path.txt",
+    "controller/E20-timing-8/stdout_path.txt",
+    "controller/E20-verify-0/artifacts",
+    "controller/E20-verify-0/lease_receipt.json",
+    "controller/E20-verify-0/stderr_path.txt",
+    "controller/E20-verify-0/stdout_path.txt",
+    "controller/E20-verify-1/artifacts",
+    "controller/E20-verify-1/lease_receipt.json",
+    "controller/E20-verify-1/stderr_path.txt",
+    "controller/E20-verify-1/stdout_path.txt",
+    "controller/E20-verify-10/artifacts",
+    "controller/E20-verify-10/lease_receipt.json",
+    "controller/E20-verify-10/stderr_path.txt",
+    "controller/E20-verify-10/stdout_path.txt",
+    "controller/E20-verify-11/artifacts",
+    "controller/E20-verify-11/lease_receipt.json",
+    "controller/E20-verify-11/stderr_path.txt",
+    "controller/E20-verify-11/stdout_path.txt",
+    "controller/E20-verify-2/artifacts",
+    "controller/E20-verify-2/lease_receipt.json",
+    "controller/E20-verify-2/stderr_path.txt",
+    "controller/E20-verify-2/stdout_path.txt",
+    "controller/E20-verify-3/artifacts",
+    "controller/E20-verify-3/lease_receipt.json",
+    "controller/E20-verify-3/stderr_path.txt",
+    "controller/E20-verify-3/stdout_path.txt",
+    "controller/E20-verify-4/artifacts",
+    "controller/E20-verify-4/lease_receipt.json",
+    "controller/E20-verify-4/stderr_path.txt",
+    "controller/E20-verify-4/stdout_path.txt",
+    "controller/E20-verify-5/artifacts",
+    "controller/E20-verify-5/lease_receipt.json",
+    "controller/E20-verify-5/stderr_path.txt",
+    "controller/E20-verify-5/stdout_path.txt",
+    "controller/E20-verify-6/artifacts",
+    "controller/E20-verify-6/lease_receipt.json",
+    "controller/E20-verify-6/stderr_path.txt",
+    "controller/E20-verify-6/stdout_path.txt",
+    "controller/E20-verify-7/artifacts",
+    "controller/E20-verify-7/lease_receipt.json",
+    "controller/E20-verify-7/stderr_path.txt",
+    "controller/E20-verify-7/stdout_path.txt",
+    "controller/E20-verify-8/artifacts",
+    "controller/E20-verify-8/lease_receipt.json",
+    "controller/E20-verify-8/stderr_path.txt",
+    "controller/E20-verify-8/stdout_path.txt",
+    "controller/E20-verify-9/artifacts",
+    "controller/E20-verify-9/lease_receipt.json",
+    "controller/E20-verify-9/stderr_path.txt",
+    "controller/E20-verify-9/stdout_path.txt"
+  ],
+  "result_summary": "20 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "1",
+        "direction": "one_way",
+        "source": "0"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.8111385,
+        "complete_transfer_ms_median": 0.8111385,
+        "complete_transfer_ms_p95": 0.819775,
+        "complete_transfer_p95_ms": 0.819775,
+        "payload_GB_per_s": 5.17088512011204
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "0",
+        "device_b": "1",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 8.611424297998564,
+        "complete_transfer_median_ms": 0.9741255,
+        "complete_transfer_ms_median": 0.9741255,
+        "complete_transfer_ms_p95": 1.034399,
+        "complete_transfer_p95_ms": 1.034399
+      },
+      "profiles": {
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/5909fe72-7a10-486b-81cc-7c9cbc4a3ebc/nsys/run/report.nsys-rep",
+          "report_bytes": 270638,
+          "sqlite_activity_counts": {
+            "kernels": 0,
+            "memcpy": 110,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 110,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/5909fe72-7a10-486b-81cc-7c9cbc4a3ebc/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 0.0,
+              "launch_pct": 0.0,
+              "malloc_free_pct": 2.5239782532381163,
+              "memcpy_memset_pct": 6.163133769589623
+            },
+            "bottleneck_hints": [
+              "missing-kernel-trace"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Rerun with the full target-side nsys binary and CUDA trace enabled.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "No CUDA kernel rows were exported. The run is not usable for timeline decisions."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Need a usable timeline before routing deeper.",
+            "status": "rerun",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [],
+            "trace_valid": false
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "2",
+        "direction": "one_way",
+        "source": "0"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.036583000000000004,
+        "complete_transfer_ms_median": 0.036583000000000004,
+        "complete_transfer_ms_p95": 0.037062,
+        "complete_transfer_p95_ms": 0.037062,
+        "payload_GB_per_s": 114.65172347811823
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "0",
+        "device_b": "2",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 201.848167665247,
+        "complete_transfer_median_ms": 0.041559,
+        "complete_transfer_ms_median": 0.041559,
+        "complete_transfer_ms_p95": 0.041914,
+        "complete_transfer_p95_ms": 0.041914
+      },
+      "profiles": {
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/3437fc7d-30f4-479f-b292-0ab72de0cb1b/nsys/run/report.nsys-rep",
+          "report_bytes": 270823,
+          "sqlite_activity_counts": {
+            "kernels": 0,
+            "memcpy": 110,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 110,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/3437fc7d-30f4-479f-b292-0ab72de0cb1b/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 0.0,
+              "launch_pct": 0.0,
+              "malloc_free_pct": 20.59419938676473,
+              "memcpy_memset_pct": 46.36081377876474
+            },
+            "bottleneck_hints": [
+              "missing-kernel-trace"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Rerun with the full target-side nsys binary and CUDA trace enabled.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "No CUDA kernel rows were exported. The run is not usable for timeline decisions."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Need a usable timeline before routing deeper.",
+            "status": "rerun",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [],
+            "trace_valid": false
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": false
+      },
+      "configuration": {},
+      "experiment": "E20",
+      "limitations": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "0",
+        "direction": "one_way",
+        "source": "1"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.811321,
+        "complete_transfer_ms_median": 0.811321,
+        "complete_transfer_ms_p95": 0.811904,
+        "complete_transfer_p95_ms": 0.811904,
+        "payload_GB_per_s": 5.16972197194452
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "1",
+        "device_b": "0",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 8.573070470784637,
+        "complete_transfer_median_ms": 0.9784835000000001,
+        "complete_transfer_ms_median": 0.9784835000000001,
+        "complete_transfer_ms_p95": 1.035209,
+        "complete_transfer_p95_ms": 1.035209
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": false
+      },
+      "configuration": {},
+      "experiment": "E20",
+      "limitations": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "3",
+        "direction": "one_way",
+        "source": "1"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.0370575,
+        "complete_transfer_ms_median": 0.0370575,
+        "complete_transfer_ms_p95": 0.050934,
+        "complete_transfer_p95_ms": 0.050934,
+        "payload_GB_per_s": 113.1836740201039
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "1",
+        "device_b": "3",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 201.28633473305337,
+        "complete_transfer_median_ms": 0.041675000000000004,
+        "complete_transfer_ms_median": 0.041675000000000004,
+        "complete_transfer_ms_p95": 0.0452,
+        "complete_transfer_p95_ms": 0.0452
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "0",
+        "direction": "one_way",
+        "source": "2"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.0372745,
+        "complete_transfer_ms_median": 0.0372745,
+        "complete_transfer_ms_p95": 0.037682,
+        "complete_transfer_p95_ms": 0.037682,
+        "payload_GB_per_s": 112.5247555299199
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "2",
+        "device_b": "0",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 204.6925563973988,
+        "complete_transfer_median_ms": 0.040981500000000004,
+        "complete_transfer_ms_median": 0.040981500000000004,
+        "complete_transfer_ms_p95": 0.041586,
+        "complete_transfer_p95_ms": 0.041586
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": false
+      },
+      "configuration": {},
+      "experiment": "E20",
+      "limitations": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "3",
+        "direction": "one_way",
+        "source": "2"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.8124875,
+        "complete_transfer_ms_median": 0.8124875,
+        "complete_transfer_ms_p95": 0.816719,
+        "complete_transfer_p95_ms": 0.816719,
+        "payload_GB_per_s": 5.162299727688118
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "2",
+        "device_b": "3",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 8.638066729068777,
+        "complete_transfer_median_ms": 0.971121,
+        "complete_transfer_ms_median": 0.971121,
+        "complete_transfer_ms_p95": 1.010248,
+        "complete_transfer_p95_ms": 1.010248
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": false
+      },
+      "configuration": {},
+      "experiment": "E20",
+      "limitations": [
+        "CUDA reports no direct peer access for this directed pair"
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "NOT_RUN",
+      "variant": "directed_peer_copy"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "1",
+        "direction": "one_way",
+        "source": "3"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.037483,
+        "complete_transfer_ms_median": 0.037483,
+        "complete_transfer_ms_p95": 0.038164,
+        "complete_transfer_p95_ms": 0.038164,
+        "payload_GB_per_s": 111.89883413814262
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "3",
+        "device_b": "1",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 200.43026784220962,
+        "complete_transfer_median_ms": 0.041853,
+        "complete_transfer_ms_median": 0.041853,
+        "complete_transfer_ms_p95": 0.058772,
+        "complete_transfer_p95_ms": 0.058772
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "4194304",
+        "destination": "2",
+        "direction": "one_way",
+        "source": "3"
+      },
+      "experiment": "E20",
+      "limitations": [],
+      "metrics": {
+        "complete_transfer_median_ms": 0.8115295,
+        "complete_transfer_ms_median": 0.8115295,
+        "complete_transfer_ms_p95": 0.812321,
+        "complete_transfer_p95_ms": 0.812321,
+        "payload_GB_per_s": 5.168393755248577
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_one_way"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes_per_direction": "4194304",
+        "device_a": "3",
+        "device_b": "2",
+        "direction": "simultaneous_two_way"
+      },
+      "experiment": "E20",
+      "limitations": [
+        "bandwidth is payload rate; physical NVLink routing requires independent link telemetry"
+      ],
+      "metrics": {
+        "aggregate_payload_GB_per_s": 8.604613925683392,
+        "complete_transfer_median_ms": 0.9748965,
+        "complete_transfer_ms_median": 0.9748965,
+        "complete_transfer_ms_p95": 1.033397,
+        "complete_transfer_p95_ms": 1.033397
+      },
+      "raw_sample_counts": {
+        "complete_transfer_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "directed_peer_copy_bidirectional"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

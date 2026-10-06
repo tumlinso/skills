@@ -1,0 +1,476 @@
+{
+  "correctness": {
+    "executed_cases": 8,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E24",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 4,
+          "size": 4096
+        },
+        {
+          "iterations": 16,
+          "size": 65536
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_memory"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E24-memcheck-0/artifacts",
+    "controller/E24-memcheck-0/lease_receipt.json",
+    "controller/E24-memcheck-0/stderr_path.txt",
+    "controller/E24-memcheck-0/stdout_path.txt",
+    "controller/E24-ncu-0/artifacts",
+    "controller/E24-ncu-0/lease_receipt.json",
+    "controller/E24-ncu-0/stderr_path.txt",
+    "controller/E24-ncu-0/stdout_path.txt",
+    "controller/E24-nsys-0/artifacts",
+    "controller/E24-nsys-0/lease_receipt.json",
+    "controller/E24-nsys-0/stderr_path.txt",
+    "controller/E24-nsys-0/stdout_path.txt",
+    "controller/E24-timing-0/artifacts",
+    "controller/E24-timing-0/lease_receipt.json",
+    "controller/E24-timing-0/stderr_path.txt",
+    "controller/E24-timing-0/stdout_path.txt",
+    "controller/E24-timing-1/artifacts",
+    "controller/E24-timing-1/lease_receipt.json",
+    "controller/E24-timing-1/stderr_path.txt",
+    "controller/E24-timing-1/stdout_path.txt",
+    "controller/E24-verify-0/artifacts",
+    "controller/E24-verify-0/lease_receipt.json",
+    "controller/E24-verify-0/stderr_path.txt",
+    "controller/E24-verify-0/stdout_path.txt",
+    "controller/E24-verify-1/artifacts",
+    "controller/E24-verify-1/lease_receipt.json",
+    "controller/E24-verify-1/stderr_path.txt",
+    "controller/E24-verify-1/stdout_path.txt"
+  ],
+  "result_summary": "8 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "16384",
+        "device": "0",
+        "elements": "4096",
+        "iterations_per_sample": "4",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, then GPU",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 41945088,
+        "host_end_to_end_ms_median": 0.55593,
+        "host_end_to_end_ms_p95": 0.621207,
+        "median_ms": 0.557405,
+        "p95_ms": 0.621207
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_cpu_first"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "16384",
+        "device": "0",
+        "elements": "4096",
+        "iterations_per_sample": "4",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, GPU prefetch before kernel",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 41945088,
+        "host_end_to_end_ms_median": 0.4729175,
+        "host_end_to_end_ms_p95": 0.487755,
+        "median_ms": 0.472926,
+        "p95_ms": 0.487755
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_prefetch"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "advice": "preferred location = selected GPU",
+        "bytes": "16384",
+        "device": "0",
+        "elements": "4096",
+        "iterations_per_sample": "4",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, GPU prefetch before kernel",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 41945088,
+        "host_end_to_end_ms_median": 0.46985299999999997,
+        "host_end_to_end_ms_p95": 0.474881,
+        "median_ms": 0.469854,
+        "p95_ms": 0.474881
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_advised_prefetch"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "16384",
+        "device": "0",
+        "elements": "4096",
+        "iterations_per_sample": "4",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "explicit cudaMalloc plus host-to-device copy on each timed call",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it.",
+        "All placements use host end-to-end timing; explicit placement includes one host-to-device copy per sample, managed prefetch placements include one prefetch per sample, and all run the same number of reduction kernels.",
+        "Managed samples restore CPU residency before timing; that restoration cost is excluded, while the timed CPU-to-GPU demand migration or prefetch and GPU work are included."
+      ],
+      "metrics": {
+        "checksum": 41945088,
+        "host_end_to_end_ms_median": 0.4553965,
+        "host_end_to_end_ms_p95": 0.456349,
+        "median_ms": 0.455416,
+        "p95_ms": 0.456349
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/21130b38-f2db-47e5-b6e5-afa8e16692a8/ncu/run/raw.csv",
+          "raw_csv_bytes": 384402,
+          "raw_csv_rows": 209,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/21130b38-f2db-47e5-b6e5-afa8e16692a8/ncu/run/report.ncu-rep",
+          "report_bytes": 2403871,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.01273762487007715,
+              "name": "<unnamed>::reduce_u32(const unsigned int *, unsigned long, unsigned long *)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 16.999999999999986,
+              "samples": 208,
+              "share_pct": 100.0,
+              "sm_pct": 0.027133588075359035,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.01273762487007715,
+                "name": "<unnamed>::reduce_u32(const unsigned int *, unsigned long, unsigned long *)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.999999999999986,
+                "samples": 208,
+                "share_pct": 100.0,
+                "sm_pct": 0.027133588075359035,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/de75336a-8383-496d-ab8f-e0e924070b75/nsys/run/report.nsys-rep",
+          "report_bytes": 297225,
+          "sqlite_activity_counts": {
+            "kernels": 560,
+            "memcpy": 281,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 841,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/de75336a-8383-496d-ab8f-e0e924070b75/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 560.0,
+              "launch_pct": 3.530074201119178,
+              "malloc_free_pct": 22.76631768339898,
+              "memcpy_memset_pct": 0.38790581694562953
+            },
+            "bottleneck_hints": [],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": false,
+            "next_step": "Use the paired Nsight Compute run on the hottest steady-state kernel.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "One-time allocation cost is still visible (22.8% of CUDA API time), but the steady-state kernel window is long enough that timing is still representative."
+            ],
+            "recommended_route": "hot-kernel",
+            "recommended_route_reason": "Timeline is usable and the next question is kernel-local cause.",
+            "status": "ok",
+            "steady_state_timing_valid": true,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 114.41810000000001,
+                "instances": 560,
+                "name": "<unnamed>::reduce_u32(const unsigned int *, unsigned long, unsigned long *)",
+                "time_pct": 100.0,
+                "total_ms": 64.074138
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "explicit_device_copy"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "262144",
+        "device": "0",
+        "elements": "65536",
+        "iterations_per_sample": "16",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, then GPU",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 10737451008,
+        "host_end_to_end_ms_median": 26.8932035,
+        "host_end_to_end_ms_p95": 26.948098,
+        "median_ms": 26.895352,
+        "p95_ms": 26.948098
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_cpu_first"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "262144",
+        "device": "0",
+        "elements": "65536",
+        "iterations_per_sample": "16",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, GPU prefetch before kernel",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 10737451008,
+        "host_end_to_end_ms_median": 26.449042,
+        "host_end_to_end_ms_p95": 26.462109,
+        "median_ms": 26.449222,
+        "p95_ms": 26.462109
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_prefetch"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "advice": "preferred location = selected GPU",
+        "bytes": "262144",
+        "device": "0",
+        "elements": "65536",
+        "iterations_per_sample": "16",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "CPU first-touch, GPU prefetch before kernel",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it."
+      ],
+      "metrics": {
+        "checksum": 10737451008,
+        "host_end_to_end_ms_median": 26.445335999999998,
+        "host_end_to_end_ms_p95": 26.459565,
+        "median_ms": 26.445452,
+        "p95_ms": 26.459565
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "managed_advised_prefetch"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "bytes": "262144",
+        "device": "0",
+        "elements": "65536",
+        "iterations_per_sample": "16",
+        "measurement_scope": "host_end_to_end_latency_only",
+        "migration_attribution": "not observed here; requires supported managed-memory profiler trace",
+        "placement": "explicit cudaMalloc plus host-to-device copy on each timed call",
+        "repeats": "30",
+        "warmup": "5"
+      },
+      "experiment": "E24",
+      "limitations": [
+        "CUDA managed-memory migration policy is driver/platform dependent; the test records public API behavior and does not inspect page tables or infer fault-counter completeness.",
+        "These cases report host end-to-end latency, not migration-fault attribution; migration and notification claims require managed-memory tracing where the available profiler supports it.",
+        "All placements use host end-to-end timing; explicit placement includes one host-to-device copy per sample, managed prefetch placements include one prefetch per sample, and all run the same number of reduction kernels.",
+        "Managed samples restore CPU residency before timing; that restoration cost is excluded, while the timed CPU-to-GPU demand migration or prefetch and GPU work are included."
+      ],
+      "metrics": {
+        "checksum": 10737451008,
+        "host_end_to_end_ms_median": 26.419205,
+        "host_end_to_end_ms_p95": 26.424048,
+        "median_ms": 26.419236,
+        "p95_ms": 26.424048
+      },
+      "raw_sample_counts": {
+        "host_end_to_end_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "explicit_device_copy"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

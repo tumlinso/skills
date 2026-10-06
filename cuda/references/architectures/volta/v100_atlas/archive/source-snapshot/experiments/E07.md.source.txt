@@ -1,0 +1,37 @@
+# E07 — Cache and transaction accounting
+
+> What fraction of traffic carries useful information, under which reuse conditions?
+
+**Status:** GPU_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
+**Read when:** experiment, cache, and, transaction, accounting.
+**Prerequisites:** R12. **Evidence:** S04 S30 S35.
+
+**Question:** What fraction of traffic carries useful information, under which reuse conditions?
+
+**Minimal setup:** Use both independent streaming accesses and dependent pointer chains. Separate read/write, warm/cold and cache forms.
+
+**Sweep:** Working set, stride, alignment, active lanes, concurrency and metadata/payload separation.
+
+**Discriminating observation:** Latency/throughput/sector signatures consistent with a stated cache or transaction explanation.
+
+**Baseline:** Contiguous useful-byte loads and a deliberately scattered control.
+
+**Confounders / correctness:** TLBs, page allocation, compiler elimination and profiler cache flushing. A plateau alone does not prove a cache level.
+
+**Access gate:** Public/PTX memory operations with legal cache semantics.
+
+**Related:** R03 M20 M21 M22 C38.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The measured units were checksum-preserving contiguous/stride-16 streams and dependent warm/scattered/displaced pointer chases. Fifteen GPU cases covered 4,096, 65,536 and 1,048,576 useful loads per pass, with 30 timing repetitions after warmups. At 1,048,576 loads, contiguous and scattered stream medians/p95 were 0.017408/0.017408 and 0.082944/0.083968 ms. The displaced chase interval excluded its separate scratch traversal. Implementation: [`run_memory` E07 branch](../benchmarks/native/memory.cu#L279). [Measured summary](evidence/v100-20261006/E07.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: Access-pattern timing contrasts for the selected stream and dependent-chase sizes.
+- Design implication (inference): State stride and dependency structure with useful-byte counts when comparing irregular and streaming access.
+- Does not establish: A specific cache level, translation cause, physical address mapping or transaction mechanism.
+- Original protocol gaps: Working-set/reuse, alignment, active-lane, read/write and metadata/payload sweeps plus counter-backed cache attribution are incomplete.

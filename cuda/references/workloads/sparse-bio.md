@@ -2,6 +2,8 @@
 
 Use this guide to classify a biological sparse matrix before choosing a kernel: record its axes (cells × genes, cells × peaks, spliced/unspliced counts, graph edges, or dense embeddings), value semantics (counts, normalized values, binary accessibility, projected features), and the hot phase.
 
+For unusual repeated operators, membership tests, or ownership patterns, use [machine-aligned design](../common/machine-aligned-design.md) to compare semantic representations while preserving biological axes, output contracts, and sparse-to-dense costs.
+
 ## Match layout to the phase
 
 - Cell-wise QC, row sums, normalization, filtering, row sharding, and sparse × dense projection usually favor CSR with rows = cells.

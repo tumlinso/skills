@@ -1,0 +1,38 @@
+# E15 — Publication and progress litmus
+
+> Can the proposed bounded protocol violate payload or scheduling invariants?
+
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E15.md)). **Depth:** 4.
+**Read when:** experiment, publication, and, progress, litmus.
+**Prerequisites:** R12. **Evidence:** S17 S25 S30 S33.
+
+**Question:** Can the proposed bounded protocol violate payload or scheduling invariants?
+
+**Minimal setup:** First write a memory-model/progress proof. Then run finite epoch-tagged producer/consumer tests with protected termination and adversarial delays.
+
+**Sweep:** Grid admission, stream ordering, queue fullness, counter wrap bounds and device/host placement.
+
+**Discriminating observation:** Any stale payload, reused slot or blocked producer falsifies the implementation; no observed failures do not prove legality.
+
+**Baseline:** A supported explicit phase/event protocol.
+
+**Confounders / correctness:** Undefined races cannot be legalized by stress testing. A watchdog cannot substitute for a schedulable stop path.
+
+**Access gate:** No unbounded spin test; use valid memory types, scopes and ordering.
+
+**Related:** R06 C22 C24 C25.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Four correctness-valid GPU cases cover sizes 2 and 31 at 8 and 32 iterations. The release/acquire cooperative variant uses two admitted CTAs, one slot without reuse, and a finite polling bound; it records zero payload mismatches and zero timeouts. Its reported median is 11.264 microseconds and p95 12.288 microseconds. The event-phased baseline medians are 1.131 and 1.144 milliseconds. Those full-protocol measurements include the recorded producer event, consumer stream wait, kernel work, and host completion wait. Each variant has 30 timing samples; the selected producer/consumer protocol is finite.
+
+[Measured summary](evidence/v100-20261006/E15.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md) · [sync.cu: publication_litmus](../benchmarks/native/sync.cu#L96)
+
+## Meaning through representation and execution
+
+- **Supports:** Correct payload observation and termination for the tested single-slot bounded protocol and its selected event baseline.
+- **Design implication (inference):** A producer/consumer design needs an explicit progress argument and a stop path that remains schedulable under its admission model.
+- **Does not establish:** Fairness, safety with slot reuse or arbitrary delays, or that stress testing can legalize an invalid memory-model protocol.
+- **Original protocol gaps:** The run does not sweep grid admission, queue fullness, counter wrap, host/device placement, or adversarial scheduling; no fairness test was performed.

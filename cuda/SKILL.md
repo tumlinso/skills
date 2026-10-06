@@ -14,9 +14,14 @@ or to locate a heading in a long manual.
 ## Working method
 
 1. Define the operation, representative shapes/data, layouts, dtypes, numerical
-   tolerances, and success metric. Separate resident kernel time from transfers,
-   setup, and end-to-end time; preserve a correctness oracle.
-2. Choose ownership and decomposition before instruction tuning. Check library
+   tolerances, and success metric. Record the equation, state transition, and
+   scientific invariants; keep an independent correctness oracle. Separate
+   resident kernel time from transfers, setup, and end-to-end time.
+2. Choose the semantic unit, then consider encodings, layouts, and ownership
+   that make its required operations native to the machine. For meaningful
+   structure or reuse, use [machine-aligned design](references/common/machine-aligned-design.md)
+   to generate and reject candidates against a complete cost model. Keep routine
+   library-shaped work on its library route. Check library
    and Tensor Core eligibility for dense/blocked work; account for packing and
    precision costs. For irregular work, choose layout and thread/warp ownership.
    Fusion must save launches or traffic without losing the gain to spills,
@@ -35,6 +40,7 @@ or to locate a heading in a long manual.
 | Question | Focused reference |
 | --- | --- |
 | Library, kernel building blocks, or custom CUDA? | [Compute libraries](references/common/compute-libraries.md) |
+| Semantic operator has a meaningful representation or ownership choice? | [Machine-aligned design](references/common/machine-aligned-design.md) |
 | Fuse, split, specialize, branch, or change memory tier? | [Kernel mechanics](references/common/kernel-mechanics.md) |
 | CPU algorithm needs GPU decomposition/layout | [CPU porting](references/workloads/cpu-porting.md) |
 | Sparse scientific/omics formats and ownership | [Sparse workloads](references/workloads/sparse-bio.md) |

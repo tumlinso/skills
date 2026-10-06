@@ -1,0 +1,146 @@
+{
+  "correctness": {
+    "executed_cases": 5,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E38",
+  "hardware": {
+    "gpu_uuids": []
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E38-host/artifacts",
+    "controller/E38-host/lease_receipt.json",
+    "controller/E38-host/stderr_path.txt",
+    "controller/E38-host/stdout_path.txt"
+  ],
+  "result_summary": "5 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "method": "offline_contract_falsification"
+      },
+      "experiment": "E38",
+      "limitations": [
+        "No documented public interface accepts an incomplete participating warp for the selected operation; exact reference semantics and participation contract are absent.",
+        "Falsifies the stated general interpretation only; does not prove physical impossibility."
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "CPU_ONLY",
+      "variant": "partial_warp_tensor_core_participation_is_a_supported_pu"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "method": "offline_contract_falsification"
+      },
+      "experiment": "E38",
+      "limitations": [
+        "Public copy/async interfaces move data but do not specify reduction semantics; equivalent supported work must execute explicit arithmetic.",
+        "Falsifies the stated general interpretation only; does not prove physical impossibility."
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "CPU_ONLY",
+      "variant": "gpu_dma_engines_perform_arbitrary_array_reductions"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "method": "offline_contract_falsification"
+      },
+      "experiment": "E38",
+      "limitations": [
+        "Peer reachability flags do not establish ordering, atomic scope, or cache coherence; each operation needs a documented memory-model contract.",
+        "Falsifies the stated general interpretation only; does not prove physical impossibility."
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "CPU_ONLY",
+      "variant": "peer_memory_is_automatically_coherent_for_every_access_p"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "method": "offline_contract_falsification"
+      },
+      "experiment": "E38",
+      "limitations": [
+        "Public WMMA/MMA interfaces define supported arithmetic forms; an arbitrary semiring requires an independently specified supported mapping.",
+        "Falsifies the stated general interpretation only; does not prove physical impossibility."
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "CPU_ONLY",
+      "variant": "generic_semiring_mma_is_available_on_sm70"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "method": "offline_contract_falsification"
+      },
+      "experiment": "E38",
+      "limitations": [
+        "Compilation and documentation evidence must establish target encoding and runtime contract; malformed opcodes are excluded.",
+        "Falsifies the stated general interpretation only; does not prove physical impossibility."
+      ],
+      "metrics": {},
+      "raw_sample_counts": {},
+      "status": "CPU_ONLY",
+      "variant": "header_or_mnemonic_presence_proves_undocumented_opcode_s"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "CPU_ONLY"
+}

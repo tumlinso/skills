@@ -1,0 +1,38 @@
+# E18 — Peer loads, cache behavior and latency
+
+> What actually services repeated peer accesses on the tested path?
+
+**Status:** GPU_RUN (implemented subset only; see measured coverage). **Original protocol status:** NOT_RUN_ON_GPU ([immutable original card](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E18.md)). **Depth:** 4.
+**Read when:** experiment, peer, loads, cache, behavior, and, latency.
+**Prerequisites:** R12. **Evidence:** S02 S25 S30.
+
+**Question:** What actually services repeated peer accesses on the tested path?
+
+**Minimal setup:** Use pointer chains and independent requests to peer allocations; compare read-only phases and correctly synchronized writes.
+
+**Sweep:** Working set, stride, cache form, concurrency, allocation and owner-side traffic.
+
+**Discriminating observation:** Signatures that separate startup, translation, caching and owner-memory contention.
+
+**Baseline:** Local HBM and explicit peer staging.
+
+**Confounders / correctness:** A latency reduction does not by itself prove requester L2 caching or coherent writable aliases.
+
+**Access gate:** Validate peer capability and use legal ordering; no unsynchronized cache-coherence tests.
+
+**Related:** R07 C20 M34.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Eight correctness-valid GPU cases compare dependent pointer chains, independent peer loads, and peer-copy staging followed by a local chain at 16 KiB and 1 MiB working sets. The dependent-chain unit is p <- next[p], repeated for 4,000 or 32,000 steps; independent cases accumulate 4 or 32 indexed loads per thread. Result configurations use CUDA-visible ordinals 0/1, which the run lease and inventory bind to physical GPUs 0/2 (UUIDs GPU-21131915-1488-23af-38dd-1743ae1f5cc8 and GPU-d745da9c-7649-8334-41f1-483afa6f3206). At 1 MiB, local and remote dependent-chain kernel medians are 1.312 and 2.450 ms; staging preparation is 0.015 ms and the following local-chain median is 1.238 ms. At 16 KiB, local and remote chain medians are 0.168 and 0.311 ms. Staging and resident-kernel intervals are reported separately.
+
+[Measured summary](evidence/v100-20261006/E18.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md) · [transport.cu: chain_kernel and independent_kernel](../benchmarks/native/transport.cu#L93)
+
+## Meaning through representation and execution
+
+- **Supports:** Distinct costs for dependent remote access, independent peer loads, and explicit staging followed by local traversal on this allocation and physical pair.
+- **Design implication (inference):** Staging can exchange an upfront transfer cost for a subsequent local access path; the choice depends on reuse and working set.
+- **Does not establish:** Which cache serves accesses, requester-side L2 caching, coherent writable aliases, or a general peer-topology rule.
+- **Original protocol gaps:** The run does not sweep cache forms, strides, concurrency, allocation alternatives, or owner-side traffic; it is not a cache-coherence proof.

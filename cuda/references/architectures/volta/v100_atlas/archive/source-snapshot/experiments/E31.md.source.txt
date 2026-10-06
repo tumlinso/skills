@@ -1,0 +1,40 @@
+# E31 — MPS and process interference
+
+> What sharing, latency and failure boundaries hold on this exact Volta stack?
+
+**Status:** GPU_RUN (subset: bounded single-GPU client-latency subcase). **Original protocol status:** NOT_RUN_ON_GPU ([archived E31 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E31.md)). **Depth:** 4.
+**Read when:** experiment, mps, and, process, interference.
+**Prerequisites:** R12. **Evidence:** S01 S41 S30.
+
+**Question:** What sharing, latency and failure boundaries hold on this exact Volta stack?
+
+**Minimal setup:** Use compatible documented MPS/IPC configurations and benign finite workloads in separate clients.
+
+**Sweep:** Client count, resource fractions, work mix and isolated versus shared execution.
+
+**Discriminating observation:** Per-client tails, aggregate useful work and observed interference.
+
+**Baseline:** Separate conventional contexts and single-client runs.
+
+**Confounders / correctness:** Current MPS docs may include unsupported newer variants; resource shares do not prove fairness or fatal-fault isolation.
+
+**Access gate:** No deliberate fault injection on shared hardware; preserve process/resource lifetimes.
+
+**Related:** M45 C25.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+Three correctness-passing cases used a size-65,536 finite client pipeline on one GPU: one client, two independent CUDA contexts, and two private MPS clients. Median client latency was 0.009216 ms in all three cases; p95 was 0.010240 ms for the first two and 0.017408 ms for private MPS clients. Concurrent-client profiling/replay was not used.
+
+Primary scope: host [run_e31](../scripts/atlas_host.py#L475) launches the finite [pipeline_kernel](../benchmarks/native/logic.cu#L203); its timeline capture is diagnostic only.
+
+[Measured summary](evidence/v100-20261006/E31.json) · [Full campaign](../benchmark_runs/v100-20261006T145155Z-4bd01216/REPORT.md) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** this exact two-client MPS sample had the same reported median as the single-client/context cases and a higher p95.
+- **Design implication (inference):** report client latency distributions for a specified workload and sharing mode; aggregate means alone can hide tail changes.
+- **Does not establish:** scheduler fairness, fault isolation, general MPS behavior, or a controlled causal comparison of sharing modes.
+- **Original protocol gaps:** client count beyond two, resource fractions, work-mix sweep, aggregate useful work, and deliberate-but-safe failure-boundary characterization were not covered.

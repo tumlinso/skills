@@ -1,0 +1,40 @@
+# E35 — Platform and electrical evidence
+
+> Which module/baseboard details affect software-visible behavior?
+
+**Status:** CPU_ONLY (subset: software-visible platform inventory subcase). **Original protocol status:** NOT_RUN_ON_GPU ([archived E35 at commit 5c1f805db80a](https://github.com/tumlinso/gpu_circuit_bending_atlas/blob/5c1f805db80a81f7476ede8292abba69821d104f/experiments/E35.md)). **Depth:** 4.
+**Read when:** experiment, platform, and, electrical, evidence.
+**Prerequisites:** R12. **Evidence:** S02 S36 S37 S39.
+
+**Question:** Which module/baseboard details affect software-visible behavior?
+
+**Minimal setup:** Collect exact SKU/part/VBIOS/BDF identifiers and available original platform documentation; inspect topology without physical modification.
+
+**Sweep:** Device/OEM revisions, link widths, root placement and supported telemetry.
+
+**Discriminating observation:** A source-backed platform matrix with explicit unresolved pins/rails/clock domains.
+
+**Baseline:** Generic V100 assumptions, used only as hypotheses to check.
+
+**Confounders / correctness:** SXM2 form factor does not prove identical wiring, firmware or enabled features.
+
+**Access gate:** Read-only first; no probing unknown powered pins or firmware modifications.
+
+**Related:** R13 R07 M49 M50.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+## Measured coverage (2026-10-06)
+
+The final campaign records one CPU_ONLY `software_visible_platform` observation. It collected available identifiers/platform facts; no physical modification or GPU experiment was performed.
+
+Primary scope: host [run_e35](../scripts/atlas_host.py#L166) records the [platform evidence](evidence/v100-20261006/E35-raw-host-records.md).
+
+[Measured summary](evidence/v100-20261006/E35.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- **Supports:** the available software-visible identifiers in this single-host inventory.
+- **Design implication (inference):** tie platform claims to recorded identifiers and primary documentation before comparing device revisions.
+- **Does not establish:** wiring, rails, clock domains, or that module/baseboard differences cause runtime behavior.
+- **Original protocol gaps:** no cross-device/OEM revision, link-width, root-placement, or telemetry matrix and no physical probing were performed.

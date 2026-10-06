@@ -6,6 +6,8 @@ implementation questions. Keep builds narrow to `sm_70`, prefer native
 measurements over generic CUDA medians, and treat repeated HBM passes as a
 first-class loss.
 
+For a structured operation whose best representation or ownership is still open, start with [machine-aligned design](../../common/machine-aligned-design.md); its linked V100 atlas cards are hypotheses and dated evidence, not architecture-wide guarantees.
+
 The recorded native-host profile has fast pairs `0 <-> 2` and `1 <-> 3`, with
 `0 <-> 3` and `1 <-> 2` the worst steady-state paths. Revalidate runtime
 topology before applying rank placement; controller admission and interlock

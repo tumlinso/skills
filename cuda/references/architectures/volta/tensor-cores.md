@@ -2,6 +2,8 @@
 
 Use this addendum when dense or blocked work on Tesla V100 16 GB `sm_70` should probably be using Tensor Cores, but the current path is not delivering the expected throughput.
 
+For an unfamiliar scientific operator, establish its equation, independent dimensions, and ownership before treating it as a tensor-core workload; [machine-aligned design](../../common/machine-aligned-design.md) gives the representation-level comparison route.
+
 This file is the operational route. It should answer:
 
 - is the workload eligible for Tensor Core pursuit

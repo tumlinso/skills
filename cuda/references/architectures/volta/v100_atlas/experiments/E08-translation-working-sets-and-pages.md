@@ -1,0 +1,37 @@
+# E08 — Translation working sets and pages
+
+> Is the irregular workload limited by translation rather than data bandwidth?
+
+**Status:** GPU_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
+**Read when:** experiment, translation, working, sets, and, pages.
+**Prerequisites:** R12. **Evidence:** S04 S16 S31.
+
+**Question:** Is the irregular workload limited by translation rather than data bandwidth?
+
+**Minimal setup:** Hold useful bytes constant while changing page footprint and traversal order. Record VMM allocation settings separately from observed translation behavior.
+
+**Sweep:** Page count, stride, allocation method, reuse and concurrent requests.
+
+**Discriminating observation:** Performance changes with translation footprint that remain after data-cache controls.
+
+**Baseline:** Page-local traversal and conventional contiguous allocation.
+
+**Confounders / correctness:** VMM granularity is not automatically TLB page size; VA patterns do not directly reveal physical channel bits.
+
+**Access gate:** Only supported allocation/advice/VMM interfaces; no direct PTE modification.
+
+**Related:** R08 M40 C38.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The measured unit was a checksum-producing traversal with 4,096-byte virtual-page spacing and footprints of 1/4/16/64/256 pages. Fifteen GPU cases paired those footprints with 4,096, 65,536 and 262,144 useful loads per pass; each used four passes and 30 timing repetitions. At 4,096 loads/pass, 1-page page-local median/p95 were 0.449536/0.450560 ms; 256-page strided were 0.563200/0.564224 ms. Virtual footprint was manipulated; no TLB counter was collected. Implementation: [`run_memory` E08 branch](../benchmarks/native/memory.cu#L358). [Measured summary](evidence/v100-20261006/E08.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: A measured timing contrast between the selected page-local and strided virtual-footprint cases.
+- Design implication (inference): Hold useful work fixed while varying address footprint in follow-up translation studies.
+- Does not establish: TLB misses, physical page placement or translation as the cause of the observed timing difference.
+- Original protocol gaps: Supported allocation/advice comparisons, data-cache controls, translation counters, reuse variations and broader traversal sweeps are missing.

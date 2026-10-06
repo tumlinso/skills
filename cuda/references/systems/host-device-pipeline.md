@@ -2,6 +2,8 @@
 
 Use this guide when GPUs wait for the host, batch assembly is fragmented, or Nsight Systems shows gaps not explained by kernel runtime. For active capture or benchmark execution on the shared host, follow [host execution](../execution/host-execution.md) first; use controller admission and invoke capture/serialization wrappers only inside that admitted run.
 
+When data ownership or the amount of information crossing the host/device boundary is itself a design choice, use [machine-aligned design](../common/machine-aligned-design.md) to compare staging, local work, and compact owner-compute candidates.
+
 ## Workflow
 
 1. Classify the stall.

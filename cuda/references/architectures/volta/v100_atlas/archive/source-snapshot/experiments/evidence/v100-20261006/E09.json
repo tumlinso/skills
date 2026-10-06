@@ -1,0 +1,287 @@
+{
+  "correctness": {
+    "executed_cases": 2,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E09",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 1,
+          "size": 16
+        }
+      ],
+      "depends_on": [
+        "E01"
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "tensor",
+      "target": "atlas_tensor"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E09-memcheck-0/artifacts",
+    "controller/E09-memcheck-0/lease_receipt.json",
+    "controller/E09-memcheck-0/stderr_path.txt",
+    "controller/E09-memcheck-0/stdout_path.txt",
+    "controller/E09-ncu-0/artifacts",
+    "controller/E09-ncu-0/lease_receipt.json",
+    "controller/E09-ncu-0/stderr_path.txt",
+    "controller/E09-ncu-0/stdout_path.txt",
+    "controller/E09-nsys-0/artifacts",
+    "controller/E09-nsys-0/lease_receipt.json",
+    "controller/E09-nsys-0/stderr_path.txt",
+    "controller/E09-nsys-0/stdout_path.txt",
+    "controller/E09-racecheck-0/artifacts",
+    "controller/E09-racecheck-0/lease_receipt.json",
+    "controller/E09-racecheck-0/stderr_path.txt",
+    "controller/E09-racecheck-0/stdout_path.txt",
+    "controller/E09-synccheck-0/artifacts",
+    "controller/E09-synccheck-0/lease_receipt.json",
+    "controller/E09-synccheck-0/stderr_path.txt",
+    "controller/E09-synccheck-0/stdout_path.txt",
+    "controller/E09-timing-0/artifacts",
+    "controller/E09-timing-0/lease_receipt.json",
+    "controller/E09-timing-0/stderr_path.txt",
+    "controller/E09-timing-0/stdout_path.txt",
+    "controller/E09-verify-0/artifacts",
+    "controller/E09-verify-0/lease_receipt.json",
+    "controller/E09-verify-0/stderr_path.txt",
+    "controller/E09-verify-0/stdout_path.txt"
+  ],
+  "result_summary": "2 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "architecture_gate": "sm_70_or_newer",
+        "b_fragment_layout": "column-major: register elements map to rows i=0..3 and column=(lane%4)+(lane>=16?4:0)",
+        "coordinate_contract": "PTX ISA 7.0 section 9.7.13.4.1 documented accumulator mapping",
+        "device": "0",
+        "iterations": "1",
+        "oracle": "CPU matrix multiplication plus lane-independent unique accumulator labels",
+        "ptx_form": "mma.sync.aligned.m8n8k4.row.col.f32.f16.f16.f32",
+        "raw_outputs": "four PTX MMA operations; per-lane d0..d7 saved before canonicalization",
+        "size": "16"
+      },
+      "experiment": "E09",
+      "limitations": [
+        "This directly tests the documented PTX form and register-coordinate formulas; it does not establish a general SASS encoding contract on other toolchains."
+      ],
+      "metrics": {
+        "documented_coordinates_covered": 256,
+        "kernel_ms_median": 0.005119999870657921,
+        "kernel_ms_p95": 0.006144000217318535,
+        "max_abs_error_vs_cpu": 0
+      },
+      "raw_sample_counts": {
+        "kernel_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "ptx_m8n8k4_lane_map"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "architecture_gate": "sm_70_or_newer",
+        "device": "0",
+        "iterations": "1",
+        "oracle": "double accumulation of exact FP16-converted inputs",
+        "raw_fragment_layout": "lane-major; WMMA fragment element slots; implementation-specific",
+        "size": "16"
+      },
+      "experiment": "E09",
+      "limitations": [
+        "WMMA fragment ownership is opaque API state; raw lane slots do not validate an explicit PTX fragment contract."
+      ],
+      "metrics": {
+        "kernel_ms_median": 0.005119999870657921,
+        "kernel_ms_p95": 0.005119999870657921,
+        "max_abs_error_vs_cpu": 0,
+        "raw_fragment_slots_written": 256
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/9fa59a00-f730-4b69-84d5-56a5fc73b700/ncu/run/raw.csv",
+          "raw_csv_bytes": 62112,
+          "raw_csv_rows": 29,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/9fa59a00-f730-4b69-84d5-56a5fc73b700/ncu/run/report.ncu-rep",
+          "report_bytes": 424315,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.14339994023413427,
+              "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 39.999999999999986,
+              "samples": 14,
+              "share_pct": 55.658436213991784,
+              "sm_pct": 0.010465735058533576,
+              "tensor_pct": 0.0020931589648798517
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.14339994023413427,
+                "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 39.999999999999986,
+                "samples": 14,
+                "share_pct": 55.658436213991784,
+                "sm_pct": 0.010465735058533576,
+                "tensor_pct": 0.0020931589648798517
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.09758895978344936,
+                "name": "<unnamed>::ptx_mma_lane_map(const __half *, const __half *, float *, int *, int *)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 32.0,
+                "samples": 14,
+                "share_pct": 44.341563786008216,
+                "sm_pct": 0.014828624129930397,
+                "tensor_pct": 0.0006447161639597834
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/c370bc80-603c-4801-bb84-52bc0c230736/nsys/run/report.nsys-rep",
+          "report_bytes": 252181,
+          "sqlite_activity_counts": {
+            "kernels": 72,
+            "memcpy": 10,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 82,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/c370bc80-603c-4801-bb84-52bc0c230736/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 72.0,
+              "launch_pct": 28.75456595435814,
+              "malloc_free_pct": 28.280329809682435,
+              "memcpy_memset_pct": 7.281023649496377
+            },
+            "bottleneck_hints": [
+              "allocator-churn",
+              "launch-overhead"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Lengthen the steady-state phase or reduce setup work further, then rerun.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator setup is still too large relative to the steady-state window (28.3% of CUDA API time). This run is weak evidence for end-to-end timing.",
+              "Kernel launches are visible (28.8% of CUDA API time). If the kernels are individually short, consider fusion or CUDA Graph capture."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.7458,
+                "instances": 36,
+                "name": "<unnamed>::wmma_matmul(const __half *, const __half *, float *, float *, int)",
+                "time_pct": 50.8,
+                "total_ms": 0.062847
+              },
+              {
+                "avg_us": 1.6907,
+                "instances": 36,
+                "name": "<unnamed>::ptx_mma_lane_map(const __half *, const __half *, float *, int *, int *)",
+                "time_pct": 49.2,
+                "total_ms": 0.060864
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "kernel_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "wmma_one_hot_lane_fragment"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

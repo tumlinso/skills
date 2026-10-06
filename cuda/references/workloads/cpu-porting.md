@@ -2,6 +2,8 @@
 
 Use this guide when the code still reflects CPU caches, thread pools, object graphs, serial stages, or callback-sized tasks. Do not map those structures literally onto CUDA: choose the execution model, data layout, and residency boundary before tuning kernels.
 
+When the operation has meaningful structure, reuse, or ownership choices, [machine-aligned design](../common/machine-aligned-design.md) helps map the semantic unit onto native positions before settling on a GPU decomposition.
+
 Use the [porting decision tree](cpu-porting-decision-tree.md) when the right
 endpoint remains unclear after identifying the hot phase and its data movement.
 

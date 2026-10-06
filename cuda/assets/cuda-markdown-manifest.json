@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "SKILL.md",
-      "bytes": 5392,
-      "sha256": "f2dcb1d158c0987e36f1350de0b09fa7bc0ca346924b6f8745779c4b79ec226b"
+      "bytes": 5927,
+      "sha256": "b821b34a890d6081ebf9ad1c83cb4f5345ed6cf51c62342749a4d3a1004905b8"
     },
     {
       "path": "references/architectures/ampere/low-level-optimization.md",
@@ -93,8 +93,8 @@
     },
     {
       "path": "references/architectures/volta/router.md",
-      "bytes": 4847,
-      "sha256": "b00e983ebe875e3ebd9cdcd4678f5267f6d375e8324df5503e0c050d136c121b"
+      "bytes": 5103,
+      "sha256": "9aefc09ec735eb2676be966fe25c129e83827bdec3e48c85cc1743a5e447d8c7"
     },
     {
       "path": "references/architectures/volta/sass-and-ptx-triage.md",
@@ -108,8 +108,1083 @@
     },
     {
       "path": "references/architectures/volta/tensor-cores.md",
-      "bytes": 6468,
-      "sha256": "ce9f1717502c738f575571832d452c52ae28fcec59db33828b79f4de5ec46f18"
+      "bytes": 6730,
+      "sha256": "893bde6e1ff6173f5eea70438cc7d77ea43f999ceff27f17cf2d95c2ef59cbb5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/CARD_CATALOG.md",
+      "bytes": 19843,
+      "sha256": "008e15af53c42f8282f52bb5104eed93b145e53e3f96cecd393ab48bf876c027"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/CURRENT_STATUS.md",
+      "bytes": 1324,
+      "sha256": "f3f9285ab7d0c85f79c1c83141aa1f6d7a40abbd722b6122ee6b73285223e46f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/FIELD_GUIDE.md",
+      "bytes": 6891,
+      "sha256": "c3b3775ad60eb018a38ce2b761ae90e938788200934a449b88ec22bda5c7d5f0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/IMPORT_MAINTENANCE.md",
+      "bytes": 1011,
+      "sha256": "39e788f6240361dec8dbc872f2d6099f4f1e78296b919864e32d8076aa125985"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/NEED_INDEX.md",
+      "bytes": 3925,
+      "sha256": "ddfc3bd88ce00eaf7b625b7291feadf0528f7c110427a8f2915a8546bf0ebc82"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/README.md",
+      "bytes": 2624,
+      "sha256": "0fb9a57c75e9e1378ce96e5a9fe331814fe3cf830562977b63fe133e09f83d07"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/START_HERE.md",
+      "bytes": 3145,
+      "sha256": "3d1c494ef06b0dda26c7a9597bca79be23192c2ee8d51b2ba1ff43540ab00cde"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/benchmarks/EXECUTION.md",
+      "bytes": 4842,
+      "sha256": "86f13f4ecbe040becdc22f13f330e7c4ddf19c79fbab127c0c486c523ecfd773"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/benchmarks/README.md",
+      "bytes": 1988,
+      "sha256": "21ed768f1ae58b46c581c52ad56ef23df3a210973b7ffbc1f4a3e8e6a71bb8fe"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C00-bit-sliced-full-adders-and-arbitrary-local-boolean-rules.md",
+      "bytes": 1900,
+      "sha256": "9ea57a6797b19f6a3b72c2eac3d1176c1ee1459992e8f11310a8b660e8b5db13"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C01-sequence-symbols-as-two-plane-equality-circuits.md",
+      "bytes": 1649,
+      "sha256": "cc084cba86e7a545bb8a536471830aa24f6a65c0bb2da19948eeca80816cd4d9"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C02-ballot-transpose-as-a-persistent-state-encoding.md",
+      "bytes": 1665,
+      "sha256": "63b7e5987e761e9563cb6cefb2a4a7d9e617b363d206c875c93cb8ab40053245"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C03-a-warp-resident-byte-lookup-network.md",
+      "bytes": 1734,
+      "sha256": "b6ebf6e639b82380238ab554b8be2fff9a4352b3db858404b074736254252ed3"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C04-warp-cam-plus-one-reservation-per-equal-destination.md",
+      "bytes": 1635,
+      "sha256": "6ecefa317d954fcbf52bc4d04da0b49fc2180d7ae9f6b8ddb88e8cb2036da12b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C05-a32-vertex-graph-carried-in-warp-registers.md",
+      "bytes": 1666,
+      "sha256": "31fe38f55d335a391fa86cd110b7207ebb7c3a4b8863e2ebda7bf30f94e86496"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C06-a-bit-sliced-finite-state-engine.md",
+      "bytes": 1555,
+      "sha256": "7424e6b96a68b293b228ace2058a8cf28036eda024391770e12a85dbb0e0effc"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C07-guard-digit-convolution-using-ordinary-integer-multiplication.md",
+      "bytes": 1765,
+      "sha256": "2f636ba2f1d919e3273b05b9286afe72a94f474489c6ddf34ddc31801f1c7ce5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C08-packed-integer-scores-instead-of-float-bookkeeping.md",
+      "bytes": 1678,
+      "sha256": "cb0fb4411c15d6a21090acaaa2609477efe43ce8c6c42d6c7ecdf44debdd9e1e"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C09-exact-bounded-integers-on-the-fp64-path.md",
+      "bytes": 1612,
+      "sha256": "0b0e306f704b812ff767d954225e470c475e9ca4bf36a6684fdc0f11a50e29b0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C10-four-tiny-linear-machines-in-one-mma-warp.md",
+      "bytes": 1719,
+      "sha256": "dc50f8ec973441824ff369c09810bc9fda8989574c7ec640f61a85aff3d7414c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C11-tensor-cores-as-common-neighbor-counters.md",
+      "bytes": 1738,
+      "sha256": "566ed54915f3932594ca915b880a637abcd4d0ac3a778ad2dc35e5a692180154"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C12-prefix-and-reductions-by-structured-matrices.md",
+      "bytes": 1618,
+      "sha256": "9eb11093a1e059d8a4dced3648fa2e17ef12d1868b161db45de8edfbae9d96d6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C13-fixed-transforms-as-configurable-tensor-circuits.md",
+      "bytes": 1651,
+      "sha256": "d821ac3bd5f0e35d2e0b50c130e166266d7b39af85007beed99f545ed04c9f0d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C14-certified-approximate-screening-with-exact-refinement.md",
+      "bytes": 1665,
+      "sha256": "1226034fae0abc6b9b1e3a15cd020aa2abde5f53ec98382350b124789734b24a"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C15-high-low-precision-expansion-as-a-composite-operator.md",
+      "bytes": 1598,
+      "sha256": "18c6989be5bef7c90e489ed0e139e42e1281426c8adf2628ec54a27b6eac49b3"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C16-cancel-intermediate-transposes-by-composing-ownership-maps.md",
+      "bytes": 1680,
+      "sha256": "ab61fbacb88bc3a23424031f5855dcab2ab470b77b7014698362af3ac2edfd47"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C17-operand-read-hypergraph-coloring.md",
+      "bytes": 1606,
+      "sha256": "d77b2e8f85868c73a68c3334cb7b686c2b0cd97ef8e34256907d9c0b0c6eadb7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C18-a-portfolio-of-useful-pipeline-work.md",
+      "bytes": 1504,
+      "sha256": "886b8bb78672c4f664a7ece0a3c1c3842f59298ed7125b100a432b80cfd31f66"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C19-manual-latency-hiding-without-importing-cp-async.md",
+      "bytes": 1546,
+      "sha256": "6d50ea106119e1b7f3d2562d749ddb39d2df4d637859dd4d25db0da5ca81cee0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C20-owner-compute-instead-of-remote-pointer-chasing.md",
+      "bytes": 1709,
+      "sha256": "b7afa37db2bbdd6101830adc5d17e5842a60ef529af2919cb4f8ebe6cfea2443"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C21-transmit-support-or-deltas-instead-of-dense-state.md",
+      "bytes": 1586,
+      "sha256": "dfea98ef62fb6bde37c5af2812b787417fc3304804559ec30bf12be493d5a6fb"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C22-a-published-ring-with-explicit-reuse-epochs.md",
+      "bytes": 1730,
+      "sha256": "7a47e621a38ce9662f21c3f95ea753db33ef4c9cd61405d5a7030afc0eabf873"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C23-topology-aware-ownership-and-dual-host-ingress.md",
+      "bytes": 1613,
+      "sha256": "26173017e221f6e802f418933214ec61c8b7a3bee9e5c83a3c7859a8e18336d4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C24-monotone-atomic-fixed-point-computation.md",
+      "bytes": 1728,
+      "sha256": "890cf549f4f52f5fb4203ce158e7a2fe7903b3ae6d3c00b4703d5a708b32e0c1"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C25-a-resident-micro-service-with-a-finite-operator-palette.md",
+      "bytes": 1582,
+      "sha256": "3e775688b4a886ff59bf9fe08543f9ce6039c1804f5f5378b80f2d2459afde5f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C26-component-remapping-in-the-copy-engine.md",
+      "bytes": 1665,
+      "sha256": "5e773753b6d034cf4b2dd78679bf1960ab0ac810aefeaa3ea32dc8f7605d9f4f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C27-command-engine-completion-arithmetic.md",
+      "bytes": 1792,
+      "sha256": "cd866edc584dc6047599948526531899f99ca158452ead98b07fc52422df1afa"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C28-dependent-qmds-as-a-bounded-dataflow-experiment.md",
+      "bytes": 1657,
+      "sha256": "0f749eafd3adc6f40edeba62bc92c9a4c9820ada764047f58994a4744ba43283"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C29-a-doubled-virtual-ring-without-duplicate-payload.md",
+      "bytes": 1583,
+      "sha256": "862ebddc0497f6c274eca01567228459020a57f09a9f3a992122c402f21076ce"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C30-translation-policy-zoning-on-an-ats-platform.md",
+      "bytes": 1544,
+      "sha256": "26902d221d7eedfa83bf4290214ea230f7108d65ed37cfcb17466af640934326"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C31-texture-interpolation-as-a-nonlinear-circuit-element.md",
+      "bytes": 1625,
+      "sha256": "65c43abe76632ee257a43463a9a7d1d142471361c02fe724d98f28916ac8ac36"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C32-a-coarse-self-adapting-kernel-policy.md",
+      "bytes": 1554,
+      "sha256": "b7d5f989d04e5e2ded6896f01d30cc1e659e56cae571be7e807b1214c146530f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C33-steady-state-scheduling-under-power-and-thermal-limits.md",
+      "bytes": 1500,
+      "sha256": "4074a3661504ddc29294793f42b42fc28723f4f9a3bcbaf083e7a3ac7c492cfa"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C34-phase-factored-circuits-instead-of-a-giant-mega-kernel.md",
+      "bytes": 1474,
+      "sha256": "2908ff0deef7c068bfe748972d049959eadfd3bdcb622019a7e48fcef2229e58"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C35-delete-metadata-through-positional-identity.md",
+      "bytes": 1513,
+      "sha256": "95d35b71fc7bfe3d2cd005fb3f8b5769f9b0984c8196926dc29649cb9856d321"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C36-compose-lane-bank-and-fragment-permutations.md",
+      "bytes": 1565,
+      "sha256": "66b646b53bede33a83e94e1e997e51315696b4efd6f34d997ddbaa40be8b65c4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C37-carry-save-trees-for-bitset-threshold-queries.md",
+      "bytes": 1553,
+      "sha256": "850872ddaa65ea546c09a8cba110356711d012dbdfa6da5e9a310c711313d8a0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C38-empirical-conflict-maps-as-placement-hints.md",
+      "bytes": 1503,
+      "sha256": "6bdc14bb9ced7bd764406b0365931d677721664a672060e4b642ce8bb890a322"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/compositions/C39-a-representation-changing-search-procedure.md",
+      "bytes": 1826,
+      "sha256": "9d01c1b70a4cde8a044155e44c3582f815961fe88f447364f767588e30957496"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/CLAIM_LIMITS.md",
+      "bytes": 20501,
+      "sha256": "f33fb2778010daa9b7ae031f50a3b72c486ca799c306a6d1010c2a81c0258de4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E00-inventory-and-capability-gates.md",
+      "bytes": 2831,
+      "sha256": "bdb151d8c67f43e0775aacd9c8fb4608a2fd052fbe251fa9b241a9840613ed36"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E01-algebra-and-encoding-checks.md",
+      "bytes": 2618,
+      "sha256": "1015ac601da6ce6c0fc912747080b80f98ff84db3940932b52884208586876ff"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E02-instruction-latency-versus-throughput.md",
+      "bytes": 3048,
+      "sha256": "324940685d71cd1abf93d5a3565db783e89a3760f373ccbaa070fb5455c22696"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E03-cross-pipeline-interference.md",
+      "bytes": 3047,
+      "sha256": "b01c87e8b0a62332ce6c657e3b9954960db2a54d61fd343267c5905660f9e0ed"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E04-register-bank-and-operand-reuse-effects.md",
+      "bytes": 2587,
+      "sha256": "366b7dc3dc8feb61dd01f8bc13de69f9b10aa521afd62a290823e1a2f8e1bc75"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E05-warp-routing-matching-and-lookup.md",
+      "bytes": 3062,
+      "sha256": "3ac1421bf6dcd02dceda0866ce119f20ca5aa96f6f0f2efa5fbe9debc38ad4ef"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E06-shared-banks-and-phase-pipelines.md",
+      "bytes": 2836,
+      "sha256": "324db6814c951b3e48c421a1b00fd3006f30dc87b50ca0827cfffb76ed3f6e89"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E07-cache-and-transaction-accounting.md",
+      "bytes": 2866,
+      "sha256": "a57078ebd196406239c6fedcff7ccbab97ed3215c60ca9ab39aa822d1f50e532"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E08-translation-working-sets-and-pages.md",
+      "bytes": 2898,
+      "sha256": "e6fc8f5014efe6d878f8ed37f8df41c6bcbc0bc8d68fe93f0bd66a212136b25d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E09-mma-lane-and-register-ownership.md",
+      "bytes": 3147,
+      "sha256": "e7bea7f29110c9504060d11c0b3482a0a943e6b8f1255b6cbe2a252ad4e92363"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E10-tensor-numerical-fingerprint.md",
+      "bytes": 3072,
+      "sha256": "0257b5d236efd7239862f07089ce23b24015e1fd25dee89b8b5f1950e68b4c2d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E11-tensor-versus-bitset-intersections.md",
+      "bytes": 3641,
+      "sha256": "6d81f7aa229c1a81e4e3ad78c3b284647a6bef17ed5f118364ae305cbbff5be2"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E12-tensor-circuits-versus-structured-simt.md",
+      "bytes": 3485,
+      "sha256": "e00e973f4c13de09e15f086f5ad58c3562473eff5a1d0645d226dee3a8c1c6a4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E13-representation-crossover.md",
+      "bytes": 3252,
+      "sha256": "5911bdb8ab58992382fb5e27b19e962f1f9e422d53796d43f4997d2f308732d8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E14-atomics-as-useful-coordination.md",
+      "bytes": 3253,
+      "sha256": "fe3843643ba8b42c72b5c285951293a8a2c9d13e40a1f37e51d083ede71a651f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E15-publication-and-progress-litmus.md",
+      "bytes": 3198,
+      "sha256": "25091a7654464d969e3429eee8538bf78c3ceb6a789737e22f58f3a2247be94d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E16-persistent-roles-and-residency.md",
+      "bytes": 2915,
+      "sha256": "89775e284b94e0e74dc806f4a9ab3511e7bc9300d6de6da6e52bba02ece30086"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E17-dma-and-compute-overlap.md",
+      "bytes": 3141,
+      "sha256": "b8bcacf98ee895eea47af291db93bc68774fe2559b66ee3d36b7d486ffbcfd34"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E18-peer-loads-cache-behavior-and-latency.md",
+      "bytes": 3354,
+      "sha256": "70847696a231f80fb049041ea5705b8dbf58e8bdaec5f7a16b3011ef39f4b6da"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E19-peer-signaling-and-clock-relationships.md",
+      "bytes": 2985,
+      "sha256": "ab12bc9e78dee31cb81ab619cb249179d4710be99fe6ba5fba4c53bc2f43dd88"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E20-actual-nvlink-routing-and-saturation.md",
+      "bytes": 3146,
+      "sha256": "9b7925b29101332b9815d5c6ae4941bc971db4a3090249759bf3a21bf70bf2e0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E21-host-numa-ingress.md",
+      "bytes": 2861,
+      "sha256": "d8f91b29c268f8167a45696b24f3cc3c0d6b279e8ed637bd9a558241ac527f43"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E22-stream-memory-operations.md",
+      "bytes": 3008,
+      "sha256": "af414f8e137c605b23c4da1e0b7b159ca6375b4f915a113dc2a3271cb503ac03"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E23-vmm-alias-and-view-behavior.md",
+      "bytes": 3536,
+      "sha256": "82ca70049a240cbc8a73b44dd3e3290e9c8457b603c914a1a8293efd941f9410"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E24-fault-and-access-counter-policy.md",
+      "bytes": 3183,
+      "sha256": "174f4deccd5b565dcac3ddc4e027ec246cff3f2f0c81eba80192504e5e54c75d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E25-feedback-cost-and-regret.md",
+      "bytes": 3214,
+      "sha256": "e701a3456ef87a6c58038616c4a68bdb6b1373b52fb63790c81e1ea9c0cf2a9a"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E26-texture-and-sfu-approximation.md",
+      "bytes": 3506,
+      "sha256": "58bb7d085a23a474baeb27bac2ab6e002672b7c464907c2accfdae6bcfc674bc"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E27-copy-remap-reachability.md",
+      "bytes": 2943,
+      "sha256": "261e86421d1b5c07b0b7d91e79ad2929e3595ce4bf69d5c5104decd1e72857bd"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E28-copy-engine-semaphore-actor.md",
+      "bytes": 2943,
+      "sha256": "97e2ad271f95ce88b96c7086b0d34669debf0c8fe866840e2cd1100ee4eb9282"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E29-dependent-qmd-minimal-experiment.md",
+      "bytes": 2992,
+      "sha256": "b83b06ed86a39060bd237b62bd73d21c2d66cc1ded87657969accd985f647799"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E30-binary-transformation-validation.md",
+      "bytes": 2981,
+      "sha256": "06fff1a747a56a65f365084613f98ad303f1a528e8c8fa41941b1040171fa15d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E31-mps-and-process-interference.md",
+      "bytes": 2945,
+      "sha256": "cbe6c31bfb1bd7f6d3802f21fdf880c511d0586c06cf07f13ab5dd4a77056799"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E32-launch-graphs-and-cdp.md",
+      "bytes": 2939,
+      "sha256": "1758d99c4bee086a73d7d0de1e56228541f55dd0f5b03e8171adb8b6f1099374"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E33-power-and-steady-state-behavior.md",
+      "bytes": 3842,
+      "sha256": "505f4b4256f8a1da735b6d9894df75fb1a87c15e32136c3bb8c06f379ca7da80"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E34-ras-contamination-audit.md",
+      "bytes": 2503,
+      "sha256": "57762b7ebb8fdbdc57500f5f90af523b945a3a399e335de707d9392452173e5f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E35-platform-and-electrical-evidence.md",
+      "bytes": 2638,
+      "sha256": "b239e82e144ac14a60b05a54536d1718c7f26585e3b148f14536f83b5fb96b02"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E36-toolchain-and-library-compatibility.md",
+      "bytes": 2679,
+      "sha256": "8f443117045c2f7ed1539e4a5122230833f53c902fe230d54521991c6b5d9420"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E37-new-ptx-spelling-on-old-silicon.md",
+      "bytes": 2851,
+      "sha256": "7bc9f6e56373a67da28b6c20b8e60cc069976883fda6471cc4287093b34f85ce"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E38-negative-space-falsification.md",
+      "bytes": 2842,
+      "sha256": "dcb2623d50ba4a189c4a8ce32d844c12da53ccb48a9641cbb9b072ab7c22da37"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/E39-complete-composition-usefulness.md",
+      "bytes": 4404,
+      "sha256": "4f95b7f258ce52d8e3d911927d823cad27a99a5d2c35697a93d9c0e3508a7f76"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/INTERPRETING_RESULTS.md",
+      "bytes": 6008,
+      "sha256": "186a642c862aeff2e1e712a4962dd36f2dd0f84ece80f4303aed47f9c349b94d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/README.md",
+      "bytes": 5545,
+      "sha256": "5aecbe9c8a2d0de944b8cb2cecf07b6c748ae79bd54ff39ed453f4879915dfff"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/evidence/v100-20261006/E33-raw-host-records.md",
+      "bytes": 616,
+      "sha256": "c43b4fefacca68fdc1fbaa6b679742fc8610f38fe9d59a0b2c0f5bff68beb3ec"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/evidence/v100-20261006/E34-raw-host-records.md",
+      "bytes": 616,
+      "sha256": "de75a7a58e570af7467c2105ec11ebfa085fea70e15ff666c471d2add75891cd"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/evidence/v100-20261006/E35-raw-host-records.md",
+      "bytes": 616,
+      "sha256": "f8ff5491e8a4411145596f0eb90bf72c0bd21b66e4d446b06c0cef2c027a72bb"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/evidence/v100-20261006/E36-raw-host-records.md",
+      "bytes": 616,
+      "sha256": "9e01416ab47d76ace020112bbd0ec7363c8e7c414cf01fc9b18f073e5a38330f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/experiments/evidence/v100-20261006/E38-raw-host-records.md",
+      "bytes": 616,
+      "sha256": "2ded60c9206c6906b98c62be2f9974ebe3f0508deee1c9467b0cc897ea8a8029"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/CORRECTIONS.md",
+      "bytes": 2104,
+      "sha256": "5bdba57105c2c824e8fe320cca207e7ac228386d8e3d078808043fbbbe3e44d6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/LEGACY_SCOPE.md",
+      "bytes": 8172,
+      "sha256": "d6f8e3439c42cbad528edf1b456321b529424b432e01c683483c6f48d6e94f1c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/MAINTENANCE.md",
+      "bytes": 2052,
+      "sha256": "55613c45364add9563ed1aa2f4d7c9a42d37b74822fd53a94a88cc225217ec60"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/OPEN_QUESTIONS.md",
+      "bytes": 5274,
+      "sha256": "c4f38c20ad03586b7126df04230d59f1c36585124400028217a02bcd836c0bf4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/SCOPE.md",
+      "bytes": 11196,
+      "sha256": "401b849308e4f5c4ee921cd1df855bc6ac1b1988b18543e9d42bb94d46d8ef47"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/ledger/SESSION.md",
+      "bytes": 1973,
+      "sha256": "4770cdda07054320bf28e873e114b3249d5b034f09cc8766ade960f32a21daee"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M01-lop3-as-a-bank-of-boolean-circuits.md",
+      "bytes": 1489,
+      "sha256": "4a463e65dc0cb1ce04f3d1e0350de89d99a78bc7a5a4f2ade399408cf7f04cc7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M02-mask-rank-select-as-routing.md",
+      "bytes": 1301,
+      "sha256": "58b0b566b7b5709099f26a1fa820151179b4a4b019f051dfbaf8ac95851a10ec"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M03-prmt-as-a-tiny-register-lookup.md",
+      "bytes": 1346,
+      "sha256": "509a6c81d2785152c7b9f3f29fbad0d3894b37d34feef9d43de7bea3f12fbcd7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M04-shuffle-as-a-constrained-routing-fabric.md",
+      "bytes": 1304,
+      "sha256": "a4fa80ca57c0fcbc99c7a84d5112b05ddc8e4c7d5214bde8be42c392d2938eef"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M05-match-as-an-ephemeral-associative-table.md",
+      "bytes": 1260,
+      "sha256": "d9bcac54a50cfa307976d26fbffac27f4a35431bf20259920cfb15624b862877"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M06-ballot-transpose-and-bit-sliced-state.md",
+      "bytes": 1343,
+      "sha256": "95b65dbdebe589bdace0f61a8de07e5cb5428c4fd61bfac4fb7ec2475c3e1be1"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M07-predicates-and-reconvergence-as-data-representation.md",
+      "bytes": 1321,
+      "sha256": "68e3fdc669982030cfeb5f1e044f4fd03c2023dcfcc7b5691e955fc147628210"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M08-dp4a-dp2a-as-structural-arithmetic.md",
+      "bytes": 1362,
+      "sha256": "c1c7f782a188fbc79060499445e976320fec7d09168976ef1202e324b1285915"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M09-packed-simd-and-conversions-as-state-operators.md",
+      "bytes": 1309,
+      "sha256": "bdb32e0b3f397de131cec6c1404a5ac04a6e66fee9d66b2be9dfcf7f2b6957cf"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M10-s-f-us-and-interpolation-as-alternate-arithmetic.md",
+      "bytes": 1246,
+      "sha256": "40b73edc6525eed00772c1e563b997b801d764fdc44ef30fb9f2845979341a22"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M11-fp64-and-wide-integer-paths-as-alternate-resources.md",
+      "bytes": 1243,
+      "sha256": "b37caaaed41e4b50e5ada29d41c5a51f41583a9bc2020223583c17ce77e00615"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M12-register-banks-as-an-operand-delivery-circuit.md",
+      "bytes": 1183,
+      "sha256": "ecff60fd4a2b1962657b60683a2767427b0c9bfea7ad16db1ca40f1fd353a888"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M13-operand-reuse-and-dependency-control.md",
+      "bytes": 1219,
+      "sha256": "7cea55a525fc1745ee1173d84a80f8b5686fb0ad0ba2747009a66d5eb64d38a3"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M14-register-resident-local-state-machines.md",
+      "bytes": 1204,
+      "sha256": "fd555a3a5b3ae6e5be68ddb5b3288dd04c127979d5129e9c5666892bfbf6e672"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M15-warp-and-sm-specialization.md",
+      "bytes": 1209,
+      "sha256": "97dc546f4425359272e97cb940bbb64b31bd65bd64cf3035641a482598cd45f8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M16-instruction-level-parallelism-and-useful-overlap.md",
+      "bytes": 1166,
+      "sha256": "c2caead939d79219edc85ea16bfede9cbf2a986b0ad226b17085ca087872fdde"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M17-instruction-cache-and-phase-factoring.md",
+      "bytes": 1130,
+      "sha256": "81400f5bf325ee115a6338fa4751dfc4631a29fa99046e6baab8f6db11e1766b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M18-shared-memory-as-a-banked-routing-network.md",
+      "bytes": 1207,
+      "sha256": "21108337f9653595122c9f73c77ace4c83d5b39c97e9d525055114588c07cc67"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M19-barriers-as-phase-boundaries.md",
+      "bytes": 1141,
+      "sha256": "9a653e3b65f2db8b6e69dd95c0cdc2c623d7c57d7cb4734f093fc61181615e8b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M20-l1-local-memory-and-deliberate-cold-spills.md",
+      "bytes": 1113,
+      "sha256": "728674966289182a8e552e13d66815299f0d99f05a4b2f73563bb999d6a1a7d2"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M21-l2-as-a-compact-coordination-service.md",
+      "bytes": 1189,
+      "sha256": "6c30928861432e48f268fb3e6b23237edf4ee3d91c7f82e24f44de79c069caf0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M22-hbm-and-coalescing-as-layout-constraints.md",
+      "bytes": 1171,
+      "sha256": "f35b7bbf3dcd850142df713cc77eb40f5bc32a4c2d11e02b172f766fda25fdb8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M23-constant-and-texture-paths-as-function-interfaces.md",
+      "bytes": 1193,
+      "sha256": "f6b1b86e89fed874dc0a1aaa5d3004cd761cd1745482355df56e512444e63f4d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M24-four-native-tensor-microcircuits-per-warp.md",
+      "bytes": 1207,
+      "sha256": "de346ed0ac3bb590b122b65fdbaacb038e6fc7b4f68b637312f03031dcae4218"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M25-fragment-native-intermediates.md",
+      "bytes": 1194,
+      "sha256": "c16aa57cf3017bda94b163bfb4473fbe7753dbd3791b2e328c02d2090db95d9a"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M26-tensor-counting-and-reduction.md",
+      "bytes": 1241,
+      "sha256": "6cf36b3e5585f3aa7f26b9f77c5bfd163ee37d26ebd862785d835fc14a9ae652"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M27-tensor-transforms-and-state-mixers.md",
+      "bytes": 1197,
+      "sha256": "56fda8e78573690f18048a4b924823f31514763e68547c65989cd9cebe7064d1"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M28-mixed-precision-and-certified-decisions.md",
+      "bytes": 1246,
+      "sha256": "c6838c8b907299545dbbd48e5d292a14044998495e342a3bf236123692e94808"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M29-atomics-as-merge-algebra-and-state-transitions.md",
+      "bytes": 1192,
+      "sha256": "a16ea36d78786fe9365779b8c126546596b78fb21e46e7feb5aa7b0b57fe1693"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M30-persistent-queues-and-resident-interpreters.md",
+      "bytes": 1187,
+      "sha256": "4f87583fb9e4217df87005128cb55aff7a6d5ad80a016c38d02962a646e13ec7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M31-stream-memory-waits-and-writes.md",
+      "bytes": 1221,
+      "sha256": "44acc1613eef855400b6eff69ef2ebae3e5240279863858cc1d982260a6453c4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M32-cooperative-grids-and-historical-multidevice-launch.md",
+      "bytes": 1212,
+      "sha256": "84f6f90d93cc35fc3f295777192b9e6e59b06335cb4e15deb3d40069177f46b6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M33-graphs-and-device-side-launches.md",
+      "bytes": 1152,
+      "sha256": "3a45910df701888e8869777853422065b2542d0cb5e76df8bc7d04d05462c74d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M34-peer-loads-as-a-distributed-data-path.md",
+      "bytes": 1177,
+      "sha256": "ae01d66f93875f8755828d665db68fe0082aff132c9cb094c5f868b429a3e9b5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M35-remote-atomics-and-nvlink-signaling.md",
+      "bytes": 1120,
+      "sha256": "ac7022e1636bd5e9bbd41b10a785349b0ab2e7f858a27d1a94c10a143c2c73df"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M36-copy-engines-as-asynchronous-workers.md",
+      "bytes": 1172,
+      "sha256": "0a8eb09cd15186cc8eb20ae9ba7fca466a6e9ddf62e318a80b6e65c0f0253eb9"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M37-copy-engine-component-remapping.md",
+      "bytes": 1200,
+      "sha256": "0a75015d1ae8acac074b328b08005646850f25f6fc0ff487e42f7f6c464682a2"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M38-semaphore-arithmetic-outside-sm-execution.md",
+      "bytes": 1178,
+      "sha256": "060e97bb5be6b28e8452d94b53d2f7084e9705cd408045fd0f7bdd3b7d9372a5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M39-qmd-as-a-control-object.md",
+      "bytes": 1211,
+      "sha256": "a4de34715d948a2eac3e154af54f45ed0c16fc59a2700ab7d220091da4c16484"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M40-vmm-views-and-virtual-contiguity.md",
+      "bytes": 1144,
+      "sha256": "5e2ca48ec8d802d829c3f5a312307bd0efead8a98fa4b6c99334de9851242588"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M41-ats-and-fault-replay-as-coarse-policy-machinery.md",
+      "bytes": 1123,
+      "sha256": "b0fc26cd7c8043f4e916e3ac96c71548a31d793a1534f98603e2f9be30637b23"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M42-access-counters-as-delayed-feedback.md",
+      "bytes": 1092,
+      "sha256": "97013f9683c759ce103e8238402a7a7b803612b34081cd426ed04c9eb6ac9665"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M43-numa-local-host-memory-as-a-tier.md",
+      "bytes": 1109,
+      "sha256": "8adb33d52a53e2d02b36d012977a5ff4c4eefcec6bf736f111692e0ff6984051"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M44-bar-gpudirect-and-external-actors.md",
+      "bytes": 1138,
+      "sha256": "850bc44b64d5daa6856fb196b9ea8cec3908d3bce83b6be13575bdf058a3ff5c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M45-contexts-ipc-and-mps.md",
+      "bytes": 1181,
+      "sha256": "1c838c614a2b25bcd2253b8b1bdc0a26b6075923ce82c83016fda24576c08142"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M46-counters-as-runtime-feedback.md",
+      "bytes": 1127,
+      "sha256": "37fbe6fb4e398a2e7cf7f94d13ef5302eabc2d5e57fc4be97334805cecee79a6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M47-special-registers-and-local-clocks.md",
+      "bytes": 1174,
+      "sha256": "02be10b8c51de916de8f5774576c43e005eecdd0284278e1a95d4d02fb1a0fa8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M48-cubin-and-sass-transformation.md",
+      "bytes": 1140,
+      "sha256": "af7b5233f9c337c247e82fe5229944c06198bae4cf63b8575cf27e51d41c8615"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M49-embedded-processors-and-firmware-frontier.md",
+      "bytes": 1162,
+      "sha256": "4ff55769053eead9e04a0b3b1a8c68b8ce8f721c04ad78f181773b262c410994"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M50-graphics-media-and-dormant-engines.md",
+      "bytes": 1207,
+      "sha256": "57a75d1725e96cd3af2e31f3e691b5015d35e83fdceacf118a717bb5880aee79"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M51-faults-reset-and-ras.md",
+      "bytes": 1105,
+      "sha256": "897be4aff4cf61eaa6b3362f727d242de6c5a88de79b5f4f49774281e4ba9872"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/mechanisms/M52-power-and-thermal-budgets-as-resources.md",
+      "bytes": 1167,
+      "sha256": "a0a9c17dc8656472ed7a94364cfa91c7e6cdd55981d6f347f182cf44807d8753"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R00-current-status-context.md",
+      "bytes": 717,
+      "sha256": "4eee3818c6f2be690e4f29aac0be7bd5e769caac444f2ccfe4a686bfbc3725d6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R00-reading-and-evidence-contract.md",
+      "bytes": 2972,
+      "sha256": "05f8fbfb1855ddd11f9f06904380e7c91abc8d3b2cc3854bb51125036a3449ea"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R01-machine-reference.md",
+      "bytes": 2403,
+      "sha256": "b740fa2377d45dd62ed35f839b0ff326ec558e90e2ddf748c45e3eefe9c947b0"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R02-execution-scoreboards-and-operands.md",
+      "bytes": 2360,
+      "sha256": "e91ef8c5c3e68118156600088793de33dd8fb3654d9c5090eb946932148fef0b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R03-memory-as-algorithmic-structure.md",
+      "bytes": 2558,
+      "sha256": "f45bb0517d9c7566eb223f4590c745dbb8573ac824a3a12180268d6b7e95d6ef"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R04-isa-families-and-generation-traps.md",
+      "bytes": 2440,
+      "sha256": "c1419a7fde4e5ee8fba12f4a61679966da0b1c31303b2add37cb75cd94114501"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R05-tensor-geometry-and-native-register-interfaces.md",
+      "bytes": 2351,
+      "sha256": "f2e560c3eebb6861e4e0a12d26f4d059f65037b9f8d4febce0cf9ab4b06e1ba7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R06-participation-visibility-and-progress.md",
+      "bytes": 2572,
+      "sha256": "4b02909469914911d50a73f3128880cec97a2d7f02060a4ae280d98c85718a1c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R07-nvlink-pcie-and-numa-as-information-boundaries.md",
+      "bytes": 2294,
+      "sha256": "8a2c22bf34971da6c9571cbe6fdacf97293298278b79ba7ac8ecf253d4164b4b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R08-virtual-memory-ats-and-faults.md",
+      "bytes": 2208,
+      "sha256": "89d993bf0825ef15c198bcbaa6921f39cee5b4553f7f06c2ce040b7d622c7a4a"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R09-the-non-sm-command-machine.md",
+      "bytes": 2114,
+      "sha256": "aae12126bafb2f528ecd144780ba9c87793adbc82c1ceb94139291c480641dd8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R10-toolchain-and-binary-evidence.md",
+      "bytes": 2058,
+      "sha256": "26d5fde58cd072727bfe0254ad73411104733b5e9fc734be8401921859cd82a5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R11-performance-model-for-circuit-bending.md",
+      "bytes": 2493,
+      "sha256": "60f8d09e5dbcb3c7289f5e02c7f76d12e63e6be4d212de11c018e78689df0ca6"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R12-measurement-discipline-and-obs-er-v-ability.md",
+      "bytes": 2170,
+      "sha256": "d2e91cce854887b7d7ce331223d01708bc29354cb28292d7695a7dc2d90027b4"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R13-electrical-firmware-and-reliability-frontier.md",
+      "bytes": 2160,
+      "sha256": "10300c472bdb968f5a5f2c74cdc6d5db10a35a67991c3ad6ed856214d140203c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R14-composition-conflict-and-scope-map.md",
+      "bytes": 2266,
+      "sha256": "c3da6260170366919962bcc777fd043afe92002608957348208f9ada6998f834"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/reference/R15-numerical-contracts-for-unconventional-arithmetic.md",
+      "bytes": 2228,
+      "sha256": "94a646a6424c462fefa594a8f5a8036a04b690f1bdee5175c7973ea8579648df"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S01-nvidia-volta-tuning-guide.md",
+      "bytes": 793,
+      "sha256": "30bc58d324054cda2f6638936c6d532d848253cee261253a635ea660a45a44e1"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S02-nvidia-tesla-v100-architecture-whitepaper.md",
+      "bytes": 815,
+      "sha256": "49d318a7e24e63e8d782455c5d7d9da71805f9662817fb450b13dcb52da2996b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S03-ptx-isa.md",
+      "bytes": 822,
+      "sha256": "3f96b5508057726b01d404c482cd9ed87f7cb3b6fa37fb99d067cf10c08b6a9e"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S04-dissecting-nvidia-volta-via-microbenchmarking.md",
+      "bytes": 789,
+      "sha256": "d588c9aa681651040295806be448a193312c3d8799cff9ab44d69bbe4ff0c3de"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S05-cuda-binary-utilities.md",
+      "bytes": 669,
+      "sha256": "6f1ec1c6c7a6fafcedea09ab014050d8ece2bdc3ad1e534c8029f2c286eb0ef5"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S06-navigating-gpu-architecture-support.md",
+      "bytes": 700,
+      "sha256": "a328fe569cb73a27f9ac40257833a5e1e87eafb30f2f1f16d2735e944e53c79e"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S07-sparkattention.md",
+      "bytes": 583,
+      "sha256": "bbdbf0b8b4e488b89e369bc1bd67cae80668ab798cd3fcf39bb303c09535e36b"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S08-cuda-integer-intrinsics.md",
+      "bytes": 735,
+      "sha256": "0cf620fa5082ceeaf99cdaaa652d99a42210e64f33b1070dad4cda9369676ccf"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S09-cuda-simd-intrinsics.md",
+      "bytes": 621,
+      "sha256": "41e06fb6157284fbc863b9052c84a036460fbd0801f90a96c4aea2d7ea7b8f1d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S10-using-cuda-warp-level-primitives.md",
+      "bytes": 633,
+      "sha256": "e04247d3633b7c896571d8744c378009cfd442844b5b7269aed4aaa4ad0e9a05"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S11-cuassembler.md",
+      "bytes": 617,
+      "sha256": "046b76fc6afb03983299bd6a5289d061915170f4347b7e185300be148a47bebd"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S12-volta-dma-copy-a-class-c3b5.md",
+      "bytes": 754,
+      "sha256": "74444433382b8ba883538ea2502812d5e7e5fb9b32f1d68ee865234f94d14c5d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S13-volta-compute-a-class-c3c0.md",
+      "bytes": 645,
+      "sha256": "96a90a440cb9e74dff99cccec292fd2ffb0e291f42526110ee10563a7e73fc7d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S14-nvidia-open-gpu-kernel-modules.md",
+      "bytes": 598,
+      "sha256": "9c14b04153df877d1ce4ca66193da83224056fe7532a58c6f9683fa40be18481"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S15-volta-uvm-copy-engine-implementation.md",
+      "bytes": 777,
+      "sha256": "02b4ad833d403b8fd31adf741287a1d645d60959899349d477e8689990db2f37"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S16-volta-uvm-mmu-implementation.md",
+      "bytes": 734,
+      "sha256": "063a752f0ae6000b6fc88a0e17a92621c7e08a851e2388d2c37ae73acafbfe87"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S17-cuda-stream-memory-operations.md",
+      "bytes": 697,
+      "sha256": "8089f2df7ab81ca76249c77708bee0d1a68289ec330b7cd2a469ddcf77ed631d"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S18-low-level-gpu-vmm-introduction.md",
+      "bytes": 588,
+      "sha256": "a94f6ad7dec544646c37c2089c7818d959ce6f8f2382d2d6b9e040eaa8f3a125"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S19-accelerating-reduction-and-scan-using-tensor-core-units.md",
+      "bytes": 604,
+      "sha256": "7a89a4295811196da2cd139113783e2364c3729e9dbeec064d83a76aa89121e7"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S20-fttn-feature-targeted-numerical-testing.md",
+      "bytes": 676,
+      "sha256": "955eb2932ab9ad0bb9fe4e82b053cf208ecb4f041cffc8964e4ce171225373f8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S21-tensor-core-programmability-performance-and-precision.md",
+      "bytes": 542,
+      "sha256": "a6a88a7fd1263565466ed35cdf87dcc732bff79147d5ff9b8d8270c3a09c1fff"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S22-cutlass-sm70-mma-implementation.md",
+      "bytes": 586,
+      "sha256": "14c1490e9cbe144615993fbbbd0f6ed33b44db4c3a9f02f22cb9868098de941c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S23-cutlass-volta-multiplicand-layouts.md",
+      "bytes": 611,
+      "sha256": "07e25341652d17af01926612632e4c5b8fdc4b9e936771876ec0f1274b920651"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S24-tcfft.md",
+      "bytes": 579,
+      "sha256": "f8d61adc528b0e336689b32f5bada08e89285052cb4580213b3f94c3c1ee8eed"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S25-using-nvshmem.md",
+      "bytes": 652,
+      "sha256": "171f1340390e490cbc9f1e529f5881dc939f1f2d150d700a6a4d5ec8b8965e7c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S26-nccl-ll128-implementation.md",
+      "bytes": 617,
+      "sha256": "a4d60525bb88ffd4c93c2f0faa2151e0666548d6159439b610071ab2f38b1acf"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S27-volta-qmd-v02-02.md",
+      "bytes": 692,
+      "sha256": "d36233d9f114804649fa0f0c266a2c3b799ced035ffcc815e099cc29a039b926"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S28-volta-uvm-fault-buffer.md",
+      "bytes": 672,
+      "sha256": "b3922c87bec4e47dda80f6abc93454797372bebabee343c4e36b5f236af6b479"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S29-uvm-access-counters.md",
+      "bytes": 636,
+      "sha256": "b0f5ee47384ed4fb45681f96cc42eb1a4955b8e589a65d9f94f7f0334896eb38"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S30-cuda-c-programming-guide.md",
+      "bytes": 746,
+      "sha256": "b1e70d2670be21dc5c85ab6c27450d14c49f201ef959cee5af05389e8d8a3047"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S31-cuda-vmm-driver-api.md",
+      "bytes": 640,
+      "sha256": "e81cba9ab376d842ac4b42967be3dbce8977e39c6aabd00fa84794a4f6258d51"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S32-cuda-device-api.md",
+      "bytes": 592,
+      "sha256": "d8a98947a07da94662f9fa548eb91b8b4e62980f0df40309e419b1cc369dcb0e"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S33-gpudirect-rdma.md",
+      "bytes": 596,
+      "sha256": "e2921e23345b876a3f3f940e6516d8dd891a908181d5dfe9555536dd6b00d658"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S34-cupti-usage.md",
+      "bytes": 585,
+      "sha256": "95aec48467c1949188a03b5b9051419a709b20b39ecdd0a1d307556e853534c8"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S35-nsight-compute-profiling-guide.md",
+      "bytes": 546,
+      "sha256": "4f2afb0414c5e2797391b55e0125f92c38af583ed8d4e2a5a06affba8346657c"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S36-nvidia-smi-management-documentation.md",
+      "bytes": 613,
+      "sha256": "383d941364cb877bd618e6ddc910ae73fccc9dfbced12fe2d7e3061cf9952749"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S37-nouveau-gv100-graphics.md",
+      "bytes": 531,
+      "sha256": "40245c54fe358351d810bae9fec38961ffc514de326eca8e2dd7b43b8c4e30a9"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S38-nouveau-gv100-mmu.md",
+      "bytes": 544,
+      "sha256": "42837311733443e5fb7bd80975b0f53303e0f3d218d19e10f952938e1f13881e"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S39-nouveau-gv100-authenticated-code-region.md",
+      "bytes": 553,
+      "sha256": "dd27ccc9d11a340cdc147b0d10dca9c298afd944fc59148c343a75d7506ad200"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S40-nouveau-gv100-fifo.md",
+      "bytes": 543,
+      "sha256": "9429cc68ef1cd23cd42dce4206fd81ea754d8de17c8d3e680719a780fdc1fccf"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S41-nvidia-mps-documentation.md",
+      "bytes": 589,
+      "sha256": "10646471960c01a48fb5861973e91e27cb59ca6808504079469feee6d9dd0b6f"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/S42-cuda-driver-api-types.md",
+      "bytes": 658,
+      "sha256": "578583d700dfb99561328eca908353016ddf9a22428ee2d43fa0c5066fa390a3"
+    },
+    {
+      "path": "references/architectures/volta/v100_atlas/sources/SOURCES.md",
+      "bytes": 10679,
+      "sha256": "df57297e07c30ec46f49ec40e805a398c05b7290a69138e5868c389d280c9648"
     },
     {
       "path": "references/common/code-organization.md",
@@ -123,8 +1198,13 @@
     },
     {
       "path": "references/common/kernel-mechanics.md",
-      "bytes": 9951,
-      "sha256": "12628f8dceb6179e75ff95110a586778bf41d0b4192dc22349fa81781845e9d8"
+      "bytes": 10215,
+      "sha256": "19a5e76c5c48f27b52a6339582d7ec2d6a85631b2327d8559c1ac3a15a9bc32f"
+    },
+    {
+      "path": "references/common/machine-aligned-design.md",
+      "bytes": 11753,
+      "sha256": "78b489b241c5be8907f36f8f26e70edd39c9d4bfb26e337d0fe7eb0ce693e779"
     },
     {
       "path": "references/debugging/compute-sanitizer-playbook.md",
@@ -313,8 +1393,8 @@
     },
     {
       "path": "references/systems/ddp-topology.md",
-      "bytes": 2199,
-      "sha256": "5830525581a8449da1462db066228ffe2d5a4973c90f7d981fd72d498ab6030a"
+      "bytes": 2427,
+      "sha256": "6ce9a5224bd806877219b57bc08d169a91c2ba9f884be0bed94b8a9651bc8833"
     },
     {
       "path": "references/systems/gb200-nvl72.md",
@@ -323,8 +1403,8 @@
     },
     {
       "path": "references/systems/host-device-pipeline.md",
-      "bytes": 1644,
-      "sha256": "0aee7f2ebd73d48eaaa6bb5c1d12c7b2f2d01daa7a4aa6e34a95fcf6110cf492"
+      "bytes": 1891,
+      "sha256": "f2701742882bd58ef38f1dc541caf8f443ac448a446878dc961a49d4aa71298c"
     },
     {
       "path": "references/systems/memory-accounting.md",
@@ -383,8 +1463,8 @@
     },
     {
       "path": "references/workloads/cpu-porting.md",
-      "bytes": 2382,
-      "sha256": "361fc30b029403be93ba5213d3386f15bbbbf14be28a1d3b43d3bbd52fbde6e7"
+      "bytes": 2609,
+      "sha256": "28adcdb454564c6451c3ef46adb4baacf6ad2eaf9938c98703c827fe72a6064f"
     },
     {
       "path": "references/workloads/cpu-to-cuda-rewrite-patterns.md",
@@ -398,8 +1478,8 @@
     },
     {
       "path": "references/workloads/sparse-bio.md",
-      "bytes": 2411,
-      "sha256": "869bb367110e5e3ce3cff5ae68bcc32773c9e89bba5e8aa124aa8b8c2af91e47"
+      "bytes": 2666,
+      "sha256": "81672cd93c3d50aa002cda559eabcbddcce873ec2f2824f40168e47f97382df1"
     }
   ]
 }

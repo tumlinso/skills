@@ -1,0 +1,54 @@
+{
+  "kind": "root_final_acceptance",
+  "source_commit": "f223c51dcfacab602e9bc68b3e65cc75730dc7f8",
+  "timestamp_utc": "2026-10-06T15:36:16.829880+00:00",
+  "independent_review": "measurement_review delivered final material checks; root records acceptance and integrates report",
+  "all_40_protocols_accounted": true,
+  "summary_complete": true,
+  "identity_checks": [
+    "commit",
+    "source",
+    "matrix",
+    "seven native binaries",
+    "live machine",
+    "tool versions",
+    "campaign key"
+  ],
+  "repeated_timing_vectors_valid": 775,
+  "gpu_subcase_raw_outputs_matching_results": 337,
+  "nsys_reports_with_actual_gpu_activity": 31,
+  "required_gpu_experiments_with_nsys": 29,
+  "ncu_reports_with_numeric_hardware_counters": 16,
+  "sanitizer_runs_with_zero_error_raw_summaries": 62,
+  "median_p95_discrepancies": 0,
+  "e39_matched_cells": 22,
+  "e39_samples_per_variant_per_cell": 30,
+  "e33_stable_events": {
+    "serial": 7739,
+    "interleaved": 8297
+  },
+  "e33_stable_median_p95_and_integrated_energy_reproduced": true,
+  "blockers": [],
+  "limits": [
+    "Five original restricted protocols were not run",
+    "Four directed peer pairs unsupported",
+    "NUMA node 1 binding unavailable",
+    "Copy-only NSYS wrapper classification disagrees with verified raw memcpy activity",
+    "E39 apparent 0.08 percent median ordering is not an established performance crossover",
+    "E33 energy is sensor-derived and runs are sequential"
+  ],
+  "e39_apparent_crossover_uncertainty": {
+    "method": "unpaired bootstrap median difference, 10000 resamples",
+    "confidence": 0.95,
+    "difference_ms": -0.000382,
+    "interval_ms": [
+      -0.010072,
+      0.008283
+    ],
+    "established_crossover": false
+  },
+  "sanitizer_zero_hazards_and_warnings": true,
+  "administrative_blockers": [
+    "Project Control task closure blocked by inactive capability, no actionable resume, and live-dispatch recovery refusal"
+  ]
+}

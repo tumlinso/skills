@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checks": 5556,
+  "errors": [],
+  "validation_scope": "local artifact integrity, portable measured-subset evidence and CPU semantic-record presence; not general performance or domain validation",
+  "gpu_measured": true,
+  "cuda_compiled": true,
+  "campaign_key": "7beacfbd95e0d2b8f9725c7ba1477122f16bc1eb686a6a7c94dbf6c7e266794b"
+}

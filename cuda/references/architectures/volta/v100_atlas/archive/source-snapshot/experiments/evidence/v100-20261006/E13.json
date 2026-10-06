@@ -1,0 +1,800 @@
+{
+  "correctness": {
+    "executed_cases": 9,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E13",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 1,
+          "size": 31
+        },
+        {
+          "iterations": 8,
+          "size": 1024
+        },
+        {
+          "iterations": 64,
+          "size": 65536
+        }
+      ],
+      "depends_on": [
+        "E01"
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "ordinary",
+      "target": "atlas_composition"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E13-memcheck-0/artifacts",
+    "controller/E13-memcheck-0/lease_receipt.json",
+    "controller/E13-memcheck-0/stderr_path.txt",
+    "controller/E13-memcheck-0/stdout_path.txt",
+    "controller/E13-ncu-0/artifacts",
+    "controller/E13-ncu-0/lease_receipt.json",
+    "controller/E13-ncu-0/stderr_path.txt",
+    "controller/E13-ncu-0/stdout_path.txt",
+    "controller/E13-nsys-0/artifacts",
+    "controller/E13-nsys-0/lease_receipt.json",
+    "controller/E13-nsys-0/stderr_path.txt",
+    "controller/E13-nsys-0/stdout_path.txt",
+    "controller/E13-timing-0/artifacts",
+    "controller/E13-timing-0/lease_receipt.json",
+    "controller/E13-timing-0/stderr_path.txt",
+    "controller/E13-timing-0/stdout_path.txt",
+    "controller/E13-timing-1/artifacts",
+    "controller/E13-timing-1/lease_receipt.json",
+    "controller/E13-timing-1/stderr_path.txt",
+    "controller/E13-timing-1/stdout_path.txt",
+    "controller/E13-timing-2/artifacts",
+    "controller/E13-timing-2/lease_receipt.json",
+    "controller/E13-timing-2/stderr_path.txt",
+    "controller/E13-timing-2/stdout_path.txt",
+    "controller/E13-verify-0/artifacts",
+    "controller/E13-verify-0/lease_receipt.json",
+    "controller/E13-verify-0/stderr_path.txt",
+    "controller/E13-verify-0/stdout_path.txt",
+    "controller/E13-verify-1/artifacts",
+    "controller/E13-verify-1/lease_receipt.json",
+    "controller/E13-verify-1/stderr_path.txt",
+    "controller/E13-verify-1/stdout_path.txt",
+    "controller/E13-verify-2/artifacts",
+    "controller/E13-verify-2/lease_receipt.json",
+    "controller/E13-verify-2/stderr_path.txt",
+    "controller/E13-verify-2/stdout_path.txt"
+  ],
+  "result_summary": "9 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "31",
+        "pattern": "random",
+        "reuse": "1",
+        "seed": "20261006",
+        "size": "31",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 31,
+        "d2h_and_materialize_median_ms": 0.017149499999999998,
+        "d2h_and_materialize_ms_median": 0.017149499999999998,
+        "d2h_and_materialize_ms_p95": 0.033683,
+        "d2h_and_materialize_p95_ms": 0.033683,
+        "device_workspace_bytes_estimate": 372,
+        "full_path_median_ms": 0.0373485,
+        "full_path_ms_median": 0.0373485,
+        "full_path_ms_p95": 0.053999,
+        "full_path_p95_ms": 0.053999,
+        "h2d_median_ms": 0.016225,
+        "h2d_ms_median": 0.016225,
+        "h2d_ms_p95": 0.032528,
+        "h2d_p95_ms": 0.032528,
+        "host_input_bytes": 372,
+        "host_output_bytes": 248,
+        "host_prepare_ms": 0.006369,
+        "resident_compute_median_ms": 0.005119999870657921,
+        "resident_compute_ms_median": 0.005119999870657921,
+        "resident_compute_ms_p95": 0.005119999870657921,
+        "resident_compute_p95_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "native"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "31",
+        "pattern": "random",
+        "representation": "32 scalar instances per bitplane word",
+        "reuse": "1",
+        "seed": "20261006",
+        "size": "31",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 31,
+        "decode_and_materialize_median_ms": 0.0206205,
+        "decode_and_materialize_ms_median": 0.0206205,
+        "decode_and_materialize_ms_p95": 0.021723,
+        "decode_and_materialize_p95_ms": 0.021723,
+        "decode_kernel_median_ms": 0.006144000217318535,
+        "decode_kernel_ms_median": 0.006144000217318535,
+        "decode_kernel_ms_p95": 0.006144000217318535,
+        "decode_kernel_p95_ms": 0.006144000217318535,
+        "device_workspace_bytes_estimate": 880,
+        "encode_kernel_median_ms": 0.005632000043988228,
+        "encode_kernel_ms_median": 0.005632000043988228,
+        "encode_kernel_ms_p95": 0.006144000217318535,
+        "encode_kernel_p95_ms": 0.006144000217318535,
+        "full_path_median_ms": 0.043965000000000004,
+        "full_path_ms_median": 0.043965000000000004,
+        "full_path_ms_p95": 0.066211,
+        "full_path_p95_ms": 0.066211,
+        "h2d_median_ms": 0.01626,
+        "h2d_ms_median": 0.01626,
+        "h2d_ms_p95": 0.016969,
+        "h2d_p95_ms": 0.016969,
+        "host_input_bytes": 372,
+        "host_output_bytes": 248,
+        "host_prepare_ms": 0.006369,
+        "resident_compute_median_ms": 0.006144000217318535,
+        "resident_compute_ms_median": 0.006144000217318535,
+        "resident_compute_ms_p95": 0.006144000217318535,
+        "resident_compute_p95_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "decode_and_materialize_ms": 30,
+        "decode_kernel_ms": 30,
+        "encode_kernel_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bitplane"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "lookup_table_entries": "512 (constant memory; static operator table)",
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "31",
+        "pattern": "random",
+        "reuse": "1",
+        "seed": "20261006",
+        "size": "31",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here.",
+        "The fixed 512-entry operator table is uploaded before timed paths and reused; one-time table setup is excluded from full_path_ms."
+      ],
+      "metrics": {
+        "correctness_checked_values": 31,
+        "d2h_and_materialize_median_ms": 0.016300000000000002,
+        "d2h_and_materialize_ms_median": 0.016300000000000002,
+        "d2h_and_materialize_ms_p95": 0.017412,
+        "d2h_and_materialize_p95_ms": 0.017412,
+        "device_workspace_bytes_estimate": 372,
+        "full_path_median_ms": 0.0402365,
+        "full_path_ms_median": 0.0402365,
+        "full_path_ms_p95": 0.042327,
+        "full_path_p95_ms": 0.042327,
+        "h2d_median_ms": 0.016124,
+        "h2d_ms_median": 0.016124,
+        "h2d_ms_p95": 0.016932,
+        "h2d_p95_ms": 0.016932,
+        "host_input_bytes": 372,
+        "host_output_bytes": 248,
+        "host_prepare_ms": 0.006369,
+        "lookup_table_setup_wall_ms": 0.01186,
+        "resident_compute_median_ms": 0.008191999979317188,
+        "resident_compute_ms_median": 0.008191999979317188,
+        "resident_compute_ms_p95": 0.008191999979317188,
+        "resident_compute_p95_ms": 0.008191999979317188
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/36ec0639-5552-408a-aade-bdc73e57ea6b/ncu/run/raw.csv",
+          "raw_csv_bytes": 284406,
+          "raw_csv_rows": 150,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/36ec0639-5552-408a-aade-bdc73e57ea6b/ncu/run/report.ncu-rep",
+          "report_bytes": 1805928,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.09413373886359132,
+              "name": "<unnamed>::decode_bitplanes(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 30.99999999999998,
+              "samples": 40,
+              "share_pct": 23.972472710014248,
+              "sm_pct": 0.01401698792318352,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.09413373886359132,
+                "name": "<unnamed>::decode_bitplanes(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 30.99999999999998,
+                "samples": 40,
+                "share_pct": 23.972472710014248,
+                "sm_pct": 0.01401698792318352,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.06409608218063466,
+                "name": "<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 28.000000000000007,
+                "samples": 27,
+                "share_pct": 23.33175130517323,
+                "sm_pct": 0.08470322803091945,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.13882082899856643,
+                "name": "<unnamed>::encode_bitplanes(const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 32.0,
+                "samples": 28,
+                "share_pct": 23.17513051732321,
+                "sm_pct": 0.026165159942658195,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.11589032058111381,
+                "name": "<unnamed>::bitplane_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 29.00000000000001,
+                "samples": 27,
+                "share_pct": 19.60132890365448,
+                "sm_pct": 0.017437203631961266,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.06994912296650718,
+                "name": "void <unnamed>::native_add<1>(unsigned int *, const unsigned int *, unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 27,
+                "share_pct": 9.919316563834837,
+                "sm_pct": 0.006731194258373207,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ee385174-b1af-4904-a145-9e3bff1b79b5/nsys/run/report.nsys-rep",
+          "report_bytes": 355377,
+          "sqlite_activity_counts": {
+            "kernels": 391,
+            "memcpy": 1075,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 1466,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/ee385174-b1af-4904-a145-9e3bff1b79b5/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 391.0,
+              "launch_pct": 16.161177827251198,
+              "malloc_free_pct": 7.55980963757626,
+              "memcpy_memset_pct": 57.25905576402337
+            },
+            "bottleneck_hints": [
+              "host-device-traffic"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Keep data resident and rerun after removing steady-state transfer traffic.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Memcpy or memset activity is material (57.3% of CUDA API time). Host-device traffic may be distorting end-to-end timing."
+            ],
+            "recommended_route": "pipeline",
+            "recommended_route_reason": "Memcpy or memset activity is large enough to route into pipeline repair first.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 4.3793999999999995,
+                "instances": 71,
+                "name": "<unnamed>::nibble_lookup_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)",
+                "time_pct": 33.4,
+                "total_ms": 0.31094
+              },
+              {
+                "avg_us": 1.9064,
+                "instances": 106,
+                "name": "<unnamed>::decode_bitplanes(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned long)",
+                "time_pct": 21.7,
+                "total_ms": 0.20208
+              },
+              {
+                "avg_us": 2.3238000000000003,
+                "instances": 71,
+                "name": "<unnamed>::bitplane_add(unsigned int *, const unsigned int *, unsigned int *, unsigned long, int)",
+                "time_pct": 17.7,
+                "total_ms": 0.164991
+              },
+              {
+                "avg_us": 2.0969,
+                "instances": 72,
+                "name": "<unnamed>::encode_bitplanes(const unsigned int *, const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned long)",
+                "time_pct": 16.2,
+                "total_ms": 0.150976
+              },
+              {
+                "avg_us": 1.4238,
+                "instances": 71,
+                "name": "void <unnamed>::native_add<(int)1>(unsigned int *, const unsigned int *, unsigned int *, unsigned long)",
+                "time_pct": 10.9,
+                "total_ms": 0.101087
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "nibble512"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "reuse": "8",
+        "seed": "20261006",
+        "size": "1024",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 1024,
+        "d2h_and_materialize_median_ms": 0.0194535,
+        "d2h_and_materialize_ms_median": 0.0194535,
+        "d2h_and_materialize_ms_p95": 0.01992,
+        "d2h_and_materialize_p95_ms": 0.01992,
+        "device_workspace_bytes_estimate": 12288,
+        "full_path_median_ms": 0.043831,
+        "full_path_ms_median": 0.043831,
+        "full_path_ms_p95": 0.045197,
+        "full_path_p95_ms": 0.045197,
+        "h2d_median_ms": 0.020104999999999998,
+        "h2d_ms_median": 0.020104999999999998,
+        "h2d_ms_p95": 0.021013,
+        "h2d_p95_ms": 0.021013,
+        "host_input_bytes": 12288,
+        "host_output_bytes": 8192,
+        "host_prepare_ms": 0.013341,
+        "resident_compute_median_ms": 0.005119999870657921,
+        "resident_compute_ms_median": 0.005119999870657921,
+        "resident_compute_ms_p95": 0.006144000217318535,
+        "resident_compute_p95_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "native"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "representation": "32 scalar instances per bitplane word",
+        "reuse": "8",
+        "seed": "20261006",
+        "size": "1024",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 1024,
+        "decode_and_materialize_median_ms": 0.023550500000000002,
+        "decode_and_materialize_ms_median": 0.023550500000000002,
+        "decode_and_materialize_ms_p95": 0.0262,
+        "decode_and_materialize_p95_ms": 0.0262,
+        "decode_kernel_median_ms": 0.006144000217318535,
+        "decode_kernel_ms_median": 0.006144000217318535,
+        "decode_kernel_ms_p95": 0.006144000217318535,
+        "decode_kernel_p95_ms": 0.006144000217318535,
+        "device_workspace_bytes_estimate": 28800,
+        "encode_kernel_median_ms": 0.005632000043988228,
+        "encode_kernel_ms_median": 0.005632000043988228,
+        "encode_kernel_ms_p95": 0.006144000217318535,
+        "encode_kernel_p95_ms": 0.006144000217318535,
+        "full_path_median_ms": 0.056698,
+        "full_path_ms_median": 0.056698,
+        "full_path_ms_p95": 0.060833,
+        "full_path_p95_ms": 0.060833,
+        "h2d_median_ms": 0.0202475,
+        "h2d_ms_median": 0.0202475,
+        "h2d_ms_p95": 0.020976,
+        "h2d_p95_ms": 0.020976,
+        "host_input_bytes": 12288,
+        "host_output_bytes": 8192,
+        "host_prepare_ms": 0.013341,
+        "resident_compute_median_ms": 0.01228800043463707,
+        "resident_compute_ms_median": 0.01228800043463707,
+        "resident_compute_ms_p95": 0.01228800043463707,
+        "resident_compute_p95_ms": 0.01228800043463707
+      },
+      "raw_sample_counts": {
+        "decode_and_materialize_ms": 30,
+        "decode_kernel_ms": 30,
+        "encode_kernel_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bitplane"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "lookup_table_entries": "512 (constant memory; static operator table)",
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "reuse": "8",
+        "seed": "20261006",
+        "size": "1024",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here.",
+        "The fixed 512-entry operator table is uploaded before timed paths and reused; one-time table setup is excluded from full_path_ms."
+      ],
+      "metrics": {
+        "correctness_checked_values": 1024,
+        "d2h_and_materialize_median_ms": 0.0193865,
+        "d2h_and_materialize_ms_median": 0.0193865,
+        "d2h_and_materialize_ms_p95": 0.020817,
+        "d2h_and_materialize_p95_ms": 0.020817,
+        "device_workspace_bytes_estimate": 12288,
+        "full_path_median_ms": 0.0628765,
+        "full_path_ms_median": 0.0628765,
+        "full_path_ms_p95": 0.066598,
+        "full_path_p95_ms": 0.066598,
+        "h2d_median_ms": 0.020187,
+        "h2d_ms_median": 0.020187,
+        "h2d_ms_p95": 0.020825,
+        "h2d_p95_ms": 0.020825,
+        "host_input_bytes": 12288,
+        "host_output_bytes": 8192,
+        "host_prepare_ms": 0.013341,
+        "lookup_table_setup_wall_ms": 0.011565,
+        "resident_compute_median_ms": 0.024064000695943832,
+        "resident_compute_ms_median": 0.024064000695943832,
+        "resident_compute_ms_p95": 0.02457600086927414,
+        "resident_compute_p95_ms": 0.02457600086927414
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "nibble512"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "reuse": "64",
+        "seed": "20261006",
+        "size": "65536",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 65536,
+        "d2h_and_materialize_median_ms": 0.24903799999999998,
+        "d2h_and_materialize_ms_median": 0.24903799999999998,
+        "d2h_and_materialize_ms_p95": 0.255786,
+        "d2h_and_materialize_p95_ms": 0.255786,
+        "device_workspace_bytes_estimate": 786432,
+        "full_path_median_ms": 0.468034,
+        "full_path_ms_median": 0.468034,
+        "full_path_ms_p95": 0.475263,
+        "full_path_p95_ms": 0.475263,
+        "h2d_median_ms": 0.2067765,
+        "h2d_ms_median": 0.2067765,
+        "h2d_ms_p95": 0.210918,
+        "h2d_p95_ms": 0.210918,
+        "host_input_bytes": 786432,
+        "host_output_bytes": 524288,
+        "host_prepare_ms": 0.888977,
+        "resident_compute_median_ms": 0.0071680000983178616,
+        "resident_compute_ms_median": 0.0071680000983178616,
+        "resident_compute_ms_p95": 0.0071680000983178616,
+        "resident_compute_p95_ms": 0.0071680000983178616
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "native"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "representation": "32 scalar instances per bitplane word",
+        "reuse": "64",
+        "seed": "20261006",
+        "size": "65536",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here."
+      ],
+      "metrics": {
+        "correctness_checked_values": 65536,
+        "decode_and_materialize_median_ms": 0.2536655,
+        "decode_and_materialize_ms_median": 0.2536655,
+        "decode_and_materialize_ms_p95": 0.26575,
+        "decode_and_materialize_p95_ms": 0.26575,
+        "decode_kernel_median_ms": 0.0071680000983178616,
+        "decode_kernel_ms_median": 0.0071680000983178616,
+        "decode_kernel_ms_p95": 0.0071680000983178616,
+        "decode_kernel_p95_ms": 0.0071680000983178616,
+        "device_workspace_bytes_estimate": 1843200,
+        "encode_kernel_median_ms": 0.01228800043463707,
+        "encode_kernel_ms_median": 0.01228800043463707,
+        "encode_kernel_ms_p95": 0.01228800043463707,
+        "encode_kernel_p95_ms": 0.01228800043463707,
+        "full_path_median_ms": 0.5992375,
+        "full_path_ms_median": 0.5992375,
+        "full_path_ms_p95": 0.607502,
+        "full_path_p95_ms": 0.607502,
+        "h2d_median_ms": 0.207159,
+        "h2d_ms_median": 0.207159,
+        "h2d_ms_p95": 0.211241,
+        "h2d_p95_ms": 0.211241,
+        "host_input_bytes": 786432,
+        "host_output_bytes": 524288,
+        "host_prepare_ms": 0.888977,
+        "resident_compute_median_ms": 0.11980800330638885,
+        "resident_compute_ms_median": 0.11980800330638885,
+        "resident_compute_ms_p95": 0.12185599654912949,
+        "resident_compute_p95_ms": 0.12185599654912949
+      },
+      "raw_sample_counts": {
+        "decode_and_materialize_ms": 30,
+        "decode_kernel_ms": 30,
+        "encode_kernel_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bitplane"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "lookup_table_entries": "512 (constant memory; static operator table)",
+        "numerical_contract": "u64(x)+u64(b)+carry; low32 becomes x and high32 becomes carry after each transition",
+        "partial_group": "0",
+        "pattern": "random",
+        "reuse": "64",
+        "seed": "20261006",
+        "size": "65536",
+        "state_contract": "initial x,b,carry transferred to device; final x,carry materialized on host; b is immutable",
+        "workspace_allocation": "device workspaces allocated before timed paths; allocation time excluded"
+      },
+      "experiment": "E13",
+      "limitations": [
+        "Energy is not measured in this kernel module; treat it as unknown below the platform sensor resolution.",
+        "Device workspace allocation is outside timed paths; allocation cost is not amortized or compared here.",
+        "The fixed 512-entry operator table is uploaded before timed paths and reused; one-time table setup is excluded from full_path_ms."
+      ],
+      "metrics": {
+        "correctness_checked_values": 65536,
+        "d2h_and_materialize_median_ms": 0.2506345,
+        "d2h_and_materialize_ms_median": 0.2506345,
+        "d2h_and_materialize_ms_p95": 0.261712,
+        "d2h_and_materialize_p95_ms": 0.261712,
+        "device_workspace_bytes_estimate": 786432,
+        "full_path_median_ms": 1.1563845000000001,
+        "full_path_ms_median": 1.1563845000000001,
+        "full_path_ms_p95": 1.173837,
+        "full_path_p95_ms": 1.173837,
+        "h2d_median_ms": 0.207052,
+        "h2d_ms_median": 0.207052,
+        "h2d_ms_p95": 0.210798,
+        "h2d_p95_ms": 0.210798,
+        "host_input_bytes": 786432,
+        "host_output_bytes": 524288,
+        "host_prepare_ms": 0.888977,
+        "lookup_table_setup_wall_ms": 0.01166,
+        "resident_compute_median_ms": 0.6891520023345947,
+        "resident_compute_ms_median": 0.6891520023345947,
+        "resident_compute_ms_p95": 0.6973440051078796,
+        "resident_compute_p95_ms": 0.6973440051078796
+      },
+      "raw_sample_counts": {
+        "d2h_and_materialize_ms": 30,
+        "full_path_ms": 30,
+        "h2d_ms": 30,
+        "resident_compute_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "nibble512"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

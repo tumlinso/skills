@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "V100 experiment result",
+  "type": "object",
+  "required": [
+    "experiment",
+    "status",
+    "hardware",
+    "software",
+    "protocol",
+    "samples",
+    "correctness",
+    "limitations"
+  ],
+  "properties": {
+    "experiment": {
+      "type": "string",
+      "pattern": "^E[0-9]{2}$"
+    },
+    "status": {
+      "enum": [
+        "NOT_RUN",
+        "CPU_ONLY",
+        "COMPILED_ONLY",
+        "GPU_RUN",
+        "REJECTED",
+        "INCONCLUSIVE"
+      ]
+    },
+    "hardware": {
+      "type": "object"
+    },
+    "software": {
+      "type": "object"
+    },
+    "protocol": {
+      "type": "object"
+    },
+    "samples": {
+      "type": "array"
+    },
+    "correctness": {
+      "type": "object"
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_hashes": {
+      "type": "object"
+    },
+    "date": {
+      "type": "string"
+    },
+    "result_summary": {
+      "type": "string"
+    },
+    "raw_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

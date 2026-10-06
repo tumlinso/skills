@@ -1,0 +1,275 @@
+{
+  "correctness": {
+    "executed_cases": 3,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E19",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8",
+      "GPU-d745da9c-7649-8334-41f1-483afa6f3206"
+    ]
+  },
+  "limitations": [
+    "Nsight Compute replay was not run for this synchronization, communication, or progress-sensitive workload."
+  ],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "device": 0,
+          "iterations": 64,
+          "peer": 1,
+          "size": 32
+        }
+      ],
+      "nsys_eligible": true,
+      "resource_group": "pair",
+      "sanitizer": "communication",
+      "target": "atlas_transport"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E19-memcheck-0/artifacts",
+    "controller/E19-memcheck-0/lease_receipt.json",
+    "controller/E19-memcheck-0/stderr_path.txt",
+    "controller/E19-memcheck-0/stdout_path.txt",
+    "controller/E19-nsys-0/artifacts",
+    "controller/E19-nsys-0/lease_receipt.json",
+    "controller/E19-nsys-0/stderr_path.txt",
+    "controller/E19-nsys-0/stdout_path.txt",
+    "controller/E19-racecheck-0/artifacts",
+    "controller/E19-racecheck-0/lease_receipt.json",
+    "controller/E19-racecheck-0/stderr_path.txt",
+    "controller/E19-racecheck-0/stdout_path.txt",
+    "controller/E19-synccheck-0/artifacts",
+    "controller/E19-synccheck-0/lease_receipt.json",
+    "controller/E19-synccheck-0/stderr_path.txt",
+    "controller/E19-synccheck-0/stdout_path.txt",
+    "controller/E19-timing-0/artifacts",
+    "controller/E19-timing-0/lease_receipt.json",
+    "controller/E19-timing-0/stderr_path.txt",
+    "controller/E19-timing-0/stdout_path.txt",
+    "controller/E19-verify-0/artifacts",
+    "controller/E19-verify-0/lease_receipt.json",
+    "controller/E19-verify-0/stderr_path.txt",
+    "controller/E19-verify-0/stdout_path.txt"
+  ],
+  "result_summary": "3 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "ack_from_producer_accessor_device": "0",
+        "ack_from_producer_device_alias": "0x705c3fc00000",
+        "ack_from_producer_memory_type": "2",
+        "ack_from_producer_original_pointer": "0x705c3fc00000",
+        "ack_from_producer_owner_device": "1",
+        "ack_owner_accessor_device": "1",
+        "ack_owner_device_alias": "0x705c3fc00000",
+        "ack_owner_memory_type": "2",
+        "ack_owner_original_pointer": "0x705c3fc00000",
+        "ack_owner_owner_device": "1",
+        "consumer_device": "1",
+        "cudaDevP2PAttrAccessSupported_forward": "1",
+        "cudaDevP2PAttrAccessSupported_reverse": "1",
+        "cudaDevP2PAttrNativeAtomicSupported_forward": "1",
+        "cudaDevP2PAttrNativeAtomicSupported_reverse": "1",
+        "cudaDeviceCanAccessPeer_forward": "1",
+        "cudaDeviceCanAccessPeer_reverse": "1",
+        "deadline_cycles_per_phase": "50000000",
+        "memory_order": "cuda::atomic_ref<uint32_t, thread_scope_system> release/acquire",
+        "payload_from_consumer_accessor_device": "1",
+        "payload_from_consumer_device_alias": "0x705c3fa00000",
+        "payload_from_consumer_memory_type": "2",
+        "payload_from_consumer_original_pointer": "0x705c3fa00000",
+        "payload_from_consumer_owner_device": "0",
+        "payload_owner_accessor_device": "0",
+        "payload_owner_device_alias": "0x705c3fa00000",
+        "payload_owner_memory_type": "2",
+        "payload_owner_original_pointer": "0x705c3fa00000",
+        "payload_owner_owner_device": "0",
+        "phases_per_handshake": "64",
+        "producer_device": "0",
+        "progress_proof": "one resident CTA per device; producer awaits consumer ack before payload overwrite; receiver acquire-loads ready then release-stores ack",
+        "ready_from_consumer_accessor_device": "1",
+        "ready_from_consumer_device_alias": "0x705c3fa00200",
+        "ready_from_consumer_memory_type": "2",
+        "ready_from_consumer_original_pointer": "0x705c3fa00200",
+        "ready_from_consumer_owner_device": "0",
+        "ready_owner_accessor_device": "0",
+        "ready_owner_device_alias": "0x705c3fa00200",
+        "ready_owner_memory_type": "2",
+        "ready_owner_original_pointer": "0x705c3fa00200",
+        "ready_owner_owner_device": "0",
+        "unifiedAddressing_consumer": "1",
+        "unifiedAddressing_producer": "1"
+      },
+      "experiment": "E19",
+      "limitations": [],
+      "metrics": {
+        "complete_handshake_median_ms": 0.3345015,
+        "complete_handshake_ms_median": 0.3345015,
+        "complete_handshake_ms_p95": 0.33611,
+        "complete_handshake_p95_ms": 0.33611,
+        "consumer_error_phase": 0,
+        "producer_error_phase": 0
+      },
+      "raw_sample_counts": {
+        "complete_handshake_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "peer_system_scope_atomic_publication"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "peer": "1",
+        "protocol": "host_enqueues_source_event_then_peer_stream_wait_then_destination_event"
+      },
+      "experiment": "E19",
+      "limitations": [
+        "host wall time includes enqueue and synchronization; cross-device clocks are never subtracted"
+      ],
+      "metrics": {
+        "complete_handshake_median_ms": 0.0123705,
+        "complete_handshake_ms_median": 0.0123705,
+        "complete_handshake_ms_p95": 0.013439,
+        "complete_handshake_p95_ms": 0.013439
+      },
+      "raw_sample_counts": {
+        "complete_handshake_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "public_cross_device_event_handshake"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "peer": "1",
+        "protocol": "source_event_synchronize_then_destination_enqueue"
+      },
+      "experiment": "E19",
+      "limitations": [],
+      "metrics": {
+        "complete_handshake_median_ms": 0.0142165,
+        "complete_handshake_ms_median": 0.0142165,
+        "complete_handshake_ms_p95": 0.014644,
+        "complete_handshake_p95_ms": 0.014644
+      },
+      "profiles": {
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/a1d898ff-1436-42eb-9d18-90dd9a3f1b3d/nsys/run/report.nsys-rep",
+          "report_bytes": 287278,
+          "sqlite_activity_counts": {
+            "kernels": 210,
+            "memcpy": 9,
+            "memset": 147
+          },
+          "sqlite_activity_rows": 366,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/a1d898ff-1436-42eb-9d18-90dd9a3f1b3d/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 210.0,
+              "launch_pct": 9.194322827349167,
+              "malloc_free_pct": 8.53043284190395,
+              "memcpy_memset_pct": 3.597440293948516
+            },
+            "bottleneck_hints": [],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": false,
+            "next_step": "Use the paired Nsight Compute run on the hottest steady-state kernel.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "CUDA kernel rows were exported and the run looks representative enough for first-pass timeline decisions."
+            ],
+            "recommended_route": "hot-kernel",
+            "recommended_route_reason": "Timeline is usable and the next question is kernel-local cause.",
+            "status": "ok",
+            "steady_state_timing_valid": true,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 329.41540000000003,
+                "instances": 35,
+                "name": "atlas::<unnamed>::peer_atomic_producer(unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned long long)",
+                "time_pct": 50.9,
+                "total_ms": 11.529539
+              },
+              {
+                "avg_us": 312.4921,
+                "instances": 35,
+                "name": "atlas::<unnamed>::peer_atomic_consumer(const unsigned int *, const unsigned int *, unsigned int *, unsigned int *, unsigned int *, unsigned int, unsigned int, unsigned int, unsigned long long)",
+                "time_pct": 48.2,
+                "total_ms": 10.937222
+              },
+              {
+                "avg_us": 1.4638,
+                "instances": 140,
+                "name": "atlas::<unnamed>::marker_kernel(unsigned int *)",
+                "time_pct": 0.9,
+                "total_ms": 0.204926
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "complete_handshake_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "host_staged_completion_handshake"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

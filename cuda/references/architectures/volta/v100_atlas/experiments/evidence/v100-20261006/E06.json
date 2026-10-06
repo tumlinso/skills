@@ -1,0 +1,725 @@
+{
+  "correctness": {
+    "executed_cases": 15,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E06",
+  "hardware": {
+    "gpu_uuids": [
+      "GPU-21131915-1488-23af-38dd-1743ae1f5cc8"
+    ]
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "cases": [
+        {
+          "iterations": 8,
+          "size": 31
+        },
+        {
+          "iterations": 16,
+          "size": 64
+        },
+        {
+          "iterations": 32,
+          "size": 1025
+        }
+      ],
+      "ncu_replay_safe": true,
+      "nsys_eligible": true,
+      "sanitizer": "shared",
+      "target": "atlas_logic"
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E06-memcheck-0/artifacts",
+    "controller/E06-memcheck-0/lease_receipt.json",
+    "controller/E06-memcheck-0/stderr_path.txt",
+    "controller/E06-memcheck-0/stdout_path.txt",
+    "controller/E06-ncu-0/artifacts",
+    "controller/E06-ncu-0/lease_receipt.json",
+    "controller/E06-ncu-0/stderr_path.txt",
+    "controller/E06-ncu-0/stdout_path.txt",
+    "controller/E06-nsys-0/artifacts",
+    "controller/E06-nsys-0/lease_receipt.json",
+    "controller/E06-nsys-0/stderr_path.txt",
+    "controller/E06-nsys-0/stdout_path.txt",
+    "controller/E06-racecheck-0/artifacts",
+    "controller/E06-racecheck-0/lease_receipt.json",
+    "controller/E06-racecheck-0/stderr_path.txt",
+    "controller/E06-racecheck-0/stdout_path.txt",
+    "controller/E06-synccheck-0/artifacts",
+    "controller/E06-synccheck-0/lease_receipt.json",
+    "controller/E06-synccheck-0/stderr_path.txt",
+    "controller/E06-synccheck-0/stdout_path.txt",
+    "controller/E06-timing-0/artifacts",
+    "controller/E06-timing-0/lease_receipt.json",
+    "controller/E06-timing-0/stderr_path.txt",
+    "controller/E06-timing-0/stdout_path.txt",
+    "controller/E06-timing-1/artifacts",
+    "controller/E06-timing-1/lease_receipt.json",
+    "controller/E06-timing-1/stderr_path.txt",
+    "controller/E06-timing-1/stdout_path.txt",
+    "controller/E06-timing-2/artifacts",
+    "controller/E06-timing-2/lease_receipt.json",
+    "controller/E06-timing-2/stderr_path.txt",
+    "controller/E06-timing-2/stdout_path.txt",
+    "controller/E06-verify-0/artifacts",
+    "controller/E06-verify-0/lease_receipt.json",
+    "controller/E06-verify-0/stderr_path.txt",
+    "controller/E06-verify-0/stdout_path.txt",
+    "controller/E06-verify-1/artifacts",
+    "controller/E06-verify-1/lease_receipt.json",
+    "controller/E06-verify-1/stderr_path.txt",
+    "controller/E06-verify-1/stdout_path.txt",
+    "controller/E06-verify-2/artifacts",
+    "controller/E06-verify-2/lease_receipt.json",
+    "controller/E06-verify-2/stderr_path.txt",
+    "controller/E06-verify-2/stdout_path.txt"
+  ],
+  "result_summary": "15 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "broadcast",
+        "device": "0",
+        "iterations": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_broadcast"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "same_bank_conflict",
+        "device": "0",
+        "iterations": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.018432000651955605,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.018432000651955605
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_same_bank_conflict"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "padded_banks",
+        "device": "0",
+        "iterations": "8",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_padded_banks"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_tile"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "profiles": {
+        "ncu": {
+          "counter_valid": true,
+          "raw_csv": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/e46996cb-cb8c-4e3c-8ed5-30c7268d014d/ncu/run/raw.csv",
+          "raw_csv_bytes": 138066,
+          "raw_csv_rows": 71,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/e46996cb-cb8c-4e3c-8ed5-30c7268d014d/ncu/run/report.ncu-rep",
+          "report_bytes": 946928,
+          "summary": {
+            "collection_set": "",
+            "counter_valid": true,
+            "hot_kernel": {
+              "class": "mixed",
+              "dram_pct": 0.11200486637080867,
+              "name": "<unnamed>::shared_bank_kernel(unsigned int *, int, int)",
+              "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+              "occupancy": null,
+              "registers_per_thread": 16.0,
+              "samples": 42,
+              "share_pct": 64.71996170416467,
+              "sm_pct": 0.0335983444280079,
+              "tensor_pct": null
+            },
+            "launch_count": null,
+            "measurement_scope": "kernel counters",
+            "needs_more_data": false,
+            "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+            "notes": [
+              "Use benchmark output or Nsight Systems for throughput comparisons.",
+              "Use Nsight Compute to decide whether poor performance comes from bytes moved, compute path choice, registers, or shared memory."
+            ],
+            "reasons": [
+              "Nsight Compute is valid for kernel-cause diagnosis here, but not for throughput timing because replay changes runtime.",
+              "Hottest kernel class: mixed.",
+              "Primary next move: Pair this with Nsight Systems and the benchmark output before changing the kernel."
+            ],
+            "recommended_route": "profile",
+            "recommended_route_reason": "The kernel summary is mixed, so pair it with timeline or benchmark evidence first.",
+            "status": "ok",
+            "timing_valid": false,
+            "tool": "ncu",
+            "top_kernels": [
+              {
+                "class": "mixed",
+                "dram_pct": 0.11200486637080867,
+                "name": "<unnamed>::shared_bank_kernel(unsigned int *, int, int)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 42,
+                "share_pct": 64.71996170416467,
+                "sm_pct": 0.0335983444280079,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.07431496187943265,
+                "name": "<unnamed>::shared_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 16.0,
+                "samples": 14,
+                "share_pct": 17.999042604116802,
+                "sm_pct": 0.011821735815602839,
+                "tensor_pct": null
+              },
+              {
+                "class": "mixed",
+                "dram_pct": 0.07759175069252079,
+                "name": "<unnamed>::shuffle_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)",
+                "next_step": "Pair this with Nsight Systems and the benchmark output before changing the kernel.",
+                "occupancy": null,
+                "registers_per_thread": 23.999999999999993,
+                "samples": 14,
+                "share_pct": 17.280995691718527,
+                "sm_pct": 0.011464394275161589,
+                "tensor_pct": null
+              }
+            ]
+          }
+        },
+        "nsys": {
+          "gpu_memtime_rows": 0,
+          "gpu_memtimes_csv": null,
+          "report": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/7ffa4ee9-d415-4a4e-9baa-996f4bcf3887/nsys/run/report.nsys-rep",
+          "report_bytes": 263484,
+          "sqlite_activity_counts": {
+            "kernels": 180,
+            "memcpy": 6,
+            "memset": 0
+          },
+          "sqlite_activity_rows": 186,
+          "sqlite_path": "/home/tumlinson/gpu_circuit_bending_atlas/.todo-orchestrator/runtime/background-artifacts/foreground/7ffa4ee9-d415-4a4e-9baa-996f4bcf3887/nsys/run/report.sqlite",
+          "sqlite_problem": null,
+          "summary": {
+            "api_signals": {
+              "launch_calls": 180.0,
+              "launch_pct": 1.0181680327964375,
+              "malloc_free_pct": 97.96116769023065,
+              "memcpy_memset_pct": 0.06513175583725567
+            },
+            "bottleneck_hints": [
+              "allocator-churn"
+            ],
+            "measurement_scope": "timeline and setup behavior",
+            "needs_rerun_for_timing": true,
+            "next_step": "Warm allocations out of the measured loop or lengthen the steady-state phase, then rerun if timing matters.",
+            "notes": [
+              "Use Nsight Systems to decide whether the benchmark reflects steady-state behavior or mostly setup and transfer costs.",
+              "Use benchmark output for throughput numbers. Use Nsight Compute for kernel cause, not timeline validity."
+            ],
+            "reasons": [
+              "Allocator churn dominates the timeline (98.0% of CUDA API time in malloc/free). This run is not a clean steady-state throughput measurement."
+            ],
+            "recommended_route": "rerun",
+            "recommended_route_reason": "Allocator churn is distorting the measured window.",
+            "status": "partial",
+            "steady_state_timing_valid": false,
+            "tool": "nsys",
+            "top_kernels": [
+              {
+                "avg_us": 1.7110999999999998,
+                "instances": 108,
+                "name": "<unnamed>::shared_bank_kernel(unsigned int *, int, int)",
+                "time_pct": 64.2,
+                "total_ms": 0.184799
+              },
+              {
+                "avg_us": 1.4550999999999998,
+                "instances": 36,
+                "name": "<unnamed>::shared_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)",
+                "time_pct": 18.2,
+                "total_ms": 0.052384
+              },
+              {
+                "avg_us": 1.4071,
+                "instances": 36,
+                "name": "<unnamed>::shuffle_warp_tile_kernel(const unsigned int *, unsigned int *, unsigned long)",
+                "time_pct": 17.6,
+                "total_ms": 0.050656
+              }
+            ],
+            "trace_valid": true
+          },
+          "trace_has_gpu_work": true
+        }
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_tile"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "broadcast",
+        "device": "0",
+        "iterations": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_broadcast"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "same_bank_conflict",
+        "device": "0",
+        "iterations": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_same_bank_conflict"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "padded_banks",
+        "device": "0",
+        "iterations": "16",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_padded_banks"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_tile"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "128",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 128,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.005119999870657921,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.005119999870657921
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_tile"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "broadcast",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1152",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1152,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_broadcast"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "same_bank_conflict",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1152",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1152,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_same_bank_conflict"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "address_pattern": "padded_banks",
+        "device": "0",
+        "iterations": "32",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1152",
+        "verification": "shared values initialized identically on CPU/GPU; all 128 CTA threads reach __syncthreads",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "Bank mapping cases are analytical address patterns; no profiler bank-conflict counters, stride sweep, carveout or payload-width sweep collected here."
+      ],
+      "metrics": {
+        "correctness_checked_threads": 1152,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.010239999741315842,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.010239999741315842
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "bank_padded_banks"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1025",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 1025,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.007199999876320362,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.007199999876320362
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shared_tile"
+    },
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "device": "0",
+        "iterations": "1",
+        "repeats": "30",
+        "seed": "20261006",
+        "size": "1025",
+        "verification": "warp-local cyclic next-lane permutation; partial final warp participates with padded lanes",
+        "warmup": "5"
+      },
+      "experiment": "E06",
+      "limitations": [
+        "One warp-local permutation and one CTA tile size; producer-consumer phase pipelines, swizzles, padding and barrier-placement sweep remain incomplete."
+      ],
+      "metrics": {
+        "correctness_checked_outputs": 1025,
+        "event_ms_median": 0.005119999870657921,
+        "event_ms_p95": 0.006144000217318535,
+        "median_event_ms": 0.005119999870657921,
+        "p95_event_ms": 0.006144000217318535
+      },
+      "raw_sample_counts": {
+        "event_ms": 30
+      },
+      "status": "GPU_RUN",
+      "variant": "shuffle_tile"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "GPU_RUN"
+}

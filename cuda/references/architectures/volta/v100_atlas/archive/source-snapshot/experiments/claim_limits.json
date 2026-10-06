@@ -1,0 +1,773 @@
+{
+  "schema_version": 1,
+  "run": {
+    "id": "v100-20261006T145155Z-4bd01216",
+    "started_utc": "2026-10-06T14:51:55.310411+00:00",
+    "campaign_key": "7beacfbd95e0d2b8f9725c7ba1477122f16bc1eb686a6a7c94dbf6c7e266794b"
+  },
+  "source": {
+    "commit": "f223c51dcfacab602e9bc68b3e65cc75730dc7f8",
+    "portable_provenance": "evidence/v100-20261006/provenance.json",
+    "interpretation_guide": "INTERPRETING_RESULTS.md"
+  },
+  "classification_kinds": [
+    "unmeasured",
+    "limited_scope",
+    "restricted_not_run",
+    "unresolved_uncertainty",
+    "missing_baseline",
+    "unequal_work",
+    "finite_validation"
+  ],
+  "entries": [
+    {
+      "id": "E00",
+      "current_status": "CPU_ONLY",
+      "card": "E00.md",
+      "summary": "evidence/v100-20261006/E00.json",
+      "limits": [
+        {
+          "claim": "The run measured peer transfer or kernel performance.",
+          "reason": "It was a single read-only inventory; no allocation, peer enabling, kernel launch, or clock change occurred.",
+          "safe_statement": "The run recorded host inventory and capability queries for four devices; no transfer or kernel-performance result is available.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E00.md",
+            "evidence/v100-20261006/E00.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E01",
+      "current_status": "CPU_ONLY",
+      "card": "E01.md",
+      "summary": "evidence/v100-20261006/E01.json",
+      "limits": [
+        {
+          "claim": "The tested identities were validated on the GPU or establish GPU ordering/numerics.",
+          "reason": "The suite ran on the host and produced no GPU outputs or timing samples.",
+          "safe_statement": "31,094 assertions across 15 CPU test groups matched the stated references and finite boundary cases.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E01.md",
+            "evidence/v100-20261006/E01.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E02",
+      "current_status": "GPU_RUN",
+      "card": "E02.md",
+      "summary": "evidence/v100-20261006/E02.json",
+      "limits": [
+        {
+          "claim": "The dependent-add timing is an isolated instruction-latency or throughput constant.",
+          "reason": "The event-timed kernel includes loop control; clock64 adds work, and no executable empty-loop baseline was measured.",
+          "safe_statement": "The tested integer-add schedules passed correctness and were timed as whole kernels at selected iterations.",
+          "kind": "missing_baseline",
+          "source_refs": [
+            "E02.md",
+            "evidence/v100-20261006/E02.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E03",
+      "current_status": "GPU_RUN",
+      "card": "E03.md",
+      "summary": "evidence/v100-20261006/E03.json",
+      "limits": [
+        {
+          "claim": "The interleaved schedule proves overlap cause or a scientific-workload benefit.",
+          "reason": "Profiling and timing did not establish which resource caused the difference.",
+          "safe_statement": "For size 65,536, the interleaved median was lower than serial with equal p95; this is an observation for that kernel.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E03.md",
+            "evidence/v100-20261006/E03.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E04",
+      "current_status": "NOT_RUN",
+      "card": "E04.md",
+      "summary": "evidence/v100-20261006/E04.json",
+      "limits": [
+        {
+          "claim": "Register-bank conflicts or source reuse do or do not occur on this GPU.",
+          "reason": "The restricted E04 experiment was not dispatched; adjacent tests do not substitute for it.",
+          "safe_statement": "There is no E04 empirical conclusion; bank and reuse effects remain unmeasured in this campaign.",
+          "kind": "restricted_not_run",
+          "source_refs": [
+            "E04.md",
+            "evidence/v100-20261006/E04.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E05",
+      "current_status": "GPU_RUN",
+      "card": "E05.md",
+      "summary": "evidence/v100-20261006/E05.json",
+      "limits": [
+        {
+          "claim": "Rank/select moves arbitrary payloads or demonstrates a native __fns advantage.",
+          "reason": "The tested rank/select returns ordinal indices, not arbitrary payloads; no native __fns payload operation was measured.",
+          "safe_statement": "The selected lookup, aggregation and software ordinal rank/select cases passed their recorded checks.",
+          "kind": "missing_baseline",
+          "source_refs": [
+            "E05.md",
+            "evidence/v100-20261006/E05.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E06",
+      "current_status": "GPU_RUN",
+      "card": "E06.md",
+      "summary": "evidence/v100-20261006/E06.json",
+      "limits": [
+        {
+          "claim": "Timing variation proves a shared-memory bank-counter cause or a whole-pipeline winner.",
+          "reason": "Output checks and event timings do not establish the cause of timing variation; the broad producer-consumer phase test was not covered.",
+          "safe_statement": "The selected shared-memory patterns and fixed-permutation shared/shuffle tile paths passed correctness checks.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E06.md",
+            "evidence/v100-20261006/E06.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E07",
+      "current_status": "GPU_RUN",
+      "card": "E07.md",
+      "summary": "evidence/v100-20261006/E07.json",
+      "limits": [
+        {
+          "claim": "The stream/chase timing identifies a cache level, TLB, or physical-address mechanism.",
+          "reason": "Collected counters do not establish a cache-level or TLB cause for selected access-pattern timings.",
+          "safe_statement": "The selected contiguous/strided streams and dependent chases show timing contrasts at stated sizes and useful-load counts.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E07.md",
+            "evidence/v100-20261006/E07.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E08",
+      "current_status": "GPU_RUN",
+      "card": "E08.md",
+      "summary": "evidence/v100-20261006/E08.json",
+      "limits": [
+        {
+          "claim": "The footprint timing difference proves TLB misses or physical page placement caused it.",
+          "reason": "Virtual footprint was varied but no TLB counter or physical-page placement evidence was collected.",
+          "safe_statement": "The selected page-local and strided virtual-footprint cases show a timing contrast for the fixed traversal.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E08.md",
+            "evidence/v100-20261006/E08.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E09",
+      "current_status": "GPU_RUN",
+      "card": "E09.md",
+      "summary": "evidence/v100-20261006/E09.json",
+      "limits": [
+        {
+          "claim": "The WMMA lane-to-fragment ownership map is verified.",
+          "reason": "Only explicit PTX m8n8k4 raw coordinates were checked; WMMA checked canonical output and finite raw writes, not slot ownership.",
+          "safe_statement": "The explicit PTX coordinate mapping passed for 256 coordinates; WMMA canonical output matched its FP16-input oracle.",
+          "kind": "unresolved_uncertainty",
+          "source_refs": [
+            "E09.md",
+            "evidence/v100-20261006/E09.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E10",
+      "current_status": "GPU_RUN",
+      "card": "E10.md",
+      "summary": "evidence/v100-20261006/E10.json",
+      "limits": [
+        {
+          "claim": "The WMMA fingerprint is a general numerical proof or certifies arbitrary FMA/counting behavior.",
+          "reason": "It covers eight selected cases, operand placements, sizes, and a case-level gamma16 diagnostic bound.",
+          "safe_statement": "The tested WMMA corpus passed its references and diagnostic bound; behavior outside it remains unresolved.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E10.md",
+            "evidence/v100-20261006/E10.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E11",
+      "current_status": "GPU_RUN",
+      "card": "E11.md",
+      "summary": "evidence/v100-20261006/E11.json",
+      "limits": [
+        {
+          "claim": "Packed AND+POPC wins sparse, reusable, or addition workloads.",
+          "reason": "One dense 16x16 intersection matrix ran; actual iterations were 1 (requested 1/8/32), so reuse was not tested. E11 and E39 use different operators.",
+          "safe_statement": "Packed AND+POPC led the three complete paths at universes 16, 256, and 1,024 for this matrix; E39 is integer addition.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E11.md",
+            "evidence/v100-20261006/E11.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E12",
+      "current_status": "GPU_RUN",
+      "card": "E12.md",
+      "summary": "evidence/v100-20261006/E12.json",
+      "limits": [
+        {
+          "claim": "The run tested M^r x, a coupled 16-variable module, or whole-pipeline MMA benefit.",
+          "reason": "It used four independent 4-variable Hadamard blocks, recomputed Mx from fixed x, and accumulated Y_r=r(Mx); timing was kernel-resident.",
+          "safe_statement": "Shuffle/add and WMMA passed for this block-diagonal transform; M^r x and coupled 16-variable operators were not tested.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E12.md",
+            "evidence/v100-20261006/E12.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E13",
+      "current_status": "GPU_RUN",
+      "card": "E13.md",
+      "summary": "evidence/v100-20261006/E13.json",
+      "limits": [
+        {
+          "claim": "Native arithmetic always wins or the comparison covers broad patterns, reuse, energy, and setup costs.",
+          "reason": "Only three random-input size/reuse points were measured; allocation, host preparation, and nibble-table upload were outside full path.",
+          "safe_statement": "Native integer addition had the lowest measured complete-path median at all three selected points; alternatives also passed correctness.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E13.md",
+            "evidence/v100-20261006/E13.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E14",
+      "current_status": "GPU_RUN",
+      "card": "E14.md",
+      "summary": "evidence/v100-20261006/E14.json",
+      "limits": [
+        {
+          "claim": "Warp aggregation has a universal latency/fairness benefit or the reported reduction is a hardware transaction count.",
+          "reason": "Transaction counts are implementation-based estimates for six exact-increment cases, not hardware counters; operation/distribution sweeps are absent.",
+          "safe_statement": "The variants returned equal updates, and implementation estimates fewer atomics for warp aggregation in these cases.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E14.md",
+            "evidence/v100-20261006/E14.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E15",
+      "current_status": "GPU_RUN",
+      "card": "E15.md",
+      "summary": "evidence/v100-20261006/E15.json",
+      "limits": [
+        {
+          "claim": "The bounded single-slot handshake proves fairness, arbitrary-delay safety, or slot-reuse safety.",
+          "reason": "Only one bounded single-slot protocol with two admitted CTAs and finite polling was exercised; no slot-reuse/fairness sweep was run.",
+          "safe_statement": "The selected protocol observed correct payloads and termination with zero mismatches/timeouts.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E15.md",
+            "evidence/v100-20261006/E15.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E16",
+      "current_status": "GPU_RUN",
+      "card": "E16.md",
+      "summary": "evidence/v100-20261006/E16.json",
+      "limits": [
+        {
+          "claim": "Resident roles generally improve scheduling or establish starvation freedom.",
+          "reason": "Six selected task-count/round cases compared resident, batching, and graph replay; no skew, starvation, or broad resource sweep was measured.",
+          "safe_statement": "All variants preserved the selected sums; resident execution was slower at the two tested sizes.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E16.md",
+            "evidence/v100-20261006/E16.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E17",
+      "current_status": "GPU_RUN",
+      "card": "E17.md",
+      "summary": "evidence/v100-20261006/E17.json",
+      "limits": [
+        {
+          "claim": "The two-slot result proves equal-work speedup or physical DMA/compute overlap.",
+          "reason": "The two-slot case processes 8 MiB versus 4 MiB for quoted serial; dependencies alone do not prove overlap.",
+          "safe_statement": "Per-slot results were correct. The unequal-work timings were unprofiled; a separate Nsight Systems timeline is available to inspect overlap.",
+          "kind": "unequal_work",
+          "source_refs": [
+            "E17.md",
+            "evidence/v100-20261006/E17.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E18",
+      "current_status": "GPU_RUN",
+      "card": "E18.md",
+      "summary": "evidence/v100-20261006/E18.json",
+      "limits": [
+        {
+          "claim": "Peer-load observations prove requester-side cache behavior, coherent writable aliases, or a general topology rule.",
+          "reason": "Only one physical GPU pair and selected dependent/independent/staged paths were measured; no cache/coherence proof or broad topology sweep exists.",
+          "safe_statement": "The run separates selected remote-chain, peer-load, and staging/local-chain costs for the recorded allocation and pair.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E18.md",
+            "evidence/v100-20261006/E18.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E19",
+      "current_status": "GPU_RUN",
+      "card": "E19.md",
+      "summary": "evidence/v100-20261006/E19.json",
+      "limits": [
+        {
+          "claim": "The result is primitive-only peer-atomic latency or a universal path ranking.",
+          "reason": "The interval measures each full 64-phase protocol on one physical pair; clocks were not subtracted/aligned and other message/device/load cases were not swept.",
+          "safe_statement": "The selected event paths had lower complete-handshake medians than peer-system-atomic for this pair and protocol.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E19.md",
+            "evidence/v100-20261006/E19.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E20",
+      "current_status": "GPU_RUN",
+      "card": "E20.md",
+      "summary": "evidence/v100-20261006/E20.json",
+      "limits": [
+        {
+          "claim": "Payload rate proves the physical route, link saturation, or scientific partition quality.",
+          "reason": "No independent link counter was collected; rates are payload measurements and four directions lacked direct-copy eligibility.",
+          "safe_statement": "The run supports pair-specific payload-rate observations and CUDA direct-access eligibility for tested directions.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E20.md",
+            "evidence/v100-20261006/E20.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E21",
+      "current_status": "GPU_RUN",
+      "card": "E21.md",
+      "summary": "evidence/v100-20261006/E21.json",
+      "limits": [
+        {
+          "claim": "Node 0 is faster than node 1 or the run establishes a local/remote NUMA penalty.",
+          "reason": "Node-1 bind attempts returned Invalid argument and were NOT_RUN, leaving only page-verified node-0 transfers.",
+          "safe_statement": "Page-verified pinned transfers from host node 0 to GPU 0 were measured at 16 KiB and 4 MiB.",
+          "kind": "missing_baseline",
+          "source_refs": [
+            "E21.md",
+            "evidence/v100-20261006/E21.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E22",
+      "current_status": "GPU_RUN",
+      "card": "E22.md",
+      "summary": "evidence/v100-20261006/E22.json",
+      "limits": [
+        {
+          "claim": "Stream-memory operations materially outperform events or establish standalone wait latency/autonomous progress.",
+          "reason": "Complete host-measured medians overlap the event baseline; timing includes the selected stream/event sequence and host completion wait.",
+          "safe_statement": "The tested 32/64-bit protocols completed under the installed stack with explicit event ordering and reported timing ranges.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E22.md",
+            "evidence/v100-20261006/E22.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E23",
+      "current_status": "GPU_RUN",
+      "card": "E23.md",
+      "summary": "evidence/v100-20261006/E23.json",
+      "limits": [
+        {
+          "claim": "Fixed aliases establish general VMM gains or isolate modulo as the cause.",
+          "reason": "Requests of 4,096 and 65,536 elements both rounded to 2 MiB and the same 524,288-element domain. No power-of-two mask or two-segment baseline ran; setup has one observation per case.",
+          "safe_statement": "Fixed aliases beat the serial modulo ring for this domain and access count; setup timings are single observations.",
+          "kind": "missing_baseline",
+          "source_refs": [
+            "E23.md",
+            "evidence/v100-20261006/E23.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E24",
+      "current_status": "GPU_RUN",
+      "card": "E24.md",
+      "summary": "evidence/v100-20261006/E24.json",
+      "limits": [
+        {
+          "claim": "The policy ordering proves a migration mechanism or general managed-memory advantage.",
+          "reason": "Migration-fault or cause attribution was not established; controlled locality and phase/reuse comparisons are absent.",
+          "safe_statement": "Complete host-visible costs were measured for the same reduction under four selected placement paths and two sizes.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E24.md",
+            "evidence/v100-20261006/E24.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E25",
+      "current_status": "GPU_RUN",
+      "card": "E25.md",
+      "summary": "evidence/v100-20261006/E25.json",
+      "limits": [
+        {
+          "claim": "The adaptive policy wins online or the offline oracle establishes held-out regret.",
+          "reason": "Adaptive observation cost dominated these synthetic phases; the offline oracle is in-sample and excludes calibration cost by construction.",
+          "safe_statement": "The run bounds policy and observation cost for the known eight-phase schedule; no online-policy win is established.",
+          "kind": "unequal_work",
+          "source_refs": [
+            "E25.md",
+            "evidence/v100-20261006/E25.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E26",
+      "current_status": "GPU_RUN",
+      "card": "E26.md",
+      "summary": "evidence/v100-20261006/E26.json",
+      "limits": [
+        {
+          "claim": "Finite sampled errors establish a global error bound, derivative accuracy, or a screen-and-refine certificate.",
+          "reason": "Maximum errors are finite-sample observations over [-pi,pi], not a worst-case proof; no screen/refine path was implemented.",
+          "safe_statement": "The selected SFU and interpolation paths passed configured pointwise tolerances on tested finite input sets.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E26.md",
+            "evidence/v100-20261006/E26.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E27",
+      "current_status": "NOT_RUN",
+      "card": "E27.md",
+      "summary": "evidence/v100-20261006/E27.json",
+      "limits": [
+        {
+          "claim": "The restricted component transformer supports arbitrary gather, is safe, or has a performance advantage.",
+          "reason": "Zero cases ran and no privileged transformer was exercised; public peer-copy/shader paths are different operations.",
+          "safe_statement": "This run provides no observation about restricted transformer reachability, correctness, or speed.",
+          "kind": "restricted_not_run",
+          "source_refs": [
+            "E27.md",
+            "evidence/v100-20261006/E27.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E28",
+      "current_status": "NOT_RUN",
+      "card": "E28.md",
+      "summary": "evidence/v100-20261006/E28.json",
+      "limits": [
+        {
+          "claim": "A public graph/launch path validates copy-engine completion-word release, visibility, or reduction semantics.",
+          "reason": "Zero cases ran and no low-level completion-word route was exercised; public E32 submission mechanisms are distinct.",
+          "safe_statement": "This run supplies no result for E28 completion-word semantics.",
+          "kind": "restricted_not_run",
+          "source_refs": [
+            "E28.md",
+            "evidence/v100-20261006/E28.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E29",
+      "current_status": "NOT_RUN",
+      "card": "E29.md",
+      "summary": "evidence/v100-20261006/E29.json",
+      "limits": [
+        {
+          "claim": "Public CUDA Graph or child launch validates restricted descriptor dependencies, dynamic graphs, or SM affinity.",
+          "reason": "Zero cases ran and no QMD dependency implementation was exercised; E32 uses distinct public mechanisms.",
+          "safe_statement": "The restricted E29 hypothesis remains unmeasured; adjacent public submission results do not validate descriptor semantics.",
+          "kind": "restricted_not_run",
+          "source_refs": [
+            "E29.md",
+            "evidence/v100-20261006/E29.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E30",
+      "current_status": "NOT_RUN",
+      "card": "E30.md",
+      "summary": "evidence/v100-20261006/E30.json",
+      "limits": [
+        {
+          "claim": "The documented PTX/source comparison validates cubin edits or proves binary-rewriting legality.",
+          "reason": "Zero cases ran; E37 compared documented PTX BoolOp and CUDA expressions without executing an edited cubin.",
+          "safe_statement": "This campaign supplies no semantic-preservation or speed result for edited binaries.",
+          "kind": "restricted_not_run",
+          "source_refs": [
+            "E30.md",
+            "evidence/v100-20261006/E30.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E31",
+      "current_status": "GPU_RUN",
+      "card": "E31.md",
+      "summary": "evidence/v100-20261006/E31.json",
+      "limits": [
+        {
+          "claim": "The two-client sample establishes general MPS behavior, fairness, or fault isolation.",
+          "reason": "Three cases used one finite workload and at most two clients; sharing modes were not a controlled causal study.",
+          "safe_statement": "For this exact sample, two private MPS clients had the same median and a higher p95 than single-client/context cases.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E31.md",
+            "evidence/v100-20261006/E31.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E32",
+      "current_status": "GPU_RUN",
+      "card": "E32.md",
+      "summary": "evidence/v100-20261006/E32.json",
+      "limits": [
+        {
+          "claim": "Two sizes establish a general launch-method ranking or dynamic/recursive behavior.",
+          "reason": "Only two fixed size/stage-count points were measured; replay profiling and broader dependency/parameter-update sweeps were omitted.",
+          "safe_statement": "Graph replay had the lowest and device-side child launch the highest median among the methods at those two points.",
+          "kind": "limited_scope",
+          "source_refs": [
+            "E32.md",
+            "evidence/v100-20261006/E32.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E33",
+      "current_status": "GPU_RUN",
+      "card": "E33.md",
+      "summary": "evidence/v100-20261006/E33.json",
+      "limits": [
+        {
+          "claim": "Timing/telemetry proves randomized schedule benefit, calibrated energy per result, or general steady-state superiority.",
+          "reason": "Two sequential synthetic runs used four selected stable 30-second windows; telemetry was read-only and uncalibrated, order was not randomized, and window comparability remains a limit.",
+          "safe_statement": "Selected stable-window event medians and sensor energy estimates describe these two synthetic runs only.",
+          "kind": "unresolved_uncertainty",
+          "source_refs": [
+            "E33.md",
+            "evidence/v100-20261006/E33.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E34",
+      "current_status": "CPU_ONLY",
+      "card": "E34.md",
+      "summary": "evidence/v100-20261006/E34.json",
+      "limits": [
+        {
+          "claim": "One RAS snapshot establishes device-wide error rate, reliability, recovery behavior, or perfect health.",
+          "reason": "The campaign recorded one read-only status observation and ran no GPU workload or fault injection.",
+          "safe_statement": "A bounded software-visible RAS snapshot is available to annotate this campaign host/device state.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E34.md",
+            "evidence/v100-20261006/E34.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E35",
+      "current_status": "CPU_ONLY",
+      "card": "E35.md",
+      "summary": "evidence/v100-20261006/E35.json",
+      "limits": [
+        {
+          "claim": "The inventory establishes physical wiring, rails, clocks, or cause of runtime behavior.",
+          "reason": "It records software-visible identifiers on one host; no cross-device/OEM matrix or physical probing occurred.",
+          "safe_statement": "The run supports available software-visible platform identifiers from this single-host inventory.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E35.md",
+            "evidence/v100-20261006/E35.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E36",
+      "current_status": "CPU_ONLY",
+      "card": "E36.md",
+      "summary": "evidence/v100-20261006/E36.json",
+      "limits": [
+        {
+          "claim": "Compiled metadata proves a library operator dispatched or executed a native sm70 path.",
+          "reason": "Overall status is CPU_ONLY; the compiled-only subcase inspected eight binary metadata records without runtime operator-coverage tests.",
+          "safe_statement": "The campaign recorded toolchain/native-image metadata and one COMPILED_ONLY qualification subcase.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E36.md",
+            "evidence/v100-20261006/E36.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E37",
+      "current_status": "GPU_RUN",
+      "card": "E37.md",
+      "summary": "evidence/v100-20261006/E37.json",
+      "limits": [
+        {
+          "claim": "Selected BoolOp cases show a hidden-instruction advantage, new scientific representation, or broad performance gain.",
+          "reason": "The run checked three documented truth-function variants over finite inputs; it did not establish the full 256-immediate/liveness surface or broad workload gain.",
+          "safe_statement": "The tested documented PTX BoolOp forms matched their truth-function oracles for selected cases, compiler, and sm70.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E37.md",
+            "evidence/v100-20261006/E37.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E38",
+      "current_status": "CPU_ONLY",
+      "card": "E38.md",
+      "summary": "evidence/v100-20261006/E38.json",
+      "limits": [
+        {
+          "claim": "Offline falsification proves empirical silicon behavior, physical impossibility, or a new operator.",
+          "reason": "Five CPU_ONLY checks qualified/rejected bounded claims from source/contract evidence; no GPU experiment was run.",
+          "safe_statement": "These five claims were checked against recorded source/contract evidence; no silicon behavior was measured.",
+          "kind": "finite_validation",
+          "source_refs": [
+            "E38.md",
+            "evidence/v100-20261006/E38.json"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "E39",
+      "current_status": "GPU_RUN",
+      "card": "E39.md",
+      "summary": "evidence/v100-20261006/E39.json",
+      "limits": [
+        {
+          "claim": "Bitplane addition has a crossover, broad usefulness, or E11 predicts integer addition.",
+          "reason": "The 0.08% median ordering at size 65,536/reuse 8 has a 95% bootstrap interval crossing zero. The selected matrix is not a generalization set; E11 tests another operator.",
+          "safe_statement": "Native generally led matched uint32 full-adder complete paths; the apparent ordering is not an established crossover.",
+          "kind": "unresolved_uncertainty",
+          "source_refs": [
+            "E39.md",
+            "evidence/v100-20261006/E39.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "cross_cutting_limits": [
+    {
+      "id": "cost_boundary",
+      "claim": "A resident-kernel or setup-excluded win establishes a complete-pipeline or retained-representation benefit.",
+      "reason": "Several timings omit preparation, setup, allocation, transfer, or representation conversion; costs differ by experiment and must stay attached to the measured boundary.",
+      "safe_statement": "Claim only the path actually timed. For E12/E13, preparation or setup limits apply; E39 includes transfer and encode/decode but excludes allocation and nibble-table setup. No whole-pipeline retained-representation gain was measured.",
+      "kind": "limited_scope",
+      "source_refs": [
+        "E12.md",
+        "E13.md",
+        "E39.md",
+        "INTERPRETING_RESULTS.md"
+      ]
+    },
+    {
+      "id": "generalization_uncertainty",
+      "claim": "Selected within-run samples establish between-run, machine-wide, or application-wide behavior.",
+      "reason": "The campaign reports selected cases and within-run samples; it does not supply an independent between-run or broad application generalization set. E39’s bootstrap interval describes within-run sampling and crosses zero.",
+      "safe_statement": "Limit claims to each stated case, source, run, and measurement boundary. E33 telemetry and E39 uncertainty retain their specific qualifications; this campaign supplies no biological validation.",
+      "kind": "unresolved_uncertainty",
+      "source_refs": [
+        "E33.md",
+        "E39.md",
+        "INTERPRETING_RESULTS.md",
+        "evidence/v100-20261006/provenance.json"
+      ]
+    }
+  ],
+  "path_base": "directory containing claim_limits.json (experiments/)"
+}

@@ -1,0 +1,37 @@
+# E11 — Tensor versus bitset intersections
+
+> When do many shared overlap queries repay numeric expansion?
+
+**Status:** GPU_RUN. **Original protocol status:** NOT_RUN_ON_GPU. **Original archive:** [commit `5c1f805db80a81f7476ede8292abba69821d104f`](https://github.com/tumlinso/gpu_circuit_bending_atlas/commit/5c1f805db80a81f7476ede8292abba69821d104f). **Depth:** 4.
+**Read when:** experiment, tensor, versus, bitset, intersections.
+**Prerequisites:** R12. **Evidence:** S19 S20 S08.
+
+**Question:** When do many shared overlap queries repay numeric expansion?
+
+**Minimal setup:** Compute identical intersection counts or threshold decisions with packed AND+POPC, DP4A and supported tensor tiles.
+
+**Sweep:** Universe length, query count, reuse, density, tile padding and requested output sparsity.
+
+**Discriminating observation:** Whole-operation crossover including encode/decode and numerical validation.
+
+**Baseline:** Strong packed-bitset implementation with cached cardinalities.
+
+**Confounders / correctness:** Computing a dense answer matrix that the application does not need is not equal useful work.
+
+**Access gate:** Counts must pass E10 within a proved or conservatively validated bounded domain.
+
+**Related:** C11 C14 M26.
+
+**Record:** UUID/SKU; topology; compiler/driver/flags/cubin hash; memory type; clocks/power/temperature; launch shape; raw samples; repetitions; median/tails; numerical contract; profiler/replay mode. Unknown measurements are null, never zero. See R12 and result.schema.json.
+
+
+## Measured coverage (2026-10-06)
+
+The semantic unit was a 16-query by 16-query dense matrix of 256 exact `popcount(A & B)` intersection counts, computed using packed AND+POPC, DP4A byte expansion or FP16 WMMA. Nine GPU cases passed at universes 16/256/1,024. Although the driver requested iteration counts 1/8/32, `run_e11` sets actual `iterations=1` and records those values only as `requested_iterations`: every sample computes one fixed 16-query by 16-query matrix, so query reuse was not swept. Thirty complete-path samples included representation encoding, H2D, kernel, D2H and materialization; common source generation and allocations were outside. At those universes, packed median/p95 pairs were 0.014809/0.015379, 0.015186/0.015997 and 0.016747/0.024667 ms; DP4A 0.015563/0.017446, 0.042810/0.061821 and 0.120421/0.142654 ms; WMMA 0.020626/0.026616, 0.047218/0.052085 and 0.126273/0.150248 ms. Packed was lowest in each tested complete path. Implementation: [`run_e11`](../benchmarks/native/tensor.cu#L366). [Measured summary](evidence/v100-20261006/E11.json) · [Full campaign](../archive/campaign/REPORT.source.txt) · [Interpretation guide](INTERPRETING_RESULTS.md)
+
+## Meaning through representation and execution
+
+- Supports: Packed AND+POPC is the lowest measured complete path for this dense 16×16 output at all three tested universes.
+- Design implication (inference): For membership and intersection-count questions, packed sets are computational states: bitwise AND followed by population count directly evaluates the requested operator. In this tested matched-query workload, numeric expansion did not repay its preparation and transfer cost, so a 16×16 answer shape alone does not justify MMA.
+- Does not establish: A packed-bitset win over generic CSR, sparse outputs, multistage/query reuse, different densities, or all set-intersection workloads; output contracts must match. FP16 count exactness is empirical only for this bounded nonnegative domain.
+- Original protocol gaps: Density and reuse sweeps, sparse-output work contracts, larger workloads and broader numerical validation are missing.

@@ -1,0 +1,81 @@
+{
+  "correctness": {
+    "executed_cases": 1,
+    "valid": true
+  },
+  "date": "2026-10-06",
+  "experiment": "E36",
+  "hardware": {
+    "gpu_uuids": []
+  },
+  "limitations": [],
+  "protocol": {
+    "matrix": {
+      "runner": "host",
+      "timeout": 120
+    },
+    "mode": "full"
+  },
+  "raw_artifacts": [
+    "controller/E36-host/artifacts",
+    "controller/E36-host/lease_receipt.json",
+    "controller/E36-host/stderr_path.txt",
+    "controller/E36-host/stdout_path.txt"
+  ],
+  "result_summary": "1 case(s); correctness passed",
+  "samples": [
+    {
+      "checks": {
+        "valid": true
+      },
+      "configuration": {
+        "cuobjdump": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/cuobjdump",
+        "nvcc": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "target_architecture": "sm_70"
+      },
+      "experiment": "E36",
+      "limitations": [
+        "Image listing is metadata inspection; no conclusion about runtime operator coverage is implied."
+      ],
+      "metrics": {
+        "binary_count": 8.0
+      },
+      "raw_sample_counts": {},
+      "status": "COMPILED_ONLY",
+      "variant": "toolchain_native_image_qualification"
+    }
+  ],
+  "software": {
+    "tools": {
+      "compute_sanitizer": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/compute-sanitizer/compute-sanitizer",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Compute Sanitizer\nCopyright (c) 2020-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35969825) (public-release)"
+      },
+      "ncu": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Compute/ncu",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)"
+      },
+      "nsys": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/profilers/12.9/Nsight_Systems_2025.3/bin/nsys",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NVIDIA Nsight Systems version 2025.3.1.90-253135822126v0"
+      },
+      "nvcc": {
+        "path": "/opt/nvidia/hpc_sdk/Linux_x86_64/26.1/cuda/12.9/bin/nvcc",
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0"
+      }
+    }
+  },
+  "source_hashes": {
+    "files_sha256": "318510f3097352432ccce8d38af7b1a95403d63d3acafaa8f7fd514ec2c124f2",
+    "tree_sha256": "5bacf9f34b437045719772d65b47a2a4767e910373ed6413f6766d24c42ae80c"
+  },
+  "status": "CPU_ONLY"
+}

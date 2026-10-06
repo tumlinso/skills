@@ -2,6 +2,8 @@
 
 Use this guide when rank placement, collectives, or NCCL communication may be topology-bound. The native host's recorded profile has fast pairs `0,2` and `1,3`, but indices are observations, not authority: rediscover device UUIDs and topology at runtime before placing processes or selecting devices. Never assume ordinal adjacency or treat a script-emitted mapping as admission.
 
+For partitioned operators, also compare which rank owns the computation and how much state crosses the boundary; [machine-aligned design](../common/machine-aligned-design.md) frames pull, staging, and owner-compute candidates.
+
 The examples below use the native host's two- and four-GPU layouts. For other
 deployments, derive groups from the observed fabric; use [GB200 NVL72](gb200-nvl72.md)
 for that rack's deployment constraints.

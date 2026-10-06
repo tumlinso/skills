@@ -2,6 +2,8 @@
 
 Use this guide before counter-by-counter tuning when the open decision is whether to fuse, split, specialize, bin, or tolerate divergence. First identify whether the loss is memory passes, tiny launches, long divergent work, spills/shared-memory pressure, or poor placement of intermediates; do not start at instruction level.
 
+If the semantic operation itself may admit a different representation or ownership map, first use [machine-aligned design](machine-aligned-design.md) to frame candidates and their complete cost; return here to choose fusion, specialization, and launch structure.
+
 - should these kernels be fused?
 - is this branch structure actually harmful?
 - should I split this into specialized kernels instead of forcing one general kernel?
