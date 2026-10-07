@@ -1,3 +1,0 @@
-format = "PROJECT-CONTROL-LOCAL-RUNTIME-FORWARD/1"
-retired = true
-receiver_relative_path = "config/host-profile.example.toml"

@@ -1,6 +1,0 @@
-interface:
-  display_name: "Todo Orchestrator Kernel"
-  short_description: "Internal workflow state and owner maintenance"
-  default_prompt: "Use $todo-orchestrator for explicit workflow maintenance or debugging; use coding-workflow for ordinary repository work."
-policy:
-  allow_implicit_invocation: true

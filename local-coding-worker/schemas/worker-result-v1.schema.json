@@ -1,8 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Retired Skills local worker contract",
-  "not": {},
-  "deprecated": true,
-  "x-project-control-forward": "project_control/local_runtime/schemas/worker-result-v1.schema.json",
-  "$comment": "Fail-closed navigation stub: every instance is rejected. Load the hash-verified receiver schema at the indicated Project Control path."
-}

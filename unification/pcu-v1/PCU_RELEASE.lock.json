@@ -1,7 +1,0 @@
-{
-  "schema_version": 1,
-  "project_control_commit": "61f74254f07e015985760e1ca6aa5498a7b84576",
-  "manifest_sha256": "5a4a5e4fda0922c236c6772bdfd276712c9bdd315f05bcf39646e9a051120256",
-  "source_tree_hash": "56b562ae8c10987487b99cbfef2b11b6b070c1426ef71d91f89087b4c02fd2f4",
-  "remote_url": "git@github.com:tumlinso/project-control.git"
-}
