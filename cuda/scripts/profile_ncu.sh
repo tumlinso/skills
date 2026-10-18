@@ -23,8 +23,9 @@ Options:
 The wrapper captures profiler chatter and command output to files, then prints a
 short summary that says whether the counters are usable and what limiter is most
 likely on V100. Throughput decisions should still come from the benchmark or
-Nsight Systems because Nsight Compute replay distorts timing. Benchmark-producing
-runs are serialized through the shared benchmark mutex.
+Nsight Systems because Nsight Compute replay distorts timing. Controller-selected
+device-scoped runs may share the host measurement gate with captures on different
+GPUs. Calls without controller scope remain host-serialized.
 EOF
 }
 
@@ -165,6 +166,8 @@ mkdir -p "${RUN_DIR}"
   printf 'benchmark_summary=%s\n' "${BENCHMARK_SUMMARY}"
   printf 'benchmark_mutex_path=%s\n' "${BENCHMARK_MUTEX_PATH}"
   printf 'benchmark_mutex_label=%s\n' "${BENCHMARK_MUTEX_LABEL}"
+  printf 'coordination_scope=%s\n' "${CUDA_BENCHMARK_LOCK_SCOPE:-host}"
+  printf 'coordination_gpu_uuids=%s\n' "${CUDA_BENCHMARK_GPU_UUIDS:-}"
   printf 'show_command_output=%s\n' "${SHOW_COMMAND_OUTPUT}"
   printf 'metrics=%s\n' "${METRICS:-${DEFAULT_METRICS}}"
   if [[ -n "${LAUNCH_COUNT}" ]]; then

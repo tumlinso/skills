@@ -1233,13 +1233,13 @@
     },
     {
       "path": "references/execution/controller-background-contract.md",
-      "bytes": 4662,
-      "sha256": "39b355e5eb57099f71c7247c82099d3641b381b3f96c3b7fa8e4a76045dc836c"
+      "bytes": 5033,
+      "sha256": "4aefa14906b67c77f627648fac9459c3336aea767362f24a789150db6c637687"
     },
     {
       "path": "references/execution/host-execution.md",
-      "bytes": 6167,
-      "sha256": "5e8ba8349c57fe513c084a23b444ed44df72682c91947ca192320b30a5a9714d"
+      "bytes": 7146,
+      "sha256": "1eb5e61c26449a7041f4b9967d229baf742fc2b28681b66f6b44be05dde08064"
     },
     {
       "path": "references/execution/performance-facts.md",
