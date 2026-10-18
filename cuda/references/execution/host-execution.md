@@ -76,11 +76,25 @@ build, then admits the sanitizer wrapper under GPU and profiler interlocks.
 
 Before timing/profiling, the controller requires consecutive idle samples from
 the runtime-selected GPU UUIDs. Foreign compute processes, utilization, or a
-quiescence timeout invalidate clean measurement. Benchmark and profiler timing
-remains serialized through the host mutex. Preserve existing script options,
-`ok`/`partial`/`rerun` verdicts, debug capture behavior, and mutex compatibility.
-Legacy wrappers supply capture/serialization behavior inside an admitted run;
-they do not replace host admission.
+quiescence timeout invalidate clean measurement. Timed benchmarks and
+system-wide profiling use the host-wide exclusive gate. Controller-selected
+Nsight Compute runs pass their admitted UUIDs and use a shared host gate plus
+exclusive locks for those UUIDs, acquired in sorted order. Captures on distinct
+devices may overlap when their requested PCIe and NVLink isolation domains do
+not conflict. The default profiler isolation remains enabled; set
+`resources.isolate_pcie_root` and `resources.isolate_nvlink_domain` to `false`
+only for independent resident work. Same-device captures remain excluded by
+controller reservations and wrapper locks.
+
+Calls to `profile_ncu.sh` without controller-provided device scope and UUIDs
+retain host-wide exclusion. New wrappers recognize both owner-specific intent
+records and the legacy singleton marker. A device capture already in progress
+may finish its finite run when a host measurement queues; new device captures
+yield to that host intent. Background timing yields to any foreground
+measurement intent, and background device profiling yields to host intents and
+overlapping UUID intents. Other profiler and debugger recipes keep their
+existing host scope. Wrappers add coordination inside an admitted run; they do
+not replace controller admission, resource reservations, or quiescence.
 
 ## Background campaigns
 

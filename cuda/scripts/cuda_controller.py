@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import fcntl
 import fnmatch
 import hashlib
 import io
@@ -504,7 +505,8 @@ def _resource_request(spec: dict[str, object], stage: str = "benchmark") -> dict
                            benchmark.get("background_cpu_threads", 0) or 0),
         "ram_bytes": int(benchmark.get("background_ram_bytes", 0) or 0),
         "tags": ({"architecture": str(benchmark["architecture"])} if benchmark.get("architecture") else {}),
-        "exclusive_resources": (["benchmark:cuda", "profiler:nvidia"] if profiler else
+        "exclusive_resources": ([] if base_stage == "ncu" else
+                                ["benchmark:cuda", "profiler:nvidia"] if profiler else
                                 ["benchmark:cuda"] if measured else []),
         "isolate_pcie_root": bool(benchmark.get("isolate_pcie_root", profiler)),
         "isolate_nvlink_domain": bool(benchmark.get("isolate_nvlink_domain", profiler)),
@@ -727,6 +729,141 @@ def _command_environment(indices: list[int], uuids: list[str], background: bool)
         environment["CUDA_BENCHMARK_COORDINATION_MODE"] = "background"
         environment["CUDA_BACKGROUND_GPU_UUIDS"] = ",".join(uuids)
     return environment
+
+
+def _apply_execution_coordination(environment: dict[str, str], indices: list[int], uuids: list[str], *,
+                                  background: bool, recipe: str) -> None:
+    """Reassert controller-owned device identity and lock scope after task env overlays."""
+    lock_path = os.environ.get("CUDA_V100_BENCHMARK_MUTEX_PATH", f"{os.environ.get('TMPDIR', '/tmp')}/cuda_v100_benchmark.lock")
+    intent_marker = os.environ.get("CUDA_BENCHMARK_FOREGROUND_INTENT_PATH", lock_path + ".foreground-intent")
+    environment["CUDA_V100_BENCHMARK_MUTEX_PATH"] = lock_path
+    environment["CUDA_BENCHMARK_FOREGROUND_INTENT_PATH"] = intent_marker
+    environment["CUDA_BENCHMARK_FOREGROUND_INTENT_RECORDS_DIR"] = intent_marker + ".owners"
+    environment["CUDA_BENCHMARK_GPU_UUIDS"] = ",".join(uuids)
+    environment["CUDA_BENCHMARK_LOCK_SCOPE"] = "device" if recipe == "ncu" and uuids else "host"
+    environment["CUDA_BENCHMARK_COORDINATION_MODE"] = "background" if background else "foreground"
+    if indices:
+        environment["CUDA_VISIBLE_DEVICES"] = ",".join(str(item) for item in indices)
+    else:
+        # In particular, CPU-only build stages must not inherit a task-provided
+        # device selection when the controller allocated no accelerator.
+        environment.pop("CUDA_VISIBLE_DEVICES", None)
+    if background:
+        environment["CUDA_BACKGROUND_GPU_UUIDS"] = ",".join(uuids)
+        environment.pop("CUDA_BENCHMARK_FOREGROUND_INTENT_HELD", None)
+    else:
+        environment["CUDA_BENCHMARK_FOREGROUND_INTENT_HELD"] = "1"
+
+
+def _intent_paths(marker: Path, intent: str, scope: str, uuids: list[str]) -> tuple[Path, list[Path]]:
+    """Create owner-specific foreground intent records without racing other runs."""
+    records = Path(str(marker) + ".owners")
+    owner = hashlib.sha256(intent.encode("utf-8")).hexdigest()
+    paths: list[Path] = []
+    if scope == "device":
+        for gpu_uuid in sorted(set(uuids)):
+            if not re.fullmatch(r"[A-Za-z0-9_.-]{1,256}", gpu_uuid):
+                raise ValueError(f"unsupported GPU UUID for profiling intent: {gpu_uuid!r}")
+            paths.append(records / f"{owner}.device.{gpu_uuid}")
+    else:
+        paths.append(records / f"{owner}.host")
+    records.mkdir(parents=True, exist_ok=True)
+    lock_path = Path(str(marker) + ".owners.lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    with lock_path.open("a", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        created: list[Path] = []
+        temporary_paths: list[Path] = []
+        marker_temporary = marker.with_name(marker.name + f".{owner}.tmp")
+        try:
+            for path in paths:
+                temporary = path.with_name(path.name + f".{uuid.uuid4().hex}.tmp")
+                temporary_paths.append(temporary)
+                temporary.write_text(json.dumps(
+                    {"intent": intent, "scope": scope, "gpu_uuids": sorted(set(uuids))}, sort_keys=True,
+                ) + "\n", encoding="utf-8")
+                os.replace(temporary, path)
+                created.append(path)
+            if scope == "host":
+                try:
+                    current = marker.read_text(encoding="utf-8")
+                except FileNotFoundError:
+                    current = ""
+                header = "controller-owners-v1\n"
+                if not current:
+                    current = header
+                if current.startswith(header):
+                    owners = set(current[len(header):].splitlines())
+                    owners.add(intent)
+                    marker_temporary.write_text(header + "".join(f"{item}\n" for item in sorted(owners)), encoding="utf-8")
+                    os.replace(marker_temporary, marker)
+                # A legacy marker belongs to its writer. Preserve it verbatim;
+                # the owner record above provides concurrency-safe new behavior.
+        except BaseException:
+            for path in created:
+                path.unlink(missing_ok=True)
+            for path in temporary_paths:
+                path.unlink(missing_ok=True)
+            marker_temporary.unlink(missing_ok=True)
+            if scope == "host":
+                try:
+                    current = marker.read_text(encoding="utf-8")
+                except FileNotFoundError:
+                    current = ""
+                header = "controller-owners-v1\n"
+                if current.startswith(header):
+                    owners = set(current[len(header):].splitlines())
+                    owners.discard(intent)
+                    if owners:
+                        marker_temporary.write_text(header + "".join(f"{item}\n" for item in sorted(owners)),
+                                                    encoding="utf-8")
+                        os.replace(marker_temporary, marker)
+                    else:
+                        marker.unlink(missing_ok=True)
+            raise
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+    return records, paths
+
+
+def _clear_intent_paths(marker: Path, intent: str, records: Path | None, paths: list[Path]) -> None:
+    """Remove only this run's records and retain the legacy marker while owners remain."""
+    if not paths:
+        return
+    lock_path = Path(str(marker) + ".owners.lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    owner = hashlib.sha256(intent.encode("utf-8")).hexdigest()
+    with lock_path.open("a", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        try:
+            for path in paths:
+                try:
+                    path.unlink()
+                except FileNotFoundError:
+                    pass
+            try:
+                current = marker.read_text(encoding="utf-8")
+            except FileNotFoundError:
+                current = ""
+            header = "controller-owners-v1\n"
+            if current.startswith(header):
+                owners: set[str] = set()
+                if records is not None:
+                    for path in records.glob("*.host"):
+                        try:
+                            owner_record = json.loads(path.read_text(encoding="utf-8"))
+                        except (OSError, json.JSONDecodeError):
+                            continue
+                        if isinstance(owner_record, dict) and owner_record.get("intent"):
+                            owners.add(str(owner_record["intent"]))
+                if owners:
+                    temporary = marker.with_name(marker.name + f".{owner}.tmp")
+                    temporary.write_text(header + "".join(f"{item}\n" for item in sorted(owners)), encoding="utf-8")
+                    os.replace(temporary, marker)
+                else:
+                    marker.unlink(missing_ok=True)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 
 def _capture(argv: list[str], cwd: Path, environment: dict[str, str], output_dir: Path, label: str, timeout: float) -> dict[str, object]:
@@ -982,6 +1119,7 @@ def background_stage(project: Path, watch_id: str, kind: str, snapshot: dict[str
     env = _command_environment(indices, uuids, background=True)
     if isinstance(candidate, dict):
         env.update({str(key): str(value) for key, value in dict(candidate.get("env", {})).items()})
+    _apply_execution_coordination(env, indices, uuids, background=True, recipe=base_kind)
     fingerprint = str(snapshot["fingerprint"])
     if base_kind == "build":
         base_build, _ = _base_stage_commands(benchmark)
@@ -1163,9 +1301,11 @@ def _recipe(spec: dict[str, object], artifact_dir: Path) -> tuple[list[str], boo
     if recipe == "debug-crash":
         return [str(SCRIPT_DIR / "debug_crash.sh"), "--out-dir", str(artifact_dir / "debug"), "--label", "run", "--", *argv], False
     if recipe == "compute-sanitizer":
-        return [str(SCRIPT_DIR / "debug_compute_sanitizer.sh"), "--out-dir", str(artifact_dir / "sanitizer"), "--label", "run", "--", *argv], False
+        debug = [str(SCRIPT_DIR / "debug_compute_sanitizer.sh"), "--out-dir", str(artifact_dir / "sanitizer"), "--label", "run", "--", *argv]
+        return [str(MUTEX), "--label", "cuda-controller-compute-sanitizer", "--", *debug], False
     if recipe == "cuda-gdb":
-        return [str(SCRIPT_DIR / "debug_cuda_gdb.sh"), "--out-dir", str(artifact_dir / "cuda-gdb"), "--label", "run", "--", *argv], False
+        debug = [str(SCRIPT_DIR / "debug_cuda_gdb.sh"), "--out-dir", str(artifact_dir / "cuda-gdb"), "--label", "run", "--", *argv]
+        return [str(MUTEX), "--label", "cuda-controller-cuda-gdb", "--", *debug], False
     if recipe == "ptx-sass":
         if not spec.get("explicit_ptx_sass"):
             raise ValueError("PTX/SASS requires explicit_ptx_sass=true")
@@ -1232,7 +1372,7 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     recipe = str(spec.get("recipe", "baseline"))
     host_request = {
         "kind": "accelerator", "ids": resource_ids,
-        "exclusive_resources": ["profiler:nvidia"] if recipe in {"nsys", "ncu", "cuda-gdb", "compute-sanitizer"} else [],
+        "exclusive_resources": ["profiler:nvidia"] if recipe in {"nsys", "cuda-gdb", "compute-sanitizer"} else [],
         "isolate_pcie_root": bool(resources.get("isolate_pcie_root", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
         "isolate_nvlink_domain": bool(resources.get("isolate_nvlink_domain", recipe in {"nsys", "ncu"})) if isinstance(resources, dict) else False,
         "cpu_threads": int(resources.get("cpu_threads", max(1, cpu_capacity() // 4))) if isinstance(resources, dict) else max(1, cpu_capacity() // 4),
@@ -1241,6 +1381,8 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
     marker = Path(os.environ.get("CUDA_BENCHMARK_FOREGROUND_INTENT_PATH", os.environ.get("CUDA_V100_BENCHMARK_MUTEX_PATH", f"{os.environ.get('TMPDIR', '/tmp')}/cuda_v100_benchmark.lock") + ".foreground-intent"))
     host_owner = None
     intent = None
+    intent_records: Path | None = None
+    intent_paths: list[Path] = []
     try:
         # Default priority_class="clean_cuda_foreground" remains the direct
         # controller contract; registered probes override it conservatively.
@@ -1251,8 +1393,8 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
         host_owner = str(reservation["owner_id"])
         host_resources = [str(item) for item in reservation["resource_ids"]]
         intent = store.foreground_intent(resource_ids)
-        marker.parent.mkdir(parents=True, exist_ok=True)
-        marker.write_text(f"controller:{intent}\n", encoding="utf-8")
+        intent_scope = "device" if recipe == "ncu" and requested else "host"
+        intent_records, intent_paths = _intent_paths(marker, intent, intent_scope, requested)
         deadline = time.monotonic() + float(spec.get("preempt_grace_seconds", 5))
         while (store.running_conflicts(resource_ids) or runtime.host.conflicts(host_resources)) and time.monotonic() < deadline:
             time.sleep(0.1)
@@ -1277,6 +1419,9 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
         environment = _command_environment(indices, requested, background=False)
         if toolchain:
             environment.update(toolchain["environment"])
+        _apply_execution_coordination(environment, indices, requested, background=False, recipe=recipe)
+        environment["CUDA_BENCHMARK_FOREGROUND_INTENT_RECORDS_DIR"] = str(intent_records)
+        environment["CUDA_BENCHMARK_FOREGROUND_INTENT_OWNER"] = intent
         lease_path = artifact_dir / "lease.json"
         lease_path.write_text(json.dumps({"format": "CUDA-FOREGROUND-LEASE/1", "owner_id": host_owner,
             "project_root": str(project), "pid": os.getpid(), "resource_ids": resource_ids,
@@ -1345,15 +1490,16 @@ def foreground_run(spec: dict[str, object]) -> dict[str, object]:
                 "stdout_path": record.get("stdout"), "stderr_path": record.get("stderr"), "lease_receipt": str(lease_path),
                 "message": "No action-worthy result; evidence stored." if valid else f"MEASUREMENT FAILURE: foreground recipe failed. [e:{evidence_id}]"}
     finally:
-        if host_owner:
-            runtime.host.release(host_owner)
-        if intent:
-            store.clear_foreground(intent)
         try:
-            if intent and marker.read_text(encoding="utf-8").strip() == f"controller:{intent}":
-                marker.unlink()
-        except OSError:
-            pass
+            if host_owner:
+                runtime.host.release(host_owner)
+        finally:
+            try:
+                if intent:
+                    store.clear_foreground(intent)
+            finally:
+                if intent:
+                    _clear_intent_paths(marker, intent, intent_records, intent_paths)
 
 
 def _probe_storage_root(project: Path) -> Path:

@@ -56,9 +56,14 @@ at its first failure and skips that revision's dependent benchmark/profile
 stages while independent watches continue. Set the correctness bounds
 explicitly when another validation intensity is justified.
 
-Ready measurements outrank additional builds. Benchmark and profiler jobs share
-one host-global scheduling resource, so jobs waiting for serialized timing do
-not reserve otherwise usable GPUs.
+Ready measurements outrank additional builds. Timed benchmarks and system-wide
+profilers use host-global scheduling resources. Nsight Compute stages instead
+reserve their selected GPU UUIDs and can profile distinct devices concurrently;
+their shared host gate excludes timed benchmarks, while per-UUID locks exclude
+same-device captures. The default PCIe-root and NVLink isolation still applies
+to profiler jobs. Set `benchmark.isolate_pcie_root` and
+`benchmark.isolate_nvlink_domain` to `false` only when the profiled work is
+independent of those shared domains.
 
 ## Explicit revision enqueue
 
