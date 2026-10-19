@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T12:40:53Z",
+  "generated_at": "2026-08-27T13:01:28Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 194,
+  "project_revision": 200,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -115,12 +115,12 @@
         "title": "All core workflow modules ready for integration"
       },
       {
-        "explanation": "1/4 requirements satisfied; target=4",
+        "explanation": "2/4 requirements satisfied; target=4",
         "id": "WFU-RELEASE-RENDEZVOUS",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 194,
+        "revision": 200,
         "state": "closed",
         "title": "Integrated implementation, routing, observation, and validation ready for cutover"
       }
@@ -2106,6 +2106,66 @@
         "revision": 194,
         "seq": 194,
         "timestamp": "2026-08-27T12:40:53Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-21\"}",
+        "revision": 195,
+        "seq": 195,
+        "timestamp": "2026-08-27T12:41:13Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 196,
+        "seq": 196,
+        "timestamp": "2026-08-27T12:47:27Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 197,
+        "seq": 197,
+        "timestamp": "2026-08-27T12:57:39Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 198,
+        "seq": 198,
+        "timestamp": "2026-08-27T13:00:29Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "claim",
+        "event_type": "claim.pulsed",
+        "payload_json": "{}",
+        "revision": 199,
+        "seq": 199,
+        "timestamp": "2026-08-27T13:01:06Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-21",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 200, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 200,
+        "seq": 200,
+        "timestamp": "2026-08-27T13:01:28Z"
       }
     ],
     "evidence": [
@@ -3124,6 +3184,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"integrations/coding-workflow-mcp/README.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/references/read-only-contract.md\", \"local-coding-worker/references/writable-work-contract.md\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"local-coding-worker/tests/test_read_only_mvp.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-07-MCP\", \"last_run_at\": \"2026-08-25T10:34:02Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-07-WORKER\", \"last_run_at\": \"2026-08-25T10:34:06Z\", \"status\": \"passed\", \"valid\": 1}, {\"id\": \"CWM-07-DIFF\", \"last_run_at\": \"2026-08-25T10:34:01Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 1583 +++++++++++++++++++-\\n integrations/coding-workflow-mcp/README.md         |    8 +\\n .../coding_workflow_mcp/backend.py                 |    2 +-\\n .../coding-workflow-mcp/tests/test_tools.py        |    9 +-\\n local-coding-worker/local_worker/controller.py     |  217 ++-\\n .../references/read-only-contract.md               |    8 +-\\n .../references/writable-work-contract.md           |    5 +\\n local-coding-worker/scripts/local_worker.py        |   25 +-\\n local-coding-worker/scripts/worker_core.py         |   23 +-\\n .../tests/test_core4_integration.py                |  152 +-\\n .../tests/test_production_integration.py           |   40 +-\\n local-coding-worker/tests/test_read_only_mvp.py    |   11 +\\n todo-status.md                                     |   10 +-\\n todos.md                                           |   10 +-\\n 14 files changed, 2049 insertions(+), 54 deletions(-)\", \"git_head\": \"03a48dbbd53658942764a68da28d45996c8e7cbb\", \"interfaces\": [], \"note\": \"Fixed MCP objective translation, bounded 1-16 parent-contained scope selection, proven ctxpp source targets, pre-admission not_eligible fallback, bounded task-spec files, and parent-objective composition. CE-style unit and real read/write model proofs passed without CellStack changes.\", \"resources\": [], \"task_id\": \"CWM-07\"}",
         "revision": 76,
         "task_id": "CWM-07"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T13:01:28Z",
+        "id": "33893dee-642f-40f8-a4ec-96b63a3450bf",
+        "kind": "complete",
+        "note": "Implemented one-front-door enforcement, canonical MCP shim/installer/migration/admin wiring, routing metadata, compatibility documentation, and child-vs-lane boundaries. Validation: todo 219/219; compatibility 15/15; front-door 6/6; four skill validators; exact six MCP tools.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"1635005be2db31b1528254be57f248e68cea8c3f\", \"completion_gates\": [], \"completion_revision\": 200, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 62 ++++++++++++++++++++++++++++++----\\n todo-status.md                         |  4 +--\\n todos.md                               |  4 +--\\n todos/wfu-21.md                        |  6 ++--\\n 4 files changed, 63 insertions(+), 13 deletions(-)\", \"git_head\": \"1635005be2db31b1528254be57f248e68cea8c3f\", \"interfaces\": [], \"note\": \"Implemented one-front-door enforcement, canonical MCP shim/installer/migration/admin wiring, routing metadata, compatibility documentation, and child-vs-lane boundaries. Validation: todo 219/219; compatibility 15/15; front-door 6/6; four skill validators; exact six MCP tools.\", \"resources\": [], \"task_id\": \"WFU-21\"}",
+        "revision": 200,
+        "task_id": "WFU-21"
       },
       {
         "claim_id": null,
@@ -6076,10 +6146,10 @@
         "version": 13
       },
       {
-        "attention_reason": "scope amendment for mandatory front-door enforcement",
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "attention_reason": null,
+        "completion_commit": "1635005be2db31b1528254be57f248e68cea8c3f",
+        "completion_git_head": "1635005be2db31b1528254be57f248e68cea8c3f",
+        "completion_revision": 200,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-21",
         "kind": "workstream",
@@ -6091,14 +6161,14 @@
         "parallel_policy": "serial",
         "parent_id": null,
         "priority": 120,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 194,
-        "status": "planned",
+        "revision": 200,
+        "status": "done",
         "tags_json": "[]",
         "title": "Rewrite routing, installer, migration, and operations documentation",
-        "updated_at": "2026-08-27T12:40:53Z",
-        "version": 13
+        "updated_at": "2026-08-27T13:01:28Z",
+        "version": 15
       },
       {
         "attention_reason": null,
