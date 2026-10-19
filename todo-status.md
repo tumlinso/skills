@@ -3,17 +3,17 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `149`
+Project revision: `161`
 
 ## Workstreams
 - `WFU-00` | status: done | execution: closed | next: Write and verify the preflight and rollback record from already-collected evidence.
 - `WFU-01` | status: done | execution: closed | next: Write the authoritative protocol v2, schema semantics, compatibility policy, role/child distinction, module ownership, budgets, and integration seams without rediscovering or changing the supplied architecture.
 - `WFU-02` | status: done | execution: closed | next: Add forward-only database foundations, shared internal service interfaces, capability lineage foundations, normalized semantic contracts, migration fixtures, and the frozen kernel contract consumed by parallel lanes.
-- `WFU-10` | status: planned | execution: ready | next: Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.
-- `WFU-11` | status: planned | execution: ready | next: Implement bounded typed first-class-lane messages, receipts and cursors, blocking questions and answers, durable decisions, rendezvous modes, idempotent arrivals, and atomic join readiness with parent-mediated child findings.
-- `WFU-12` | status: planned | execution: ready | next: Implement hashed versioned run, lane, task, decision, delta, and source-reference fragments with targeted invalidation, strict response budgets, and deliberately narrower local-child packets.
-- `WFU-13` | status: planned | execution: ready | next: Implement explicit workspace ownership modes, first-class lane worktree records, immutable patch and commit artifacts, integration queues, base enforcement, conflict preservation, and cleanup eligibility while retaining subordinate child scope leases.
-- `WFU-14` | status: planned | execution: ready | next: Implement one interactive owner-only recovery engine covering first-class dispatches and distinct subordinate child degradation, with live-process refusal, dirty artifact preservation, idempotent terminal reconciliation, audit, and no approval-token round trip.
+- `WFU-10` | status: done | execution: closed | next: Implement durable first-class Codex runs, lane trees, ordered queues, role enforcement, dispatch identity, heartbeat, deterministic assignment, serial-lane constraints, and wait-cycle diagnostics without representing local children as lanes.
+- `WFU-11` | status: done | execution: closed | next: Implement bounded typed first-class-lane messages, receipts and cursors, blocking questions and answers, durable decisions, rendezvous modes, idempotent arrivals, and atomic join readiness with parent-mediated child findings.
+- `WFU-12` | status: done | execution: closed | next: Implement hashed versioned run, lane, task, decision, delta, and source-reference fragments with targeted invalidation, strict response budgets, and deliberately narrower local-child packets.
+- `WFU-13` | status: in_progress | execution: claimed | next: Implement explicit workspace ownership modes, first-class lane worktree records, immutable patch and commit artifacts, integration queues, base enforcement, conflict preservation, and cleanup eligibility while retaining subordinate child scope leases.
+- `WFU-14` | status: in_progress | execution: claimed | next: Implement one interactive owner-only recovery engine covering first-class dispatches and distinct subordinate child degradation, with live-process refusal, dirty artifact preservation, idempotent terminal reconciliation, audit, and no approval-token round trip.
 - `WFU-15` | status: planned | execution: ready | next: Implement the canonical in-process WorkflowKernel boundary, protocol v2 envelopes, hash-stored lineage-bound first-class capabilities, exact six-tool MCP server, fixed adapters, and compatibility shim without todo subprocess operations.
 - `WFU-20` | status: planned | execution: ready | next: Integrate all core modules into shared service methods, CLI commands, schema migration dispatch, plan normalization, export, deterministic snapshots, restore, doctor, audit, projections, semantic reads, and existing lifecycle behavior; publish the normalized semantic read contract.
 - `WFU-21` | status: planned | execution: ready | next: Enforce one front door, add workflow_front_door compatibility policy, reduce the integration path to installer/shim/migration/tests, provide idempotent repository migration, document protocol, lanes versus children, recovery, rollback, and remove obsolete normal-workflow guidance.
