@@ -3,7 +3,7 @@
 <!-- todo-orchestrator:v2-managed:start -->
 # Todo Status v2 Projection
 
-Project revision: `1031`
+Project revision: `1042`
 
 ## Workstreams
 - `SK-WF2-0000` | status: superseded | execution: closed | next: Read planning/workflow-foundation-v2/proposed-todos/sk-wf2-0000.md; verify live prerequisites and evidence before work.
@@ -75,6 +75,7 @@ Project revision: `1031`
 - `C4Q-02` | status: done | execution: closed | next: Correct the filtered structured-output diagnostic, verify the rebuilt llama.cpp runtime through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks, and finalize the existing Qwen harness repair without changing model, context, topology, or worker policy.
 - `WFU-29` | status: done | execution: closed | next: Fix the installed owner command to locate the canonical todo package without MCP-only environment variables, and preserve the complete prior installed package as a recoverable rollback artifact during cutover.
 - `C4Q-01` | status: blocked | execution: blocked_dependency | next: Use strict --core-tools registration, derive a bounded structured-output-aware turn cap, share the terminal instruction across read-only and writable execution, preserve compact exit-53 diagnostics, and validate the cached Q4 model through terminal-only, one-read, NEEDS_CODEX, read-only host, and writable host checks.
+- `CUDA-PER-DEVICE-NCU` | status: done | execution: closed | next: Develop on a bounded Skills branch, test per-UUID locks and marker ownership, deploy only the validated fix, then qualify overlapping native captures under root scheduling.
 - `CWM-00` | status: done | execution: closed | next: Create the dedicated worktree, preserve the starting state, verify official SDK/Codex support, and record the exact five-tool contract without touching core skills.
 - `CWM-07` | status: done | execution: closed | next: Treat MCP target text as a delegation objective, derive or omit a separately proven ctxpp target, and select 1-16 relevant child scopes within the parent authorization for writable and read-only CE-style requests without weakening admission or acceptance safety.
 - `CWM-08` | status: done | execution: closed | next: Durably resume a facade-owned active todo claim after MCP reinstall, restart, or turn boundary by issuing a fresh opaque workflow handle without duplicating the claim, corrupting revision state, or exposing raw todo secrets.
@@ -115,6 +116,6 @@ Project revision: `1031`
 - `SK-WF2A-ENGINES` | status: done | execution: closed | next: Read only the matching work-package sheet and relevant evidence. Follow the root-owned, cheap-first adaptive charter.
 - `SK-PA1-0000` | status: done | execution: closed | next: Aggregate the verified outcome results; this record is not an initial coordinator gate. Complete last after the outcome and cross-authority evidence is accepted.
 - `SK-AS1-0000` | status: done | execution: closed | next: Close after local outcome gates and paired release receipts are current. The package purpose is useful engineering progress, not framework administration.
-- `SK-CUDA-ATLAS-MERGE` | status: planned | execution: ready | next: Import and verify atlas content, implement atlas-local sync and integration checks, update only the declared skill/index files, and record source identity plus validation evidence.
+- `SK-CUDA-ATLAS-MERGE` | status: done | execution: closed | next: Import and verify atlas content, implement atlas-local sync and integration checks, update only the declared skill/index files, and record source identity plus validation evidence.
 - `SK-PCE2-0000` | status: planned | execution: inactive | next: Close after all local child outcomes have executed acceptance evidence; overall release also needs both authorities. NF1A remains paused.
 <!-- todo-orchestrator:v2-managed:end -->
