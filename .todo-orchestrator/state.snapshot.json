@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-27T11:00:21Z",
+  "generated_at": "2026-08-27T11:09:44Z",
   "project": {
     "configuration": {
       "busy_timeout_ms": 5000,
@@ -18,7 +18,7 @@
     "project_uuid": "460468fe-ee72-4a64-a565-87cfec640d0c",
     "schema_version": 2
   },
-  "project_revision": 149,
+  "project_revision": 157,
   "schema_version": 2,
   "tables": {
     "barrier_requirements": [
@@ -105,12 +105,12 @@
     ],
     "barriers": [
       {
-        "explanation": "0/6 requirements satisfied; target=6",
+        "explanation": "2/6 requirements satisfied; target=6",
         "id": "WFU-CORE-RENDEZVOUS",
         "mode": "all",
         "opened_at": null,
         "quorum": null,
-        "revision": 146,
+        "revision": 157,
         "state": "closed",
         "title": "All core workflow modules ready for integration"
       },
@@ -1656,6 +1656,86 @@
         "revision": 149,
         "seq": 149,
         "timestamp": "2026-08-27T11:00:21Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-10",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-10\"}",
+        "revision": 150,
+        "seq": 150,
+        "timestamp": "2026-08-27T11:01:17Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-11",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-11\"}",
+        "revision": 151,
+        "seq": 151,
+        "timestamp": "2026-08-27T11:01:20Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-12",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-12\"}",
+        "revision": 152,
+        "seq": 152,
+        "timestamp": "2026-08-27T11:01:33Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-12",
+        "entity_type": "claim",
+        "event_type": "claim.released",
+        "payload_json": "{\"reason\": \"rotate handle after local CLI argument echo\", \"status\": \"in_progress\"}",
+        "revision": 153,
+        "seq": 153,
+        "timestamp": "2026-08-27T11:07:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-12",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-12\"}",
+        "revision": 154,
+        "seq": 154,
+        "timestamp": "2026-08-27T11:07:26Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-12",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 155, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 155,
+        "seq": 155,
+        "timestamp": "2026-08-27T11:08:00Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-13",
+        "entity_type": "claim",
+        "event_type": "continue.completed",
+        "payload_json": "{\"requested_task_id\": \"WFU-13\"}",
+        "revision": 156,
+        "seq": 156,
+        "timestamp": "2026-08-27T11:09:12Z"
+      },
+      {
+        "actor_session_id": null,
+        "entity_id": "WFU-10",
+        "entity_type": "task",
+        "event_type": "task.completed",
+        "payload_json": "{\"completion_revision\": 157, \"disposition\": \"implemented\", \"reached_checkpoints\": []}",
+        "revision": 157,
+        "seq": 157,
+        "timestamp": "2026-08-27T11:09:44Z"
       }
     ],
     "evidence": [
@@ -2606,6 +2686,16 @@
       },
       {
         "claim_id": null,
+        "created_at": "2026-08-27T11:08:00Z",
+        "id": "4f9b4e78-97f4-4a13-9ed1-23f91f555511",
+        "kind": "complete",
+        "note": "Commit d1b111d implements transactional versioned context fragments, targeted stale references, bounded first-class capsules, legacy normalization, reference-only source packets, and deliberately narrower subordinate child packets. Focused context tests 9/9 and frozen foundation tests 8/8 passed; task declares no authoritative gates.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"d1b111d5ccaa993af44d35eb6c8b1fb691cb9831\", \"completion_gates\": [], \"completion_revision\": 155, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 80 +++++++++++++++++++++++++++-------\\n todo-status.md                         |  8 ++--\\n todos.md                               |  8 ++--\\n todos/wfu-12.md                        |  6 +--\\n 4 files changed, 76 insertions(+), 26 deletions(-)\", \"git_head\": \"d1b111d5ccaa993af44d35eb6c8b1fb691cb9831\", \"interfaces\": [], \"note\": \"Commit d1b111d implements transactional versioned context fragments, targeted stale references, bounded first-class capsules, legacy normalization, reference-only source packets, and deliberately narrower subordinate child packets. Focused context tests 9/9 and frozen foundation tests 8/8 passed; task declares no authoritative gates.\", \"resources\": [], \"task_id\": \"WFU-12\"}",
+        "revision": 155,
+        "task_id": "WFU-12"
+      },
+      {
+        "claim_id": null,
         "created_at": "2026-08-25T10:53:59Z",
         "id": "53c11e04-e6e8-4808-bb50-d949e364f93e",
         "kind": "complete",
@@ -2633,6 +2723,16 @@
         "payload_json": "{\"changed_owned_paths\": [\"AGENTS.md\", \"integrations/coding-workflow-mcp/coding_workflow_mcp/backend.py\", \"integrations/coding-workflow-mcp/tests/test_live_contract.py\", \"integrations/coding-workflow-mcp/tests/test_tools.py\", \"local-coding-worker/local_worker/controller.py\", \"local-coding-worker/local_worker/supervisor.py\", \"local-coding-worker/scripts/local_worker.py\", \"local-coding-worker/scripts/worker_core.py\", \"local-coding-worker/tests/test_core4_integration.py\", \"local-coding-worker/tests/test_production_integration.py\", \"local-coding-worker/tests/test_supervisor.py\"], \"checkpoints\": [], \"gates\": [{\"id\": \"CWM-05-GATE\", \"last_run_at\": \"2026-08-24T20:56:46Z\", \"status\": \"passed\", \"valid\": 1}], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json             | 1069 +++++++++++++++++++-\\n AGENTS.md                                          |   10 +\\n .../coding_workflow_mcp/backend.py                 |    6 +-\\n .../coding-workflow-mcp/tests/test_tools.py        |   12 +-\\n local-coding-worker/local_worker/controller.py     |   32 +-\\n local-coding-worker/local_worker/supervisor.py     |  175 +++-\\n local-coding-worker/scripts/local_worker.py        |   99 +-\\n local-coding-worker/scripts/worker_core.py         |    2 +-\\n .../tests/test_core4_integration.py                |   48 +\\n .../tests/test_production_integration.py           |   48 +-\\n local-coding-worker/tests/test_supervisor.py       |   59 +-\\n todo-status.md                                     |    9 +-\\n todos.md                                           |    9 +-\\n 13 files changed, 1503 insertions(+), 75 deletions(-)\", \"git_head\": \"b1b80bb29228f9dda68ca2d6b7b7150c3c3d8245\", \"interfaces\": [], \"note\": \"Validated live read-only and writable MCP delegations, atomic GPU admission before child scope, unavailable fallback, and todo finish behavior.\", \"resources\": [], \"task_id\": \"CWM-05\"}",
         "revision": 49,
         "task_id": "CWM-05"
+      },
+      {
+        "claim_id": null,
+        "created_at": "2026-08-27T11:09:44Z",
+        "id": "76464316-0817-4de4-8c01-5321e1e47636",
+        "kind": "complete",
+        "note": "Implemented commit 0f3e6e7: first-class run charters, lane trees, serial queues, server-enforced roles, deterministic dispatch/resume/heartbeat/stale handling, and structured wait-cycle diagnostics. Local-worker children are excluded from lane/dispatch authority and cannot advance parent completion. Focused 8/8 plus 40/40 focused and legacy-relevant tests passed; no WFU-10 task gate is configured.",
+        "payload_json": "{\"changed_owned_paths\": [], \"checkpoints\": [], \"completion_commit\": \"0f3e6e715ae356a3f29db0421877fd42692e1c9d\", \"completion_gates\": [], \"completion_revision\": 157, \"finalized_checkpoints\": [], \"gates\": [], \"git_diffstat\": \".todo-orchestrator/state.snapshot.json | 22 ++++++++++++++++------\\n todo-status.md                         |  4 ++--\\n todos.md                               |  4 ++--\\n todos/wfu-10.md                        |  6 +++---\\n 4 files changed, 23 insertions(+), 13 deletions(-)\", \"git_head\": \"0f3e6e715ae356a3f29db0421877fd42692e1c9d\", \"interfaces\": [], \"note\": \"Implemented commit 0f3e6e7: first-class run charters, lane trees, serial queues, server-enforced roles, deterministic dispatch/resume/heartbeat/stale handling, and structured wait-cycle diagnostics. Local-worker children are excluded from lane/dispatch authority and cannot advance parent completion. Focused 8/8 plus 40/40 focused and legacy-relevant tests passed; no WFU-10 task gate is configured.\", \"resources\": [], \"task_id\": \"WFU-10\"}",
+        "revision": 157,
+        "task_id": "WFU-10"
       },
       {
         "claim_id": null,
@@ -5004,9 +5104,9 @@
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "0f3e6e715ae356a3f29db0421877fd42692e1c9d",
+        "completion_git_head": "0f3e6e715ae356a3f29db0421877fd42692e1c9d",
+        "completion_revision": 157,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-10",
         "kind": "workstream",
@@ -5018,14 +5118,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 160,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 146,
-        "status": "planned",
+        "revision": 157,
+        "status": "done",
         "tags_json": "[]",
         "title": "Runs, serial lanes, roles, dispatch, and scheduling",
-        "updated_at": "2026-08-27T10:59:26Z",
-        "version": 3
+        "updated_at": "2026-08-27T11:09:44Z",
+        "version": 5
       },
       {
         "attention_reason": null,
@@ -5045,18 +5145,18 @@
         "priority": 159,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 146,
-        "status": "planned",
+        "revision": 151,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Typed messages, cursors, rendezvous, and arrivals",
-        "updated_at": "2026-08-27T10:59:26Z",
-        "version": 3
+        "updated_at": "2026-08-27T11:01:20Z",
+        "version": 4
       },
       {
         "attention_reason": null,
-        "completion_commit": null,
-        "completion_git_head": null,
-        "completion_revision": null,
+        "completion_commit": "d1b111d5ccaa993af44d35eb6c8b1fb691cb9831",
+        "completion_git_head": "d1b111d5ccaa993af44d35eb6c8b1fb691cb9831",
+        "completion_revision": 155,
         "created_at": "2026-08-27T10:46:34Z",
         "id": "WFU-12",
         "kind": "workstream",
@@ -5068,14 +5168,14 @@
         "parallel_policy": "parallel_safe",
         "parent_id": null,
         "priority": 158,
-        "result": null,
+        "result": "implemented",
         "result_policy_json": "{}",
-        "revision": 146,
-        "status": "planned",
+        "revision": 155,
+        "status": "done",
         "tags_json": "[]",
         "title": "Versioned context fragments and bounded composition",
-        "updated_at": "2026-08-27T10:59:26Z",
-        "version": 3
+        "updated_at": "2026-08-27T11:08:00Z",
+        "version": 7
       },
       {
         "attention_reason": null,
@@ -5095,12 +5195,12 @@
         "priority": 157,
         "result": null,
         "result_policy_json": "{}",
-        "revision": 146,
-        "status": "planned",
+        "revision": 156,
+        "status": "in_progress",
         "tags_json": "[]",
         "title": "Managed isolated workspaces and integration queues",
-        "updated_at": "2026-08-27T10:59:26Z",
-        "version": 3
+        "updated_at": "2026-08-27T11:09:12Z",
+        "version": 4
       },
       {
         "attention_reason": null,
