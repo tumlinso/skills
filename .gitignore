@@ -3,4 +3,7 @@ __pycache__/
 .pytest_cache/
 .ctxpp/
 cpp-context-compiler/tool/build/
-.todo-orchestrator/runtime/
+.todo-orchestrator/
+
+# Local backups produced by the REA skill installer.
+*.rea.backup
