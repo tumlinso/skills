@@ -3,8 +3,8 @@
   "files": [
     {
       "path": "SKILL.md",
-      "bytes": 5927,
-      "sha256": "b821b34a890d6081ebf9ad1c83cb4f5345ed6cf51c62342749a4d3a1004905b8"
+      "bytes": 6105,
+      "sha256": "3992c5b0e85409cce8002fcfe2c6caed63df6451daad9bae28ccd64a381d717a"
     },
     {
       "path": "references/architectures/ampere/low-level-optimization.md",
@@ -58,8 +58,8 @@
     },
     {
       "path": "references/architectures/volta/native-benchmark-loop.md",
-      "bytes": 1304,
-      "sha256": "1d3f7e90847c3a027fcd11b3e143b96ec5bb425a66ca22b517a7001fb3eea90b"
+      "bytes": 1310,
+      "sha256": "f4d5004bb1b33b1833acf3753464f2e739e28c599af1d004d74980f04dc0e8e3"
     },
     {
       "path": "references/architectures/volta/native-v100-extreme.md",
@@ -68,8 +68,8 @@
     },
     {
       "path": "references/architectures/volta/optimization-guide.md",
-      "bytes": 14226,
-      "sha256": "718c2dd07f7d141973df8992e3ad72e859b006f42b0f4b0d92ede1252429bbf9"
+      "bytes": 14280,
+      "sha256": "9bd26a845f841f92a5d493fb84881aae33c5408a0ebd890f060473de6aee575b"
     },
     {
       "path": "references/architectures/volta/profiling-interpretation.md",
@@ -93,8 +93,8 @@
     },
     {
       "path": "references/architectures/volta/router.md",
-      "bytes": 5103,
-      "sha256": "9aefc09ec735eb2676be966fe25c129e83827bdec3e48c85cc1743a5e447d8c7"
+      "bytes": 5377,
+      "sha256": "54f91d1e42395eac485862a0970d74ea641642f63b96ffbdc2381ca52a0096b7"
     },
     {
       "path": "references/architectures/volta/sass-and-ptx-triage.md",
@@ -1233,18 +1233,18 @@
     },
     {
       "path": "references/execution/controller-background-contract.md",
-      "bytes": 5033,
-      "sha256": "4aefa14906b67c77f627648fac9459c3336aea767362f24a789150db6c637687"
+      "bytes": 5276,
+      "sha256": "8571ba39540281c16335ea2f0f0bbd5860669c92af81286f9410ffc416c4e06d"
     },
     {
       "path": "references/execution/host-execution.md",
-      "bytes": 7146,
-      "sha256": "1eb5e61c26449a7041f4b9967d229baf742fc2b28681b66f6b44be05dde08064"
+      "bytes": 4023,
+      "sha256": "311edd1ea9055c70914bddebe7b5c6fbe36789cfaafa4491c153b2e713fbc90d"
     },
     {
       "path": "references/execution/performance-facts.md",
-      "bytes": 3123,
-      "sha256": "7480ca2595829dbbc2eb23a4f7819cde16e96211bf924e03721679847ac45a94"
+      "bytes": 3355,
+      "sha256": "cff76240f3f73e35dee5c26c0bb6b5ce3993eb8f1ded572eb8c2854a29a832eb"
     },
     {
       "path": "references/low-level/ptx-general-guidelines.md",
@@ -1273,18 +1273,18 @@
     },
     {
       "path": "references/profiling/benchmark-registry.md",
-      "bytes": 4360,
-      "sha256": "cd6446ec040aff50d160bbf341f7e8ebf92b8396caa64edc7906da1e77e9b047"
+      "bytes": 3734,
+      "sha256": "f3f8e23df1d09d9e89bc9721f2640e1aa84bd634803dd050edd50e41c1e0496d"
     },
     {
       "path": "references/profiling/benchmark-standardization.md",
-      "bytes": 6721,
-      "sha256": "9fdd0c808ce791d27025e5e0fb5311384a9cad05bebfee703af80572d7ece6d8"
+      "bytes": 6815,
+      "sha256": "6c8a7c7547234add7bc785ab2ceca3ca52873349e717f4ae44c29a6a83891d79"
     },
     {
       "path": "references/profiling/benchmark-target-authoring.md",
-      "bytes": 4766,
-      "sha256": "93bb2bbb911c88112c5859674ede183349517e42b754af5186a6fa1f0ac81aad"
+      "bytes": 4772,
+      "sha256": "b11c87c28d0fb4d4e96d1e7fc33ead74023acbed01175bc950b33c963054ad9f"
     },
     {
       "path": "references/profiling/diagnostics-workflow.md",
@@ -1293,8 +1293,8 @@
     },
     {
       "path": "references/profiling/hot-kernel.md",
-      "bytes": 3290,
-      "sha256": "33196f31f53a16662a3c3a76dca35aacd60c54d1cbffd4f8f99b1ef1fcead751"
+      "bytes": 3295,
+      "sha256": "1efba37632c9da5568121dffe01181f028ce27a150b1e51bdc93e0793a1ce6cb"
     },
     {
       "path": "references/profiling/roofline-counter-triage.md",
@@ -1353,8 +1353,8 @@
     },
     {
       "path": "references/specialized/nvhpc.md",
-      "bytes": 2072,
-      "sha256": "8cb4f1b4dcf15d63075adcf430d28c5ff4cf9f6b6416e2097f2a75c7a6b5758b"
+      "bytes": 2074,
+      "sha256": "928ae62d19268cdac3bd3fa01e6980abf42f2d1b52cdcf5e3094cfc9e27687c0"
     },
     {
       "path": "references/specialized/torch-extension-playbook.md",
@@ -1393,8 +1393,8 @@
     },
     {
       "path": "references/systems/ddp-topology.md",
-      "bytes": 2427,
-      "sha256": "6ce9a5224bd806877219b57bc08d169a91c2ba9f884be0bed94b8a9651bc8833"
+      "bytes": 2431,
+      "sha256": "98837f2b5972f1492d27b363e93bf13cae9c34c94c0226d705533f7ed6b68be5"
     },
     {
       "path": "references/systems/gb200-nvl72.md",
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "references/systems/host-device-pipeline.md",
-      "bytes": 1891,
-      "sha256": "f2701742882bd58ef38f1dc541caf8f443ac448a446878dc961a49d4aa71298c"
+      "bytes": 1896,
+      "sha256": "33c25d5b60e6394d8379ad9691d7540b4e28712f3db9e84a63d23ab38020ea99"
     },
     {
       "path": "references/systems/memory-accounting.md",

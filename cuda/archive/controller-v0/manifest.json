@@ -1,0 +1,79 @@
+{
+  "archive_date": "2026-10-28",
+  "items": [
+    {
+      "archive_path": "cuda/archive/controller-v0/scripts/cuda_controller.py",
+      "bytes": 108148,
+      "git_blob": "683a785d72df01c3b47bf235d1fbcb4099a15686",
+      "original_path": "cuda/scripts/cuda_controller.py",
+      "sha256": "d16b5ae270fc63b27e8191e15c6385688e8d9e4799b0e756dfe82e68c08ee245"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/scripts/legacy_qualify_observer_residency.py",
+      "bytes": 18068,
+      "git_blob": "7991a8b8bcfe0fad202475988f8a97d429a54892",
+      "original_path": "cuda/scripts/qualify_observer_residency.py",
+      "sha256": "495ac9ffce5482dc831a4ee9195d3bcd4aac05bb5f698830456345bf613cc222"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_controller.py",
+      "bytes": 26753,
+      "git_blob": "b02279319e1815565b4a0b94be96cd6fc4884251",
+      "original_path": "cuda/tests/test_controller.py",
+      "sha256": "ba73591872f2e1016a79cb9031852698201b215292225961aa097d55ff4cdce8"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_core4_interlock.py",
+      "bytes": 2760,
+      "git_blob": "b86de9fc8fb498e8515fb85c3c1c7c8b632febce",
+      "original_path": "cuda/tests/test_core4_interlock.py",
+      "sha256": "e01e7a583626b9af5fb3de00cf3d58a820e696817cd54a22963efc02acfdc182"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_core4_topology.py",
+      "bytes": 2404,
+      "git_blob": "3513b4acdbad394456eb0d9e10e31620b5d570de",
+      "original_path": "cuda/tests/test_core4_topology.py",
+      "sha256": "f5ad4258c928ee69145db8fad0cd2d73812b3aae5b1a8c17bfe99844ee37bd07"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_device_profile_coordination.py",
+      "bytes": 17652,
+      "git_blob": "c1c7f701453020a249e81c306bca755870786667",
+      "original_path": "cuda/tests/test_device_profile_coordination.py",
+      "sha256": "49e75a5ec80870366db704c1514434a009f6c8e43655051fbf1b4d1f535cd633"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_foreground_contract.py",
+      "bytes": 2213,
+      "git_blob": "3c866c9984091e7e37ba1160e45c299a6afe2621",
+      "original_path": "cuda/tests/test_foreground_contract.py",
+      "sha256": "2649e20b905d2834ba1278dcf834cb087ef5ffc1f7a79eaac199a5bfc9dcde7d"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_observer_qualification.py",
+      "bytes": 5892,
+      "git_blob": "a53a97aaaf06761974c47863bd8300a6b698cc6d",
+      "original_path": "cuda/tests/test_observer_qualification.py",
+      "sha256": "2d1597132eddf85e66369ef97f683b50f2c84f33e8a1ae6a908e1bb819ddf85f"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_performance_facts.py",
+      "bytes": 24355,
+      "git_blob": "2fc97e5937c149651b7ff496e46dd5db4eda17d6",
+      "original_path": "cuda/tests/test_performance_facts.py",
+      "sha256": "c1945597d0707df03e219f700648eb0e640afd01baddc71966e9c8abe54119f5"
+    },
+    {
+      "archive_path": "cuda/archive/controller-v0/tests/legacy_test_registry_discovery.py",
+      "bytes": 15108,
+      "git_blob": "6c58848f75f2a0ebdfd49e77ad5ec56014956baa",
+      "original_path": "cuda/tests/test_registry_discovery.py",
+      "sha256": "7ab03f65f5f738ee9c456da9952ef8a219816137b0339d2e3185a6cbd622db80"
+    }
+  ],
+  "purpose": "Preserve the retired CUDA controller, its dependent tests, and tests/scripts tied to retired Todo host-resource and local-worker residency authorities outside active discovery.",
+  "schema_version": 1,
+  "source_commit": "8cd5705d0d318c7730b1af6c28dc4a480c8a3a46",
+  "source_repository": "/home/tumlinson/.agents/skills"
+}

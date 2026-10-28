@@ -26,7 +26,7 @@ for that rack's deployment constraints.
 4. Place ranks and CPU affinity deliberately.
    - do not let ordinal adjacency hide the real topology
 
-5. For correctness or timing on the shared host, follow [host execution](../execution/host-execution.md) first. The controller selects runtime devices and enforces admission; rank-layout helpers express a candidate ordering inside the admitted run.
+5. For correctness or timing on the shared host, follow [host execution](../execution/host-execution.md) first. Device Scheduler grants the runtime devices and enforces admission; rank-layout helpers express a candidate ordering inside the granted job.
 
 Use [topology patterns](ddp-topology-playbook.md) for 2-GPU and 4-GPU decompositions; [rank layouts](ddp-rank-layouts.md) for logical-to-physical mapping and CPU affinity; [hierarchy patterns](ddp-hierarchy-patterns.md) when reductions cross pairs; and [NCCL experiments](ddp-nccl-experiments.md) only after defaults and observed paths are understood. If measurements disagree, [interpretation rules](ddp-benchmark-interpretation.md) separate fabric effects from rank, CPU, and message-size effects.
 

@@ -2,7 +2,7 @@
 
 Use this guide after architecture, library choice, data layout, and kernel structure are reasonable and one representative hot kernel remains. It is written around the native V100 toolchain; use the selected architecture route for family-specific counters and limits elsewhere.
 
-Before executing correctness, benchmark, or profiler work on the shared host, read [host execution](../execution/host-execution.md). Controller admission owns the run; profiling and benchmark wrappers supply capture/serialization behavior inside that admitted run. A mutex wrapper alone is not host admission.
+Before executing correctness, benchmark, or profiler work on the shared host, read [host execution](../execution/host-execution.md). Device Scheduler admission owns the run; profiling and benchmark wrappers supply capture/serialization behavior inside the admitted job. A mutex wrapper alone is not host admission.
 
 The first gate is now simple:
 

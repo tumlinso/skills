@@ -1,4 +1,9 @@
-# CUDA Controller Background Contract
+# Retired CUDA Controller Background Contract
+
+> Historical reference only. The controller background queue and watch commands
+> are retired; this document does not describe a supported Device Scheduler
+> interface. For current execution, see [host execution](host-execution.md).
+
 
 Read this only when arming, explicitly enqueueing, or backfilling a CUDA
 background campaign. Commands accept JSON from a file or `-` and return compact

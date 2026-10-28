@@ -1,6 +1,6 @@
 # Host And Device Pipeline
 
-Use this guide when GPUs wait for the host, batch assembly is fragmented, or Nsight Systems shows gaps not explained by kernel runtime. For active capture or benchmark execution on the shared host, follow [host execution](../execution/host-execution.md) first; use controller admission and invoke capture/serialization wrappers only inside that admitted run.
+Use this guide when GPUs wait for the host, batch assembly is fragmented, or Nsight Systems shows gaps not explained by kernel runtime. For active capture or benchmark execution on the shared host, follow [host execution](../execution/host-execution.md) first; use Device Scheduler admission and invoke capture/serialization wrappers only inside the admitted job.
 
 When data ownership or the amount of information crossing the host/device boundary is itself a design choice, use [machine-aligned design](../common/machine-aligned-design.md) to compare staging, local work, and compact owner-compute candidates.
 

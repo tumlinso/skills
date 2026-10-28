@@ -2,15 +2,15 @@
 
 Use this reference when the task is to standardize benchmark targets, profiler interop, or benchmark summaries across V100 repos.
 
-Before executing on the shared host, use [controller admission](../execution/host-execution.md).
-The mutex and capture wrappers below apply inside an admitted run; they do not
-replace GPU reservation, foreground preemption, or quiescence checks.
+Before executing on the shared host, follow [Device Scheduler host execution](../execution/host-execution.md).
+The mutex and capture wrappers below coordinate work inside an admitted job;
+they do not grant resources or establish scheduler admission.
 
 For a new executable/CLI, use [target authoring](benchmark-target-authoring.md).
 For dataset representativeness, use [real-data contracts](benchmark-real-data.md);
 for compute versus transfer stress, use [large-data scenarios](benchmark-large-data.md).
-Use a [benchmark registry](benchmark-registry.md) when the same declared build,
-correctness, and measurement contract should follow multiple source revisions.
+The [historical benchmark registry](benchmark-registry.md) helps interpret
+older campaign definitions and evidence; it is not an active runner.
 
 The rule is simple:
 
@@ -53,9 +53,10 @@ Every benchmark target that wants easy interoperability should support:
 Repo-local flags are fine, but these baseline flags should exist and retain the same meaning across targets.
 
 Benchmark-producing runs must also be serialized on shared hosts. The skill-owned
-profiler wrappers already do this. Inside controller-admitted work, raw benchmark commands should run through
-`scripts/with_benchmark_mutex.sh` or embed an equivalent host-global lock keyed
-by `CUDA_V100_BENCHMARK_MUTEX_PATH`.
+profiler wrappers provide in-job coordination. Run raw benchmark commands only
+inside the scheduler-admitted job described in the host-execution guide; a mutex
+keyed by CUDA_V100_BENCHMARK_MUTEX_PATH is coordination only and does not
+replace resource admission.
 
 If a repo still accepts plain `large`, treat it as a compatibility alias only. The supported contract should name `large-compute` and `large-transfer` explicitly.
 
@@ -174,7 +175,7 @@ Do not collapse `large-compute` and `large-transfer` into one ambiguous `large` 
 
 Use these scripts in order:
 
-1. use the CUDA controller for host admission; within that run, use `scripts/with_benchmark_mutex.sh -- benchmark_target ...` unless the target already embeds an equivalent mutex
+1. submit a bounded Device Scheduler job as described in [host execution](../execution/host-execution.md); within the admitted job, use scripts/with_benchmark_mutex.sh -- benchmark_target ... unless the target already embeds equivalent coordination
 2. benchmark target writes `run_config.json` and `results.json`
 3. `scripts/summarize_benchmark_run.py` writes `summary.json` and `summary.txt`
 4. `scripts/profile_nsys.sh --benchmark-summary ...` writes Nsight summaries and a combined summary

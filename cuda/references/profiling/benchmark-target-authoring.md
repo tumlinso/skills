@@ -3,7 +3,7 @@
 Use this reference when writing a new benchmark build target that should interoperate cleanly with the `cuda` scripts and summaries.
 
 On the shared host, run the target and profiler wrappers through
-[controller admission](../execution/host-execution.md). The target's mutex
+[Device Scheduler admission](../execution/host-execution.md). The target's mutex
 contract provides timing serialization inside that admitted execution.
 
 ## Core Rule

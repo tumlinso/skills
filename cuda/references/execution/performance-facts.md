@@ -1,4 +1,9 @@
-# CUDA performance facts and clean measurement
+# Historical CUDA performance facts and clean measurement
+
+> Historical reference only. These facts were stored by the retired CUDA
+> controller and are not a current scheduler evidence API. For current bounded
+> execution and receipts, see [host execution](host-execution.md).
+
 
 `CUDA-PERFORMANCE-FACT/1` is a reusable measurement fact, not work authority
 and not a substitute for raw benchmark output. Facts live in the CUDA

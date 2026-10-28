@@ -77,12 +77,14 @@ For substantial repository work, use Project Control's task scope and lifecycle.
 This skill supports bounded CUDA work authorized there, explicitly requested
 CUDA maintenance, or Project Control debugging.
 
-Before running GPU work, read [host execution](references/execution/host-execution.md).
-Use `scripts/cuda_controller.py run --spec <spec.json|-> --json` for foreground
-execution. It owns reservations, foreground preemption, quiescence, profiler
-and timing interlocks. Device visibility or the benchmark mutex alone does not
-replace it. Background campaigns require explicit persistent arming; their
-specification is in the linked execution reference.
+Before running host GPU work, read [host execution](references/execution/host-execution.md).
+The former `scripts/cuda_controller.py` entrypoint is retired and fails closed.
+Submit finite work through the authenticated Device Scheduler CLI with an
+explicit UUID-selected resource request and the required adapter preconditions;
+inspect execution state and artifacts through the same scheduler authority.
+Do not use legacy controller commands or receipts as current allocation or
+execution evidence. Existing profiler wrappers remain useful inside an admitted
+scheduler job, but they do not grant resources or establish admission.
 
 Keep evidence transforms, build helpers, and source-context compilation in
 `scripts/`. Use their compact outputs to inform judgment. PTX/SASS stays

@@ -13,10 +13,10 @@ Use this file for concrete implementation choices:
 
 Read `v100_programming_guide.md` first for topology and optimization order.
 
-The numerical and warp rules in this manual assume Volta `sm_70`. Its GPU
+The numerical and warp rules in this manual assume Volta sm_70. Its GPU
 ordinal-pair advice describes the recorded native-host profile; revalidate
-runtime topology before applying placement. CUDA controller admission and
-interlock rules remain authoritative for GPU work.
+runtime topology before applying placement. Device Scheduler admission and the
+shared-host execution rules govern GPU work; see [host execution](../../execution/host-execution.md).
 
 If the binary or extension still crashes, route first into [crash debugging](../../debugging/crash-debugging.md) before profiler or kernel-tuning work.
 

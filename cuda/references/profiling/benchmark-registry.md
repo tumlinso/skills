@@ -1,16 +1,17 @@
-# CUDA benchmark registry
+# Historical CUDA benchmark registry
 
-Use a project-owned `CUDA-BENCHMARK-REGISTRY/1` file when the same build,
-correctness, and measurement contract should be reused across todo work,
-accepted local-worker patches, and direct source changes. The registry is
-configuration, not a second task system. Todo-orchestrator remains authoritative
-for work and the CUDA controller remains authoritative for campaign execution.
+This page preserves the former campaign format and its evidence-selection
+methodology. The controller that validated, discovered, and executed these
+registries has been retired. No current scheduler adapter consumes this format,
+so the examples below help interpret existing registries and receipts; they do
+not define an active runner. For new bounded execution, follow [host execution](../execution/host-execution.md) and submit a Device Scheduler job directly. Todo-orchestrator
+remains authoritative for task ownership and acceptance.
 
-Each campaign declares logical targets, repository-relative path globs, exact
-ctxpp symbol identities, optional todo task selectors, structured commands, one
-JSON metric path, and a resource request. GPU UUIDs are optional; prefer a count
-and architecture so runtime topology discovery can select the physical devices.
-Never encode assumed GPU pairs.
+In the historical format, campaigns declared logical targets, repository-relative
+path globs, exact ctxpp symbol identities, optional task selectors, structured
+commands, metrics, and resource requests. UUIDs could be omitted in favor of
+architecture/count discovery. These fields are not a current Device Scheduler
+request; never submit a legacy registry directly as a job spec.
 
 ```json
 {
@@ -51,33 +52,18 @@ Never encode assumed GPU pairs.
 }
 ```
 
-Registered observer probes may substitute only `{parameter:name}` in the
-already-registered `build`, `correctness`, `benchmark`, and `binary_paths`
-argv components.  Parameter declarations are bounded `integer`, finite
-`number`, `enum`, or symbolic `dataset` values.  A dataset parameter names a
-registry-owned dataset source and entry; callers never supply a filesystem
-path.  The probe interface resolves only `project_root/cuda-benchmarks.json`,
-runs no build unless `rebuild:true`, and writes all transient output below its
-app-private state root:
+The retired observer-probe interface substituted bounded parameter values
+into registered command arguments. Dataset values named registry-owned sources
+rather than caller-supplied paths. These details are retained to explain
+historical campaign records; no active probe or registry-validation command is
+provided.
 
-```bash
-python cuda/scripts/cuda_controller.py probe --spec - --json <<'JSON'
-{"schema_version":1,"project_root":"/project","campaign":"fused-attention-sm70", "mode":"benchmark","parameters":{"size":8192},"rebuild":false}
-JSON
-```
-
-Validate without creating watches or jobs:
-
-```bash
-python cuda/scripts/cuda_controller.py registry validate \
-  --registry cuda-benchmarks.json --json
-```
-
-Discovery accepts a small evidence object. `changed_paths` are direct Git
-changes, `todo_scopes` are todo ownership scopes, and only patch results with
-`accepted: true` contribute `changed_paths`. A readonly
-`CTXPP-CONTEXT-PACKET/1` contributes its canonical target `id`, `name`, and
-`signature`. Logical `targets` and todo `task_ids` use exact identifiers.
+The former discovery interface accepted a small evidence object. changed_paths
+were direct Git changes, todo_scopes were Todo ownership scopes, and only patch
+results marked accepted contributed paths. Read-only context packets supplied
+canonical target identity. Logical targets and task IDs used exact identifiers.
+The shape below is retained as historical evidence, not an active scheduler
+request.
 
 ```json
 {
@@ -93,14 +79,10 @@ changes, `todo_scopes` are todo ownership scopes, and only patch results with
 }
 ```
 
-```bash
-python cuda/scripts/cuda_controller.py registry discover \
-  --registry cuda-benchmarks.json --input discovery.json --json
-```
 
-Without `--input`, discovery reads tracked and untracked changes relative to
-`--base HEAD`. It is read-only unless `--auto-queue` is supplied. Auto-queue is
-permitted only when exactly one campaign matches. Zero matches return
-`no_match`; multiple matches return `ambiguous` with the matching evidence and
-create no watch, queue, claim, or resource lease. The controller never ranks or
-guesses among plausible production benchmarks.
+
+Historically, discovery read tracked and untracked changes relative to HEAD.
+Its optional auto-queue path required exactly one match; zero matches returned
+no_match, and multiple matches returned ambiguous without creating work. Those
+behaviors describe the retired controller and are not available through
+Device Scheduler.

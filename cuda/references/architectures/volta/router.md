@@ -6,6 +6,11 @@ implementation questions. Keep builds narrow to `sm_70`, prefer native
 measurements over generic CUDA medians, and treat repeated HBM passes as a
 first-class loss.
 
+The [V100 atlas execution guide](v100_atlas/benchmarks/EXECUTION.md) is a
+historical runner record; its command examples use the retired CUDA controller
+and cannot launch work. Use [current host execution](../../execution/host-execution.md)
+for Device Scheduler admission.
+
 For a structured operation whose best representation or ownership is still open, start with [machine-aligned design](../../common/machine-aligned-design.md); its linked V100 atlas cards are hypotheses and dated evidence, not architecture-wide guarantees.
 
 The recorded native-host profile has fast pairs `0 <-> 2` and `1 <-> 3`, with

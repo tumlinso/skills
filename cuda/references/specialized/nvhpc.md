@@ -2,7 +2,7 @@
 
 Use this guide when choosing NVC++ CUDA interop, OpenACC, OpenMP target, or stdpar for a performance-sensitive GPU path. The comparison is framed around the native V100 system; verify target compiler/toolkit support and architecture behavior on other systems.
 
-Do not use compile success as performance evidence. For a broader CPU-to-GPU endpoint decision, start with [CPU porting](../workloads/cpu-porting.md); come here once offload is a serious candidate. Before active GPU benchmarks or profiles on the shared host, read [host execution](../execution/host-execution.md); use its controller admission, then invoke profiling wrappers within the admitted run.
+Do not use compile success as performance evidence. For a broader CPU-to-GPU endpoint decision, start with [CPU porting](../workloads/cpu-porting.md); come here once offload is a serious candidate. Before active GPU benchmarks or profiles on the shared host, read [host execution](../execution/host-execution.md); use Device Scheduler admission, then invoke profiling wrappers within the admitted job.
 
 ## Decision
 

@@ -1,138 +1,95 @@
-# Shared-host CUDA execution
+# Shared-host CUDA execution through Device Scheduler
 
-Read this before executing CUDA correctness, benchmarks, profiling, or debug
-captures on the shared machine. These controls are operational invariants;
-architecture and workload choices remain the agent's judgment.
+Device Scheduler is the single authority for host resource admission and
+supervised execution. Read this before launching CUDA correctness, profiling,
+benchmark, sanitizer, or debug work. Project Control still authorizes project
+work and owns task state; Device Scheduler owns execution and physical resource
+allocation.
 
-MCP startup never imports GPU libraries, starts a model, reserves a GPU, scans
-a repository, or runs a benchmark. Reading guidance does not authorize execution.
+The former `cuda_controller.py` entrypoint is retired after cutover. It is a
+fail-closed tombstone, not a compatibility proxy. Historical controller
+receipts remain archival evidence and do not describe current ownership.
 
-## Foreground work
+## Submit a bounded job
+
+Create a normal Device Scheduler `JobSpec` JSON object and submit it through
+the installed CLI:
 
 ```bash
-python <skill-dir>/scripts/cuda_controller.py inspect --project <repo> --json
-python <skill-dir>/scripts/cuda_controller.py run --spec <spec.json|-> --json
+device-scheduler job submit --payload-file job-spec.json
 ```
 
-An explicit `run` preempts conflicting background activity and reserves its
-GPUs atomically. Campaign state is project-local; physical GPU, profiler,
-interference-domain, and host-pressure interlocks are host-global. Runtime
-device identity/topology governs selection. `CUDA_VISIBLE_DEVICES`, a short
-standalone reservation, or `with_benchmark_mutex.sh` alone does not establish
-exclusive controller admission or quiescence.
+Use argument arrays and an explicit working directory. Request the stable GPU
+UUID discovered by Device Scheduler, with a positive `gpu_memory_bytes`
+admission estimate. Use `mode: "exclusive"` and the `gpu.exclusive` tag for
+whole-device work. A GPU memory request is admission accounting; the NVIDIA
+adapter does not claim hard VRAM enforcement. Request CPU cores and host memory
+when the workload needs supervised cgroup limits. Declare finite timeouts and
+restart/cancellation behavior explicitly.
 
-Keep builds in `benchmark.build_argv`; they run before the GPU lease. Top-level
-`build_argv` is rejected. An explicit unusable toolkit fails rather than
-silently selecting another; compiler and sanitizer come from the same toolkit.
-Read [controller spec contract](controller-background-contract.md#foreground-build-and-toolkit-contract-2026-09-06)
-for `binary_paths`, `command_cwd`, and Todo gate integration. A bound gate must
-run through its supported controller integration; direct runs do not waive it.
-
-For a direct Compute Sanitizer check, the foreground schema uses `argv` for the
-target, `benchmark.build_argv` for an optional build, `recipe` for the wrapper,
-`resources` for host admission, and `toolchain` for compiler/sanitizer
-validation. This accepted spec shape requires replacing the repository,
-toolkit, and target placeholders with real project and validated toolkit paths:
+For profiling and clean timing, include the adapter precondition supported by
+the configured NVIDIA adapter:
 
 ```json
 {
+  "name": "gpu.quiescence",
   "schema_version": 1,
-  "project_root": "/path/to/repository",
-  "command_cwd": "/path/to/repository",
-  "recipe": "compute-sanitizer",
-  "toolchain": {
-    "root": "<validated-toolkit-root>",
-    "require_sanitizer": true
-  },
-  "benchmark": {
-    "build_argv": ["cmake", "--build", "build", "--target", "my_cuda_test"]
-  },
-  "argv": ["./build/my_cuda_test", "--input", "data/example.bin"],
-  "correctness_argv": ["./build/my_cuda_test", "--self-test"],
-  "resources": {"gpus": 1, "cpu_threads": 4}
+  "parameters": {
+    "timeout_seconds": 60,
+    "interval_seconds": 1,
+    "consecutive_samples": 3,
+    "max_utilization_percent": 0
+  }
 }
 ```
 
-Replace the placeholders with real project paths, a usable toolkit root, and a
-test case compatible with the target GPU and host driver. For V100 `sm_70`, see
-the CUDA 12.x [Volta build rules](../architectures/volta/optimization-guide.md).
-The toolkit root must contain a usable `bin/nvcc` and matching
-`compute-sanitizer`; `require_sanitizer` makes missing or unusable sanitizer
-support fail before admission. `argv` and `correctness_argv` are argument
-arrays, not shell command strings. Run the example through `python <skill-dir>/scripts/cuda_controller.py
-run --spec <spec.json> --json`, replacing `<skill-dir>` with this skill's
-absolute path. Set the sanitizer executable from that same validated toolkit
-in the controller process environment when invoking it:
+A precondition is checked against the actual granted GPU descriptors immediately
+before launch. Unsupported or stale telemetry blocks the job; do not replace
+that refusal with device visibility variables, a mutex, or an unmanaged launch.
+
+To retrieve current execution state and retained output, use the same authority:
 
 ```bash
-COMPUTE_SANITIZER_BIN="<validated-toolkit-root>/bin/compute-sanitizer" \
-  python <skill-dir>/scripts/cuda_controller.py run --spec <spec.json> --json
+device-scheduler job get <job-id>
+device-scheduler job wait <job-id> --timeout-seconds 30
+device-scheduler job logs <job-id>
 ```
 
-The wrapper checks `COMPUTE_SANITIZER_BIN` first, then its pinned host path,
-then `PATH`; setting `PATH` alone may select a different sanitizer. The
-controller inherits this environment, validates the toolkit, runs the optional
-build, then admits the sanitizer wrapper under GPU and profiler interlocks.
+Wait timeout does not cancel a job. Use `device-scheduler job control <job-id>
+cancel` for an authorized cancellation and wait for verified cleanup before
+assuming its resources are available. Unknown execution or reclamation state
+remains unavailable pending reconciliation.
 
-Before timing/profiling, the controller requires consecutive idle samples from
-the runtime-selected GPU UUIDs. Foreign compute processes, utilization, or a
-quiescence timeout invalidate clean measurement. Timed benchmarks and
-system-wide profiling use the host-wide exclusive gate. Controller-selected
-Nsight Compute runs pass their admitted UUIDs and use a shared host gate plus
-exclusive locks for those UUIDs, acquired in sorted order. Captures on distinct
-devices may overlap when their requested PCIe and NVLink isolation domains do
-not conflict. The default profiler isolation remains enabled; set
-`resources.isolate_pcie_root` and `resources.isolate_nvlink_domain` to `false`
-only for independent resident work. Same-device captures remain excluded by
-controller reservations and wrapper locks.
+## Profilers and measurements
 
-Calls to `profile_ncu.sh` without controller-provided device scope and UUIDs
-retain host-wide exclusion. New wrappers recognize both owner-specific intent
-records and the legacy singleton marker. A device capture already in progress
-may finish its finite run when a host measurement queues; new device captures
-yield to that host intent. Background timing yields to any foreground
-measurement intent, and background device profiling yields to host intents and
-overlapping UUID intents. Other profiler and debugger recipes keep their
-existing host scope. Wrappers add coordination inside an admitted run; they do
-not replace controller admission, resource reservations, or quiescence.
+Existing wrappers such as `profile_ncu.sh` remain as in-job coordination tools.
+They preserve profiler scope, capture interlocks, and evidence formatting, but
+they do not allocate GPUs, preempt work, or prove quiescence. Invoke them only
+inside a supervised job that already has the required grant and precondition.
+Keep Nsight Compute, Compute Sanitizer, compiler, and CUDA toolkit paths explicit
+in the job's argument/environment contract. A missing tool or unsupported
+adapter guarantee is a failed admission, not permission to fall back.
 
-## Background campaigns
+Keep correctness checks separate from timing. Preserve source, binary, command,
+profiler, sanitizer, result, and Device Scheduler receipt identities in the
+project's evidence records. Scheduler receipts establish the admitted attempt,
+actual grant, logs/results, and cleanup evidence; they do not prove a performance
+claim beyond the captured measurement.
 
-```bash
-python <skill-dir>/scripts/cuda_controller.py background arm --spec <spec.json|-> --json
-python <skill-dir>/scripts/cuda_controller.py background enqueue --spec <spec.json|-> --json
-```
+## Background work
 
-Arming is explicit and persistent. Once armed, relevant task completion,
-checkpoint, and handoff events wake private correctness/benchmark work without
-polling or changing Todo output. Read [background specs](controller-background-contract.md)
-only when authoring these campaigns. Use `background backfill --spec ...` once
-for project-supplied historical task/source/benchmark mappings; it does not
-rewrite Todo history.
+Submit recurring or event-triggered work as Device Scheduler schedules only
+when an operator has explicitly authorized the campaign and its bounded policy.
+Do not use retired controller `background arm`, `enqueue`, or `backfill`
+commands. Project Control tasks remain the acceptance authority; scheduler job
+completion is execution evidence, not task acceptance.
 
-Correctness repeats and fails fast; failure skips its dependent measurement
-chain while unrelated watches can proceed. Healthy background results remain
-silent. Failures, material regressions, missed targets, serious variance or
-contamination, and relevant bottlenecks produce bounded evidence. The agent
-interprets conflicts and decides promotion.
 
-## Evidence and source context
+## Historical controller records
 
-```bash
-python <skill-dir>/scripts/cuda_controller.py evidence <id> --project <repo> --focus <topic> --json
-```
+The following references explain preserved legacy campaign evidence only;
+their controller operations are retired:
 
-Summaries point to authoritative raw artifacts. Read
-[performance facts](performance-facts.md) when selecting/comparing baselines:
-compatibility keys, source/binary provenance, contamination, and candidate
-promotion have different roles.
-
-Generated context views are read-only; edit canonical source. The controller
-uses cpp-context-compiler for small semantic source slices and falls back to
-`scripts/split_cuda_translation_unit.py` when semantic retrieval is unavailable.
-For accepted changes, prefer a performance-intent ctxpp task packet carrying
-changed paths plus task/campaign identity before the slice/TU fallback.
-
-For CUDA knowledge, follow the authored links in [SKILL.md](../../SKILL.md),
-then search filenames/headings with ordinary filesystem tools. The controller's
-compatibility `guide` command is not the semantic routing authority.
+- [Background campaign contract](controller-background-contract.md)
+- [Performance facts and historical comparisons](performance-facts.md)
+- [Historical benchmark registry](../profiling/benchmark-registry.md)
